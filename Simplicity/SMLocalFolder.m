@@ -14,6 +14,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessage.h"
+#import "SMOpDeleteMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
@@ -323,6 +324,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
 	SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session];
 	
+    (void)updateResult;
+
 	// TODO: send result
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }
@@ -670,35 +673,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)deleteMessages:(MCOIndexSet*)uids {
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	MCOIMAPSession *session = [[appDelegate model] imapSession];
-	NSAssert(session, @"session lost");
-
-	MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_localName uids:uids kind:MCOIMAPStoreFlagsRequestKindSet flags:MCOMessageFlagDeleted];
-
-	[op start:^(NSError * error) {
-		if(error == nil) {
-			NSLog(@"%s: Flags for folder %@ successfully updated", __func__, _localName);
-		} else {
-			NSLog(@"%s: Error updating flags for folder %@: %@", __func__, _localName, error);
-			
-			// TODO: try again!
-		}
-
-		MCOIMAPOperation *deleteOp = [session expungeOperation:_localName];
-
-		[deleteOp start:^(NSError *error) {
-			if(error == nil) {
-				NSLog(@"%s: Folder %@ successfully expunged", __func__, _localName);
-
-				[self startLocalFolderSync];
-			} else {
-				NSLog(@"%s: Error expunging folder %@: %@", __func__, _localName, error);
-
-				// TODO: try again!
-			}
-		}];
-	}];
+    SMOpDeleteMessages *deleteOp = [[SMOpDeleteMessages alloc] initWithUids:uids remoteFolderName:_remoteFolderName];
+    [deleteOp start]; // TODO: put in a queue
 }
 
 #pragma mark Memory management

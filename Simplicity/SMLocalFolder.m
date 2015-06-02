@@ -14,7 +14,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessage.h"
-#import "SMOpDeleteMessages.h"
+#import "SMOpMoveMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
@@ -620,61 +620,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		}
 	}
 	
-	NSAssert(messagesToMoveUids.count > 0, @"no message uids to move from %@ to %@", _remoteFolderName, destRemoteFolderName);
+    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
 
-	MCOIMAPSession *session = [[appDelegate model] imapSession];
-	NSAssert(session, @"session lost");
-
-	MCOIMAPCopyMessagesOperation *op = [session copyMessagesOperationWithFolder:_remoteFolderName uids:messagesToMoveUids destFolder:destRemoteFolderName];
-
-	op.urgent = YES;
-	
-	[op start:^(NSError *error, NSDictionary *uidMapping) {
-		if(error == nil) {
-			if(uidMapping != nil) {
-				SMFolder *targetFolder = [[[appDelegate model] mailbox] getFolderByName:destRemoteFolderName];
-				
-				if(targetFolder != nil && targetFolder.kind == SMFolderKindRegular) {
-					MCOIndexSet *uids = [MCOIndexSet indexSet];
-					for(NSNumber *srcUid in uidMapping)
-						[uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
-	
-					[self addLabel:destRemoteFolderName toMessages:uids forRemoteFolder:destRemoteFolderName];
-				}
-			}
- 
-			[self deleteMessages:messagesToMoveUids];
-		} else {
-			NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _remoteFolderName, destRemoteFolderName, error);
-		}
-	}];
-
-	// TODO: register the op for the folder (there may be multiple moving operations)
-	
-}
-
-- (void)addLabel:(NSString*)label toMessages:(MCOIndexSet*)uids forRemoteFolder:(NSString*)remoteFolderName {
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-	MCOIMAPSession *session = [[appDelegate model] imapSession];
-	NSAssert(session, @"session lost");
-
-	MCOIMAPOperation *op = [session storeLabelsOperationWithFolder:remoteFolderName uids:uids kind:MCOIMAPStoreFlagsRequestKindAdd labels:[NSArray arrayWithObject:label]];
-	
-	[op start:^(NSError * error) {
-		if(error == nil) {
-			NSLog(@"%s: Label %@ for folder %@ successfully set", __func__, label, remoteFolderName);
-		} else {
-			NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, label, remoteFolderName, error);
-			
-			// TODO: try again!
-		}
-	}];
-}
-
-- (void)deleteMessages:(MCOIndexSet*)uids {
-    SMOpDeleteMessages *deleteOp = [[SMOpDeleteMessages alloc] initWithUids:uids remoteFolderName:_remoteFolderName];
-    [deleteOp start]; // TODO: put in a queue
+    [op start]; // TODO: put in a queue
 }
 
 #pragma mark Memory management

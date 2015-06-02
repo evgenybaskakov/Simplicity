@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMOpMoveMessages : NSObject
+#import "SMOperation.h"
+
+@interface SMOpMoveMessages : SMOperation
 
 - (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst;
-- (void)start;
-- (void)cancel;
 
 @end

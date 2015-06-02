@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMOpDeleteMessages : NSObject
+#import "SMOperation.h"
+
+@interface SMOpDeleteMessages : SMOperation
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName;
-- (void)start;
-- (void)cancel;
 
 @end

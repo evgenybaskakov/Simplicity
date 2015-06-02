@@ -102,6 +102,7 @@
 		80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */; };
 		80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */; };
 		80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */; };
+		80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575C1B1D763C00A0AA81 /* SMOperation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -329,6 +330,8 @@
 		80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpMoveMessages.m; sourceTree = "<group>"; };
 		80E657581B1D6C0600A0AA81 /* SMOpAddLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAddLabel.h; sourceTree = "<group>"; };
 		80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAddLabel.m; sourceTree = "<group>"; };
+		80E6575B1B1D763C00A0AA81 /* SMOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperation.h; sourceTree = "<group>"; };
+		80E6575C1B1D763C00A0AA81 /* SMOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -450,6 +453,8 @@
 				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
 				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
 				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
+				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
+				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
 				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
@@ -780,6 +785,7 @@
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
+				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
 				0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,

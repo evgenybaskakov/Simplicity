@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMOpAddLabel : NSObject
+#import "SMOperation.h"
+
+@interface SMOpAddLabel : SMOperation
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label;
-- (void)start;
-- (void)cancel;
 
 @end

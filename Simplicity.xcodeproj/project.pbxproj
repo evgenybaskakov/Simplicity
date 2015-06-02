@@ -103,6 +103,7 @@
 		80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */; };
 		80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */; };
 		80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575C1B1D763C00A0AA81 /* SMOperation.m */; };
+		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -332,6 +333,8 @@
 		80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAddLabel.m; sourceTree = "<group>"; };
 		80E6575B1B1D763C00A0AA81 /* SMOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperation.h; sourceTree = "<group>"; };
 		80E6575C1B1D763C00A0AA81 /* SMOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperation.m; sourceTree = "<group>"; };
+		80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSendMessage.h; sourceTree = "<group>"; };
+		80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpSendMessage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -453,6 +456,8 @@
 				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
 				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
 				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
+				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
+				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
 				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
 				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
 				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
@@ -807,6 +812,7 @@
 				00A085A01A7206FC00CC4E1C /* SMAttachmentItem.m in Sources */,
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMLabeledTokenFieldBoxViewController.m in Sources */,
+				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
 				00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */,
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,

@@ -98,6 +98,8 @@
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
+		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
+		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
 		80E6574E1B182B2B00A0AA81 /* libMailCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E6573F1B182AF700A0AA81 /* libMailCore.a */; };
 		80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */; };
 		80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */; };
@@ -323,6 +325,10 @@
 		00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInstrumentPanelViewController.h; sourceTree = "<group>"; };
 		00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInstrumentPanelViewController.m; sourceTree = "<group>"; };
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
+		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
+		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
+		80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationExecutor.h; sourceTree = "<group>"; };
+		80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationExecutor.m; sourceTree = "<group>"; };
 		80E657331B182AF700A0AA81 /* mailcore2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mailcore2.xcodeproj; path = "../mailcore2/build-mac/mailcore2.xcodeproj"; sourceTree = "<group>"; };
 		80E657511B182DE300A0AA81 /* SMMailLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailLogin.h; sourceTree = "<group>"; };
 		80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpDeleteMessages.h; sourceTree = "<group>"; };
@@ -460,6 +466,10 @@
 				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
 				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
 				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
+				80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */,
+				80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */,
+				80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */,
+				80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */,
 				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
@@ -792,6 +802,7 @@
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
+				80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */,
 				0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,
 				0097426E195686F900620145 /* SMMailboxViewController.m in Sources */,
@@ -817,6 +828,7 @@
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,
 				0082F5FE1A0FFAAC0050578A /* SMLocalFolder.m in Sources */,
+				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
 				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,
 				0089D35F1A88084F00C189BB /* SMFolderColorController.m in Sources */,

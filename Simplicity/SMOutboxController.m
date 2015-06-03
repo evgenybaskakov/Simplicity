@@ -8,6 +8,9 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMOperationExecutor.h"
 #import "SMOpSendMessage.h"
 #import "SMOutboxController.h"
 
@@ -16,8 +19,10 @@
 - (void)sendMessage:(MCOMessageBuilder*)message {
 	NSLog(@"%s", __func__);
     
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithMessage:message];
-    [op start]; // TODO: queue!!!
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 }
 
 @end

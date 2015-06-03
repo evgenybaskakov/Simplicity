@@ -11,6 +11,7 @@
 #import "SMAppDelegate.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
+#import "SMOperationExecutor.h"
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessage.h"
@@ -622,7 +623,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
 
-    [op start]; // TODO: put in a queue
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 }
 
 #pragma mark Memory management

@@ -9,6 +9,8 @@
 #import <MailCore/MailCore.h>
 
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMMessageListController.h"
@@ -65,12 +67,12 @@
                         [uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
                     
                     SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName];
-                    [op start]; // TODO: put in a queue
+                    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
                 }
             }
             
             SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName];
-            [op start]; // TODO: put in a queue
+            [[[appDelegate appController] operationExecutor] replaceOperation:self with:op];
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
         }

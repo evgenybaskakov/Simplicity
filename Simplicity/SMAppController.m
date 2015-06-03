@@ -21,6 +21,7 @@
 #import "SMFindContentsPanelViewController.h"
 #import "SMFolderColorController.h"
 #import "SMOutboxController.h"
+#import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 
@@ -218,6 +219,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	//
 	
 	_outboxController = [[SMOutboxController alloc] init];
+    
+    //
+    
+    _operationExecutor = [[SMOperationExecutor alloc] init];
 }
 
 - (void)updateMailboxFolderListView {

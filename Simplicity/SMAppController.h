@@ -19,6 +19,7 @@
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
 @class SMOutboxController;
+@class SMOperationExecutor;
 
 @interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate>
 
@@ -39,6 +40,7 @@
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMFolderColorController *folderColorController;
 @property SMOutboxController *outboxController;
+@property SMOperationExecutor *operationExecutor;
 
 - (void)updateMailboxFolderListView;
 - (void)toggleSearchResultsView;

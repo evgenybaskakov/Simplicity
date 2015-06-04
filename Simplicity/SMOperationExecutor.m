@@ -40,7 +40,7 @@
     
     // TODO: gen event
 
-    [op start]; // TODO: remove
+    [replacementOp start]; // TODO: remove
 }
 
 - (void)completeOperation:(SMOperation*)op {

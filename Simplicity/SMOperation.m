@@ -17,8 +17,15 @@
     NSAssert(false, @"start not implemented");
 }
 
+- (void)restart {
+    [self start]; // TODO: schedule restart after a delay
+}
+
 - (void)cancel {
-    NSAssert(false, @"cancel not implemented");
+    NSAssert(_currentOp != nil, @"no current op");
+
+    [_currentOp cancel];
+    _currentOp = nil;
 }
 
 - (void)complete {

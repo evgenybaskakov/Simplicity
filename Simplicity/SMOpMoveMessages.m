@@ -20,7 +20,6 @@
     MCOIndexSet *_uids;
     NSString *_srcRemoteFolderName;
     NSString *_dstRemoteFolderName;
-    MCOIMAPOperation *_currentOp;
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst {
@@ -46,6 +45,8 @@
     
     op.urgent = YES;
     
+    self.currentOp = op;
+    
     [op start:^(NSError *error, NSDictionary *uidMapping) {
         if(error == nil) {
             if(uidMapping != nil) {
@@ -68,14 +69,9 @@
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
 
-            [self start]; // repeat (TODO)
+            [self restart];
         }
     }];
-}
-
-- (void)cancel {
-    [_currentOp cancel];
-    _currentOp = nil;
 }
 
 @end

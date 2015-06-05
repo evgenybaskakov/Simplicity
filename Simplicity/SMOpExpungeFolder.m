@@ -14,7 +14,6 @@
 
 @implementation SMOpExpungeFolder {
     NSString *_remoteFolderName;
-    MCOIMAPOperation *_currentOp;
 }
 
 - (id)initWithRemoteFolder:(NSString*)remoteFolderName {
@@ -34,7 +33,7 @@
     
     MCOIMAPOperation *op = [session expungeOperation:_remoteFolderName];
     
-    _currentOp = op;
+    self.currentOp = op;
     
     [op start:^(NSError *error) {
         if(error == nil) {
@@ -51,14 +50,9 @@
         } else {
             NSLog(@"%s: Error expunging remote folder %@: %@", __func__, _remoteFolderName, error);
             
-            [self start]; // repeat (TODO)
+            [self restart];
         }
     }];
-}
-
-- (void)cancel {
-    [_currentOp cancel];
-    _currentOp = nil;
 }
 
 @end

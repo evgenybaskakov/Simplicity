@@ -14,7 +14,6 @@
     MCOIndexSet *_uids;
     NSString *_remoteFolderName;
     NSString *_label;
-    MCOIMAPOperation *_currentOp;
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label {
@@ -36,7 +35,7 @@
     
     MCOIMAPOperation *op = [session storeLabelsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindAdd labels:[NSArray arrayWithObject:_label]];
     
-    _currentOp = op;
+    self.currentOp = op;
     
     [op start:^(NSError * error) {
         if(error == nil) {
@@ -46,14 +45,9 @@
         } else {
             NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, _label, _remoteFolderName, error);
             
-            [self start]; // repeat (TODO)
+            [self restart];
         }
     }];
-}
-
-- (void)cancel {
-    [_currentOp cancel];
-    _currentOp = nil;
 }
 
 @end

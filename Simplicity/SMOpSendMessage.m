@@ -13,7 +13,6 @@
 
 @implementation SMOpSendMessage {
     MCOMessageBuilder *_message;
-    MCOSMTPOperation *_currentOp;
 }
 
 - (id)initWithMessage:(MCOMessageBuilder*)message {
@@ -30,24 +29,19 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_message.data];
     
-    _currentOp = op;
+    self.currentOp = op;
     
     [op start:^(NSError * error) {
-        if (error != nil && [error code] != MCOErrorNone) {
-            NSLog(@"%s: Error sending message: %@", __func__, error);
-            
-            [self start]; // repeat (TODO)
-        } else {
+        if (error == nil || [error code] == MCOErrorNone) {
             NSLog(@"%s: message sent successfully", __func__);
             
             [self complete];
+        } else {
+            NSLog(@"%s: Error sending message: %@", __func__, error);
+            
+            [self restart];
         }
     }];
-}
-
-- (void)cancel {
-    [_currentOp cancel];
-    _currentOp = nil;
 }
 
 @end

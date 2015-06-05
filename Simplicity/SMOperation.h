@@ -9,10 +9,14 @@
 #import <Foundation/Foundation.h>
 
 @class SMOperation;
+@class MCOOperation;
 
 @interface SMOperation : NSObject
 
+@property MCOOperation *currentOp;
+
 - (void)start;
+- (void)restart;
 - (void)cancel;
 - (void)complete;
 - (void)enqueue;

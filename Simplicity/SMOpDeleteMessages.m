@@ -16,7 +16,6 @@
 @implementation SMOpDeleteMessages {
     MCOIndexSet *_uids;
     NSString *_remoteFolderName;
-    MCOIMAPOperation *_currentOp;
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName {
@@ -37,7 +36,7 @@
     
     MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindSet flags:MCOMessageFlagDeleted];
     
-    _currentOp = op;
+    self.currentOp = op;
     
     [op start:^(NSError * error) {
         if(error == nil) {
@@ -49,14 +48,9 @@
         } else {
             NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
             
-            [self start]; // repeat (TODO)
+            [self restart];
         }
     }];
-}
-
-- (void)cancel {
-    [_currentOp cancel];
-    _currentOp = nil;
 }
 
 @end

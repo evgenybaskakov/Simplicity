@@ -75,6 +75,8 @@
             [self replaceWith:op];
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
+
+            [self startInternal]; // repeat (TODO)
         }
     }];
 }

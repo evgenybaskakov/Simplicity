@@ -54,7 +54,7 @@
         } else {
             NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, _label, _remoteFolderName, error);
             
-            [self startInternal];
+            [self startInternal]; // repeat (TODO)
         }
     }];
 }

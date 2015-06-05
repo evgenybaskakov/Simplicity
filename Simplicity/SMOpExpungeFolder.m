@@ -1,8 +1,8 @@
 //
-//  SMOpDeleteMessages.m
+//  SMOpExpungeFolder.m
 //  Simplicity
 //
-//  Created by Evgeny Baskakov on 5/31/15.
+//  Created by Evgeny Baskakov on 6/4/15.
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
@@ -11,22 +11,19 @@
 #import "SMAppDelegate.h"
 #import "SMMessageListController.h"
 #import "SMOpExpungeFolder.h"
-#import "SMOpDeleteMessages.h"
 
-@implementation SMOpDeleteMessages {
-    MCOIndexSet *_uids;
+@implementation SMOpExpungeFolder {
     NSString *_remoteFolderName;
     MCOIMAPOperation *_currentOp;
 }
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName {
+- (id)initWithRemoteFolder:(NSString*)remoteFolderName {
     self = [super init];
-
+    
     if(self) {
-        _uids = uids;
         _remoteFolderName = remoteFolderName;
     }
-
+    
     return self;
 }
 
@@ -43,19 +40,24 @@
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
     
-    MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindSet flags:MCOMessageFlagDeleted];
+    MCOIMAPOperation *op = [session expungeOperation:_remoteFolderName];
     
     _currentOp = op;
     
-    [op start:^(NSError * error) {
+    [op start:^(NSError *error) {
         if(error == nil) {
-            NSLog(@"%s: Flags for remote folder %@ successfully updated", __func__, _remoteFolderName);
+            NSLog(@"%s: Remote folder %@ successfully expunged", __func__, _remoteFolderName);
             
-            SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName];
+            SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+            SMMessageListController *messageListController = [[appDelegate model] messageListController];
             
-            [self replaceWith:op];
+            // TODO: should check if the current folder is the same as expunged one
+            
+            [messageListController scheduleMessageListUpdate:YES];
+            
+            [self complete];
         } else {
-            NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
+            NSLog(@"%s: Error expunging remote folder %@: %@", __func__, _remoteFolderName, error);
             
             [self startInternal]; // repeat (TODO)
         }

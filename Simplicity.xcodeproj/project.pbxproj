@@ -98,6 +98,7 @@
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
+		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
 		80E6574E1B182B2B00A0AA81 /* libMailCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E6573F1B182AF700A0AA81 /* libMailCore.a */; };
@@ -325,6 +326,8 @@
 		00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInstrumentPanelViewController.h; sourceTree = "<group>"; };
 		00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInstrumentPanelViewController.m; sourceTree = "<group>"; };
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
+		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
+		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
 		80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationExecutor.h; sourceTree = "<group>"; };
@@ -460,6 +463,8 @@
 				80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */,
 				80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */,
 				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
+				8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */,
+				8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */,
 				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
 				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
 				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
@@ -812,6 +817,7 @@
 				004741651AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m in Sources */,
 				00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */,
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
+				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
 				00172FF0198B3BB700DB975E /* SMMessageBodyViewController.m in Sources */,

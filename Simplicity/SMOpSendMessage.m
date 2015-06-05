@@ -44,7 +44,7 @@
         if (error != nil && [error code] != MCOErrorNone) {
             NSLog(@"%s: Error sending message: %@", __func__, error);
             
-            [self startInternal];
+            [self startInternal]; // repeat (TODO)
         } else {
             NSLog(@"%s: message sent successfully", __func__);
             

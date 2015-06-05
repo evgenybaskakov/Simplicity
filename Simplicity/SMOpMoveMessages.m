@@ -36,14 +36,6 @@
 }
 
 - (void)start {
-    [self startInternal];
-}
-
-- (void)cancel {
-    [self cancelInternal];
-}
-
-- (void)startInternal {
     NSAssert(_uids.count > 0, @"no message uids to move from %@ to %@", _srcRemoteFolderName, _dstRemoteFolderName);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -76,12 +68,12 @@
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
 
-            [self startInternal]; // repeat (TODO)
+            [self start]; // repeat (TODO)
         }
     }];
 }
 
-- (void)cancelInternal {
+- (void)cancel {
     [_currentOp cancel];
     _currentOp = nil;
 }

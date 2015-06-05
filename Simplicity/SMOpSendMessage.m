@@ -27,14 +27,6 @@
 }
 
 - (void)start {
-    [self startInternal];
-}
-
-- (void)cancel {
-    [self cancelInternal];
-}
-
-- (void)startInternal {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_message.data];
     
@@ -44,7 +36,7 @@
         if (error != nil && [error code] != MCOErrorNone) {
             NSLog(@"%s: Error sending message: %@", __func__, error);
             
-            [self startInternal]; // repeat (TODO)
+            [self start]; // repeat (TODO)
         } else {
             NSLog(@"%s: message sent successfully", __func__);
             
@@ -53,7 +45,7 @@
     }];
 }
 
-- (void)cancelInternal {
+- (void)cancel {
     [_currentOp cancel];
     _currentOp = nil;
 }

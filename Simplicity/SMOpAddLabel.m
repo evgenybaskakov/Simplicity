@@ -30,36 +30,28 @@
 }
 
 - (void)start {
-    [self startInternal];
-}
-
-- (void)cancel {
-    [self cancelInternal];
-}
-
-- (void)startInternal {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session storeLabelsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindAdd labels:[NSArray arrayWithObject:_label]];
-
+    
     _currentOp = op;
-
+    
     [op start:^(NSError * error) {
         if(error == nil) {
             NSLog(@"%s: Label %@ for folder %@ successfully set", __func__, _label, _remoteFolderName);
-
+            
             [self complete];
         } else {
             NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, _label, _remoteFolderName, error);
             
-            [self startInternal]; // repeat (TODO)
+            [self start]; // repeat (TODO)
         }
     }];
 }
 
-- (void)cancelInternal {
+- (void)cancel {
     [_currentOp cancel];
     _currentOp = nil;
 }

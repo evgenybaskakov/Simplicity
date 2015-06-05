@@ -31,14 +31,6 @@
 }
 
 - (void)start {
-    [self startInternal];
-}
-
-- (void)cancel {
-    [self cancelInternal];
-}
-
-- (void)startInternal {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
@@ -57,12 +49,12 @@
         } else {
             NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
             
-            [self startInternal]; // repeat (TODO)
+            [self start]; // repeat (TODO)
         }
     }];
 }
 
-- (void)cancelInternal {
+- (void)cancel {
     [_currentOp cancel];
     _currentOp = nil;
 }

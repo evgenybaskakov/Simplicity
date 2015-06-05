@@ -49,6 +49,8 @@
     [op start:^(NSError * error) {
         if(error == nil) {
             NSLog(@"%s: Label %@ for folder %@ successfully set", __func__, _label, _remoteFolderName);
+
+            [self complete];
         } else {
             NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, _label, _remoteFolderName, error);
             

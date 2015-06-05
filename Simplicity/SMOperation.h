@@ -8,9 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMOperation;
+
 @interface SMOperation : NSObject
 
 - (void)start;
 - (void)cancel;
+- (void)complete;
+- (void)enqueue;
+- (void)replaceWith:(SMOperation*)op;
 
 @end

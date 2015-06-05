@@ -12,10 +12,11 @@
 
 @interface SMOperationQueue : NSObject
 
+@property (readonly) NSUInteger size;
+
 - (void)putOp:(SMOperation*)op;
 - (void)popFirstOp;
 - (void)replaceFirstOp:(SMOperation*)op;
 - (SMOperation*)getFirstOp;
-- (NSUInteger)getQueueSize;
 
 @end

@@ -26,10 +26,10 @@
 
 - (void)enqueueOperation:(SMOperation*)op {
     [_queue putOp:op];
-    
-    // TODO: gen event
-    
-    [op start]; // TODO: remove
+
+    if(_queue.size == 1) {
+        [op start];
+    }
 }
 
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
@@ -37,10 +37,8 @@
     NSAssert(fop == op, @"current first op doesn't match the op being replaced");
 
     [_queue replaceFirstOp:replacementOp];
-    
-    // TODO: gen event
 
-    [replacementOp start]; // TODO: remove
+    [replacementOp start];
 }
 
 - (void)completeOperation:(SMOperation*)op {
@@ -48,7 +46,9 @@
 
     [_queue popFirstOp];
 
-    // TODO: gen event
+    if(_queue.size > 0) {
+        [[_queue getFirstOp] start];
+    }
 }
 
 @end

@@ -44,10 +44,12 @@
         if (error != nil && [error code] != MCOErrorNone) {
             NSLog(@"%s: Error sending message: %@", __func__, error);
             
-            [self startInternal]; // TODO!!
+            [self startInternal];
+        } else {
+            NSLog(@"%s: message sent successfully", __func__);
+            
+            [self complete];
         }
-        
-        NSLog(@"%s: message sent successfully", __func__);
     }];
 }
 

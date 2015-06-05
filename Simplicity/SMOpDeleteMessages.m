@@ -78,6 +78,8 @@
             // TODO: should check if the current folder is the same as expunged one
 
             [messageListController scheduleMessageListUpdate:YES];
+            
+            [self complete];
         } else {
             NSLog(@"%s: Error expunging remote folder %@: %@", __func__, _remoteFolderName, error);
             

@@ -41,7 +41,7 @@
     return _queue[0];
 }
 
-- (NSUInteger)getQueueSize {
+- (NSUInteger)size {
     return _queue.count;
 }
 

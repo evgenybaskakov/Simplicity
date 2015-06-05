@@ -9,8 +9,6 @@
 #import <MailCore/MailCore.h>
 
 #import "SMAppDelegate.h"
-#import "SMAppController.h"
-#import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMMessageListController.h"
@@ -60,19 +58,21 @@
         if(error == nil) {
             if(uidMapping != nil) {
                 SMFolder *targetFolder = [[[appDelegate model] mailbox] getFolderByName:_dstRemoteFolderName];
-                
+
                 if(targetFolder != nil && targetFolder.kind == SMFolderKindRegular) {
                     MCOIndexSet *uids = [MCOIndexSet indexSet];
                     for(NSNumber *srcUid in uidMapping)
                         [uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
                     
                     SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName];
-                    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+
+                    [op enqueue];
                 }
             }
             
             SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName];
-            [[[appDelegate appController] operationExecutor] replaceOperation:self with:op];
+            
+            [self replaceWith:op];
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
         }

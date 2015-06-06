@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMOperationQueueWindowController : NSWindowController
+@interface SMOperationQueueWindowController : NSWindowController<NSWindowDelegate>
 
 @property (nonatomic) IBOutlet NSView *operationsView;
 

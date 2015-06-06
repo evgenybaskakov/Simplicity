@@ -481,7 +481,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)showOperationQueueSheet {
     if(_operationQueueWindowController == nil)
-        _operationQueueWindowController = [[SMOperationQueueWindowController alloc] init];
+        _operationQueueWindowController = [[SMOperationQueueWindowController alloc] initWithWindowNibName:@"SMOperationQueueWindowController"];
     
 //    [_operationQueueWindowController updateExistingLabelsList];
 //    [_addNewLabelWindowController setSuggestedNestingLabel:suggestedParentFolder];

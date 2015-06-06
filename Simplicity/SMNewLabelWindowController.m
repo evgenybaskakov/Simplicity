@@ -50,14 +50,14 @@
 	[self closeNewLabelWindow];
 }
 
-- (void)windowWillClose:(NSNotification *)notification {
-	[self closeNewLabelWindow];
-}
-
 - (IBAction)toggleNestedLabelAction:(id)sender {
 	const Boolean nestLabel = (_labelNestedCheckbox.state == NSOnState);
 
 	[_nestingLabelName setEnabled:nestLabel];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [self closeNewLabelWindow];
 }
 
 - (void)closeNewLabelWindow {

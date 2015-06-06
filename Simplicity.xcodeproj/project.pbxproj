@@ -98,6 +98,11 @@
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
+		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
+		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
+		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
+		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
+		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -326,6 +331,13 @@
 		00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInstrumentPanelViewController.h; sourceTree = "<group>"; };
 		00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInstrumentPanelViewController.m; sourceTree = "<group>"; };
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
+		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
+		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
+		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
+		801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueViewController.h; sourceTree = "<group>"; };
+		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
+		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
+		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
@@ -526,6 +538,10 @@
 				00172FF3198D5C6100DB975E /* SMMessageThreadViewController.m */,
 				00AD52ED1AA81C7900627433 /* SMNewLabelWindowController.h */,
 				00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */,
+				801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */,
+				801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */,
+				801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */,
+				801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */,
 				008F93681AC4F8E600C21D62 /* SMOutboxController.h */,
 				008F93691AC4F8E600C21D62 /* SMOutboxController.m */,
 				0082F5F61A0DD39B0050578A /* SMSearchResultsListController.h */,
@@ -580,6 +596,8 @@
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
+				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
+				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
 				00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */,
 				003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */,
 			);
@@ -602,6 +620,7 @@
 				002556F91A5A3BF900C864D0 /* info-icon.png */,
 				00DBA6DD1AC2705F00DFE03D /* new-message.png */,
 				002057CC1A85D2DA00D5FE8A /* outbox-white.png */,
+				801B8E881B23B1BC00B144C0 /* queue-icon.png */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
 				006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */,
@@ -766,6 +785,7 @@
 				0002A0A217D1B1E000EA4AFF /* Credits.rtf in Resources */,
 				00DBA6DE1AC2705F00DFE03D /* new-message.png in Resources */,
 				002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */,
+				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */,
@@ -781,9 +801,11 @@
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
+				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
 				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
+				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,
 			);
@@ -820,6 +842,7 @@
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
+				801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */,
 				00172FF0198B3BB700DB975E /* SMMessageBodyViewController.m in Sources */,
 				006709341A99A77600C0C9CC /* SMFindContentsPanelViewController.m in Sources */,
 				0002A0B817D224C600EA4AFF /* SMMessageListCellView.m in Sources */,
@@ -834,6 +857,7 @@
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,
 				0082F5FE1A0FFAAC0050578A /* SMLocalFolder.m in Sources */,
+				801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */,
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
 				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,

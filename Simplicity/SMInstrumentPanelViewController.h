@@ -14,5 +14,6 @@
 
 - (IBAction)hideSearchResults:(id)sender;
 - (IBAction)addNewLabel:(id)sender;
+- (IBAction)showOperationQueue:(id)sender;
 
 @end

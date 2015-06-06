@@ -26,4 +26,11 @@
 	[appController showNewLabelSheet:nil];
 }
 
+- (IBAction)showOperationQueue:(id)sender {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+
+    [appController showOperationQueueSheet];
+}
+
 @end

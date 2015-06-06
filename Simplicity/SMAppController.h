@@ -18,6 +18,7 @@
 @class SMFolderColorController;
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
+@class SMOperationQueueWindowController;
 @class SMOutboxController;
 @class SMOperationExecutor;
 
@@ -52,6 +53,11 @@
 
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder;
 - (void)hideNewLabelSheet;
+
+@property (nonatomic) SMOperationQueueWindowController *operationQueueWindowController;
+
+- (void)showOperationQueueSheet;
+- (void)hideOperationQueueSheet;
 
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
 

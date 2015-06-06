@@ -19,6 +19,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMInstrumentPanelViewController.h"
 #import "SMFindContentsPanelViewController.h"
+#import "SMOperationQueueWindowController.h"
 #import "SMFolderColorController.h"
 #import "SMOutboxController.h"
 #import "SMOperationExecutor.h"
@@ -473,6 +474,33 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	[newLabelSheet orderOut:self];
 
 	[NSApp endSheet:newLabelSheet];
+}
+
+
+#pragma mark Operation Queue Window
+
+- (void)showOperationQueueSheet {
+    if(_operationQueueWindowController == nil)
+        _operationQueueWindowController = [[SMOperationQueueWindowController alloc] init];
+    
+//    [_operationQueueWindowController updateExistingLabelsList];
+//    [_addNewLabelWindowController setSuggestedNestingLabel:suggestedParentFolder];
+    
+    NSWindow *operationQueueSheet = _operationQueueWindowController.window;
+    NSAssert(operationQueueSheet != nil, @"operationQueueSheet is nil");
+    
+    [NSApp runModalForWindow:operationQueueSheet];
+}
+
+- (void)hideOperationQueueSheet {
+    NSAssert(_operationQueueWindowController != nil, @"_addNewLabelWindowController is nil");
+    
+    NSWindow *operationQueueSheet = _operationQueueWindowController.window;
+    NSAssert(operationQueueSheet != nil, @"operationQueueSheet is nil");
+    
+//    [operationQueueSheet orderOut:self];
+    
+    [NSApp endSheet:operationQueueSheet];
 }
 
 #pragma mark Message editor window management

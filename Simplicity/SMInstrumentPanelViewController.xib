@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D2134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMInstrumentPanelViewController">
@@ -46,7 +45,7 @@
                                 </buttonCell>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vgA-OF-Vi6">
-                                <rect key="frame" x="140" y="2" width="31" height="23"/>
+                                <rect key="frame" x="141" y="2" width="31" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="31" id="3fj-3i-G2B"/>
                                 </constraints>
@@ -58,19 +57,35 @@
                                     <action selector="addNewLabel:" target="-2" id="4N1-Zu-VMg"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RQ6-I1-BNo">
+                                <rect key="frame" x="111" y="2" width="31" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="31" id="FVP-bK-PBM"/>
+                                </constraints>
+                                <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="queue-icon" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DV7-tR-AuQ">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="showOperationQueue:" target="-2" id="qxb-at-0Ww"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <constraints>
+                        <constraint firstAttribute="bottom" secondItem="Gll-3h-Kly" secondAttribute="bottom" id="2Op-cq-bw0"/>
+                        <constraint firstAttribute="bottom" secondItem="RQ6-I1-BNo" secondAttribute="bottom" id="392-9j-tLp"/>
                         <constraint firstAttribute="height" constant="20" id="9cq-WR-Py4"/>
                         <constraint firstAttribute="trailing" secondItem="arQ-NF-dVx" secondAttribute="trailing" id="FEp-F2-I2b"/>
-                        <constraint firstItem="arQ-NF-dVx" firstAttribute="leading" secondItem="vgA-OF-Vi6" secondAttribute="trailing" id="H9Z-Nj-rrg"/>
+                        <constraint firstItem="arQ-NF-dVx" firstAttribute="leading" secondItem="vgA-OF-Vi6" secondAttribute="trailing" constant="-1" id="H9Z-Nj-rrg"/>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="M5w-g1-HrS"/>
                         <constraint firstItem="arQ-NF-dVx" firstAttribute="top" secondItem="nfi-FJ-ILo" secondAttribute="top" constant="-1" id="O9Z-1e-XEG"/>
+                        <constraint firstItem="RQ6-I1-BNo" firstAttribute="top" secondItem="nfi-FJ-ILo" secondAttribute="top" constant="-1" id="bPY-yu-1zB"/>
                         <constraint firstItem="Gll-3h-Kly" firstAttribute="top" secondItem="nfi-FJ-ILo" secondAttribute="top" constant="-1" id="e5X-A0-G2z"/>
-                        <constraint firstAttribute="bottom" secondItem="Gll-3h-Kly" secondAttribute="bottom" id="m4S-nP-jUp"/>
+                        <constraint firstAttribute="bottom" secondItem="arQ-NF-dVx" secondAttribute="bottom" id="jfN-d5-3Qu"/>
+                        <constraint firstItem="vgA-OF-Vi6" firstAttribute="leading" secondItem="RQ6-I1-BNo" secondAttribute="trailing" constant="-1" id="jhJ-RW-xWL"/>
                         <constraint firstItem="Gll-3h-Kly" firstAttribute="leading" secondItem="nfi-FJ-ILo" secondAttribute="leading" id="md8-Bb-31q" userLabel="IHorizontal Space - Square - Box"/>
-                        <constraint firstAttribute="bottom" secondItem="arQ-NF-dVx" secondAttribute="bottom" id="ogI-6W-Qu1"/>
-                        <constraint firstAttribute="bottom" secondItem="vgA-OF-Vi6" secondAttribute="bottom" id="s7K-ew-lEm"/>
+                        <constraint firstAttribute="bottom" secondItem="vgA-OF-Vi6" secondAttribute="bottom" id="mx2-Bv-J7N"/>
                         <constraint firstItem="vgA-OF-Vi6" firstAttribute="top" secondItem="nfi-FJ-ILo" secondAttribute="top" constant="-1" id="ygW-gf-4kU"/>
                     </constraints>
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -89,12 +104,13 @@
                 <constraint firstItem="LSm-cq-jH8" firstAttribute="trailing" secondItem="nfi-FJ-ILo" secondAttribute="trailing" id="mSl-kv-Mi7"/>
                 <constraint firstAttribute="trailing" secondItem="LSm-cq-jH8" secondAttribute="trailing" id="sh4-bE-wds"/>
             </constraints>
-            <point key="canvasLocation" x="23" y="215.5"/>
+            <point key="canvasLocation" x="45" y="228.5"/>
         </customView>
     </objects>
     <resources>
         <image name="NSSmartBadgeTemplate" width="14" height="14"/>
         <image name="add-label" width="128" height="128"/>
+        <image name="queue-icon" width="128" height="128"/>
         <image name="search-icon" width="100" height="100"/>
     </resources>
 </document>

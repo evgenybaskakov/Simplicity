@@ -17,16 +17,6 @@
 
 @implementation SMNewLabelWindowController
 
-- (id)init {
-	self = [super init];
-	
-	if(self) {
-		[NSBundle loadNibNamed:@"SMNewLabelWindowController" owner:self];
-	}
-	
-	return self;
-}
-
 - (IBAction)createAction:(id)sender {
 	NSString *folderName = _labelName.stringValue;
 	NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelName.titleOfSelectedItem : nil;

@@ -454,7 +454,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder {
 	if(_addNewLabelWindowController == nil)
-		_addNewLabelWindowController = [[SMNewLabelWindowController alloc] init];
+		_addNewLabelWindowController = [[SMNewLabelWindowController alloc] initWithWindowNibName:@"SMNewLabelWindowController"];
 
 	[_addNewLabelWindowController updateExistingLabelsList];	
 	[_addNewLabelWindowController setSuggestedNestingLabel:suggestedParentFolder];

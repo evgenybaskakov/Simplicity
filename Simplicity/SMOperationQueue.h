@@ -18,5 +18,6 @@
 - (void)popFirstOp;
 - (void)replaceFirstOp:(SMOperation*)op;
 - (SMOperation*)getFirstOp;
+- (SMOperation*)getOpAtIndex:(NSUInteger)index;
 
 @end

@@ -53,4 +53,8 @@
     }];
 }
 
+- (NSString*)name {
+    return @"Delete messages";
+}
+
 @end

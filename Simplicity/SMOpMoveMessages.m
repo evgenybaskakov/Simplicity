@@ -74,4 +74,8 @@
     }];
 }
 
+- (NSString*)name {
+    return @"Move messages";
+}
+
 @end

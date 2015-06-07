@@ -44,4 +44,8 @@
     }];
 }
 
+- (NSString*)name {
+    return @"Send messages";
+}
+
 @end

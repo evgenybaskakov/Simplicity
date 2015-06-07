@@ -21,5 +21,6 @@
 - (void)complete;
 - (void)enqueue;
 - (void)replaceWith:(SMOperation*)op;
+- (NSString*)name;
 
 @end

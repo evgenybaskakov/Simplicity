@@ -41,6 +41,11 @@
     return _queue[0];
 }
 
+- (SMOperation*)getOpAtIndex:(NSUInteger)index {
+    NSAssert(index < _queue.count, @"bad index");
+    return _queue[index];
+}
+
 - (NSUInteger)size {
     return _queue.count;
 }

@@ -55,4 +55,8 @@
     }];
 }
 
+- (NSString*)name {
+    return @"Expunge folder";
+}
+
 @end

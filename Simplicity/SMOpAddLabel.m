@@ -50,4 +50,8 @@
     }];
 }
 
+- (NSString*)name {
+    return @"Add label";
+}
+
 @end

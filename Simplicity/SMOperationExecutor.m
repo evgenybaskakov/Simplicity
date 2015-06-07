@@ -51,4 +51,11 @@
     }
 }
 
+- (NSUInteger)operationsCount {
+    return _queue.size;
+}
+
+- (SMOperation*)getOpAtIndex:(NSUInteger)index {
+    return [_queue getOpAtIndex:index];
+}
 @end

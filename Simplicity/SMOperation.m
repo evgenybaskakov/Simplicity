@@ -43,4 +43,9 @@
     [[[appDelegate appController] operationExecutor] replaceOperation:self with:op];
 }
 
+- (NSString*)name {
+    NSAssert(false, @"not implemented");
+    return nil;
+}
+
 @end

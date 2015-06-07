@@ -32,4 +32,8 @@
     [[appDelegate appController] hideOperationQueueSheet];
 }
 
+- (void)reloadData {
+    [_operationQueueViewController reloadData];
+}
+
 @end

@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMOperationQueueWindowController.h"
 #import "SMOperation.h"
 #import "SMOperationQueue.h"
 #import "SMOperationExecutor.h"
@@ -30,6 +33,8 @@
     if(_queue.size == 1) {
         [op start];
     }
+
+    [self notifyController];
 }
 
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
@@ -39,6 +44,8 @@
     [_queue replaceFirstOp:replacementOp];
 
     [replacementOp start];
+
+    [self notifyController];
 }
 
 - (void)completeOperation:(SMOperation*)op {
@@ -49,6 +56,8 @@
     if(_queue.size > 0) {
         [[_queue getFirstOp] start];
     }
+
+    [self notifyController];
 }
 
 - (NSUInteger)operationsCount {
@@ -58,4 +67,10 @@
 - (SMOperation*)getOpAtIndex:(NSUInteger)index {
     return [_queue getOpAtIndex:index];
 }
+
+- (void)notifyController {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationQueueWindowController] reloadData];
+}
+
 @end

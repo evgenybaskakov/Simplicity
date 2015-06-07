@@ -12,4 +12,6 @@
 
 @property (nonatomic) IBOutlet NSView *operationsView;
 
+- (void)reloadData;
+
 @end

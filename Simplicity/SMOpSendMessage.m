@@ -48,4 +48,8 @@
     return @"Send messages";
 }
 
+- (NSString*)details {
+    return [NSString stringWithFormat:@"Sending 1 message"];
+}
+
 @end

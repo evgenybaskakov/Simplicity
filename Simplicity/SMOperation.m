@@ -13,6 +13,15 @@
 
 @implementation SMOperation
 
+- (id)init {
+    self = [super init];
+    
+    if(self) {
+        _timeCreated = [NSDate dateWithTimeIntervalSinceNow:0];
+    }
+    
+    return self;
+}
 - (void)start {
     NSAssert(false, @"start not implemented");
 }
@@ -44,6 +53,11 @@
 }
 
 - (NSString*)name {
+    NSAssert(false, @"not implemented");
+    return nil;
+}
+
+- (NSString*)details {
     NSAssert(false, @"not implemented");
     return nil;
 }

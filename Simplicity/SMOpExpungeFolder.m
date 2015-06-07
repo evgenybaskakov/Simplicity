@@ -59,4 +59,8 @@
     return @"Expunge folder";
 }
 
+- (NSString*)details {
+    return [NSString stringWithFormat:@"Expunging folder %@", _remoteFolderName];
+}
+
 @end

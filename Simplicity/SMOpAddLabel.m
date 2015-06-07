@@ -54,4 +54,8 @@
     return @"Add label";
 }
 
+- (NSString*)details {
+    return [NSString stringWithFormat:@"Applying label %@ for %u messages in folder %@", _label, _uids.count, _remoteFolderName];
+}
+
 @end

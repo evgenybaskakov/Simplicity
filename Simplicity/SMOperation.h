@@ -13,6 +13,8 @@
 
 @interface SMOperation : NSObject
 
+@property (readonly) NSDate *timeCreated;
+
 @property MCOOperation *currentOp;
 
 - (void)start;
@@ -22,5 +24,6 @@
 - (void)enqueue;
 - (void)replaceWith:(SMOperation*)op;
 - (NSString*)name;
+- (NSString*)details;
 
 @end

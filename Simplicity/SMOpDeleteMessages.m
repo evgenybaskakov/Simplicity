@@ -57,4 +57,8 @@
     return @"Delete messages";
 }
 
+- (NSString*)details {
+    return [NSString stringWithFormat:@"Deleting %u messages in folder %@", _uids.count, _remoteFolderName];
+}
+
 @end

@@ -20,7 +20,7 @@
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
- SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMOperationExecutor *opExecutor = [[appDelegate appController] operationExecutor];
     SMOperation *op = [opExecutor getOpAtIndex:row];
     
@@ -30,10 +30,10 @@
         return [op name];
     }
     else if([tableColumn.identifier isEqualToString:@"Time"]) {
-        return @"TODO";
+        return [NSDateFormatter localizedStringFromDate:[op timeCreated] dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle];
     }
     else if([tableColumn.identifier isEqualToString:@"Details"]) {
-        return @"TODO";
+        return [op details];
     }
 
     NSAssert(false, @"unexpected column");

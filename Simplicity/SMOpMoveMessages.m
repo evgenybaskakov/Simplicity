@@ -78,4 +78,8 @@
     return @"Move messages";
 }
 
+- (NSString*)details {
+    return [NSString stringWithFormat:@"Moving %u messages from %@ to %@", _uids.count, _srcRemoteFolderName, _dstRemoteFolderName];
+}
+
 @end

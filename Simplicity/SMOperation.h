@@ -8,15 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    kSMTPOpKind,
+    kIMAPChangeOpKind,
+    kIMAPCheckOpKind
+} SMOpKind;
+
 @class SMOperation;
 @class MCOOperation;
 
 @interface SMOperation : NSObject
 
 @property (readonly) NSDate *timeCreated;
+@property (readonly) SMOpKind kind;
 
 @property MCOOperation *currentOp;
 
+- (id)initWithKind:(SMOpKind)kind;
 - (void)start;
 - (void)restart;
 - (void)cancel;

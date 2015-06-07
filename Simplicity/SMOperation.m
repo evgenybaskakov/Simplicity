@@ -13,10 +13,11 @@
 
 @implementation SMOperation
 
-- (id)init {
+- (id)initWithKind:(SMOpKind)kind {
     self = [super init];
     
     if(self) {
+        _kind = kind;
         _timeCreated = [NSDate dateWithTimeIntervalSinceNow:0];
     }
     

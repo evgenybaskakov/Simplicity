@@ -17,7 +17,7 @@
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label {
-    self = [super init];
+    self = [super initWithKind:kIMAPChangeOpKind];
     
     if(self) {
         _uids = uids;

@@ -16,7 +16,7 @@
 }
 
 - (id)initWithMessage:(MCOMessageBuilder*)message {
-    self = [super init];
+    self = [super initWithKind:kSMTPOpKind];
     
     if(self) {
         _message = message;

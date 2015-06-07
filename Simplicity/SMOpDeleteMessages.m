@@ -19,7 +19,7 @@
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName {
-    self = [super init];
+    self = [super initWithKind:kIMAPChangeOpKind];
 
     if(self) {
         _uids = uids;

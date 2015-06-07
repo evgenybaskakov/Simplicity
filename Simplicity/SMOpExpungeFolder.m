@@ -17,7 +17,7 @@
 }
 
 - (id)initWithRemoteFolder:(NSString*)remoteFolderName {
-    self = [super init];
+    self = [super initWithKind:kIMAPChangeOpKind];
     
     if(self) {
         _remoteFolderName = remoteFolderName;

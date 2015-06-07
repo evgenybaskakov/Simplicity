@@ -87,13 +87,6 @@
 	[_sendButton setEnabled:NO];
 }
 
-- (void)windowWillClose:(NSNotification *)notification {
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
-	
-	[appController closeMessageEditorWindow:self];
-}
-
 #pragma mark Actions
 
 - (IBAction)sendAction:(id)sender {

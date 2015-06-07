@@ -483,24 +483,13 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     if(_operationQueueWindowController == nil)
         _operationQueueWindowController = [[SMOperationQueueWindowController alloc] initWithWindowNibName:@"SMOperationQueueWindowController"];
     
-//    [_operationQueueWindowController updateExistingLabelsList];
-//    [_addNewLabelWindowController setSuggestedNestingLabel:suggestedParentFolder];
-    
-    NSWindow *operationQueueSheet = _operationQueueWindowController.window;
-    NSAssert(operationQueueSheet != nil, @"operationQueueSheet is nil");
-    
-    [NSApp runModalForWindow:operationQueueSheet];
+    [_operationQueueWindowController showWindow:self];
 }
 
 - (void)hideOperationQueueSheet {
     NSAssert(_operationQueueWindowController != nil, @"_addNewLabelWindowController is nil");
     
-    NSWindow *operationQueueSheet = _operationQueueWindowController.window;
-    NSAssert(operationQueueSheet != nil, @"operationQueueSheet is nil");
-    
-//    [operationQueueSheet orderOut:self];
-    
-    [NSApp endSheet:operationQueueSheet];
+    // TODO: do we have to do anything here at all?..
 }
 
 #pragma mark Message editor window management

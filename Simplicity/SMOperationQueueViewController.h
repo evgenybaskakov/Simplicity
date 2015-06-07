@@ -10,6 +10,8 @@
 
 @interface SMOperationQueueViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
+@property IBOutlet NSTableView *tableView;
+
 - (void)reloadData;
 
 @end

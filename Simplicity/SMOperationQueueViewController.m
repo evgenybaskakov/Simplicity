@@ -41,8 +41,7 @@
 }
 
 - (void)reloadData {
-    NSTableView *tableView = (NSTableView *)[self view];
-    [tableView reloadData];
+    [_tableView reloadData];
 }
 
 @end

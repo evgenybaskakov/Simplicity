@@ -20,7 +20,7 @@
 
     _operationQueueViewController = [[SMOperationQueueViewController alloc] initWithNibName:@"SMOperationQueueViewController" bundle:nil];
     
-    [_operationsView addSubview:_operationQueueViewController.view];
+    [self setContentViewController:_operationQueueViewController];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

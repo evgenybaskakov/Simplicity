@@ -23,12 +23,9 @@
     
     return self;
 }
+
 - (void)start {
     NSAssert(false, @"start not implemented");
-}
-
-- (void)restart {
-    [self start]; // TODO: schedule restart after a delay
 }
 
 - (void)cancel {
@@ -36,6 +33,13 @@
 
     [_currentOp cancel];
     _currentOp = nil;
+    
+    // TODO
+}
+
+- (void)fail {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationExecutor] failedOperation:self];
 }
 
 - (void)complete {

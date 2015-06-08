@@ -82,6 +82,15 @@
     [self notifyController];
 }
 
+- (void)failedOperation:(SMOperation*)op {
+    SMOperationQueue *queue = [self getQueue:op.kind];
+    NSAssert([queue getFirstOp] == op, @"first op is not the restarted op");
+
+    // TODO: should monitor the connection status, not just re-trying...
+
+    [op performSelector:@selector(start) withObject:nil afterDelay:5];
+}
+
 - (NSUInteger)operationsCount {
     return _smtpQueue.size + _imapChangeQueue.size + _imapCheckQueue.size;
 }

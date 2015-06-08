@@ -48,7 +48,7 @@
         } else {
             NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
             
-            [self restart];
+            [self fail];
         }
     }];
 }

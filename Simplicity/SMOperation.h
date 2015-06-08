@@ -26,7 +26,7 @@ typedef enum {
 
 - (id)initWithKind:(SMOpKind)kind;
 - (void)start;
-- (void)restart;
+- (void)fail;
 - (void)cancel;
 - (void)complete;
 - (void)enqueue;

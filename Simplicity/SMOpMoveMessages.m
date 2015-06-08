@@ -69,7 +69,7 @@
         } else {
             NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
 
-            [self restart];
+            [self fail];
         }
     }];
 }

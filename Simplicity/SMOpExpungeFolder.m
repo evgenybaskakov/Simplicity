@@ -50,7 +50,7 @@
         } else {
             NSLog(@"%s: Error expunging remote folder %@: %@", __func__, _remoteFolderName, error);
             
-            [self restart];
+            [self fail];
         }
     }];
 }

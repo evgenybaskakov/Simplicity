@@ -39,7 +39,7 @@
         } else {
             NSLog(@"%s: Error sending message: %@", __func__, error);
             
-            [self restart];
+            [self fail];
         }
     }];
 }

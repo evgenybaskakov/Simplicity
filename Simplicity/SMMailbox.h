@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class SMFolder;
+#import "SMFolder.h"
 
 @interface SMMailbox : NSObject
 
@@ -21,6 +21,7 @@
 
 - (Boolean)updateIMAPFolders:(NSArray *)folders;
 
+- (SMFolder*)getFolderByKind:(SMFolderKind)kind;
 - (SMFolder*)getFolderByName:(NSString*)folderName;
 - (NSString*)constructFolderName:(NSString*)folderName parent:(NSString*)parentFolderName;
 

@@ -253,6 +253,15 @@
 	}
 }
 
+- (SMFolder*)getFolderByKind:(SMFolderKind)kind {
+    for(SMFolder *f in _mainFolders) {
+        if(f.kind == kind)
+            return f;
+    }
+    
+    return nil;
+}
+
 - (SMFolder*)getFolderByName:(NSString*)folderName {
 	for(SMFolder *f in _folders) {
 		if([f.fullName isEqualToString:folderName])

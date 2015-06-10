@@ -12,14 +12,24 @@
 
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMOperationExecutor.h"
+#import "SMOpAppendMessage.h"
+#import "SMOpDeleteMessages.h"
+#import "SMSimplicityContainer.h"
+#import "SMMailbox.h"
+#import "SMFolder.h"
 #import "SMTokenField.h"
 #import "SMOutboxController.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
 #import "SMMessageEditorWindowController.h"
-
 #import "SMMailLogin.h"
 
-@implementation SMMessageEditorWindowController
+@implementation SMMessageEditorWindowController {
+    NSString *_draftsFolderName;
+    MCOMessageBuilder *_saveDraftMessage;
+    SMOpAppendMessage *_saveDraftOp;
+    uint32_t _saveDraftUID;
+}
 
 - (void)awakeFromNib {
 	NSLog(@"%s", __func__);
@@ -69,6 +79,8 @@
 	// register events
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSavedToDrafts:) name:@"MessageAppended" object:nil];
 }
 
 - (void)windowDidLoad {
@@ -91,6 +103,7 @@
 
 - (IBAction)sendAction:(id)sender {
 	MCOMessageBuilder *message = [self createMessageData];
+    NSAssert(message != nil, @"no message body");
 
 	NSLog(@"%s: '%@'", __func__, message);
 
@@ -98,12 +111,33 @@
 	SMAppController *appController = [appDelegate appController];
 	
 	[[appController outboxController] sendMessage:message];
-	
+
 	[self close];
 }
 
 - (IBAction)saveAction:(id)sender {
-	NSLog(@"%s", __func__);
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    if(_draftsFolderName == nil) {
+        SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
+        NSAssert(draftsFolder, @"no drafts folder");
+
+        _draftsFolderName = draftsFolder.fullName;
+        NSAssert(_draftsFolderName, @"no drafts folder name");
+    }
+
+    [_saveDraftOp cancel];
+    
+    MCOMessageBuilder *message = [self createMessageData];
+    NSAssert(message != nil, @"no message body");
+    
+    NSLog(@"%s: '%@'", __func__, message);
+    
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+
+    _saveDraftMessage = message;
+    _saveDraftOp = op;
 }
 
 - (IBAction)attachAction:(id)sender {
@@ -155,6 +189,28 @@
 
 		[_sendButton setEnabled:(toValue.length != 0)];
 	}
+}
+
+#pragma mark Message after-saving actions
+
+- (void)messageSavedToDrafts:(NSNotification *)notification {
+    MCOMessageBuilder *message = [[notification userInfo] objectForKey:@"Message"];
+    uint32_t uid = [[[notification userInfo] objectForKey:@"UID"] unsignedIntValue];
+ 
+    if(message == _saveDraftMessage) {
+        if(_saveDraftUID != 0) {
+            // there is a previously saved draft, delete it
+            NSAssert(_draftsFolderName, @"no drafts folder name");
+            SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:[MCOIndexSet indexSetWithIndex:_saveDraftUID] remoteFolderName:_draftsFolderName];
+
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+        }
+
+        _saveDraftMessage = nil;
+        _saveDraftOp = nil;
+        _saveDraftUID = uid;
+    }
 }
 
 @end

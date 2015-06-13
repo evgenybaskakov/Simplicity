@@ -36,6 +36,8 @@
     self.currentOp = op;
     
     [op start:^(NSError *error) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+        
         if(error == nil) {
             NSLog(@"%s: Remote folder %@ successfully expunged", __func__, _remoteFolderName);
             

@@ -48,6 +48,8 @@
     self.currentOp = op;
     
     [op start:^(NSError *error, NSDictionary *uidMapping) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+        
         if(error == nil) {
             if(uidMapping != nil) {
                 SMFolder *targetFolder = [[[appDelegate model] mailbox] getFolderByName:_dstRemoteFolderName];

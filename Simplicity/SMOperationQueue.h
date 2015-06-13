@@ -17,6 +17,7 @@
 - (void)putOp:(SMOperation*)op;
 - (void)popFirstOp;
 - (void)replaceFirstOp:(SMOperation*)op;
+- (void)removeOp:(SMOperation*)op;
 - (SMOperation*)getFirstOp;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
 

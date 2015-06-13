@@ -28,13 +28,18 @@
     NSAssert(false, @"start not implemented");
 }
 
-- (void)cancel {
-    NSAssert(_currentOp != nil, @"no current op");
-
-    [_currentOp cancel];
-    _currentOp = nil;
+- (Boolean)cancelOp {
+    if(_currentOp) {
+        // we can't cancel operation in progress
+        // there's no way to rollback changes already made,
+        // and there's no way to ensure that nothing has started yet
+        return false;
+    }
     
-    // TODO
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationExecutor] cancelOperation:self];
+    
+    return true;
 }
 
 - (void)fail {

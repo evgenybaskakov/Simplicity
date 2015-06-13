@@ -37,6 +37,8 @@
     self.currentOp = op;
     
     [op start:^(NSError * error, uint32_t createdUID) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+
         if(error == nil) {
             NSLog(@"%s: Message appended to remote folder %@, new uid %u", __func__, _remoteFolderName, createdUID);
 

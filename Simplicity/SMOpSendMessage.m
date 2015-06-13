@@ -32,6 +32,8 @@
     self.currentOp = op;
     
     [op start:^(NSError * error) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+        
         if (error == nil || [error code] == MCOErrorNone) {
             NSLog(@"%s: message sent successfully", __func__);
             

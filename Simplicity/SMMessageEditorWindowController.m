@@ -28,6 +28,8 @@
     NSString *_draftsFolderName;
     MCOMessageBuilder *_saveDraftMessage;
     SMOpAppendMessage *_saveDraftOp;
+    MCOMessageBuilder *_prevSaveDraftMessage;
+    SMOpAppendMessage *_prevSaveDraftOp;
     uint32_t _saveDraftUID;
 }
 
@@ -126,12 +128,23 @@
         NSAssert(_draftsFolderName, @"no drafts folder name");
     }
 
-    [_saveDraftOp cancel];
+    if(_saveDraftOp) {
+        // There may be two last operations: the current one and a previous one
+        // We're trying to cancel the current one. If that's successful, we'll simply replace it later.
+        // Otherwise, it is in progress, so there shouldn't be any previous one.
+        if(![_saveDraftOp cancelOp]) {
+            _prevSaveDraftOp = _saveDraftOp;
+            _prevSaveDraftMessage = _saveDraftMessage;
+        }
+
+        _saveDraftMessage = nil;
+        _saveDraftOp = nil;
+    }
     
     MCOMessageBuilder *message = [self createMessageData];
     NSAssert(message != nil, @"no message body");
     
-    NSLog(@"%s: '%@'", __func__, message);
+    //NSLog(@"%s: '%@'", __func__, message);
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
@@ -196,8 +209,10 @@
 - (void)messageSavedToDrafts:(NSNotification *)notification {
     MCOMessageBuilder *message = [[notification userInfo] objectForKey:@"Message"];
     uint32_t uid = [[[notification userInfo] objectForKey:@"UID"] unsignedIntValue];
+    
+    NSLog(@"%s: uids %u", __FUNCTION__, uid);
  
-    if(message == _saveDraftMessage) {
+    if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
         if(_saveDraftUID != 0) {
             // there is a previously saved draft, delete it
             NSAssert(_draftsFolderName, @"no drafts folder name");
@@ -205,10 +220,18 @@
 
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+            
+            _saveDraftUID = 0;
         }
 
-        _saveDraftMessage = nil;
-        _saveDraftOp = nil;
+        if(message == _prevSaveDraftMessage) {
+            _prevSaveDraftMessage = nil;
+            _prevSaveDraftOp = nil;
+        } else {
+            _saveDraftMessage = nil;
+            _saveDraftOp = nil;
+        }
+
         _saveDraftUID = uid;
     }
 }

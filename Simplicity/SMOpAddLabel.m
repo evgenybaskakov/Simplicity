@@ -38,6 +38,8 @@
     self.currentOp = op;
     
     [op start:^(NSError * error) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+        
         if(error == nil) {
             NSLog(@"%s: Label %@ for folder %@ successfully set", __func__, _label, _remoteFolderName);
             

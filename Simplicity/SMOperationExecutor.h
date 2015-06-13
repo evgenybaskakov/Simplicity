@@ -16,6 +16,7 @@
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;
 - (void)completeOperation:(SMOperation*)op;
 - (void)failedOperation:(SMOperation*)op;
+- (void)cancelOperation:(SMOperation*)op;
 - (NSUInteger)operationsCount;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
 

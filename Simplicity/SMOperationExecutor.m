@@ -43,6 +43,8 @@
 }
 
 - (void)enqueueOperation:(SMOperation*)op {
+    NSLog(@"%s: op %@", __FUNCTION__, op);
+    
     SMOperationQueue *queue = [self getQueue:op.kind];
 
     [queue putOp:op];
@@ -55,6 +57,8 @@
 }
 
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
+    NSLog(@"%s: op %@, replacementOp %@", __FUNCTION__, op, replacementOp);
+
     NSAssert(op.kind == replacementOp.kind, @"op kind %u and replacement op kind %u don't match", op.kind, replacementOp.kind);
 
     SMOperationQueue *queue = [self getQueue:op.kind];
@@ -69,6 +73,8 @@
 }
 
 - (void)completeOperation:(SMOperation*)op {
+    NSLog(@"%s: op %@", __FUNCTION__, op);
+    
     SMOperationQueue *queue = [self getQueue:op.kind];
 
     NSAssert([queue getFirstOp] == op, @"first op is not the completed op");
@@ -83,12 +89,32 @@
 }
 
 - (void)failedOperation:(SMOperation*)op {
+    NSLog(@"%s: op %@", __FUNCTION__, op);
+    
     SMOperationQueue *queue = [self getQueue:op.kind];
     NSAssert([queue getFirstOp] == op, @"first op is not the restarted op");
 
     // TODO: should monitor the connection status, not just re-trying...
 
     [op performSelector:@selector(start) withObject:nil afterDelay:5];
+}
+
+- (void)cancelOperation:(SMOperation*)op {
+    NSLog(@"%s: op %@", __FUNCTION__, op);
+    
+    SMOperationQueue *queue = [self getQueue:op.kind];
+    
+    if([queue getFirstOp] == op) {
+        [queue popFirstOp];
+        
+        if(queue.size > 0) {
+            [[queue getFirstOp] start];
+        }
+    } else {
+        [queue removeOp:op];
+    }
+    
+    [self notifyController];
 }
 
 - (NSUInteger)operationsCount {

@@ -39,6 +39,8 @@
     self.currentOp = op;
     
     [op start:^(NSError * error) {
+        NSAssert(self.currentOp != nil, @"current op has disappeared");
+        
         if(error == nil) {
             NSLog(@"%s: Flags for remote folder %@ successfully updated", __func__, _remoteFolderName);
             

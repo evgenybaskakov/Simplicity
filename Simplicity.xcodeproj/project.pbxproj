@@ -98,6 +98,7 @@
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
+		8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */; };
 		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
@@ -332,6 +333,8 @@
 		00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInstrumentPanelViewController.h; sourceTree = "<group>"; };
 		00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInstrumentPanelViewController.m; sourceTree = "<group>"; };
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
+		8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorController.h; sourceTree = "<group>"; };
+		8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorController.m; sourceTree = "<group>"; };
 		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
 		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
 		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
@@ -525,6 +528,8 @@
 				00172FEE198B3BB700DB975E /* SMMessageBodyViewController.m */,
 				00BAE7F419207540001243F5 /* SMMessageDetailsViewController.h */,
 				00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */,
+				8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */,
+				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
 				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
 				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
 				007A735F1A57A95500A4D694 /* SMMessageFullDetailsViewController.h */,
@@ -869,6 +874,7 @@
 				0089D35F1A88084F00C189BB /* SMFolderColorController.m in Sources */,
 				0082F5F81A0DD39B0050578A /* SMSearchResultsListController.m in Sources */,
 				8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */,
+				8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */,
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,

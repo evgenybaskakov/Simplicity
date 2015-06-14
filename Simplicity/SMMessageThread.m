@@ -260,7 +260,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		[_messageCollection.messagesByDate removeObjectsAtIndexes:notUpdatedMessageIndices];
 
 		if(_messageCollection.count == 0)
-			NSLog(@"%s: thread %llu - all messagesvanished", __FUNCTION__, _threadId);
+			NSLog(@"%s: thread %llu - all messages vanished", __FUNCTION__, _threadId);
 	}
 	
 	NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");

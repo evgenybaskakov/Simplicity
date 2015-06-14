@@ -58,7 +58,11 @@
 	NSComparator messageThreadComparator = [comparators messageThreadsComparatorByDate];
 
 	if([collection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:[messageThread threadId]]] != nil) {
-		return [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingFirstEqual usingComparator:messageThreadComparator];
+		NSUInteger idx = [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingFirstEqual usingComparator:messageThreadComparator];
+        
+        NSAssert([sortedMessageThreads objectAtIndex:idx] == messageThread, @"message threads not the same object");
+
+        return idx;
 	} else {
 		return NSNotFound;
 	}
@@ -247,7 +251,11 @@
 
 - (BOOL)messageHasData:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {
 	SMMessageThread *thread = [self messageThreadById:threadId localFolder:localFolder];
-	NSAssert(thread != nil, @"thread id %lld not found in local folder %@", threadId, localFolder);
+//	NSAssert(thread != nil, @"thread id %lld not found in local folder %@", threadId, localFolder);
+    if(thread == nil) {
+        NSLog(@"%s: thread id %lld not found in local folder %@", __FUNCTION__, threadId, localFolder);
+        return NO;
+    }
 
 	return [thread messageHasData:uid];
 }

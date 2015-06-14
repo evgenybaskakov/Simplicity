@@ -10,16 +10,33 @@
 #import "SMMessageThread.h"
 #import "SMMessageComparators.h"
 
+static NSComparisonResult compareUIDs(uint32_t uid1, uint32_t uid2) {
+    return (uid1 == uid2? NSOrderedSame : (uid1 > uid2? NSOrderedAscending : NSOrderedDescending));
+}
+
+static NSComparisonResult compareMessagesByUID(SMMessage *a, SMMessage *b) {
+    uint32_t uid1 = [(SMMessage*)a uid];
+    uint32_t uid2 = [(SMMessage*)b uid];
+
+    return compareUIDs(uid1, uid2);
+}
+
+static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessageThread *b) {
+    if(a.threadId == b.threadId) {
+        assert(a == b);
+        return NSOrderedSame;
+    }
+    
+    return a.threadId < b.threadId? NSOrderedAscending : NSOrderedDescending;
+}
+
 @implementation SMMessageComparators
 
 - (id)init {
 	self = [super init];
 	if(self) {
 		_messagesComparator = ^NSComparisonResult(id a, id b) {
-			uint32_t uid1 = [(SMMessage*)a uid];
-			uint32_t uid2 = [(SMMessage*)b uid];
-			
-			return uid1 > uid2? NSOrderedAscending : (uid2 > uid1? NSOrderedDescending : NSOrderedSame);
+            return compareMessagesByUID(a, b);
 		};
 		
 		_messagesComparatorByImapMessage = ^NSComparisonResult(id a, id b) {
@@ -33,7 +50,7 @@
 				uid2 = [(MCOIMAPMessage*)b uid];
 			}
 			
-			return uid1 > uid2? NSOrderedAscending : (uid2 > uid1? NSOrderedDescending : NSOrderedSame);
+            return compareUIDs(uid1, uid2);
 		};
 		
 		_messagesComparatorByUID = ^NSComparisonResult(id a, id b) {
@@ -47,20 +64,27 @@
 				uid2 = [(NSNumber*)b unsignedIntValue];
 			}
 			
-			return uid1 > uid2? NSOrderedAscending : (uid2 > uid1? NSOrderedDescending : NSOrderedSame);
+            return compareUIDs(uid1, uid2);
 		};
 		
 		_messagesComparatorByDate = ^NSComparisonResult(id a, id b) {
 			NSDate *date1 = [(SMMessage*)a date];
 			NSDate *date2 = [(SMMessage*)b date];
 			
-			return [date2 compare:date1];
+            NSComparisonResult dateComparisonResult = [date2 compare:date1];
+
+            if(dateComparisonResult == NSOrderedSame) {
+                return compareMessagesByUID(a, b);
+            }
+            
+            return dateComparisonResult;
 		};
 		
 		_messageThreadsComparatorByDate = ^NSComparisonResult(id a, id b) {
 			if([a messagesCount] == 0) {
-				if([b messagesCount] == 0)
-					return NSOrderedSame;
+                if([b messagesCount] == 0) {
+                    return compareThreadsByThreadId(a, b);
+                }
 
 				return NSOrderedAscending;
 			} else if([b messagesCount] == 0) {
@@ -72,8 +96,14 @@
 			
 			NSDate *date1 = [message1 date];
 			NSDate *date2 = [message2 date];
-			
-			return [date2 compare:date1];
+
+            NSComparisonResult dateComparisonResult = [date2 compare:date1];
+            
+            if(dateComparisonResult == NSOrderedSame) {
+                return compareThreadsByThreadId(a, b);
+            }
+            
+            return dateComparisonResult;
 		};
 	}
 

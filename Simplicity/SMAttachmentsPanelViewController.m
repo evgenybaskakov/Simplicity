@@ -21,6 +21,10 @@
 	return self;
 }
 
+- (void)viewDidLoad {
+    NSLog(@"TODO");
+}
+
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
 	NSLog(@"%s: indexes %@", __func__, indexes);
 
@@ -50,23 +54,88 @@
 			return NSDragOperationCopy;
 			
 		case NSDraggingContextWithinApplication:
-			return NSDragOperationNone; // TODO: composing message with attachments
+			return NSDragOperationCopy; // TODO: composing message with attachments
 			
 		default:
-			return NSDragOperationNone;
+			return NSDragOperationCopy;
 	}
 }
 
-- (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
-	NSLog(@"%s", __func__);
+- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index
+{
+/*
+ NSMutableArray *insertedObjects = [NSMutableArray array];
+ */
+    for (NSURL *URL in files)
+    {
+        // add file to our bundle
+        NSLog(@"%s: addFileWithPath:%@", __func__, [URL path]);
+        
+/*
+ // create model object for it
+        DocumentItem *newItem = [[DocumentItem alloc] init];
+        newItem.fileName = [[URL path] lastPathComponent];
+        newItem.document = self;
+        
+        // add to our items
+        [insertedObjects addObject:newItem];
+*/
+    }
+    
+/*
+ // send KVO message so that the array controller updates itself
+    [self willChangeValueForKey:@"items"];
+    [self.items insertObjects:insertedObjects atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    [self didChangeValueForKey:@"items"];
+    
+    // mark document as dirty
+    [self updateChangeCount:NSChangeDone];
+*/
+}
 
-	return NO;
+- (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
+
+    NSLog(@"%s: TODO", __func__);
+
+    NSPasteboard *pasteboard = [draggingInfo draggingPasteboard];
+    
+    NSMutableArray *files = [NSMutableArray array];
+    
+    for (NSPasteboardItem *oneItem in [pasteboard pasteboardItems])
+    {
+        NSString *urlString = [oneItem stringForType:(id)kUTTypeFileURL];
+        NSURL *URL = [NSURL URLWithString:urlString];
+        
+        if (URL)
+        {
+            [files addObject:URL];
+        }
+    }
+    
+    if ([files count])
+    {
+        [self insertFiles:files atIndex:index];
+    }
+
+    return YES;
 }
 
 -(NSDragOperation)collectionView:(NSCollectionView *)collectionView validateDrop:(id<NSDraggingInfo>)draggingInfo proposedIndex:(NSInteger *)proposedDropIndex dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation {
 	// do not recognize any drop to itself
 	// TODO: may need to add logic for messages being composed
-	return NSDragOperationNone;
+
+    if (!draggingInfo.draggingSource)
+    {
+        NSLog(@"%s: TODO (external)", __func__);
+
+        // comes from external
+        return NSDragOperationCopy;
+    }
+    
+    NSLog(@"%s: TODO (internal)", __func__);
+    
+    // comes from internal
+    return NSDragOperationMove;
 }
 
 - (NSArray *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes {
@@ -84,5 +153,34 @@
 
 	return fileNames;
 }
+
+#pragma mark Dragging destination
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
+    NSLog(@"%s: TODO", __func__);
+    return [self draggingEntered:sender];
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
+    NSLog(@"%s: TODO", __func__);
+    return [self draggingUpdated:sender];
+}
+
+//- (void)draggingExited:(id <NSDraggingInfo>)sender {
+//}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+    return YES;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    return YES;
+}
+
+//- (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
+//}
+
+//- (void)draggingEnded:(id <NSDraggingInfo>)sender {
+//}
 
 @end

@@ -12,11 +12,16 @@
 
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMAttachmentItem.h"
+#import "SMAttachmentsPanelViewController.h"
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWindowController.h"
 
 @implementation SMMessageEditorWindowController {
     SMMessageEditorController *_messageEditorController;
+    SMAttachmentsPanelViewController *_attachmentsPanelViewController;
+    NSMutableArray *_attachmentsPanelViewConstraints;
+    Boolean _attachmentsPanelShown;
 }
 
 - (void)awakeFromNib {
@@ -107,6 +112,7 @@
 
 - (IBAction)attachAction:(id)sender {
 	NSLog(@"%s", __func__);
+    [self toggleAttachmentsPanel];
 }
 
 #pragma mark UI elements collaboration
@@ -121,6 +127,79 @@
 
 		[_sendButton setEnabled:(toValue.length != 0)];
 	}
+}
+
+#pragma mark Attachments panel
+
+- (void)toggleAttachmentsPanel {
+    if(!_attachmentsPanelShown) {
+        [self showAttachmentsPanel];
+    } else {
+        [self hideAttachmentsPanel];
+    }
+}
+
+- (void)showAttachmentsPanel {
+    if(_attachmentsPanelShown)
+        return;
+    
+    NSView *view = [[self window] contentView];
+    NSAssert(view != nil, @"view is nil");
+    
+    NSAssert(_messageEditorBottomConstraint != nil, @"_messageEditorBottomConstraint not created");
+    [view removeConstraint:_messageEditorBottomConstraint];
+    
+    if(_attachmentsPanelViewController == nil) {
+        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+        
+        NSView *attachmentsView = _attachmentsPanelViewController.view;
+        NSAssert(attachmentsView, @"attachmentsView");
+        
+        NSAssert(_attachmentsPanelViewConstraints == nil, @"_attachmentsPanelViewConstraints already created");
+        _attachmentsPanelViewConstraints = [NSMutableArray array];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageTextEditor attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        
+        // test adding objects to the attachment panel
+        
+//TODO        NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
+        
+        NSArrayController *arrayController = _attachmentsPanelViewController.arrayController;
+        
+//TODO        for(NSUInteger i = 0; i < _message.attachments.count; i++)
+//TODO            [arrayController addObject:[[SMAttachmentItem alloc] initWithMessage:_message attachmentIndex:i]];
+        
+        [arrayController setSelectedObjects:[NSArray array]];
+    }
+    
+    [view addSubview:_attachmentsPanelViewController.view];
+    [view addConstraints:_attachmentsPanelViewConstraints];
+    
+    _attachmentsPanelShown = YES;
+}
+
+- (void)hideAttachmentsPanel {
+    if(!_attachmentsPanelShown)
+        return;
+    
+    NSView *view = [[self window] contentView];
+    NSAssert(view != nil, @"view is nil");
+    
+    NSAssert(_attachmentsPanelViewConstraints != nil, @"_attachmentsPanelViewConstraints not created");
+    [view removeConstraints:_attachmentsPanelViewConstraints];
+    
+    [_attachmentsPanelViewController.view removeFromSuperview];
+    
+    NSAssert(_messageEditorBottomConstraint != nil, @"_messageEditorBottomConstraint not created");
+    [view addConstraint:_messageEditorBottomConstraint];
+    
+    _attachmentsPanelShown = NO;
 }
 
 @end

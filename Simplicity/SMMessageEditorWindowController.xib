@@ -11,6 +11,7 @@
                 <outlet property="attachButton" destination="9vu-n1-mIw" id="9iH-Jy-bOM"/>
                 <outlet property="bccBoxView" destination="BNN-lf-zgk" id="4Hc-rN-U1T"/>
                 <outlet property="ccBoxView" destination="m7U-0p-xXm" id="uO2-6r-XDE"/>
+                <outlet property="messageEditorBottomConstraint" destination="Vr9-7q-pgB" id="EKe-8v-wxG"/>
                 <outlet property="messageTextEditor" destination="qvd-c0-JP4" id="72t-0e-PQM"/>
                 <outlet property="saveButton" destination="g6K-Xs-dwd" id="LuB-gC-b9L"/>
                 <outlet property="sendButton" destination="e7V-Vc-k0q" id="Wtp-oE-AeT"/>

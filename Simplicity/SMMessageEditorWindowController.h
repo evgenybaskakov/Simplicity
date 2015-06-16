@@ -23,6 +23,7 @@
 @property IBOutlet NSView *bccBoxView;
 @property IBOutlet NSTextField *subjectField;
 @property IBOutlet WebView *messageTextEditor;
+@property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;
 @property SMLabeledTokenFieldBoxViewController *ccBoxViewController;

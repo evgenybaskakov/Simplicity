@@ -15,4 +15,6 @@
 
 @property NSMutableArray *attachmentItems;
 
+- (void)enableEditing;
+
 @end

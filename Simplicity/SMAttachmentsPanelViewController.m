@@ -26,10 +26,14 @@
     
     NSAssert(_collectionView, @"no collection view");
     
-    NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
-
-    [_collectionView registerForDraggedTypes:supportedTypes];
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
+}
+
+- (void)enableEditing {
+    NSAssert(_collectionView, @"no collection view");
+    
+    NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
+    [_collectionView registerForDraggedTypes:supportedTypes];
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
@@ -68,68 +72,30 @@
 	}
 }
 
-- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index
-{
-/*
- NSMutableArray *insertedObjects = [NSMutableArray array];
- */
-    NSArrayController *arrayController = _arrayController;
-    
-    for (NSURL *url in files)
-    {
-        // add file to our bundle
+- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
+    for (NSURL *url in files) {
         NSLog(@"%s: addFileWithPath:%@", __func__, [url path]);
 
-        [arrayController addObject:[[SMAttachmentItem alloc] initWithFilePath:[url path]]];
-
-//        [arrayController addObject:[[SMAttachmentItem alloc] initWithMessage:_message attachmentIndex:i]];
-        
-
-/*
- // create model object for it
-        DocumentItem *newItem = [[DocumentItem alloc] init];
-        newItem.fileName = [[URL path] lastPathComponent];
-        newItem.document = self;
-        
-        // add to our items
-        [insertedObjects addObject:newItem];
-*/
+        [_arrayController addObject:[[SMAttachmentItem alloc] initWithFilePath:[url path]]];
     }
 
-    [arrayController setSelectedObjects:[NSArray array]];
-
-/*
- // send KVO message so that the array controller updates itself
-    [self willChangeValueForKey:@"items"];
-    [self.items insertObjects:insertedObjects atIndexes:[NSIndexSet indexSetWithIndex:index]];
-    [self didChangeValueForKey:@"items"];
-    
-    // mark document as dirty
-    [self updateChangeCount:NSChangeDone];
-*/
+    [_arrayController setSelectedObjects:[NSArray array]];
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
-
-    NSLog(@"%s: TODO", __func__);
-
     NSPasteboard *pasteboard = [draggingInfo draggingPasteboard];
-    
     NSMutableArray *files = [NSMutableArray array];
     
-    for (NSPasteboardItem *oneItem in [pasteboard pasteboardItems])
-    {
+    for (NSPasteboardItem *oneItem in [pasteboard pasteboardItems]) {
         NSString *urlString = [oneItem stringForType:(id)kUTTypeFileURL];
-        NSURL *URL = [NSURL URLWithString:urlString];
+        NSURL *url = [NSURL URLWithString:urlString];
         
-        if (URL)
-        {
-            [files addObject:URL];
+        if (url) {
+            [files addObject:url];
         }
     }
     
-    if ([files count])
-    {
+    if ([files count]) {
         [self insertFiles:files atIndex:index];
     }
 

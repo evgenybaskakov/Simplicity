@@ -276,15 +276,16 @@
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 		
-		// test adding objects to the attachment panel
+		// add objects from the message body to the attachment panel
 
 		NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
 		
 		NSArrayController *arrayController = _attachmentsPanelViewController.arrayController;
 		
-		for(NSUInteger i = 0; i < _message.attachments.count; i++)
-			[arrayController addObject:[[SMAttachmentItem alloc] initWithMessage:_message attachmentIndex:i]];
-		
+        for(NSUInteger i = 0; i < _message.attachments.count; i++) {
+            [arrayController addObject:[[SMAttachmentItem alloc] initWithMCOAttachment:_message.attachments[i]]];
+        }
+
 		[arrayController setSelectedObjects:[NSArray array]];
 	}
 

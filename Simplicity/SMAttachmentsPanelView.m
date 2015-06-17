@@ -12,20 +12,6 @@
 
 @implementation SMAttachmentsPanelView
 
-- (void)awakeFromNib {
-	NSLog(@"%s", __func__);
-
-//	[self registerForDraggedTypes:@[NSFilesPromisePboardType]];
-//    [self setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
-
-    // register types that we accept
-    NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.drobnik.shoebox.item", NSFilenamesPboardType, nil];
-    [self registerForDraggedTypes:supportedTypes];
-    
-    // from external we always add
-    [self setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
-}
-
 - (void)drawRect:(NSRect)dirtyRect {
 //	NSLog(@"%s", __func__);
 

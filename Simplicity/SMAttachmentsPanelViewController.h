@@ -10,6 +10,7 @@
 
 @interface SMAttachmentsPanelViewController : NSViewController<NSCollectionViewDelegate, NSDraggingSource, NSDraggingDestination>
 
+@property IBOutlet NSCollectionView *collectionView;
 @property IBOutlet NSArrayController *arrayController;
 
 @property NSMutableArray *attachmentItems;

@@ -8,41 +8,39 @@
 
 #import <MailCore/MailCore.h>
 
-#import "SMMessage.h"
 #import "SMAttachmentItem.h"
 
 @implementation SMAttachmentItem {
-	SMMessage *_message;
-	NSUInteger _attachmentIndex;
+    MCOAttachment *_mcoAttachment;
 }
 
-- (id)initWithMessage:(SMMessage*)message attachmentIndex:(NSUInteger)attachmentIndex {
-	NSAssert(message != nil, @"message is nil");
-	NSAssert(message.attachments != nil, @"message has not attachments");
-	NSAssert(attachmentIndex < message.attachments.count, @"attachment index is out of bounds");
-
+- (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment {
 	self = [super init];
 	
 	if(self) {
-		_message = message;
-		_attachmentIndex = attachmentIndex;
+        _mcoAttachment = mcoAttachment;
 	}
 
 	return self;
 }
 
-- (NSString*)fileName {
-	MCOAttachment *attachment = _message.attachments[_attachmentIndex];
-	NSAssert(attachment != nil, @"bad attachment");
+- (id)initWithFilePath:(NSString*)filePath {
+    self = [super init];
+    
+    if(self) {
+        _mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:filePath];
+        NSAssert(_mcoAttachment, @"could not create attachment from file %@", filePath);
+    }
+    
+    return self;
+}
 
-	return attachment.filename;
+- (NSString*)fileName {
+	return _mcoAttachment.filename;
 }
 
 - (NSData*)fileData {
-	MCOAttachment *attachment = _message.attachments[_attachmentIndex];
-	NSAssert(attachment != nil, @"bad attachment");
-	
-	return attachment.data;
+	return _mcoAttachment.data;
 }
 
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl {

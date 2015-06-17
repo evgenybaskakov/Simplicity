@@ -22,7 +22,14 @@
 }
 
 - (void)viewDidLoad {
-    NSLog(@"TODO");
+    NSLog(@"%s", __func__);
+    
+    NSAssert(_collectionView, @"no collection view");
+    
+    NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
+
+    [_collectionView registerForDraggedTypes:supportedTypes];
+    [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
@@ -66,11 +73,18 @@
 /*
  NSMutableArray *insertedObjects = [NSMutableArray array];
  */
-    for (NSURL *URL in files)
+    NSArrayController *arrayController = _arrayController;
+    
+    for (NSURL *url in files)
     {
         // add file to our bundle
-        NSLog(@"%s: addFileWithPath:%@", __func__, [URL path]);
+        NSLog(@"%s: addFileWithPath:%@", __func__, [url path]);
+
+        [arrayController addObject:[[SMAttachmentItem alloc] initWithFilePath:[url path]]];
+
+//        [arrayController addObject:[[SMAttachmentItem alloc] initWithMessage:_message attachmentIndex:i]];
         
+
 /*
  // create model object for it
         DocumentItem *newItem = [[DocumentItem alloc] init];
@@ -81,7 +95,9 @@
         [insertedObjects addObject:newItem];
 */
     }
-    
+
+    [arrayController setSelectedObjects:[NSArray array]];
+
 /*
  // send KVO message so that the array controller updates itself
     [self willChangeValueForKey:@"items"];

@@ -8,14 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class SMMessage;
+@class MCOAttachment;
 
 @interface SMAttachmentItem : NSObject
 
 @property (nonatomic, readonly) NSString *fileName;
 @property (nonatomic, readonly) NSData *fileData;
 
-- (id)initWithMessage:(SMMessage*)message attachmentIndex:(NSUInteger)attachmentIndex;
+- (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment;
+- (id)initWithFilePath:(NSString*)filePath;
 
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl;
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName;

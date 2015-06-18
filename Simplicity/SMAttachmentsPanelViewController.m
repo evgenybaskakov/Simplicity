@@ -8,9 +8,11 @@
 
 #import "SMMessage.h"
 #import "SMAttachmentItem.h"
+#import "SMMessageEditorController.h"
 #import "SMAttachmentsPanelViewController.h"
 
 @implementation SMAttachmentsPanelViewController {
+    SMMessageEditorController *_messageEditorController;
     SMMessage *_message;
 }
 
@@ -48,11 +50,17 @@
     [_arrayController setSelectedObjects:[NSArray array]];
 }
 
-- (void)enableEditing {
+- (void)enableEditing:(SMMessageEditorController*)messageEditorController {
     NSAssert(_collectionView, @"no collection view");
     
     NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
+
     [_collectionView registerForDraggedTypes:supportedTypes];
+
+    NSAssert(messageEditorController != nil, @"no message editor controller provided");
+    NSAssert(_messageEditorController == nil, @"message editor controller already set");
+    
+    _messageEditorController = messageEditorController;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
@@ -95,7 +103,10 @@
     for (NSURL *url in files) {
         NSLog(@"%s: addFileWithPath:%@", __func__, [url path]);
 
-        [_arrayController addObject:[[SMAttachmentItem alloc] initWithFilePath:[url path]]];
+        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithFilePath:[url path]];
+        [_arrayController addObject:attachment];
+        
+        [_messageEditorController addAttachmentItem:attachment];
     }
 
     [_arrayController setSelectedObjects:[NSArray array]];

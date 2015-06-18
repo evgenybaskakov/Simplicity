@@ -18,9 +18,11 @@
 #import "SMFolder.h"
 #import "SMOutboxController.h"
 #import "SMMailLogin.h"
+#import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
 
 @implementation SMMessageEditorController {
+    NSMutableArray *_attachmentItems;
     NSString *_draftsFolderName;
     MCOMessageBuilder *_saveDraftMessage;
     SMOpAppendMessage *_saveDraftOp;
@@ -33,10 +35,18 @@
     self = [super init];
     
     if(self) {
+        _attachmentItems = [NSMutableArray array];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSavedToDrafts:) name:@"MessageAppended" object:nil];
     }
     
     return self;
+}
+
+#pragma mark Attachment management
+
+- (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem {
+    [_attachmentItems addObject:attachmentItem];
 }
 
 #pragma mark Actions
@@ -117,6 +127,12 @@
     [builder setHTMLBody:messageText];
     
     //TODO (local attachments): [builder addAttachment:[MCOAttachment attachmentWithContentsOfFile:@"/Users/foo/Pictures/image.jpg"]];
+   
+    for(SMAttachmentItem *attachmentItem in _attachmentItems) {
+        MCOAttachment *mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentItem.fileName];
+        [builder addAttachment:mcoAttachment];
+        // TODO: ???    - (void) addRelatedAttachment:(MCOAttachment *)attachment;
+    }
     
     return builder;
 }

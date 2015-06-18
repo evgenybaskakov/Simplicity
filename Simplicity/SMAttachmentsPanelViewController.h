@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class SMMessage;
+@class SMMessageEditorController;
 
 @interface SMAttachmentsPanelViewController : NSViewController<NSCollectionViewDelegate, NSDraggingSource, NSDraggingDestination>
 
@@ -18,6 +19,6 @@
 @property NSMutableArray *attachmentItems;
 
 - (void)setMessage:(SMMessage*)message;
-- (void)enableEditing;
+- (void)enableEditing:(SMMessageEditorController*)messageEditorController;
 
 @end

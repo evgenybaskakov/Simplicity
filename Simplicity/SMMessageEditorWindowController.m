@@ -166,7 +166,7 @@
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
         
-        [_attachmentsPanelViewController enableEditing];
+        [_attachmentsPanelViewController enableEditing:_messageEditorController];
     }
     
     [view addSubview:_attachmentsPanelViewController.view];

@@ -6,10 +6,13 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMMessage.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
 
-@implementation SMAttachmentsPanelViewController
+@implementation SMAttachmentsPanelViewController {
+    SMMessage *_message;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -27,6 +30,22 @@
     NSAssert(_collectionView, @"no collection view");
     
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
+}
+
+- (void)setMessage:(SMMessage*)message {
+    NSAssert(message != nil, @"message is nil");
+    NSAssert(_message == nil, @"_message already set");
+    
+    _message = message;
+
+    NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
+    
+    for(NSUInteger i = 0; i < _message.attachments.count; i++) {
+        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:_message.attachments[i]];
+        [_arrayController addObject:attachmentItem];
+    }
+    
+    [_arrayController setSelectedObjects:[NSArray array]];
 }
 
 - (void)enableEditing {

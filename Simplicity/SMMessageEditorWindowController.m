@@ -7,6 +7,7 @@
 //
 
 #import <WebKit/WebKit.h>
+#import <WebKit/WebUIDelegate.h>
 
 #import <MailCore/MailCore.h>
 
@@ -192,5 +193,53 @@
     
     _attachmentsPanelShown = NO;
 }
+
+#pragma mark Drag and drop to HTML editor
+
+- (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
+    NSLog(@"%s: TODO", __func__);
+    return 0;
+}
+
+- (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
+    NSLog(@"%s: TODO", __func__);
+    return 0;
+}
+
+- (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
+    NSLog(@"%s: TODO", __func__);
+}
+
+#if 0
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    if ( [sender draggingSource] == nil )
+    {
+        NSPasteboard *pboard = [sender draggingPasteboard];
+        NSArray *classes = @[ [NSURL class] ];
+        NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES],
+                                   NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
+        NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
+        
+        if(fileURLs)
+        {
+            NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
+            NSMutableString* html = [NSMutableString string];
+            
+            for(NSString* filename in filenames) {
+                [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
+            }
+            
+            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
+            [pboard setString: html forType: NSHTMLPboardType];
+        }
+        
+    } return [super performDragOperation:sender];
+}
+#endif
 
 @end

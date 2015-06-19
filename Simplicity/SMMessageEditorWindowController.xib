@@ -154,6 +154,9 @@
                         <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                             <nil key="identifier"/>
                         </webPreferences>
+                        <connections>
+                            <outlet property="UIDelegate" destination="-2" id="vKf-jQ-cah"/>
+                        </connections>
                     </webView>
                 </subviews>
                 <constraints>

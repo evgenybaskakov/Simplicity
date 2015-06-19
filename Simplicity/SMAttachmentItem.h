@@ -13,6 +13,7 @@
 @interface SMAttachmentItem : NSObject
 
 @property (nonatomic, readonly) NSString *fileName;
+@property (nonatomic, readonly) NSString *filePath;
 @property (nonatomic, readonly) NSData *fileData;
 
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment;

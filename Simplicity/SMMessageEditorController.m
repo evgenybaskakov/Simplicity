@@ -129,7 +129,11 @@
     //TODO (local attachments): [builder addAttachment:[MCOAttachment attachmentWithContentsOfFile:@"/Users/foo/Pictures/image.jpg"]];
    
     for(SMAttachmentItem *attachmentItem in _attachmentItems) {
-        MCOAttachment *mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentItem.fileName];
+        NSString *attachmentFilePath = attachmentItem.filePath;
+        NSAssert(attachmentFilePath != nil, @"attachmentFilePath is nil");
+
+        MCOAttachment *mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentFilePath];
+
         [builder addAttachment:mcoAttachment];
         // TODO: ???    - (void) addRelatedAttachment:(MCOAttachment *)attachment;
     }

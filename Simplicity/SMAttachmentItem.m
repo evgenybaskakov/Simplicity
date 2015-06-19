@@ -12,6 +12,7 @@
 
 @implementation SMAttachmentItem {
     MCOAttachment *_mcoAttachment;
+    NSString *_filePath;
 }
 
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment {
@@ -28,6 +29,7 @@
     self = [super init];
     
     if(self) {
+        _filePath = filePath;
         _mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:filePath];
         NSAssert(_mcoAttachment, @"could not create attachment from file %@", filePath);
     }
@@ -37,6 +39,10 @@
 
 - (NSString*)fileName {
 	return _mcoAttachment.filename;
+}
+
+- (NSString*)filePath {
+    return _filePath;
 }
 
 - (NSData*)fileData {

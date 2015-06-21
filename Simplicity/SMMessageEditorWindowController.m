@@ -94,38 +94,44 @@
 	[_messageTextEditor setEditable:YES];
 	
 	[_sendButton setEnabled:NO];
-    
+
     [self startEditor];
+}
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    if(sender != nil && frame == sender.mainFrame) {
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"quill" ofType:@"js"];
+            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+            
+            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
+            NSLog(@"%s: ret '%@'", __func__, ret);
+        }
+        
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"editor_api" ofType:@"js"];
+            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+            
+            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
+            NSLog(@"%s: ret '%@'", __func__, ret);
+        }
+        
+        {
+            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorStart()"];
+            NSLog(@"%s: ret '%@'", __func__, ret);
+            
+            NSAssert([ret isEqualToString:@"Success"], @"Failed to init editor, error '%@'", ret);
+        }
+    }
 }
 
 #pragma mark Editor
 
 - (void)startEditor {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"quill.min" ofType:@"js"];
-    NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSString *htmlText = @"<div id=\"editor-container\">""</div>";
     
-    NSString *ret1 = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
-    NSLog(@"%s: ret1 '%@'", __func__, ret1);
-
-    NSString *startEditorCode = [NSString stringWithFormat:@""
-                                 "      var editor = new Quill('#editor-container', {"
-                                 "        modules: {"
-                                 "          'toolbar': { container: '#formatting-container' },"
-                                 "          'link-tooltip': true,"
-                                 "          'image-tooltip': true"
-                                 "        }"
-                                 "      });"
-                                 "      editor.on('selection-change', function(range) {"
-                                 "        console.log('selection-change', range)"
-                                 "      });"
-                                 "      editor.on('text-change', function(delta, source) {"
-                                 "        console.log('text-change', delta, source)"
-                                 "      });"
-                                 ""];
-    
-    NSString *ret2 = [_messageTextEditor stringByEvaluatingJavaScriptFromString:startEditorCode];
-    NSLog(@"%s: ret2 '%@'", __func__, ret2);
- }
+    [[_messageTextEditor mainFrame] loadHTMLString:htmlText baseURL:nil];
+}
 
 #pragma mark Actions
 
@@ -146,6 +152,15 @@
 - (IBAction)attachAction:(id)sender {
 	NSLog(@"%s", __func__);
     [self toggleAttachmentsPanel];
+}
+
+#pragma mark Text attrbitute actions
+
+- (IBAction)textBoldAction:(id)sender {
+    {
+        NSString *ret2 = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorLoadTemplate()"];
+        NSLog(@"%s: ret2 '%@'", __func__, ret2);
+    }
 }
 
 #pragma mark UI elements collaboration

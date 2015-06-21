@@ -11,10 +11,12 @@
                 <outlet property="attachButton" destination="9vu-n1-mIw" id="9iH-Jy-bOM"/>
                 <outlet property="bccBoxView" destination="BNN-lf-zgk" id="4Hc-rN-U1T"/>
                 <outlet property="ccBoxView" destination="m7U-0p-xXm" id="uO2-6r-XDE"/>
+                <outlet property="messageEditorBottomConstraint" destination="TMe-e3-QLh" id="MO8-SQ-NHu"/>
                 <outlet property="messageTextEditor" destination="qvd-c0-JP4" id="72t-0e-PQM"/>
                 <outlet property="saveButton" destination="g6K-Xs-dwd" id="LuB-gC-b9L"/>
                 <outlet property="sendButton" destination="e7V-Vc-k0q" id="Wtp-oE-AeT"/>
                 <outlet property="subjectField" destination="Qrx-X9-Ruh" id="dDt-TS-DA6"/>
+                <outlet property="textBoldButton" destination="3jY-5o-sIs" id="aHg-eL-xxO"/>
                 <outlet property="toBoxView" destination="CyJ-Re-fR4" id="YKz-o1-hjH"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="u0l-k6-RWg"/>
             </connections>
@@ -149,6 +151,18 @@
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="524" height="28"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3jY-5o-sIs">
+                                    <rect key="frame" x="1" y="-3" width="69" height="32"/>
+                                    <buttonCell key="cell" type="push" title="Bold" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="textBoldAction:" target="-2" id="TFB-Ni-xfe"/>
+                                    </connections>
+                                </button>
+                            </subviews>
                         </view>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="ucv-XK-8hb"/>
@@ -161,7 +175,7 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="303" id="gdq-HJ-eCq"/>
                         </constraints>
-                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
+                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                             <nil key="identifier"/>
                         </webPreferences>
                         <connections>

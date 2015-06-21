@@ -114,6 +114,9 @@
 		80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */; };
 		80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575C1B1D763C00A0AA81 /* SMOperation.m */; };
 		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
+		80F007551B366D7A00139766 /* quill.base.css in Resources */ = {isa = PBXBuildFile; fileRef = 80F007521B366D7A00139766 /* quill.base.css */; };
+		80F007561B366D7A00139766 /* quill.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 80F007531B366D7A00139766 /* quill.min.js */; };
+		80F007571B366D7A00139766 /* quill.snow.css in Resources */ = {isa = PBXBuildFile; fileRef = 80F007541B366D7A00139766 /* quill.snow.css */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -362,6 +365,9 @@
 		80E6575C1B1D763C00A0AA81 /* SMOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperation.m; sourceTree = "<group>"; };
 		80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSendMessage.h; sourceTree = "<group>"; };
 		80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpSendMessage.m; sourceTree = "<group>"; };
+		80F007521B366D7A00139766 /* quill.base.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = quill.base.css; sourceTree = "<group>"; };
+		80F007531B366D7A00139766 /* quill.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = quill.min.js; sourceTree = "<group>"; };
+		80F007541B366D7A00139766 /* quill.snow.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = quill.snow.css; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -631,6 +637,9 @@
 				00DBA6DD1AC2705F00DFE03D /* new-message.png */,
 				002057CC1A85D2DA00D5FE8A /* outbox-white.png */,
 				801B8E881B23B1BC00B144C0 /* queue-icon.png */,
+				80F007521B366D7A00139766 /* quill.base.css */,
+				80F007531B366D7A00139766 /* quill.min.js */,
+				80F007541B366D7A00139766 /* quill.snow.css */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
 				006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */,
@@ -778,6 +787,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80F007551B366D7A00139766 /* quill.base.css in Resources */,
 				009C7BA01A5BB558002EA2DF /* circle-blue.png in Resources */,
 				0047416D1AA42115002566E8 /* uncollapse-all.png in Resources */,
 				002057D71A85D87500D5FE8A /* drafts-white.png in Resources */,
@@ -811,10 +821,12 @@
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
+				80F007571B366D7A00139766 /* quill.snow.css in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
 				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
+				80F007561B366D7A00139766 /* quill.min.js in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,

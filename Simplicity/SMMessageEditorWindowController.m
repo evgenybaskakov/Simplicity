@@ -89,6 +89,7 @@
 	[_messageTextEditor setFrameLoadDelegate:self];
 	[_messageTextEditor setPolicyDelegate:self];
 	[_messageTextEditor setResourceLoadDelegate:self];
+    [_messageTextEditor setEditingDelegate:self];
 	[_messageTextEditor setCanDrawConcurrently:YES];
 	[_messageTextEditor setEditable:YES];
 	
@@ -198,28 +199,20 @@
 
 - (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
     NSLog(@"%s: TODO", __func__);
-    return 0;
+    return WebDragDestinationActionEdit;
 }
 
 - (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
     NSLog(@"%s: TODO", __func__);
-    return 0;
+    return WebDragDestinationActionNone;
 }
 
 - (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
     NSLog(@"%s: TODO", __func__);
-}
-
-- (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
-    NSLog(@"%s: TODO", __func__);
-}
-
-#if 0
-- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
-{
-    if ( [sender draggingSource] == nil )
+/*
+    if ( [draggingInfo draggingSource] == nil )
     {
-        NSPasteboard *pboard = [sender draggingPasteboard];
+        NSPasteboard *pboard = [draggingInfo draggingPasteboard];
         NSArray *classes = @[ [NSURL class] ];
         NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES],
                                    NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
@@ -236,10 +229,22 @@
             
             [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
             [pboard setString: html forType: NSHTMLPboardType];
+            
+            NSLog(@"html: %@", html);
         }
-        
-    } return [super performDragOperation:sender];
+    }
+*/
 }
-#endif
+
+- (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (BOOL)webView:(WebView *)webView shouldInsertNode:(DOMNode *)node replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action {
+
+    NSLog(@"%s: node '%@', range '%@'", __func__, node, range);
+    return YES;
+}
+
 
 @end

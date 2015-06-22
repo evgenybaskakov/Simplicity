@@ -15,10 +15,15 @@ function Simplicity_EditorStart() {
     return "Success";
 }
 
-function Simplicity_EditorLoadTemplate() {
+function Simplicity_EditorToggleBold() {
+    editor.setSelection(0, 5);
+    editor.formatText(0, 10, 'bold', true);
+}
+
+function Simplicity_EditorToggleItalic() {
     editor.setContents([
-                       { insert: 'Hello ' },
-                       { insert: 'World!', attributes: { bold: true } },
-                       { insert: '\n' }
-                       ]);
+                        { insert: 'Hello ' },
+                        { insert: 'World!', attributes: { bold: true } },
+                        { insert: '\n' }
+                        ]);
 }

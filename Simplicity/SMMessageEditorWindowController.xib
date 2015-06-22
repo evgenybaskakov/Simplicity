@@ -16,8 +16,9 @@
                 <outlet property="saveButton" destination="g6K-Xs-dwd" id="LuB-gC-b9L"/>
                 <outlet property="sendButton" destination="e7V-Vc-k0q" id="Wtp-oE-AeT"/>
                 <outlet property="subjectField" destination="Qrx-X9-Ruh" id="dDt-TS-DA6"/>
-                <outlet property="textBoldButton" destination="3jY-5o-sIs" id="aHg-eL-xxO"/>
                 <outlet property="toBoxView" destination="CyJ-Re-fR4" id="YKz-o1-hjH"/>
+                <outlet property="toggleBoldButton" destination="3jY-5o-sIs" id="yvi-4A-YAg"/>
+                <outlet property="toggleItalicButton" destination="Ang-Xi-Pkv" id="gfH-1v-WtT"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="u0l-k6-RWg"/>
             </connections>
         </customObject>
@@ -159,7 +160,17 @@
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
                                     <connections>
-                                        <action selector="textBoldAction:" target="-2" id="TFB-Ni-xfe"/>
+                                        <action selector="toggleBoldAction:" target="-2" id="h4z-lC-iO7"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ang-Xi-Pkv">
+                                    <rect key="frame" x="59" y="-3" width="69" height="32"/>
+                                    <buttonCell key="cell" type="push" title="Italic" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleItalicAction:" target="-2" id="Xmt-9g-Zqk"/>
                                     </connections>
                                 </button>
                             </subviews>

@@ -156,11 +156,14 @@
 
 #pragma mark Text attrbitute actions
 
-- (IBAction)textBoldAction:(id)sender {
-    {
-        NSString *ret2 = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorLoadTemplate()"];
-        NSLog(@"%s: ret2 '%@'", __func__, ret2);
-    }
+- (IBAction)toggleBoldAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleBold()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)toggleItalicAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleItalic()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
 }
 
 #pragma mark UI elements collaboration

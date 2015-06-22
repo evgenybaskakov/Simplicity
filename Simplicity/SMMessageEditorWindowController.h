@@ -23,7 +23,8 @@
 @property IBOutlet NSView *bccBoxView;
 @property IBOutlet NSTextField *subjectField;
 @property IBOutlet WebView *messageTextEditor;
-@property IBOutlet NSButton *textBoldButton;
+@property IBOutlet NSButton *toggleBoldButton;
+@property IBOutlet NSButton *toggleItalicButton;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;
@@ -33,6 +34,7 @@
 - (IBAction)sendAction:(id)sender;
 - (IBAction)saveAction:(id)sender;
 - (IBAction)attachAction:(id)sender;
-- (IBAction)textBoldAction:(id)sender;
+- (IBAction)toggleBoldAction:(id)sender;
+- (IBAction)toggleItalicAction:(id)sender;
 
 @end

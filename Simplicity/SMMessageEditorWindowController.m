@@ -101,7 +101,15 @@
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
         {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"quill" ofType:@"js"];
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"wysihtml5x-rules" ofType:@"js"];
+            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+            
+            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
+            NSLog(@"%s: ret '%@'", __func__, ret);
+        }
+        
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"wysihtml5x-toolbar" ofType:@"js"];
             NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
             
             NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];

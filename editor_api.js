@@ -1,29 +1,34 @@
-var editor;
+var editor, commands;
 
 function Simplicity_EditorStart() {
     try {
-        editor = new Quill('#editor-container', {});
+        editor = new wysihtml5.Editor("editor-container", {
+                                          parserRules:    wysihtml5ParserRules,
+                                          useLineBreaks:  false
+                                          });
+
+        commands = new wysihtml5.Commands(editor);
     } catch(e) {
         return "Error " + e.toString();
     }
-    editor.on('selection-change', function(range) {
-                console.log('selection-change', range)
-              });
-    editor.on('text-change', function(delta, source) {
-                console.log('text-change', delta, source)
-              });
     return "Success";
 }
 
 function Simplicity_EditorToggleBold() {
-    editor.setSelection(0, 5);
-    editor.formatText(0, 10, 'bold', true);
+    try {
+        commands.exec("bold");
+    } catch(e) {
+        return "Error " + e.toString();
+    }
+    return "Success";
 }
 
 function Simplicity_EditorToggleItalic() {
-    editor.setContents([
-                        { insert: 'Hello ' },
-                        { insert: 'World!', attributes: { bold: true } },
-                        { insert: '\n' }
-                        ]);
+    try {
+        commands.exec("insertImage", "http://i.telegraph.co.uk/multimedia/archive/03204/Jennifer-in-Paradi_3204219n.jpg");
+        commands.exec("bold");
+    } catch(e) {
+        return "Error " + e.toString();
+    }
+    return "Success";
 }

@@ -184,7 +184,7 @@
                     <webView maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qvd-c0-JP4">
                         <rect key="frame" x="0.0" y="0.0" width="524" height="303"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="303" id="gdq-HJ-eCq"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="303" id="gdq-HJ-eCq"/>
                         </constraints>
                         <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                             <nil key="identifier"/>

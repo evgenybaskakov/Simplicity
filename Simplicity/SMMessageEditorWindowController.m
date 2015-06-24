@@ -110,36 +110,20 @@
     }
 
     if(sender != nil && frame == sender.mainFrame) {
-        {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"wysihtml5x-rules" ofType:@"js"];
+        NSArray *scripts = [NSArray arrayWithObjects:@"wysihtml5x-rules", @"wysihtml5x-toolbar", @"editor_api", nil];
+        
+        for(NSString *s in scripts) {
+            NSString *path = [[NSBundle mainBundle] pathForResource:s ofType:@"js"];
             NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
             
             NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
-            NSLog(@"%s: ret '%@'", __func__, ret);
+            NSLog(@"%s: script '%@' loading result '%@'", __func__, s, ret);
         }
         
-        {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"wysihtml5x-toolbar" ofType:@"js"];
-            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-            
-            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
-            NSLog(@"%s: ret '%@'", __func__, ret);
-        }
+        NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorStart()"];
+        NSLog(@"%s: editor start result '%@'", __func__, ret);
         
-        {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"editor_api" ofType:@"js"];
-            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-            
-            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
-            NSLog(@"%s: ret '%@'", __func__, ret);
-        }
-        
-        {
-            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorStart()"];
-            NSLog(@"%s: ret '%@'", __func__, ret);
-            
-            NSAssert([ret isEqualToString:@"Success"], @"Failed to init editor, error '%@'", ret);
-        }
+        NSAssert([ret isEqualToString:@"Success"], @"Failed to init editor, error '%@'", ret);
     }
 }
 

@@ -11,7 +11,7 @@ function Simplicity_EditorStart() {
 
         commands = new wysihtml5.Commands(editor);
     } catch(e) {
-        return "Error " + e.toString();
+        return "Error " + e.toString() + "\nStack: " + e.stack;
     }
     return "Success";
 }
@@ -22,7 +22,7 @@ function Simplicity_EditorToggleBold() {
     try {
         commands.exec("bold");
     } catch(e) {
-        return "Error " + e.toString();
+        return "Error " + e.toString() + "\nStack: " + e.stack;
     }
     return "Success";
 }
@@ -34,7 +34,7 @@ function Simplicity_EditorToggleItalic() {
         commands.exec("insertImage", "http://i.telegraph.co.uk/multimedia/archive/03204/Jennifer-in-Paradi_3204219n.jpg");
         commands.exec("bold");
     } catch(e) {
-        return "Error " + e.toString();
+        return "Error " + e.toString() + "\nStack: " + e.stack;
     }
     return "Success";
 }

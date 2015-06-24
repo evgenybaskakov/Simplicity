@@ -180,6 +180,11 @@
     NSLog(@"%s: ret '%@'", __func__, ret);
 }
 
+- (IBAction)toggleUnderlineAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleUnderline()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
 #pragma mark UI elements collaboration
 
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {

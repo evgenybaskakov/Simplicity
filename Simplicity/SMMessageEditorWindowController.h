@@ -25,6 +25,7 @@
 @property IBOutlet WebView *messageTextEditor;
 @property IBOutlet NSButton *toggleBoldButton;
 @property IBOutlet NSButton *toggleItalicButton;
+@property IBOutlet NSButton *toggleUnderlineButton;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;
@@ -36,5 +37,6 @@
 - (IBAction)attachAction:(id)sender;
 - (IBAction)toggleBoldAction:(id)sender;
 - (IBAction)toggleItalicAction:(id)sender;
+- (IBAction)toggleUnderlineAction:(id)sender;
 
 @end

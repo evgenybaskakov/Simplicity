@@ -19,6 +19,7 @@
                 <outlet property="toBoxView" destination="CyJ-Re-fR4" id="YKz-o1-hjH"/>
                 <outlet property="toggleBoldButton" destination="3jY-5o-sIs" id="yvi-4A-YAg"/>
                 <outlet property="toggleItalicButton" destination="Ang-Xi-Pkv" id="gfH-1v-WtT"/>
+                <outlet property="toggleUnderlineButton" destination="ABg-p1-t6b" id="ypW-as-F47"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="u0l-k6-RWg"/>
             </connections>
         </customObject>
@@ -154,8 +155,8 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3jY-5o-sIs">
-                                    <rect key="frame" x="1" y="-3" width="69" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Bold" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
+                                    <rect key="frame" x="160" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="B" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -163,14 +164,116 @@
                                         <action selector="toggleBoldAction:" target="-2" id="h4z-lC-iO7"/>
                                     </connections>
                                 </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZvR-yu-u4z">
+                                    <rect key="frame" x="405" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="L" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="d1e-lq-fnF">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleBoldAction:" target="-2" id="kjb-DW-kWf"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4A0-Lc-LJ8">
+                                    <rect key="frame" x="440" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="R" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G3i-yJ-HN5">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleBoldAction:" target="-2" id="Bhd-UK-TKH"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dpD-ev-Dhj">
+                                    <rect key="frame" x="335" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="N" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ikc-63-srE">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleBoldAction:" target="-2" id="API-2n-qTM"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H6b-e2-0Xy">
+                                    <rect key="frame" x="370" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="B" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oE7-Yv-02F">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleBoldAction:" target="-2" id="i98-pC-uqW"/>
+                                    </connections>
+                                </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ang-Xi-Pkv">
-                                    <rect key="frame" x="59" y="-3" width="69" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Italic" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
+                                    <rect key="frame" x="196" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="I" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
                                     <connections>
                                         <action selector="toggleItalicAction:" target="-2" id="Xmt-9g-Zqk"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABg-p1-t6b">
+                                    <rect key="frame" x="231" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="U" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rlZ-eH-0Sp">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleUnderlineAction:" target="-2" id="4NZ-0i-J3H"/>
+                                    </connections>
+                                </button>
+                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9tL-Cj-7Pi">
+                                    <rect key="frame" x="2" y="1" width="111" height="26"/>
+                                    <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="iPd-ZC-3nV" id="kzL-2p-xxI">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" id="MjI-Bi-Hxc">
+                                            <items>
+                                                <menuItem title="Font" state="on" id="iPd-ZC-3nV"/>
+                                                <menuItem title="Item 2" id="MJX-q9-zfX"/>
+                                                <menuItem title="Item 3" id="X3I-jb-IHM"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                </popUpButton>
+                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KyZ-XH-z9k">
+                                    <rect key="frame" x="112" y="1" width="53" height="26"/>
+                                    <popUpButtonCell key="cell" type="bevel" title="Sz" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="uV3-Xa-D4u" id="OWX-ME-vlo">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" id="FTu-ih-DMW">
+                                            <items>
+                                                <menuItem title="Sz" state="on" id="uV3-Xa-D4u"/>
+                                                <menuItem title="Item 2" id="azH-OB-czM"/>
+                                                <menuItem title="Item 3" id="5Dd-2U-wJs"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                </popUpButton>
+                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MqA-HP-bbb">
+                                    <rect key="frame" x="269" y="1" width="71" height="26"/>
+                                    <popUpButtonCell key="cell" type="bevel" title="Color" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="tUw-Pr-R53" id="yIb-Km-uqf">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" id="k59-Hi-7Os">
+                                            <items>
+                                                <menuItem title="Color" state="on" id="tUw-Pr-R53"/>
+                                                <menuItem title="Item 2" id="15O-D2-2a4"/>
+                                                <menuItem title="Item 3" id="G25-N0-MLG"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                </popUpButton>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pBs-le-v1d">
+                                    <rect key="frame" x="475" y="-3" width="44" height="32"/>
+                                    <buttonCell key="cell" type="push" title="Q" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1al-yg-yWK">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleBoldAction:" target="-2" id="KJK-07-Grw"/>
                                     </connections>
                                 </button>
                             </subviews>

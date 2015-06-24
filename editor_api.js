@@ -1,7 +1,7 @@
 var editor, commands;
 
 function Simplicity_EditorStart() {
-    console.log("Simplicity_EditorStart: loading editor");
+    console.log("Simplicity_EditorStart");
 
     try {
         editor = new wysihtml5.Editor("editor-container", {
@@ -17,7 +17,7 @@ function Simplicity_EditorStart() {
 }
 
 function Simplicity_EditorToggleBold() {
-    console.log("Simplicity_EditorToggleBold: toggle bold");
+    console.log("Simplicity_EditorToggleBold");
 
     try {
         commands.exec("bold");
@@ -28,10 +28,21 @@ function Simplicity_EditorToggleBold() {
 }
 
 function Simplicity_EditorToggleItalic() {
-    console.log("Simplicity_EditorToggleBold: toggle italic");
+    console.log("Simplicity_EditorToggleBold");
 
     try {
         commands.exec("italic");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorToggleUnderline() {
+    console.log("Simplicity_EditorTogglUnderline");
+    
+    try {
+        commands.exec("underline");
     } catch(e) {
         return "Error " + e.toString() + "\nStack: " + e.stack;
     }

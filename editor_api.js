@@ -31,8 +31,7 @@ function Simplicity_EditorToggleItalic() {
     console.log("Simplicity_EditorToggleBold: toggle italic");
 
     try {
-        commands.exec("insertImage", "http://i.telegraph.co.uk/multimedia/archive/03204/Jennifer-in-Paradi_3204219n.jpg");
-        commands.exec("bold");
+        commands.exec("italic");
     } catch(e) {
         return "Error " + e.toString() + "\nStack: " + e.stack;
     }

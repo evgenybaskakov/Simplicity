@@ -9386,8 +9386,12 @@ wysihtml5.quirks.ensureProperClearing = (function() {
 
       if (node2) {
         caretPlaceholder = this.contain.querySelectorAll("." + className);
-        range.setStartBefore(caretPlaceholder[0]);
-        range.setEndAfter(caretPlaceholder[caretPlaceholder.length -1]);
+        console.log('executeAndRestore: caretPlaceholder.length=' + caretPlaceholder.length);
+        // Workaround for "DOMException 8"; TODO - figure out what's going on
+        if(caretPlaceholder.length != 0) {
+          range.setStartBefore(caretPlaceholder[0]);
+          range.setEndAfter(caretPlaceholder[caretPlaceholder.length -1]);
+        }
       }
       this.setSelection(range);
 

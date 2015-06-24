@@ -99,6 +99,16 @@
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    if (frame == [frame findFrameNamed:@"_top"]) {
+        //
+        // Bridge between JavaScript's console.log and Cocoa NSLog
+        // http://jerodsanto.net/2010/12/bridging-the-gap-between-javascripts-console-log-and-cocoas-nslog/
+        //
+        WebScriptObject *scriptObject = [sender windowScriptObject];
+        [scriptObject setValue:self forKey:@"Simplicity"];
+        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+    }
+
     if(sender != nil && frame == sender.mainFrame) {
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"wysihtml5x-rules" ofType:@"js"];
@@ -131,6 +141,18 @@
             NSAssert([ret isEqualToString:@"Success"], @"Failed to init editor, error '%@'", ret);
         }
     }
+}
+
+- (void)consoleLog:(NSString *)message {
+    NSLog(@"JSLog: %@", message);
+}
+
++ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
+    if (aSelector == @selector(consoleLog:)) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark Editor

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D2134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
         <plugIn identifier="com.apple.WebKitIBPlugin" version="7706"/>
     </dependencies>
@@ -18,6 +17,7 @@
                 <outlet property="shiftLeftButton" destination="ZvR-yu-u4z" id="1Mq-ax-rWI"/>
                 <outlet property="shiftRightButton" destination="4A0-Lc-LJ8" id="cSD-ed-G8B"/>
                 <outlet property="subjectField" destination="Qrx-X9-Ruh" id="dDt-TS-DA6"/>
+                <outlet property="textSizeButton" destination="KyZ-XH-z9k" id="sr7-gJ-eFQ"/>
                 <outlet property="toBoxView" destination="CyJ-Re-fR4" id="YKz-o1-hjH"/>
                 <outlet property="toggleBoldButton" destination="3jY-5o-sIs" id="yvi-4A-YAg"/>
                 <outlet property="toggleBulletsButton" destination="H6b-e2-0Xy" id="OC5-n0-7ov"/>
@@ -196,17 +196,20 @@
                                 </popUpButton>
                                 <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KyZ-XH-z9k">
                                     <rect key="frame" x="112" y="1" width="53" height="26"/>
-                                    <popUpButtonCell key="cell" type="bevel" title="Sz" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="uV3-Xa-D4u" id="OWX-ME-vlo">
+                                    <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="uV3-Xa-D4u" id="OWX-ME-vlo">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="FTu-ih-DMW">
                                             <items>
-                                                <menuItem title="Sz" state="on" id="uV3-Xa-D4u"/>
+                                                <menuItem title="10" state="on" id="uV3-Xa-D4u"/>
                                                 <menuItem title="Item 2" id="azH-OB-czM"/>
                                                 <menuItem title="Item 3" id="5Dd-2U-wJs"/>
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
+                                    <connections>
+                                        <action selector="setTextSizeAction:" target="-2" id="Noc-Sh-gpW"/>
+                                    </connections>
                                 </popUpButton>
                                 <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MqA-HP-bbb">
                                     <rect key="frame" x="269" y="1" width="71" height="26"/>

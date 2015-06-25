@@ -94,6 +94,12 @@
 	[_messageTextEditor setEditable:YES];
 	
 	[_sendButton setEnabled:NO];
+    
+    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"8", @"9", @"10", @"11", @"12", @"13", @"14", @"18", @"24", @"36", @"48", @"64", @"72", @"96", @"144", @"288", nil];
+
+    [_textSizeButton removeAllItems];
+    [_textSizeButton addItemsWithTitles:textSizes];
+    [_textSizeButton selectItemAtIndex:2];
 
     [self startEditor];
 }
@@ -207,6 +213,18 @@
 
 - (IBAction)shiftRightAction:(id)sender {
     NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorShiftRight()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)setTextSizeAction:(id)sender {
+    NSInteger index = [_textSizeButton indexOfSelectedItem];
+    if(index < 0 || index >= _textSizeButton.numberOfItems) {
+        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
+        return;
+    }
+
+    NSInteger textSize = [[_textSizeButton itemTitleAtIndex:index] integerValue];
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_EditorSetTextSize(%ld)", textSize]];
     NSLog(@"%s: ret '%@'", __func__, ret);
 }
 

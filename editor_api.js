@@ -105,3 +105,16 @@ function Simplicity_EditorShiftRight() {
     }
     return "Success";
 }
+
+function Simplicity_EditorSetTextSize(textSize) {
+    var textSizeString = textSize.toString() + "px";
+
+    console.log("Simplicity_EditorSetTextSize: " + textSizeString);
+
+    try {
+        commands.exec("fontSizeStyle", textSizeString);
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}

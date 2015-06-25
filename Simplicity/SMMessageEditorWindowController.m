@@ -185,6 +185,31 @@
     NSLog(@"%s: ret '%@'", __func__, ret);
 }
 
+- (IBAction)toggleBulletsAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleBullets()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)toggleNumberingAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleNumbering()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)toggleQuoteAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleQuote()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)shiftLeftAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorShiftLeft()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)shiftRightAction:(id)sender {
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorShiftRight()"];
+    NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
 #pragma mark UI elements collaboration
 
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {

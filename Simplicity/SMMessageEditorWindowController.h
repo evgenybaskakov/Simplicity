@@ -26,6 +26,11 @@
 @property IBOutlet NSButton *toggleBoldButton;
 @property IBOutlet NSButton *toggleItalicButton;
 @property IBOutlet NSButton *toggleUnderlineButton;
+@property IBOutlet NSButton *toggleBulletsButton;
+@property IBOutlet NSButton *toggleNumberingButton;
+@property IBOutlet NSButton *toggleQuoteButton;
+@property IBOutlet NSButton *shiftLeftButton;
+@property IBOutlet NSButton *shiftRightButton;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;

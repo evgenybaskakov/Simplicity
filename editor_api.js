@@ -48,3 +48,60 @@ function Simplicity_EditorToggleUnderline() {
     }
     return "Success";
 }
+
+
+function Simplicity_EditorToggleBullets() {
+    console.log("Simplicity_EditorToggleBullets");
+    
+    try {
+        commands.exec("insertUnorderedList");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorToggleNumbering() {
+    console.log("Simplicity_EditorToggleNumbering");
+    
+    try {
+        commands.exec("insertOrderedList");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorToggleQuote() {
+    console.log("Simplicity_EditorToggleQuote");
+    
+    try {
+        // see https://css-tricks.com/examples/Blockquotes/
+        commands.exec("TODO");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorShiftLeft() {
+    console.log("Simplicity_EditorShiftLeft");
+    
+    try {
+        commands.exec("TODO");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorShiftRight() {
+    console.log("Simplicity_EditorShiftRight");
+    
+    try {
+        commands.exec("TODO");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}

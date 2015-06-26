@@ -32,6 +32,7 @@
 @property IBOutlet NSButton *shiftLeftButton;
 @property IBOutlet NSButton *shiftRightButton;
 @property IBOutlet NSPopUpButton *textSizeButton;
+@property IBOutlet NSPopUpButton *justifyButton;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;
@@ -45,5 +46,6 @@
 - (IBAction)toggleItalicAction:(id)sender;
 - (IBAction)toggleUnderlineAction:(id)sender;
 - (IBAction)setTextSizeAction:(id)sender;
+- (IBAction)justifyTextAction:(id)sender;
 
 @end

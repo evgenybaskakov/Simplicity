@@ -94,12 +94,18 @@
 	[_messageTextEditor setEditable:YES];
 	
 	[_sendButton setEnabled:NO];
-    
+
     NSArray *textSizes = [[NSArray alloc] initWithObjects:@"8", @"9", @"10", @"11", @"12", @"13", @"14", @"18", @"24", @"36", @"48", @"64", @"72", @"96", @"144", @"288", nil];
 
     [_textSizeButton removeAllItems];
     [_textSizeButton addItemsWithTitles:textSizes];
     [_textSizeButton selectItemAtIndex:2];
+    
+    NSArray *justifyOptions = [[NSArray alloc] initWithObjects:@"Left", @"Center", @"Right", nil];
+    
+    [_justifyButton removeAllItems];
+    [_justifyButton addItemsWithTitles:justifyOptions];
+    [_justifyButton selectItemAtIndex:0];
 
     [self startEditor];
 }
@@ -226,6 +232,26 @@
     NSInteger textSize = [[_textSizeButton itemTitleAtIndex:index] integerValue];
     NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_EditorSetTextSize(%ld)", textSize]];
     NSLog(@"%s: ret '%@'", __func__, ret);
+}
+
+- (IBAction)justifyTextAction:(id)sender {
+    NSInteger index = [_textSizeButton indexOfSelectedItem];
+    if(index < 0 || index >= _textSizeButton.numberOfItems) {
+        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
+        return;
+    }
+
+    NSString *justifyFunc = nil;
+    
+    switch(index) {
+        case 0: justifyFunc = @"Simplicity_EditorJustifyLeft()"; break;
+        case 1: justifyFunc = @"Simplicity_EditorJustifyCenter()"; break;
+        case 2: justifyFunc = @"Simplicity_EditorJustifyRight()"; break;
+        default: NSAssert(nil, @"Unexpected index %ld", index);
+    }
+
+    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:justifyFunc];
+    NSLog(@"%s: func '%@', ret '%@'", __func__, justifyFunc, ret);
 }
 
 #pragma mark UI elements collaboration

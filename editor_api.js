@@ -118,3 +118,37 @@ function Simplicity_EditorSetTextSize(textSize) {
     }
     return "Success";
 }
+
+function Simplicity_EditorJustifyLeft() {
+    console.log("Simplicity_EditorJustifyLeft");
+    
+    try {
+        commands.exec("justifyLeft");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorJustifyCenter() {
+    console.log("Simplicity_EditorJustifyCenter");
+    
+    try {
+        commands.exec("justifyCenter");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+
+function Simplicity_EditorJustifyRight() {
+    console.log("Simplicity_EditorJustifyRight");
+    
+    try {
+        commands.exec("justifyRight");
+    } catch(e) {
+        return "Error " + e.toString() + "\nStack: " + e.stack;
+    }
+    return "Success";
+}
+

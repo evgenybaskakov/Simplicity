@@ -154,7 +154,7 @@
 #pragma mark Editor
 
 - (void)startEditor {
-    NSString *htmlText = @"<div id=\"editor-container\">""</div>";
+    NSString *htmlText = @"<div id=\"editor-container\"></div>";
     
     [[_messageTextEditor mainFrame] loadHTMLString:htmlText baseURL:nil];
 }
@@ -235,8 +235,8 @@
 }
 
 - (IBAction)justifyTextAction:(id)sender {
-    NSInteger index = [_textSizeButton indexOfSelectedItem];
-    if(index < 0 || index >= _textSizeButton.numberOfItems) {
+    NSInteger index = [_justifyButton indexOfSelectedItem];
+    if(index < 0 || index >= _justifyButton.numberOfItems) {
         NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
         return;
     }
@@ -252,6 +252,12 @@
 
     NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:justifyFunc];
     NSLog(@"%s: func '%@', ret '%@'", __func__, justifyFunc, ret);
+}
+
+- (IBAction)showSourceAction:(id)sender {
+    NSString *messageText = [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+
+    NSLog(@"%@", messageText);
 }
 
 #pragma mark UI elements collaboration
@@ -340,7 +346,7 @@
 }
 
 - (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
-    NSLog(@"%s: TODO", __func__);
+    //NSLog(@"%s: TODO", __func__);
     return WebDragDestinationActionNone;
 }
 

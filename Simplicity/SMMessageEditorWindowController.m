@@ -142,19 +142,20 @@
         "    }"
         "  </style>"
         "  <body>"
-        "    <div id='content' contenteditable='true' style='font-family: Helvetica; font-size: 10pt'>"
-        "      This is out Rich Text Editing View"
-        "    </div>"
         "  </body>"
         "</html>";
 
     [[_messageTextEditor mainFrame] loadHTMLString:htmlText baseURL:nil];
 }
 
+- (NSString*)getMessageText {
+    return [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+}
+
 #pragma mark Actions
 
 - (IBAction)sendAction:(id)sender {
-    NSString *messageText = [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+    NSString *messageText = [self getMessageText];
 
     [_messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 
@@ -162,7 +163,7 @@
 }
 
 - (IBAction)saveAction:(id)sender {
-    NSString *messageText = [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+    NSString *messageText = [self getMessageText];
     
     [_messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 }
@@ -249,7 +250,7 @@
 }
 
 - (IBAction)showSourceAction:(id)sender {
-    NSString *messageText = [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+    NSString *messageText = [self getMessageText];
 
     NSLog(@"%@", messageText);
 }

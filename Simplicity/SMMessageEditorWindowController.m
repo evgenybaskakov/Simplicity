@@ -95,7 +95,7 @@
 	
 	[_sendButton setEnabled:NO];
 
-    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"8", @"9", @"10", @"11", @"12", @"13", @"14", @"18", @"24", @"36", @"48", @"64", @"72", @"96", @"144", @"288", nil];
+    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
 
     [_textSizeButton removeAllItems];
     [_textSizeButton addItemsWithTitles:textSizes];
@@ -111,32 +111,7 @@
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
-    if (frame == [frame findFrameNamed:@"_top"]) {
-        //
-        // Bridge between JavaScript's console.log and Cocoa NSLog
-        // http://jerodsanto.net/2010/12/bridging-the-gap-between-javascripts-console-log-and-cocoas-nslog/
-        //
-        WebScriptObject *scriptObject = [sender windowScriptObject];
-        [scriptObject setValue:self forKey:@"Simplicity"];
-        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
-    }
-
-    if(sender != nil && frame == sender.mainFrame) {
-        NSArray *scripts = [NSArray arrayWithObjects:@"wysihtml5x-rules", @"wysihtml5x-toolbar", @"editor_api", nil];
-        
-        for(NSString *s in scripts) {
-            NSString *path = [[NSBundle mainBundle] pathForResource:s ofType:@"js"];
-            NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-            
-            NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:jsCode];
-            NSLog(@"%s: script '%@' loading result '%@'", __func__, s, ret);
-        }
-        
-        NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorStart()"];
-        NSLog(@"%s: editor start result '%@'", __func__, ret);
-        
-        NSAssert([ret isEqualToString:@"Success"], @"Failed to init editor, error '%@'", ret);
-    }
+    // Init editor here, if needed.
 }
 
 - (void)consoleLog:(NSString *)message {
@@ -154,8 +129,25 @@
 #pragma mark Editor
 
 - (void)startEditor {
-    NSString *htmlText = @"<div id=\"editor-container\"></div>";
-    
+    NSString *htmlText = @""
+        "<html>"
+        "  <style>"
+        "    blockquote {"
+        "      display: block;"
+        "      margin-top: 1em;"
+        "      margin-bottom: 1em;"
+        "      margin-left: 0em;"
+        "      padding-left: 15px;"
+        "      border-left: 4px solid #ccf;"
+        "    }"
+        "  </style>"
+        "  <body>"
+        "    <div id='content' contenteditable='true' style='font-family: Helvetica; font-size: 10pt'>"
+        "      This is out Rich Text Editing View"
+        "    </div>"
+        "  </body>"
+        "</html>";
+
     [[_messageTextEditor mainFrame] loadHTMLString:htmlText baseURL:nil];
 }
 
@@ -183,43 +175,43 @@
 #pragma mark Text attrbitute actions
 
 - (IBAction)toggleBoldAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleBold()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Bold')"];
 }
 
 - (IBAction)toggleItalicAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleItalic()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Italic')"];
 }
 
 - (IBAction)toggleUnderlineAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleUnderline()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Underline')"];
 }
 
 - (IBAction)toggleBulletsAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleBullets()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertUnorderedList')"];
 }
 
 - (IBAction)toggleNumberingAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleNumbering()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertOrderedList')"];
 }
 
 - (IBAction)toggleQuoteAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorToggleQuote()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('formatBlock', false, 'blockquote')"];
 }
 
 - (IBAction)shiftLeftAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorShiftLeft()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('outdent')"];
 }
 
 - (IBAction)shiftRightAction:(id)sender {
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"Simplicity_EditorShiftRight()"];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s", __func__);
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
 }
 
 - (IBAction)setTextSizeAction:(id)sender {
@@ -230,8 +222,9 @@
     }
 
     NSInteger textSize = [[_textSizeButton itemTitleAtIndex:index] integerValue];
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_EditorSetTextSize(%ld)", textSize]];
-    NSLog(@"%s: ret '%@'", __func__, ret);
+    NSLog(@"%s: textSize %ld", __func__, textSize);
+
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
 }
 
 - (IBAction)justifyTextAction:(id)sender {
@@ -244,14 +237,15 @@
     NSString *justifyFunc = nil;
     
     switch(index) {
-        case 0: justifyFunc = @"Simplicity_EditorJustifyLeft()"; break;
-        case 1: justifyFunc = @"Simplicity_EditorJustifyCenter()"; break;
-        case 2: justifyFunc = @"Simplicity_EditorJustifyRight()"; break;
+        case 0: justifyFunc = @"justifyLeft"; break;
+        case 1: justifyFunc = @"justifyCenter"; break;
+        case 2: justifyFunc = @"justifyRight"; break;
         default: NSAssert(nil, @"Unexpected index %ld", index);
     }
 
-    NSString *ret = [_messageTextEditor stringByEvaluatingJavaScriptFromString:justifyFunc];
-    NSLog(@"%s: func '%@', ret '%@'", __func__, justifyFunc, ret);
+    NSLog(@"%s: %@", __func__, justifyFunc);
+
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
 }
 
 - (IBAction)showSourceAction:(id)sender {

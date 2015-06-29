@@ -125,7 +125,7 @@
                             <subviews>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3jY-5o-sIs">
                                     <rect key="frame" x="160" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="B" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Bold-icon" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -135,7 +135,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4A0-Lc-LJ8">
                                     <rect key="frame" x="440" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="R" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G3i-yJ-HN5">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Outdent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G3i-yJ-HN5">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -145,7 +145,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dpD-ev-Dhj">
                                     <rect key="frame" x="335" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="N" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ikc-63-srE">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Numbered List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ikc-63-srE">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -155,7 +155,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H6b-e2-0Xy">
                                     <rect key="frame" x="370" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="B" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oE7-Yv-02F">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oE7-Yv-02F">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -165,7 +165,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ang-Xi-Pkv">
                                     <rect key="frame" x="196" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="I" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Italic-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -175,7 +175,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABg-p1-t6b">
                                     <rect key="frame" x="231" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="U" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rlZ-eH-0Sp">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Underline-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rlZ-eH-0Sp">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -235,7 +235,9 @@
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="bsg-Cg-0Ly">
                                             <items>
-                                                <menuItem title="Justify" state="on" id="B5T-uk-VfD"/>
+                                                <menuItem title="Justify" state="on" id="B5T-uk-VfD">
+                                                    <attributedString key="attributedTitle"/>
+                                                </menuItem>
                                                 <menuItem title="Item 2" id="q0F-fr-RPA"/>
                                                 <menuItem title="Item 3" id="y85-vX-EjE"/>
                                             </items>
@@ -247,7 +249,7 @@
                                 </popUpButton>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pBs-le-v1d">
                                     <rect key="frame" x="475" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Q" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1al-yg-yWK">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1al-yg-yWK">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -257,7 +259,7 @@
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZvR-yu-u4z">
                                     <rect key="frame" x="405" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" title="L" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="d1e-lq-fnF">
+                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Indent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="d1e-lq-fnF">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -283,18 +285,6 @@
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
-                    <webView maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qvd-c0-JP4">
-                        <rect key="frame" x="0.0" y="0.0" width="680" height="303"/>
-                        <constraints>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="303" id="gdq-HJ-eCq"/>
-                        </constraints>
-                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
-                            <nil key="identifier"/>
-                        </webPreferences>
-                        <connections>
-                            <outlet property="UIDelegate" destination="-2" id="vKf-jQ-cah"/>
-                        </connections>
-                    </webView>
                     <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="QmY-mt-AuV" userLabel="Subject Box">
                         <rect key="frame" x="-1" y="333" width="681" height="30"/>
                         <view key="contentView">
@@ -334,6 +324,18 @@
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
+                    <webView maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qvd-c0-JP4">
+                        <rect key="frame" x="0.0" y="0.0" width="680" height="303"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="303" id="gdq-HJ-eCq"/>
+                        </constraints>
+                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
+                            <nil key="identifier"/>
+                        </webPreferences>
+                        <connections>
+                            <outlet property="UIDelegate" destination="-2" id="vKf-jQ-cah"/>
+                        </connections>
+                    </webView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="j1n-aU-mlD" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="2Pl-Yr-gZS"/>
@@ -364,6 +366,14 @@
         </window>
     </objects>
     <resources>
+        <image name="Editing-Bold-icon" width="128" height="128"/>
+        <image name="Editing-Italic-icon" width="128" height="128"/>
+        <image name="Editing-Underline-icon" width="128" height="128"/>
+        <image name="Indent Filled-50" width="50" height="50"/>
+        <image name="List Filled-50" width="50" height="50"/>
+        <image name="Numbered List Filled-50" width="50" height="50"/>
+        <image name="Outdent Filled-50" width="50" height="50"/>
+        <image name="Quote-50" width="50" height="50"/>
         <image name="attachment-icon" width="128" height="128"/>
     </resources>
 </document>

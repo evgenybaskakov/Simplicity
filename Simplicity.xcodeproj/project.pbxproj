@@ -105,6 +105,21 @@
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
+		80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */; };
+		80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */; };
+		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
+		80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */; };
+		80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */; };
+		80533ABF1B4114B700A0A67F /* Editing-Bold-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB51B4114B700A0A67F /* Editing-Bold-icon.png */; };
+		80533AC01B4114B700A0A67F /* Editing-Align-Right-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */; };
+		80533AC11B4114B700A0A67F /* Editing-Align-Left-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */; };
+		80533AC21B4114B700A0A67F /* Editing-Align-Justify-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */; };
+		80533AC31B4114B700A0A67F /* Editing-Align-Center-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */; };
+		80533ACD1B41176600A0A67F /* Outdent Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACB1B41176600A0A67F /* Outdent Filled-50.png */; };
+		80533ACE1B41176600A0A67F /* Indent Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACC1B41176600A0A67F /* Indent Filled-50.png */; };
+		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
+		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
+		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -344,6 +359,21 @@
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
+		80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Underline-icon.png"; sourceTree = "<group>"; };
+		80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Italic-icon.png"; sourceTree = "<group>"; };
+		80533AB21B4114B700A0A67F /* Editing-Text-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Text-icon.png"; sourceTree = "<group>"; };
+		80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Border-Color-icon.png"; sourceTree = "<group>"; };
+		80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Chisel-Tip-Marker-icon.png"; sourceTree = "<group>"; };
+		80533AB51B4114B700A0A67F /* Editing-Bold-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Bold-icon.png"; sourceTree = "<group>"; };
+		80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Right-icon.png"; sourceTree = "<group>"; };
+		80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Left-icon.png"; sourceTree = "<group>"; };
+		80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Justify-icon.png"; sourceTree = "<group>"; };
+		80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Center-icon.png"; sourceTree = "<group>"; };
+		80533ACB1B41176600A0A67F /* Outdent Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Outdent Filled-50.png"; sourceTree = "<group>"; };
+		80533ACC1B41176600A0A67F /* Indent Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Indent Filled-50.png"; sourceTree = "<group>"; };
+		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
+		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
+		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
 		8081A7891B27F65B0081727C /* SMOpAppendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAppendMessage.h; sourceTree = "<group>"; };
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
@@ -617,6 +647,7 @@
 		00E9108017D30FB90028C679 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				80533AD51B4118B800A0A67F /* TextEditorIcons */,
 				00909E741A9ACDE300636C90 /* SearchWebView.js */,
 				00AD52E71AA813FB00627433 /* add-label.png */,
 				00A681791A7DEDB800DAD2BD /* attachment-document.png */,
@@ -643,6 +674,28 @@
 				0047416B1AA42115002566E8 /* uncollapse-all.png */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		80533AD51B4118B800A0A67F /* TextEditorIcons */ = {
+			isa = PBXGroup;
+			children = (
+				80533AD31B41189B00A0A67F /* Quote-50.png */,
+				80533ACF1B41180D00A0A67F /* List Filled-50.png */,
+				80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */,
+				80533ACB1B41176600A0A67F /* Outdent Filled-50.png */,
+				80533ACC1B41176600A0A67F /* Indent Filled-50.png */,
+				80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */,
+				80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */,
+				80533AB21B4114B700A0A67F /* Editing-Text-icon.png */,
+				80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */,
+				80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */,
+				80533AB51B4114B700A0A67F /* Editing-Bold-icon.png */,
+				80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */,
+				80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */,
+				80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */,
+				80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */,
+			);
+			name = TextEditorIcons;
 			sourceTree = "<group>";
 		};
 		80E657341B182AF700A0AA81 /* Products */ = {
@@ -784,8 +837,13 @@
 				0047416C1AA42115002566E8 /* collapse-all.png in Resources */,
 				002057D21A85D2DA00D5FE8A /* sent-white.png in Resources */,
 				009217A51A92F007003A0348 /* trash-black.png in Resources */,
+				80533AC01B4114B700A0A67F /* Editing-Align-Right-icon.png in Resources */,
+				80533AD41B41189B00A0A67F /* Quote-50.png in Resources */,
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
+				80533ACD1B41176600A0A67F /* Outdent Filled-50.png in Resources */,
+				80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
+				80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */,
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
 				00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */,
 				00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */,
@@ -794,11 +852,17 @@
 				004A64221AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib in Resources */,
 				0002A0A217D1B1E000EA4AFF /* Credits.rtf in Resources */,
 				00DBA6DE1AC2705F00DFE03D /* new-message.png in Resources */,
+				80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */,
 				002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
+				80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */,
+				80533ABF1B4114B700A0A67F /* Editing-Bold-icon.png in Resources */,
+				80533AC11B4114B700A0A67F /* Editing-Align-Left-icon.png in Resources */,
+				80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */,
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */,
+				80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */,
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
 				00DBA6D81AC25FD500DFE03D /* SMMessageEditorWindowController.xib in Resources */,
@@ -810,14 +874,18 @@
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
+				80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
+				80533AC21B4114B700A0A67F /* Editing-Align-Justify-icon.png in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
 				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */,
+				80533AC31B4114B700A0A67F /* Editing-Align-Center-icon.png in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,
+				80533ACE1B41176600A0A67F /* Indent Filled-50.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

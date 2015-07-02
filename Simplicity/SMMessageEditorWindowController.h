@@ -13,7 +13,7 @@
 @class SMLabeledTokenFieldBoxView;
 @class SMLabeledTokenFieldBoxViewController;
 
-@interface SMMessageEditorWindowController : NSWindowController
+@interface SMMessageEditorWindowController : NSWindowController<NSWindowDelegate>
 
 @property IBOutlet NSButton *sendButton;
 @property IBOutlet NSButton *saveButton;

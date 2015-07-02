@@ -19,6 +19,7 @@
 #import "SMMessageEditorWindowController.h"
 
 @implementation SMMessageEditorWindowController {
+    NSTimer *_textMonitorTimer;
     SMMessageEditorController *_messageEditorController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
@@ -81,7 +82,13 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+
+    // Delegate setup
+
+    [[self window] setDelegate:self];
 	
+    // Controls initialization
+
 	[_toBoxViewController.label setStringValue:@"To:"];
 	[_ccBoxViewController.label setStringValue:@"Cc:"];
 	[_bccBoxViewController.label setStringValue:@"Bcc:"];
@@ -106,6 +113,12 @@
     [_justifyButton removeAllItems];
     [_justifyButton addItemsWithTitles:justifyOptions];
     [_justifyButton selectItemAtIndex:0];
+
+    // Timer
+    
+    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
+    
+    // Editor
 
     [self startEditor];
 }
@@ -152,7 +165,48 @@
     return [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
 }
 
+- (void)textMonitorEvent:(NSTimer*)timer {
+    NSString *textStateString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@""
+      "(document.queryCommandState('bold')? 1 : 0) |"
+      "(document.queryCommandState('italic')? 2 : 0) |"
+      "(document.queryCommandState('underline')? 4 : 0)"];
+                                 
+    NSInteger textState = [textStateString integerValue];
+
+//    NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
+//    NSLog(@"%s: textState: %ld, fontName: %@", __func__, textState, fontName);
+
+    if(textState & 1) {
+        [_toggleBoldButton setTransparent:NO];
+    } else {
+        [_toggleBoldButton setTransparent:YES];
+    }
+    
+    if(textState & (1<<1)) {
+        [_toggleItalicButton setTransparent:NO];
+    } else {
+        [_toggleItalicButton setTransparent:YES];
+    }
+    
+    if(textState & (1<<2)) {
+        [_toggleUnderlineButton setTransparent:NO];
+    } else {
+        [_toggleUnderlineButton setTransparent:YES];
+    }
+}
+
 #pragma mark Actions
+
+//- (BOOL)windowShouldClose:(id)sender {
+//    NSLog(@"%s", __func__);
+//    return YES;
+//}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    [_textMonitorTimer invalidate];
+    
+    _textMonitorTimer = nil;
+}
 
 - (IBAction)sendAction:(id)sender {
     NSString *messageText = [self getMessageText];
@@ -169,49 +223,40 @@
 }
 
 - (IBAction)attachAction:(id)sender {
-	NSLog(@"%s", __func__);
     [self toggleAttachmentsPanel];
 }
 
 #pragma mark Text attrbitute actions
 
 - (IBAction)toggleBoldAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Bold')"];
 }
 
 - (IBAction)toggleItalicAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Italic')"];
 }
 
 - (IBAction)toggleUnderlineAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Underline')"];
 }
 
 - (IBAction)toggleBulletsAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertUnorderedList')"];
 }
 
 - (IBAction)toggleNumberingAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertOrderedList')"];
 }
 
 - (IBAction)toggleQuoteAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('formatBlock', false, 'blockquote')"];
 }
 
 - (IBAction)shiftLeftAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('outdent')"];
 }
 
 - (IBAction)shiftRightAction:(id)sender {
-    NSLog(@"%s", __func__);
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
 }
 

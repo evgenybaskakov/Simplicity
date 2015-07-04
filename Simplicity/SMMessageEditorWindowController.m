@@ -159,12 +159,6 @@ static NSDictionary *fontNameToIndexMap;
     [_textSizeButton removeAllItems];
     [_textSizeButton addItemsWithTitles:textSizes];
     [_textSizeButton selectItemAtIndex:2];
-
-    NSArray *justifyOptions = [[NSArray alloc] initWithObjects:@"Left", @"Center", @"Full", @"Right", nil];
-    
-    [_justifyButton removeAllItems];
-    [_justifyButton addItemsWithTitles:justifyOptions];
-    [_justifyButton selectItemAtIndex:0];
     
     // Timer
     
@@ -381,11 +375,7 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (IBAction)justifyTextAction:(id)sender {
-    NSInteger index = [_justifyButton indexOfSelectedItem];
-    if(index < 0 || index >= _justifyButton.numberOfItems) {
-        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
-        return;
-    }
+    NSInteger index = [sender selectedSegment];
 
     NSString *justifyFunc = nil;
     
@@ -396,7 +386,7 @@ static NSDictionary *fontNameToIndexMap;
         case 3: justifyFunc = @"justifyRight"; break;
         default: NSAssert(nil, @"Unexpected index %ld", index);
     }
-
+    
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
 }
 

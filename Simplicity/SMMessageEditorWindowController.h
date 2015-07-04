@@ -33,7 +33,7 @@
 @property IBOutlet NSButton *shiftRightButton;
 @property IBOutlet NSPopUpButton *fontSelectionButton;
 @property IBOutlet NSPopUpButton *textSizeButton;
-@property IBOutlet NSPopUpButton *justifyButton;
+@property IBOutlet NSSegmentedControl *justifyTextControl;
 @property IBOutlet NSButton *showSourceButton;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 

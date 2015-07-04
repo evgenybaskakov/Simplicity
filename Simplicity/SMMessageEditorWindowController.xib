@@ -12,7 +12,7 @@
                 <outlet property="bccBoxView" destination="BNN-lf-zgk" id="4Hc-rN-U1T"/>
                 <outlet property="ccBoxView" destination="m7U-0p-xXm" id="uO2-6r-XDE"/>
                 <outlet property="fontSelectionButton" destination="9tL-Cj-7Pi" id="qbh-U4-s2i"/>
-                <outlet property="justifyButton" destination="2Jj-Eb-gs2" id="rCK-rA-6N5"/>
+                <outlet property="justifyTextControl" destination="q5v-yn-z8A" id="ruf-M6-SwA"/>
                 <outlet property="messageEditorBottomConstraint" destination="TMe-e3-QLh" id="MO8-SQ-NHu"/>
                 <outlet property="messageTextEditor" destination="qvd-c0-JP4" id="72t-0e-PQM"/>
                 <outlet property="saveButton" destination="g6K-Xs-dwd" id="LuB-gC-b9L"/>
@@ -232,25 +232,6 @@
                                         </menu>
                                     </popUpButtonCell>
                                 </popUpButton>
-                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Jj-Eb-gs2">
-                                    <rect key="frame" x="514" y="1" width="71" height="26"/>
-                                    <popUpButtonCell key="cell" type="bevel" title="Justify" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="B5T-uk-VfD" id="QSH-dt-sqZ">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="menu"/>
-                                        <menu key="menu" id="bsg-Cg-0Ly">
-                                            <items>
-                                                <menuItem title="Justify" state="on" id="B5T-uk-VfD">
-                                                    <attributedString key="attributedTitle"/>
-                                                </menuItem>
-                                                <menuItem title="Item 2" id="q0F-fr-RPA"/>
-                                                <menuItem title="Item 3" id="y85-vX-EjE"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                    <connections>
-                                        <action selector="justifyTextAction:" target="-2" id="rxl-CO-Dyj"/>
-                                    </connections>
-                                </popUpButton>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pBs-le-v1d">
                                     <rect key="frame" x="475" y="-3" width="44" height="32"/>
                                     <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1al-yg-yWK">
@@ -271,8 +252,27 @@
                                         <action selector="shiftLeftAction:" target="-2" id="cG9-dJ-KPN"/>
                                     </connections>
                                 </button>
+                                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q5v-yn-z8A" userLabel="Justify">
+                                    <rect key="frame" x="514" y="2" width="113" height="24"/>
+                                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="5uQ-GC-ORb">
+                                        <font key="font" metaFont="system"/>
+                                        <segments>
+                                            <segment image="Editing-Align-Left-icon" width="26"/>
+                                            <segment image="Editing-Align-Center-icon" width="26" tag="1"/>
+                                            <segment image="Editing-Align-Justify-icon" width="26">
+                                                <nil key="label"/>
+                                            </segment>
+                                            <segment image="Editing-Align-Right-icon" width="26">
+                                                <nil key="label"/>
+                                            </segment>
+                                        </segments>
+                                    </segmentedCell>
+                                    <connections>
+                                        <action selector="justifyTextAction:" target="-2" id="yfE-eT-M8c"/>
+                                    </connections>
+                                </segmentedControl>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MkU-qg-6xN">
-                                    <rect key="frame" x="580" y="-3" width="80" height="32"/>
+                                    <rect key="frame" x="622" y="-3" width="80" height="32"/>
                                     <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VKl-5W-98Q">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -370,6 +370,10 @@
         </window>
     </objects>
     <resources>
+        <image name="Editing-Align-Center-icon" width="128" height="128"/>
+        <image name="Editing-Align-Justify-icon" width="128" height="128"/>
+        <image name="Editing-Align-Left-icon" width="128" height="128"/>
+        <image name="Editing-Align-Right-icon" width="128" height="128"/>
         <image name="Editing-Bold-icon" width="128" height="128"/>
         <image name="Editing-Italic-icon" width="128" height="128"/>
         <image name="Editing-Underline-icon" width="128" height="128"/>

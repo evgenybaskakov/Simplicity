@@ -19,8 +19,8 @@
 #import "SMMessageEditorWindowController.h"
 
 static NSArray *fontFamilies;
-static NSArray *fontTypefaces;
-static NSDictionary *fontMapping;
+static NSArray *fontNames;
+static NSDictionary *fontNameToIndexMap;
 
 @implementation SMMessageEditorWindowController {
     NSTimer *_textMonitorTimer;
@@ -35,21 +35,7 @@ static NSDictionary *fontMapping;
     
     // Static data
     
-    if(fontMapping == nil) {
-        fontTypefaces = [NSArray arrayWithObjects:
-                         @"Arial",
-                         @"Times New Roman",
-                         @"Courier New",
-                         @"Arial Black",
-                         @"Arial Narrow",
-                         @"Comic Sans MS",
-                         @"Times",
-                         @"Georgia",
-                         @"Tahoma",
-                         @"Trebuchet MS",
-                         @"Verdana",
-                         nil];
-        
+    if(fontNameToIndexMap == nil) {
         fontFamilies = [NSArray arrayWithObjects:
                         @"Sans Serif",
                         @"Serif",
@@ -63,8 +49,32 @@ static NSDictionary *fontMapping;
                         @"Trebuchet MS",
                         @"Verdana",
                         nil];
+        
+        fontNames = [NSArray arrayWithObjects:
+                         @"Arial",
+                         @"Times New Roman",
+                         @"Courier New",
+                         @"Arial Black",
+                         @"Arial Narrow",
+                         @"Comic Sans MS",
+                         @"Times",
+                         @"Georgia",
+                         @"Tahoma",
+                         @"Trebuchet MS",
+                         @"Verdana",
+                         nil];
+        
+        NSMutableDictionary *mapping = [NSMutableDictionary dictionary];
 
-        fontMapping = [NSDictionary dictionaryWithObjects:fontTypefaces forKeys:fontFamilies];
+        for(NSUInteger i = 0; i < fontNames.count; i++) {
+            NSNumber *indexNum = [NSNumber numberWithUnsignedInteger:i];
+
+            [mapping setObject:indexNum forKey:fontNames[i]];
+            [mapping setObject:indexNum forKey:[NSString stringWithFormat:@"'%@'", fontNames[i]]];
+            [mapping setObject:indexNum forKey:[NSString stringWithFormat:@"\"%@\"", fontNames[i]]];
+        }
+        
+        fontNameToIndexMap = mapping;
     }
 
     // Controller
@@ -181,6 +191,16 @@ static NSDictionary *fontMapping;
     return YES;
 }
 
+- (NSString*)getFontTypeface:(NSInteger)index {
+    if(index < 0 || index >= _fontSelectionButton.numberOfItems) {
+        return nil;
+    }
+    
+    NSAssert(index >= 0 && index < fontNames.count, @"bad index %ld", index);
+    
+    return fontNames[index];
+}
+
 #pragma mark Editor
 
 - (void)startEditor {
@@ -215,8 +235,19 @@ static NSDictionary *fontMapping;
                                  
     NSInteger textState = [textStateString integerValue];
 
-    //TODO: NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
-    //NSLog(@"%s: textState: %ld, fontName: %@", __func__, textState, fontName);
+    NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
+
+    NSString *currentFontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
+    if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
+        NSNumber *fontIndexNum = [fontNameToIndexMap objectForKey:fontName];
+
+        if(fontIndexNum != nil) {
+            NSUInteger fontIndex = [fontIndexNum unsignedIntegerValue];
+            NSAssert(fontIndex < fontFamilies.count, @"bad fontIndex %lu", fontIndex);
+
+            [_fontSelectionButton selectItemAtIndex:fontIndex];
+        }
+    }
 
     if(textState & 1) {
         [_toggleBoldButton setTransparent:NO];
@@ -303,19 +334,13 @@ static NSDictionary *fontMapping;
 }
 
 - (IBAction)selectFontAction:(id)sender {
-    NSInteger index = [_fontSelectionButton indexOfSelectedItem];
-    if(index < 0 || index >= _fontSelectionButton.numberOfItems) {
-        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
-        return;
+    NSString *fontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
+
+    if(fontName != nil) {
+        [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
+    } else {
+        NSLog(@"%s: no selected font", __func__);
     }
-    
-    NSAssert(index >= 0 && index < fontTypefaces.count, @"bad index %ld", index);
-
-    NSString *fontName = fontTypefaces[index];
-
-    NSLog(@"%s: selected font '%@'", __func__, fontName);
-
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
 }
 
 - (IBAction)setTextSizeAction:(id)sender {

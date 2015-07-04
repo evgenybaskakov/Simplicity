@@ -18,6 +18,10 @@
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWindowController.h"
 
+static NSArray *fontFamilies;
+static NSArray *fontTypefaces;
+static NSDictionary *fontMapping;
+
 @implementation SMMessageEditorWindowController {
     NSTimer *_textMonitorTimer;
     SMMessageEditorController *_messageEditorController;
@@ -29,6 +33,40 @@
 - (void)awakeFromNib {
 	NSLog(@"%s", __func__);
     
+    // Static data
+    
+    if(fontMapping == nil) {
+        fontTypefaces = [NSArray arrayWithObjects:
+                         @"Arial",
+                         @"Times New Roman",
+                         @"Courier New",
+                         @"Arial Black",
+                         @"Arial Narrow",
+                         @"Comic Sans MS",
+                         @"Times",
+                         @"Georgia",
+                         @"Tahoma",
+                         @"Trebuchet MS",
+                         @"Verdana",
+                         nil];
+        
+        fontFamilies = [NSArray arrayWithObjects:
+                        @"Sans Serif",
+                        @"Serif",
+                        @"Fixed Width",
+                        @"Wide",
+                        @"Narrow",
+                        @"Comic Sans MS",
+                        @"Garamond",
+                        @"Georgia",
+                        @"Tahoma",
+                        @"Trebuchet MS",
+                        @"Verdana",
+                        nil];
+
+        fontMapping = [NSDictionary dictionaryWithObjects:fontTypefaces forKeys:fontFamilies];
+    }
+
     // Controller
     
     _messageEditorController = [[SMMessageEditorController alloc] init];
@@ -101,22 +139,26 @@
 	[_messageTextEditor setEditable:YES];
 	
 	[_sendButton setEnabled:NO];
+    
+    [_fontSelectionButton removeAllItems];
+    [_fontSelectionButton addItemsWithTitles:fontFamilies];
+    [_fontSelectionButton selectItemAtIndex:0];
 
     NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
 
     [_textSizeButton removeAllItems];
     [_textSizeButton addItemsWithTitles:textSizes];
     [_textSizeButton selectItemAtIndex:2];
-    
-    NSArray *justifyOptions = [[NSArray alloc] initWithObjects:@"Left", @"Center", @"Right", nil];
+
+    NSArray *justifyOptions = [[NSArray alloc] initWithObjects:@"Left", @"Center", @"Full", @"Right", nil];
     
     [_justifyButton removeAllItems];
     [_justifyButton addItemsWithTitles:justifyOptions];
     [_justifyButton selectItemAtIndex:0];
-
+    
     // Timer
     
-    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
+    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
     
     // Editor
 
@@ -173,8 +215,8 @@
                                  
     NSInteger textState = [textStateString integerValue];
 
-//    NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
-//    NSLog(@"%s: textState: %ld, fontName: %@", __func__, textState, fontName);
+    //TODO: NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
+    //NSLog(@"%s: textState: %ld, fontName: %@", __func__, textState, fontName);
 
     if(textState & 1) {
         [_toggleBoldButton setTransparent:NO];
@@ -260,6 +302,22 @@
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
 }
 
+- (IBAction)selectFontAction:(id)sender {
+    NSInteger index = [_fontSelectionButton indexOfSelectedItem];
+    if(index < 0 || index >= _fontSelectionButton.numberOfItems) {
+        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
+        return;
+    }
+    
+    NSAssert(index >= 0 && index < fontTypefaces.count, @"bad index %ld", index);
+
+    NSString *fontName = fontTypefaces[index];
+
+    NSLog(@"%s: selected font '%@'", __func__, fontName);
+
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
+}
+
 - (IBAction)setTextSizeAction:(id)sender {
     NSInteger index = [_textSizeButton indexOfSelectedItem];
     if(index < 0 || index >= _textSizeButton.numberOfItems) {
@@ -285,7 +343,8 @@
     switch(index) {
         case 0: justifyFunc = @"justifyLeft"; break;
         case 1: justifyFunc = @"justifyCenter"; break;
-        case 2: justifyFunc = @"justifyRight"; break;
+        case 2: justifyFunc = @"justifyFull"; break;
+        case 3: justifyFunc = @"justifyRight"; break;
         default: NSAssert(nil, @"Unexpected index %ld", index);
     }
 

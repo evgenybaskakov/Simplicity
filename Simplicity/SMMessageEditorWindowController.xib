@@ -11,6 +11,7 @@
                 <outlet property="attachButton" destination="9vu-n1-mIw" id="9iH-Jy-bOM"/>
                 <outlet property="bccBoxView" destination="BNN-lf-zgk" id="4Hc-rN-U1T"/>
                 <outlet property="ccBoxView" destination="m7U-0p-xXm" id="uO2-6r-XDE"/>
+                <outlet property="fontSelectionButton" destination="9tL-Cj-7Pi" id="qbh-U4-s2i"/>
                 <outlet property="justifyButton" destination="2Jj-Eb-gs2" id="rCK-rA-6N5"/>
                 <outlet property="messageEditorBottomConstraint" destination="TMe-e3-QLh" id="MO8-SQ-NHu"/>
                 <outlet property="messageTextEditor" destination="qvd-c0-JP4" id="72t-0e-PQM"/>
@@ -196,6 +197,9 @@
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
+                                    <connections>
+                                        <action selector="selectFontAction:" target="-2" id="Orh-Iz-On1"/>
+                                    </connections>
                                 </popUpButton>
                                 <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KyZ-XH-z9k">
                                     <rect key="frame" x="112" y="1" width="53" height="26"/>

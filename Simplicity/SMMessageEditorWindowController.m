@@ -228,26 +228,15 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (void)textMonitorEvent:(NSTimer*)timer {
+    //
+    // Basic text attributes.
+    //
     NSString *textStateString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@""
       "(document.queryCommandState('bold')? 1 : 0) |"
       "(document.queryCommandState('italic')? 2 : 0) |"
       "(document.queryCommandState('underline')? 4 : 0)"];
                                  
     NSInteger textState = [textStateString integerValue];
-
-    NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
-
-    NSString *currentFontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
-    if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
-        NSNumber *fontIndexNum = [fontNameToIndexMap objectForKey:fontName];
-
-        if(fontIndexNum != nil) {
-            NSUInteger fontIndex = [fontIndexNum unsignedIntegerValue];
-            NSAssert(fontIndex < fontFamilies.count, @"bad fontIndex %lu", fontIndex);
-
-            [_fontSelectionButton selectItemAtIndex:fontIndex];
-        }
-    }
 
     if(textState & 1) {
         [_toggleBoldButton setTransparent:NO];
@@ -265,6 +254,42 @@ static NSDictionary *fontNameToIndexMap;
         [_toggleUnderlineButton setTransparent:NO];
     } else {
         [_toggleUnderlineButton setTransparent:YES];
+    }
+    
+    //
+    // Font name.
+    //
+    NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
+    
+    NSString *currentFontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
+    if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
+        NSNumber *fontIndexNum = [fontNameToIndexMap objectForKey:fontName];
+        
+        if(fontIndexNum != nil) {
+            NSUInteger fontIndex = [fontIndexNum unsignedIntegerValue];
+            NSAssert(fontIndex < fontFamilies.count, @"bad fontIndex %lu", fontIndex);
+            
+            [_fontSelectionButton selectItemAtIndex:fontIndex];
+        } else {
+            [_fontSelectionButton selectItemAtIndex:-1];
+        }
+    }
+    
+    //
+    // Font size.
+    //
+    NSString *fontSize = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontSize')"];
+    
+    if(fontSize != nil) {
+        NSInteger fontSizeNum = [fontSize integerValue];
+        
+        if(fontSizeNum >= 1 && fontSizeNum <= 7) {
+            [_textSizeButton selectItemAtIndex:fontSizeNum-1];
+        } else {
+            [_textSizeButton selectItemAtIndex:-1];
+        }
+    } else {
+        [_textSizeButton selectItemAtIndex:-1];
     }
 }
 
@@ -351,7 +376,6 @@ static NSDictionary *fontNameToIndexMap;
     }
 
     NSInteger textSize = [[_textSizeButton itemTitleAtIndex:index] integerValue];
-    NSLog(@"%s: textSize %ld", __func__, textSize);
 
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
 }
@@ -372,8 +396,6 @@ static NSDictionary *fontNameToIndexMap;
         case 3: justifyFunc = @"justifyRight"; break;
         default: NSAssert(nil, @"Unexpected index %ld", index);
     }
-
-    NSLog(@"%s: %@", __func__, justifyFunc);
 
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
 }
@@ -465,7 +487,9 @@ static NSDictionary *fontNameToIndexMap;
 #pragma mark Drag and drop to HTML editor
 
 - (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
+/*
     NSLog(@"%s: TODO", __func__);
+*/
     return WebDragDestinationActionEdit;
 }
 
@@ -475,8 +499,9 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
-    NSLog(@"%s: TODO", __func__);
 /*
+    NSLog(@"%s: TODO", __func__);
+
     if ( [draggingInfo draggingSource] == nil )
     {
         NSPasteboard *pboard = [draggingInfo draggingPasteboard];
@@ -504,14 +529,16 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
+/*
     NSLog(@"%s: TODO", __func__);
+*/
 }
 
 - (BOOL)webView:(WebView *)webView shouldInsertNode:(DOMNode *)node replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action {
-
+/*
     NSLog(@"%s: node '%@', range '%@'", __func__, node, range);
+*/
     return YES;
 }
-
 
 @end

@@ -12,6 +12,7 @@
 
 @class SMLabeledTokenFieldBoxView;
 @class SMLabeledTokenFieldBoxViewController;
+@class SMColorWellWithIcon;
 
 @interface SMMessageEditorWindowController : NSWindowController<NSWindowDelegate>
 
@@ -26,6 +27,8 @@
 @property IBOutlet NSButton *toggleBoldButton;
 @property IBOutlet NSButton *toggleItalicButton;
 @property IBOutlet NSButton *toggleUnderlineButton;
+@property IBOutlet SMColorWellWithIcon *textForegroundColorSelector;
+@property IBOutlet SMColorWellWithIcon *textBackgroundColorSelector;
 @property IBOutlet NSButton *toggleBulletsButton;
 @property IBOutlet NSButton *toggleNumberingButton;
 @property IBOutlet NSButton *toggleQuoteButton;

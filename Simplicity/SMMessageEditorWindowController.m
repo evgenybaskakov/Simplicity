@@ -12,6 +12,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMTokenField.h"
+#import "SMColorWellWithIcon.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
@@ -160,6 +161,9 @@ static NSDictionary *fontNameToIndexMap;
     [_textSizeButton addItemsWithTitles:textSizes];
     [_textSizeButton selectItemAtIndex:2];
     
+    _textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
+    _textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
+
     // Timer
     
     _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];

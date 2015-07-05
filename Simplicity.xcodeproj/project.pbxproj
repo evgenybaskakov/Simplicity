@@ -99,6 +99,8 @@
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
 		8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */; };
+		800C67761B489FB300272D60 /* SMColorWellWithIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67751B489FB300272D60 /* SMColorWellWithIcon.m */; };
+		800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */ = {isa = PBXBuildFile; fileRef = 800C677E1B48FE6D00272D60 /* Text-Marker.png */; };
 		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
@@ -350,6 +352,9 @@
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
 		8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorController.h; sourceTree = "<group>"; };
 		8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorController.m; sourceTree = "<group>"; };
+		800C67741B489FB300272D60 /* SMColorWellWithIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMColorWellWithIcon.h; sourceTree = "<group>"; };
+		800C67751B489FB300272D60 /* SMColorWellWithIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMColorWellWithIcon.m; sourceTree = "<group>"; };
+		800C677E1B48FE6D00272D60 /* Text-Marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Text-Marker.png"; sourceTree = "<group>"; };
 		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
 		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
 		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
@@ -599,6 +604,8 @@
 				00A6816F1A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
 				008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */,
+				800C67741B489FB300272D60 /* SMColorWellWithIcon.h */,
+				800C67751B489FB300272D60 /* SMColorWellWithIcon.m */,
 				0039B8501A67948500C03C3C /* SMFlippedView.h */,
 				0039B8511A67948500C03C3C /* SMFlippedView.m */,
 				0040B0F7196A5331004E55CC /* SMFolderCellView.h */,
@@ -679,6 +686,7 @@
 		80533AD51B4118B800A0A67F /* TextEditorIcons */ = {
 			isa = PBXGroup;
 			children = (
+				800C677E1B48FE6D00272D60 /* Text-Marker.png */,
 				80533AD31B41189B00A0A67F /* Quote-50.png */,
 				80533ACF1B41180D00A0A67F /* List Filled-50.png */,
 				80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */,
@@ -869,6 +877,7 @@
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
 				00E9107F17D2F6F50028C679 /* SMMessageListViewController.xib in Resources */,
 				00A6817A1A7DEDB800DAD2BD /* attachment-document.png in Resources */,
+				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
 				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				006A5DD717F6C4DC004D6D78 /* Simplicity.sqlite in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
@@ -939,6 +948,7 @@
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
 				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,
+				800C67761B489FB300272D60 /* SMColorWellWithIcon.m in Sources */,
 				0089D35F1A88084F00C189BB /* SMFolderColorController.m in Sources */,
 				0082F5F81A0DD39B0050578A /* SMSearchResultsListController.m in Sources */,
 				8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */,

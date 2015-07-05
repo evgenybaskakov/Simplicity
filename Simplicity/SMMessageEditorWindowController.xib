@@ -269,13 +269,19 @@
                                         <action selector="showSourceAction:" target="-2" id="G9A-yi-Wqw"/>
                                     </connections>
                                 </button>
-                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LcT-0q-LeA" customClass="SMColorWellWithIcon">
+                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LcT-0q-LeA" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
                                     <rect key="frame" x="273" y="3" width="23" height="23"/>
                                     <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="setTextForegroundColorAction:" target="-2" id="P8O-OS-Cvu"/>
+                                    </connections>
                                 </colorWell>
-                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0vo-E7-WMb" customClass="SMColorWellWithIcon">
+                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0vo-E7-WMb" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
                                     <rect key="frame" x="300" y="3" width="23" height="23"/>
                                     <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="setTextBackgroundColorAction:" target="-2" id="R0E-Ug-j45"/>
+                                    </connections>
                                 </colorWell>
                             </subviews>
                         </view>

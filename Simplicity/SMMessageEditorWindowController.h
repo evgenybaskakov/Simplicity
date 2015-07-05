@@ -54,5 +54,7 @@
 - (IBAction)setTextSizeAction:(id)sender;
 - (IBAction)justifyTextAction:(id)sender;
 - (IBAction)showSourceAction:(id)sender;
+- (IBAction)setTextForegroundColorAction:(id)sender;
+- (IBAction)setTextBackgroundColorAction:(id)sender;
 
 @end

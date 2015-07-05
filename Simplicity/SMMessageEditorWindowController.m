@@ -400,6 +400,26 @@ static NSDictionary *fontNameToIndexMap;
     NSLog(@"%@", messageText);
 }
 
+- (NSString*)colorToHex:(NSColor*)color {
+    return [NSString stringWithFormat:@"#FF%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
+}
+
+- (IBAction)setTextForegroundColorAction:(id)sender {
+    NSString *hexString = [self colorToHex:_textForegroundColorSelector.color];
+
+    NSLog(@"%s: %@", __func__, hexString);
+
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', %@)", hexString]];
+}
+
+- (IBAction)setTextBackgroundColorAction:(id)sender {
+    NSString *hexString = [self colorToHex:_textForegroundColorSelector.color];
+    
+    NSLog(@"%s: %@", __func__, hexString);
+    
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', %@)", hexString]];
+}
+
 #pragma mark UI elements collaboration
 
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {

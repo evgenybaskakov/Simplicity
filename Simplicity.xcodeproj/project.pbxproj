@@ -101,6 +101,13 @@
 		8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */; };
 		800C67761B489FB300272D60 /* SMColorWellWithIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67751B489FB300272D60 /* SMColorWellWithIcon.m */; };
 		800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */ = {isa = PBXBuildFile; fileRef = 800C677E1B48FE6D00272D60 /* Text-Marker.png */; };
+		800C67901B499DA900272D60 /* NSColor+ColorExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C678F1B499DA900272D60 /* NSColor+ColorExtensions.m */; };
+		800C67921B499F0700272D60 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 800C67911B499F0700272D60 /* Images.xcassets */; };
+		800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67941B49A89B00272D60 /* MKColorWell+Bindings.m */; };
+		800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67961B49A89B00272D60 /* MKColorPickerView.m */; };
+		800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67981B49A89B00272D60 /* MKColorSwatchCell.m */; };
+		800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */; };
+		800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679C1B49A89B00272D60 /* MKColorWell.m */; };
 		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
@@ -355,6 +362,19 @@
 		800C67741B489FB300272D60 /* SMColorWellWithIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMColorWellWithIcon.h; sourceTree = "<group>"; };
 		800C67751B489FB300272D60 /* SMColorWellWithIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMColorWellWithIcon.m; sourceTree = "<group>"; };
 		800C677E1B48FE6D00272D60 /* Text-Marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Text-Marker.png"; sourceTree = "<group>"; };
+		800C678E1B499DA900272D60 /* NSColor+ColorExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+ColorExtensions.h"; sourceTree = "<group>"; };
+		800C678F1B499DA900272D60 /* NSColor+ColorExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+ColorExtensions.m"; sourceTree = "<group>"; };
+		800C67911B499F0700272D60 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		800C67931B49A89B00272D60 /* MKColorWell+Bindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKColorWell+Bindings.h"; sourceTree = "<group>"; };
+		800C67941B49A89B00272D60 /* MKColorWell+Bindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKColorWell+Bindings.m"; sourceTree = "<group>"; };
+		800C67951B49A89B00272D60 /* MKColorPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorPickerView.h; sourceTree = "<group>"; };
+		800C67961B49A89B00272D60 /* MKColorPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorPickerView.m; sourceTree = "<group>"; };
+		800C67971B49A89B00272D60 /* MKColorSwatchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorSwatchCell.h; sourceTree = "<group>"; };
+		800C67981B49A89B00272D60 /* MKColorSwatchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorSwatchCell.m; sourceTree = "<group>"; };
+		800C67991B49A89B00272D60 /* MKColorSwatchMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorSwatchMatrix.h; sourceTree = "<group>"; };
+		800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorSwatchMatrix.m; sourceTree = "<group>"; };
+		800C679B1B49A89B00272D60 /* MKColorWell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorWell.h; sourceTree = "<group>"; };
+		800C679C1B49A89B00272D60 /* MKColorWell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorWell.m; sourceTree = "<group>"; };
 		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
 		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
 		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
@@ -600,6 +620,18 @@
 		005B086D17D4F62600341051 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				800C67931B49A89B00272D60 /* MKColorWell+Bindings.h */,
+				800C67941B49A89B00272D60 /* MKColorWell+Bindings.m */,
+				800C67951B49A89B00272D60 /* MKColorPickerView.h */,
+				800C67961B49A89B00272D60 /* MKColorPickerView.m */,
+				800C67971B49A89B00272D60 /* MKColorSwatchCell.h */,
+				800C67981B49A89B00272D60 /* MKColorSwatchCell.m */,
+				800C67991B49A89B00272D60 /* MKColorSwatchMatrix.h */,
+				800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */,
+				800C679B1B49A89B00272D60 /* MKColorWell.h */,
+				800C679C1B49A89B00272D60 /* MKColorWell.m */,
+				800C678E1B499DA900272D60 /* NSColor+ColorExtensions.h */,
+				800C678F1B499DA900272D60 /* NSColor+ColorExtensions.m */,
 				00A6816E1A7D6B6E00DAD2BD /* SMAttachmentsPanelView.h */,
 				00A6816F1A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
@@ -654,6 +686,7 @@
 		00E9108017D30FB90028C679 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				800C67911B499F0700272D60 /* Images.xcassets */,
 				80533AD51B4118B800A0A67F /* TextEditorIcons */,
 				00909E741A9ACDE300636C90 /* SearchWebView.js */,
 				00AD52E71AA813FB00627433 /* add-label.png */,
@@ -893,6 +926,7 @@
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
+				800C67921B499F0700272D60 /* Images.xcassets in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,
 				80533ACE1B41176600A0A67F /* Indent Filled-50.png in Resources */,
 			);
@@ -905,10 +939,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */,
 				00DC84961967A70E00577667 /* SMMailboxController.m in Sources */,
 				00EB7E87199C70FA00CA2B1B /* SMMessageThread.m in Sources */,
 				00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
+				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */,
 				0002A09E17D1B1E000EA4AFF /* main.m in Sources */,
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
@@ -929,7 +965,10 @@
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
+				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,
+				800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */,
 				801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */,
+				800C67901B499DA900272D60 /* NSColor+ColorExtensions.m in Sources */,
 				00172FF0198B3BB700DB975E /* SMMessageBodyViewController.m in Sources */,
 				006709341A99A77600C0C9CC /* SMFindContentsPanelViewController.m in Sources */,
 				0002A0B817D224C600EA4AFF /* SMMessageListCellView.m in Sources */,
@@ -953,6 +992,7 @@
 				0082F5F81A0DD39B0050578A /* SMSearchResultsListController.m in Sources */,
 				8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */,
 				8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */,
+				800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */,
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,

@@ -8,7 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMColorWellWithIcon : NSColorWell
+#import "MKColorWell.h"
+
+@interface SMColorWellWithIcon : MKColorWell
 
 @property NSImage *icon;
 

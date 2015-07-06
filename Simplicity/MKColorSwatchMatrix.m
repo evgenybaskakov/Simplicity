@@ -11,6 +11,7 @@
 #import "MKColorWell.h"
 
 @implementation MKColorSwatchMatrix
+
 - (id)initWithFrame:(NSRect)frameRect
        numberOfRows:(NSInteger)rowsHigh 
     numberOfColumns:(NSInteger)colsWide 
@@ -62,4 +63,11 @@
         [targetColorWell setColorAndClose:[cell color]];
     }
 }
+
+- (BOOL)acceptsFirstResponder {
+    // Do not set focus on the color chooser.
+    // Doing so would clear current text selection.
+    return NO;
+}
+
 @end

@@ -203,7 +203,8 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    if (![self isEnabled]) return;
+    if (![self isEnabled])
+        return;
     
     if ([popover isShown]) {
         [popover performClose:self];

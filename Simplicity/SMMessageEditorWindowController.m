@@ -401,7 +401,7 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (NSString*)colorToHex:(NSColor*)color {
-    return [NSString stringWithFormat:@"#FF%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
+    return [NSString stringWithFormat:@"#%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
 }
 
 - (IBAction)setTextForegroundColorAction:(id)sender {
@@ -409,15 +409,15 @@ static NSDictionary *fontNameToIndexMap;
 
     NSLog(@"%s: %@", __func__, hexString);
 
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', %@)", hexString]];
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', false, '%@')", hexString]];
 }
 
 - (IBAction)setTextBackgroundColorAction:(id)sender {
-    NSString *hexString = [self colorToHex:_textForegroundColorSelector.color];
+    NSString *hexString = [self colorToHex:_textBackgroundColorSelector.color];
     
     NSLog(@"%s: %@", __func__, hexString);
     
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', %@)", hexString]];
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', false, '%@')", hexString]];
 }
 
 #pragma mark UI elements collaboration

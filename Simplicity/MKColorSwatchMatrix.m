@@ -61,6 +61,8 @@
     if (hit) {
         MKColorSwatchCell *cell = [self cellAtRow:row column:column];
         [targetColorWell setColorAndClose:[cell color]];
+
+        [targetColorWell.target performSelector:targetColorWell.action withObject:self];
     }
 }
 

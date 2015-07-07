@@ -17,12 +17,13 @@
     
     [_icon drawInRect:iconArea];
 
-    NSRect colorArea = NSMakeRect(bounds.origin.x + bounds.size.width/8, bounds.size.height/16, bounds.size.width - 2*bounds.size.width/8, bounds.size.height/16);
+    NSRect colorArea = NSMakeRect(bounds.origin.x + bounds.size.width/8, bounds.size.height/32, bounds.size.width - 2*bounds.size.width/8, bounds.size.height/16 + bounds.size.height/32);
 
     [self.color setStroke];
+    [self.color setFill];
 
-    NSRectFill(colorArea);
     [NSBezierPath strokeRect:colorArea];
+    [NSBezierPath fillRect:colorArea];
 }
 
 @end

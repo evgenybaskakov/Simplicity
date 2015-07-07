@@ -62,7 +62,9 @@
         MKColorSwatchCell *cell = [self cellAtRow:row column:column];
         [targetColorWell setColorAndClose:[cell color]];
 
-        [targetColorWell.target performSelector:targetColorWell.action withObject:self];
+        // trigger the color well action, so the destination
+        // (editor's setForeground / setBackground color chooser) gets the new color
+        [targetColorWell.target performSelector:targetColorWell.action withObject:self afterDelay:0];
     }
 }
 

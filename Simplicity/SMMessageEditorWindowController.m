@@ -289,6 +289,47 @@ static NSDictionary *fontNameToIndexMap;
     } else {
         [_textSizeButton selectItemAtIndex:-1];
     }
+
+    //
+    // Font color.
+    //
+    NSString *foreColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('foreColor')"];
+    NSString *backColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('backColor')"];
+
+    NSColor *foreColor = [self colorFromString:foreColorString];
+    NSColor *backColor = [self colorFromString:backColorString];
+
+    if(foreColor != nil && ![_textForegroundColorSelector.color isEqualTo:foreColor]) {
+        [_textForegroundColorSelector setColor:foreColor];
+    }
+    
+    if(backColor != nil && ![_textBackgroundColorSelector.color isEqualTo:backColor]) {
+        [_textBackgroundColorSelector setColor:backColor];
+    }
+}
+
+- (NSColor*)colorFromString:(NSString*)colorString {
+    NSScanner *colorScanner = [NSScanner scannerWithString:colorString];
+    [colorScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"0123456789"] intoString:nil];
+    
+    NSInteger r,g,b;
+    if([colorScanner scanInteger:&r] && [colorScanner scanString:@", " intoString:nil] &&
+       [colorScanner scanInteger:&g] && [colorScanner scanString:@", " intoString:nil] &&
+       [colorScanner scanInteger:&b])
+    {
+        NSInteger a = 255;
+        if([colorString characterAtIndex:3] == 'a') {
+            if(![colorScanner scanString:@", " intoString:nil] || ![colorScanner scanInteger:&a]) {
+                a = 255;
+            }
+        }
+
+        return [NSColor colorWithRed:(CGFloat)r/255 green:(CGFloat)g/255 blue:(CGFloat)b/255 alpha:(CGFloat)a/255];
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 #pragma mark Actions

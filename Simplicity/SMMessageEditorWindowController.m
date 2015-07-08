@@ -174,7 +174,37 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
-    // Init editor here, if needed.
+    if (frame == [frame findFrameNamed:@"_top"]) {
+        //
+        // Bridge between JavaScript's console.log and Cocoa NSLog
+        // http://jerodsanto.net/2010/12/bridging-the-gap-between-javascripts-console-log-and-cocoas-nslog/
+        //
+        WebScriptObject *scriptObject = [sender windowScriptObject];
+        [scriptObject setValue:self forKey:@"Simplicity"];
+        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+    }
+
+    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@""
+         "var enterKeyPressHandler = function(evt) {"
+         "    var sel, range, br, addedBr = false;"
+         "    evt = evt || window.event;"
+         "    var charCode = evt.which || evt.keyCode;"
+         "    if (charCode == 13) {"
+         "        console.log('Enter key pressed');"
+         "    } else {"
+         "        console.log('Key ' + charCode + ' pressed');"
+         "    }"
+         "};"
+         "console.log('Document loaded');"
+         "var el = document.getElementById('SimplicityEditor');"
+         "if (typeof el.addEventListener != 'undefined')"
+         "{"
+         "    el.addEventListener('keypress', enterKeyPressHandler , false);"
+         "}"
+         "else if (typeof el.attachEvent != 'undefined')"
+         "{"
+         "    el.attachEvent('onkeypress', enterKeyPressHandler);"
+         "}"];
 }
 
 - (void)consoleLog:(NSString *)message {
@@ -214,7 +244,7 @@ static NSDictionary *fontNameToIndexMap;
         "      border-left: 4px solid #ccf;"
         "    }"
         "  </style>"
-        "  <body>"
+        "  <body id='SimplicityEditor'>"
         "  </body>"
         "</html>";
 

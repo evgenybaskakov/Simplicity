@@ -16,5 +16,8 @@
 @property (readonly, nonatomic) NSImage *yellowStarImage;
 @property (readonly, nonatomic) NSImage *grayStarImage;
 @property (readonly, nonatomic) NSImage *infoImage;
+@property (readonly, nonatomic) NSImage *replyImage;
+@property (readonly, nonatomic) NSImage *replyAllImage;
+@property (readonly, nonatomic) NSImage *moreMessageActionsImage;
 
 @end

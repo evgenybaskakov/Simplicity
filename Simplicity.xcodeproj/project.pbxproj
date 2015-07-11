@@ -113,6 +113,9 @@
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
+		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
+		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
+		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */; };
 		80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */; };
@@ -382,6 +385,9 @@
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
+		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
+		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
+		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Underline-icon.png"; sourceTree = "<group>"; };
@@ -702,6 +708,9 @@
 				00DBA6DD1AC2705F00DFE03D /* new-message.png */,
 				002057CC1A85D2DA00D5FE8A /* outbox-white.png */,
 				801B8E881B23B1BC00B144C0 /* queue-icon.png */,
+				8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */,
+				8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */,
+				8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
 				006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */,
@@ -872,6 +881,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */,
 				009C7BA01A5BB558002EA2DF /* circle-blue.png in Resources */,
 				0047416D1AA42115002566E8 /* uncollapse-all.png in Resources */,
 				002057D71A85D87500D5FE8A /* drafts-white.png in Resources */,
@@ -914,6 +924,7 @@
 				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				006A5DD717F6C4DC004D6D78 /* Simplicity.sqlite in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
+				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */,
@@ -925,6 +936,7 @@
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
+				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				800C67921B499F0700272D60 /* Images.xcassets in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,

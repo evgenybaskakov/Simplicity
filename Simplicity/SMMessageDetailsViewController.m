@@ -33,6 +33,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	NSButton *_attachmentButton;
 	NSTextField *_date;
 	NSButton *_infoButton;
+    NSButton *_replyButton;
+    NSButton *_messageActionsButton;
 	Boolean _fullDetailsShown;
 	NSMutableArray *_fullDetailsViewConstraints;
 	NSLayoutConstraint *_bottomConstraint;
@@ -385,6 +387,9 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	NSAssert(view != nil, @"no view");
 
 	if(_infoButton == nil) {
+        NSAssert(_replyButton == nil, @"reply button already created");
+        NSAssert(_messageActionsButton == nil, @"message actions button already created");
+
 		_infoButton = [[NSButton alloc] init];
 		_infoButton.translatesAutoresizingMaskIntoConstraints = NO;
 		_infoButton.bezelStyle = NSShadowlessSquareBezelStyle;
@@ -394,27 +399,55 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 		_infoButton.bordered = NO;
 		_infoButton.action = @selector(toggleFullDetails:);
 
+        _replyButton = [[NSButton alloc] init];
+        _replyButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _replyButton.bezelStyle = NSShadowlessSquareBezelStyle;
+        _replyButton.target = self;
+        _replyButton.image = appDelegate.imageRegistry.replyImage; // TODO: optionally show replyAll
+        [_replyButton.cell setImageScaling:NSImageScaleProportionallyDown];
+        _replyButton.bordered = NO;
+        _replyButton.action = @selector(composeReply:);
+
+        _messageActionsButton = [[NSButton alloc] init];
+        _messageActionsButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _messageActionsButton.bezelStyle = NSShadowlessSquareBezelStyle;
+        _messageActionsButton.target = self;
+        _messageActionsButton.image = appDelegate.imageRegistry.moreMessageActionsImage;
+        [_messageActionsButton.cell setImageScaling:NSImageScaleProportionallyDown];
+        _messageActionsButton.bordered = NO;
+        _messageActionsButton.action = @selector(showMessageActions:);
+        
 		NSAssert(_uncollapsedHeaderConstraints == nil, @"_uncollapsedHeaderConstraints already created");
 		_uncollapsedHeaderConstraints = [NSMutableArray array];
 
-		[_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
-		[_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
+        for(NSButton *button in [NSArray arrayWithObjects:_infoButton, _replyButton, _messageActionsButton, nil]) {
+            [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/HEADER_ICON_HEIGHT_RATIO]];
 
-		[_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-		[_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired];
-
-		[_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/HEADER_ICON_HEIGHT_RATIO]];
-
-		[_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-
+            [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:button attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+            
+            [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:button attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+            [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired];
+        }
+        
 		[_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_date attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
 		[_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
+
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_replyButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
+
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageActionsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_replyButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
+
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messageActionsButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
+        [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
 	}
 
 	NSAssert(_collapsedHeaderConstraint != nil, @"_collapsedHeaderConstraint is nil");
 	[view removeConstraint:_collapsedHeaderConstraint];
 
 	[view addSubview:_infoButton];
+    [view addSubview:_replyButton];
+    [view addSubview:_messageActionsButton];
 	[view addConstraints:_uncollapsedHeaderConstraints];
 
 	_fullHeaderShown = YES;
@@ -431,6 +464,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	
 	[view removeConstraints:_uncollapsedHeaderConstraints];
 	[_infoButton removeFromSuperview];
+    [_replyButton removeFromSuperview];
+    [_messageActionsButton removeFromSuperview];
 
 	[view addConstraint:_collapsedHeaderConstraint];
 	
@@ -442,6 +477,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	[view addConstraint:constraint];
 }
 
+#pragma mark Actions
+
 - (void)toggleFullDetails:(id)sender {
 	if(_fullDetailsShown) {
 		[self hideFullDetails];
@@ -452,6 +489,16 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	// this must be done to keep the proper details panel height
 	[[self view] invalidateIntrinsicContentSize];
 }
+
+- (void)composeReply:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)showMessageActions:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+#pragma mark Intrinsic size
 
 - (NSSize)intrinsicContentViewSize {
 	if(_fullDetailsShown) {

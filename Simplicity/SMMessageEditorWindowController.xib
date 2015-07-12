@@ -198,11 +198,6 @@
             </view>
             <point key="canvasLocation" x="538" y="418.5"/>
         </window>
-        <viewController id="T2C-bm-zdn" customClass="SMEditorToolBoxViewController">
-            <connections>
-                <outlet property="view" destination="iw0-PG-Dkp" id="fbE-tl-8aO"/>
-            </connections>
-        </viewController>
     </objects>
     <resources>
         <image name="attachment-icon" width="128" height="128"/>

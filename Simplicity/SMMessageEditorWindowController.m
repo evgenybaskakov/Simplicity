@@ -13,6 +13,7 @@
 
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
+#import "SMEditorToolBoxViewController.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
@@ -26,6 +27,7 @@ static NSDictionary *fontNameToIndexMap;
 @implementation SMMessageEditorWindowController {
     NSTimer *_textMonitorTimer;
     SMMessageEditorController *_messageEditorController;
+    SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
@@ -123,7 +125,22 @@ static NSDictionary *fontNameToIndexMap;
 	[_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
 	
 	[_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
-	
+    
+    // editor toolbox
+    
+    _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
+    _editorToolBoxViewController.messageEditorWindowController = self;
+    
+    [_editorToolBoxView addSubview:_editorToolBoxViewController.view];
+
+    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    
+    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    
+    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+    
+    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+
 	// register events
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
@@ -151,18 +168,21 @@ static NSDictionary *fontNameToIndexMap;
 	
 	[_sendButton setEnabled:NO];
     
-    [_fontSelectionButton removeAllItems];
-    [_fontSelectionButton addItemsWithTitles:fontFamilies];
-    [_fontSelectionButton selectItemAtIndex:0];
+    // Editor toolbox
+    NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
 
-    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
-
-    [_textSizeButton removeAllItems];
-    [_textSizeButton addItemsWithTitles:textSizes];
-    [_textSizeButton selectItemAtIndex:2];
+    [_editorToolBoxViewController.fontSelectionButton removeAllItems];
+    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:fontFamilies];
+    [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
     
-    _textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
-    _textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
+    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
+    
+    [_editorToolBoxViewController.textSizeButton removeAllItems];
+    [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
+    [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
+    
+    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
+    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
 
     // Timer
     
@@ -224,7 +244,7 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (NSString*)getFontTypeface:(NSInteger)index {
-    if(index < 0 || index >= _fontSelectionButton.numberOfItems) {
+    if(index < 0 || index >= _editorToolBoxViewController.fontSelectionButton.numberOfItems) {
         return nil;
     }
     
@@ -271,21 +291,21 @@ static NSDictionary *fontNameToIndexMap;
     NSInteger textState = [textStateString integerValue];
 
     if(textState & 1) {
-        [_toggleBoldButton setTransparent:NO];
+        [_editorToolBoxViewController.toggleBoldButton setTransparent:NO];
     } else {
-        [_toggleBoldButton setTransparent:YES];
+        [_editorToolBoxViewController.toggleBoldButton setTransparent:YES];
     }
     
     if(textState & (1<<1)) {
-        [_toggleItalicButton setTransparent:NO];
+        [_editorToolBoxViewController.toggleItalicButton setTransparent:NO];
     } else {
-        [_toggleItalicButton setTransparent:YES];
+        [_editorToolBoxViewController.toggleItalicButton setTransparent:YES];
     }
     
     if(textState & (1<<2)) {
-        [_toggleUnderlineButton setTransparent:NO];
+        [_editorToolBoxViewController.toggleUnderlineButton setTransparent:NO];
     } else {
-        [_toggleUnderlineButton setTransparent:YES];
+        [_editorToolBoxViewController.toggleUnderlineButton setTransparent:YES];
     }
     
     //
@@ -293,7 +313,7 @@ static NSDictionary *fontNameToIndexMap;
     //
     NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
     
-    NSString *currentFontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
+    NSString *currentFontName = [self getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
     if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
         NSNumber *fontIndexNum = [fontNameToIndexMap objectForKey:fontName];
         
@@ -301,9 +321,9 @@ static NSDictionary *fontNameToIndexMap;
             NSUInteger fontIndex = [fontIndexNum unsignedIntegerValue];
             NSAssert(fontIndex < fontFamilies.count, @"bad fontIndex %lu", fontIndex);
             
-            [_fontSelectionButton selectItemAtIndex:fontIndex];
+            [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:fontIndex];
         } else {
-            [_fontSelectionButton selectItemAtIndex:-1];
+            [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:-1];
         }
     }
     
@@ -316,12 +336,12 @@ static NSDictionary *fontNameToIndexMap;
         NSInteger fontSizeNum = [fontSize integerValue];
         
         if(fontSizeNum >= 1 && fontSizeNum <= 7) {
-            [_textSizeButton selectItemAtIndex:fontSizeNum-1];
+            [_editorToolBoxViewController.textSizeButton selectItemAtIndex:fontSizeNum-1];
         } else {
-            [_textSizeButton selectItemAtIndex:-1];
+            [_editorToolBoxViewController.textSizeButton selectItemAtIndex:-1];
         }
     } else {
-        [_textSizeButton selectItemAtIndex:-1];
+        [_editorToolBoxViewController.textSizeButton selectItemAtIndex:-1];
     }
 
     //
@@ -333,12 +353,12 @@ static NSDictionary *fontNameToIndexMap;
     NSColor *foreColor = [self colorFromString:foreColorString];
     NSColor *backColor = [self colorFromString:backColorString];
 
-    if(foreColor != nil && ![_textForegroundColorSelector.color isEqualTo:foreColor]) {
-        [_textForegroundColorSelector setColor:foreColor];
+    if(foreColor != nil && ![_editorToolBoxViewController.textForegroundColorSelector.color isEqualTo:foreColor]) {
+        [_editorToolBoxViewController.textForegroundColorSelector setColor:foreColor];
     }
     
-    if(backColor != nil && ![_textBackgroundColorSelector.color isEqualTo:backColor]) {
-        [_textBackgroundColorSelector setColor:backColor];
+    if(backColor != nil && ![_editorToolBoxViewController.textBackgroundColorSelector.color isEqualTo:backColor]) {
+        [_editorToolBoxViewController.textBackgroundColorSelector setColor:backColor];
     }
 }
 
@@ -399,40 +419,40 @@ static NSDictionary *fontNameToIndexMap;
 
 #pragma mark Text attrbitute actions
 
-- (IBAction)toggleBoldAction:(id)sender {
+- (void)toggleBold {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Bold')"];
 }
 
-- (IBAction)toggleItalicAction:(id)sender {
+- (void)toggleItalic {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Italic')"];
 }
 
-- (IBAction)toggleUnderlineAction:(id)sender {
+- (void)toggleUnderline {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Underline')"];
 }
 
-- (IBAction)toggleBulletsAction:(id)sender {
+- (void)toggleBullets {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertUnorderedList')"];
 }
 
-- (IBAction)toggleNumberingAction:(id)sender {
+- (void)toggleNumbering {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertOrderedList')"];
 }
 
-- (IBAction)toggleQuoteAction:(id)sender {
+- (void)toggleQuote {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('formatBlock', false, 'blockquote')"];
 }
 
-- (IBAction)shiftLeftAction:(id)sender {
+- (void)shiftLeft {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('outdent')"];
 }
 
-- (IBAction)shiftRightAction:(id)sender {
+- (void)shiftRight {
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
 }
 
-- (IBAction)selectFontAction:(id)sender {
-    NSString *fontName = [self getFontTypeface:[_fontSelectionButton indexOfSelectedItem]];
+- (void)selectFont {
+    NSString *fontName = [self getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
 
     if(fontName != nil) {
         [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
@@ -441,20 +461,20 @@ static NSDictionary *fontNameToIndexMap;
     }
 }
 
-- (IBAction)setTextSizeAction:(id)sender {
-    NSInteger index = [_textSizeButton indexOfSelectedItem];
-    if(index < 0 || index >= _textSizeButton.numberOfItems) {
+- (void)setTextSize {
+    NSInteger index = [_editorToolBoxViewController.textSizeButton indexOfSelectedItem];
+    if(index < 0 || index >= _editorToolBoxViewController.textSizeButton.numberOfItems) {
         NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
         return;
     }
 
-    NSInteger textSize = [[_textSizeButton itemTitleAtIndex:index] integerValue];
+    NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
 
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
 }
 
-- (IBAction)justifyTextAction:(id)sender {
-    NSInteger index = [sender selectedSegment];
+- (void)justifyText {
+    NSInteger index = [_editorToolBoxViewController.justifyTextControl selectedSegment];
 
     NSString *justifyFunc = nil;
     
@@ -469,7 +489,7 @@ static NSDictionary *fontNameToIndexMap;
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
 }
 
-- (IBAction)showSourceAction:(id)sender {
+- (void)showSource {
     NSString *messageText = [self getMessageText];
 
     NSLog(@"%@", messageText);
@@ -479,16 +499,16 @@ static NSDictionary *fontNameToIndexMap;
     return [NSString stringWithFormat:@"#%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
 }
 
-- (IBAction)setTextForegroundColorAction:(id)sender {
-    NSString *hexString = [self colorToHex:_textForegroundColorSelector.color];
+- (void)setTextForegroundColor {
+    NSString *hexString = [self colorToHex:_editorToolBoxViewController.textForegroundColorSelector.color];
 
     NSLog(@"%s: %@", __func__, hexString);
 
     [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', false, '%@')", hexString]];
 }
 
-- (IBAction)setTextBackgroundColorAction:(id)sender {
-    NSString *hexString = [self colorToHex:_textBackgroundColorSelector.color];
+- (void)setTextBackgroundColor {
+    NSString *hexString = [self colorToHex:_editorToolBoxViewController.textBackgroundColorSelector.color];
     
     NSLog(@"%s: %@", __func__, hexString);
     

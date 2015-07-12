@@ -116,6 +116,8 @@
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
+		8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */; };
+		8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */; };
 		80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */; };
@@ -388,6 +390,9 @@
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
+		8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMEditorToolBoxViewController.h; sourceTree = "<group>"; };
+		8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMEditorToolBoxViewController.m; sourceTree = "<group>"; };
+		8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMEditorToolBoxViewController.xib; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Underline-icon.png"; sourceTree = "<group>"; };
@@ -573,6 +578,8 @@
 				003DFF171A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m */,
 				00A085AD1A72145300CC4E1C /* SMAttachmentsPanelViewController.h */,
 				00A085AE1A72145300CC4E1C /* SMAttachmentsPanelViewController.m */,
+				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
+				8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */,
 				006709311A99A77600C0C9CC /* SMFindContentsPanelViewController.h */,
 				006709321A99A77600C0C9CC /* SMFindContentsPanelViewController.m */,
 				0089D35D1A88084F00C189BB /* SMFolderColorController.h */,
@@ -674,6 +681,7 @@
 				0002A0A617D1B1E000EA4AFF /* MainMenu.xib */,
 				003DFF181A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
+				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				004A64201AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib */,
@@ -918,6 +926,7 @@
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
 				00DBA6D81AC25FD500DFE03D /* SMMessageEditorWindowController.xib in Resources */,
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
+				8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */,
 				00E9107F17D2F6F50028C679 /* SMMessageListViewController.xib in Resources */,
 				00A6817A1A7DEDB800DAD2BD /* attachment-document.png in Resources */,
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
@@ -1012,6 +1021,7 @@
 				00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */,
 				005F9A3B1AAD46500022EDEF /* SMMailboxTableView.m in Sources */,
 				009742721957C78E00620145 /* SMMailbox.m in Sources */,
+				8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */,
 				00A681701A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D2134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
@@ -11,26 +11,13 @@
                 <outlet property="attachButton" destination="9vu-n1-mIw" id="9iH-Jy-bOM"/>
                 <outlet property="bccBoxView" destination="BNN-lf-zgk" id="4Hc-rN-U1T"/>
                 <outlet property="ccBoxView" destination="m7U-0p-xXm" id="uO2-6r-XDE"/>
-                <outlet property="fontSelectionButton" destination="9tL-Cj-7Pi" id="qbh-U4-s2i"/>
-                <outlet property="justifyTextControl" destination="q5v-yn-z8A" id="ruf-M6-SwA"/>
+                <outlet property="editorToolBoxView" destination="iw0-PG-Dkp" id="2YO-gi-Phj"/>
                 <outlet property="messageEditorBottomConstraint" destination="TMe-e3-QLh" id="MO8-SQ-NHu"/>
                 <outlet property="messageTextEditor" destination="qvd-c0-JP4" id="72t-0e-PQM"/>
                 <outlet property="saveButton" destination="g6K-Xs-dwd" id="LuB-gC-b9L"/>
                 <outlet property="sendButton" destination="e7V-Vc-k0q" id="Wtp-oE-AeT"/>
-                <outlet property="shiftLeftButton" destination="ZvR-yu-u4z" id="1Mq-ax-rWI"/>
-                <outlet property="shiftRightButton" destination="4A0-Lc-LJ8" id="cSD-ed-G8B"/>
-                <outlet property="showSourceButton" destination="MkU-qg-6xN" id="pRE-9c-Inc"/>
                 <outlet property="subjectField" destination="Qrx-X9-Ruh" id="dDt-TS-DA6"/>
-                <outlet property="textBackgroundColorSelector" destination="0vo-E7-WMb" id="BmB-AU-pJV"/>
-                <outlet property="textForegroundColorSelector" destination="LcT-0q-LeA" id="TGN-lR-MXZ"/>
-                <outlet property="textSizeButton" destination="KyZ-XH-z9k" id="sr7-gJ-eFQ"/>
                 <outlet property="toBoxView" destination="CyJ-Re-fR4" id="YKz-o1-hjH"/>
-                <outlet property="toggleBoldButton" destination="3jY-5o-sIs" id="yvi-4A-YAg"/>
-                <outlet property="toggleBulletsButton" destination="H6b-e2-0Xy" id="OC5-n0-7ov"/>
-                <outlet property="toggleItalicButton" destination="Ang-Xi-Pkv" id="gfH-1v-WtT"/>
-                <outlet property="toggleNumberingButton" destination="dpD-ev-Dhj" id="JIT-op-DXf"/>
-                <outlet property="toggleQuoteButton" destination="pBs-le-v1d" id="4G7-cF-7Nn"/>
-                <outlet property="toggleUnderlineButton" destination="ABg-p1-t6b" id="ypW-as-F47"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="u0l-k6-RWg"/>
             </connections>
         </customObject>
@@ -125,165 +112,6 @@
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="679" height="28"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3jY-5o-sIs">
-                                    <rect key="frame" x="160" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Bold-icon" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OGi-bx-ad1">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleBoldAction:" target="-2" id="h4z-lC-iO7"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4A0-Lc-LJ8">
-                                    <rect key="frame" x="426" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Outdent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G3i-yJ-HN5">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="shiftRightAction:" target="-2" id="lbI-S1-snR"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dpD-ev-Dhj">
-                                    <rect key="frame" x="321" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Numbered List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ikc-63-srE">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleNumberingAction:" target="-2" id="Mm9-AY-rg3"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H6b-e2-0Xy">
-                                    <rect key="frame" x="356" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oE7-Yv-02F">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleBulletsAction:" target="-2" id="alA-qW-F0t"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ang-Xi-Pkv">
-                                    <rect key="frame" x="196" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Italic-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g4E-wi-t3Q">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleItalicAction:" target="-2" id="Xmt-9g-Zqk"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABg-p1-t6b">
-                                    <rect key="frame" x="231" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Underline-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rlZ-eH-0Sp">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleUnderlineAction:" target="-2" id="4NZ-0i-J3H"/>
-                                    </connections>
-                                </button>
-                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9tL-Cj-7Pi">
-                                    <rect key="frame" x="2" y="1" width="111" height="26"/>
-                                    <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="iPd-ZC-3nV" id="kzL-2p-xxI">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="menu"/>
-                                        <menu key="menu" id="MjI-Bi-Hxc">
-                                            <items>
-                                                <menuItem title="Font" state="on" id="iPd-ZC-3nV"/>
-                                                <menuItem title="Item 2" id="MJX-q9-zfX"/>
-                                                <menuItem title="Item 3" id="X3I-jb-IHM"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                    <connections>
-                                        <action selector="selectFontAction:" target="-2" id="Orh-Iz-On1"/>
-                                    </connections>
-                                </popUpButton>
-                                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KyZ-XH-z9k">
-                                    <rect key="frame" x="112" y="1" width="53" height="26"/>
-                                    <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="uV3-Xa-D4u" id="OWX-ME-vlo">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="menu"/>
-                                        <menu key="menu" id="FTu-ih-DMW">
-                                            <items>
-                                                <menuItem title="10" state="on" id="uV3-Xa-D4u"/>
-                                                <menuItem title="Item 2" id="azH-OB-czM"/>
-                                                <menuItem title="Item 3" id="5Dd-2U-wJs"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                    <connections>
-                                        <action selector="setTextSizeAction:" target="-2" id="Noc-Sh-gpW"/>
-                                    </connections>
-                                </popUpButton>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pBs-le-v1d">
-                                    <rect key="frame" x="461" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1al-yg-yWK">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="toggleQuoteAction:" target="-2" id="6lo-fu-xQz"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZvR-yu-u4z">
-                                    <rect key="frame" x="391" y="-3" width="44" height="32"/>
-                                    <buttonCell key="cell" type="push" bezelStyle="rounded" image="Indent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="d1e-lq-fnF">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="shiftLeftAction:" target="-2" id="cG9-dJ-KPN"/>
-                                    </connections>
-                                </button>
-                                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q5v-yn-z8A" userLabel="Justify">
-                                    <rect key="frame" x="500" y="2" width="113" height="24"/>
-                                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="5uQ-GC-ORb">
-                                        <font key="font" metaFont="system"/>
-                                        <segments>
-                                            <segment image="Editing-Align-Left-icon" width="26"/>
-                                            <segment image="Editing-Align-Center-icon" width="26" tag="1"/>
-                                            <segment image="Editing-Align-Justify-icon" width="26">
-                                                <nil key="label"/>
-                                            </segment>
-                                            <segment image="Editing-Align-Right-icon" width="26">
-                                                <nil key="label"/>
-                                            </segment>
-                                        </segments>
-                                    </segmentedCell>
-                                    <connections>
-                                        <action selector="justifyTextAction:" target="-2" id="yfE-eT-M8c"/>
-                                    </connections>
-                                </segmentedControl>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MkU-qg-6xN">
-                                    <rect key="frame" x="608" y="-3" width="80" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VKl-5W-98Q">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="showSourceAction:" target="-2" id="G9A-yi-Wqw"/>
-                                    </connections>
-                                </button>
-                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LcT-0q-LeA" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
-                                    <rect key="frame" x="273" y="3" width="23" height="23"/>
-                                    <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="setTextForegroundColorAction:" target="-2" id="P8O-OS-Cvu"/>
-                                    </connections>
-                                </colorWell>
-                                <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0vo-E7-WMb" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
-                                    <rect key="frame" x="300" y="3" width="23" height="23"/>
-                                    <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <connections>
-                                        <action selector="setTextBackgroundColorAction:" target="-2" id="R0E-Ug-j45"/>
-                                    </connections>
-                                </colorWell>
-                            </subviews>
                         </view>
                         <constraints>
                             <constraint firstAttribute="height" constant="30" id="ucv-XK-8hb"/>
@@ -370,20 +198,13 @@
             </view>
             <point key="canvasLocation" x="538" y="418.5"/>
         </window>
+        <viewController id="T2C-bm-zdn" customClass="SMEditorToolBoxViewController">
+            <connections>
+                <outlet property="view" destination="iw0-PG-Dkp" id="fbE-tl-8aO"/>
+            </connections>
+        </viewController>
     </objects>
     <resources>
-        <image name="Editing-Align-Center-icon" width="128" height="128"/>
-        <image name="Editing-Align-Justify-icon" width="128" height="128"/>
-        <image name="Editing-Align-Left-icon" width="128" height="128"/>
-        <image name="Editing-Align-Right-icon" width="128" height="128"/>
-        <image name="Editing-Bold-icon" width="128" height="128"/>
-        <image name="Editing-Italic-icon" width="128" height="128"/>
-        <image name="Editing-Underline-icon" width="128" height="128"/>
-        <image name="Indent Filled-50" width="50" height="50"/>
-        <image name="List Filled-50" width="50" height="50"/>
-        <image name="Numbered List Filled-50" width="50" height="50"/>
-        <image name="Outdent Filled-50" width="50" height="50"/>
-        <image name="Quote-50" width="50" height="50"/>
         <image name="attachment-icon" width="128" height="128"/>
     </resources>
 </document>

@@ -119,6 +119,7 @@
 		8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */; };
 		8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */; };
 		8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */; };
+		8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */; };
 		80533ABB1B4114B700A0A67F /* Editing-Italic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB11B4114B700A0A67F /* Editing-Italic-icon.png */; };
@@ -396,6 +397,8 @@
 		8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMEditorToolBoxViewController.xib; sourceTree = "<group>"; };
 		8043D7E81B537FF700B07469 /* SMMessageEditorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorBase.h; sourceTree = "<group>"; };
 		8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorBase.m; sourceTree = "<group>"; };
+		8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorWebView.h; sourceTree = "<group>"; };
+		8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorWebView.m; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		80533AB01B4114B700A0A67F /* Editing-Underline-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Underline-icon.png"; sourceTree = "<group>"; };
@@ -605,6 +608,8 @@
 				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
 				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
 				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
+				8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */,
+				8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */,
 				007A735F1A57A95500A4D694 /* SMMessageFullDetailsViewController.h */,
 				007A73601A57A95500A4D694 /* SMMessageFullDetailsViewController.m */,
 				00A25BB817E10D1400D0FCB1 /* SMMessageListController.h */,
@@ -1029,6 +1034,7 @@
 				009742721957C78E00620145 /* SMMailbox.m in Sources */,
 				8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */,
 				00A681701A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m in Sources */,
+				8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,

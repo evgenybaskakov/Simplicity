@@ -12,6 +12,7 @@
 
 @class SMLabeledTokenFieldBoxView;
 @class SMLabeledTokenFieldBoxViewController;
+@class SMMessageEditorWebView;
 
 @interface SMMessageEditorWindowController : NSWindowController<NSWindowDelegate>
 
@@ -23,7 +24,7 @@
 @property IBOutlet NSView *bccBoxView;
 @property IBOutlet NSTextField *subjectField;
 @property IBOutlet NSView *editorToolBoxView;
-@property IBOutlet WebView *messageTextEditor;
+@property IBOutlet SMMessageEditorWebView *messageTextEditor;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;

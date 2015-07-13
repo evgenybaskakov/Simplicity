@@ -19,11 +19,11 @@
 #import "SMAttachmentsPanelViewController.h"
 #import "SMMessageEditorBase.h"
 #import "SMMessageEditorController.h"
+#import "SMMessageEditorWebView.h"
 #import "SMMessageEditorWindowController.h"
 
 @implementation SMMessageEditorWindowController {
     SMMessageEditorBase *_messageEditorBase;
-    NSTimer *_textMonitorTimer;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
@@ -108,13 +108,6 @@
 	[_ccBoxViewController.label setStringValue:@"Cc:"];
 	[_bccBoxViewController.label setStringValue:@"Bcc:"];
 	
-	[_messageTextEditor setFrameLoadDelegate:self];
-	[_messageTextEditor setPolicyDelegate:self];
-	[_messageTextEditor setResourceLoadDelegate:self];
-    [_messageTextEditor setEditingDelegate:self];
-	[_messageTextEditor setCanDrawConcurrently:YES];
-	[_messageTextEditor setEditable:YES];
-	
 	[_sendButton setEnabled:NO];
     
     // Editor toolbox
@@ -132,15 +125,9 @@
     
     _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
     _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
-
-    // Timer
-    
-    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
-    
-    // Editor
-
-    [self startEditor];
 }
+
+#pragma mark Web view control
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if (frame == [frame findFrameNamed:@"_top"]) {
@@ -192,24 +179,61 @@
     return YES;
 }
 
-- (NSString*)getFontTypeface:(NSInteger)index {
-    if(index < 0 || index >= _editorToolBoxViewController.fontSelectionButton.numberOfItems) {
-        return nil;
-    }
-    
-    NSAssert(index >= 0 && index < [SMMessageEditorBase fontNames].count, @"bad index %ld", index);
-    
-    return [SMMessageEditorBase fontNames][index];
+#pragma mark Drag and drop to HTML editor
+
+- (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
+    /*
+     NSLog(@"%s: TODO", __func__);
+     */
+    return WebDragDestinationActionEdit;
 }
 
-#pragma mark Editor
-
-- (void)startEditor {
-    [[_messageTextEditor mainFrame] loadHTMLString:[SMMessageEditorBase newMessageHTMLTemplate] baseURL:nil];
+- (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
+    //NSLog(@"%s: TODO", __func__);
+    return WebDragDestinationActionNone;
 }
 
-- (NSString*)getMessageText {
-    return [(DOMHTMLElement *)[[[_messageTextEditor mainFrame] DOMDocument] documentElement] outerHTML];
+- (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
+    /*
+     NSLog(@"%s: TODO", __func__);
+     
+     if ( [draggingInfo draggingSource] == nil )
+     {
+     NSPasteboard *pboard = [draggingInfo draggingPasteboard];
+     NSArray *classes = @[ [NSURL class] ];
+     NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES],
+     NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
+     NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
+     
+     if(fileURLs)
+     {
+     NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
+     NSMutableString* html = [NSMutableString string];
+     
+     for(NSString* filename in filenames) {
+     [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
+     }
+     
+     [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
+     [pboard setString: html forType: NSHTMLPboardType];
+     
+     NSLog(@"html: %@", html);
+     }
+     }
+     */
+}
+
+- (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
+    /*
+     NSLog(@"%s: TODO", __func__);
+     */
+}
+
+- (BOOL)webView:(WebView *)webView shouldInsertNode:(DOMNode *)node replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action {
+    /*
+     NSLog(@"%s: node '%@', range '%@'", __func__, node, range);
+     */
+    return YES;
 }
 
 - (void)textMonitorEvent:(NSTimer*)timer {
@@ -217,12 +241,12 @@
     // Basic text attributes.
     //
     NSString *textStateString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@""
-      "(document.queryCommandState('bold')? 1 : 0) |"
-      "(document.queryCommandState('italic')? 2 : 0) |"
-      "(document.queryCommandState('underline')? 4 : 0)"];
-                                 
+                                 "(document.queryCommandState('bold')? 1 : 0) |"
+                                 "(document.queryCommandState('italic')? 2 : 0) |"
+                                 "(document.queryCommandState('underline')? 4 : 0)"];
+    
     NSInteger textState = [textStateString integerValue];
-
+    
     if(textState & 1) {
         [_editorToolBoxViewController.toggleBoldButton setTransparent:NO];
     } else {
@@ -246,7 +270,7 @@
     //
     NSString *fontName = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('fontName')"];
     
-    NSString *currentFontName = [self getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
+    NSString *currentFontName = [_messageTextEditor getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
     if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
         NSNumber *fontIndexNum = [[SMMessageEditorBase fontNameToIndexMap] objectForKey:fontName];
         
@@ -276,16 +300,16 @@
     } else {
         [_editorToolBoxViewController.textSizeButton selectItemAtIndex:-1];
     }
-
+    
     //
     // Font color.
     //
     NSString *foreColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('foreColor')"];
     NSString *backColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('backColor')"];
-
+    
     NSColor *foreColor = [_messageEditorBase colorFromString:foreColorString];
     NSColor *backColor = [_messageEditorBase colorFromString:backColorString];
-
+    
     if(foreColor != nil && ![_editorToolBoxViewController.textForegroundColorSelector.color isEqualTo:foreColor]) {
         [_editorToolBoxViewController.textForegroundColorSelector setColor:foreColor];
     }
@@ -303,13 +327,11 @@
 //}
 
 - (void)windowWillClose:(NSNotification *)notification {
-    [_textMonitorTimer invalidate];
-    
-    _textMonitorTimer = nil;
+    [_messageTextEditor stopTextMonitor];
 }
 
 - (IBAction)sendAction:(id)sender {
-    NSString *messageText = [self getMessageText];
+    NSString *messageText = [_messageTextEditor getMessageText];
 
     [_messageEditorBase.messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 
@@ -317,7 +339,7 @@
 }
 
 - (IBAction)saveAction:(id)sender {
-    NSString *messageText = [self getMessageText];
+    NSString *messageText = [_messageTextEditor getMessageText];
     
     [_messageEditorBase.messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 }
@@ -329,80 +351,53 @@
 #pragma mark Text attrbitute actions
 
 - (void)toggleBold {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Bold')"];
+    [_messageTextEditor toggleBold];
 }
 
 - (void)toggleItalic {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Italic')"];
+    [_messageTextEditor toggleItalic];
 }
 
 - (void)toggleUnderline {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('Underline')"];
+    [_messageTextEditor toggleUnderline];
 }
 
 - (void)toggleBullets {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertUnorderedList')"];
+    [_messageTextEditor toggleBullets];
 }
 
 - (void)toggleNumbering {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertOrderedList')"];
+    [_messageTextEditor toggleNumbering];
 }
 
 - (void)toggleQuote {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('formatBlock', false, 'blockquote')"];
+    [_messageTextEditor toggleQuote];
 }
 
 - (void)shiftLeft {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('outdent')"];
+    [_messageTextEditor shiftLeft];
 }
 
 - (void)shiftRight {
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
+    [_messageTextEditor shiftRight];
 }
 
 - (void)selectFont {
-    NSString *fontName = [self getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
-
-    if(fontName != nil) {
-        [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
-    } else {
-        NSLog(@"%s: no selected font", __func__);
-    }
+    [_messageTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
 }
 
 - (void)setTextSize {
-    NSInteger index = [_editorToolBoxViewController.textSizeButton indexOfSelectedItem];
-    if(index < 0 || index >= _editorToolBoxViewController.textSizeButton.numberOfItems) {
-        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
-        return;
-    }
-
-    NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
-
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
+    [_messageTextEditor setTextSize:[_editorToolBoxViewController.textSizeButton indexOfSelectedItem]];
 }
 
 - (void)justifyText {
-    NSInteger index = [_editorToolBoxViewController.justifyTextControl selectedSegment];
-
-    NSString *justifyFunc = nil;
-    
-    switch(index) {
-        case 0: justifyFunc = @"justifyLeft"; break;
-        case 1: justifyFunc = @"justifyCenter"; break;
-        case 2: justifyFunc = @"justifyFull"; break;
-        case 3: justifyFunc = @"justifyRight"; break;
-        default: NSAssert(nil, @"Unexpected index %ld", index);
-    }
-    
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
+    [_messageTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
 }
 
 - (void)showSource {
-    NSString *messageText = [self getMessageText];
-
-    NSLog(@"%@", messageText);
+    [_messageTextEditor showSource];
 }
+///
 
 - (NSString*)colorToHex:(NSColor*)color {
     return [NSString stringWithFormat:@"#%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
@@ -500,63 +495,6 @@
     [view addConstraint:_messageEditorBottomConstraint];
     
     _attachmentsPanelShown = NO;
-}
-
-#pragma mark Drag and drop to HTML editor
-
-- (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
-/*
-    NSLog(@"%s: TODO", __func__);
-*/
-    return WebDragDestinationActionEdit;
-}
-
-- (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
-    //NSLog(@"%s: TODO", __func__);
-    return WebDragDestinationActionNone;
-}
-
-- (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
-/*
-    NSLog(@"%s: TODO", __func__);
-
-    if ( [draggingInfo draggingSource] == nil )
-    {
-        NSPasteboard *pboard = [draggingInfo draggingPasteboard];
-        NSArray *classes = @[ [NSURL class] ];
-        NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES],
-                                   NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
-        NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
-        
-        if(fileURLs)
-        {
-            NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
-            NSMutableString* html = [NSMutableString string];
-            
-            for(NSString* filename in filenames) {
-                [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
-            }
-            
-            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
-            [pboard setString: html forType: NSHTMLPboardType];
-            
-            NSLog(@"html: %@", html);
-        }
-    }
-*/
-}
-
-- (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
-/*
-    NSLog(@"%s: TODO", __func__);
-*/
-}
-
-- (BOOL)webView:(WebView *)webView shouldInsertNode:(DOMNode *)node replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action {
-/*
-    NSLog(@"%s: node '%@', range '%@'", __func__, node, range);
-*/
-    return YES;
 }
 
 @end

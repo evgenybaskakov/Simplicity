@@ -17,16 +17,13 @@
 #import "SMLabeledTokenFieldBoxViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
+#import "SMMessageEditorBase.h"
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWindowController.h"
 
-static NSArray *fontFamilies;
-static NSArray *fontNames;
-static NSDictionary *fontNameToIndexMap;
-
 @implementation SMMessageEditorWindowController {
+    SMMessageEditorBase *_messageEditorBase;
     NSTimer *_textMonitorTimer;
-    SMMessageEditorController *_messageEditorController;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
@@ -34,55 +31,7 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 - (void)awakeFromNib {
-	NSLog(@"%s", __func__);
-    
-    // Static data
-    
-    if(fontNameToIndexMap == nil) {
-        fontFamilies = [NSArray arrayWithObjects:
-                        @"Sans Serif",
-                        @"Serif",
-                        @"Fixed Width",
-                        @"Wide",
-                        @"Narrow",
-                        @"Comic Sans MS",
-                        @"Garamond",
-                        @"Georgia",
-                        @"Tahoma",
-                        @"Trebuchet MS",
-                        @"Verdana",
-                        nil];
-        
-        fontNames = [NSArray arrayWithObjects:
-                         @"Arial",
-                         @"Times New Roman",
-                         @"Courier New",
-                         @"Arial Black",
-                         @"Arial Narrow",
-                         @"Comic Sans MS",
-                         @"Times",
-                         @"Georgia",
-                         @"Tahoma",
-                         @"Trebuchet MS",
-                         @"Verdana",
-                         nil];
-        
-        NSMutableDictionary *mapping = [NSMutableDictionary dictionary];
-
-        for(NSUInteger i = 0; i < fontNames.count; i++) {
-            NSNumber *indexNum = [NSNumber numberWithUnsignedInteger:i];
-
-            [mapping setObject:indexNum forKey:fontNames[i]];
-            [mapping setObject:indexNum forKey:[NSString stringWithFormat:@"'%@'", fontNames[i]]];
-            [mapping setObject:indexNum forKey:[NSString stringWithFormat:@"\"%@\"", fontNames[i]]];
-        }
-        
-        fontNameToIndexMap = mapping;
-    }
-
-    // Controller
-    
-    _messageEditorController = [[SMMessageEditorController alloc] init];
+    _messageEditorBase = [[SMMessageEditorBase alloc] init];
 
 	// To
 	
@@ -172,7 +121,7 @@ static NSDictionary *fontNameToIndexMap;
     NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
 
     [_editorToolBoxViewController.fontSelectionButton removeAllItems];
-    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:fontFamilies];
+    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:[SMMessageEditorBase fontFamilies]];
     [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
     
     NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
@@ -248,31 +197,15 @@ static NSDictionary *fontNameToIndexMap;
         return nil;
     }
     
-    NSAssert(index >= 0 && index < fontNames.count, @"bad index %ld", index);
+    NSAssert(index >= 0 && index < [SMMessageEditorBase fontNames].count, @"bad index %ld", index);
     
-    return fontNames[index];
+    return [SMMessageEditorBase fontNames][index];
 }
 
 #pragma mark Editor
 
 - (void)startEditor {
-    NSString *htmlText = @""
-        "<html>"
-        "  <style>"
-        "    blockquote {"
-        "      display: block;"
-        "      margin-top: 0em;"
-        "      margin-bottom: 0em;"
-        "      margin-left: 0em;"
-        "      padding-left: 15px;"
-        "      border-left: 4px solid #ccf;"
-        "    }"
-        "  </style>"
-        "  <body id='SimplicityEditor'>"
-        "  </body>"
-        "</html>";
-
-    [[_messageTextEditor mainFrame] loadHTMLString:htmlText baseURL:nil];
+    [[_messageTextEditor mainFrame] loadHTMLString:[SMMessageEditorBase newMessageHTMLTemplate] baseURL:nil];
 }
 
 - (NSString*)getMessageText {
@@ -315,11 +248,11 @@ static NSDictionary *fontNameToIndexMap;
     
     NSString *currentFontName = [self getFontTypeface:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
     if(currentFontName == nil || ![currentFontName isEqualToString:fontName]) {
-        NSNumber *fontIndexNum = [fontNameToIndexMap objectForKey:fontName];
+        NSNumber *fontIndexNum = [[SMMessageEditorBase fontNameToIndexMap] objectForKey:fontName];
         
         if(fontIndexNum != nil) {
             NSUInteger fontIndex = [fontIndexNum unsignedIntegerValue];
-            NSAssert(fontIndex < fontFamilies.count, @"bad fontIndex %lu", fontIndex);
+            NSAssert(fontIndex < [SMMessageEditorBase fontFamilies].count, @"bad fontIndex %lu", fontIndex);
             
             [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:fontIndex];
         } else {
@@ -350,8 +283,8 @@ static NSDictionary *fontNameToIndexMap;
     NSString *foreColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('foreColor')"];
     NSString *backColorString = [_messageTextEditor stringByEvaluatingJavaScriptFromString:@"document.queryCommandValue('backColor')"];
 
-    NSColor *foreColor = [self colorFromString:foreColorString];
-    NSColor *backColor = [self colorFromString:backColorString];
+    NSColor *foreColor = [_messageEditorBase colorFromString:foreColorString];
+    NSColor *backColor = [_messageEditorBase colorFromString:backColorString];
 
     if(foreColor != nil && ![_editorToolBoxViewController.textForegroundColorSelector.color isEqualTo:foreColor]) {
         [_editorToolBoxViewController.textForegroundColorSelector setColor:foreColor];
@@ -359,30 +292,6 @@ static NSDictionary *fontNameToIndexMap;
     
     if(backColor != nil && ![_editorToolBoxViewController.textBackgroundColorSelector.color isEqualTo:backColor]) {
         [_editorToolBoxViewController.textBackgroundColorSelector setColor:backColor];
-    }
-}
-
-- (NSColor*)colorFromString:(NSString*)colorString {
-    NSScanner *colorScanner = [NSScanner scannerWithString:colorString];
-    [colorScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"0123456789"] intoString:nil];
-    
-    NSInteger r,g,b;
-    if([colorScanner scanInteger:&r] && [colorScanner scanString:@", " intoString:nil] &&
-       [colorScanner scanInteger:&g] && [colorScanner scanString:@", " intoString:nil] &&
-       [colorScanner scanInteger:&b])
-    {
-        NSInteger a = 255;
-        if([colorString characterAtIndex:3] == 'a') {
-            if(![colorScanner scanString:@", " intoString:nil] || ![colorScanner scanInteger:&a]) {
-                a = 255;
-            }
-        }
-
-        return [NSColor colorWithRed:(CGFloat)r/255 green:(CGFloat)g/255 blue:(CGFloat)b/255 alpha:(CGFloat)a/255];
-    }
-    else
-    {
-        return nil;
     }
 }
 
@@ -402,7 +311,7 @@ static NSDictionary *fontNameToIndexMap;
 - (IBAction)sendAction:(id)sender {
     NSString *messageText = [self getMessageText];
 
-    [_messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+    [_messageEditorBase.messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 
 	[self close];
 }
@@ -410,7 +319,7 @@ static NSDictionary *fontNameToIndexMap;
 - (IBAction)saveAction:(id)sender {
     NSString *messageText = [self getMessageText];
     
-    [_messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+    [_messageEditorBase.messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 }
 
 - (IBAction)attachAction:(id)sender {
@@ -566,7 +475,7 @@ static NSDictionary *fontNameToIndexMap;
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
         
-        [_attachmentsPanelViewController enableEditing:_messageEditorController];
+        [_attachmentsPanelViewController enableEditing:_messageEditorBase.messageEditorController];
     }
     
     [view addSubview:_attachmentsPanelViewController.view];

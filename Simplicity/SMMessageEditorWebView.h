@@ -21,8 +21,13 @@
 - (void)shiftLeft;
 - (void)shiftRight;
 - (void)selectFont:(NSInteger)index;
-- (void)setTextSize:(NSInteger)index;
+- (void)setTextSize:(NSInteger)textSize;
 - (void)justifyText:(NSInteger)index;
+- (void)setTextForegroundColor:(NSColor*)color;
+- (void)setTextBackgroundColor:(NSColor*)color;
 - (void)showSource;
+
+// TODO: remove
+- (NSString*)getFontTypeface:(NSInteger)index;
 
 @end

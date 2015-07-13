@@ -97,14 +97,7 @@
     }
 }
 
-- (void)setTextSize:(NSInteger)index {
-    if(index < 0 || index >= _editorToolBoxViewController.textSizeButton.numberOfItems) {
-        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
-        return;
-    }
-    
-    NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
-    
+- (void)setTextSize:(NSInteger)textSize {
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
 }
 
@@ -120,6 +113,22 @@
     }
     
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
+}
+
+- (NSString*)colorToHex:(NSColor*)color {
+    return [NSString stringWithFormat:@"#%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
+}
+
+- (void)setTextForegroundColor:(NSColor*)color {
+    NSString *hexString = [self colorToHex:color];
+    
+    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', false, '%@')", hexString]];
+}
+
+- (void)setTextBackgroundColor:(NSColor*)color {
+    NSString *hexString = [self colorToHex:color];
+    
+    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', false, '%@')", hexString]];
 }
 
 - (void)showSource {

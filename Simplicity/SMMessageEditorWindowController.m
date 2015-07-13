@@ -387,7 +387,16 @@
 }
 
 - (void)setTextSize {
-    [_messageTextEditor setTextSize:[_editorToolBoxViewController.textSizeButton indexOfSelectedItem]];
+    NSInteger index = [_editorToolBoxViewController.textSizeButton indexOfSelectedItem];
+
+    if(index < 0 || index >= _editorToolBoxViewController.textSizeButton.numberOfItems) {
+        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
+        return;
+    }
+    
+    NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
+    
+    [_messageTextEditor setTextSize:textSize];
 }
 
 - (void)justifyText {
@@ -397,26 +406,13 @@
 - (void)showSource {
     [_messageTextEditor showSource];
 }
-///
-
-- (NSString*)colorToHex:(NSColor*)color {
-    return [NSString stringWithFormat:@"#%02X%02X%02X", (int)(color.redComponent * 0xFF), (int)(color.greenComponent * 0xFF), (int)(color.blueComponent * 0xFF)];
-}
 
 - (void)setTextForegroundColor {
-    NSString *hexString = [self colorToHex:_editorToolBoxViewController.textForegroundColorSelector.color];
-
-    NSLog(@"%s: %@", __func__, hexString);
-
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', false, '%@')", hexString]];
+    [_messageTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
 }
 
 - (void)setTextBackgroundColor {
-    NSString *hexString = [self colorToHex:_editorToolBoxViewController.textBackgroundColorSelector.color];
-    
-    NSLog(@"%s: %@", __func__, hexString);
-    
-    [_messageTextEditor stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', false, '%@')", hexString]];
+    [_messageTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
 }
 
 #pragma mark UI elements collaboration

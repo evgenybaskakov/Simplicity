@@ -8,7 +8,13 @@
 
 #import <WebKit/WebKit.h>
 
+@class SMMessageEditorBase;
+@class SMEditorToolBoxViewController;
+
 @interface SMMessageEditorWebView : WebView
+
+@property __weak SMMessageEditorBase *messageEditorBase;
+@property __weak SMEditorToolBoxViewController *editorToolBoxViewController;
 
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;

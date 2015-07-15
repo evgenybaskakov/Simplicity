@@ -15,6 +15,7 @@
 #import "SMMessageThreadInfoViewController.h"
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
+#import "SMMessageEditorViewController.h"
 #import "SMFlippedView.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -28,6 +29,7 @@ static const CGFloat CELL_SPACING = -1;
 
 @implementation SMMessageThreadViewController {
 	SMMessageThreadInfoViewController *_messageThreadInfoViewController;
+    SMMessageEditorViewController *_messageEditorViewController;
 	NSMutableArray *_cells;
 	NSView *_contentView;
 	Boolean _findContentsActive;
@@ -39,6 +41,7 @@ static const CGFloat CELL_SPACING = -1;
 	NSUInteger _firstVisibleCell, _lastVisibleCell;
 	Boolean _cellsArranged;
 	Boolean _cellsUpdateStarted;
+    Boolean _composingMessageReply;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -57,7 +60,8 @@ static const CGFloat CELL_SPACING = -1;
 		_cells = [NSMutableArray new];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
-	}
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
+    }
 	
 	return self;
 }
@@ -655,6 +659,37 @@ static const CGFloat CELL_SPACING = -1;
 	} else {
 		[super keyDown:theEvent];
 	}
+}
+
+#pragma mark Message reply composition
+
+- (void)composeMessageReply:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
+
+    NSUInteger cellIdx = 0;
+    for(; cellIdx < _cells.count; cellIdx++) {
+        SMMessageThreadCell *cell = _cells[cellIdx];
+        
+        if(cell.viewController == cellViewControllerToReply) {
+            break;
+        }
+    }
+    
+    NSAssert(cellIdx <= _cells.count, @"bad cell idx %lu", cellIdx);
+    
+    if(cellIdx == _cells.count) {
+        NSLog(@"%s: cell to reply not found", __func__);
+        return;
+    }
+    
+    NSAssert(!_composingMessageReply, @"TODO: already composing a reply");
+    
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil];
+    NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
+
+    [_contentView addSubview:[_messageEditorViewController view]];
+    
 }
 
 @end

@@ -491,7 +491,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)composeReply:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)showMessageActions:(id)sender {

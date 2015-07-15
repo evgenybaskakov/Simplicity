@@ -7,7 +7,7 @@
 //
 
 #import "SMColorWellWithIcon.h"
-#import "SMMessageEditorWindowController.h"
+#import "SMMessageEditorViewController.h"
 #import "SMEditorToolBoxViewController.h"
 
 @implementation SMEditorToolBoxViewController
@@ -23,59 +23,59 @@
 #pragma mark Text attrbitute actions
 
 - (IBAction)toggleBoldAction:(id)sender {
-    [_messageEditorWindowController toggleBold];
+    [_messageEditorViewController toggleBold];
 }
 
 - (IBAction)toggleItalicAction:(id)sender {
-    [_messageEditorWindowController toggleItalic];
+    [_messageEditorViewController toggleItalic];
 }
 
 - (IBAction)toggleUnderlineAction:(id)sender {
-    [_messageEditorWindowController toggleUnderline];
+    [_messageEditorViewController toggleUnderline];
 }
 
 - (IBAction)toggleBulletsAction:(id)sender {
-    [_messageEditorWindowController toggleBullets];
+    [_messageEditorViewController toggleBullets];
 }
 
 - (IBAction)toggleNumberingAction:(id)sender {
-    [_messageEditorWindowController toggleNumbering];
+    [_messageEditorViewController toggleNumbering];
 }
 
 - (IBAction)toggleQuoteAction:(id)sender {
-    [_messageEditorWindowController toggleQuote];
+    [_messageEditorViewController toggleQuote];
 }
 
 - (IBAction)shiftLeftAction:(id)sender {
-    [_messageEditorWindowController shiftLeft];
+    [_messageEditorViewController shiftLeft];
 }
 
 - (IBAction)shiftRightAction:(id)sender {
-    [_messageEditorWindowController shiftRight];
+    [_messageEditorViewController shiftRight];
 }
 
 - (IBAction)selectFontAction:(id)sender {
-    [_messageEditorWindowController selectFont];
+    [_messageEditorViewController selectFont];
 }
 
 - (IBAction)setTextSizeAction:(id)sender {
-    [_messageEditorWindowController setTextSize];
+    [_messageEditorViewController setTextSize];
 }
 
 - (IBAction)justifyTextAction:(id)sender {
-    [_messageEditorWindowController justifyText];
+    [_messageEditorViewController justifyText];
 }
 
 - (IBAction)showSourceAction:(id)sender {
-    [_messageEditorWindowController showSource];
+    [_messageEditorViewController showSource];
 }
 
 - (IBAction)setTextForegroundColorAction:(id)sender {
-    [_messageEditorWindowController setTextForegroundColor];
+    [_messageEditorViewController setTextForegroundColor];
 }
 
 - (IBAction)setTextBackgroundColorAction:(id)sender {
-    [_messageEditorWindowController setTextBackgroundColor];
+    [_messageEditorViewController setTextBackgroundColor];
 }
 
 @end

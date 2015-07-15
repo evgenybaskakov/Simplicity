@@ -136,6 +136,8 @@
 		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
+		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
+		8062FEF11B54D9B5007D7140 /* SMMessageEditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8062FEEF1B54D9B5007D7140 /* SMMessageEditorViewController.xib */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -416,6 +418,9 @@
 		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
+		8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorViewController.h; sourceTree = "<group>"; };
+		8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorViewController.m; sourceTree = "<group>"; };
+		8062FEEF1B54D9B5007D7140 /* SMMessageEditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageEditorViewController.xib; sourceTree = "<group>"; };
 		8081A7891B27F65B0081727C /* SMOpAppendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAppendMessage.h; sourceTree = "<group>"; };
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
@@ -606,6 +611,8 @@
 				8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */,
 				8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */,
 				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
+				8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */,
+				8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */,
 				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
 				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
 				8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */,
@@ -696,6 +703,7 @@
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				004A64201AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
+				8062FEEF1B54D9B5007D7140 /* SMMessageEditorViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
@@ -924,6 +932,7 @@
 				80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */,
 				002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
+				8062FEF11B54D9B5007D7140 /* SMMessageEditorViewController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
 				80533ABA1B4114B700A0A67F /* Editing-Underline-icon.png in Resources */,
 				80533ABF1B4114B700A0A67F /* Editing-Bold-icon.png in Resources */,
@@ -1029,6 +1038,7 @@
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,
 				00ED318117F88DA700B04F5B /* SMAttachmentStorage.m in Sources */,
+				8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */,
 				00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */,
 				005F9A3B1AAD46500022EDEF /* SMMailboxTableView.m in Sources */,
 				009742721957C78E00620145 /* SMMailbox.m in Sources */,

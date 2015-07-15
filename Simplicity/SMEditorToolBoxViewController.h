@@ -8,12 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class SMMessageEditorWindowController;
+@class SMMessageEditorViewController;
 @class SMColorWellWithIcon;
 
 @interface SMEditorToolBoxViewController : NSViewController
 
-@property __weak SMMessageEditorWindowController *messageEditorWindowController;
+@property __weak SMMessageEditorViewController *messageEditorViewController;
 
 @property IBOutlet NSButton *toggleBoldButton;
 @property IBOutlet NSButton *toggleItalicButton;

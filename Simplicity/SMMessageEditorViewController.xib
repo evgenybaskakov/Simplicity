@@ -24,11 +24,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <view id="awl-0X-WVJ">
-            <rect key="frame" x="0.0" y="0.0" width="680" height="479"/>
+            <rect key="frame" x="0.0" y="0.0" width="679" height="478"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="nQY-1U-v3Z" userLabel="Header Box">
-                    <rect key="frame" x="-1" y="449" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="448" width="681" height="30"/>
                     <view key="contentView">
                         <rect key="frame" x="1" y="1" width="679" height="28"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -85,25 +85,25 @@
                     <color key="fillColor" red="0.34868213380000002" green="0.34868213380000002" blue="0.34868213380000002" alpha="1" colorSpace="calibratedRGB"/>
                 </box>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="WBj-Jp-pZI" userLabel="To Box">
-                    <rect key="frame" x="-1" y="420" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="419" width="681" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" placeholder="YES" id="ZDV-VG-9zM"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Rhr-tu-1Ab" userLabel="Cc Box">
-                    <rect key="frame" x="-1" y="391" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="390" width="681" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" placeholder="YES" id="aEa-cM-xqu"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="JYx-A9-5LX" userLabel="Bcc Box">
-                    <rect key="frame" x="-1" y="362" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="361" width="681" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" placeholder="YES" id="qA5-jN-eln"/>
                     </constraints>
                 </customView>
                 <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="t8p-rB-0qh" userLabel="Editor Tool Box">
-                    <rect key="frame" x="-1" y="304" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="303" width="681" height="30"/>
                     <view key="contentView">
                         <rect key="frame" x="1" y="1" width="679" height="28"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -115,7 +115,7 @@
                     <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 </box>
                 <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="105-Hl-i3x" userLabel="Subject Box">
-                    <rect key="frame" x="-1" y="333" width="681" height="30"/>
+                    <rect key="frame" x="-1" y="332" width="681" height="30"/>
                     <view key="contentView">
                         <rect key="frame" x="1" y="1" width="679" height="28"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -154,7 +154,7 @@
                     <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 </box>
                 <webView maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdG-T3-iga" customClass="SMMessageEditorWebView">
-                    <rect key="frame" x="0.0" y="0.0" width="680" height="303"/>
+                    <rect key="frame" x="-1" y="0.0" width="681" height="303"/>
                     <constraints>
                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="303" id="sRs-Um-Lv7"/>
                     </constraints>
@@ -164,28 +164,28 @@
                 </webView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="WBj-Jp-pZI" secondAttribute="trailing" id="029-fE-JRh"/>
-                <constraint firstItem="rdG-T3-iga" firstAttribute="top" secondItem="t8p-rB-0qh" secondAttribute="bottom" constant="1" id="15B-gA-Ekg"/>
+                <constraint firstAttribute="trailing" secondItem="WBj-Jp-pZI" secondAttribute="trailing" constant="-1" id="029-fE-JRh"/>
+                <constraint firstItem="rdG-T3-iga" firstAttribute="top" secondItem="t8p-rB-0qh" secondAttribute="bottom" id="15B-gA-Ekg"/>
                 <constraint firstItem="JYx-A9-5LX" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="2Ny-KA-e1u"/>
                 <constraint firstItem="105-Hl-i3x" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="69M-6a-Cy7"/>
-                <constraint firstAttribute="trailing" secondItem="105-Hl-i3x" secondAttribute="trailing" id="8wK-eU-fzu"/>
+                <constraint firstAttribute="trailing" secondItem="105-Hl-i3x" secondAttribute="trailing" constant="-1" id="8wK-eU-fzu"/>
                 <constraint firstItem="Rhr-tu-1Ab" firstAttribute="top" secondItem="WBj-Jp-pZI" secondAttribute="bottom" constant="-1" id="AwJ-sn-HdU"/>
-                <constraint firstAttribute="trailing" secondItem="nQY-1U-v3Z" secondAttribute="trailing" id="BTq-Rq-ovO"/>
+                <constraint firstAttribute="trailing" secondItem="nQY-1U-v3Z" secondAttribute="trailing" constant="-1" id="BTq-Rq-ovO"/>
                 <constraint firstItem="nQY-1U-v3Z" firstAttribute="top" secondItem="awl-0X-WVJ" secondAttribute="top" id="IFP-FP-Iit"/>
                 <constraint firstItem="WBj-Jp-pZI" firstAttribute="top" secondItem="nQY-1U-v3Z" secondAttribute="bottom" constant="-1" id="KO6-e6-l86"/>
                 <constraint firstItem="105-Hl-i3x" firstAttribute="top" secondItem="JYx-A9-5LX" secondAttribute="bottom" constant="-1" id="N6z-lO-NbU"/>
                 <constraint firstItem="nQY-1U-v3Z" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="P7J-ec-zYE"/>
                 <constraint firstItem="JYx-A9-5LX" firstAttribute="top" secondItem="Rhr-tu-1Ab" secondAttribute="bottom" constant="-1" id="Pb3-Cg-xt6"/>
-                <constraint firstItem="rdG-T3-iga" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" id="Rqc-1K-s9M"/>
-                <constraint firstAttribute="trailing" secondItem="JYx-A9-5LX" secondAttribute="trailing" id="VhZ-s1-Qul"/>
+                <constraint firstItem="rdG-T3-iga" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="Rqc-1K-s9M"/>
+                <constraint firstAttribute="trailing" secondItem="JYx-A9-5LX" secondAttribute="trailing" constant="-1" id="VhZ-s1-Qul"/>
                 <constraint firstItem="Rhr-tu-1Ab" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="XqM-YV-0uz"/>
                 <constraint firstItem="t8p-rB-0qh" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="Ywy-Ur-dti"/>
                 <constraint firstItem="WBj-Jp-pZI" firstAttribute="leading" secondItem="awl-0X-WVJ" secondAttribute="leading" constant="-1" id="fOk-rJ-mRS"/>
-                <constraint firstAttribute="trailing" secondItem="rdG-T3-iga" secondAttribute="trailing" id="k9T-gI-0fB"/>
+                <constraint firstAttribute="trailing" secondItem="rdG-T3-iga" secondAttribute="trailing" constant="-1" id="k9T-gI-0fB"/>
                 <constraint firstAttribute="bottom" secondItem="rdG-T3-iga" secondAttribute="bottom" id="ld5-mh-r3f"/>
-                <constraint firstAttribute="trailing" secondItem="Rhr-tu-1Ab" secondAttribute="trailing" id="rvk-eW-nW3"/>
+                <constraint firstAttribute="trailing" secondItem="Rhr-tu-1Ab" secondAttribute="trailing" constant="-1" id="rvk-eW-nW3"/>
                 <constraint firstItem="t8p-rB-0qh" firstAttribute="top" secondItem="105-Hl-i3x" secondAttribute="bottom" constant="-1" id="sWH-CN-Kqa"/>
-                <constraint firstAttribute="trailing" secondItem="t8p-rB-0qh" secondAttribute="trailing" id="ygs-uC-9w6"/>
+                <constraint firstAttribute="trailing" secondItem="t8p-rB-0qh" secondAttribute="trailing" constant="-1" id="ygs-uC-9w6"/>
             </constraints>
         </view>
     </objects>

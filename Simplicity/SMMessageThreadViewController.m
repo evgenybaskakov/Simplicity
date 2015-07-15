@@ -20,6 +20,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
+static const CGFloat EMBEDDED_EDITOR_HEIGHT = 300; // TODO
 static const CGFloat CELL_SPACING = -1;
 
 @interface SMMessageThreadViewController()
@@ -267,6 +268,11 @@ static const CGFloat CELL_SPACING = -1;
 	NSAssert(_cells.count > 0, @"no cells");
 
 	CGFloat fullHeight = 0;
+    
+    if(_messageEditorViewController != nil) {
+        fullHeight += EMBEDDED_EDITOR_HEIGHT;
+        fullHeight += CELL_SPACING;
+    }
 
 	if(_cells.count > 1) {
 		fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
@@ -279,7 +285,7 @@ static const CGFloat CELL_SPACING = -1;
 				fullHeight += CELL_SPACING;
 		}
 	} else {
-		fullHeight = _contentView.frame.size.height;
+		fullHeight += _contentView.frame.size.height;
 	}
 
 	_contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
@@ -295,6 +301,17 @@ static const CGFloat CELL_SPACING = -1;
 	infoView.autoresizingMask = NSViewWidthSizable;
 
 	CGFloat ypos = infoView.bounds.size.height + CELL_SPACING;
+    
+    if(_messageEditorViewController != nil) {
+        NSView *subview = _messageEditorViewController.view;
+        
+        subview.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+        subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, EMBEDDED_EDITOR_HEIGHT);
+
+        ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
+    }
 	
 	for(NSInteger i = 0; i < _cells.count; i++) {
 		SMMessageThreadCell *cell = _cells[i];
@@ -688,8 +705,9 @@ static const CGFloat CELL_SPACING = -1;
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil];
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 
-    [_contentView addSubview:[_messageEditorViewController view]];
-    
+    [_contentView addSubview:[_messageEditorViewController view]];    
+
+    [self updateCellFrames];
 }
 
 @end

@@ -47,5 +47,6 @@
 - (void)showSource;
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
+- (void)stopTextMonitor;
 
 @end

@@ -149,7 +149,7 @@
     
     [_messageEditorBase.messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
     
-//###TODO!!!    [self close];
+    [[[self view] window] close];
 }
 
 - (IBAction)saveAction:(id)sender {
@@ -305,6 +305,12 @@
     [view addConstraint:_messageEditorBottomConstraint];
     
     _attachmentsPanelShown = NO;
+}
+
+#pragma mark Misc
+
+- (void)stopTextMonitor {
+    [_messageTextEditor stopTextMonitor];
 }
 
 @end

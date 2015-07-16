@@ -89,6 +89,14 @@ static const CGFloat CELL_SPACING = -1;
 - (void)setMessageThread:(SMMessageThread*)messageThread {
 	if(_currentMessageThread == messageThread)
 		return;
+    
+    if(_messageEditorViewController != nil) {
+        // TODO: save draft, etc.
+        // TODO: it looks like that's not enough (unreg token notifi. as well)
+        
+        [_messageEditorViewController.view removeFromSuperview];
+        _messageEditorViewController = nil;
+    }
 
 	_currentMessageThread = messageThread;
 
@@ -274,7 +282,7 @@ static const CGFloat CELL_SPACING = -1;
         fullHeight += CELL_SPACING;
     }
 
-	if(_cells.count > 1) {
+	if(_cells.count > 1 || _messageEditorViewController != nil) {
 		fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
 		
 		for(NSInteger i = 0; i < _cells.count; i++) {
@@ -291,9 +299,10 @@ static const CGFloat CELL_SPACING = -1;
 	_contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
 	_contentView.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
 
-	if(_cells.count == 1)
+    if(_cells.count == 1 && _messageEditorViewController == nil) {
 		_contentView.autoresizingMask |= NSViewHeightSizable;
-	
+    }
+
 	NSView *infoView = [_messageThreadInfoViewController view];
 	NSAssert(infoView != nil, @"no info view");
 
@@ -308,7 +317,7 @@ static const CGFloat CELL_SPACING = -1;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
         
         subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
-        subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, EMBEDDED_EDITOR_HEIGHT);
+        subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, 400); // TODO: implement and then use subview.intrinsicContentSize.height
 
         ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
     }
@@ -319,7 +328,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		subview.translatesAutoresizingMaskIntoConstraints = YES;
 
-		if(_cells.count == 1) {
+		if(_cells.count == 1 && _messageEditorViewController == nil) {
 			subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 			subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, fullHeight);
 		} else {
@@ -702,7 +711,8 @@ static const CGFloat CELL_SPACING = -1;
     
     NSAssert(!_composingMessageReply, @"TODO: already composing a reply");
     
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:YES];
+
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 
     [_contentView addSubview:[_messageEditorViewController view]];    

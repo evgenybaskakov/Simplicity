@@ -29,6 +29,10 @@
 @property SMLabeledTokenFieldBoxViewController *ccBoxViewController;
 @property SMLabeledTokenFieldBoxViewController *bccBoxViewController;
 
+@property Boolean embedded;
+
+- (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded;
+
 - (IBAction)sendAction:(id)sender;
 - (IBAction)saveAction:(id)sender;
 - (IBAction)attachAction:(id)sender;

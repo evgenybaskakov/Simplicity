@@ -30,10 +30,12 @@
     Boolean _attachmentsPanelShown;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if(self) {
+        _embedded = embedded;
+
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
         
         // To

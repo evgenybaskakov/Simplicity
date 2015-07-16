@@ -155,9 +155,6 @@
                 </box>
                 <webView maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rdG-T3-iga" customClass="SMMessageEditorWebView">
                     <rect key="frame" x="-1" y="0.0" width="681" height="303"/>
-                    <constraints>
-                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="303" id="sRs-Um-Lv7"/>
-                    </constraints>
                     <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                         <nil key="identifier"/>
                     </webPreferences>

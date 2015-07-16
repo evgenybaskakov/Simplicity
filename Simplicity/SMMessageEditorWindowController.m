@@ -14,7 +14,8 @@
 }
 
 - (void)awakeFromNib {
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:NO];
+
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 }
 

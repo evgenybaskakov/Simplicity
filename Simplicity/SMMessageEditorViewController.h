@@ -17,6 +17,7 @@
 @property IBOutlet NSView *toBoxView;
 @property IBOutlet NSView *ccBoxView;
 @property IBOutlet NSView *bccBoxView;
+@property IBOutlet NSView *subjectView;
 @property IBOutlet NSTextField *subjectField;
 @property IBOutlet NSView *editorToolBoxView;
 @property IBOutlet SMMessageEditorWebView *messageTextEditor;

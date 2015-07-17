@@ -316,7 +316,7 @@ static const CGFloat CELL_SPACING = -1;
 	NSView *infoView = [_messageThreadInfoViewController view];
 	NSAssert(infoView != nil, @"no info view");
 
-	infoView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, [SMMessageThreadInfoViewController infoHeaderHeight]);
+	infoView.frame = NSMakeRect(-1, 0, _contentView.frame.size.width+2, [SMMessageThreadInfoViewController infoHeaderHeight]);
 	infoView.autoresizingMask = NSViewWidthSizable;
 
 	CGFloat ypos = infoView.bounds.size.height + CELL_SPACING;
@@ -330,6 +330,9 @@ static const CGFloat CELL_SPACING = -1;
             editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
             
             editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+            
+            // Note that the editor width doesn't have to exceed the content view width,
+            // because it already does.
             editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, EMBEDDED_EDITOR_HEIGHT); // TODO: implement and then use subview.intrinsicContentSize.height
             
             ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
@@ -340,10 +343,10 @@ static const CGFloat CELL_SPACING = -1;
 
 		if(_cells.count == 1 && _messageEditorViewController == nil) {
 			subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-			subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, fullHeight);
+			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
 		} else {
 			subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
-			subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, cell.viewController.height);
+			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.height);
 		}
 		
 		ypos += cell.viewController.height + CELL_SPACING;
@@ -513,7 +516,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		if(cell.viewController.view.superview == nil) {
 			if(_cells.count > 1) {
-				[cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width, cell.viewController.height)];
+				[cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.height)];
 			}
 			
 			[_contentView addSubview:cell.viewController.view];

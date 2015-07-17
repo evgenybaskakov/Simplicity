@@ -20,7 +20,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
-static const CGFloat EMBEDDED_EDITOR_HEIGHT = 300; // TODO
+static const CGFloat EMBEDDED_EDITOR_HEIGHT = 400; // TODO
 static const CGFloat CELL_SPACING = -1;
 
 @interface SMMessageThreadViewController()
@@ -31,6 +31,7 @@ static const CGFloat CELL_SPACING = -1;
 @implementation SMMessageThreadViewController {
 	SMMessageThreadInfoViewController *_messageThreadInfoViewController;
     SMMessageEditorViewController *_messageEditorViewController;
+    SMMessageThreadCellViewController *_cellViewControllerToReply;
 	NSMutableArray *_cells;
 	NSView *_contentView;
 	Boolean _findContentsActive;
@@ -95,7 +96,9 @@ static const CGFloat CELL_SPACING = -1;
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
         [_messageEditorViewController.view removeFromSuperview];
+
         _messageEditorViewController = nil;
+        _cellViewControllerToReply = nil;
     }
 
 	_currentMessageThread = messageThread;
@@ -210,6 +213,10 @@ static const CGFloat CELL_SPACING = -1;
 			
 			// TODO: use the sorting info for fast search
 			if(![newMessages containsObject:cell.message]) {
+                if(_cellViewControllerToReply == cell.viewController) {
+                    NSAssert(nil, @"%s:%d: TODO: remove the currently composed reply????", __func__, __LINE__);
+                }
+
 				[cell.viewController.view removeFromSuperview];
 				[_cells removeObjectAtIndex:i];
 
@@ -311,21 +318,21 @@ static const CGFloat CELL_SPACING = -1;
 
 	CGFloat ypos = infoView.bounds.size.height + CELL_SPACING;
     
-    if(_messageEditorViewController != nil) {
-        NSView *subview = _messageEditorViewController.view;
-        
-        subview.translatesAutoresizingMaskIntoConstraints = YES;
-        
-        subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
-        subview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, 400); // TODO: implement and then use subview.intrinsicContentSize.height
-
-        ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
-    }
-	
 	for(NSInteger i = 0; i < _cells.count; i++) {
 		SMMessageThreadCell *cell = _cells[i];
-		NSView *subview = cell.viewController.view;
+        
+        NSAssert(cell.viewController != nil, @"cell.viewController is nil");
+        if(cell.viewController == _cellViewControllerToReply) {
+            NSView *editorSubview = _messageEditorViewController.view;
+            editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
+            
+            editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+            editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, EMBEDDED_EDITOR_HEIGHT); // TODO: implement and then use subview.intrinsicContentSize.height
+            
+            ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
+        }
 
+		NSView *subview = cell.viewController.view;
 		subview.translatesAutoresizingMaskIntoConstraints = YES;
 
 		if(_cells.count == 1 && _messageEditorViewController == nil) {
@@ -708,7 +715,9 @@ static const CGFloat CELL_SPACING = -1;
         NSLog(@"%s: cell to reply not found", __func__);
         return;
     }
-    
+   
+    _cellViewControllerToReply = cellViewControllerToReply;
+
     NSAssert(!_composingMessageReply, @"TODO: already composing a reply");
     
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:YES];

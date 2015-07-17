@@ -43,7 +43,6 @@ static const CGFloat CELL_SPACING = -1;
 	NSUInteger _firstVisibleCell, _lastVisibleCell;
 	Boolean _cellsArranged;
 	Boolean _cellsUpdateStarted;
-    Boolean _composingMessageReply;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -87,19 +86,23 @@ static const CGFloat CELL_SPACING = -1;
 	return messageThreadCellViewController;
 }
 
-- (void)setMessageThread:(SMMessageThread*)messageThread {
-	if(_currentMessageThread == messageThread)
-		return;
-    
+- (void)closeEmbeddedEditor {
     if(_messageEditorViewController != nil) {
         // TODO: save draft, etc.
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
         [_messageEditorViewController.view removeFromSuperview];
-
+        
         _messageEditorViewController = nil;
         _cellViewControllerToReply = nil;
     }
+}
+
+- (void)setMessageThread:(SMMessageThread*)messageThread {
+	if(_currentMessageThread == messageThread)
+		return;
+    
+    [self closeEmbeddedEditor];
 
 	_currentMessageThread = messageThread;
 
@@ -715,16 +718,14 @@ static const CGFloat CELL_SPACING = -1;
         NSLog(@"%s: cell to reply not found", __func__);
         return;
     }
-   
-    _cellViewControllerToReply = cellViewControllerToReply;
 
-    NSAssert(!_composingMessageReply, @"TODO: already composing a reply");
+    [self closeEmbeddedEditor]; // Close the currently edited message; it should save draft, etc.
     
+    _cellViewControllerToReply = cellViewControllerToReply;
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:YES];
 
-    NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
-
-    [_contentView addSubview:[_messageEditorViewController view]];    
+    NSAssert(_messageEditorViewController.view != nil, @"_messageEditorViewController.view is nil");
+    [_contentView addSubview:_messageEditorViewController.view];
 
     [self updateCellFrames];
 }

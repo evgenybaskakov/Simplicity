@@ -326,6 +326,12 @@ static const CGFloat CELL_SPACING = -1;
         
         NSAssert(cell.viewController != nil, @"cell.viewController is nil");
         if(cell.viewController == _cellViewControllerToReply) {
+            if(i == 0) {
+                // Avoid negative overlapping between the editor, because its frame
+                // is already borderless.
+                ypos -= CELL_SPACING;
+            }
+
             NSView *editorSubview = _messageEditorViewController.view;
             editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
             

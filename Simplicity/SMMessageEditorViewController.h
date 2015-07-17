@@ -20,6 +20,30 @@
 @property IBOutlet NSTextField *subjectField;
 @property IBOutlet NSView *editorToolBoxView;
 @property IBOutlet SMMessageEditorWebView *messageTextEditor;
+
+@property IBOutlet NSLayoutConstraint *toTopConstraint;
+@property IBOutlet NSLayoutConstraint *toLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *toTrailingConstraint;
+
+@property IBOutlet NSLayoutConstraint *ccTopConstraint;
+@property IBOutlet NSLayoutConstraint *ccLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *ccTrailingConstraint;
+
+@property IBOutlet NSLayoutConstraint *bccTopConstraint;
+@property IBOutlet NSLayoutConstraint *bccLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *bccTrailingConstraint;
+
+@property IBOutlet NSLayoutConstraint *subjectTopConstraint;
+@property IBOutlet NSLayoutConstraint *subjectLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *subjectTrailingConstraint;
+
+@property IBOutlet NSLayoutConstraint *toolboxTopConstraint;
+@property IBOutlet NSLayoutConstraint *toolboxLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *toolboxTrailingConstraint;
+
+@property IBOutlet NSLayoutConstraint *messageEditorTopConstraint;
+@property IBOutlet NSLayoutConstraint *messageEditorLeadingConstraint;
+@property IBOutlet NSLayoutConstraint *messageEditorTrailingConstraint;
 @property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
 
 @property SMLabeledTokenFieldBoxViewController *toBoxViewController;

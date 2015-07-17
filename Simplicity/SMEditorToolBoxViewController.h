@@ -15,6 +15,9 @@
 
 @property __weak SMMessageEditorViewController *messageEditorViewController;
 
+@property IBOutlet NSButton *sendButton;
+//@property IBOutlet NSButton *saveButton;
+@property IBOutlet NSButton *attachButton;
 @property IBOutlet NSButton *toggleBoldButton;
 @property IBOutlet NSButton *toggleItalicButton;
 @property IBOutlet NSButton *toggleUnderlineButton;
@@ -30,6 +33,9 @@
 @property IBOutlet NSSegmentedControl *justifyTextControl;
 @property IBOutlet NSButton *showSourceButton;
 
+- (IBAction)sendAction:(id)sender;
+//- (IBAction)saveAction:(id)sender;
+- (IBAction)attachAction:(id)sender;
 - (IBAction)toggleBoldAction:(id)sender;
 - (IBAction)toggleItalicAction:(id)sender;
 - (IBAction)toggleUnderlineAction:(id)sender;

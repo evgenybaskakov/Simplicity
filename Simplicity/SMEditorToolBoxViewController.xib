@@ -7,8 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMEditorToolBoxViewController">
             <connections>
+                <outlet property="attachButton" destination="ko7-PU-pG9" id="mTc-QE-P4d"/>
                 <outlet property="fontSelectionButton" destination="jql-C8-Dmq" id="lpS-BD-uoP"/>
                 <outlet property="justifyTextControl" destination="PYc-3u-Ywx" id="IfK-ER-45i"/>
+                <outlet property="sendButton" destination="mY8-mx-Ebq" id="lcn-eZ-3es"/>
                 <outlet property="shiftLeftButton" destination="etb-LZ-vdJ" id="Mzy-1g-NnD"/>
                 <outlet property="shiftRightButton" destination="KxT-ZY-fFx" id="JkL-jy-wia"/>
                 <outlet property="showSourceButton" destination="EGq-e0-vfT" id="YFa-ZL-PsM"/>
@@ -26,74 +28,34 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="SRf-ju-wWd" userLabel="Editor Tool Box">
-            <rect key="frame" x="0.0" y="0.0" width="681" height="30"/>
+        <box autoresizesSubviews="NO" wantsLayer="YES" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="SRf-ju-wWd" userLabel="Editor Tool Box">
+            <rect key="frame" x="0.0" y="0.0" width="840" height="30"/>
             <view key="contentView">
-                <rect key="frame" x="1" y="1" width="679" height="28"/>
+                <rect key="frame" x="1" y="1" width="838" height="28"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Yl-74-hoZ">
-                        <rect key="frame" x="160" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Bold-icon" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fpi-9Z-Jjw">
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mY8-mx-Ebq">
+                        <rect key="frame" x="8" y="3" width="69" height="23"/>
+                        <buttonCell key="cell" type="smallSquare" title="Send" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Vv-az-tNJ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="toggleBoldAction:" target="-2" id="PdK-4u-MJp"/>
+                            <action selector="sendAction:" target="-2" id="Xfv-l7-oHu"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KxT-ZY-fFx">
-                        <rect key="frame" x="426" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Outdent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyU-8u-RpT">
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ko7-PU-pG9" userLabel="Attach">
+                        <rect key="frame" x="79" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="attachment-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HAd-ah-lv1">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="shiftRightAction:" target="-2" id="eZX-Vk-MZJ"/>
+                            <action selector="attachAction:" target="-2" id="CPH-49-QtL"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yr7-Uq-mqN">
-                        <rect key="frame" x="321" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Numbered List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1ER-OI-Jad">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleNumberingAction:" target="-2" id="kst-0w-4vm"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q7U-xK-RMA">
-                        <rect key="frame" x="356" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hCt-Cd-2Xc">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleBulletsAction:" target="-2" id="8A2-ZH-dbu"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lR4-Te-FXB">
-                        <rect key="frame" x="196" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Italic-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nyr-eY-Eje">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleItalicAction:" target="-2" id="ONq-mV-LWf"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M9R-kE-9yV">
-                        <rect key="frame" x="231" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Underline-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OlR-kL-4ui">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleUnderlineAction:" target="-2" id="4w0-tL-fMK"/>
-                        </connections>
-                    </button>
-                    <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jql-C8-Dmq">
-                        <rect key="frame" x="2" y="1" width="111" height="26"/>
+                    <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jql-C8-Dmq" userLabel="Font Name">
+                        <rect key="frame" x="118" y="1" width="111" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -109,8 +71,8 @@
                             <action selector="selectFontAction:" target="-2" id="HyV-pD-JB5"/>
                         </connections>
                     </popUpButton>
-                    <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-l5-E7p">
-                        <rect key="frame" x="112" y="1" width="53" height="26"/>
+                    <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-l5-E7p" userLabel="Text Size">
+                        <rect key="frame" x="228" y="1" width="53" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -126,18 +88,72 @@
                             <action selector="setTextSizeAction:" target="-2" id="Ued-eu-JX0"/>
                         </connections>
                     </popUpButton>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7">
-                        <rect key="frame" x="461" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Yl-74-hoZ" userLabel="Bold">
+                        <rect key="frame" x="276" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Bold-icon" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fpi-9Z-Jjw">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="toggleQuoteAction:" target="-2" id="sDt-AB-K26"/>
+                            <action selector="toggleBoldAction:" target="-2" id="PdK-4u-MJp"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="etb-LZ-vdJ">
-                        <rect key="frame" x="391" y="-3" width="44" height="32"/>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lR4-Te-FXB" userLabel="Italic">
+                        <rect key="frame" x="312" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Italic-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nyr-eY-Eje">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleItalicAction:" target="-2" id="ONq-mV-LWf"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M9R-kE-9yV" userLabel="Underline">
+                        <rect key="frame" x="347" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Editing-Underline-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OlR-kL-4ui">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleUnderlineAction:" target="-2" id="4w0-tL-fMK"/>
+                        </connections>
+                    </button>
+                    <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qoz-bT-xOl" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
+                        <rect key="frame" x="389" y="3" width="23" height="23"/>
+                        <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <connections>
+                            <action selector="setTextForegroundColorAction:" target="-2" id="7pf-dT-qIH"/>
+                        </connections>
+                    </colorWell>
+                    <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn8-1h-uOB" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
+                        <rect key="frame" x="416" y="3" width="23" height="23"/>
+                        <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <connections>
+                            <action selector="setTextBackgroundColorAction:" target="-2" id="Pv1-Qa-sfa"/>
+                        </connections>
+                    </colorWell>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yr7-Uq-mqN" userLabel="Numbered List">
+                        <rect key="frame" x="437" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Numbered List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1ER-OI-Jad">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleNumberingAction:" target="-2" id="kst-0w-4vm"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q7U-xK-RMA" userLabel="Buttlet List">
+                        <rect key="frame" x="472" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="List Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hCt-Cd-2Xc">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleBulletsAction:" target="-2" id="8A2-ZH-dbu"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="etb-LZ-vdJ" userLabel="Shift Left">
+                        <rect key="frame" x="507" y="-3" width="44" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="Indent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uch-YI-aCI">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -146,8 +162,28 @@
                             <action selector="shiftLeftAction:" target="-2" id="Bzb-40-iMf"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KxT-ZY-fFx" userLabel="Shift Right">
+                        <rect key="frame" x="542" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Outdent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyU-8u-RpT">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="shiftRightAction:" target="-2" id="eZX-Vk-MZJ"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7" userLabel="Quote">
+                        <rect key="frame" x="577" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleQuoteAction:" target="-2" id="sDt-AB-K26"/>
+                        </connections>
+                    </button>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYc-3u-Ywx" userLabel="Justify">
-                        <rect key="frame" x="500" y="2" width="113" height="24"/>
+                        <rect key="frame" x="616" y="2" width="113" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="bsJ-5w-fII">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -166,7 +202,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGq-e0-vfT">
-                        <rect key="frame" x="608" y="-3" width="80" height="32"/>
+                        <rect key="frame" x="779" y="-3" width="80" height="32"/>
                         <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wY7-p1-UxM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -175,20 +211,6 @@
                             <action selector="showSourceAction:" target="-2" id="oCg-Dn-8ti"/>
                         </connections>
                     </button>
-                    <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qoz-bT-xOl" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="273" y="3" width="23" height="23"/>
-                        <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <connections>
-                            <action selector="setTextForegroundColorAction:" target="-2" id="7pf-dT-qIH"/>
-                        </connections>
-                    </colorWell>
-                    <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn8-1h-uOB" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="300" y="3" width="23" height="23"/>
-                        <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <connections>
-                            <action selector="setTextBackgroundColorAction:" target="-2" id="Pv1-Qa-sfa"/>
-                        </connections>
-                    </colorWell>
                 </subviews>
             </view>
             <constraints>
@@ -196,6 +218,7 @@
             </constraints>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
             <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <point key="canvasLocation" x="495" y="315"/>
         </box>
     </objects>
     <resources>
@@ -211,5 +234,6 @@
         <image name="Numbered List Filled-50" width="50" height="50"/>
         <image name="Outdent Filled-50" width="50" height="50"/>
         <image name="Quote-50" width="50" height="50"/>
+        <image name="attachment-icon" width="128" height="128"/>
     </resources>
 </document>

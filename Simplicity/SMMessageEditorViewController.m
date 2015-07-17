@@ -120,7 +120,7 @@
     [_ccBoxViewController.label setStringValue:@"Cc:"];
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
     
-    [_sendButton setEnabled:NO];
+    [_editorToolBoxViewController.sendButton setEnabled:NO];
     
     // Editor toolbox
     NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
@@ -146,21 +146,25 @@
 
 /////////////////////////////
 
-- (IBAction)sendAction:(id)sender {
+- (void)sendMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
     
     [_messageEditorBase.messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
-    
-    [[[self view] window] close];
+
+    if(!_embedded) {
+        [[[self view] window] close];
+    }
 }
 
+/*
 - (IBAction)saveAction:(id)sender {
     NSString *messageText = [_messageTextEditor getMessageText];
     
     [_messageEditorBase.messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 }
+ */
 
-- (IBAction)attachAction:(id)sender {
+- (void)attachDocument {
     [self toggleAttachmentsPanel];
 }
 
@@ -241,7 +245,7 @@
         
         // TODO: verify the destination email address / recepient name more carefully
         
-        [_sendButton setEnabled:(toValue.length != 0)];
+        [_editorToolBoxViewController.sendButton setEnabled:(toValue.length != 0)];
     }
 }
 

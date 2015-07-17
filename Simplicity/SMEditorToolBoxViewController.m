@@ -12,15 +12,15 @@
 
 @implementation SMEditorToolBoxViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // Do view setup here.
+#pragma mark Text attrbitute actions
 
-    
+- (IBAction)sendAction:(id)sender {
+    [_messageEditorViewController sendMessage];
 }
 
-#pragma mark Text attrbitute actions
+- (IBAction)attachAction:(id)sender {
+    [_messageEditorViewController attachDocument];
+}
 
 - (IBAction)toggleBoldAction:(id)sender {
     [_messageEditorViewController toggleBold];

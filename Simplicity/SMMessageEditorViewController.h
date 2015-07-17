@@ -14,9 +14,6 @@
 
 @interface SMMessageEditorViewController : NSViewController
 
-@property IBOutlet NSButton *sendButton;
-@property IBOutlet NSButton *saveButton;
-@property IBOutlet NSButton *attachButton;
 @property IBOutlet NSView *toBoxView;
 @property IBOutlet NSView *ccBoxView;
 @property IBOutlet NSView *bccBoxView;
@@ -33,10 +30,9 @@
 
 - (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded;
 
-- (IBAction)sendAction:(id)sender;
-- (IBAction)saveAction:(id)sender;
-- (IBAction)attachAction:(id)sender;
-
+- (void)sendMessage;
+//- (void)saveMessage;
+- (void)attachDocument;
 - (void)toggleBold;
 - (void)toggleItalic;
 - (void)toggleUnderline;

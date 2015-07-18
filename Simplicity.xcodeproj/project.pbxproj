@@ -124,10 +124,6 @@
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
 		80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */; };
 		80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */; };
-		80533AC01B4114B700A0A67F /* Editing-Align-Right-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */; };
-		80533AC11B4114B700A0A67F /* Editing-Align-Left-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */; };
-		80533AC21B4114B700A0A67F /* Editing-Align-Justify-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */; };
-		80533AC31B4114B700A0A67F /* Editing-Align-Center-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */; };
 		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
@@ -139,6 +135,11 @@
 		80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B031B5A10BC0049AB88 /* Bold-128.png */; };
 		80A44B101B5A16A60049AB88 /* shift-right.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B0E1B5A16A60049AB88 /* shift-right.png */; };
 		80A44B111B5A16A60049AB88 /* shirt-left.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B0F1B5A16A60049AB88 /* shirt-left.png */; };
+		80A44B131B5A18520049AB88 /* quote.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B121B5A18520049AB88 /* quote.png */; };
+		80A44B181B5A19260049AB88 /* align_justify-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B141B5A19260049AB88 /* align_justify-128.png */; };
+		80A44B191B5A19260049AB88 /* align_center-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B151B5A19260049AB88 /* align_center-128.png */; };
+		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
+		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
 		80E6574E1B182B2B00A0AA81 /* libMailCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E6573F1B182AF700A0AA81 /* libMailCore.a */; };
@@ -406,10 +407,6 @@
 		80533AB21B4114B700A0A67F /* Editing-Text-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Text-icon.png"; sourceTree = "<group>"; };
 		80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Border-Color-icon.png"; sourceTree = "<group>"; };
 		80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Chisel-Tip-Marker-icon.png"; sourceTree = "<group>"; };
-		80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Right-icon.png"; sourceTree = "<group>"; };
-		80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Left-icon.png"; sourceTree = "<group>"; };
-		80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Justify-icon.png"; sourceTree = "<group>"; };
-		80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Align-Center-icon.png"; sourceTree = "<group>"; };
 		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
@@ -423,6 +420,11 @@
 		80A44B031B5A10BC0049AB88 /* Bold-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bold-128.png"; sourceTree = "<group>"; };
 		80A44B0E1B5A16A60049AB88 /* shift-right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shift-right.png"; sourceTree = "<group>"; };
 		80A44B0F1B5A16A60049AB88 /* shirt-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shirt-left.png"; sourceTree = "<group>"; };
+		80A44B121B5A18520049AB88 /* quote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quote.png; sourceTree = "<group>"; };
+		80A44B141B5A19260049AB88 /* align_justify-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_justify-128.png"; sourceTree = "<group>"; };
+		80A44B151B5A19260049AB88 /* align_center-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_center-128.png"; sourceTree = "<group>"; };
+		80A44B161B5A19260049AB88 /* align_left-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_left-128.png"; sourceTree = "<group>"; };
+		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
 		80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationExecutor.h; sourceTree = "<group>"; };
@@ -754,6 +756,11 @@
 		80533AD51B4118B800A0A67F /* TextEditorIcons */ = {
 			isa = PBXGroup;
 			children = (
+				80A44B141B5A19260049AB88 /* align_justify-128.png */,
+				80A44B151B5A19260049AB88 /* align_center-128.png */,
+				80A44B161B5A19260049AB88 /* align_left-128.png */,
+				80A44B171B5A19260049AB88 /* align_right-128.png */,
+				80A44B121B5A18520049AB88 /* quote.png */,
 				80A44B0E1B5A16A60049AB88 /* shift-right.png */,
 				80A44B0F1B5A16A60049AB88 /* shirt-left.png */,
 				80A44B011B5A10BC0049AB88 /* Underline-128.png */,
@@ -766,10 +773,6 @@
 				80533AB21B4114B700A0A67F /* Editing-Text-icon.png */,
 				80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */,
 				80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */,
-				80533AB61B4114B700A0A67F /* Editing-Align-Right-icon.png */,
-				80533AB71B4114B700A0A67F /* Editing-Align-Left-icon.png */,
-				80533AB81B4114B700A0A67F /* Editing-Align-Justify-icon.png */,
-				80533AB91B4114B700A0A67F /* Editing-Align-Center-icon.png */,
 			);
 			name = TextEditorIcons;
 			sourceTree = "<group>";
@@ -915,16 +918,19 @@
 				0047416C1AA42115002566E8 /* collapse-all.png in Resources */,
 				002057D21A85D2DA00D5FE8A /* sent-white.png in Resources */,
 				009217A51A92F007003A0348 /* trash-black.png in Resources */,
-				80533AC01B4114B700A0A67F /* Editing-Align-Right-icon.png in Resources */,
+				80A44B181B5A19260049AB88 /* align_justify-128.png in Resources */,
 				80533AD41B41189B00A0A67F /* Quote-50.png in Resources */,
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
 				80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
+				80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */,
 				80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */,
+				80A44B131B5A18520049AB88 /* quote.png in Resources */,
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
 				00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */,
 				00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */,
 				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
+				80A44B191B5A19260049AB88 /* align_center-128.png in Resources */,
 				00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */,
 				004A64221AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib in Resources */,
 				0002A0A217D1B1E000EA4AFF /* Credits.rtf in Resources */,
@@ -934,7 +940,6 @@
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				8062FEF11B54D9B5007D7140 /* SMMessageEditorViewController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
-				80533AC11B4114B700A0A67F /* Editing-Align-Left-icon.png in Resources */,
 				80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */,
 				80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */,
 				80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */,
@@ -955,12 +960,11 @@
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
 				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
+				80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
-				80533AC21B4114B700A0A67F /* Editing-Align-Justify-icon.png in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
 				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */,
-				80533AC31B4114B700A0A67F /* Editing-Align-Center-icon.png in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,

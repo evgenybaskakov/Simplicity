@@ -36,12 +36,13 @@
     }
 }
 
-- (IBAction)toggleBulletsAction:(id)sender {
-    [_messageEditorViewController toggleBullets];
-}
-
-- (IBAction)toggleNumberingAction:(id)sender {
-    [_messageEditorViewController toggleNumbering];
+- (IBAction)toggleListAction:(id)sender {
+    if(_toggleListButton.selectedSegment == 0) {
+        [_messageEditorViewController toggleBullets];
+    }
+    else {
+        [_messageEditorViewController toggleNumbering];
+    }
 }
 
 - (IBAction)toggleQuoteAction:(id)sender {

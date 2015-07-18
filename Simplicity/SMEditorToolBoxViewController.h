@@ -21,8 +21,7 @@
 @property IBOutlet NSSegmentedControl *textStyleButton;
 @property IBOutlet SMColorWellWithIcon *textForegroundColorSelector;
 @property IBOutlet SMColorWellWithIcon *textBackgroundColorSelector;
-@property IBOutlet NSButton *toggleBulletsButton;
-@property IBOutlet NSButton *toggleNumberingButton;
+@property IBOutlet NSSegmentedControl *toggleListButton;
 @property IBOutlet NSButton *toggleQuoteButton;
 @property IBOutlet NSSegmentedControl *shiftButton;
 @property IBOutlet NSPopUpButton *fontSelectionButton;
@@ -34,8 +33,7 @@
 //- (IBAction)saveAction:(id)sender;
 - (IBAction)attachAction:(id)sender;
 - (IBAction)setTextStyleAction:(id)sender;
-- (IBAction)toggleBulletsAction:(id)sender;
-- (IBAction)toggleNumberingAction:(id)sender;
+- (IBAction)toggleListAction:(id)sender;
 - (IBAction)toggleQuoteAction:(id)sender;
 - (IBAction)shiftAction:(id)sender;
 - (IBAction)selectFontAction:(id)sender;

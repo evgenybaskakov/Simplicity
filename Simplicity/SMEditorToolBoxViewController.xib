@@ -11,8 +11,7 @@
                 <outlet property="fontSelectionButton" destination="jql-C8-Dmq" id="lpS-BD-uoP"/>
                 <outlet property="justifyTextControl" destination="PYc-3u-Ywx" id="IfK-ER-45i"/>
                 <outlet property="sendButton" destination="mY8-mx-Ebq" id="lcn-eZ-3es"/>
-                <outlet property="shiftLeftButton" destination="etb-LZ-vdJ" id="Mzy-1g-NnD"/>
-                <outlet property="shiftRightButton" destination="KxT-ZY-fFx" id="JkL-jy-wia"/>
+                <outlet property="shiftButton" destination="ZN8-xv-e9A" id="Wov-dD-rD6"/>
                 <outlet property="showSourceButton" destination="EGq-e0-vfT" id="YFa-ZL-PsM"/>
                 <outlet property="textBackgroundColorSelector" destination="Fn8-1h-uOB" id="dc5-uU-pbP"/>
                 <outlet property="textForegroundColorSelector" destination="Qoz-bT-xOl" id="nH6-bb-fHA"/>
@@ -33,7 +32,7 @@
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mY8-mx-Ebq">
-                        <rect key="frame" x="8" y="3" width="69" height="23"/>
+                        <rect key="frame" x="8" y="3" width="69" height="22"/>
                         <buttonCell key="cell" type="smallSquare" title="Send" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Vv-az-tNJ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -86,7 +85,7 @@
                             <action selector="setTextSizeAction:" target="-2" id="Ued-eu-JX0"/>
                         </connections>
                     </popUpButton>
-                    <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2X9-vT-Zqa">
+                    <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2X9-vT-Zqa" userLabel="Text Style">
                         <rect key="frame" x="276" y="2" width="83" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="Aas-1p-30s">
                             <font key="font" metaFont="system"/>
@@ -136,28 +135,21 @@
                             <action selector="toggleBulletsAction:" target="-2" id="8A2-ZH-dbu"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="etb-LZ-vdJ" userLabel="Shift Left">
-                        <rect key="frame" x="479" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Indent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uch-YI-aCI">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                    <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZN8-xv-e9A" userLabel="Shift">
+                        <rect key="frame" x="483" y="2" width="57" height="24"/>
+                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="AFj-VP-2mY">
                             <font key="font" metaFont="system"/>
-                        </buttonCell>
+                            <segments>
+                                <segment image="shirt-left" width="25"/>
+                                <segment image="shift-right" width="25" tag="1"/>
+                            </segments>
+                        </segmentedCell>
                         <connections>
-                            <action selector="shiftLeftAction:" target="-2" id="Bzb-40-iMf"/>
+                            <action selector="shiftAction:" target="-2" id="uZ3-o9-Hsk"/>
                         </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KxT-ZY-fFx" userLabel="Shift Right">
-                        <rect key="frame" x="514" y="-3" width="44" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Outdent Filled-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyU-8u-RpT">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="shiftRightAction:" target="-2" id="eZX-Vk-MZJ"/>
-                        </connections>
-                    </button>
+                    </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7" userLabel="Quote">
-                        <rect key="frame" x="549" y="-3" width="44" height="32"/>
+                        <rect key="frame" x="535" y="-3" width="44" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="Quote-50" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -167,7 +159,7 @@
                         </connections>
                     </button>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYc-3u-Ywx" userLabel="Justify">
-                        <rect key="frame" x="588" y="2" width="113" height="24"/>
+                        <rect key="frame" x="574" y="2" width="113" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="bsJ-5w-fII">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -186,7 +178,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGq-e0-vfT">
-                        <rect key="frame" x="696" y="-3" width="80" height="32"/>
+                        <rect key="frame" x="682" y="-3" width="80" height="32"/>
                         <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wY7-p1-UxM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -211,13 +203,13 @@
         <image name="Editing-Align-Justify-icon" width="128" height="128"/>
         <image name="Editing-Align-Left-icon" width="128" height="128"/>
         <image name="Editing-Align-Right-icon" width="128" height="128"/>
-        <image name="Indent Filled-50" width="50" height="50"/>
         <image name="Italic-128" width="128" height="128"/>
         <image name="List Filled-50" width="50" height="50"/>
         <image name="Numbered List Filled-50" width="50" height="50"/>
-        <image name="Outdent Filled-50" width="50" height="50"/>
         <image name="Quote-50" width="50" height="50"/>
         <image name="Underline-128" width="128" height="128"/>
         <image name="attachment-icon" width="128" height="128"/>
+        <image name="shift-right" width="128" height="128"/>
+        <image name="shirt-left" width="128" height="128"/>
     </resources>
 </document>

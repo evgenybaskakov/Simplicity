@@ -48,12 +48,13 @@
     [_messageEditorViewController toggleQuote];
 }
 
-- (IBAction)shiftLeftAction:(id)sender {
-    [_messageEditorViewController shiftLeft];
-}
-
-- (IBAction)shiftRightAction:(id)sender {
-    [_messageEditorViewController shiftRight];
+- (IBAction)shiftAction:(id)sender {
+    if(_shiftButton.selectedSegment == 0) {
+        [_messageEditorViewController shiftLeft];
+    }
+    else {
+        [_messageEditorViewController shiftRight];
+    }
 }
 
 - (IBAction)selectFontAction:(id)sender {

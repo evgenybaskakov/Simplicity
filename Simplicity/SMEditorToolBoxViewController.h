@@ -24,8 +24,7 @@
 @property IBOutlet NSButton *toggleBulletsButton;
 @property IBOutlet NSButton *toggleNumberingButton;
 @property IBOutlet NSButton *toggleQuoteButton;
-@property IBOutlet NSButton *shiftLeftButton;
-@property IBOutlet NSButton *shiftRightButton;
+@property IBOutlet NSSegmentedControl *shiftButton;
 @property IBOutlet NSPopUpButton *fontSelectionButton;
 @property IBOutlet NSPopUpButton *textSizeButton;
 @property IBOutlet NSSegmentedControl *justifyTextControl;
@@ -38,8 +37,7 @@
 - (IBAction)toggleBulletsAction:(id)sender;
 - (IBAction)toggleNumberingAction:(id)sender;
 - (IBAction)toggleQuoteAction:(id)sender;
-- (IBAction)shiftLeftAction:(id)sender;
-- (IBAction)shiftRightAction:(id)sender;
+- (IBAction)shiftAction:(id)sender;
 - (IBAction)selectFontAction:(id)sender;
 - (IBAction)setTextSizeAction:(id)sender;
 - (IBAction)justifyTextAction:(id)sender;

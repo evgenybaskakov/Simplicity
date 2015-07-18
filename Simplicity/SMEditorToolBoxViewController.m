@@ -22,16 +22,18 @@
     [_messageEditorViewController attachDocument];
 }
 
-- (IBAction)toggleBoldAction:(id)sender {
-    [_messageEditorViewController toggleBold];
-}
-
-- (IBAction)toggleItalicAction:(id)sender {
-    [_messageEditorViewController toggleItalic];
-}
-
-- (IBAction)toggleUnderlineAction:(id)sender {
-    [_messageEditorViewController toggleUnderline];
+- (IBAction)setTextStyleAction:(id)sender {
+    switch(_textStyleButton.selectedSegment) {
+        case 0:
+            [_messageEditorViewController toggleBold];
+            break;
+        case 1:
+            [_messageEditorViewController toggleItalic];
+            break;
+        case 2:
+            [_messageEditorViewController toggleUnderline];
+            break;
+    }
 }
 
 - (IBAction)toggleBulletsAction:(id)sender {

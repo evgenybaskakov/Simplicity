@@ -174,24 +174,10 @@
                                  "(document.queryCommandState('underline')? 4 : 0)"];
     
     NSInteger textState = [textStateString integerValue];
-    
-    if(textState & 1) {
-        [_editorToolBoxViewController.toggleBoldButton setTransparent:NO];
-    } else {
-        [_editorToolBoxViewController.toggleBoldButton setTransparent:YES];
-    }
-    
-    if(textState & (1<<1)) {
-        [_editorToolBoxViewController.toggleItalicButton setTransparent:NO];
-    } else {
-        [_editorToolBoxViewController.toggleItalicButton setTransparent:YES];
-    }
-    
-    if(textState & (1<<2)) {
-        [_editorToolBoxViewController.toggleUnderlineButton setTransparent:NO];
-    } else {
-        [_editorToolBoxViewController.toggleUnderlineButton setTransparent:YES];
-    }
+
+    [_editorToolBoxViewController.textStyleButton setSelected:((textState & (1<<0)) != 0) forSegment:0];
+    [_editorToolBoxViewController.textStyleButton setSelected:((textState & (1<<1)) != 0) forSegment:1];
+    [_editorToolBoxViewController.textStyleButton setSelected:((textState & (1<<2)) != 0) forSegment:2];
     
     //
     // Font name.

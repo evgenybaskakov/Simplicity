@@ -18,9 +18,7 @@
 @property IBOutlet NSButton *sendButton;
 //@property IBOutlet NSButton *saveButton;
 @property IBOutlet NSButton *attachButton;
-@property IBOutlet NSButton *toggleBoldButton;
-@property IBOutlet NSButton *toggleItalicButton;
-@property IBOutlet NSButton *toggleUnderlineButton;
+@property IBOutlet NSSegmentedControl *textStyleButton;
 @property IBOutlet SMColorWellWithIcon *textForegroundColorSelector;
 @property IBOutlet SMColorWellWithIcon *textBackgroundColorSelector;
 @property IBOutlet NSButton *toggleBulletsButton;
@@ -36,9 +34,7 @@
 - (IBAction)sendAction:(id)sender;
 //- (IBAction)saveAction:(id)sender;
 - (IBAction)attachAction:(id)sender;
-- (IBAction)toggleBoldAction:(id)sender;
-- (IBAction)toggleItalicAction:(id)sender;
-- (IBAction)toggleUnderlineAction:(id)sender;
+- (IBAction)setTextStyleAction:(id)sender;
 - (IBAction)toggleBulletsAction:(id)sender;
 - (IBAction)toggleNumberingAction:(id)sender;
 - (IBAction)toggleQuoteAction:(id)sender;

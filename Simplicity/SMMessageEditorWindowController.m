@@ -39,7 +39,7 @@
 //}
 
 - (void)windowWillClose:(NSNotification *)notification {
-    [_messageEditorViewController stopTextMonitor];
+    [_messageEditorViewController closeEditor];
 }
 
 @end

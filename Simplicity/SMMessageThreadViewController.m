@@ -92,6 +92,7 @@ static const CGFloat CELL_SPACING = -1;
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
         [_messageEditorViewController.view removeFromSuperview];
+        [_messageEditorViewController closeEditor];
         
         _messageEditorViewController = nil;
         _cellViewControllerToReply = nil;

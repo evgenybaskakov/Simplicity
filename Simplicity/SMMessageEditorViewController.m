@@ -344,7 +344,8 @@
 
 #pragma mark Misc
 
-- (void)stopTextMonitor {
+- (void)closeEditor {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_messageTextEditor stopTextMonitor];
 }
 

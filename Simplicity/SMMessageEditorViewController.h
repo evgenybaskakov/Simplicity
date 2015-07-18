@@ -72,6 +72,6 @@
 - (void)showSource;
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
-- (void)stopTextMonitor;
+- (void)closeEditor;
 
 @end

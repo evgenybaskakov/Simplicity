@@ -187,6 +187,14 @@
 	}
 }
 
+- (NSUInteger)contentHeight {
+    if(!_mainFrameLoaded)
+        return 0;
+    
+    WebView *webView = (WebView*)[self view];
+    return [[[[webView mainFrame] frameView] documentView] frame].size.height + 0.5;
+}
+
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase {

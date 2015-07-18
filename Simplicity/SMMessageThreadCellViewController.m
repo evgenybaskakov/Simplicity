@@ -234,7 +234,7 @@
     return uncollapsedHeaderHeight + MAX(MIN_BODY_HEIGHT, MIN(MAX_BODY_HEIGHT, contentHeight));
 }
 
-- (NSUInteger)height {
+- (NSUInteger)cellHeight {
 	return _collapsed? [SMMessageDetailsViewController headerHeight] : [self uncollapsedHeight];
 }
 

@@ -184,7 +184,9 @@
 		if(_currentFindString != nil && _uncollapsed) {
 			[self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
 		}
-	}
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:_uid], @"UID", nil]];
+    }
 }
 
 - (NSUInteger)contentHeight {

@@ -61,6 +61,7 @@ static const CGFloat CELL_SPACING = -1;
 		_cells = [NSMutableArray new];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
     }
 	
@@ -298,7 +299,7 @@ static const CGFloat CELL_SPACING = -1;
 		
 		for(NSInteger i = 0; i < _cells.count; i++) {
 			SMMessageThreadCell *cell = _cells[i];
-			fullHeight += (CGFloat)cell.viewController.height;
+			fullHeight += (CGFloat)cell.viewController.cellHeight;
 			
 			if(i + 1 < _cells.count)
 				fullHeight += CELL_SPACING;
@@ -353,10 +354,10 @@ static const CGFloat CELL_SPACING = -1;
 			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
 		} else {
 			subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
-			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.height);
+			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
 		}
 		
-		ypos += cell.viewController.height + CELL_SPACING;
+		ypos += cell.viewController.cellHeight + CELL_SPACING;
 	}
 
 	_cellsUpdateStarted = NO;
@@ -473,7 +474,7 @@ static const CGFloat CELL_SPACING = -1;
 		firstCell = _cells[--_firstVisibleCell];
 	}
 
-	while(_firstVisibleCell + 1 < _cells.count && firstCell.viewController.view.frame.origin.y + firstCell.viewController.height <= visibleRect.origin.y) {
+	while(_firstVisibleCell + 1 < _cells.count && firstCell.viewController.view.frame.origin.y + firstCell.viewController.cellHeight <= visibleRect.origin.y) {
 //TODO: should we?
 //		if(!firstCell.viewController.collapsed)
 			[firstCell.viewController.view removeFromSuperview];
@@ -486,7 +487,7 @@ static const CGFloat CELL_SPACING = -1;
 
 	SMMessageThreadCell *lastCell = _cells[_lastVisibleCell];
 
-	while(_lastVisibleCell + 1 < _cells.count && lastCell.viewController.view.frame.origin.y + lastCell.viewController.height < visibleRect.origin.y + visibleRect.size.height) {
+	while(_lastVisibleCell + 1 < _cells.count && lastCell.viewController.view.frame.origin.y + lastCell.viewController.cellHeight < visibleRect.origin.y + visibleRect.size.height) {
 		lastCell = _cells[++_lastVisibleCell];
 	}
 
@@ -523,7 +524,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		if(cell.viewController.view.superview == nil) {
 			if(_cells.count > 1) {
-				[cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.height)];
+				[cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
 			}
 			
 			[_contentView addSubview:cell.viewController.view];
@@ -551,6 +552,23 @@ static const CGFloat CELL_SPACING = -1;
 	NSDictionary *messageInfo = [notification userInfo];
 	
 	[self updateMessageView:[[messageInfo objectForKey:@"UID"] unsignedIntValue] threadId:[[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue]];
+}
+
+- (void)messageBodyLoaded:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+
+    uint32_t uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+
+    for(NSInteger i = 0; i < _cells.count; i++) {
+        SMMessageThreadCell *cell = _cells[i];
+        
+        // Logic: if the message whose html body is just loaded is contained in this
+        // message thread, and it is uncollapsed, cell heights may need to be adjusted.
+        // TODO: maybe skip real frames update, if this cell is invisible?
+        if(cell.message.uid == uid && !cell.viewController.collapsed) {
+            [self updateCellFrames];
+        }
+    }
 }
 
 #pragma mark Finding messages contents

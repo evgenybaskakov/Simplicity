@@ -20,7 +20,8 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
-static const CGFloat EMBEDDED_EDITOR_HEIGHT = 400; // TODO
+static const CGFloat MIN_EDITOR_HEIGHT = 100;
+static const CGFloat MAX_EDITOR_HEIGHT = 500;
 static const CGFloat CELL_SPACING = -1;
 
 @interface SMMessageThreadViewController()
@@ -63,6 +64,7 @@ static const CGFloat CELL_SPACING = -1;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
 	return self;
@@ -288,9 +290,12 @@ static const CGFloat CELL_SPACING = -1;
 	NSAssert(_cells.count > 0, @"no cells");
 
 	CGFloat fullHeight = 0;
+    CGFloat editorHeight = 0;
     
     if(_messageEditorViewController != nil) {
-        fullHeight += EMBEDDED_EDITOR_HEIGHT;
+        editorHeight = MAX(MIN_EDITOR_HEIGHT, MIN(_messageEditorViewController.editorFullHeight, MAX_EDITOR_HEIGHT));
+        
+        fullHeight += editorHeight;
         fullHeight += CELL_SPACING;
     }
 
@@ -341,9 +346,8 @@ static const CGFloat CELL_SPACING = -1;
             
             // Note that the editor width doesn't have to exceed the content view width,
             // because it already does.
-            editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, EMBEDDED_EDITOR_HEIGHT); // TODO: implement and then use subview.intrinsicContentSize.height
-            
-            ypos += EMBEDDED_EDITOR_HEIGHT + CELL_SPACING;
+            editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight);
+            ypos += editorHeight + CELL_SPACING;
         }
 
 		NSView *subview = cell.viewController.view;
@@ -756,6 +760,12 @@ static const CGFloat CELL_SPACING = -1;
     [_contentView addSubview:_messageEditorViewController.view];
 
     [self updateCellFrames];
+}
+
+- (void)messageEditorContentHeightChanged:(NSNotification *)notification {
+    if(_messageEditorViewController != nil) {
+        [self updateCellFrames];
+    }
 }
 
 @end

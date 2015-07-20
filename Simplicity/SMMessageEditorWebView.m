@@ -13,6 +13,7 @@
 
 @implementation SMMessageEditorWebView {
     NSTimer *_textMonitorTimer;
+    NSUInteger _cachedContentHeight;
 }
 
 - (void)awakeFromNib {
@@ -66,6 +67,7 @@
         WebScriptObject *scriptObject = [sender windowScriptObject];
         [scriptObject setValue:self forKey:@"Simplicity"];
         [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+        [scriptObject evaluateWebScript:@"eventCallback = { eventInput: function(msg) { Simplicity.eventInput_(msg); } }"];
     }
     
     [self stringByEvaluatingJavaScriptFromString:@""
@@ -92,19 +94,51 @@
          "else if (typeof el.attachEvent != 'undefined')"
          "{"
          "    el.attachEvent('onkeypress', enterKeyPressHandler);"
-         "}"];
+         "}"
+         "document.getElementById('SimplicityEditor').addEventListener('input', function() {"
+         "    var body = document.body;"
+         "    var html = document.documentElement;"
+         "    var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);"
+         "    eventCallback.eventInput(height);"
+         "}, false);"];
 }
 
 - (void)consoleLog:(NSString *)message {
     NSLog(@"JSLog: %@", message);
 }
 
+- (void)eventInput:(NSString *)heightString {
+    NSUInteger height = [heightString integerValue];
+    NSLog(@"eventInput: contentHeight %ld", height);
+    
+    if(height != _cachedContentHeight) {
+        _cachedContentHeight = height;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageEditorContentHeightChanged" object:nil userInfo:nil];
+    }
+}
+
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
-    if (aSelector == @selector(consoleLog:)) {
+    if (aSelector == @selector(consoleLog:) || aSelector == @selector(eventInput:)) {
         return NO;
     }
     
     return YES;
+}
+
+- (NSUInteger)contentHeight {
+    WebFrame *mainFrame = [self mainFrame];
+    
+    if(mainFrame == nil)
+        return 0;
+    
+    if(_cachedContentHeight == 0) {
+        // TODO: remove duplication, see SMMessageBodyViewController.contentHeight
+        _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height + 0.5;
+        //NSLog(@"_cachedContentHeight: %ld", _cachedContentHeight);
+    }
+    
+    return _cachedContentHeight;
 }
 
 #pragma mark Drag and drop to HTML editor

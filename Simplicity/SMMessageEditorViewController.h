@@ -51,7 +51,8 @@
 @property SMLabeledTokenFieldBoxViewController *ccBoxViewController;
 @property SMLabeledTokenFieldBoxViewController *bccBoxViewController;
 
-@property Boolean embedded;
+@property (readonly) Boolean embedded;
+@property (readonly) NSUInteger editorFullHeight;
 
 - (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded;
 

@@ -192,7 +192,8 @@
 - (NSUInteger)contentHeight {
     if(!_mainFrameLoaded)
         return 0;
-    
+
+    // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
     WebView *webView = (WebView*)[self view];
     return [[[[webView mainFrame] frameView] documentView] frame].size.height + 0.5;
 }

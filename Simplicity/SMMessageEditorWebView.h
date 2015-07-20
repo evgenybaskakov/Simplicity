@@ -16,6 +16,8 @@
 @property __weak SMMessageEditorBase *messageEditorBase;
 @property __weak SMEditorToolBoxViewController *editorToolBoxViewController;
 
+@property (readonly) NSUInteger contentHeight;
+
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;
 - (void)toggleBold;

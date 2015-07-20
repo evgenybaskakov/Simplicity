@@ -173,6 +173,11 @@
     _messageTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
 }
 
+- (NSUInteger)editorFullHeight {
+    NSAssert(_embedded, @"editor height is implemented for embedded mode only");
+    return _toBoxViewController.view.frame.size.height + _editorToolBoxViewController.view.frame.size.height + _messageTextEditor.contentHeight - 2; // TODO: better spec. of this '2' - that's because of overlapping 'to', 'subject' and editor views
+}
+
 /////////////////////////////
 
 - (void)sendMessage {

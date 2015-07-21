@@ -124,7 +124,7 @@
         
         [_ccBoxView removeFromSuperview];
         [_bccBoxView removeFromSuperview];
-        [_subjectField removeFromSuperview];
+        [_subjectBoxView removeFromSuperview];
         
         _toolboxTopConstraint = [NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxView attribute:NSLayoutAttributeTop multiplier:1 constant:1];
         

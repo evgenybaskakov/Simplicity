@@ -22,11 +22,11 @@
                 <outlet property="messageEditorTopConstraint" destination="15B-gA-Ekg" id="UQe-BZ-xbb"/>
                 <outlet property="messageEditorTrailingConstraint" destination="k9T-gI-0fB" id="Jta-Fv-3v3"/>
                 <outlet property="messageTextEditor" destination="rdG-T3-iga" id="JfR-D4-wfN"/>
+                <outlet property="subjectBoxView" destination="105-Hl-i3x" id="wZW-R6-aI6"/>
                 <outlet property="subjectField" destination="2AL-HJ-0Jy" id="lBt-Vh-YxK"/>
                 <outlet property="subjectLeadingConstraint" destination="69M-6a-Cy7" id="6cg-ie-yal"/>
                 <outlet property="subjectTopConstraint" destination="N6z-lO-NbU" id="m8T-L5-IdE"/>
                 <outlet property="subjectTrailingConstraint" destination="8wK-eU-fzu" id="6zK-Xb-zwq"/>
-                <outlet property="subjectView" destination="105-Hl-i3x" id="XSI-eZ-ypt"/>
                 <outlet property="toBoxView" destination="WBj-Jp-pZI" id="WhZ-bk-bXp"/>
                 <outlet property="toLeadingConstraint" destination="fOk-rJ-mRS" id="Ryg-aW-WWv"/>
                 <outlet property="toTopConstraint" destination="16b-zK-Ycw" id="lVt-SU-pwT"/>

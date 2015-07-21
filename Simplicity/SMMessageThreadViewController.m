@@ -340,9 +340,6 @@ static const CGFloat CELL_SPACING = -1;
             }
 
             NSView *editorSubview = _messageEditorViewController.view;
-            editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
-            
-            editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
             
             // Note that the editor width doesn't have to exceed the content view width,
             // because it already does.
@@ -351,7 +348,7 @@ static const CGFloat CELL_SPACING = -1;
         }
 
 		NSView *subview = cell.viewController.view;
-		subview.translatesAutoresizingMaskIntoConstraints = YES;
+        subview.translatesAutoresizingMaskIntoConstraints = YES;
 
 		if(_cells.count == 1 && _messageEditorViewController == nil) {
 			subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
@@ -756,8 +753,13 @@ static const CGFloat CELL_SPACING = -1;
     _cellViewControllerToReply = cellViewControllerToReply;
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:YES];
 
-    NSAssert(_messageEditorViewController.view != nil, @"_messageEditorViewController.view is nil");
-    [_contentView addSubview:_messageEditorViewController.view];
+    NSView *editorSubview = _messageEditorViewController.view;
+    NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
+
+    editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
+    editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+    
+    [_contentView addSubview:editorSubview];
 
     [self updateCellFrames];
 }

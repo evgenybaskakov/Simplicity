@@ -84,20 +84,24 @@ static NSDictionary *fontNameToIndexMap;
     return fontNameToIndexMap;
 }
 
-+ (NSString*)newMessageHTMLTemplate {
++ (NSString*)newMessageHTMLBeginTemplate {
     return @""
-        "<html>"
-        "  <style>"
-        "    blockquote {"
-        "      display: block;"
-        "      margin-top: 0em;"
-        "      margin-bottom: 0em;"
-        "      margin-left: 0em;"
-        "      padding-left: 15px;"
-        "      border-left: 4px solid #ccf;"
-        "    }"
-        "  </style>"
-        "  <body id='SimplicityEditor'>"
+    "<html>"
+    "  <style>"
+    "    blockquote {"
+    "      display: block;"
+    "      margin-top: 0em;"
+    "      margin-bottom: 0em;"
+    "      margin-left: 0em;"
+    "      padding-left: 15px;"
+    "      border-left: 4px solid #ccf;"
+    "    }"
+    "  </style>"
+    "  <body id='SimplicityEditor'>";
+}
+
++ (NSString*)newMessageHTMLEndTemplate {
+    return @""
         "  </body>"
         "</html>";
 }

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
 
@@ -29,6 +30,10 @@
     // View setup
 
     [[self window] setContentView:_messageEditorViewController.view];
+    
+    // Editor setup
+    
+    [_messageEditorViewController.messageTextEditor startEmptyEditor];
 }
 
 #pragma mark Actions

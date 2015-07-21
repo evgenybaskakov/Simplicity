@@ -17,7 +17,8 @@
 + (NSArray*)fontFamilies;
 + (NSArray*)fontNames;
 + (NSDictionary*)fontNameToIndexMap;
-+ (NSString*)newMessageHTMLTemplate;
++ (NSString*)newMessageHTMLBeginTemplate;
++ (NSString*)newMessageHTMLEndTemplate;
 
 - (NSColor*)colorFromString:(NSString*)colorString;
 

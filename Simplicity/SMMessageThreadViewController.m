@@ -16,6 +16,7 @@
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageEditorViewController.h"
+#import "SMMessageEditorWebView.h"
 #import "SMFlippedView.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -740,7 +741,7 @@ static const CGFloat CELL_SPACING = -1;
             break;
         }
     }
-    
+
     NSAssert(cellIdx <= _cells.count, @"bad cell idx %lu", cellIdx);
     
     if(cellIdx == _cells.count) {
@@ -755,6 +756,11 @@ static const CGFloat CELL_SPACING = -1;
 
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
+
+    SMMessageThreadCell *cell = _cells[cellIdx];
+
+    NSString *replyHtmlText = [NSString stringWithFormat:@"Compose the reply here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
+    [_messageEditorViewController.messageTextEditor startEditorWithHTML:replyHtmlText];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
     editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;

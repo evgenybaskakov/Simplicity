@@ -18,6 +18,8 @@
 
 @property (readonly) NSUInteger contentHeight;
 
+- (void)startEmptyEditor;
+- (void)startEditorWithHTML:(NSString*)htmlContents;
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;
 - (void)toggleBold;

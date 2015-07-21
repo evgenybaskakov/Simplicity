@@ -25,18 +25,22 @@
     [self setEditingDelegate:self];
     [self setCanDrawConcurrently:YES];
     [self setEditable:YES];
-    
-    // Timer
-    
-    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
-    
-    // Editor
-    
-    [self startEditor];
 }
 
-- (void)startEditor {
-    [self.mainFrame loadHTMLString:[SMMessageEditorBase newMessageHTMLTemplate] baseURL:nil];
+- (void)startEditorInternal:(NSString*)htmlContents {
+    _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
+
+    NSString *bodyHtml = [NSString stringWithFormat:@"%@%@%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], (htmlContents == nil? @"" : htmlContents), [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+
+    [self.mainFrame loadHTMLString:bodyHtml baseURL:nil];
+}
+
+- (void)startEmptyEditor {
+    [self startEditorInternal:nil];
+}
+
+- (void)startEditorWithHTML:(NSString*)htmlContents {
+    [self startEditorInternal:htmlContents];
 }
 
 - (void)stopTextMonitor {
@@ -52,6 +56,8 @@
     return [SMMessageEditorBase fontNames][index];
 }
 
+#pragma mark Web frame contents
+
 - (NSString*)getMessageText {
     return [(DOMHTMLElement *)[[self.mainFrame DOMDocument] documentElement] outerHTML];
 }
@@ -59,6 +65,13 @@
 #pragma mark Web view control
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    if(sender != nil && frame == sender.mainFrame) {
+        NSLog(@"%s: loaded", __func__);
+
+        [self setCachedContentHeight];
+        [self notifyContentHeightChanged];
+    }
+
     if (frame == [frame findFrameNamed:@"_top"]) {
         //
         // Bridge between JavaScript's console.log and Cocoa NSLog
@@ -113,8 +126,8 @@
     
     if(height != _cachedContentHeight) {
         _cachedContentHeight = height;
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageEditorContentHeightChanged" object:nil userInfo:nil];
+
+        [self notifyContentHeightChanged];
     }
 }
 
@@ -126,16 +139,23 @@
     return YES;
 }
 
-- (NSUInteger)contentHeight {
+- (void)notifyContentHeightChanged {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageEditorContentHeightChanged" object:nil userInfo:nil];
+}
+
+- (void)setCachedContentHeight {
     WebFrame *mainFrame = [self mainFrame];
     
-    if(mainFrame == nil)
-        return 0;
-    
-    if(_cachedContentHeight == 0) {
+    if(mainFrame != nil) {
         // TODO: remove duplication, see SMMessageBodyViewController.contentHeight
         _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height + 0.5;
         //NSLog(@"_cachedContentHeight: %ld", _cachedContentHeight);
+    }
+}
+
+- (NSUInteger)contentHeight {
+    if(_cachedContentHeight == 0) {
+        [self setCachedContentHeight];
     }
     
     return _cachedContentHeight;

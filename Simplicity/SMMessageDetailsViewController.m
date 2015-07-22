@@ -494,8 +494,26 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
-- (void)showMessageActions:(id)sender {
+- (void)composeReplyAll:(id)sender {
     NSLog(@"%s: TODO", __func__);
+}
+
+- (void)composeForward:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)showMessageActions:(id)sender {
+    NSMenu *theMenu = [[NSMenu alloc] init];
+
+    [theMenu setAutoenablesItems:NO];
+
+    [[theMenu insertItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@"" atIndex:0] setTarget:self];
+    [[theMenu insertItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@"" atIndex:1] setTarget:self];
+    [[theMenu insertItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@"" atIndex:2] setTarget:self];
+    
+    NSPoint menuPosition = NSMakePoint(_messageActionsButton.bounds.origin.x, _messageActionsButton.bounds.origin.y + _messageActionsButton.bounds.size.height);
+    
+    [theMenu popUpMenuPositioningItem:nil atLocation:menuPosition inView:_messageActionsButton];
 }
 
 #pragma mark Intrinsic size

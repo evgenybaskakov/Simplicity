@@ -43,6 +43,10 @@
     return self;
 }
 
+- (void)closeEditor {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark Attachment management
 
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem {

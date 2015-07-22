@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
-#import "SMMessageEditorController.h"
 #import "SMMessageEditorBase.h"
 
 static NSArray *fontFamilies;
@@ -61,10 +60,6 @@ static NSDictionary *fontNameToIndexMap;
         
         fontNameToIndexMap = mapping;
     }
-
-    // Instance data
-    
-    _messageEditorController = [[SMMessageEditorController alloc] init];
 
     return self;
 }

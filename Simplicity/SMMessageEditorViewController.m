@@ -24,6 +24,7 @@
 
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
+    SMMessageEditorController *_messageEditorController;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
@@ -37,6 +38,7 @@
         _embedded = embedded;
 
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
+        _messageEditorController = [[SMMessageEditorController alloc] init];
         
         // To
         
@@ -183,7 +185,7 @@
 - (void)sendMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
     
-    [_messageEditorBase.messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+    [_messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 
     if(!_embedded) {
         [[[self view] window] close];
@@ -226,7 +228,7 @@
         bcc = @"TODO: bcc";
     }
 
-    [_messageEditorBase.messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
+    [_messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
 }
 
 - (void)attachDocument {
@@ -351,7 +353,7 @@
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
         
-        [_attachmentsPanelViewController enableEditing:_messageEditorBase.messageEditorController];
+        [_attachmentsPanelViewController enableEditing:_messageEditorController];
     }
     
     [view addSubview:_attachmentsPanelViewController.view];
@@ -382,6 +384,7 @@
 
 - (void)closeEditor {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_messageEditorController closeEditor];
     [_messageTextEditor stopTextMonitor];
 }
 

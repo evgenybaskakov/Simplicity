@@ -8,11 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class SMMessageEditorController;
-
 @interface SMMessageEditorBase : NSObject
-
-@property (readonly) SMMessageEditorController *messageEditorController;
 
 + (NSArray*)fontFamilies;
 + (NSArray*)fontNames;

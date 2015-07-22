@@ -178,7 +178,7 @@
     return _toBoxViewController.view.frame.size.height + _editorToolBoxViewController.view.frame.size.height + _messageTextEditor.contentHeight - 2; // TODO: better spec. of this '2' - that's because of overlapping 'to', 'subject' and editor views
 }
 
-/////////////////////////////
+#pragma mark Message actions
 
 - (void)sendMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
@@ -190,13 +190,44 @@
     }
 }
 
-/*
-- (IBAction)saveAction:(id)sender {
-    NSString *messageText = [_messageTextEditor getMessageText];
-    
-    [_messageEditorBase.messageEditorController saveDraft:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+- (void)deleteMessage {
+    NSLog(@"%s: TODO - save the message to drafts", __func__);
+
+    [self saveMessage];
+
+    if(!_embedded) {
+        [[[self view] window] close];
+    }
+    else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
+    }
 }
- */
+
+- (void)saveMessage {
+    NSString *messageText = [_messageTextEditor getMessageText];
+    NSString *subject = _subjectField.stringValue;
+    NSString *to = _toBoxViewController.tokenField.stringValue;
+    NSString *cc = _ccBoxViewController.tokenField.stringValue;
+    NSString *bcc = _bccBoxViewController.tokenField.stringValue;
+    
+    if(subject == nil) {
+        subject = @"TODO: subject";
+    }
+    
+    if(to == nil) {
+        to = @"TODO: to";
+    }
+    
+    if(cc == nil) {
+        cc = @"TODO: cc";
+    }
+    
+    if(bcc == nil) {
+        bcc = @"TODO: bcc";
+    }
+
+    [_messageEditorBase.messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
+}
 
 - (void)attachDocument {
     [self toggleAttachmentsPanel];

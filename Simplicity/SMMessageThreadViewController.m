@@ -65,6 +65,7 @@ static const CGFloat CELL_SPACING = -1;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
@@ -768,6 +769,16 @@ static const CGFloat CELL_SPACING = -1;
     [_contentView addSubview:editorSubview];
 
     [self updateCellFrames];
+}
+
+- (void)deleteMessageReply:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
+    
+    if(_messageEditorViewController != nil && _messageEditorViewController == messageEditorViewController) {
+        [self closeEmbeddedEditor];
+        [self updateCellFrames];
+    }
 }
 
 - (void)messageEditorContentHeightChanged:(NSNotification *)notification {

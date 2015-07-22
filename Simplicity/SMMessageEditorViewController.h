@@ -57,6 +57,7 @@
 - (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded;
 
 - (void)sendMessage;
+- (void)deleteMessage;
 //- (void)saveMessage;
 - (void)attachDocument;
 - (void)toggleBold;

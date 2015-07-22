@@ -16,6 +16,7 @@
 @property __weak SMMessageEditorViewController *messageEditorViewController;
 
 @property IBOutlet NSButton *sendButton;
+@property IBOutlet NSButton *deleteButton;
 //@property IBOutlet NSButton *saveButton;
 @property IBOutlet NSButton *attachButton;
 @property IBOutlet NSSegmentedControl *textStyleButton;
@@ -30,6 +31,7 @@
 @property IBOutlet NSButton *showSourceButton;
 
 - (IBAction)sendAction:(id)sender;
+- (IBAction)deleteAction:(id)sender;
 //- (IBAction)saveAction:(id)sender;
 - (IBAction)attachAction:(id)sender;
 - (IBAction)setTextStyleAction:(id)sender;

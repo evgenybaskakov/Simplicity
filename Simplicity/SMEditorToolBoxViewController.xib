@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMEditorToolBoxViewController">
             <connections>
                 <outlet property="attachButton" destination="ko7-PU-pG9" id="mTc-QE-P4d"/>
+                <outlet property="deleteButton" destination="GXF-54-Toa" id="7RB-si-en7"/>
                 <outlet property="fontSelectionButton" destination="jql-C8-Dmq" id="lpS-BD-uoP"/>
                 <outlet property="justifyTextControl" destination="PYc-3u-Ywx" id="IfK-ER-45i"/>
                 <outlet property="sendButton" destination="mY8-mx-Ebq" id="lcn-eZ-3es"/>
@@ -40,8 +41,24 @@
                             <action selector="sendAction:" target="-2" id="Xfv-l7-oHu"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GXF-54-Toa" userLabel="Delete">
+                        <rect key="frame" x="59" y="-3" width="44" height="32"/>
+                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="full_recycle_bin-128" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f9p-mP-MyG">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="deleteAction:" target="-2" id="S8n-bV-jr9"/>
+                        </connections>
+                    </button>
+                    <box horizontalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="YGR-UK-Tk6">
+                        <rect key="frame" x="99" y="3" width="5" height="22"/>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ko7-PU-pG9" userLabel="Attach">
-                        <rect key="frame" x="65" y="-3" width="44" height="32"/>
+                        <rect key="frame" x="100" y="-3" width="44" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="attachment-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HAd-ah-lv1">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -51,7 +68,7 @@
                         </connections>
                     </button>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jql-C8-Dmq" userLabel="Font Name">
-                        <rect key="frame" x="104" y="1" width="111" height="26"/>
+                        <rect key="frame" x="139" y="1" width="111" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -68,7 +85,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-l5-E7p" userLabel="Text Size">
-                        <rect key="frame" x="214" y="1" width="49" height="26"/>
+                        <rect key="frame" x="249" y="1" width="49" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -85,7 +102,7 @@
                         </connections>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2X9-vT-Zqa" userLabel="Text Style">
-                        <rect key="frame" x="262" y="2" width="83" height="24"/>
+                        <rect key="frame" x="297" y="2" width="83" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="Aas-1p-30s">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -101,21 +118,21 @@
                         </connections>
                     </segmentedControl>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qoz-bT-xOl" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="347" y="3" width="23" height="23"/>
+                        <rect key="frame" x="382" y="3" width="23" height="23"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <action selector="setTextForegroundColorAction:" target="-2" id="7pf-dT-qIH"/>
                         </connections>
                     </colorWell>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn8-1h-uOB" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="374" y="3" width="23" height="23"/>
+                        <rect key="frame" x="409" y="3" width="23" height="23"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <action selector="setTextBackgroundColorAction:" target="-2" id="Pv1-Qa-sfa"/>
                         </connections>
                     </colorWell>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hq6-jg-08T" userLabel="List">
-                        <rect key="frame" x="399" y="2" width="57" height="24"/>
+                        <rect key="frame" x="434" y="2" width="57" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="OQ4-uB-5zu">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -128,7 +145,7 @@
                         </connections>
                     </segmentedControl>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZN8-xv-e9A" userLabel="Shift">
-                        <rect key="frame" x="455" y="2" width="57" height="24"/>
+                        <rect key="frame" x="490" y="2" width="57" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="AFj-VP-2mY">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -141,7 +158,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7" userLabel="Quote">
-                        <rect key="frame" x="615" y="-3" width="40" height="32"/>
+                        <rect key="frame" x="650" y="-3" width="40" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="quote" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -151,7 +168,7 @@
                         </connections>
                     </button>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYc-3u-Ywx" userLabel="Justify">
-                        <rect key="frame" x="511" y="2" width="109" height="24"/>
+                        <rect key="frame" x="546" y="2" width="109" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="bsJ-5w-fII">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -170,7 +187,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGq-e0-vfT">
-                        <rect key="frame" x="646" y="-3" width="80" height="32"/>
+                        <rect key="frame" x="681" y="-3" width="80" height="32"/>
                         <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wY7-p1-UxM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -179,12 +196,6 @@
                             <action selector="showSourceAction:" target="-2" id="oCg-Dn-8ti"/>
                         </connections>
                     </button>
-                    <box horizontalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="YGR-UK-Tk6">
-                        <rect key="frame" x="64" y="3" width="5" height="22"/>
-                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <font key="titleFont" metaFont="system"/>
-                    </box>
                 </subviews>
             </view>
             <constraints>
@@ -206,6 +217,7 @@
         <image name="align_left-128" width="128" height="128"/>
         <image name="align_right-128" width="128" height="128"/>
         <image name="attachment-icon" width="128" height="128"/>
+        <image name="full_recycle_bin-128" width="128" height="128"/>
         <image name="quote" width="128" height="128"/>
         <image name="shift-right" width="128" height="128"/>
         <image name="shirt-left" width="128" height="128"/>

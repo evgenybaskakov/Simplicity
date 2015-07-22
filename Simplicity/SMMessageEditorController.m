@@ -102,6 +102,12 @@
 #pragma mark Message creation
 
 - (MCOMessageBuilder*)createMessageData:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
+    NSAssert(messageText, @"messageText is nil");
+    NSAssert(subject, @"subject is nil");
+    NSAssert(to, @"to is nil");
+    NSAssert(cc, @"cc is nil");
+    NSAssert(bcc, @"bcc is nil");
+
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
     //TODO: custom from

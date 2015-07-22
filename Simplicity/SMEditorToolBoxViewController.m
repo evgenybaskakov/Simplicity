@@ -18,6 +18,10 @@
     [_messageEditorViewController sendMessage];
 }
 
+- (IBAction)deleteAction:(id)sender {
+    [_messageEditorViewController deleteMessage];
+}
+
 - (IBAction)attachAction:(id)sender {
     [_messageEditorViewController attachDocument];
 }

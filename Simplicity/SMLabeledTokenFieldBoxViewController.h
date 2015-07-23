@@ -17,5 +17,6 @@
 
 - (NSSize)intrinsicContentViewSize;
 - (void)invalidateIntrinsicContentViewSize;
+- (void)addControlSwitch;
 
 @end

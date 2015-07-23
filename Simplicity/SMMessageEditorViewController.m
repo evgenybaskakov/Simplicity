@@ -69,6 +69,8 @@
     [super viewDidLoad];
 
     // To
+
+    [_toBoxViewController addControlSwitch]; // TODO: provide target & action
     
     [_toBoxView addSubview:_toBoxViewController.view];
     

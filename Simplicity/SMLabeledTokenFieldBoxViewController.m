@@ -49,7 +49,21 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
-#pragma mark - NSTokenFieldDelegate
+#pragma mark Control triangle
+
+- (void)addControlSwitch {
+    NSButton *triangle = [[NSButton alloc] init];
+    [triangle setButtonType:NSOnOffButton];
+    [[triangle cell] setBezelStyle:NSDisclosureBezelStyle];
+    triangle.title = @"";
+    triangle.frame = NSMakeRect(0, 1, triangle.intrinsicContentSize.width, triangle.intrinsicContentSize.height);
+    //    triangle.target = self;
+    //    triangle.action = @selector(trashAction:);
+    
+    [[self view] addSubview:triangle];
+}
+
+#pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
 	//NSLog(@"%s", __func__);

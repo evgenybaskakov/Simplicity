@@ -502,14 +502,25 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSLog(@"%s: TODO", __func__);
 }
 
+- (void)deleteMessage:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)markMessageAsUnread:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
 - (void)showMessageActions:(id)sender {
     NSMenu *theMenu = [[NSMenu alloc] init];
 
     [theMenu setAutoenablesItems:NO];
 
-    [[theMenu insertItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@"" atIndex:0] setTarget:self];
-    [[theMenu insertItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@"" atIndex:1] setTarget:self];
-    [[theMenu insertItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@"" atIndex:2] setTarget:self];
+    [[theMenu addItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
+    [theMenu addItem:[NSMenuItem separatorItem]];
+    [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Mark as Unread" action:@selector(markMessageAsUnread:) keyEquivalent:@""] setTarget:self];
     
     NSPoint menuPosition = NSMakePoint(_messageActionsButton.bounds.origin.x, _messageActionsButton.bounds.origin.y + _messageActionsButton.bounds.size.height);
     

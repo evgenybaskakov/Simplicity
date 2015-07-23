@@ -759,8 +759,22 @@ static const CGFloat CELL_SPACING = -1;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
     SMMessageThreadCell *cell = _cells[cellIdx];
+    NSString *replyHtmlText = nil;
+    
+    NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
+    if([replyKind isEqualToString:@"Reply"]) {
+        replyHtmlText = [NSString stringWithFormat:@"Compose the reply here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
+    }
+    else if([replyKind isEqualToString:@"ReplyAll"]) {
+        replyHtmlText = [NSString stringWithFormat:@"Compose the reply to all here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
+    }
+    else if([replyKind isEqualToString:@"Forward"]) {
+        replyHtmlText = [NSString stringWithFormat:@"Compose the forward here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
+    }
+    else {
+        NSAssert(false, @"Unrecognized reply kind %@", replyKind);
+    }
 
-    NSString *replyHtmlText = [NSString stringWithFormat:@"Compose the reply here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
     [_messageEditorViewController.messageTextEditor startEditorWithHTML:replyHtmlText];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;

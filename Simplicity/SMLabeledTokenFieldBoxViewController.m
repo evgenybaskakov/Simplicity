@@ -49,18 +49,21 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
-#pragma mark Control triangle
+#pragma mark Control switch
 
-- (void)addControlSwitch:(id)target action:(SEL)action {
-    NSButton *triangle = [[NSButton alloc] init];
-    [triangle setButtonType:NSOnOffButton];
-    [[triangle cell] setBezelStyle:NSDisclosureBezelStyle];
-    triangle.title = @"";
-    triangle.frame = NSMakeRect(0, 1, triangle.intrinsicContentSize.width, triangle.intrinsicContentSize.height);
-    triangle.target = target;
-    triangle.action = action;
+- (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action {
+    NSAssert(_controlSwitch == nil, @"controlSwitch already exists");
+
+    _controlSwitch = [[NSButton alloc] init];
+    [_controlSwitch setButtonType:NSOnOffButton];
+    [[_controlSwitch cell] setBezelStyle:NSDisclosureBezelStyle];
+    _controlSwitch.title = @"";
+    _controlSwitch.state = state;
+    _controlSwitch.frame = NSMakeRect(0, 1, _controlSwitch.intrinsicContentSize.width, _controlSwitch.intrinsicContentSize.height);
+    _controlSwitch.target = target;
+    _controlSwitch.action = action;
     
-    [[self view] addSubview:triangle];
+    [[self view] addSubview:_controlSwitch];
 }
 
 #pragma mark NSTokenFieldDelegate

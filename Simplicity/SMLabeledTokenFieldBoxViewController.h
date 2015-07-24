@@ -15,8 +15,10 @@
 @property IBOutlet NSTextField *label;
 @property IBOutlet SMTokenField *tokenField;
 
+@property (readonly) NSButton *controlSwitch;
+
 - (NSSize)intrinsicContentViewSize;
 - (void)invalidateIntrinsicContentViewSize;
-- (void)addControlSwitch:(id)target action:(SEL)action;
+- (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action;
 
 @end

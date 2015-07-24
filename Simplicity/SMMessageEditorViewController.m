@@ -70,7 +70,7 @@
 
     // To
 
-    [_toBoxViewController addControlSwitch]; // TODO: provide target & action
+    [_toBoxViewController addControlSwitch:self action:@selector(toggleFullAddressPanel:)];
     
     [_toBoxView addSubview:_toBoxViewController.view];
     
@@ -305,6 +305,20 @@
 }
 
 #pragma mark UI elements collaboration
+
+- (void)toggleFullAddressPanel:(id)sender {
+    NSButton *controlSwitch = sender;
+
+    if(controlSwitch.state == NSOnState) {
+        NSLog(@"control panel is on");
+    }
+    else if(controlSwitch.state == NSOffState) {
+        NSLog(@"control panel is off");
+    }
+    else {
+        NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
+    }
+}
 
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {
     id object = [notification object];

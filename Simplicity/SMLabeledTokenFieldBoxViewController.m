@@ -51,14 +51,14 @@
 
 #pragma mark Control triangle
 
-- (void)addControlSwitch {
+- (void)addControlSwitch:(id)target action:(SEL)action {
     NSButton *triangle = [[NSButton alloc] init];
     [triangle setButtonType:NSOnOffButton];
     [[triangle cell] setBezelStyle:NSDisclosureBezelStyle];
     triangle.title = @"";
     triangle.frame = NSMakeRect(0, 1, triangle.intrinsicContentSize.width, triangle.intrinsicContentSize.height);
-    //    triangle.target = self;
-    //    triangle.action = @selector(trashAction:);
+    triangle.target = target;
+    triangle.action = action;
     
     [[self view] addSubview:triangle];
 }

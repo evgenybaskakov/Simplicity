@@ -17,6 +17,8 @@
 #import "SMMessageListController.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWebView.h"
+#import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMTokenField.h"
 #import "SMFlippedView.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -773,6 +775,25 @@ static const CGFloat CELL_SPACING = -1;
     }
     else {
         NSAssert(false, @"Unrecognized reply kind %@", replyKind);
+    }
+    
+    if(![replyKind isEqualToString:@"Forward"]) {
+        NSString *fromAddress = [cell.message from];
+        NSAssert(fromAddress != nil, @"bad message from address");
+
+        [_messageEditorViewController.toBoxViewController.tokenField setObjectValue:fromAddress];
+
+        if([replyKind isEqualToString:@"ReplyAll"]) {
+            NSMutableArray *ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
+            // TODO: remove ourselves (myself) from this CC list
+            
+            NSArray *parsedMessageCcAddressList = [cell.message parsedCcAddressList];
+            if(parsedMessageCcAddressList != nil && parsedMessageCcAddressList.count != 0) {
+                [ccAddressList addObjectsFromArray:parsedMessageCcAddressList];
+            }
+
+            [_messageEditorViewController.ccBoxViewController.tokenField setObjectValue:ccAddressList];
+        }
     }
 
     [_messageEditorViewController.messageTextEditor startEditorWithHTML:replyHtmlText];

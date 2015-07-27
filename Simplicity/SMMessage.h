@@ -43,4 +43,7 @@
 
 - (NSString*)localizedDate;
 
+- (NSArray*)parsedToAddressList;
+- (NSArray*)parsedCcAddressList;
+
 @end

@@ -169,6 +169,31 @@ static NSString *unquote(NSString *s) {
 	return @"<no subject>";
 }
 
+- (NSArray*)parsedToAddressList {
+    NSArray *toAddressArray = [self.header to];
+    NSMutableArray *newToArray = [[NSMutableArray alloc] initWithCapacity:toAddressArray.count];
+    
+    for(NSUInteger i = 0; i < toAddressArray.count; i++)
+        newToArray[i] = [SMMessage parseAddress:toAddressArray[i]];
+    
+    return newToArray;
+}
+
+- (NSArray*)parsedCcAddressList {
+    NSArray *ccAddressArray = [self.header cc];
+    
+    if(ccAddressArray != nil && ccAddressArray.count > 0) {
+        NSMutableArray *newCcArray = [[NSMutableArray alloc] initWithCapacity:ccAddressArray.count];
+        
+        for(NSUInteger i = 0; i < ccAddressArray.count; i++)
+            newCcArray[i] = [SMMessage parseAddress:ccAddressArray[i]];
+        
+        return newCcArray;
+    }
+    
+    return nil;
+}
+
 - (NSDate*)date {
 	if(_createdFromDB)
 		return _dateDB;

@@ -166,27 +166,16 @@
 	NSArray *newFromArray = [NSArray arrayWithObject:fromAddress];
 	
 	[_fromAddress setObjectValue:newFromArray];
-	
-	NSArray *toAddressArray = [message.header to];
-	NSMutableArray *newToArray = [[NSMutableArray alloc] initWithCapacity:toAddressArray.count];
-	
-	for(NSUInteger i = 0; i < toAddressArray.count; i++)
-		newToArray[i] = [SMMessage parseAddress:toAddressArray[i]];
-	
-	[_toAddresses setObjectValue:newToArray];
-	
-	NSArray *ccAddressArray = [message.header cc];
-	
-	if(ccAddressArray.count > 0) {
-		[self createCc];
-		
-		NSMutableArray *newCcArray = [[NSMutableArray alloc] initWithCapacity:ccAddressArray.count];
-		
-		for(NSUInteger i = 0; i < ccAddressArray.count; i++)
-			newCcArray[i] = [SMMessage parseAddress:ccAddressArray[i]];
-		
-		[_ccAddresses setObjectValue:newCcArray];
-	}
+    
+    NSArray *parsedToAddressList = [message parsedToAddressList];
+	[_toAddresses setObjectValue:parsedToAddressList];
+
+    NSArray *parsedCcAddressList = [message parsedCcAddressList];
+    if(parsedCcAddressList != nil && parsedCcAddressList.count != 0) {
+        [self createCc];
+
+        [_ccAddresses setObjectValue:parsedCcAddressList];
+    }
 	
 	_addressListsFramesValid = NO;
 }

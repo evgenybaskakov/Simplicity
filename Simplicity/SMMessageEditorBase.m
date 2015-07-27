@@ -83,6 +83,10 @@ static NSDictionary *fontNameToIndexMap;
     return @""
     "<html>"
     "  <style>"
+    "    body {"
+    "      font-family: 'Arial';" // TODO: sync with fontFamilies and User Prefs!
+    "      font-size: 12px;"      // TODO: sync with fontFamilies and User Prefs!
+    "    }"
     "    blockquote {"
     "      display: block;"
     "      margin-top: 0em;"

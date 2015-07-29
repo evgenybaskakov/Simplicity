@@ -293,7 +293,7 @@ static const CGFloat boxHeight = 31;
     _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
     _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
-    _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1));
+    _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1) + 2); // TODO: +2 is needed to prevent small frame changes on text input (see _messageTextEditor.contentHeight calculation)
     _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
     _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
 }

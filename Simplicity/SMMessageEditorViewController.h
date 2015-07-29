@@ -8,18 +8,17 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class SMLabeledTokenFieldBoxView;
 @class SMLabeledTokenFieldBoxViewController;
+@class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorWebView;
 
 @interface SMMessageEditorViewController : NSViewController
 
-@property (readonly) NSBox *subjectBoxView;
-@property (readonly) NSTextField *subjectField;
-@property (readonly) SMMessageEditorWebView *messageTextEditor;
 @property (readonly) SMLabeledTokenFieldBoxViewController *toBoxViewController;
 @property (readonly) SMLabeledTokenFieldBoxViewController *ccBoxViewController;
 @property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
+@property (readonly) SMLabeledTextFieldBoxViewController *subjectBoxViewController;
+@property (readonly) SMMessageEditorWebView *messageTextEditor;
 
 @property (readonly) Boolean embedded;
 @property (readonly) NSUInteger editorFullHeight;

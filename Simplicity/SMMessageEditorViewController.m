@@ -16,6 +16,7 @@
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMLabeledTextFieldBoxViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
 #import "SMMessageEditorBase.h"
@@ -59,11 +60,7 @@
         
         // subject
         
-        _subjectBoxView = [[NSBox alloc] init];
-
-        [_subjectBoxView setBoxType:NSBoxCustom];
-        [_subjectBoxView setTitlePosition:NSNoTitle];
-        [_subjectBoxView setFillColor:[NSColor whiteColor]];
+        _subjectBoxViewController = [[SMLabeledTextFieldBoxViewController alloc] initWithNibName:@"SMLabeledTextFieldBoxViewController" bundle:nil];
         
         // editor toolbox
         
@@ -123,11 +120,11 @@
 
     // subject
     
-    [self.view addSubview:_subjectBoxView];
+    [self.view addSubview:_subjectBoxViewController.view];
 
-    _subjectBoxView.frame = NSMakeRect(-1, (boxHeight-1)*3-1, curWidth+2, boxHeight);
-    _subjectBoxView.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _subjectBoxView.translatesAutoresizingMaskIntoConstraints = YES;
+    _subjectBoxViewController.view.frame = NSMakeRect(-1, (boxHeight-1)*3-1, curWidth+2, boxHeight);
+    _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
     // editor toolbox
     
@@ -150,6 +147,7 @@
     [_toBoxViewController.label setStringValue:@"To:"];
     [_ccBoxViewController.label setStringValue:@"Cc:"];
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
+    [_subjectBoxViewController.label setStringValue:@"Subject:"];
     
     [_editorToolBoxViewController.sendButton setEnabled:NO];
     
@@ -185,7 +183,7 @@
 - (void)sendMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
     
-    [_messageEditorController sendMessage:messageText subject:_subjectField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
 
     if(!_embedded) {
         [[[self view] window] close];
@@ -207,7 +205,7 @@
 
 - (void)saveMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
-    NSString *subject = _subjectField.stringValue;
+    NSString *subject = _subjectBoxViewController.textField.stringValue;
     NSString *to = _toBoxViewController.tokenField.stringValue;
     NSString *cc = _ccBoxViewController.tokenField.stringValue;
     NSString *bcc = _bccBoxViewController.tokenField.stringValue;

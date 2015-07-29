@@ -128,6 +128,8 @@
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
+		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
+		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B011B5A10BC0049AB88 /* Underline-128.png */; };
 		80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B021B5A10BC0049AB88 /* Italic-128.png */; };
@@ -412,6 +414,9 @@
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
 		8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorViewController.h; sourceTree = "<group>"; };
 		8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorViewController.m; sourceTree = "<group>"; };
+		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
+		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
+		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
 		8081A7891B27F65B0081727C /* SMOpAppendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAppendMessage.h; sourceTree = "<group>"; };
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		80A44B011B5A10BC0049AB88 /* Underline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Underline-128.png"; sourceTree = "<group>"; };
@@ -599,6 +604,8 @@
 				0089D35E1A88084F00C189BB /* SMFolderColorController.m */,
 				00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */,
 				00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */,
+				8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */,
+				8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */,
 				004A64271AC7A40B0079A0C1 /* SMLabeledTokenFieldBoxViewController.h */,
 				004A64281AC7A40B0079A0C1 /* SMLabeledTokenFieldBoxViewController.m */,
 				00DC84941967A70E00577667 /* SMMailboxController.h */,
@@ -703,6 +710,7 @@
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
+				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
 				004A64201AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
@@ -928,6 +936,7 @@
 				80A44B131B5A18520049AB88 /* quote.png in Resources */,
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
 				00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */,
+				8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */,
 				00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */,
 				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
 				80A44B191B5A19260049AB88 /* align_center-128.png in Resources */,
@@ -997,6 +1006,7 @@
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
+				8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */,
 				80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */,
 				0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,

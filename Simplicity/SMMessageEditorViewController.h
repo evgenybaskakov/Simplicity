@@ -14,47 +14,17 @@
 
 @interface SMMessageEditorViewController : NSViewController
 
-@property IBOutlet NSView *toBoxView;
-@property IBOutlet NSView *ccBoxView;
-@property IBOutlet NSView *bccBoxView;
-@property IBOutlet NSView *subjectBoxView;
-@property IBOutlet NSTextField *subjectField;
-@property IBOutlet NSView *editorToolBoxView;
-@property IBOutlet SMMessageEditorWebView *messageTextEditor;
-
-@property IBOutlet NSLayoutConstraint *toTopConstraint;
-@property IBOutlet NSLayoutConstraint *toLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *toTrailingConstraint;
-
-@property IBOutlet NSLayoutConstraint *ccTopConstraint;
-@property IBOutlet NSLayoutConstraint *ccLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *ccTrailingConstraint;
-
-@property IBOutlet NSLayoutConstraint *bccTopConstraint;
-@property IBOutlet NSLayoutConstraint *bccLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *bccTrailingConstraint;
-
-@property IBOutlet NSLayoutConstraint *subjectTopConstraint;
-@property IBOutlet NSLayoutConstraint *subjectLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *subjectTrailingConstraint;
-
-@property IBOutlet NSLayoutConstraint *toolboxTopConstraint;
-@property IBOutlet NSLayoutConstraint *toolboxLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *toolboxTrailingConstraint;
-
-@property IBOutlet NSLayoutConstraint *messageEditorTopConstraint;
-@property IBOutlet NSLayoutConstraint *messageEditorLeadingConstraint;
-@property IBOutlet NSLayoutConstraint *messageEditorTrailingConstraint;
-@property IBOutlet NSLayoutConstraint *messageEditorBottomConstraint;
-
-@property SMLabeledTokenFieldBoxViewController *toBoxViewController;
-@property SMLabeledTokenFieldBoxViewController *ccBoxViewController;
-@property SMLabeledTokenFieldBoxViewController *bccBoxViewController;
+@property (readonly) NSBox *subjectBoxView;
+@property (readonly) NSTextField *subjectField;
+@property (readonly) SMMessageEditorWebView *messageTextEditor;
+@property (readonly) SMLabeledTokenFieldBoxViewController *toBoxViewController;
+@property (readonly) SMLabeledTokenFieldBoxViewController *ccBoxViewController;
+@property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
 
 @property (readonly) Boolean embedded;
 @property (readonly) NSUInteger editorFullHeight;
 
-- (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded;
+- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded;
 
 - (void)sendMessage;
 - (void)deleteMessage;

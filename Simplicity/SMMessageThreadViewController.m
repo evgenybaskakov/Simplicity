@@ -755,7 +755,7 @@ static const CGFloat CELL_SPACING = -1;
     [self closeEmbeddedEditor]; // Close the currently edited message; it should save draft, etc.
     
     _cellViewControllerToReply = cellViewControllerToReply;
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:YES];
+//TODO    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithEmbedded:YES];
 
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");

@@ -15,9 +15,6 @@
 }
 
 - (void)awakeFromNib {
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithNibName:@"SMMessageEditorViewController" bundle:nil embedded:NO];
-
-    NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 }
 
 - (void)windowDidLoad {
@@ -29,7 +26,12 @@
     
     // View setup
 
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO];
+    
+    NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
+
     [[self window] setContentView:_messageEditorViewController.view];
+//    _messageEditorViewController.view.frame = [[self window] frame];
     
     // Editor setup
     

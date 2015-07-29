@@ -11,6 +11,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMFlippedView.h"
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
@@ -27,15 +28,18 @@
     SMMessageEditorController *_messageEditorController;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
-    NSLayoutConstraint *_collapsedToolboxTopConstraint;
     NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
 }
 
-- (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil embedded:(Boolean)embedded {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded {
+    self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
+        NSView *view = [[SMFlippedView alloc] initWithFrame:frame];
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        [self setView:view];
+        
         _embedded = embedded;
 
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
@@ -53,59 +57,65 @@
         
         _bccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
         
+        // subject
+        
+        _subjectBoxView = [[NSBox alloc] init];
+
+        [_subjectBoxView setBoxType:NSBoxCustom];
+        [_subjectBoxView setTitlePosition:NSNoTitle];
+        [_subjectBoxView setFillColor:[NSColor whiteColor]];
+        
         // editor toolbox
         
         _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
         _editorToolBoxViewController.messageEditorViewController = self;
         
+        // editor area
+        
+        _messageTextEditor = [[SMMessageEditorWebView alloc] init];
+        
         // register events
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
+        
+        [self initView];
     }
     
     return self;
 }
 
-- (void)viewDidLoad {
+- (void)initView {
     [super viewDidLoad];
+
+    const CGFloat curWidth = self.view.frame.size.width;
+    const CGFloat curHeight = self.view.frame.size.height;
+    const CGFloat boxHeight = 31;
 
     // To
 
     [_toBoxViewController addControlSwitch:NSOnState target:self action:@selector(toggleFullAddressPanel:)];
     
-    [_toBoxView addSubview:_toBoxViewController.view];
-    
-    [_toBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_toBoxViewController.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    
-    [_toBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_toBoxViewController.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-    
-    [_toBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_toBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-    
-    [_toBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    [self.view addSubview:_toBoxViewController.view];
+
+    _toBoxViewController.view.frame = NSMakeRect(-1, -1, curWidth+2, boxHeight);
+    _toBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _toBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
     // Cc
     
-    [_ccBoxView addSubview:_ccBoxViewController.view];
-    
-    [_ccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_ccBoxView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_ccBoxViewController.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    
-    [_ccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_ccBoxView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_ccBoxViewController.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-    
-    [_ccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_ccBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_ccBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-    
-    [_ccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_ccBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    [self.view addSubview:_ccBoxViewController.view];
+
+    _ccBoxViewController.view.frame = NSMakeRect(-1, boxHeight-2, curWidth+2, boxHeight);
+    _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _ccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
     // Bcc
     
-    [_bccBoxView addSubview:_bccBoxViewController.view];
-    
-    [_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    
-    [_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-    
-    [_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-    
-    [_bccBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_bccBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_bccBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    [self.view addSubview:_bccBoxViewController.view];
+
+    _bccBoxViewController.view.frame = NSMakeRect(-1, (boxHeight-1)*2-1, curWidth+2, boxHeight);
+    _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
     if(_embedded) {
         _toBoxViewController.controlSwitch.state = NSOffState;
@@ -113,17 +123,29 @@
         [self hideFullAddressPanel];
     }
 
+    // subject
+    
+    [self.view addSubview:_subjectBoxView];
+
+    _subjectBoxView.frame = NSMakeRect(-1, (boxHeight-1)*3-1, curWidth+2, boxHeight);
+    _subjectBoxView.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _subjectBoxView.translatesAutoresizingMaskIntoConstraints = YES;
+
     // editor toolbox
     
-    [_editorToolBoxView addSubview:_editorToolBoxViewController.view];
+    [self.view addSubview:_editorToolBoxViewController.view];
+
+    _editorToolBoxViewController.view.frame = NSMakeRect(-1, (boxHeight-1)*4-1, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
+    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
-    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    // editor area
     
-    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    [self.view addSubview:_messageTextEditor];
     
-    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-    
-    [_editorToolBoxView addConstraint:[NSLayoutConstraint constraintWithItem:_editorToolBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxViewController.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+    _messageTextEditor.frame = NSMakeRect(-1, (boxHeight-1)*5-1, curWidth+2, curHeight - (boxHeight-1) * 5);
+    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
+    _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
 
     // Controls initialization
     
@@ -285,58 +307,30 @@
 #pragma mark UI elements collaboration
 
 - (void)showFullAddressPanel {
-    NSView *view = [self view];
+/*    [self.view addSubview:_ccBoxViewController.view];
+    [self.view addSubview:_bccBoxViewController.view];
+    [self.view addSubview:_subjectBoxView];
+
+    CGFloat deltaY = (_ccBoxView.bounds.size.height - 1) + (_bccBoxView.bounds.size.height - 1) + (_subjectBoxView.bounds.size.height - 1);
+    CGFloat newY = _editorToolBoxView.frame.origin.y - deltaY;
     
-    NSAssert(_collapsedToolboxTopConstraint != nil, @"no _collapsedToolboxTopConstraint");
-    
-    [view removeConstraint:_collapsedToolboxTopConstraint];
-    
-    [view addSubview:_ccBoxView];
-    [view addSubview:_bccBoxView];
-    [view addSubview:_subjectBoxView];
-    
-    [view addConstraint:_ccTopConstraint];
-    [view addConstraint:_ccLeadingConstraint];
-    [view addConstraint:_ccTrailingConstraint];
-    
-    [view addConstraint:_bccTopConstraint];
-    [view addConstraint:_bccLeadingConstraint];
-    [view addConstraint:_bccTrailingConstraint];
-    
-    [view addConstraint:_subjectTopConstraint];
-    [view addConstraint:_subjectLeadingConstraint];
-    [view addConstraint:_subjectTrailingConstraint];
-    
-    [view addConstraint:_toolboxTopConstraint];
-}
+    _editorToolBoxView.frame = NSMakeRect(_editorToolBoxView.frame.origin.x, newY, _editorToolBoxView.frame.size.width, _editorToolBoxView.frame.size.height);
+
+    _messageTextEditor.frame = NSMakeRect(_messageTextEditor.frame.origin.x, _messageTextEditor.frame.origin.y, _messageTextEditor.frame.size.width, _messageTextEditor.frame.size.height - deltaY);
+*/}
 
 - (void)hideFullAddressPanel {
-    NSView *view = [self view];
-    
-    [view removeConstraint:_ccTopConstraint];
-    [view removeConstraint:_ccLeadingConstraint];
-    [view removeConstraint:_ccTrailingConstraint];
-    
-    [view removeConstraint:_bccTopConstraint];
-    [view removeConstraint:_bccLeadingConstraint];
-    [view removeConstraint:_bccTrailingConstraint];
-    
-    [view removeConstraint:_subjectTopConstraint];
-    [view removeConstraint:_subjectLeadingConstraint];
-    [view removeConstraint:_subjectTrailingConstraint];
-    
-    [view removeConstraint:_toolboxTopConstraint];
+/*    CGFloat deltaY = (_ccBoxView.bounds.size.height - 1) + (_bccBoxView.bounds.size.height - 1) + (_subjectBoxView.bounds.size.height - 1);
+    CGFloat newY = _editorToolBoxView.frame.origin.y + deltaY;
     
     [_ccBoxView removeFromSuperview];
     [_bccBoxView removeFromSuperview];
     [_subjectBoxView removeFromSuperview];
-    
-    if(_collapsedToolboxTopConstraint == nil) {
-        _collapsedToolboxTopConstraint = [NSLayoutConstraint constraintWithItem:_toBoxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_editorToolBoxView attribute:NSLayoutAttributeTop multiplier:1 constant:1];
-    }
-    
-    [view addConstraint:_collapsedToolboxTopConstraint];
-}
+
+    _editorToolBoxView.frame = NSMakeRect(_editorToolBoxView.frame.origin.x, newY, _editorToolBoxView.frame.size.width, _editorToolBoxView.frame.size.height);
+
+    _messageTextEditor.frame = NSMakeRect(_messageTextEditor.frame.origin.x, _messageTextEditor.frame.origin.y, _messageTextEditor.frame.size.width, _messageTextEditor.frame.size.height + deltaY);
+*/}
 
 - (void)toggleFullAddressPanel:(id)sender {
     NSButton *controlSwitch = _toBoxViewController.controlSwitch;
@@ -381,9 +375,6 @@
     NSView *view = [self view];
     NSAssert(view != nil, @"view is nil");
     
-    NSAssert(_messageEditorBottomConstraint != nil, @"_messageEditorBottomConstraint not created");
-    [view removeConstraint:_messageEditorBottomConstraint];
-    
     if(_attachmentsPanelViewController == nil) {
         _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
         
@@ -421,9 +412,6 @@
     [view removeConstraints:_attachmentsPanelViewConstraints];
     
     [_attachmentsPanelViewController.view removeFromSuperview];
-    
-    NSAssert(_messageEditorBottomConstraint != nil, @"_messageEditorBottomConstraint not created");
-    [view addConstraint:_messageEditorBottomConstraint];
     
     _attachmentsPanelShown = NO;
 }

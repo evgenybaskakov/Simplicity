@@ -26,13 +26,13 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <box autoresizesSubviews="NO" wantsLayer="YES" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="SRf-ju-wWd" userLabel="Editor Tool Box">
-            <rect key="frame" x="0.0" y="0.0" width="825" height="30"/>
+            <rect key="frame" x="0.0" y="0.0" width="825" height="29"/>
             <view key="contentView">
-                <rect key="frame" x="1" y="1" width="823" height="28"/>
+                <rect key="frame" x="1" y="1" width="823" height="27"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mY8-mx-Ebq">
-                        <rect key="frame" x="5" y="2" width="56" height="24"/>
+                        <rect key="frame" x="5" y="1" width="56" height="25"/>
                         <buttonCell key="cell" type="smallSquare" title="Send" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Vv-az-tNJ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -42,7 +42,7 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GXF-54-Toa" userLabel="Delete">
-                        <rect key="frame" x="59" y="-3" width="44" height="32"/>
+                        <rect key="frame" x="59" y="-4" width="44" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="full_recycle_bin-128" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f9p-mP-MyG">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -52,13 +52,13 @@
                         </connections>
                     </button>
                     <box horizontalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="YGR-UK-Tk6">
-                        <rect key="frame" x="99" y="3" width="5" height="22"/>
+                        <rect key="frame" x="99" y="2" width="5" height="22"/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ko7-PU-pG9" userLabel="Attach">
-                        <rect key="frame" x="100" y="-3" width="44" height="32"/>
+                        <rect key="frame" x="100" y="-4" width="44" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="attachment-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HAd-ah-lv1">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -68,7 +68,7 @@
                         </connections>
                     </button>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jql-C8-Dmq" userLabel="Font Name">
-                        <rect key="frame" x="139" y="1" width="111" height="26"/>
+                        <rect key="frame" x="139" y="0.0" width="111" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -85,7 +85,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-l5-E7p" userLabel="Text Size">
-                        <rect key="frame" x="249" y="1" width="49" height="26"/>
+                        <rect key="frame" x="249" y="0.0" width="49" height="26"/>
                         <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -102,7 +102,7 @@
                         </connections>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2X9-vT-Zqa" userLabel="Text Style">
-                        <rect key="frame" x="297" y="2" width="83" height="24"/>
+                        <rect key="frame" x="297" y="1" width="83" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="Aas-1p-30s">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -118,21 +118,21 @@
                         </connections>
                     </segmentedControl>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qoz-bT-xOl" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="382" y="3" width="23" height="23"/>
+                        <rect key="frame" x="382" y="2" width="23" height="23"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <action selector="setTextForegroundColorAction:" target="-2" id="7pf-dT-qIH"/>
                         </connections>
                     </colorWell>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn8-1h-uOB" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="409" y="3" width="23" height="23"/>
+                        <rect key="frame" x="409" y="2" width="23" height="23"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <action selector="setTextBackgroundColorAction:" target="-2" id="Pv1-Qa-sfa"/>
                         </connections>
                     </colorWell>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hq6-jg-08T" userLabel="List">
-                        <rect key="frame" x="434" y="2" width="57" height="24"/>
+                        <rect key="frame" x="434" y="1" width="57" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="OQ4-uB-5zu">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -145,7 +145,7 @@
                         </connections>
                     </segmentedControl>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZN8-xv-e9A" userLabel="Shift">
-                        <rect key="frame" x="490" y="2" width="57" height="24"/>
+                        <rect key="frame" x="490" y="1" width="57" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="AFj-VP-2mY">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -158,7 +158,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7" userLabel="Quote">
-                        <rect key="frame" x="650" y="-3" width="40" height="32"/>
+                        <rect key="frame" x="650" y="-4" width="40" height="32"/>
                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="quote" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -168,7 +168,7 @@
                         </connections>
                     </button>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYc-3u-Ywx" userLabel="Justify">
-                        <rect key="frame" x="546" y="2" width="109" height="24"/>
+                        <rect key="frame" x="546" y="1" width="109" height="24"/>
                         <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="bsJ-5w-fII">
                             <font key="font" metaFont="system"/>
                             <segments>
@@ -187,7 +187,7 @@
                         </connections>
                     </segmentedControl>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGq-e0-vfT">
-                        <rect key="frame" x="681" y="-3" width="80" height="32"/>
+                        <rect key="frame" x="681" y="-4" width="80" height="32"/>
                         <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wY7-p1-UxM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -199,7 +199,7 @@
                 </subviews>
             </view>
             <constraints>
-                <constraint firstAttribute="height" constant="30" id="3up-Mm-fyB"/>
+                <constraint firstAttribute="height" constant="29" id="3up-Mm-fyB"/>
             </constraints>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
             <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>

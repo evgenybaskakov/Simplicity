@@ -16,9 +16,27 @@
     NSUInteger _cachedContentHeight;
 }
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
+- (id)init {
+    self = [super init];
     
+    if(self) {
+        [self initWebView];
+    }
+    
+    return self;
+}
+
+- (id)initWithFrame:(NSRect)frameRect {
+    self = [super initWithFrame:frameRect];
+    
+    if(self) {
+        [self initWebView];
+    }
+    
+    return self;
+}
+
+- (void)initWebView {
     [self setFrameLoadDelegate:self];
     [self setPolicyDelegate:self];
     [self setResourceLoadDelegate:self];

@@ -85,8 +85,6 @@
 }
 
 - (void)initView {
-    [super viewDidLoad];
-
     const CGFloat curWidth = self.view.frame.size.width;
     const CGFloat curHeight = self.view.frame.size.height;
     const CGFloat boxHeight = 31;

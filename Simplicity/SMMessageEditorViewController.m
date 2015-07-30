@@ -31,6 +31,7 @@
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
+    NSUInteger _panelHeight;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded {
@@ -129,22 +130,6 @@
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
-}
-
-- (NSUInteger)editorFullHeight {
-    NSAssert(_embedded, @"editor height is implemented for embedded mode only");
-    return _toBoxViewController.view.frame.size.height + _editorToolBoxViewController.view.frame.size.height + _messageTextEditor.contentHeight - 2; // TODO: better spec. of this '2' - that's because of overlapping 'to', 'subject' and editor views
-}
-
-- (void)tokenFieldHeightChanged:(NSNotification*)notification {
-    SMTokenField *tokenField = [[notification userInfo] objectForKey:@"Object"];
-
-    if(tokenField == _toBoxViewController.tokenField) {
-        NSLog(@"%s: _toBoxViewController.intrinsicContentViewSize.height %g", __func__, _toBoxViewController.intrinsicContentViewSize.height);
-        
-        [self adjustFrames];
-    }
-    
 }
 
 #pragma mark Message actions
@@ -271,6 +256,20 @@
 
 #pragma mark UI elements collaboration
 
+- (void)toggleFullAddressPanel:(id)sender {
+    NSButton *controlSwitch = _toBoxViewController.controlSwitch;
+    
+    if(controlSwitch.state == NSOnState) {
+        [self showFullAddressPanel];
+    }
+    else if(controlSwitch.state == NSOffState) {
+        [self hideFullAddressPanel];
+    }
+    else {
+        NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
+    }
+}
+
 - (void)showFullAddressPanel {
     [self.view addSubview:_ccBoxViewController.view];
     [self.view addSubview:_bccBoxViewController.view];
@@ -293,20 +292,20 @@
     
     CGFloat yPos = -1;
     
-    _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height + 1);
+    _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height);
     _toBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
     _toBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
-    yPos += _toBoxViewController.intrinsicContentViewSize.height;
+    yPos += _toBoxViewController.intrinsicContentViewSize.height - 1;
 
     if(_toBoxViewController.controlSwitch.state == NSOnState) {
-        _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.intrinsicContentViewSize.height + 1);
+        _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.intrinsicContentViewSize.height);
         _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
         _ccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
         yPos += _ccBoxViewController.view.frame.size.height - 1;
         
-        _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.intrinsicContentViewSize.height + 1);
+        _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.intrinsicContentViewSize.height);
         _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
         _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
@@ -325,23 +324,22 @@
     
     yPos += _editorToolBoxViewController.view.frame.size.height - 1;
 
-    // TODO: +2 is needed to prevent small frame changes on text input (see _messageTextEditor.contentHeight calculation)
-    _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos + 2);
+    _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos);
     _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
     _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    
+    _panelHeight = yPos;
 }
 
-- (void)toggleFullAddressPanel:(id)sender {
-    NSButton *controlSwitch = _toBoxViewController.controlSwitch;
+- (NSUInteger)editorFullHeight {
+    return _panelHeight + _messageTextEditor.contentHeight;
+}
 
-    if(controlSwitch.state == NSOnState) {
-        [self showFullAddressPanel];
-    }
-    else if(controlSwitch.state == NSOffState) {
-        [self hideFullAddressPanel];
-    }
-    else {
-        NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
+- (void)tokenFieldHeightChanged:(NSNotification*)notification {
+    SMTokenField *tokenField = [[notification userInfo] objectForKey:@"Object"];
+    
+    if(tokenField == _toBoxViewController.tokenField || tokenField == _ccBoxViewController.tokenField || tokenField == _bccBoxViewController.tokenField) {
+        [self adjustFrames];
     }
 }
 

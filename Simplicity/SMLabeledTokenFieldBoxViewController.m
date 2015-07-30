@@ -54,16 +54,26 @@
 - (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action {
     NSAssert(_controlSwitch == nil, @"controlSwitch already exists");
 
+    NSView *view = [self view];
+
     _controlSwitch = [[NSButton alloc] init];
     [_controlSwitch setButtonType:NSOnOffButton];
     [[_controlSwitch cell] setBezelStyle:NSDisclosureBezelStyle];
+    _controlSwitch.translatesAutoresizingMaskIntoConstraints = NO;
     _controlSwitch.title = @"";
     _controlSwitch.state = state;
-    _controlSwitch.frame = NSMakeRect(0, 1, _controlSwitch.intrinsicContentSize.width, _controlSwitch.intrinsicContentSize.height);
     _controlSwitch.target = target;
     _controlSwitch.action = action;
+
+    [view addSubview:_controlSwitch];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_controlSwitch attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:5]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_controlSwitch attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_label attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_controlSwitch attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:_controlSwitch.intrinsicContentSize.width]];
     
-    [[self view] addSubview:_controlSwitch];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_controlSwitch attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:_controlSwitch.intrinsicContentSize.height]];
 }
 
 #pragma mark NSTokenFieldDelegate

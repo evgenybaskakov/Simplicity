@@ -38,6 +38,12 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
 		_height = sizeToFit.height;
 
 		// TODO: not sure if this is an appropriate place to do the intrinsic size invalidation
+        NSLog(@"%s",__func__);
+        
+//        self.frame = NSMakeRect(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, _height);
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SMTokenFieldHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"Object", nil]];
+
 		[self invalidateIntrinsicContentSize];
 		[self.superview invalidateIntrinsicContentSize];
 	}

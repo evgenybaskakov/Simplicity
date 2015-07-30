@@ -14,6 +14,8 @@
 
 @property IBOutlet NSTextField *label;
 @property IBOutlet SMTokenField *tokenField;
+@property IBOutlet NSLayoutConstraint *topTokenFieldContraint;
+@property IBOutlet NSLayoutConstraint *bottomTokenFieldContraint;
 
 @property (readonly) NSButton *controlSwitch;
 

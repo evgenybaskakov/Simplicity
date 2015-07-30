@@ -91,11 +91,6 @@ static const CGFloat boxHeight = 31;
     [_toBoxViewController addControlSwitch:(_embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
     
     [self.view addSubview:_toBoxViewController.view];
-
-    _toBoxViewController.view.frame = NSMakeRect(-1, -1, curWidth+2, boxHeight);
-    _toBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _toBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-
     [self.view addSubview:_subjectBoxViewController.view];
     [self.view addSubview:_editorToolBoxViewController.view];
     [self.view addSubview:_messageTextEditor];
@@ -136,11 +131,26 @@ static const CGFloat boxHeight = 31;
     
     _messageTextEditor.messageEditorBase = _messageEditorBase;
     _messageTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+    
+    // Event registration
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
 }
 
 - (NSUInteger)editorFullHeight {
     NSAssert(_embedded, @"editor height is implemented for embedded mode only");
     return _toBoxViewController.view.frame.size.height + _editorToolBoxViewController.view.frame.size.height + _messageTextEditor.contentHeight - 2; // TODO: better spec. of this '2' - that's because of overlapping 'to', 'subject' and editor views
+}
+
+- (void)tokenFieldHeightChanged:(NSNotification*)notification {
+    SMTokenField *tokenField = [[notification userInfo] objectForKey:@"Object"];
+
+    if(tokenField == _toBoxViewController.tokenField) {
+        NSLog(@"%s: _toBoxViewController.intrinsicContentViewSize.height %g", __func__, _toBoxViewController.intrinsicContentViewSize.height);
+        
+        [self adjustFrames];
+    }
+    
 }
 
 #pragma mark Message actions
@@ -268,53 +278,61 @@ static const CGFloat boxHeight = 31;
 #pragma mark UI elements collaboration
 
 - (void)showFullAddressPanel {
-    const CGFloat curWidth = self.view.frame.size.width;
-    const CGFloat curHeight = self.view.frame.size.height;
-
     [self.view addSubview:_ccBoxViewController.view];
     [self.view addSubview:_bccBoxViewController.view];
     [self.view addSubview:_subjectBoxViewController.view];
     
-    NSUInteger vPos = 1;
-
-    _ccBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, boxHeight);
-    _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _ccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _bccBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, boxHeight);
-    _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _subjectBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, boxHeight);
-    _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _editorToolBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
-    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1) + 2); // TODO: +2 is needed to prevent small frame changes on text input (see _messageTextEditor.contentHeight calculation)
-    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
-    _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    [self adjustFrames];
 }
 
 - (void)hideFullAddressPanel {
-    const CGFloat curWidth = self.view.frame.size.width;
-    const CGFloat curHeight = self.view.frame.size.height;
-    
     [_ccBoxViewController.view removeFromSuperview];
     [_bccBoxViewController.view removeFromSuperview];
     [_subjectBoxViewController.view removeFromSuperview];
+
+    [self adjustFrames];
+}
+
+- (void)adjustFrames {
+    const CGFloat curWidth = self.view.frame.size.width;
+    const CGFloat curHeight = self.view.frame.size.height;
+    
+    _toBoxViewController.view.frame = NSMakeRect(-1, -1, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height + 1);
+    _toBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _toBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
     NSUInteger vPos = 1;
-    
-    _editorToolBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
-    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
-    _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1));
-    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
-    _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+
+    if(_toBoxViewController.controlSwitch.state == NSOffState) {
+        _editorToolBoxViewController.view.frame = NSMakeRect(-1, vPos++ * _toBoxViewController.intrinsicContentViewSize.height - 1, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
+        _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1));
+        _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
+        _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    }
+    else {
+        _ccBoxViewController.view.frame = NSMakeRect(-1, vPos++ * _toBoxViewController.intrinsicContentViewSize.height - 1, curWidth+2, boxHeight);
+        _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _ccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        _bccBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, boxHeight);
+        _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        _subjectBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, boxHeight);
+        _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        _editorToolBoxViewController.view.frame = NSMakeRect(-1, vPos++ * (boxHeight-1) - 1, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
+        _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        _messageTextEditor.frame = NSMakeRect(-1, vPos * (boxHeight-1) - 1, curWidth+2, curHeight - vPos * (boxHeight-1) + 2); // TODO: +2 is needed to prevent small frame changes on text input (see _messageTextEditor.contentHeight calculation)
+        _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
+        _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    }
 }
 
 - (void)toggleFullAddressPanel:(id)sender {

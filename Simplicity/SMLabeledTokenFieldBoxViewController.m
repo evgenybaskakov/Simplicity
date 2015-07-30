@@ -42,7 +42,7 @@
 }
 
 - (NSSize)intrinsicContentViewSize {
-	return NSMakeSize(-1, [_label intrinsicContentSize].height);
+	return NSMakeSize(-1, _tokenField.intrinsicContentSize.height + _topTokenFieldContraint.constant + _bottomTokenFieldContraint.constant);
 }
 
 - (void)invalidateIntrinsicContentViewSize {

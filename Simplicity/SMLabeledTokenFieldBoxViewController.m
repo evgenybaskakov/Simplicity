@@ -96,7 +96,7 @@
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
 	//NSLog(@"%s", __func__);
 	// TODO: scan address books for the recepient name and/or verify the email address for correctness
-	return nil;
+	return tokens;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {

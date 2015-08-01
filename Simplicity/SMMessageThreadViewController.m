@@ -228,13 +228,18 @@ static const CGFloat CELL_SPACING = -1;
 			
 			// TODO: use the sorting info for fast search
 			if(![newMessages containsObject:cell.message]) {
+                // if there's a reply to the vanished message being composed,
+                // just clear the cell marker; the editor will be moved to the top
+                // of the message thread on frame updatess
                 if(_cellViewControllerToReply == cell.viewController) {
-                    NSAssert(nil, @"%s:%d: TODO: remove the currently composed reply????", __func__, __LINE__);
+                    _cellViewControllerToReply = nil;
                 }
 
+                // Physically remove the cell and its subview.
 				[cell.viewController.view removeFromSuperview];
 				[_cells removeObjectAtIndex:i];
 
+                // Adjust the search marker position, if any.
 				if(_stringOccurrenceMarked) {
 					if(_stringOccurrenceMarkedCellIndex == i) {
 						[self clearStringOccurrenceMarkIndex];
@@ -340,19 +345,21 @@ static const CGFloat CELL_SPACING = -1;
 		SMMessageThreadCell *cell = _cells[i];
         
         NSAssert(cell.viewController != nil, @"cell.viewController is nil");
-        if(cell.viewController == _cellViewControllerToReply) {
-            if(i == 0) {
-                // Avoid negative overlapping between the editor, because its frame
-                // is already borderless.
-                ypos -= CELL_SPACING;
-            }
+        if(_messageEditorViewController != nil) {
+            if((_cellViewControllerToReply == nil && i == 0) || (_cellViewControllerToReply == cell.viewController)) {
+                if(i == 0) {
+                    // Avoid negative overlapping between the editor, because its frame
+                    // is already borderless.
+                    ypos -= CELL_SPACING;
+                }
 
-            NSView *editorSubview = _messageEditorViewController.view;
-            
-            // Note that the editor width doesn't have to exceed the content view width,
-            // because it already does.
-            editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight);
-            ypos += editorHeight + CELL_SPACING;
+                NSView *editorSubview = _messageEditorViewController.view;
+                
+                // Note that the editor width doesn't have to exceed the content view width,
+                // because it already does.
+                editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight);
+                ypos += editorHeight + CELL_SPACING;
+            }
         }
 
 		NSView *subview = cell.viewController.view;

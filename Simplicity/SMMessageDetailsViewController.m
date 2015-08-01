@@ -503,7 +503,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)deleteMessage:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteMessage" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)markMessageAsUnread:(id)sender {

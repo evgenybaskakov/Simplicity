@@ -15,6 +15,8 @@
 #import "SMMessageThreadInfoViewController.h"
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
+#import "SMLocalFolder.h"
+#import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
@@ -68,6 +70,7 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
@@ -730,12 +733,7 @@ static const CGFloat CELL_SPACING = -1;
 	}
 }
 
-#pragma mark Message reply composition
-
-- (void)composeMessageReply:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
-    SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
-
+- (NSUInteger)findCell:(SMMessageThreadCellViewController*)cellViewControllerToReply {
     NSUInteger cellIdx = 0;
     for(; cellIdx < _cells.count; cellIdx++) {
         SMMessageThreadCell *cell = _cells[cellIdx];
@@ -744,8 +742,46 @@ static const CGFloat CELL_SPACING = -1;
             break;
         }
     }
-
+    
     NSAssert(cellIdx <= _cells.count, @"bad cell idx %lu", cellIdx);
+    
+    return cellIdx;
+}
+
+#pragma mark Message manipulations
+
+- (void)deleteMessage:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
+    
+    if(cellIdx == _cells.count) {
+        NSLog(@"%s: cell to reply not found", __func__);
+        return;
+    }
+
+    SMMessageThreadCell *cell = _cells[cellIdx];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMFolder *trashFolder = [mailbox trashFolder];
+    NSAssert(trashFolder != nil, @"no trash folder");
+    
+    if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
+        NSLog(@"%s: TODO: refresh message list! close editor!", __func__);
+    }
+
+    [self updateMessageThread];
+}
+
+#pragma mark Message reply composition
+
+- (void)composeMessageReply:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
         NSLog(@"%s: cell to reply not found", __func__);
@@ -754,13 +790,14 @@ static const CGFloat CELL_SPACING = -1;
 
     [self closeEmbeddedEditor]; // Close the currently edited message; it should save draft, etc.
     
-    _cellViewControllerToReply = cellViewControllerToReply;
+    SMMessageThreadCell *cell = _cells[cellIdx];
+
+    _cellViewControllerToReply = cell.viewController;
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES];
 
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
-    SMMessageThreadCell *cell = _cells[cellIdx];
     NSString *replyHtmlText = nil;
     
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];

@@ -90,7 +90,7 @@
 	[sortedMessageThreads insertObject:messageThread atIndex:messageThreadIndexByDate];
 }
 
-- (void)removeMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder {
+- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder {
 	SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
 	NSAssert(collection, @"bad folder collection");
 
@@ -100,7 +100,7 @@
 	}
 }
 
-- (Boolean)removeMessage:(uint32_t)uid threadId:(uint64_t)threadId fromLocalFolder:(NSString*)localFolder {
+- (Boolean)deleteMessage:(uint32_t)uid threadId:(uint64_t)threadId fromLocalFolder:(NSString*)localFolder {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection, @"bad folder collection");
     
@@ -108,13 +108,22 @@
     NSAssert(messageThread != nil, @"message thread not found for message uid %u, threadId %llu", uid, threadId);
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
-    if(messageThread.messagesCount == 1) {
-        [collection.messageThreadsByDate removeObject:messageThread];
-        return true;
+    NSAssert(messageThread.messagesCount > 1, @"there's only one message in message thread %llu", threadId);
+
+    SMMessage *firstMessage = [messageThread.messagesSortedByDate objectAtIndex:0];
+    if(firstMessage.uid == uid) {
+        NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
+        
+        [messageThread removeMessage:uid];
+        
+        NSAssert(oldIndex != NSNotFound, @"message thread not found");
+        [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+            
+        return true; // TODO: if the message was first, perhaps we'll need to update the message list
     }
     else {
         [messageThread removeMessage:uid];
-        return false; // TODO: if the message was first, perhaps we'll need to update the message list
+        return false;
     }
 }
 

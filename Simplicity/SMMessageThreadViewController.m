@@ -15,6 +15,7 @@
 #import "SMMessageThreadInfoViewController.h"
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
+#import "SMMessageListViewController.h"
 #import "SMLocalFolder.h"
 #import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
@@ -760,21 +761,31 @@ static const CGFloat CELL_SPACING = -1;
     }
 
     SMMessageThreadCell *cell = _cells[cellIdx];
-
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [[appDelegate model] messageListController];
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
-
     SMMailbox *mailbox = [[appDelegate model] mailbox];
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
-        NSLog(@"%s: TODO: refresh message list! close editor!", __func__);
-    }
+    SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
+    NSAssert(messageListViewController != nil, @"messageListViewController is nil");
 
-    [self updateMessageThread];
+    if(_currentMessageThread.messagesCount == 1) {
+        [self closeEmbeddedEditor];
+        [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder.fullName];
+    }
+    else {
+        NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
+        
+        SMMessageListController *messageListController = [[appDelegate model] messageListController];
+        SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+        NSAssert(currentFolder != nil, @"no current folder");
+
+        if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
+            [messageListViewController reloadMessageList:YES];
+        }
+
+        [self updateMessageThread];
+    }
 }
 
 #pragma mark Message reply composition

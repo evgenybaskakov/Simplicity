@@ -271,7 +271,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 		[_trashButton.cell setImageScaling:NSImageScaleProportionallyDown];
 		_trashButton.bezelStyle = NSTexturedSquareBezelStyle;
 		_trashButton.target = self;
-		_trashButton.action = @selector(trashAction:);
+		_trashButton.action = @selector(moveToTrashAction:);
 
 		[toolbarItem setView:_trashButton];
 	} else {
@@ -374,7 +374,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	return proposedEffectiveRect;
 }
 
-- (IBAction)trashAction:(id)sender {
+- (IBAction)moveToTrashAction:(id)sender {
 	NSLog(@"%s", __func__);
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

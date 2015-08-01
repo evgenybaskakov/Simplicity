@@ -31,7 +31,7 @@
 @property (nonatomic) IBOutlet NSButton *trashButton;
 @property (nonatomic) IBOutlet NSTextField *searchField;
 
-- (IBAction)trashAction:(id)sender;
+- (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 
 @property SMMailboxViewController *mailboxViewController;

@@ -597,33 +597,87 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 #pragma mark Messages movement to other remote folders
 
 - (void)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
+    // Stop current message loading process, except bodies (because bodies can belong to
+    // messages from other folders - TODO: is that logical?).
+    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
 	[self stopMessagesLoading:NO];
+    
+    // Cancel scheduled update. It will be restored after message movement is finished.
 	[self cancelScheduledMessageListUpdate];
-	
+
+    // Remove the deleted message threads from the message storage.
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	[[[appDelegate model] messageStorage] removeMessageThreads:messageThreads fromLocalFolder:_localName];
 	
+    // Now, we have to cancel message bodies loading for the deleted messages.
 	MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
 	for(SMMessageThread *thread in messageThreads) {
 		NSArray *messages = [thread messagesSortedByDate];
 		
+        // Iterate messages for each deleted message thread.
 		for(SMMessage *message in messages) {
+            // Note that we choose only messages that belong to the current folder.
+            // If a message doesn't belong to the folder, it's already in another folder
+            // and hence has been shown in this message thread because of its thread id.
+            // So leave it alone (skip it).
 			if([message.remoteFolder isEqualToString:_remoteFolderName]) {
+                // Keep the message for later; we'll have to actually move it remotely.
 				[messagesToMoveUids addIndex:message.uid];
 
-				NSNumber *uid = [NSNumber numberWithUnsignedInt:message.uid];
-
-				MCOIMAPFetchContentOperation *bodyFetchOp = [_fetchMessageBodyOps objectForKey:uid];
-				[bodyFetchOp cancel];
-
-				[_fetchMessageBodyOps removeObjectForKey:uid];
+                // Cancel message body fetching.
+				NSNumber *uidNum = [NSNumber numberWithUnsignedInt:message.uid];
+				MCOIMAPFetchContentOperation *bodyFetchOp = [_fetchMessageBodyOps objectForKey:uidNum];
+                
+                if(bodyFetchOp) {
+                    [bodyFetchOp cancel];
+                    [_fetchMessageBodyOps removeObjectForKey:uidNum];
+                }
 			}
 		}
 	}
 	
+    NSAssert(messagesToMoveUids.count != 0, @"no messages to move");
+
+    // After the local storage is cleared and there is no bodies loading,
+    // actually move the messages on the server.
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
 
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+}
+
+- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName {
+    NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
+
+    // Stop current message loading process, except bodies (because bodies can belong to
+    // messages from other folders - TODO: is that logical?).
+    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
+    [self stopMessagesLoading:NO];
+    
+    // Cancel scheduled update. It will be restored after message movement is finished.
+    [self cancelScheduledMessageListUpdate];
+
+    // Remove the deleted message from the current folder in the message storage.
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    Boolean needUpdateMessageList = [[[appDelegate model] messageStorage] removeMessage:uid threadId:threadId fromLocalFolder:_localName];
+    
+    // Now, we have to cancel message bodies loading for the deleted messages.
+    MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];
+    
+    // Cancel message body fetching.
+    NSNumber *uidNum = [NSNumber numberWithUnsignedInt:uid];
+    MCOIMAPFetchContentOperation *bodyFetchOp = [_fetchMessageBodyOps objectForKey:uidNum];
+    if(bodyFetchOp) {
+        [bodyFetchOp cancel];
+        [_fetchMessageBodyOps removeObjectForKey:uidNum];
+    }
+    
+    // After the local storage is cleared and there is no bodies loading,
+    // actually move the messages on the server.
+    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
+    
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    
+    return needUpdateMessageList;
 }
 
 #pragma mark Memory management

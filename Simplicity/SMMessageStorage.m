@@ -88,24 +88,6 @@
 	NSAssert(messageThreadIndexByDate != NSNotFound, @"message thread not found");
 	
 	[sortedMessageThreads insertObject:messageThread atIndex:messageThreadIndexByDate];
-
-	//TODO: remove/leave in debug mode only
-/*
-	//NSLog(@"validate threads");
-	SMMessageThread *p = nil;
-	for(id i in sortedMessageThreads) {
-		SMMessageThread *t = i;
-		//SMMessage *pi = t.messagesSortedByDate.firstObject;
-		//NSLog(@"threadId %llu, date %@", t.threadId, pi.date);
-		if(p != nil) {
-			SMMessage *m = t.messagesSortedByDate.firstObject;
-			SMMessage *pm = p.messagesSortedByDate.firstObject;
-			NSComparisonResult r = [pm.date compare:m.date];
-			NSAssert(r != NSOrderedAscending, @"threads not sorted");
-		}
-		p = i;
-	}
-*/
 }
 
 - (void)removeMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder {
@@ -116,6 +98,24 @@
 		[collection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:thread.threadId]];
 		[collection.messageThreadsByDate removeObject:thread];
 	}
+}
+
+- (Boolean)removeMessage:(uint32_t)uid threadId:(uint64_t)threadId fromLocalFolder:(NSString*)localFolder {
+    SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
+    NSAssert(collection, @"bad folder collection");
+    
+    SMMessageThread *messageThread = [self messageThreadById:threadId localFolder:localFolder];
+    NSAssert(messageThread != nil, @"message thread not found for message uid %u, threadId %llu", uid, threadId);
+    NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
+
+    if(messageThread.messagesCount == 1) {
+        [collection.messageThreadsByDate removeObject:messageThread];
+        return true;
+    }
+    else {
+        [messageThread removeMessage:uid];
+        return false; // TODO: if the message was first, perhaps we'll need to update the message list
+    }
 }
 
 - (void)startUpdate:(NSString*)localFolder {

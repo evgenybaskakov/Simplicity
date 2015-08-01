@@ -299,13 +299,39 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (void)cancelUpdate {
-	for(SMMessage *message in [_messageCollection messages])
+    for(SMMessage *message in [_messageCollection messages]) {
 		[message setUpdated:NO];
+    }
 }
 
 - (void)markAsUpdated {
-	for(SMMessage *message in [_messageCollection messages])
+    for(SMMessage *message in [_messageCollection messages]) {
 		[message setUpdated:YES];
+    }
+}
+
+- (void)removeMessage:(uint32_t)uid {
+    NSMutableOrderedSet *messages = [_messageCollection messages];
+    for(NSUInteger i = 0, count = messages.count; i < count; i++) {
+        SMMessage *message = [messages objectAtIndex:i];
+        
+        if(message.uid == uid) {
+            [messages removeObjectAtIndex:i];
+            break;
+        }
+    }
+
+    messages = [_messageCollection messagesByDate];
+    for(NSUInteger i = 0, count = messages.count; i < count; i++) {
+        SMMessage *message = [messages objectAtIndex:i];
+        
+        if(message.uid == uid) {
+            [messages removeObjectAtIndex:i];
+            break;
+        }
+    }
+    
+    NSAssert([_messageCollection messages].count == [_messageCollection messagesByDate].count, @"message storage inconsistency after removing a message");
 }
 
 @end

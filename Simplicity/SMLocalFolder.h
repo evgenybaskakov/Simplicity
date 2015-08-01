@@ -38,6 +38,9 @@
 // stops message headers and, optionally, bodies loading
 - (void)stopMessagesLoading:(Boolean)stopBodiesLoading;
 
+// initiates process of moving the selected message to another (remote) folder
+- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName;
+
 // stops message headers and bodies loading; also stops sync, if any
 // then removes the local folder contents (does not affect the remote folder, if any)
 - (void)clear;

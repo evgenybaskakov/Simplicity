@@ -145,10 +145,10 @@ static const CGFloat CELL_SPACING = -1;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewFrameDidChange:) name:NSViewFrameDidChangeNotification object:[messageThreadView contentView]];
 
-	[_contentView addSubview:[_messageThreadInfoViewController view]];
-
 	if(_currentMessageThread != nil) {
-		NSAssert(_currentMessageThread.messagesCount > 0, @"no messages in message thread");
+        [_contentView addSubview:_messageThreadInfoViewController.view];
+
+        NSAssert(_currentMessageThread.messagesCount > 0, @"no messages in message thread");
 	
 		NSArray *messages = [_currentMessageThread messagesSortedByDate];
 
@@ -180,6 +180,9 @@ static const CGFloat CELL_SPACING = -1;
 
 		[self updateCellFrames];
 	}
+    else {
+        [_messageThreadInfoViewController.view removeFromSuperview];
+    }
 	
 	// on every message thread switch, we hide the find contents panel
 	// because it is presumably needed only when the user means to search the particular message thread
@@ -777,7 +780,6 @@ static const CGFloat CELL_SPACING = -1;
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
 
     if(_currentMessageThread.messagesCount == 1) {
-        [self closeEmbeddedEditor];
         [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder.fullName];
     }
     else {

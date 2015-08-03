@@ -322,17 +322,17 @@
     _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
     _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
-    yPos += _editorToolBoxViewController.view.frame.size.height - 1;
+    yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+    
+    _panelHeight = yPos - 1;
 
     _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos);
     _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
     _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    _panelHeight = yPos;
 }
 
 - (NSUInteger)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight;
+    return _panelHeight + _messageTextEditor.contentHeight + 1;
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {

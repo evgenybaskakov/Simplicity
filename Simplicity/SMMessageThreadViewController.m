@@ -330,7 +330,7 @@ static const CGFloat CELL_SPACING = -1;
 	}
 
 	_contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
-	_contentView.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+	_contentView.autoresizingMask = NSViewWidthSizable;
 
     if(_cells.count == 1 && _messageEditorViewController == nil) {
 		_contentView.autoresizingMask |= NSViewHeightSizable;
@@ -372,7 +372,7 @@ static const CGFloat CELL_SPACING = -1;
 			subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
 		} else {
-			subview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+			subview.autoresizingMask = NSViewWidthSizable;
 			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
 		}
 		
@@ -856,7 +856,7 @@ static const CGFloat CELL_SPACING = -1;
     [_messageEditorViewController.messageTextEditor startEditorWithHTML:replyHtmlText];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
-    editorSubview.autoresizingMask = NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+    editorSubview.autoresizingMask = NSViewWidthSizable;
     
     [_contentView addSubview:editorSubview];
 

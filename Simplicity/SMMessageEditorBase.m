@@ -96,11 +96,30 @@ static NSDictionary *fontNameToIndexMap;
     "      border-left: 4px solid #ccf;"
     "    }"
     "  </style>"
-    "  <body id='SimplicityEditor'>";
+    "<script>"
+    "    var contentHidden=false;"
+    "    function toggleContent(obj) {"
+    "        var el = document.getElementById(obj);"
+    "        if(contentHidden) {"
+    "            el.style.display = '';"
+    "            contentHidden = false;"
+    "        }"
+    "        else {"
+    "            el.style.display = 'none';"
+    "            contentHidden = true;"
+    "        }"
+    "    }"
+    "</script>"
+    "<body id='SimplicityEditor'>"
+    "    <a href='#' class='close_notification' title='Click to Toggle'>"
+    "        <img src='http://www.moodlenews.com/wp-content/uploads/view-01-128.png' width='16' height='16' onClick=\"toggleContent('contentToToggle')\"/>"
+    "    </a>"
+    "<div id='contentToToggle'>";
 }
 
 + (NSString*)newMessageHTMLEndTemplate {
     return @""
+        "    </div>"
         "  </body>"
         "</html>";
 }

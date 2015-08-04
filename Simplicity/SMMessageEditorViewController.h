@@ -11,6 +11,7 @@
 @class SMLabeledTokenFieldBoxViewController;
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorWebView;
+@class SMInlineButtonPanelViewController;
 
 @interface SMMessageEditorViewController : NSViewController
 
@@ -19,11 +20,13 @@
 @property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
 @property (readonly) SMLabeledTextFieldBoxViewController *subjectBoxViewController;
 @property (readonly) SMMessageEditorWebView *messageTextEditor;
+@property (readonly) SMInlineButtonPanelViewController *foldPanelViewController;
 
 @property (readonly) Boolean embedded;
 @property (readonly) NSUInteger editorFullHeight;
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded;
+- (void)setEditorFrame:(NSRect)frame;
 
 - (void)sendMessage;
 - (void)deleteMessage;

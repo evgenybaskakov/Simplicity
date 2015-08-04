@@ -113,6 +113,8 @@
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
+		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
+		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
@@ -394,6 +396,9 @@
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
+		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
+		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
+		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
@@ -544,6 +549,8 @@
 				00ED317B17F88DA700B04F5B /* SMAttachmentStorage.m */,
 				00C75607195921AA006ED86B /* SMFolder.h */,
 				00C75608195921AA006ED86B /* SMFolder.m */,
+				802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */,
+				802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */,
 				0082F5FC1A0FFAAC0050578A /* SMLocalFolder.h */,
 				0082F5FD1A0FFAAC0050578A /* SMLocalFolder.m */,
 				00036D7D1A205FCB0085C266 /* SMLocalFolderRegistry.h */,
@@ -712,6 +719,7 @@
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
 				004A64201AC7A3000079A0C1 /* SMLabeledTokenFieldBoxViewController.xib */,
+				802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
@@ -948,6 +956,7 @@
 				002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
+				802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */,
 				80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */,
 				80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */,
 				80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */,
@@ -1004,6 +1013,7 @@
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
+				802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */,
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
 				8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */,

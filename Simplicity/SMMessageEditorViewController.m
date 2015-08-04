@@ -17,6 +17,7 @@
 #import "SMEditorToolBoxViewController.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
+#import "SMInlineButtonPanelViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
 #import "SMMessageEditorBase.h"
@@ -71,6 +72,15 @@
         // editor area
         
         _messageTextEditor = [[SMMessageEditorWebView alloc] init];
+
+        // unfold panel
+        
+        if(embedded) {
+            _foldPanelViewController = [[SMInlineButtonPanelViewController alloc] initWithNibName:@"SMInlineButtonPanelViewController" bundle:nil];
+            
+            _foldPanelViewController.button.target = self;
+            _foldPanelViewController.button.action = @selector(unfoldHiddenText:);
+        }
         
         // register events
         
@@ -89,6 +99,7 @@
     [self.view addSubview:_subjectBoxViewController.view];
     [self.view addSubview:_editorToolBoxViewController.view];
     [self.view addSubview:_messageTextEditor];
+    [self.view addSubview:_foldPanelViewController.view];
 
     if(!_embedded) {
         [self showFullAddressPanel];
@@ -256,6 +267,14 @@
 
 #pragma mark UI elements collaboration
 
+- (void)unfoldHiddenText:(id)sender {
+    NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
+
+    [_foldPanelViewController.view removeFromSuperview];
+    
+    [self adjustFrames];
+}
+
 - (void)toggleFullAddressPanel:(id)sender {
     NSButton *controlSwitch = _toBoxViewController.controlSwitch;
     
@@ -286,6 +305,11 @@
     [self adjustFrames];
 }
 
+- (void)setEditorFrame:(NSRect)frame {
+    [self.view setFrame:frame];
+    [self adjustFrames];    
+}
+
 - (void)adjustFrames {
     const CGFloat curWidth = self.view.frame.size.width;
     const CGFloat curHeight = self.view.frame.size.height;
@@ -293,46 +317,54 @@
     CGFloat yPos = -1;
     
     _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height);
-    _toBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _toBoxViewController.view.autoresizingMask = NSViewWidthSizable;
     _toBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
     yPos += _toBoxViewController.intrinsicContentViewSize.height - 1;
 
     if(_toBoxViewController.controlSwitch.state == NSOnState) {
         _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.intrinsicContentViewSize.height);
-        _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _ccBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _ccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
         yPos += _ccBoxViewController.view.frame.size.height - 1;
         
         _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.intrinsicContentViewSize.height);
-        _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _bccBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
         yPos += _bccBoxViewController.view.frame.size.height - 1;
 
         _subjectBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _subjectBoxViewController.view.frame.size.height);
-        _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+        _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
         yPos += _subjectBoxViewController.view.frame.size.height - 1;
     }
 
     _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
-    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMaxXMargin;
+    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
     _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     
     yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
     
     _panelHeight = yPos - 1;
 
-    _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos);
-    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable | NSViewMaxXMargin | NSViewMaxYMargin;
+    const NSUInteger foldButtonHeight = (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0);
+
+    _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos - foldButtonHeight);
+    _messageTextEditor.autoresizingMask = NSViewWidthSizable;
     _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    
+    if(_foldPanelViewController != nil) {
+        _foldPanelViewController.view.frame = NSMakeRect(-1, curHeight - foldButtonHeight, curWidth+2, foldButtonHeight);
+        _foldPanelViewController.view.autoresizingMask = NSViewWidthSizable;
+        _foldPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+    }
 }
 
 - (NSUInteger)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight + 1;
+    return _panelHeight + _messageTextEditor.contentHeight + 1 + 30;
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {

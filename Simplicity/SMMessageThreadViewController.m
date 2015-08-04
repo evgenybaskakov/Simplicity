@@ -356,11 +356,9 @@ static const CGFloat CELL_SPACING = -1;
                     ypos -= CELL_SPACING;
                 }
 
-                NSView *editorSubview = _messageEditorViewController.view;
-                
                 // Note that the editor width doesn't have to exceed the content view width,
                 // because it already does.
-                editorSubview.frame = NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight);
+                [_messageEditorViewController setEditorFrame:NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight)];
                 ypos += editorHeight + CELL_SPACING;
             }
         }

@@ -269,6 +269,8 @@
 - (void)unfoldHiddenText:(id)sender {
     NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
 
+    [_messageTextEditor unfoldContent];
+
     [_foldPanelViewController.view removeFromSuperview];
     _foldPanelViewController = nil;
 

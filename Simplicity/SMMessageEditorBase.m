@@ -82,36 +82,22 @@ static NSDictionary *fontNameToIndexMap;
 + (NSString*)newMessageHTMLBeginTemplate {
     return @""
         "<html>"
-        "  <style>"
-        "    body {"
-        "      font-family: 'Arial';" // TODO: sync with fontFamilies and User Prefs!
-        "      font-size: 12px;"      // TODO: sync with fontFamilies and User Prefs!
-        "    }"
-        "    blockquote {"
-        "      display: block;"
-        "      margin-top: 0em;"
-        "      margin-bottom: 0em;"
-        "      margin-left: 0em;"
-        "      padding-left: 15px;"
-        "      border-left: 4px solid #ccf;"
-        "    }"
-        "  </style>"
-        "<script>"
-        "    var contentHidden=false;"
-        "    function toggleContent(obj) {"
-        "        var el = document.getElementById(obj);"
-        "        if(contentHidden) {"
-        "            el.style.display = '';"
-        "            contentHidden = false;"
-        "        }"
-        "        else {"
-        "            el.style.display = 'none';"
-        "            contentHidden = true;"
-        "        }"
-        "    }"
-        "</script>"
+        "<style>"
+        "  body {"
+        "    font-family: 'Arial';" // TODO: sync with fontFamilies and User Prefs!
+        "    font-size: 12px;"      // TODO: sync with fontFamilies and User Prefs!
+        "  }"
+        "  blockquote {"
+        "    display: block;"
+        "    margin-top: 0em;"
+        "    margin-bottom: 0em;"
+        "    margin-left: 0em;"
+        "    padding-left: 15px;"
+        "    border-left: 4px solid #ccf;"
+        "  }"
+        "</style>"
         "<body id='SimplicityEditor'>"
-        "  <div id='contentToToggle'>";
+        "  <div id='SimplicityContentToFold' style='display: none;'>";
 }
 
 + (NSString*)newMessageHTMLEndTemplate {

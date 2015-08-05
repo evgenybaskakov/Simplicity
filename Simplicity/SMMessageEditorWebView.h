@@ -36,6 +36,7 @@
 - (void)setTextForegroundColor:(NSColor*)color;
 - (void)setTextBackgroundColor:(NSColor*)color;
 - (void)showSource;
+- (void)unfoldContent;
 
 // TODO: remove
 - (NSString*)getFontTypeface:(NSInteger)index;

@@ -96,42 +96,48 @@
         // http://jerodsanto.net/2010/12/bridging-the-gap-between-javascripts-console-log-and-cocoas-nslog/
         //
         WebScriptObject *scriptObject = [sender windowScriptObject];
+        
         [scriptObject setValue:self forKey:@"Simplicity"];
+        
         [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+        
         [scriptObject evaluateWebScript:@"eventCallback = { eventInput: function(msg) { Simplicity.eventInput_(msg); } }"];
-    }
+
+        [scriptObject evaluateWebScript:@""
+             "jsNotifyContentHeightChanged = function() {"
+             "    var body = document.body;"
+             "    var html = document.documentElement;"
+             "    var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);"
+             "    eventCallback.eventInput(height);"
+             "}"];
     
-    [self stringByEvaluatingJavaScriptFromString:@""
-         "var enterKeyPressHandler = function(evt) {"
-         "    evt = evt || window.event;"
-         "    var charCode = evt.which || evt.keyCode;"
-         "    if (charCode == 13) {"
-         "        console.log('Enter key {');"
-         "        var selection = document.getSelection();"
-         "        var node = selection.anchorNode.parentNode;"
-         "        if(node.tagName == 'BLOCKQUOTE') {"
-         "            console.log('Splitting blockquote');"
-         "            document.execCommand('insertHTML', false, '</blockquote><br><blockquote>');"
-         "            evt.preventDefault();"
-         "        }"
-         "        console.log('Enter key }');"
-         "    }"
-         "};"
-         "var el = document.getElementById('SimplicityEditor');"
-         "if (typeof el.addEventListener != 'undefined')"
-         "{"
-         "    el.addEventListener('keypress', enterKeyPressHandler , false);"
-         "}"
-         "else if (typeof el.attachEvent != 'undefined')"
-         "{"
-         "    el.attachEvent('onkeypress', enterKeyPressHandler);"
-         "}"
-         "document.getElementById('SimplicityEditor').addEventListener('input', function() {"
-         "    var body = document.body;"
-         "    var html = document.documentElement;"
-         "    var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);"
-         "    eventCallback.eventInput(height);"
-         "}, false);"];
+        [scriptObject evaluateWebScript:@""
+             "var enterKeyPressHandler = function(evt) {"
+             "    evt = evt || window.event;"
+             "    var charCode = evt.which || evt.keyCode;"
+             "    if (charCode == 13) {"
+             "        console.log('Enter key {');"
+             "        var selection = document.getSelection();"
+             "        var node = selection.anchorNode.parentNode;"
+             "        if(node.tagName == 'BLOCKQUOTE') {"
+             "            console.log('Splitting blockquote');"
+             "            document.execCommand('insertHTML', false, '</blockquote><br><blockquote>');"
+             "            evt.preventDefault();"
+             "        }"
+             "        console.log('Enter key }');"
+             "    }"
+             "};"
+             "var el = document.getElementById('SimplicityEditor');"
+             "if (typeof el.addEventListener != 'undefined')"
+             "{"
+             "    el.addEventListener('keypress', enterKeyPressHandler , false);"
+             "}"
+             "else if (typeof el.attachEvent != 'undefined')"
+             "{"
+             "    el.attachEvent('onkeypress', enterKeyPressHandler);"
+             "}"
+             "document.getElementById('SimplicityEditor').addEventListener('input', jsNotifyContentHeightChanged, false);"];
+    }
 }
 
 - (void)consoleLog:(NSString *)message {
@@ -387,6 +393,15 @@
     NSString *messageText = [self getMessageText];
     
     NSLog(@"%@", messageText);
+}
+
+#pragma mark Content folding
+
+- (void)unfoldContent {
+    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@""
+        "var el = document.getElementById('SimplicityContentToFold');"
+        "el.style.display = '';"
+        "jsNotifyContentHeightChanged();"]];
 }
 
 @end

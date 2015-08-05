@@ -78,8 +78,7 @@
         if(embedded) {
             _foldPanelViewController = [[SMInlineButtonPanelViewController alloc] initWithNibName:@"SMInlineButtonPanelViewController" bundle:nil];
             
-            _foldPanelViewController.button.target = self;
-            _foldPanelViewController.button.action = @selector(unfoldHiddenText:);
+            [_foldPanelViewController setButtonTarget:self action:@selector(unfoldHiddenText:)];
         }
         
         // register events
@@ -271,7 +270,8 @@
     NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
 
     [_foldPanelViewController.view removeFromSuperview];
-    
+    _foldPanelViewController = nil;
+
     [self adjustFrames];
 }
 

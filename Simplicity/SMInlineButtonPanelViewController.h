@@ -12,4 +12,8 @@
 
 @property IBOutlet NSButton *button;
 
+- (IBAction)buttonClicked:(id)sender;
+
+- (void)setButtonTarget:(id)target action:(SEL)action;
+
 @end

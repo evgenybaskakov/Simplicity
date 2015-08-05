@@ -8,10 +8,33 @@
 
 #import "SMInlineButtonPanelViewController.h"
 
-@implementation SMInlineButtonPanelViewController
+@implementation SMInlineButtonPanelViewController {
+    __weak id _target;
+    SEL _action;
+}
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
+    NSMutableAttributedString *attrTitle = [[NSMutableAttributedString alloc] initWithString:_button.title];
+    NSUInteger len = [attrTitle length];
+    NSRange range = NSMakeRange(0, len);
+    
+    [attrTitle addAttribute:NSForegroundColorAttributeName value:[NSColor blueColor] range:range];
+    [attrTitle fixAttributesInRange:range];
+    
+    [_button setAttributedTitle:attrTitle];
+}
+
+- (void)buttonClicked:(id)sender {
+    id target = _target;
+    
+    if(target != nil) {
+        [target performSelector:_action withObject:nil afterDelay:0.0];
+    }
+}
+
+- (void)setButtonTarget:(id)target action:(SEL)action {
+    _target = target;
+    _action = action;
 }
 
 @end

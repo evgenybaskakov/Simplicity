@@ -24,6 +24,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="buttonClicked:" target="-2" id="t8q-d6-7Oi"/>
+                    </connections>
                 </button>
             </subviews>
             <point key="canvasLocation" x="419" y="328.5"/>

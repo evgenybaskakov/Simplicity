@@ -26,7 +26,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
-static const CGFloat MIN_EDITOR_HEIGHT = 100;
+static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 500;
 static const CGFloat CELL_SPACING = -1;
 

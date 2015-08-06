@@ -10,4 +10,6 @@
 
 @interface SMFlippedView : NSView
 
+- (id)initWithFrame:(NSRect)frameRect backgroundColor:(NSColor*)backgroundColor;
+
 @end

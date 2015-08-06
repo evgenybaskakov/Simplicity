@@ -8,7 +8,28 @@
 
 #import "SMFlippedView.h"
 
-@implementation SMFlippedView
+@implementation SMFlippedView {
+    NSColor *_backgroundColor;
+}
+
+- (id)initWithFrame:(NSRect)frameRect backgroundColor:(NSColor*)backgroundColor {
+    self = [super initWithFrame:frameRect];
+    
+    if(self) {
+        _backgroundColor = backgroundColor;
+    }
+    
+    return self;
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
+    if(_backgroundColor) {
+        [_backgroundColor setFill];
+        NSRectFill(dirtyRect);
+    }
+    
+    [super drawRect:dirtyRect];
+}
 
 - (BOOL)isFlipped {
 	return YES;

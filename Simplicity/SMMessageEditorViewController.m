@@ -25,6 +25,8 @@
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 
+static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
+
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
@@ -33,13 +35,17 @@
     NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
+    NSView *_innerView;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
-        NSView *view = [[SMFlippedView alloc] initWithFrame:frame];
+        NSView *view = [[SMFlippedView alloc] initWithFrame:frame backgroundColor:[NSColor colorWithCalibratedRed:0.90
+                                                                                                            green:0.90
+                                                                                                             blue:0.90
+                                                                                                            alpha:1]];
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self setView:view];
         
@@ -92,13 +98,29 @@
 }
 
 - (void)initView {
+    if(_embedded) {
+        _innerView = [[SMFlippedView alloc] init];
+        _innerView.wantsLayer = YES;
+        _innerView.layer.borderWidth = 1;
+        _innerView.layer.cornerRadius = 3;
+        _innerView.layer.borderColor = [[NSColor lightGrayColor] CGColor];
+        
+        [self.view addSubview:_innerView];
+    }
+    else {
+        _innerView = self.view;
+    }
+
     [_toBoxViewController addControlSwitch:(_embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
     
-    [self.view addSubview:_toBoxViewController.view];
-    [self.view addSubview:_subjectBoxViewController.view];
-    [self.view addSubview:_editorToolBoxViewController.view];
-    [self.view addSubview:_messageTextEditor];
-    [self.view addSubview:_foldPanelViewController.view];
+    [_innerView addSubview:_toBoxViewController.view];
+    [_innerView addSubview:_subjectBoxViewController.view];
+    [_innerView addSubview:_editorToolBoxViewController.view];
+    [_innerView addSubview:_messageTextEditor];
+
+    if(_foldPanelViewController != nil) {
+        [_innerView addSubview:_foldPanelViewController.view];
+    }
 
     if(!_embedded) {
         [self showFullAddressPanel];
@@ -292,9 +314,9 @@
 }
 
 - (void)showFullAddressPanel {
-    [self.view addSubview:_ccBoxViewController.view];
-    [self.view addSubview:_bccBoxViewController.view];
-    [self.view addSubview:_subjectBoxViewController.view];
+    [_innerView addSubview:_ccBoxViewController.view];
+    [_innerView addSubview:_bccBoxViewController.view];
+    [_innerView addSubview:_subjectBoxViewController.view];
     
     [self adjustFrames];
 }
@@ -313,8 +335,14 @@
 }
 
 - (void)adjustFrames {
-    const CGFloat curWidth = self.view.frame.size.width;
-    const CGFloat curHeight = self.view.frame.size.height;
+    if(_embedded) {
+        _innerView.frame = NSMakeRect(EMBEDDED_MARGIN_H, EMBEDDED_MARGIN_W, self.view.frame.size.width - EMBEDDED_MARGIN_H * 2 - 1, self.view.frame.size.height - EMBEDDED_MARGIN_W * 2 - 1);
+        _innerView.autoresizingMask = NSViewWidthSizable;
+        _innerView.translatesAutoresizingMaskIntoConstraints = YES;
+    }
+    
+    const CGFloat curWidth = _innerView.frame.size.width;
+    const CGFloat curHeight = _innerView.frame.size.height;
     
     CGFloat yPos = -1;
     
@@ -366,7 +394,7 @@
 }
 
 - (NSUInteger)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight + 1 + 30;
+    return _panelHeight + _messageTextEditor.contentHeight + EMBEDDED_MARGIN_H * 2 + 2; // TODO
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {

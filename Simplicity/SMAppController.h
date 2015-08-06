@@ -56,7 +56,7 @@
 
 @property (nonatomic) SMOperationQueueWindowController *operationQueueWindowController;
 
-- (void)showOperationQueueSheet;
+- (void)toggleOperationQueueSheet;
 - (void)hideOperationQueueSheet;
 
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;

@@ -41,6 +41,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	NSView *_messageThreadAndFindContentsPanelView;
 	NSLayoutConstraint *_messageThreadViewTopContraint;
 	NSMutableArray *_messageEditorWindowControllers;
+    Boolean _operationQueueShown;
 }
 
 - (void)awakeFromNib {
@@ -479,17 +480,36 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 #pragma mark Operation Queue Window
 
+- (void)toggleOperationQueueSheet {
+    if(!_operationQueueShown) {
+        [self showOperationQueueSheet];
+    }
+    else {
+        [self hideOperationQueueSheet];
+    }
+}
+
 - (void)showOperationQueueSheet {
-    if(_operationQueueWindowController == nil)
+    if(_operationQueueWindowController == nil) {
         _operationQueueWindowController = [[SMOperationQueueWindowController alloc] initWithWindowNibName:@"SMOperationQueueWindowController"];
+    }
     
     [_operationQueueWindowController showWindow:self];
+
+    _operationQueueShown = YES;
 }
 
 - (void)hideOperationQueueSheet {
     NSAssert(_operationQueueWindowController != nil, @"_addNewLabelWindowController is nil");
     
-    // TODO: do we have to do anything here at all?..
+    NSWindow *sheet = _operationQueueWindowController.window;
+    NSAssert(sheet != nil, @"sheet is nil");
+    
+    [sheet orderOut:self];
+    
+    [NSApp endSheet:sheet];
+
+    _operationQueueShown = NO;
 }
 
 #pragma mark Message editor window management

@@ -130,6 +130,7 @@
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
+		806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */ = {isa = PBXBuildFile; fileRef = 806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
@@ -419,6 +420,8 @@
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
 		8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorViewController.h; sourceTree = "<group>"; };
 		8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorViewController.m; sourceTree = "<group>"; };
+		806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSetMessageFlags.h; sourceTree = "<group>"; };
+		806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpSetMessageFlags.m; sourceTree = "<group>"; };
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
@@ -580,6 +583,8 @@
 				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
 				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
 				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
+				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
+				806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */,
 				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
 				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
 				80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */,
@@ -1006,6 +1011,7 @@
 				00DC84961967A70E00577667 /* SMMailboxController.m in Sources */,
 				00EB7E87199C70FA00CA2B1B /* SMMessageThread.m in Sources */,
 				00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */,
+				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */,

@@ -27,7 +27,6 @@
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded;
 - (void)setEditorFrame:(NSRect)frame;
-- (void)unfoldHiddenText;
 - (void)sendMessage;
 - (void)deleteMessage;
 //- (void)saveMessage;

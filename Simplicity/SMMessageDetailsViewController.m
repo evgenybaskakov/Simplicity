@@ -497,8 +497,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteMessage" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
-- (void)markMessageAsUnread:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MarkMessageAsUnread" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+- (void)changeMessageUnreadFlag:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeMessageUnreadFlag" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)showMessageActions:(id)sender {
@@ -511,7 +511,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
     [theMenu addItem:[NSMenuItem separatorItem]];
     [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
-    [[theMenu addItemWithTitle:@"Mark as Unread" action:@selector(markMessageAsUnread:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:(_currentMessage.unseen? @"Mark as Read" : @"Mark as Unread") action:@selector(changeMessageUnreadFlag:) keyEquivalent:@""] setTarget:self];
     
     NSPoint menuPosition = NSMakePoint(_messageActionsButton.bounds.origin.x, _messageActionsButton.bounds.origin.y + _messageActionsButton.bounds.size.height);
     

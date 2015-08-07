@@ -72,7 +72,7 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(markMessageAsUnread:) name:@"MarkMessageAsUnread" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
@@ -796,7 +796,7 @@ static const CGFloat CELL_SPACING = -1;
     }
 }
 
-- (void)markMessageAsUnread:(NSNotification *)notification {
+- (void)changeMessageUnreadFlag:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -812,7 +812,7 @@ static const CGFloat CELL_SPACING = -1;
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    [currentFolder setMessageUnseen:cell.message unseen:YES];
+    [currentFolder setMessageUnseen:cell.message unseen:(cell.message.unseen? NO : YES)];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     [self updateMessageThread];

@@ -115,19 +115,55 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 			_threadFlags |= ThreadFlagsHasAttachment;
 			attributesChanged = YES;
 		}
+        else if(!message.hasAttachments && [self hasAttachments]) {
+            Boolean attachmentFound = NO;
+            for(SMMessage *m in _messageCollection.messages) {
+                if(m.hasAttachments) {
+                    attachmentFound = YES;
+                    break;
+                }
+            }
+            if(!attachmentFound) {
+                _threadFlags &= ~ThreadFlagsHasAttachment;
+                attributesChanged = YES;
+            }
+        }
 
         if(message.unseen && ![self unseen]) {
             _threadFlags |= ThreadFlagsUnseen;
             attributesChanged = YES;
+        }
+        else if(!message.unseen && [self unseen]) {
+            Boolean unseenFound = NO;
+            for(SMMessage *m in _messageCollection.messages) {
+                if(m.unseen) {
+                    unseenFound = YES;
+                    break;
+                }
+            }
+            if(!unseenFound) {
+                _threadFlags &= ~ThreadFlagsUnseen;
+                attributesChanged = YES;
+            }
         }
 
         if(message.flagged && ![self flagged]) {
             _threadFlags |= ThreadFlagsFlagged;
             attributesChanged = YES;
         }
-
-        // TODO: unset attributes (more sophisticated logic)
-		
+        else if(!message.flagged && [self flagged]) {
+            Boolean flaggedFound = NO;
+            for(SMMessage *m in _messageCollection.messages) {
+                if(m.flagged) {
+                    flaggedFound = YES;
+                    break;
+                }
+            }
+            if(!flaggedFound) {
+                _threadFlags &= ~ThreadFlagsFlagged;
+                attributesChanged = YES;
+            }
+        }
 	} else {
 		NSLog(@"%s: message for uid %u not found in current threadId %llu", __FUNCTION__, uid, _threadId);
 	}

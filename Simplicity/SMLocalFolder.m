@@ -609,12 +609,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
-    
-    // refresh the message list
-    //TODO
-    
-    // refresh the current message thread
-    //TODO
 }
 
 #pragma mark Messages movement to other remote folders

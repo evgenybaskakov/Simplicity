@@ -24,6 +24,7 @@
     if(self) {
         _uids = uids;
         _remoteFolderName = remoteFolderName;
+        _kind = kind;
         _flags = flags;
     }
     

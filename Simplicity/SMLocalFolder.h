@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMMessage;
+
 @interface SMLocalFolder : NSObject
 
 @property (readonly) NSString *localName;
@@ -41,6 +43,9 @@
 // stops message headers and bodies loading; also stops sync, if any
 // then removes the local folder contents (does not affect the remote folder, if any)
 - (void)clear;
+
+// sets/clears the unseen flag
+- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
 
 // initiates process of moving the selected message to another (remote) folder
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName;

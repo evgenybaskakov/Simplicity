@@ -115,6 +115,18 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 			_threadFlags |= ThreadFlagsHasAttachment;
 			attributesChanged = YES;
 		}
+
+        if(message.unseen && ![self unseen]) {
+            _threadFlags |= ThreadFlagsUnseen;
+            attributesChanged = YES;
+        }
+
+        if(message.flagged && ![self flagged]) {
+            _threadFlags |= ThreadFlagsFlagged;
+            attributesChanged = YES;
+        }
+
+        // TODO: unset attributes (more sophisticated logic)
 		
 	} else {
 		NSLog(@"%s: message for uid %u not found in current threadId %llu", __FUNCTION__, uid, _threadId);

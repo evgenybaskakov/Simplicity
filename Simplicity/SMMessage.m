@@ -289,8 +289,23 @@ static NSString *unquote(NSString *s) {
 		NSLog(@"%s: IMAP message is not set", __FUNCTION__);
 		return NO;
 	}
-	
-	return (_imapMessage.originalFlags & MCOMessageFlagSeen) == 0;
+    
+	return (_imapMessage.flags & MCOMessageFlagSeen) == 0;
+}
+
+- (void)setUnseen:(Boolean)unseen {
+    if(_imapMessage == nil) {
+        NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+        return;
+    }
+    
+    if(unseen) {
+        _imapMessage.flags &= ~MCOMessageFlagSeen;
+    }
+    else {
+        _imapMessage.flags |= MCOMessageFlagSeen;
+    }
+    
 }
 
 - (Boolean)flagged {

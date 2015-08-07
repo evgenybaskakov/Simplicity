@@ -12,10 +12,11 @@
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
+#import "SMOpMoveMessages.h"
+#import "SMOpSetMessageFlags.h"
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessage.h"
-#import "SMOpMoveMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
@@ -592,6 +593,28 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	[[[appDelegate model] messageStorage] removeLocalFolder:_localName];
+}
+
+#pragma mark Messages manipulation
+
+- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
+    if(message.unseen == unseen)
+        return;
+    
+    // set the local message flags
+    message.unseen = unseen;
+
+    // enqueue the remote folder operation
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    
+    // refresh the message list
+    //TODO
+    
+    // refresh the current message thread
+    //TODO
 }
 
 #pragma mark Messages movement to other remote folders

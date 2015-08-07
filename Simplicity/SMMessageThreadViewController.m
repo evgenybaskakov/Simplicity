@@ -72,6 +72,7 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(markMessageAsUnread:) name:@"MarkMessageAsUnread" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
@@ -793,6 +794,30 @@ static const CGFloat CELL_SPACING = -1;
 
         [self updateMessageThread];
     }
+}
+
+- (void)markMessageAsUnread:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
+    
+    if(cellIdx == _cells.count) {
+        NSLog(@"%s: cell to reply not found", __func__);
+        return;
+    }
+    
+    SMMessageThreadCell *cell = _cells[cellIdx];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
+    [currentFolder setMessageUnseen:cell.message unseen:YES];
+    [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+    
+    [self updateMessageThread];
+    
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 #pragma mark Message reply composition

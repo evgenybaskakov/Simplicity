@@ -498,7 +498,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)markMessageAsUnread:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MarkMessageAsUnread" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)showMessageActions:(id)sender {

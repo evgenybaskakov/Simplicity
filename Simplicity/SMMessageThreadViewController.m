@@ -72,8 +72,8 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageFlaggedFlag:) name:@"ChangeMessageFlaggedFlag" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellFlaggedFlag:) name:@"ChangeMessageFlaggedFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
     }
 	
@@ -414,10 +414,10 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex {
 	NSAssert(cellIndex < _cells.count, @"bad index %lu", cellIndex);
-	
-	if(_findContentsActive) {
-		SMMessageThreadCell *cell = _cells[cellIndex];
 
+    SMMessageThreadCell *cell = _cells[cellIndex];
+
+	if(_findContentsActive) {
 		if(collapsed) {
 			[cell.viewController removeAllHighlightedOccurrencesOfString];
 			
@@ -427,6 +427,20 @@ static const CGFloat CELL_SPACING = -1;
 			[cell.viewController highlightAllOccurrencesOfString:_currentStringToFind matchCase:_currentStringToFindMatchCase];
 		}
 	}
+    
+    // If the cell is being uncollapsed while the message is unread,
+    // mark is as read; then update the message thread and the message
+    // list to immediately reflect the changes.
+    if(!collapsed && cell.message.unseen) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+        [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+
+        [self updateMessageThread];
+        
+        [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    }
 }
 
 - (void)collapseAll {
@@ -797,7 +811,7 @@ static const CGFloat CELL_SPACING = -1;
     }
 }
 
-- (void)changeMessageUnreadFlag:(NSNotification *)notification {
+- (void)changeMessageCellUnreadFlag:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -816,12 +830,22 @@ static const CGFloat CELL_SPACING = -1;
     [currentFolder setMessageUnseen:cell.message unseen:(cell.message.unseen? NO : YES)];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
-    [self updateMessageThread];
+    // If the message is being marked unseen, collapse its cell.
+    // Then update the message thread and the message list views to reflect that.
+    if(cell.message.unseen) {
+        cell.viewController.collapsed = YES;
+        
+        [self updateMessageThread];
+        [self updateCellFrames];
+    }
+    else {
+        [self updateMessageThread];
+    }
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
-- (void)changeMessageFlaggedFlag:(NSNotification *)notification {
+- (void)changeMessageCellFlaggedFlag:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -831,12 +855,11 @@ static const CGFloat CELL_SPACING = -1;
     }
     
     SMMessageThreadCell *cell = _cells[cellIdx];
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
-    
+
     [currentFolder setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     

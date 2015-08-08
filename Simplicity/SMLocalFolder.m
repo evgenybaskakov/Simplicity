@@ -611,6 +611,20 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 }
 
+- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
+    if(message.flagged == flagged)
+        return;
+    
+    // set the local message flags
+    message.flagged = flagged;
+    
+    // enqueue the remote folder operation
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+}
+
 #pragma mark Messages movement to other remote folders
 
 - (void)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {

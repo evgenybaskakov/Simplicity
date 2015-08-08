@@ -314,7 +314,22 @@ static NSString *unquote(NSString *s) {
 		return NO;
 	}
 	
-	return (_imapMessage.originalFlags & MCOMessageFlagFlagged) != 0;
+	return (_imapMessage.flags & MCOMessageFlagFlagged) != 0;
+}
+
+- (void)setFlagged:(Boolean)flagged {
+    if(_imapMessage == nil) {
+        NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+        return;
+    }
+    
+    if(flagged) {
+        _imapMessage.flags |= MCOMessageFlagFlagged;
+    }
+    else {
+        _imapMessage.flags &= ~MCOMessageFlagFlagged;
+    }
+    
 }
 
 - (void)fetchInlineAttachments {

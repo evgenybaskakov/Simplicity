@@ -164,7 +164,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	_starButton.image = appDelegate.imageRegistry.grayStarImage;
 	[_starButton.cell setImageScaling:NSImageScaleProportionallyDown];
 	_starButton.bordered = NO;
-	_starButton.action = @selector(toggleFullDetails:);
+	_starButton.action = @selector(changeMessageFlaggedFlag:);
 
 	[view addSubview:_starButton];
 
@@ -499,6 +499,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 - (void)changeMessageUnreadFlag:(id)sender {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeMessageUnreadFlag" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+}
+
+- (void)changeMessageFlaggedFlag:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeMessageFlaggedFlag" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)showMessageActions:(id)sender {

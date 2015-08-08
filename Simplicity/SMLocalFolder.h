@@ -47,6 +47,9 @@
 // sets/clears the unseen flag
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
 
+// sets/clears the "flag" mark
+- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
+
 // initiates process of moving the selected message to another (remote) folder
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName;
 

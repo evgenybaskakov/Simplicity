@@ -20,12 +20,12 @@
 @property (readonly) uint32_t uid;
 @property (readonly) NSString *htmlBodyRendering;
 @property (readonly) NSString *remoteFolder;
-@property (readonly) Boolean flagged;
 @property (readonly) Boolean hasAttachments;
 @property (readonly) NSArray *attachments;
 @property (readonly) NSArray *labels;
 
 @property Boolean unseen;
+@property Boolean flagged;
 
 @property (assign) NSData *data;
 

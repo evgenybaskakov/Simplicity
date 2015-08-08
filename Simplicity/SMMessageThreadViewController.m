@@ -832,17 +832,26 @@ static const CGFloat CELL_SPACING = -1;
     
     // If the message is being marked unseen, collapse its cell.
     // Then update the message thread and the message list views to reflect that.
+    Boolean preserveMessageListSelection = YES;
+    
     if(cell.message.unseen) {
-        cell.viewController.collapsed = YES;
-        
-        [self updateMessageThread];
-        [self updateCellFrames];
+        if(_cells.count == 1) {
+            [self setMessageThread:nil];
+            
+            preserveMessageListSelection = NO;
+        }
+        else {
+            cell.viewController.collapsed = YES;
+            
+            [self updateMessageThread];
+            [self updateCellFrames];
+        }
     }
     else {
         [self updateMessageThread];
     }
     
-    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:preserveMessageListSelection];
 }
 
 - (void)changeMessageCellFlaggedFlag:(NSNotification *)notification {

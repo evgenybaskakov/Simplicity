@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6751" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6751"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListViewController">
@@ -38,6 +38,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="47" rowSizeStyle="automatic" viewBased="YES" id="4">
+                                <rect key="frame" x="0.0" y="0.0" width="235" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
@@ -91,6 +92,13 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
+                                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
+                                                        <rect key="frame" x="0.0" y="26" width="18" height="17"/>
+                                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="star-yellow-icon" imagePosition="only" alignment="center" alternateImage="star-gray-icon" imageScaling="proportionallyDown" inset="2" id="foW-9l-eeJ">
+                                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system" size="10"/>
+                                                        </buttonCell>
+                                                    </button>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WUA-NN-aMr" userLabel="Unseen">
                                                         <rect key="frame" x="3" y="6" width="12" height="12"/>
                                                         <constraints>
@@ -98,14 +106,6 @@
                                                             <constraint firstAttribute="width" constant="12" id="nFH-pY-YCa"/>
                                                         </constraints>
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="circle-blue" id="cIK-TO-Bpr"/>
-                                                    </imageView>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4FB-rA-suJ" userLabel="Starred">
-                                                        <rect key="frame" x="0.0" y="26" width="18" height="18"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="18" id="Zda-pl-9tp"/>
-                                                            <constraint firstAttribute="width" constant="18" id="ukI-Em-NPM"/>
-                                                        </constraints>
-                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="star-yellow-icon" id="nDt-Tq-SNe"/>
                                                     </imageView>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oxo-5I-gnK" userLabel="Attachment">
                                                         <rect key="frame" x="196" y="4" width="18" height="18"/>
@@ -128,7 +128,6 @@
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="8" symbolic="YES" id="7aa-5k-6qD"/>
                                                     <constraint firstItem="WUA-NN-aMr" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="7ns-gL-Nch"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="3" id="B7j-aR-abH"/>
-                                                    <constraint firstItem="4FB-rA-suJ" firstAttribute="leading" secondItem="32" secondAttribute="leading" id="Dt9-oo-3wQ"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
                                                     <constraint firstItem="WUA-NN-aMr" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="3" id="H8H-8I-daO"/>
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="leading" secondItem="164" secondAttribute="trailing" id="LaT-yg-u4W"/>
@@ -137,7 +136,6 @@
                                                     <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="4" id="SMR-bD-zZT"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="WUA-NN-aMr" secondAttribute="trailing" constant="4" id="boL-kG-Zah"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
-                                                    <constraint firstItem="4FB-rA-suJ" firstAttribute="top" secondItem="WUA-NN-aMr" secondAttribute="bottom" constant="-38" id="nPF-r7-bhM"/>
                                                     <constraint firstItem="160" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="pEu-Zu-EPr"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" id="yef-dg-cQ3"/>
@@ -150,7 +148,7 @@
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>
                                                     <outlet property="fromTextField" destination="160" id="163"/>
-                                                    <outlet property="starImage" destination="4FB-rA-suJ" id="FWz-wm-iyu"/>
+                                                    <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>
                                                     <outlet property="unseenImage" destination="WUA-NN-aMr" id="b2H-xX-tFZ"/>
                                                 </connections>
@@ -217,6 +215,7 @@
     <resources>
         <image name="attachment-icon" width="128" height="128"/>
         <image name="circle-blue" width="256" height="256"/>
+        <image name="star-gray-icon" width="286" height="286"/>
         <image name="star-yellow-icon" width="286" height="286"/>
     </resources>
 </document>

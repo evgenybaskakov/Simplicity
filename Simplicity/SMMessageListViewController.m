@@ -187,10 +187,10 @@
 	}
 
 	if(messageThread.flagged) {
-		[view.starImage setImage:appDelegate.imageRegistry.yellowStarImage];
-		[view.starImage setHidden:NO];
+		[view.starButton setImage:appDelegate.imageRegistry.yellowStarImage];
+		[view.starButton setHidden:NO];
 	} else {
-		[view.starImage setHidden:YES];
+		[view.starButton setHidden:YES];
 	}
 
 	if(messageThread.hasAttachments) {

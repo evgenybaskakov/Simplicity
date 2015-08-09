@@ -456,7 +456,6 @@
     [self setStarButtonAlpha:button];
 
     NSInteger row = button.tag;
-    NSLog(@"%s: row %ld", __func__, row);
 
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
@@ -466,10 +465,27 @@
     NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
     NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
     
-    SMMessage *message = messageThread.messagesSortedByDate[0];
-    
-    [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
-    [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    if(messageThread.flagged) {
+        //
+        // Gmail logic: remove the star from all messages in the thread.
+        //
+        for(SMMessage *message in messageThread.messagesSortedByDate) {
+            //
+            // TODO: Optimize by using the bulk API for setting IMAP flags
+            //
+            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:NO];
+            [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        }
+    }
+    else {
+        //
+        // TODO: Use not just the first message, but the first message that belongs to this remote folder
+        //
+        SMMessage *message = messageThread.messagesSortedByDate[0];
+        
+        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
+        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    }
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
 }

@@ -16,6 +16,7 @@
 @property IBOutlet NSProgressIndicator *loadingMoreMessagesProgressIndicator;
 @property IBOutlet NSTableView *messageListTableView;
 
+- (IBAction)toggleStarAction:(id)sender;
 - (IBAction)updateMessagesNow:(id)sender;
 - (IBAction)loadMoreMessages:(id)sender;
 

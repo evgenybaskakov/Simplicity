@@ -187,12 +187,13 @@
 	}
 
 	if(messageThread.flagged) {
-		[view.starButton setImage:appDelegate.imageRegistry.yellowStarImage];
-		[view.starButton setHidden:NO];
+        [view.starButton setState:NSOnState];
 	} else {
-		[view.starButton setHidden:YES];
+        [view.starButton setState:NSOffState];
 	}
 
+    [self setStarButtonAlpha:view.starButton];
+    
 	if(messageThread.hasAttachments) {
 		[view showAttachmentImage];
 	} else {
@@ -435,6 +436,21 @@
 	// the message list view does not accept dropping
 
 	return NSDragOperationNone;
+}
+
+- (void)setStarButtonAlpha:(NSButton*)button {
+    if(button.state == NSOnState) {
+        [button setAlphaValue:1.0];
+    } else {
+        [button setAlphaValue:0.2];
+    }
+}
+
+- (IBAction)toggleStarAction:(id)sender {
+    NSButton *button = (NSButton*)sender;
+    NSLog(@"%s: image %@", __func__, button.image);
+    
+    [self setStarButtonAlpha:button];
 }
 
 @end

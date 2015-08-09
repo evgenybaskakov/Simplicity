@@ -156,7 +156,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		_cells = [NSMutableArray arrayWithCapacity:messages.count];
 
-		NSUInteger lastUnseenMessageIdx = 0;
+		NSUInteger lastUnseenMessageIdx = NSUIntegerMax;
 		if(_currentMessageThread.unseen) {
 			for(NSUInteger i = messages.count; i > 0;) {
 				SMMessage *message = messages[--i];
@@ -181,6 +181,16 @@ static const CGFloat CELL_SPACING = -1;
 		}
 
 		[self updateCellFrames];
+        
+        if(lastUnseenMessageIdx != NSUIntegerMax) {
+            SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            
+            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+            [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+            
+            [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+        }
 	}
     else {
         [_messageThreadInfoViewController.view removeFromSuperview];

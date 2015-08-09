@@ -837,7 +837,7 @@ static const CGFloat CELL_SPACING = -1;
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    [currentFolder setMessageUnseen:cell.message unseen:(cell.message.unseen? NO : YES)];
+    [currentFolder setMessageUnseen:cell.message unseen:!cell.message.unseen];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     // If the message is being marked unseen, collapse its cell.

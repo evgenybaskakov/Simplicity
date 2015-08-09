@@ -80,11 +80,6 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	return _threadFlags & ThreadFlagsHasAttachment;
 }
 
-- (SMMessage*)latestMessage {
-	NSAssert(0, @"TODO");
-	return nil;
-}
-
 - (SMMessage*)getMessage:(uint32_t)uid {
 	SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
 	SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];

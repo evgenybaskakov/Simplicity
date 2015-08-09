@@ -192,6 +192,11 @@
         [view.starButton setState:NSOffState];
 	}
 
+    // the buttons within the table cells must know which row they're in
+    // so their action will use this tag to reflect the button action to the
+    // target message thread
+    [view.starButton setTag:row];
+
     [self setStarButtonAlpha:view.starButton];
     
 	if(messageThread.hasAttachments) {
@@ -448,9 +453,25 @@
 
 - (IBAction)toggleStarAction:(id)sender {
     NSButton *button = (NSButton*)sender;
-    NSLog(@"%s: image %@", __func__, button.image);
-    
     [self setStarButtonAlpha:button];
+
+    NSInteger row = button.tag;
+    NSLog(@"%s: row %ld", __func__, row);
+
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+    
+    NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
+    NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
+    
+    SMMessage *message = messageThread.messagesSortedByDate[0];
+    
+    [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
+    [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
 }
 
 @end

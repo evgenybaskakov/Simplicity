@@ -23,8 +23,6 @@
 
 - (id)initWithThreadId:(uint64_t)threadId;
 
-- (SMMessage*)latestMessage;
-
 - (NSArray*)messagesSortedByDate;
 - (SMMessage*)getMessage:(uint32_t)uid;
 

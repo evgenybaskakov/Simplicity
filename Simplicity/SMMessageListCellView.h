@@ -15,7 +15,7 @@
 @property (weak) IBOutlet NSTextField *fromTextField;
 @property (weak) IBOutlet NSTextField *subjectTextField;
 @property (weak) IBOutlet NSTextField *dateTextField;
-@property (weak) IBOutlet NSImageView *unseenImage;
+@property (weak) IBOutlet NSButton *unseenButton;
 @property (weak) IBOutlet NSButton *starButton;
 @property (weak) IBOutlet SMMessageBookmarksView *bookmarksView;
 

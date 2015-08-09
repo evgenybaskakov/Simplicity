@@ -93,7 +93,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
-                                                        <rect key="frame" x="0.0" y="26" width="18" height="17"/>
+                                                        <rect key="frame" x="0.0" y="26" width="18" height="18"/>
                                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="star-gray-icon" imagePosition="only" alignment="center" alternateImage="star-yellow-icon" state="on" imageScaling="proportionallyDown" inset="2" id="foW-9l-eeJ">
                                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system" size="10"/>
@@ -102,14 +102,20 @@
                                                             <action selector="toggleStarAction:" target="-2" id="ttl-pL-8Vj"/>
                                                         </connections>
                                                     </button>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WUA-NN-aMr" userLabel="Unseen">
-                                                        <rect key="frame" x="3" y="6" width="12" height="12"/>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="xPq-SM-e48" userLabel="Unseen">
+                                                        <rect key="frame" x="4" y="7" width="11" height="11"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="12" id="LiG-Ow-gau"/>
-                                                            <constraint firstAttribute="width" constant="12" id="nFH-pY-YCa"/>
+                                                            <constraint firstAttribute="width" constant="11" id="DAJ-2M-z4Z"/>
+                                                            <constraint firstAttribute="height" constant="11" id="ryl-2u-xHg"/>
                                                         </constraints>
-                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="circle-blue" id="cIK-TO-Bpr"/>
-                                                    </imageView>
+                                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="circle-blue" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="mlh-y3-B3R">
+                                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system" size="10"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="toggleUnseenAction:" target="-2" id="gXc-E6-3L0"/>
+                                                        </connections>
+                                                    </button>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oxo-5I-gnK" userLabel="Attachment">
                                                         <rect key="frame" x="196" y="4" width="18" height="18"/>
                                                         <constraints>
@@ -129,15 +135,15 @@
                                                     <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" id="3aT-87-YxW"/>
                                                     <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="2" id="6Ae-4K-scf"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="8" symbolic="YES" id="7aa-5k-6qD"/>
-                                                    <constraint firstItem="WUA-NN-aMr" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="7ns-gL-Nch"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="3" id="B7j-aR-abH"/>
+                                                    <constraint firstItem="160" firstAttribute="leading" secondItem="xPq-SM-e48" secondAttribute="trailing" constant="4" id="CXh-WQ-V1D"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
-                                                    <constraint firstItem="WUA-NN-aMr" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="3" id="H8H-8I-daO"/>
+                                                    <constraint firstItem="xPq-SM-e48" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="Gqa-MK-utm"/>
+                                                    <constraint firstItem="xPq-SM-e48" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="4" id="Iys-BD-NjQ"/>
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="leading" secondItem="164" secondAttribute="trailing" id="LaT-yg-u4W"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="4" id="QCM-lj-Yyi"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="BTp-sC-DoL" secondAttribute="bottom" constant="4" id="R73-US-hFc"/>
                                                     <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="4" id="SMR-bD-zZT"/>
-                                                    <constraint firstItem="160" firstAttribute="leading" secondItem="WUA-NN-aMr" secondAttribute="trailing" constant="4" id="boL-kG-Zah"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
                                                     <constraint firstItem="160" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="pEu-Zu-EPr"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
@@ -153,7 +159,7 @@
                                                     <outlet property="fromTextField" destination="160" id="163"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>
-                                                    <outlet property="unseenImage" destination="WUA-NN-aMr" id="b2H-xX-tFZ"/>
+                                                    <outlet property="unseenButton" destination="xPq-SM-e48" id="jZS-Ox-jf0"/>
                                                 </connections>
                                             </tableCellView>
                                         </prototypeCellViews>

@@ -180,10 +180,9 @@
 	[view.dateTextField setStringValue:[message localizedDate]];
 
 	if(messageThread.unseen) {
-		[view.unseenImage setImage:appDelegate.imageRegistry.blueCircleImage];
-		[view.unseenImage setHidden:NO];
+		[view.unseenButton setState:NSOnState];
 	} else {
-		[view.unseenImage setHidden:YES];
+        [view.unseenButton setState:NSOffState];
 	}
 
 	if(messageThread.flagged) {
@@ -195,9 +194,11 @@
     // the buttons within the table cells must know which row they're in
     // so their action will use this tag to reflect the button action to the
     // target message thread
-    [view.starButton setTag:row];
+    view.unseenButton.tag = row;
+    view.starButton.tag = row;
 
-    [self setStarButtonAlpha:view.starButton];
+    [self setToggleButtonAlpha:view.unseenButton];
+    [self setToggleButtonAlpha:view.starButton];
     
 	if(messageThread.hasAttachments) {
 		[view showAttachmentImage];
@@ -443,17 +444,17 @@
 	return NSDragOperationNone;
 }
 
-- (void)setStarButtonAlpha:(NSButton*)button {
+- (void)setToggleButtonAlpha:(NSButton*)button {
     if(button.state == NSOnState) {
         [button setAlphaValue:1.0];
     } else {
-        [button setAlphaValue:0.2];
+        [button setAlphaValue:0.1];
     }
 }
 
 - (IBAction)toggleStarAction:(id)sender {
     NSButton *button = (NSButton*)sender;
-    [self setStarButtonAlpha:button];
+    [self setToggleButtonAlpha:button];
 
     NSInteger row = button.tag;
 
@@ -484,6 +485,45 @@
         SMMessage *message = messageThread.messagesSortedByDate[0];
         
         [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
+        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    }
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+}
+
+- (IBAction)toggleUnseenAction:(id)sender {
+    NSButton *button = (NSButton*)sender;
+    [self setToggleButtonAlpha:button];
+    
+    NSInteger row = button.tag;
+    
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+    
+    NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
+    NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
+    
+    if(messageThread.unseen) {
+        //
+        // Gmail logic: make all messages in the thread to be seen.
+        //
+        for(SMMessage *message in messageThread.messagesSortedByDate) {
+            //
+            // TODO: Optimize by using the bulk API for setting IMAP flags
+            //
+            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:message unseen:NO];
+            [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        }
+    }
+    else {
+        //
+        // TODO: Use not just the first message, but the first message that belongs to this remote folder
+        //
+        SMMessage *message = messageThread.messagesSortedByDate[0];
+        
+        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:message unseen:!message.unseen];
         [messageThread updateThreadAttributesFromMessageUID:message.uid];
     }
     

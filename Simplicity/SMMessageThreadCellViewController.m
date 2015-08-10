@@ -16,7 +16,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMMessageThreadCellViewController.h"
 
-#define MIN_BODY_HEIGHT 100
+#define MIN_BODY_HEIGHT 150
 #define MAX_BODY_HEIGHT 500
 
 @implementation SMMessageThreadCellViewController {
@@ -179,7 +179,7 @@
 			
 			[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 			
-			[self addConstraint:view constraint:[NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:[self uncollapsedHeight]] priority:NSLayoutPriorityDefaultLow];
+			[self addConstraint:view constraint:[NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:[_messageBodyViewController contentHeight]] priority:NSLayoutPriorityDefaultLow];
 			
 			NSAssert(_messageBodyBottomConstraint == nil, @"_messageBodyBottomConstraint already created");
 			_messageBodyBottomConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
@@ -229,13 +229,17 @@
 }
 
 - (NSUInteger)uncollapsedHeight {
-    NSUInteger uncollapsedHeaderHeight = 50;
     NSUInteger contentHeight = [_messageBodyViewController contentHeight];
-    return uncollapsedHeaderHeight + MAX(MIN_BODY_HEIGHT, MIN(MAX_BODY_HEIGHT, contentHeight));
+    return MAX(MIN_BODY_HEIGHT, contentHeight);
 }
 
 - (NSUInteger)cellHeight {
-	return _collapsed? [SMMessageDetailsViewController headerHeight] : [self uncollapsedHeight];
+    if(_collapsed) {
+        return [SMMessageDetailsViewController headerHeight];
+    }
+    else {
+        return [SMMessageDetailsViewController headerHeight] + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]);
+    }
 }
 
 - (void)buttonClicked:(id)sender {

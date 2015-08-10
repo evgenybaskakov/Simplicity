@@ -379,7 +379,7 @@ static const CGFloat CELL_SPACING = -1;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
 
 		if(_cells.count == 1 && _messageEditorViewController == nil) {
-			subview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+			subview.autoresizingMask = NSViewWidthSizable;
 			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
 		} else {
 			subview.autoresizingMask = NSViewWidthSizable;

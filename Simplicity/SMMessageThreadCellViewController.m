@@ -16,8 +16,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMMessageThreadCellViewController.h"
 
-#define MIN_BODY_HEIGHT 150
-#define MAX_BODY_HEIGHT 500
+static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 @implementation SMMessageThreadCellViewController {
 	SMMessage *_message;
@@ -226,11 +225,6 @@
 	} else {
 		[self setCollapsed:NO];
 	}
-}
-
-- (NSUInteger)uncollapsedHeight {
-    NSUInteger contentHeight = [_messageBodyViewController contentHeight];
-    return MAX(MIN_BODY_HEIGHT, contentHeight);
 }
 
 - (NSUInteger)cellHeight {

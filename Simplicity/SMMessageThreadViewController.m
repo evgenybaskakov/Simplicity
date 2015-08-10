@@ -327,26 +327,18 @@ static const CGFloat CELL_SPACING = -1;
         fullHeight += CELL_SPACING;
     }
 
-	if(_cells.count > 1 || _messageEditorViewController != nil) {
-		fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
-		
-		for(NSInteger i = 0; i < _cells.count; i++) {
-			SMMessageThreadCell *cell = _cells[i];
-			fullHeight += (CGFloat)cell.viewController.cellHeight;
-			
-			if(i + 1 < _cells.count)
-				fullHeight += CELL_SPACING;
-		}
-	} else {
-		fullHeight += _contentView.frame.size.height;
-	}
+    fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
+    
+    for(NSInteger i = 0; i < _cells.count; i++) {
+        SMMessageThreadCell *cell = _cells[i];
+        fullHeight += (CGFloat)cell.viewController.cellHeight;
+        
+        if(i + 1 < _cells.count)
+            fullHeight += CELL_SPACING;
+    }
 
 	_contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
 	_contentView.autoresizingMask = NSViewWidthSizable;
-
-    if(_cells.count == 1 && _messageEditorViewController == nil) {
-		_contentView.autoresizingMask |= NSViewHeightSizable;
-    }
 
 	NSView *infoView = [_messageThreadInfoViewController view];
 	NSAssert(infoView != nil, @"no info view");
@@ -377,14 +369,8 @@ static const CGFloat CELL_SPACING = -1;
 
 		NSView *subview = cell.viewController.view;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
-
-		if(_cells.count == 1 && _messageEditorViewController == nil) {
-			subview.autoresizingMask = NSViewWidthSizable;
-			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
-		} else {
-			subview.autoresizingMask = NSViewWidthSizable;
-			subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
-		}
+        subview.autoresizingMask = NSViewWidthSizable;
+        subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
 		
 		ypos += cell.viewController.cellHeight + CELL_SPACING;
 	}
@@ -566,9 +552,7 @@ static const CGFloat CELL_SPACING = -1;
 		SMMessageThreadCell *cell = _cells[i];
 
 		if(cell.viewController.view.superview == nil) {
-			if(_cells.count > 1) {
-				[cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
-			}
+            [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
 			
 			[_contentView addSubview:cell.viewController.view];
 		}

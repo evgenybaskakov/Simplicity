@@ -181,6 +181,13 @@
 
 		_mainFrameLoaded = YES;
 		
+        // Don't allow message body scrolling.
+        // Instead, the thread cell is responsible for setting its
+        // content side to fit the whole message. The message thread
+        // view is the one who scrolls. Inner scrolling must not be
+        // enabled to avoid user annoyance.
+        [frame.frameView setAllowsScrolling:NO];
+
 		if(_currentFindString != nil && _uncollapsed) {
 			[self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
 		}

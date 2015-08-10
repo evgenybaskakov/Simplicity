@@ -113,6 +113,7 @@
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
+		802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 802408ED1B786FC80072FB98 /* SMBoxView.m */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
@@ -397,6 +398,8 @@
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
+		802408EC1B786FC80072FB98 /* SMBoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBoxView.h; sourceTree = "<group>"; };
+		802408ED1B786FC80072FB98 /* SMBoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBoxView.m; sourceTree = "<group>"; };
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
@@ -685,6 +688,8 @@
 				800C678F1B499DA900272D60 /* NSColor+ColorExtensions.m */,
 				00A6816E1A7D6B6E00DAD2BD /* SMAttachmentsPanelView.h */,
 				00A6816F1A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m */,
+				802408EC1B786FC80072FB98 /* SMBoxView.h */,
+				802408ED1B786FC80072FB98 /* SMBoxView.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
 				008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */,
 				800C67741B489FB300272D60 /* SMColorWellWithIcon.h */,
@@ -1078,6 +1083,7 @@
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,
+				802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */,
 				00A085B01A72145300CC4E1C /* SMAttachmentsPanelViewController.m in Sources */,
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,
 				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,

@@ -331,6 +331,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	return TRUE;
 }
 
+- (Boolean)mainFrameLoaded {
+    return (_messageBodyViewController != nil) && _messageBodyViewController.mainFrameLoaded;
+}
+
 - (void)setMessage:(SMMessage*)message {
 	NSAssert(_message == nil, @"message already set");
 

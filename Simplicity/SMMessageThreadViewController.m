@@ -312,6 +312,16 @@ static const CGFloat CELL_SPACING = -1;
 	}
 }
 
+- (Boolean)shouldUseFullHeightForFirstCell {
+    if(_cells.count == 1 && _messageEditorViewController == nil) {
+        SMMessageThreadCell *firstCell = _cells[0];
+        return !firstCell.viewController.mainFrameLoaded;
+    }
+    else {
+        return NO;
+    }
+}
+
 - (void)updateCellFrames {
 	_cellsUpdateStarted = YES;
 
@@ -327,19 +337,28 @@ static const CGFloat CELL_SPACING = -1;
         fullHeight += CELL_SPACING;
     }
 
-    fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
-    
-    for(NSInteger i = 0; i < _cells.count; i++) {
-        SMMessageThreadCell *cell = _cells[i];
-        fullHeight += (CGFloat)cell.viewController.cellHeight;
+    if([self shouldUseFullHeightForFirstCell]) {
+        fullHeight += _contentView.frame.size.height;
+    }
+    else {
+        fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
         
-        if(i + 1 < _cells.count)
-            fullHeight += CELL_SPACING;
+        for(NSInteger i = 0; i < _cells.count; i++) {
+            SMMessageThreadCell *cell = _cells[i];
+            fullHeight += (CGFloat)cell.viewController.cellHeight;
+            
+            if(i + 1 < _cells.count)
+                fullHeight += CELL_SPACING;
+        }
     }
 
 	_contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
 	_contentView.autoresizingMask = NSViewWidthSizable;
 
+    if([self shouldUseFullHeightForFirstCell]) {
+        _contentView.autoresizingMask |= NSViewHeightSizable;
+    }
+    
 	NSView *infoView = [_messageThreadInfoViewController view];
 	NSAssert(infoView != nil, @"no info view");
 
@@ -369,9 +388,15 @@ static const CGFloat CELL_SPACING = -1;
 
 		NSView *subview = cell.viewController.view;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
-        subview.autoresizingMask = NSViewWidthSizable;
-        subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
-		
+
+        if([self shouldUseFullHeightForFirstCell]) {
+            subview.autoresizingMask = NSViewWidthSizable;
+            subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
+        } else {
+            subview.autoresizingMask = NSViewWidthSizable;
+            subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
+        }
+        
 		ypos += cell.viewController.cellHeight + CELL_SPACING;
 	}
 
@@ -548,11 +573,16 @@ static const CGFloat CELL_SPACING = -1;
 }
 
 - (void)showCellsRegion:(NSUInteger)from toInclusive:(NSUInteger)to {
-	for(NSUInteger i = from; i <= to; i++) {
+    for(NSUInteger i = from; i <= to; i++) {
 		SMMessageThreadCell *cell = _cells[i];
 
 		if(cell.viewController.view.superview == nil) {
-            [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
+            if([self shouldUseFullHeightForFirstCell]) {
+                [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, _contentView.frame.size.height)];
+            }
+            else {
+                [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
+            }
 			
 			[_contentView addSubview:cell.viewController.view];
 		}
@@ -594,6 +624,7 @@ static const CGFloat CELL_SPACING = -1;
         // TODO: maybe skip real frames update, if this cell is invisible?
         if(cell.message.uid == uid && !cell.viewController.collapsed) {
             [self updateCellFrames];
+            break;
         }
     }
 }

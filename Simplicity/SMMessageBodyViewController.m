@@ -51,7 +51,6 @@
 	uint32_t _uid;
 	NSString *_folder;
 	Boolean _uncollapsed;
-	Boolean _mainFrameLoaded;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {

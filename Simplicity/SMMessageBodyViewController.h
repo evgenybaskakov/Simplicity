@@ -13,6 +13,7 @@
 @interface SMMessageBodyViewController : NSViewController
 
 @property (readonly) NSUInteger stringOccurrencesCount;
+@property (readonly) Boolean mainFrameLoaded;
 
 - (NSUInteger)contentHeight;
 - (void)uncollapse;

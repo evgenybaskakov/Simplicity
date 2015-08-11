@@ -17,6 +17,7 @@
 
 @property (readonly, nonatomic) NSUInteger cellHeight;
 @property (readonly, nonatomic) NSUInteger stringOccurrencesCount;
+@property (readonly, nonatomic) Boolean mainFrameLoaded;
 
 + (NSUInteger)collapsedCellHeight;
 

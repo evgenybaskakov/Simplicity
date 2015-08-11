@@ -206,11 +206,12 @@
 		[view hideAttachmentImage];
 	}
 	
+    SMFolder *currentFolder = nil;
 	NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
-	NSAssert(currentFolderName != nil, @"currentFolderName == nil");
-
-	SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:currentFolderName];
-	NSAssert(currentFolder != nil, @"currentFolder == nil");
+    if(currentFolderName != nil) {
+        SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:currentFolderName];
+        NSAssert(currentFolder != nil, @"currentFolder == nil");
+    }
 
 	NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
 	

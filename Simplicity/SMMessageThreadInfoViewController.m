@@ -225,11 +225,13 @@
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	SMAppController *appController = [appDelegate appController];
-	NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
-	NSAssert(currentFolderName != nil, @"currentFolderName == nil");
-	
-	SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:currentFolderName];
-	NSAssert(currentFolder != nil, @"currentFolder == nil");
+
+    SMFolder *currentFolder = nil;
+    NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
+    if(currentFolderName != nil) {
+        currentFolder = [[[appDelegate model] mailbox] getFolderByName:currentFolderName];
+        NSAssert(currentFolder != nil, @"currentFolder == nil");
+    }
 
 	NSMutableArray *labels = [NSMutableArray array];
 	NSArray *colors = [[appController folderColorController] colorsForMessageThread:_messageThread folder:currentFolder labels:labels];

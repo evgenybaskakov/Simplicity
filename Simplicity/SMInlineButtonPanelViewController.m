@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMBoxView.h"
 #import "SMInlineButtonPanelViewController.h"
 
 @implementation SMInlineButtonPanelViewController {
@@ -14,6 +15,9 @@
 }
 
 - (void)viewDidLoad {
+    NSAssert([self.view isKindOfClass:[SMBoxView class]], @"bad type of view");
+    [((SMBoxView*)self.view) setFillColor:[NSColor whiteColor]];
+    
     NSMutableAttributedString *attrTitle = [[NSMutableAttributedString alloc] initWithString:_button.title];
     NSUInteger len = [attrTitle length];
     NSRange range = NSMakeRange(0, len);

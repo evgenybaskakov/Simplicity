@@ -33,6 +33,7 @@
 	Boolean _immediateSelection;
 	Boolean _mouseSelectionInProcess;
 	Boolean _reloadDeferred;
+    NSArray *_messageThreadsForContextMenu;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -529,6 +530,81 @@
     }
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+}
+
+#pragma mark Context menu creation
+
+- (NSMenu*)menuForRow:(NSInteger)row {
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+
+    NSMutableArray *messageThreads = [NSMutableArray array];
+    
+    NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
+    if(![selectedRows containsIndex:row]) {
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:row];
+        [_messageListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+
+        [self reloadMessageList:YES];
+        
+        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+        
+        if(messageThread == nil) {
+            // TODO: fix this logic
+            return nil;
+        }
+
+        [messageThreads addObject:[NSNumber numberWithUnsignedLong:messageThread.threadId]];
+    }
+    else {
+        NSUInteger selectedRow = [selectedRows firstIndex];
+        while(selectedRow != NSNotFound) {
+            SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:selectedRow localFolder:[currentLocalFolder localName]];
+            NSAssert(messageThread != nil, @"message thread at selected row %lu not found", selectedRow);
+            
+            [messageThreads addObject:[NSNumber numberWithUnsignedLong:messageThread.threadId]];
+            
+            selectedRow = [selectedRows indexGreaterThanIndex:selectedRow];
+        }
+    }
+    
+    NSMenu *menu = [[NSMenu alloc] init];
+
+    [[menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""] setTarget:self];
+    [menu addItem:[NSMenuItem separatorItem]];
+    [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
+    [menu addItem:[NSMenuItem separatorItem]];
+    [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnread:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Mark as Starred" action:@selector(menuActionMarkAsStarred:) keyEquivalent:@""] setTarget:self];
+    
+    return menu;
+}
+
+- (void)menuActionReply:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)menuActionReplyAll:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)menuActionForward:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)menuActionDelete:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)menuActionMarkAsUnread:(id)sender {
+    NSLog(@"%s: TODO", __func__);
+}
+
+- (void)menuActionMarkAsStarred:(id)sender {
+    NSLog(@"%s: TODO", __func__);
 }
 
 @end

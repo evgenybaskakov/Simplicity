@@ -28,4 +28,6 @@
 
 - (void)moveSelectedMessageThreadsToFolder:(NSString*)remoteFolderName;
 
+- (NSMenu*)menuForRow:(NSInteger)row;
+
 @end

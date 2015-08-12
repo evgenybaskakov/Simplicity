@@ -76,7 +76,7 @@
 			SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 			SMAppController *appController = [appDelegate appController];
 
-			[appController performSelectorOnMainThread:@selector(updateMailboxFolderListView) withObject:nil waitUntilDone:NO];
+			[appController performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 		}
 	}];
 }

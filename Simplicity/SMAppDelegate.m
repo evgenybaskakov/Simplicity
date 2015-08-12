@@ -31,8 +31,6 @@
 	_window.titleVisibility = NSWindowTitleHidden;
 
 	[[_model mailboxController] scheduleFolderListUpdate:YES];
-	[[_model messageListController] changeFolder:@"INBOX"];
-	[[_appController mailboxViewController] changeFolder:@"INBOX"];
 }
 
 + (NSURL*)appDataDir {

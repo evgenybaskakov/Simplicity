@@ -42,6 +42,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	NSLayoutConstraint *_messageThreadViewTopContraint;
 	NSMutableArray *_messageEditorWindowControllers;
     Boolean _operationQueueShown;
+    Boolean _inboxNotInitializedYet;
 }
 
 - (void)awakeFromNib {
@@ -227,8 +228,17 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _operationExecutor = [[SMOperationExecutor alloc] init];
 }
 
-- (void)updateMailboxFolderListView {
+- (void)updateMailboxFolderList {
 	[ _mailboxViewController updateFolderListView ];
+
+    if(!_inboxNotInitializedYet) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        [[[appDelegate model] messageListController] changeFolder:@"INBOX"];
+        [[[appDelegate appController] mailboxViewController] changeFolder:@"INBOX"];
+        
+        _inboxNotInitializedYet = YES;
+    }
 }
 
 - (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted {

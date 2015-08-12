@@ -43,7 +43,7 @@
 @property SMOutboxController *outboxController;
 @property SMOperationExecutor *operationExecutor;
 
-- (void)updateMailboxFolderListView;
+- (void)updateMailboxFolderList;
 - (void)toggleSearchResultsView;
 
 - (void)showFindContentsPanel;

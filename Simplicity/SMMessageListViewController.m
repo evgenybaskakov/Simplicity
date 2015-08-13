@@ -33,7 +33,7 @@
 	Boolean _immediateSelection;
 	Boolean _mouseSelectionInProcess;
 	Boolean _reloadDeferred;
-    NSArray *_messageThreadsForContextMenu;
+    NSArray *_selectedMessageThreadsForContextMenu;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -469,28 +469,40 @@
     NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
     
     if(messageThread.flagged) {
-        //
-        // Gmail logic: remove the star from all messages in the thread.
-        //
-        for(SMMessage *message in messageThread.messagesSortedByDate) {
-            //
-            // TODO: Optimize by using the bulk API for setting IMAP flags
-            //
-            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:NO];
-            [messageThread updateThreadAttributesFromMessageUID:message.uid];
-        }
+        [self addStarToMessageThread:messageThread];
     }
     else {
-        //
-        // TODO: Use not just the first message, but the first message that belongs to this remote folder
-        //
-        SMMessage *message = messageThread.messagesSortedByDate[0];
-        
-        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
-        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        [self removeStarFromMessageThread:messageThread];
     }
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+}
+
+- (void)addStarToMessageThread:(SMMessageThread*)messageThread {
+    //
+    // TODO: Use not just the first message, but the first message that belongs to this remote folder
+    //
+    SMMessage *message = messageThread.messagesSortedByDate[0];
+    
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
+    
+    [messageThread updateThreadAttributesFromMessageUID:message.uid];
+}
+
+- (void)removeStarFromMessageThread:(SMMessageThread*)messageThread {
+    //
+    // Gmail logic: remove the star from all messages in the thread.
+    //
+    for(SMMessage *message in messageThread.messagesSortedByDate) {
+        //
+        // TODO: Optimize by using the bulk API for setting IMAP flags
+        //
+        SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:NO];
+
+        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    }
 }
 
 - (IBAction)toggleUnseenAction:(id)sender {
@@ -568,6 +580,8 @@
             selectedRow = [selectedRows indexGreaterThanIndex:selectedRow];
         }
     }
+
+    _selectedMessageThreadsForContextMenu = messageThreads;
     
     NSMenu *menu = [[NSMenu alloc] init];
 
@@ -577,8 +591,10 @@
     [menu addItem:[NSMenuItem separatorItem]];
     [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
     [menu addItem:[NSMenuItem separatorItem]];
-    [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnread:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Mark as Starred" action:@selector(menuActionMarkAsStarred:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsRead:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Mark as Unseen" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Add Star" action:@selector(menuActionAddStar:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Remove Star" action:@selector(menuActionRemoveStar:) keyEquivalent:@""] setTarget:self];
     
     return menu;
 }
@@ -596,15 +612,71 @@
 }
 
 - (void)menuActionDelete:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] moveSelectedMessageThreadsToTrash];
 }
 
-- (void)menuActionMarkAsUnread:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+- (void)menuActionMarkAsRead:(id)sender {
+    [self markMessageThreadsAsUnseen:NO];
 }
 
-- (void)menuActionMarkAsStarred:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+- (void)menuActionMarkAsUnseen:(id)sender {
+    [self markMessageThreadsAsUnseen:YES];
+}
+
+- (void)menuActionAddStar:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    
+    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
+        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
+        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+
+        if(messageThread != nil) {
+            [self addStarToMessageThread:messageThread];
+        }
+    }
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (void)menuActionRemoveStar:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    
+    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
+        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
+        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+        
+        if(messageThread != nil) {
+            [self removeStarFromMessageThread:messageThread];
+        }
+    }
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (void)markMessageThreadsAsUnseen:(Boolean)unseen {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    
+    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
+        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
+        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+        
+        for(SMMessage *message in messageThread.messagesSortedByDate) {
+            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
+            [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        }
+    }
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 @end

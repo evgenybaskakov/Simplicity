@@ -386,15 +386,17 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (IBAction)moveToTrashAction:(id)sender {
-	NSLog(@"%s", __func__);
+    [self moveSelectedMessageThreadsToTrash];
+}
 
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMailbox *mailbox = [[appDelegate model] mailbox];
-
-	SMFolder *trashFolder = [mailbox trashFolder];
-	NSAssert(trashFolder != nil, @"no trash folder");
-	
-	[[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder.fullName];
+- (void)moveSelectedMessageThreadsToTrash {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    
+    SMFolder *trashFolder = [mailbox trashFolder];
+    NSAssert(trashFolder != nil, @"no trash folder");
+    
+    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder.fullName];
 }
 
 #pragma mark Find Contents panel management

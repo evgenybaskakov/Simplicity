@@ -61,4 +61,6 @@
 
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
 
+- (void)moveSelectedMessageThreadsToTrash;
+
 @end

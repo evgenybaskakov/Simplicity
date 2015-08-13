@@ -805,7 +805,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to reply not found", __func__);
+        NSLog(@"%s: cell to delete not found", __func__);
         return;
     }
 
@@ -841,7 +841,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to reply not found", __func__);
+        NSLog(@"%s: cell to change unread flag not found", __func__);
         return;
     }
     
@@ -884,7 +884,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to reply not found", __func__);
+        NSLog(@"%s: cell to change flagged flag not found", __func__);
         return;
     }
     
@@ -906,11 +906,16 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)composeMessageReply:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
-    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
+    SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
     
-    if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to reply not found", __func__);
-        return;
+    NSUInteger cellIdx = 0;
+    if(cellViewControllerToReply != nil) {
+        NSUInteger cellIdx = [self findCell:cellViewControllerToReply];
+        
+        if(cellIdx == _cells.count) {
+            NSLog(@"%s: cell to reply not found", __func__);
+            return;
+        }
     }
 
     [self closeEmbeddedEditor]; // Close the currently edited message; it should save draft, etc.

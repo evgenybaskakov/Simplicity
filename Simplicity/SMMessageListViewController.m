@@ -469,10 +469,10 @@
     NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
     
     if(messageThread.flagged) {
-        [self addStarToMessageThread:messageThread];
+        [self removeStarFromMessageThread:messageThread];
     }
     else {
-        [self removeStarFromMessageThread:messageThread];
+        [self addStarToMessageThread:messageThread];
     }
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
@@ -485,7 +485,7 @@
     SMMessage *message = messageThread.messagesSortedByDate[0];
     
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
-    [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:!message.flagged];
+    [[[[appDelegate model] messageListController] currentLocalFolder] setMessageFlagged:message flagged:YES];
     
     [messageThread updateThreadAttributesFromMessageUID:message.uid];
 }
@@ -584,15 +584,25 @@
     _selectedMessageThreadsForContextMenu = messageThreads;
     
     NSMenu *menu = [[NSMenu alloc] init];
+    menu.autoenablesItems = NO;
 
-    [[menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""] setTarget:self];
+    NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+
+    item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    
+    item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    
     [menu addItem:[NSMenuItem separatorItem]];
     [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
     [menu addItem:[NSMenuItem separatorItem]];
-    [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsRead:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Mark as Unseen" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsSeen:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
     [[menu addItemWithTitle:@"Add Star" action:@selector(menuActionAddStar:) keyEquivalent:@""] setTarget:self];
     [[menu addItemWithTitle:@"Remove Star" action:@selector(menuActionRemoveStar:) keyEquivalent:@""] setTarget:self];
     
@@ -600,15 +610,15 @@
 }
 
 - (void)menuActionReply:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Reply", @"ReplyKind", nil]];
 }
 
 - (void)menuActionReplyAll:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"ReplyAll", @"ReplyKind", nil]];
 }
 
 - (void)menuActionForward:(id)sender {
-    NSLog(@"%s: TODO", __func__);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Forward", @"ReplyKind", nil]];
 }
 
 - (void)menuActionDelete:(id)sender {
@@ -616,7 +626,7 @@
     [[appDelegate appController] moveSelectedMessageThreadsToTrash];
 }
 
-- (void)menuActionMarkAsRead:(id)sender {
+- (void)menuActionMarkAsSeen:(id)sender {
     [self markMessageThreadsAsUnseen:NO];
 }
 
@@ -669,9 +679,11 @@
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
         SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
         
-        for(SMMessage *message in messageThread.messagesSortedByDate) {
-            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
-            [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        if(messageThread != nil) {
+            for(SMMessage *message in messageThread.messagesSortedByDate) {
+                [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
+                [messageThread updateThreadAttributesFromMessageUID:message.uid];
+            }
         }
     }
     

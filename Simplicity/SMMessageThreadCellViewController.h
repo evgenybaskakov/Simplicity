@@ -13,6 +13,7 @@
 @interface SMMessageThreadCellViewController : NSViewController
 
 @property (nonatomic) Boolean collapsed;
+@property (nonatomic) Boolean shouldDrawBottomLineWhenUncollapsed;
 @property (nonatomic) NSUInteger cellIndex;
 
 @property (readonly, nonatomic) NSUInteger cellHeight;

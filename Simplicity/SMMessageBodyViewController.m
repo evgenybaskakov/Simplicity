@@ -191,17 +191,11 @@
 			[self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
 		}
 
+        // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
+        _contentHeight = [[[frame frameView] documentView] frame].size.height;
+
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:_uid], @"UID", nil]];
     }
-}
-
-- (NSUInteger)contentHeight {
-    if(!_mainFrameLoaded)
-        return 0;
-
-    // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
-    WebView *webView = (WebView*)[self view];
-    return [[[[webView mainFrame] frameView] documentView] frame].size.height + 0.5;
 }
 
 #pragma mark Finding contents

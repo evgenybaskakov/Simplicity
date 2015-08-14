@@ -173,6 +173,7 @@ static const CGFloat CELL_SPACING = -1;
 			SMMessageThreadCellViewController *viewController = [self createMessageThreadCell:messages[i] collapsed:collapsed];
 
 			[viewController enableCollapse:(messages.count > 1)];
+            viewController.shouldDrawBottomLineWhenUncollapsed = (i != messages.count-1? YES : NO);
 			viewController.cellIndex = i;
 
 			[_contentView addSubview:[viewController view]];
@@ -910,7 +911,7 @@ static const CGFloat CELL_SPACING = -1;
     
     NSUInteger cellIdx = 0;
     if(cellViewControllerToReply != nil) {
-        NSUInteger cellIdx = [self findCell:cellViewControllerToReply];
+        cellIdx = [self findCell:cellViewControllerToReply];
         
         if(cellIdx == _cells.count) {
             NSLog(@"%s: cell to reply not found", __func__);

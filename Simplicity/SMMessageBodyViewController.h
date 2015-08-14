@@ -12,10 +12,10 @@
 
 @interface SMMessageBodyViewController : NSViewController
 
+@property (readonly) NSUInteger contentHeight;
 @property (readonly) NSUInteger stringOccurrencesCount;
 @property (readonly) Boolean mainFrameLoaded;
 
-- (NSUInteger)contentHeight;
 - (void)uncollapse;
 - (void)setMessageViewText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder;
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;

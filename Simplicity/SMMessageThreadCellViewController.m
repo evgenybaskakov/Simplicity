@@ -175,7 +175,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 			[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:[_messageBodyViewController contentHeight]] priority:NSLayoutPriorityDefaultLow];
 			
 			NSAssert(_messageBodyBottomConstraint == nil, @"_messageBodyBottomConstraint already created");
-			_messageBodyBottomConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+			_messageBodyBottomConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-1];
 			
 			[_view addConstraint:_messageBodyBottomConstraint];
 			
@@ -188,7 +188,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		}
 		
         _view.fillColor = [NSColor whiteColor];
-        _view.drawBottom = NO;
+        _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
 
         [_messageDetailsViewController uncollapse];
 		[_messageBodyViewController uncollapse];
@@ -208,6 +208,14 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 		[[[appDelegate appController] messageThreadViewController] setCellCollapsed:_collapsed cellIndex:_cellIndex];
 	}
+}
+
+- (void)setShouldDrawBottomLineWhenUncollapsed:(Boolean)shouldDrawBottomLineWhenUncollapsed {
+    _shouldDrawBottomLineWhenUncollapsed = shouldDrawBottomLineWhenUncollapsed;
+    
+    if(!_collapsed) {
+        _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
+    }
 }
 
 - (Boolean)isCollapsed {

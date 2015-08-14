@@ -172,7 +172,7 @@
     
     if(mainFrame != nil) {
         // TODO: remove duplication, see SMMessageBodyViewController.contentHeight
-        _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height + 0.5;
+        _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height;
         //NSLog(@"_cachedContentHeight: %ld", _cachedContentHeight);
     }
 }

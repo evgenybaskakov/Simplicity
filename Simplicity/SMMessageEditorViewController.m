@@ -318,6 +318,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_innerView addSubview:_subjectBoxViewController.view];
     
     [self adjustFrames];
+    [self notifyContentHeightChanged];
 }
 
 - (void)hideFullAddressPanel {
@@ -326,6 +327,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_subjectBoxViewController.view removeFromSuperview];
 
     [self adjustFrames];
+    [self notifyContentHeightChanged];
+}
+
+- (void)notifyContentHeightChanged {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageEditorContentHeightChanged" object:nil userInfo:nil];
 }
 
 - (void)setEditorFrame:(NSRect)frame {
@@ -393,7 +399,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (NSUInteger)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight + EMBEDDED_MARGIN_H * 2 + 2; // TODO
+    return _panelHeight + _messageTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {

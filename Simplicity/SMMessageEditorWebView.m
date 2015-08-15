@@ -53,16 +53,16 @@
     if(htmlContents == nil) {
         NSAssert(kind == kEmptyEditorContentsKind, @"invalid editor contents kind %u", kind);
 
-        bodyHtml = [NSString stringWithFormat:@"%@%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+        bodyHtml = [NSString stringWithFormat:@"%@%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
     }
     else {
         NSAssert(htmlContents != nil, @"htmlContents is nil");
 
         if(kind == kFoldedReplyEditorContentsKind) {
-            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedReplyEditorContentsKind) {
-            NSAssert(nil, @"TODO 1");
+            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedDraftEditorContentsKind) {
             NSAssert(nil, @"TODO 2");

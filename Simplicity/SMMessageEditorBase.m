@@ -79,8 +79,8 @@ static NSDictionary *fontNameToIndexMap;
     return fontNameToIndexMap;
 }
 
-+ (NSString*)newMessageHTMLBeginTemplate {
-    return @""
++ (NSString*)newMessageHTMLBeginTemplate:(Boolean)folded {
+    return [NSString stringWithFormat:@""
         "<html>"
         "<style>"
         "  body {"
@@ -97,7 +97,15 @@ static NSDictionary *fontNameToIndexMap;
         "  }"
         "</style>"
         "<body id='SimplicityEditor'>"
-        "  <div id='SimplicityContentToFold' style='display: none;'>";
+        "  <div id='SimplicityContentToFold' %@>", (folded? @"style='display: none;'" : @""), nil ];
+}
+
++ (NSString*)newFoldedMessageHTMLBeginTemplate {
+    return [self newMessageHTMLBeginTemplate:YES];
+}
+
++ (NSString*)newUnfoldedMessageHTMLBeginTemplate {
+    return [self newMessageHTMLBeginTemplate:NO];
 }
 
 + (NSString*)newMessageHTMLEndTemplate {

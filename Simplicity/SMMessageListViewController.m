@@ -695,31 +695,30 @@
 #pragma mark Opening message in window
 
 - (void)openMessageInWindow:(id)sender {
-    NSLog(@"%s: TODO (row %ld)", __func__, _messageListTableView.clickedRow);
-
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *localFolder = messageListController.currentLocalFolder;
-
     SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
+
     NSAssert(messageThread != nil, @"messageThread is nil");
 
-    SMMessage *messageToOpen = messageThread.messagesSortedByDate[0];
-    NSAssert(messageToOpen != nil, @"messageToOpen is nil");
-    NSAssert(messageToOpen.htmlBodyRendering != nil, @"messageToOpen.htmlBodyRendering is nil");
+    for(SMMessage *m in messageThread.messagesSortedByDate) {
+        NSAssert(m != nil, @"messageToOpen is nil");
 
-    NSString *htmlContents = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//    NSString *htmlContents = [NSString stringWithFormat:@"Compose the forward here...<br><br><br><blockquote>%@</blockquote>", [messageToOpen htmlBodyRendering], nil];
-
-    [[appDelegate appController] openComposeMessageWindow:htmlContents];
+        SMFolder *messageFolder = [[[appDelegate model] mailbox] getFolderByName:m.remoteFolder];
         
+        if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
+            NSAssert(m.htmlBodyRendering != nil, @"messageToOpen.htmlBodyRendering is nil");
 
-    //SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    //NSAssert(currentFolder != nil, @"current folder is nil");
-
-    // TODO: check if the message itself is a draft (don't use folder kind)
+            [[appDelegate appController] openComposeMessageWindow:m.htmlBodyRendering];
+            
+            return;
+        }
+    }
     
+    // Assume there's no draft, so open the message window in the readonly mode.
     
+    NSLog(@"%s: TODO - open message in readonly window", __func__);
 }
 
 @end

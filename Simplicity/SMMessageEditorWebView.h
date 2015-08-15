@@ -8,6 +8,13 @@
 
 #import <WebKit/WebKit.h>
 
+typedef enum {
+    kFoldedReplyEditorContentsKind,
+    kUnfoldedReplyEditorContentsKind,
+    kUnfoldedDraftEditorContentsKind,
+    kEmptyEditorContentsKind,
+} SMEditorContentsKind;
+
 @class SMMessageEditorBase;
 @class SMEditorToolBoxViewController;
 
@@ -18,8 +25,7 @@
 
 @property (readonly) NSUInteger contentHeight;
 
-- (void)startEmptyEditor;
-- (void)startEditorWithHTML:(NSString*)htmlContents;
+- (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind;
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;
 - (void)toggleBold;

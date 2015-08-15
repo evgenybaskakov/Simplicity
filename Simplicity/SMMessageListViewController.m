@@ -51,6 +51,7 @@
 - (void)viewDidLoad {
 	[_messageListTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
 	[_messageListTableView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
+    [_messageListTableView setDoubleAction:@selector(openMessageInWindow:)];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -689,6 +690,36 @@
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+#pragma mark Opening message in window
+
+- (void)openMessageInWindow:(id)sender {
+    NSLog(@"%s: TODO (row %ld)", __func__, _messageListTableView.clickedRow);
+
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *localFolder = messageListController.currentLocalFolder;
+
+    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
+    NSAssert(messageThread != nil, @"messageThread is nil");
+
+    SMMessage *messageToOpen = messageThread.messagesSortedByDate[0];
+    NSAssert(messageToOpen != nil, @"messageToOpen is nil");
+    NSAssert(messageToOpen.htmlBodyRendering != nil, @"messageToOpen.htmlBodyRendering is nil");
+
+    NSString *htmlContents = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//    NSString *htmlContents = [NSString stringWithFormat:@"Compose the forward here...<br><br><br><blockquote>%@</blockquote>", [messageToOpen htmlBodyRendering], nil];
+
+    [[appDelegate appController] openComposeMessageWindow:htmlContents];
+        
+
+    //SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    //NSAssert(currentFolder != nil, @"current folder is nil");
+
+    // TODO: check if the message itself is a draft (don't use folder kind)
+    
+    
 }
 
 @end

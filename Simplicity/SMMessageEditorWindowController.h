@@ -8,6 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMMessageEditorViewController;
+
 @interface SMMessageEditorWindowController : NSWindowController<NSWindowDelegate>
+
+@property (readonly) SMMessageEditorViewController *messageEditorViewController;
+
+- (void)setHtmlContents:(NSString*)htmlContents;
 
 @end

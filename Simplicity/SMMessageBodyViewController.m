@@ -176,7 +176,8 @@
 		return;
 
 	if(sender != nil && frame == sender.mainFrame) {
-		NSAssert(!_mainFrameLoaded, @"main frame already loaded");
+		//NSAssert(!_mainFrameLoaded, @"main frame already loaded");
+        NSLog(@"!!!!!!!!!!! %s: main frame already loaded !!!!!!!!!!!", __func__);
 
 		_mainFrameLoaded = YES;
 		

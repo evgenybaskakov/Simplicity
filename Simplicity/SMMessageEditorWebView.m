@@ -45,20 +45,34 @@
     [self setEditable:YES];
 }
 
-- (void)startEditorInternal:(NSString*)htmlContents {
+- (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind {
     _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
+    
+    NSString *bodyHtml = nil;
+    
+    if(htmlContents == nil) {
+        NSAssert(kind == kEmptyEditorContentsKind, @"invalid editor contents kind %u", kind);
 
-    NSString *bodyHtml = [NSString stringWithFormat:@"%@%@%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], (htmlContents == nil? @"" : htmlContents), [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+        bodyHtml = [NSString stringWithFormat:@"%@%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+    }
+    else {
+        NSAssert(htmlContents != nil, @"htmlContents is nil");
+
+        if(kind == kFoldedReplyEditorContentsKind) {
+            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLBeginTemplate], nil];
+        }
+        else if(kind == kUnfoldedReplyEditorContentsKind) {
+            NSAssert(nil, @"TODO 1");
+        }
+        else if(kind == kUnfoldedDraftEditorContentsKind) {
+            NSAssert(nil, @"TODO 2");
+        }
+        else {
+            NSAssert(nil, @"unknown editor contents kind %u", kind);
+        }
+    }
 
     [self.mainFrame loadHTMLString:bodyHtml baseURL:nil];
-}
-
-- (void)startEmptyEditor {
-    [self startEditorInternal:nil];
-}
-
-- (void)startEditorWithHTML:(NSString*)htmlContents {
-    [self startEditorInternal:htmlContents];
 }
 
 - (void)stopTextMonitor {

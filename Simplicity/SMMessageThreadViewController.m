@@ -929,22 +929,7 @@ static const CGFloat CELL_SPACING = -1;
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
-    NSString *replyHtmlText = nil;
-    
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
-    if([replyKind isEqualToString:@"Reply"]) {
-        replyHtmlText = [NSString stringWithFormat:@"Compose the reply here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
-    }
-    else if([replyKind isEqualToString:@"ReplyAll"]) {
-        replyHtmlText = [NSString stringWithFormat:@"Compose the reply to all here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
-    }
-    else if([replyKind isEqualToString:@"Forward"]) {
-        replyHtmlText = [NSString stringWithFormat:@"Compose the forward here...<br><br><br><blockquote>%@</blockquote>", [cell.message htmlBodyRendering], nil];
-    }
-    else {
-        NSAssert(false, @"Unrecognized reply kind %@", replyKind);
-    }
-    
     if(![replyKind isEqualToString:@"Forward"]) {
         NSString *fromAddress = [cell.message from];
         NSAssert(fromAddress != nil, @"bad message from address");
@@ -964,7 +949,7 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
 
-    [_messageEditorViewController.messageTextEditor startEditorWithHTML:replyHtmlText];
+    [_messageEditorViewController.messageTextEditor startEditorWithHTML:cell.message.htmlBodyRendering kind:kFoldedReplyEditorContentsKind];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
     editorSubview.autoresizingMask = NSViewWidthSizable;

@@ -59,6 +59,7 @@
 - (void)toggleOperationQueueSheet;
 - (void)hideOperationQueueSheet;
 
+- (void)openComposeMessageWindow:(NSString*)htmlContents;
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
 
 - (void)moveSelectedMessageThreadsToTrash;

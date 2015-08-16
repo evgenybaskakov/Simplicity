@@ -27,4 +27,6 @@
 
 - (void)updateCellFrames;
 
+- (void)messageThreadViewWillClose;
+
 @end

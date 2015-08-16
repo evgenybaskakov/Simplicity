@@ -80,6 +80,10 @@ static const CGFloat CELL_SPACING = -1;
 	return self;
 }
 
+- (void)messageThreadViewWillClose {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark Setting new message threads
 
 - (SMMessageThreadCellViewController*)createMessageThreadCell:(SMMessage*)message collapsed:(Boolean)collapsed {

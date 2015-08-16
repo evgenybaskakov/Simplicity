@@ -43,7 +43,7 @@
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    // TODO
+    [_messageThreadViewController messageThreadViewWillClose];
 }
 
 @end

@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class SMMessageBodyViewController;
+@class SMMessageThreadViewController;
 
 @interface SMMessageThreadCellViewController : NSViewController
 
@@ -20,9 +21,11 @@
 @property (readonly, nonatomic) NSUInteger stringOccurrencesCount;
 @property (readonly, nonatomic) Boolean mainFrameLoaded;
 
+@property (readonly, nonatomic) __weak SMMessageThreadViewController *messageThreadViewController;
+
 + (NSUInteger)collapsedCellHeight;
 
-- (id)initCollapsed:(Boolean)collapsed;
+- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed;
 
 - (void)setMessage:(SMMessage*)message;
 - (void)updateMessage;

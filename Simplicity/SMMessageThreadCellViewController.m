@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
-#import "SMAppDelegate.h"
-#import "SMAppController.h"
 #import "SMBoxView.h"
 #import "SMAttachmentItem.h"
 #import "SMMessage.h"
@@ -38,10 +36,12 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	Boolean _cellInitialized;
 }
 
-- (id)initCollapsed:(Boolean)collapsed {
+- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed {
 	self = [super init];
 	
 	if(self) {
+        _messageThreadViewController = messageThreadViewController;
+
 		// init main view
 		
 		_view = [[SMBoxView alloc] init];
@@ -55,7 +55,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		_headerButton.translatesAutoresizingMaskIntoConstraints = NO;
 		_headerButton.bezelStyle = NSShadowlessSquareBezelStyle;
 		_headerButton.target = self;
-		_headerButton.action = @selector(buttonClicked:);
+		_headerButton.action = @selector(headerButtonClicked:);
 
 		[_headerButton setTransparent:YES];
 		[_headerButton setEnabled:NO];
@@ -205,8 +205,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	}
 
 	if(_cellInitialized) {
-		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-		[[[appDelegate appController] messageThreadViewController] setCellCollapsed:_collapsed cellIndex:_cellIndex];
+		[_messageThreadViewController setCellCollapsed:_collapsed cellIndex:_cellIndex];
 	}
 }
 
@@ -239,11 +238,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)buttonClicked:(id)sender {
+- (void)headerButtonClicked:(id)sender {
 	[self toggleCollapse];
 
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	[[[appDelegate appController] messageThreadViewController] updateCellFrames];
+	[_messageThreadViewController updateCellFrames];
 }
 
 - (void)toggleAttachmentsPanel {

@@ -23,6 +23,7 @@
     [[self window] setDelegate:self];
     
     NSView *view = [[SMFlippedView alloc] initWithFrame:[[self window] frame]];
+    view.translatesAutoresizingMaskIntoConstraints = YES;
     [[self window] setContentView:view];
     
     _messageThreadViewController = [[SMMessageThreadViewController alloc] initWithNibName:nil bundle:nil];

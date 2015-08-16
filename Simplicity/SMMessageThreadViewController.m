@@ -83,7 +83,7 @@ static const CGFloat CELL_SPACING = -1;
 #pragma mark Setting new message threads
 
 - (SMMessageThreadCellViewController*)createMessageThreadCell:(SMMessage*)message collapsed:(Boolean)collapsed {
-	SMMessageThreadCellViewController *messageThreadCellViewController = [[SMMessageThreadCellViewController alloc] initCollapsed:collapsed];
+    SMMessageThreadCellViewController *messageThreadCellViewController = [[SMMessageThreadCellViewController alloc] init:self collapsed:collapsed];
 	
 	[messageThreadCellViewController setMessage:message];
 	

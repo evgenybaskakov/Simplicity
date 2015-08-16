@@ -708,9 +708,9 @@
         SMFolder *messageFolder = [[[appDelegate model] mailbox] getFolderByName:m.remoteFolder];
         
         if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
-            NSAssert(m.htmlBodyRendering != nil, @"messageToOpen.htmlBodyRendering is nil");
+            NSAssert(m.htmlBodyRendering != nil, @"TODO: handle messageToOpen.htmlBodyRendering is nil");
 
-            [[appDelegate appController] openComposeMessageWindow:m.htmlBodyRendering];
+            [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering];
             
             return;
         }
@@ -718,7 +718,7 @@
     
     // Assume there's no draft, so open the message window in the readonly mode.
     
-    NSLog(@"%s: TODO - open message in readonly window", __func__);
+    [[appDelegate appController] openMessageWindow:messageThread];
 }
 
 @end

@@ -21,6 +21,7 @@
 @class SMOperationQueueWindowController;
 @class SMOutboxController;
 @class SMOperationExecutor;
+@class SMMessageThread;
 
 @interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate>
 
@@ -59,8 +60,8 @@
 - (void)toggleOperationQueueSheet;
 - (void)hideOperationQueueSheet;
 
-- (void)openComposeMessageWindow:(NSString*)htmlContents;
-- (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
+- (void)openMessageWindow:(SMMessageThread*)messageThread;
+- (void)openMessageEditorWindow:(NSString*)htmlContents;
 
 - (void)moveSelectedMessageThreadsToTrash;
 

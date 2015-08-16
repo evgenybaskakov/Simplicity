@@ -155,6 +155,8 @@
 		80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */; };
 		80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575C1B1D763C00A0AA81 /* SMOperation.m */; };
 		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
+		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
+		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -460,6 +462,9 @@
 		80E6575C1B1D763C00A0AA81 /* SMOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperation.m; sourceTree = "<group>"; };
 		80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSendMessage.h; sourceTree = "<group>"; };
 		80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpSendMessage.m; sourceTree = "<group>"; };
+		80F7EA701B8009290000992E /* SMMessageWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageWindowController.h; sourceTree = "<group>"; };
+		80F7EA711B8009290000992E /* SMMessageWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageWindowController.m; sourceTree = "<group>"; };
+		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -658,6 +663,8 @@
 				004741641AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m */,
 				00172FF2198D5C6100DB975E /* SMMessageThreadViewController.h */,
 				00172FF3198D5C6100DB975E /* SMMessageThreadViewController.m */,
+				80F7EA701B8009290000992E /* SMMessageWindowController.h */,
+				80F7EA711B8009290000992E /* SMMessageWindowController.m */,
 				00AD52ED1AA81C7900627433 /* SMNewLabelWindowController.h */,
 				00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */,
 				801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */,
@@ -738,6 +745,7 @@
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
+				80F7EA721B8009290000992E /* SMMessageWindowController.xib */,
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
 				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
@@ -974,6 +982,7 @@
 				802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */,
 				80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */,
 				80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */,
+				80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */,
 				80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */,
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */,
@@ -1033,6 +1042,7 @@
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
 				8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */,
+				80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */,
 				80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */,
 				0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,

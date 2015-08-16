@@ -25,6 +25,8 @@
 #import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMMessageThread.h"
+#import "SMMessageWindowController.h"
 
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
@@ -41,6 +43,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	NSView *_messageThreadAndFindContentsPanelView;
 	NSLayoutConstraint *_messageThreadViewTopContraint;
 	NSMutableArray *_messageEditorWindowControllers;
+    NSMutableArray *_messageWindowControllers;
     Boolean _operationQueueShown;
     Boolean _inboxNotInitializedYet;
 }
@@ -218,6 +221,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	//
 	
 	_messageEditorWindowControllers = [NSMutableArray array];
+    _messageWindowControllers = [NSMutableArray array];
 	
 	//
 	
@@ -527,10 +531,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 #pragma mark Message editor window management
 
 - (IBAction)composeMessageAction:(id)sender {
-    [self openComposeMessageWindow:nil];
+    [self openMessageEditorWindow:nil];
 }
 
-- (void)openComposeMessageWindow:(NSString*)htmlContents {
+- (void)openMessageEditorWindow:(NSString*)htmlContents {
     SMMessageEditorWindowController *messageEditorWindowController = [[SMMessageEditorWindowController alloc] initWithWindowNibName:@"SMMessageEditorWindowController"];
 
     [messageEditorWindowController setHtmlContents:htmlContents];
@@ -539,8 +543,15 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [_messageEditorWindowControllers addObject:messageEditorWindowController];
 }
 
-- (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController {
-	[_messageEditorWindowControllers removeObject:messageEditorWindowController];
+#pragma mark Message viewer window
+
+- (void)openMessageWindow:(SMMessageThread*)messageThread {
+    SMMessageWindowController *messageWindowController = [[SMMessageWindowController alloc] initWithWindowNibName:@"SMMessageWindowController"];
+    
+    [messageWindowController setCurrentMessageThread:messageThread];
+    [messageWindowController showWindow:self];
+    
+    [_messageWindowControllers addObject:messageWindowController];
 }
 
 @end

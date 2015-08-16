@@ -698,6 +698,12 @@
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *localFolder = messageListController.currentLocalFolder;
+    
+    if(localFolder == nil) {
+        NSLog(@"%s: no local folder", __func__);
+        return;
+    }
+    
     SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
 
     NSAssert(messageThread != nil, @"messageThread is nil");

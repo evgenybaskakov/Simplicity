@@ -8,11 +8,11 @@
 
 #import "SMFlippedView.h"
 #import "SMMessageThread.h"
-#import "SMMessageThreadInfoViewController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMMessageWindowController.h"
 
 @implementation SMMessageWindowController {
-    SMMessageThreadInfoViewController *_messageThreadInfoViewController;
+    SMMessageThreadViewController *_messageThreadViewController;
 }
 
 - (void)windowDidLoad {
@@ -22,27 +22,23 @@
     
     [[self window] setDelegate:self];
     
-    // View setup
-    
     NSView *view = [[SMFlippedView alloc] initWithFrame:[[self window] frame]];
     [[self window] setContentView:view];
     
-    // Editor setup
+    _messageThreadViewController = [[SMMessageThreadViewController alloc] initWithNibName:nil bundle:nil];
+    NSAssert(_messageThreadViewController, @"_messageThreadViewController");
     
-    _messageThreadInfoViewController = [[SMMessageThreadInfoViewController alloc] init];
+    NSView *messageThreadView = [_messageThreadViewController view];
+    NSAssert(messageThreadView, @"messageThreadView");
     
-    NSAssert(_currentMessageThread != nil, @"_currentMessageThread is not set");
-    [_messageThreadInfoViewController setMessageThread:_currentMessageThread];
+    messageThreadView.translatesAutoresizingMaskIntoConstraints = YES;
 
-    NSView *infoView = [_messageThreadInfoViewController view];
-    NSAssert(infoView != nil, @"no info view");
+    [view addSubview:messageThreadView];
     
-    infoView.translatesAutoresizingMaskIntoConstraints = YES;
-
-    [view addSubview:infoView];
-
-    infoView.frame = NSMakeRect(-1, 0, view.frame.size.width+2, [SMMessageThreadInfoViewController infoHeaderHeight]);
-    infoView.autoresizingMask = NSViewWidthSizable;
+    messageThreadView.frame = view.frame;
+    messageThreadView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    
+    [_messageThreadViewController setMessageThread:_currentMessageThread];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

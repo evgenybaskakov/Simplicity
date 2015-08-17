@@ -207,10 +207,18 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)deleteMessage {
-    NSLog(@"%s: TODO - save the message to drafts", __func__);
+    NSAlert *alert = [[NSAlert alloc] init];
 
-    [self saveMessage];
-
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:@"Are you sure to delete this draft?"];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    if([alert runModal] != NSAlertFirstButtonReturn) {
+        NSLog(@"%s: delete cancelled", __func__);
+        return;
+    }
+    
     if(!_embedded) {
         [[[self view] window] close];
     }
@@ -513,7 +521,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 #pragma mark Misc
 
-- (void)closeEditor {
+- (void)closeEditor:(Boolean)saveDraft {
+    if(saveDraft) {
+        [self saveMessage];
+    }
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_messageEditorController closeEditor];
     [_messageTextEditor stopTextMonitor];

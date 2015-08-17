@@ -54,7 +54,7 @@
 //}
 
 - (void)windowWillClose:(NSNotification *)notification {
-    [_messageEditorViewController closeEditor];
+    [_messageEditorViewController closeEditor:YES];
 }
 
 @end

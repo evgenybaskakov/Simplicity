@@ -103,13 +103,12 @@ static const CGFloat CELL_SPACING = -1;
 	return messageThreadCellViewController;
 }
 
-- (void)closeEmbeddedEditor {
+- (void)closeEmbeddedEditor:(Boolean)saveDraft {
     if(_messageEditorViewController != nil) {
-        // TODO: save draft, etc.
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
         [_messageEditorViewController.view removeFromSuperview];
-        [_messageEditorViewController closeEditor];
+        [_messageEditorViewController closeEditor:saveDraft];
         
         _messageEditorViewController = nil;
         _cellViewControllerToReply = nil;
@@ -120,7 +119,7 @@ static const CGFloat CELL_SPACING = -1;
 	if(_currentMessageThread == messageThread)
 		return;
     
-    [self closeEmbeddedEditor];
+    [self closeEmbeddedEditor:YES];
 
 	_currentMessageThread = messageThread;
 
@@ -923,7 +922,7 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
 
-    [self closeEmbeddedEditor]; // Close the currently edited message; it should save draft, etc.
+    [self closeEmbeddedEditor:YES]; // Close the currently edited message; it should save draft, etc.
     
     SMMessageThreadCell *cell = _cells[cellIdx];
 
@@ -967,7 +966,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
     
     if(_messageEditorViewController != nil && _messageEditorViewController == messageEditorViewController) {
-        [self closeEmbeddedEditor];
+        [self closeEmbeddedEditor:NO];
         [self updateCellFrames];
     }
 }

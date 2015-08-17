@@ -12,6 +12,10 @@
 
 @implementation SMMessageEditorWindowController {
     NSString *_htmlContents;
+    NSString *_subject;
+    NSArray *_to;
+    NSArray *_cc;
+    NSArray *_bcc;
 }
 
 - (void)windowDidLoad {
@@ -31,11 +35,15 @@
     // Editor setup
     
     SMEditorContentsKind editorContentsKind = (_htmlContents == nil? kEmptyEditorContentsKind : kUnfoldedReplyEditorContentsKind);
-    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:nil to:nil cc:nil bcc:nil kind:editorContentsKind];
+    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind];
 }
 
-- (void)setHtmlContents:(NSString*)htmlContents {
+- (void)setHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
     _htmlContents = htmlContents;
+    _subject = subject;
+    _to = to;
+    _cc = cc;
+    _bcc = bcc;
 }
 
 #pragma mark Actions

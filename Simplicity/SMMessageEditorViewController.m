@@ -175,9 +175,22 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 #pragma mark Editor startup
 
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind {
-    [_toBoxViewController.tokenField setObjectValue:to];
-    [_ccBoxViewController.tokenField setObjectValue:cc];
-    [_bccBoxViewController.tokenField setObjectValue:bcc];
+    if(subject) {
+        [_subjectBoxViewController.textField setStringValue:subject];
+    }
+    
+    if(to) {
+        [_toBoxViewController.tokenField setObjectValue:to];
+    }
+    
+    if(cc) {
+        [_ccBoxViewController.tokenField setObjectValue:cc];
+    }
+    
+    if(bcc) {
+        [_bccBoxViewController.tokenField setObjectValue:bcc];
+    }
+    
     [_messageTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 

@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "SMMessageEditorWebView.h"
+
 @class SMLabeledTokenFieldBoxViewController;
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorWebView;
@@ -15,18 +17,12 @@
 
 @interface SMMessageEditorViewController : NSViewController
 
-@property (readonly) SMLabeledTokenFieldBoxViewController *toBoxViewController;
-@property (readonly) SMLabeledTokenFieldBoxViewController *ccBoxViewController;
-@property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
-@property (readonly) SMLabeledTextFieldBoxViewController *subjectBoxViewController;
-@property (readonly) SMMessageEditorWebView *messageTextEditor;
-@property (readonly) SMInlineButtonPanelViewController *foldPanelViewController;
-
 @property (readonly) Boolean embedded;
 @property (readonly) NSUInteger editorFullHeight;
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded;
 - (void)setEditorFrame:(NSRect)frame;
+- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind;
 - (void)sendMessage;
 - (void)deleteMessage;
 //- (void)saveMessage;

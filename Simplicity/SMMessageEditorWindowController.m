@@ -31,7 +31,7 @@
     // Editor setup
     
     SMEditorContentsKind editorContentsKind = (_htmlContents == nil? kEmptyEditorContentsKind : kUnfoldedReplyEditorContentsKind);
-    [_messageEditorViewController.messageTextEditor startEditorWithHTML:_htmlContents kind:editorContentsKind];
+    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:nil to:nil cc:nil bcc:nil kind:editorContentsKind];
 }
 
 - (void)setHtmlContents:(NSString*)htmlContents {

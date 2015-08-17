@@ -27,9 +27,18 @@
 
 static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
+@interface SMMessageEditorViewController ()
+@property (readonly) SMLabeledTokenFieldBoxViewController *toBoxViewController;
+@property (readonly) SMLabeledTokenFieldBoxViewController *ccBoxViewController;
+@property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
+@property (readonly) SMLabeledTextFieldBoxViewController *subjectBoxViewController;
+@property (readonly) SMInlineButtonPanelViewController *foldPanelViewController;
+@end
+
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
+    SMMessageEditorWebView *_messageTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray *_attachmentsPanelViewConstraints;
@@ -161,6 +170,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+}
+
+#pragma mark Editor startup
+
+- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind {
+    [_toBoxViewController.tokenField setObjectValue:to];
+    [_ccBoxViewController.tokenField setObjectValue:cc];
+    [_bccBoxViewController.tokenField setObjectValue:bcc];
+    [_messageTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 
 #pragma mark Message actions

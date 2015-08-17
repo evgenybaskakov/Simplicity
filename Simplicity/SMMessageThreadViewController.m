@@ -933,27 +933,26 @@ static const CGFloat CELL_SPACING = -1;
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
+    NSString *fromAddress = nil;
+    NSMutableArray *ccAddressList = nil;
+    
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
     if(![replyKind isEqualToString:@"Forward"]) {
-        NSString *fromAddress = [cell.message from];
+        fromAddress = [cell.message from];
         NSAssert(fromAddress != nil, @"bad message from address");
 
-        [_messageEditorViewController.toBoxViewController.tokenField setObjectValue:fromAddress];
-
         if([replyKind isEqualToString:@"ReplyAll"]) {
-            NSMutableArray *ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
+            ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
             // TODO: remove ourselves (myself) from this CC list
             
             NSArray *parsedMessageCcAddressList = [cell.message parsedCcAddressList];
             if(parsedMessageCcAddressList != nil && parsedMessageCcAddressList.count != 0) {
                 [ccAddressList addObjectsFromArray:parsedMessageCcAddressList];
             }
-
-            [_messageEditorViewController.ccBoxViewController.tokenField setObjectValue:ccAddressList];
         }
     }
 
-    [_messageEditorViewController.messageTextEditor startEditorWithHTML:cell.message.htmlBodyRendering kind:kFoldedReplyEditorContentsKind];
+    [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:@"TODO" to:[NSArray arrayWithObject:fromAddress] cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
     editorSubview.autoresizingMask = NSViewWidthSizable;

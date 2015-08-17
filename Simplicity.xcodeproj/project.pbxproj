@@ -157,6 +157,7 @@
 		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
 		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
 		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
+		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -465,6 +466,8 @@
 		80F7EA701B8009290000992E /* SMMessageWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageWindowController.h; sourceTree = "<group>"; };
 		80F7EA711B8009290000992E /* SMMessageWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageWindowController.m; sourceTree = "<group>"; };
 		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
+		80F7EA7C1B81B0C80000992E /* SMStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMStringUtils.h; sourceTree = "<group>"; };
+		80F7EA7D1B81B0C80000992E /* SMStringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMStringUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -606,6 +609,8 @@
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
 				00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */,
+				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
+				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1059,6 +1064,7 @@
 				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,
 				800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */,
 				801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */,
+				80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */,
 				800C67901B499DA900272D60 /* NSColor+ColorExtensions.m in Sources */,
 				00172FF0198B3BB700DB975E /* SMMessageBodyViewController.m in Sources */,
 				006709341A99A77600C0C9CC /* SMFindContentsPanelViewController.m in Sources */,

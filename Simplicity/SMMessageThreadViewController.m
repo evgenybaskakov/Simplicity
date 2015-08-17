@@ -25,6 +25,7 @@
 #import "SMFlippedView.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMStringUtils.h"
 
 static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 600;
@@ -935,11 +936,20 @@ static const CGFloat CELL_SPACING = -1;
     NSString *fromAddress = nil;
     NSMutableArray *ccAddressList = nil;
     
+    NSAssert(cell.message.subject != nil, @"bad message subject");
+    NSString *replySubject = cell.message.subject;
+    
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
-    if(![replyKind isEqualToString:@"Forward"]) {
+    if([replyKind isEqualToString:@"Forward"]) {
+        if(![SMStringUtils string:replySubject hasPrefix:@"Fw: " caseInsensitive:YES]) {
+            replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
+        }
+    }
+    else {
         fromAddress = [cell.message from];
         NSAssert(fromAddress != nil, @"bad message from address");
 
+        Boolean reply = NO;
         if([replyKind isEqualToString:@"ReplyAll"]) {
             ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
             // TODO: remove ourselves (myself) from this CC list
@@ -948,10 +958,21 @@ static const CGFloat CELL_SPACING = -1;
             if(parsedMessageCcAddressList != nil && parsedMessageCcAddressList.count != 0) {
                 [ccAddressList addObjectsFromArray:parsedMessageCcAddressList];
             }
+            
+            reply = YES;
+        }
+        else if([replyKind isEqualToString:@"Reply"]) {
+            reply = YES;
+        }
+        
+        if(reply) {
+            if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
+                replySubject = [NSString stringWithFormat:@"Re: %@", replySubject];
+            }
         }
     }
 
-    [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:@"TODO" to:[NSArray arrayWithObject:fromAddress] cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
+    [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
 
     editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
     editorSubview.autoresizingMask = NSViewWidthSizable;

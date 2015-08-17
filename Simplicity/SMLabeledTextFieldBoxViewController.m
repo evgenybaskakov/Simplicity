@@ -20,6 +20,7 @@
     [(NSBox*)view setBoxType:NSBoxCustom];
     [(NSBox*)view setTitlePosition:NSNoTitle];
     [(NSBox*)view setFillColor:[NSColor whiteColor]];
+    [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
 @end

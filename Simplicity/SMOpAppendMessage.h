@@ -14,6 +14,9 @@
 
 @interface SMOpAppendMessage : SMOperation
 
+@property (nonatomic) id postActionTarget;
+@property (nonatomic) SEL postActionSelector;
+
 - (id)initWithMessage:(MCOMessageBuilder*)message remoteFolderName:(NSString*)remoteFolderName;
 
 @end

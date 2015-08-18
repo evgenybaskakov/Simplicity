@@ -37,15 +37,9 @@
     if(self) {
         _attachmentItems = [NSMutableArray array];
         _saveDraftUID = draftMessageUid;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSavedToDrafts:) name:@"MessageAppended" object:nil];
     }
     
     return self;
-}
-
-- (void)closeEditor {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark Attachment management
@@ -98,6 +92,10 @@
     //NSLog(@"%s: '%@'", __func__, message);
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
+    
+    op.postActionTarget = self;
+    op.postActionSelector = @selector(messageSavedToDrafts:);
+    
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
     
     _saveDraftMessage = message;
@@ -154,15 +152,13 @@
 
 #pragma mark Message after-saving actions
 
-- (void)messageSavedToDrafts:(NSNotification *)notification {
-    MCOMessageBuilder *message = [[notification userInfo] objectForKey:@"Message"];
-    uint32_t uid = [[[notification userInfo] objectForKey:@"UID"] unsignedIntValue];
+- (void)messageSavedToDrafts:(NSDictionary *)info {
+    MCOMessageBuilder *message = [info objectForKey:@"Message"];
+    uint32_t uid = [[info objectForKey:@"UID"] unsignedIntValue];
     
     NSLog(@"%s: uid %u", __FUNCTION__, uid);
     
     if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
-        NSLog(@"%s: _saveDraftUID %u", __FUNCTION__, _saveDraftUID);
-
         if(_saveDraftUID != 0) {
             // there is a previously saved draft, delete it
             NSAssert(_draftsFolderName, @"no drafts folder name");

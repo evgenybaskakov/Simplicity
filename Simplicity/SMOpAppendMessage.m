@@ -42,9 +42,11 @@
         if(error == nil) {
             NSLog(@"%s: Message appended to remote folder %@, new uid %u", __func__, _remoteFolderName, createdUID);
 
-            NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_message, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
-
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageAppended" object:nil userInfo:messageInfo];
+            if(_postActionTarget) {
+                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_message, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
+                
+                [_postActionTarget performSelector:_postActionSelector withObject:messageInfo afterDelay:0];
+            }
 
             [self complete];
         } else {

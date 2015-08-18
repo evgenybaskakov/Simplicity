@@ -527,7 +527,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_messageEditorController closeEditor];
+
     [_messageTextEditor stopTextMonitor];
 }
 

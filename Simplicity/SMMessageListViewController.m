@@ -714,9 +714,12 @@
         SMFolder *messageFolder = [[[appDelegate model] mailbox] getFolderByName:m.remoteFolder];
         
         if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
-            NSAssert(m.htmlBodyRendering != nil, @"TODO: handle messageToOpen.htmlBodyRendering is nil");
-
-            [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil draftUid:m.uid];
+            if(m.htmlBodyRendering != nil) {
+                [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil draftUid:m.uid];
+            }
+            else {
+                NSLog(@"%s: TODO: handle messageToOpen.htmlBodyRendering is nil", __func__);
+            }
             
             return;
         }

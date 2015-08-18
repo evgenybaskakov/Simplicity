@@ -31,11 +31,12 @@
     uint32_t _saveDraftUID;
 }
 
-- (id)init {
+- (id)initWithDraftUID:(uint32_t)draftMessageUid {
     self = [super init];
     
     if(self) {
         _attachmentItems = [NSMutableArray array];
+        _saveDraftUID = draftMessageUid;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSavedToDrafts:) name:@"MessageAppended" object:nil];
     }
@@ -157,9 +158,11 @@
     MCOMessageBuilder *message = [[notification userInfo] objectForKey:@"Message"];
     uint32_t uid = [[[notification userInfo] objectForKey:@"UID"] unsignedIntValue];
     
-    NSLog(@"%s: uids %u", __FUNCTION__, uid);
+    NSLog(@"%s: uid %u", __FUNCTION__, uid);
     
     if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
+        NSLog(@"%s: _saveDraftUID %u", __FUNCTION__, _saveDraftUID);
+
         if(_saveDraftUID != 0) {
             // there is a previously saved draft, delete it
             NSAssert(_draftsFolderName, @"no drafts folder name");

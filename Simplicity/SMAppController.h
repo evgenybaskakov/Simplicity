@@ -61,7 +61,7 @@
 - (void)hideOperationQueueSheet;
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread;
-- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc;
+- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid;
 
 - (void)moveSelectedMessageThreadsToTrash;
 

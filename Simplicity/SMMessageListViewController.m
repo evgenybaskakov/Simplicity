@@ -716,7 +716,7 @@
         if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
             NSAssert(m.htmlBodyRendering != nil, @"TODO: handle messageToOpen.htmlBodyRendering is nil");
 
-            [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil /*TODO*/];
+            [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil draftUid:m.uid];
             
             return;
         }

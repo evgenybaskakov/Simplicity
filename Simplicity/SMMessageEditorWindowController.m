@@ -16,6 +16,7 @@
     NSArray *_to;
     NSArray *_cc;
     NSArray *_bcc;
+    uint32_t _draftUid;
 }
 
 - (void)windowDidLoad {
@@ -27,7 +28,7 @@
     
     // View setup
 
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO draftUid:_draftUid];
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 
     [[self window] setContentView:_messageEditorViewController.view];
@@ -38,12 +39,13 @@
     [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind];
 }
 
-- (void)setHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
+- (void)setHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid {
     _htmlContents = htmlContents;
     _subject = subject;
     _to = to;
     _cc = cc;
     _bcc = bcc;
+    _draftUid = draftUid;
 }
 
 #pragma mark Actions

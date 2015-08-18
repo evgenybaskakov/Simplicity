@@ -928,7 +928,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageThreadCell *cell = _cells[cellIdx];
 
     _cellViewControllerToReply = cell.viewController;
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES draftUid:0];
 
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");

@@ -47,7 +47,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *_innerView;
 }
 
-- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded {
+- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
@@ -61,7 +61,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         _embedded = embedded;
 
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
-        _messageEditorController = [[SMMessageEditorController alloc] init];
+        _messageEditorController = [[SMMessageEditorController alloc] initWithDraftUID:draftUid];
         
         // To
         

@@ -531,13 +531,13 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 #pragma mark Message editor window management
 
 - (IBAction)composeMessageAction:(id)sender {
-    [self openMessageEditorWindow:nil subject:nil to:nil cc:nil bcc:nil];
+    [self openMessageEditorWindow:nil subject:nil to:nil cc:nil bcc:nil draftUid:0];
 }
 
-- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
+- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid {
     SMMessageEditorWindowController *messageEditorWindowController = [[SMMessageEditorWindowController alloc] initWithWindowNibName:@"SMMessageEditorWindowController"];
 
-    [messageEditorWindowController setHtmlContents:htmlContents subject:subject to:to cc:cc bcc:bcc];
+    [messageEditorWindowController setHtmlContents:htmlContents subject:subject to:to cc:cc bcc:bcc draftUid:draftUid];
     [messageEditorWindowController showWindow:self];
     
     [_messageEditorWindowControllers addObject:messageEditorWindowController];

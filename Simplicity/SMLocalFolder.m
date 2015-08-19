@@ -737,7 +737,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 				reclaimedMessagesCount++;
 				reclaimedMemory += data.length;
 
-				[message setData:nil];
+                [message reclaimData];
 				
 				if(reclaimedMemory / 1024 >= memoryToReclaimKb) {
 					stop = YES;

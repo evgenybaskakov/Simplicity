@@ -23,6 +23,7 @@
 @property (readonly) Boolean hasAttachments;
 @property (readonly) NSArray *attachments;
 @property (readonly) NSArray *labels;
+@property (readonly) Boolean reclaimed;
 
 @property Boolean unseen;
 @property Boolean flagged;
@@ -46,5 +47,7 @@
 
 - (NSArray*)parsedToAddressList;
 - (NSArray*)parsedCcAddressList;
+
+- (void)reclaimData;
 
 @end

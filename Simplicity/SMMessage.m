@@ -230,6 +230,12 @@ static NSString *unquote(NSString *s) {
 	return [_imapMessage uid];
 }
 
+- (void)reclaimData {
+    _reclaimed = YES;
+    
+    [self setData:nil];
+}
+
 - (void)setData:(NSData*)data {
 	if(data != nil) {
 		if(_data == nil) {
@@ -240,7 +246,9 @@ static NSString *unquote(NSString *s) {
 			
 			NSAssert(_msgParser, @"cannot create message parser");
 		}
-	} else {
+
+        _reclaimed = NO;
+    } else {
 		_data = nil;
 		_msgParser = nil;
 		_attachments = nil;
@@ -333,7 +341,7 @@ static NSString *unquote(NSString *s) {
 }
 
 - (void)fetchInlineAttachments {
-	NSAssert(_data, @"bad _data");
+	NSAssert(_data, @"bad _data (reclaimed: %u)", _reclaimed);
 	NSAssert(_msgParser, @"bad _msgParser");
 	
 	if(_createdFromDB && _imapMessage == nil) {

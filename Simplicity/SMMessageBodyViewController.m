@@ -15,6 +15,7 @@
 #import <WebKit/WebFrameLoadDelegate.h>
 #import <WebKit/WebPolicyDelegate.h>
 
+#import "SMLog.h"
 #import "SMMessageBodyViewController.h"
 #import "SMAppDelegate.h"
 #import "SMAttachmentStorage.h"
@@ -104,26 +105,26 @@
 }
 
 - (id)webView:(WebView *)sender identifierForInitialRequest:(NSURLRequest *)request fromDataSource:(WebDataSource *)dataSource {
-//	NSLog(@"%s: request %@, identifier %llu", __FUNCTION__, request, _nextIdentifier);
+//	SM_LOG_DEBUG(@"request %@, identifier %llu", request, _nextIdentifier);
 	return [NSNumber numberWithUnsignedLongLong:_nextIdentifier++];
 }
 
 - (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
 	
-//	NSLog(@"%s: request %@, identifier %@", __FUNCTION__, request, identifier);
+//	SM_LOG_DEBUG(@"request %@, identifier %@", request, identifier);
 	
 	NSURL *url = [request URL];
 	NSString *absoluteUrl = [url absoluteString];
 	
-//	NSLog(@"%s: url absoluteString: %@", __FUNCTION__, absoluteUrl);
+//	SM_LOG_DEBUG(@"url absoluteString: %@", absoluteUrl);
 	
 	////
 //	NSScrollView *scrollView = [[[[_view mainFrame] frameView] documentView] enclosingScrollView];
 //	NSRect scrollViewBounds = [[scrollView contentView] bounds];
 //	NSPoint savedScrollPosition = scrollViewBounds.origin;
 //	NSSize savedScrollSize = scrollViewBounds.size;
-//	NSLog(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
-//	NSLog(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
+//	SM_LOG_DEBUG(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
+//	SM_LOG_DEBUG(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
 	////
 	
 	if([absoluteUrl hasPrefix:@"cid:"]) {
@@ -135,11 +136,11 @@
 		NSURL *attachmentLocation = [[[appDelegate model] attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
 		
 		if(!attachmentLocation) {
-			NSLog(@"%s: cannot load attachment for contentId %@", __FUNCTION__, contentId);
+			SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);
 			return request;
 		}
 		
-//		NSLog(@"%s: loading attachment file '%@' for contentId %@", __FUNCTION__, attachmentLocation, contentId);
+//		SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
 		return [NSURLRequest requestWithURL:attachmentLocation];
 	}
 	
@@ -147,19 +148,19 @@
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFinishLoadingFromDataSource:(WebDataSource *)dataSource {
-//	NSLog(@"%s: identifier %@", __FUNCTION__, identifier);
+//	SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didReceiveResponse:(NSURLResponse *)response fromDataSource:(WebDataSource *)dataSource {
-//	NSLog(@"%s: identifier %@", __FUNCTION__, identifier);
+//	SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didReceiveContentLength:(NSUInteger)length fromDataSource:(WebDataSource *)dataSource {
-//	NSLog(@"%s: identifier %@", __FUNCTION__, identifier);
+//	SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFailLoadingWithError:(NSError *)error fromDataSource:(WebDataSource *)dataSource {
-//	NSLog(@"%s: identifier %@", __FUNCTION__, identifier);
+//	SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id <WebPolicyDecisionListener>)listener {
@@ -179,7 +180,7 @@
 		//NSAssert(!_mainFrameLoaded, @"main frame already loaded");
 
         if(_mainFrameLoaded) {
-            NSLog(@"!!!!!!!!!!! %s: main frame already loaded !!!!!!!!!!!", __func__);
+            SM_LOG_WARNING(@"!!!!!!!!!!! main frame already loaded !!!!!!!!!!!");
         }
 
 		_mainFrameLoaded = YES;

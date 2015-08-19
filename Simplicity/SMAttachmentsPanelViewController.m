@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMMessage.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
@@ -27,7 +28,7 @@
 }
 
 - (void)viewDidLoad {
-    NSLog(@"%s", __func__);
+    SM_LOG_DEBUG(@"???");
     
     NSAssert(_collectionView, @"no collection view");
     
@@ -64,13 +65,13 @@
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
-	NSLog(@"%s: indexes %@", __func__, indexes);
+	SM_LOG_DEBUG(@"indexes %@", indexes);
 
 	return YES;
 }
 
 -(BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard {
-	NSLog(@"%s: indexes %@", __func__, indexes);
+	SM_LOG_DEBUG(@"indexes %@", indexes);
 
 	[pasteboard declareTypes:[NSArray arrayWithObject:NSFilesPromisePboardType] owner:self];
 
@@ -101,7 +102,7 @@
 
 - (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
     for (NSURL *url in files) {
-        NSLog(@"%s: addFileWithPath:%@", __func__, [url path]);
+        SM_LOG_DEBUG(@"addFileWithPath:%@", [url path]);
 
         SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithFilePath:[url path]];
         [_arrayController addObject:attachment];
@@ -138,20 +139,20 @@
 
     if (!draggingInfo.draggingSource)
     {
-        NSLog(@"%s: TODO (external)", __func__);
+        SM_LOG_DEBUG(@"TODO (external)");
 
         // comes from external
         return NSDragOperationCopy;
     }
     
-    NSLog(@"%s: TODO (internal)", __func__);
+    SM_LOG_DEBUG(@"TODO (internal)");
     
     // comes from internal
     return NSDragOperationMove;
 }
 
 - (NSArray *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes {
-	NSLog(@"%s: indexes %@, drop url %@", __func__, indexes, dropURL);
+	SM_LOG_DEBUG(@"indexes %@, drop url %@", indexes, dropURL);
 
 	NSMutableArray *fileNames = [NSMutableArray array];
 
@@ -169,12 +170,12 @@
 #pragma mark Dragging destination
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
-    NSLog(@"%s: TODO", __func__);
+    SM_LOG_DEBUG(@"TODO");
     return [self draggingEntered:sender];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
-    NSLog(@"%s: TODO", __func__);
+    SM_LOG_DEBUG(@"TODO");
     return [self draggingUpdated:sender];
 }
 

@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 
-const int SMLogLevel = SM_LOG_LEVEL_DEBUG;
+const int SMLogLevel = SM_LOG_LEVEL_INFO;
 
 static const char *logLevelName(int level) {
     switch(level) {

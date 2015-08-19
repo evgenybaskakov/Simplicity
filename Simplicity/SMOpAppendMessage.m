@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMOpAppendMessage.h"
 
@@ -40,7 +41,7 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
 
         if(error == nil) {
-            NSLog(@"%s: Message appended to remote folder %@, new uid %u", __func__, _remoteFolderName, createdUID);
+            SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
 
             if(_postActionTarget) {
                 NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_message, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
@@ -50,7 +51,7 @@
 
             [self complete];
         } else {
-            NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
+            SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
             
             [self fail];
         }

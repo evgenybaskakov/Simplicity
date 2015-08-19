@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMSimplicityContainer.h"
 #import "SMMessageStorage.h"
@@ -147,7 +148,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
 
 			const uint64_t totalFolderMemoryReclaimedKb = folderMemoryBeforeKb - folderMemoryAfterKb;
 
-			NSLog(@"%s: %llu Kb reclaimed for folder %@", __func__, totalFolderMemoryReclaimedKb, folderEntry.folder.localName);
+			SM_LOG_DEBUG(@"%llu Kb reclaimed for folder %@", totalFolderMemoryReclaimedKb, folderEntry.folder.localName);
 
 			totalMemoryReclaimedKb += totalFolderMemoryReclaimedKb;
 			
@@ -155,7 +156,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
 				break;
 		}
 
-		NSLog(@"%s: total %llu Kb reclaimed (%llu Kb was requested to reclaim, %lu Kb is the green zone, %lu Kb is the yellow zone)", __func__, totalMemoryReclaimedKb, totalMemoryToReclaimKb, FOLDER_MEMORY_GREEN_ZONE_KB, FOLDER_MEMORY_YELLOW_ZONE_KB);
+		SM_LOG_DEBUG(@"total %llu Kb reclaimed (%llu Kb was requested to reclaim, %lu Kb is the green zone, %lu Kb is the yellow zone)", totalMemoryReclaimedKb, totalMemoryToReclaimKb, FOLDER_MEMORY_GREEN_ZONE_KB, FOLDER_MEMORY_YELLOW_ZONE_KB);
 	}
 }
 

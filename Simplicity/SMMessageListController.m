@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
@@ -50,7 +51,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-	//NSLog(@"%s: new folder '%@'", __FUNCTION__, folderName);
+	//SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
 	if(folderName != nil) {
 		SMLocalFolder *folder = [[_model localFolderRegistry] getLocalFolder:folderName];
@@ -102,7 +103,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)startMessagesUpdate {
-	//NSLog(@"%s: updating message list", __func__);
+	//SM_LOG_DEBUG(@"updating message list");
 
 	[_currentFolder startLocalFolderSync];
 }
@@ -124,7 +125,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)updateMessageList {
-//	NSLog(@"%s: new messages count %lu", __FUNCTION__, (unsigned long)[imapMessages count]);
+//	SM_LOG_DEBUG(@"new messages count %lu", (unsigned long)[imapMessages count]);
 
 	//TODO:
 	//if(updateResult == SMMesssageStorageUpdateResultNone) {
@@ -134,7 +135,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	
 	// TODO: special case for flags changed in some cells only
 	
-	//NSLog(@"%s: some messages updated, the list will be reloaded", __func__);
+	//SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	SMAppController *appController = [appDelegate appController];
@@ -159,13 +160,13 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	
 	NSTimeInterval delay_sec = now? 0 : MESSAGE_LIST_UPDATE_INTERVAL_SEC;
 	
-	//NSLog(@"%s: scheduling message list update after %lu sec", __func__, (unsigned long)delay_sec);
+	//SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
 
 	[self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-	//NSLog(@"%s: msg uid %u, remote folder %@, threadId %llu", __FUNCTION__, uid, remoteFolder, threadId);
+	//SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolder, threadId);
 
 	[_currentFolder fetchMessageBody:uid remoteFolder:remoteFolderName threadId:threadId urgent:YES];
 }

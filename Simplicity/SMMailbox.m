@@ -10,6 +10,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 
@@ -90,7 +91,7 @@
 		}
 
 		if(i == folders.count) {
-			//NSLog(@"folders didn't change");
+			//SM_LOG_DEBUG(@"folders didn't change");
 			return NO;
 		}
 	}
@@ -106,7 +107,7 @@
 	[self updateMainFolders];
 	[self updateFavoriteFolders];
 
-//	NSLog(@"number of folders %lu", _folders.count);
+//	SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
 	
 	return YES;
 }
@@ -278,7 +279,7 @@
 
 - (NSString*)constructFolderName:(NSString*)folderName parent:(NSString*)parentFolderName {
 	if(folderName == nil || folderName.length == 0) {
-		NSLog(@"%s: no label name specified", __func__);
+		SM_LOG_DEBUG(@"no label name specified");
 		return nil;
 	}
 

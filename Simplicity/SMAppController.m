@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMMessageEditorWindowController.h"
@@ -49,7 +50,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)awakeFromNib {
-	//NSLog(@"SMAppController: awakeFromNib: _messageListViewController %@", _messageListViewController);
+	//SM_LOG_DEBUG(@"SMAppController: awakeFromNib: _messageListViewController %@", _messageListViewController);
 	
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	appDelegate.appController = self;
@@ -343,7 +344,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	if(searchString.length == 0)
 		return;
 	
-	NSLog(@"%s: searching for string '%@'", __func__, searchString);
+	SM_LOG_DEBUG(@"searching for string '%@'", searchString);
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	[[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil];

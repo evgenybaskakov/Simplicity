@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageListController.h"
 #import "SMOpAddLabel.h"
@@ -41,11 +42,11 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
         if(error == nil) {
-            NSLog(@"%s: Label %@ for folder %@ successfully set", __func__, _label, _remoteFolderName);
+            SM_LOG_DEBUG(@"Label %@ for folder %@ successfully set", _label, _remoteFolderName);
             
             [self complete];
         } else {
-            NSLog(@"%s: Error setting label %@ for folder %@: %@", __func__, _label, _remoteFolderName, error);
+            SM_LOG_ERROR(@"Error setting label %@ for folder %@: %@", _label, _remoteFolderName, error);
             
             [self fail];
         }

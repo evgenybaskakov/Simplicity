@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelItemViewController.h"
 
@@ -76,7 +77,7 @@
 	[super mouseDown:theEvent];
 
 	if([theEvent clickCount] == 2) {
-		NSLog(@"%s: double click", __func__);
+		SM_LOG_DEBUG(@"double click");
 		//[NSApp sendAction:@selector(collectionItemViewDoubleClick:) to:nil from:[self object]];
 
 		[self openAttachment];
@@ -105,7 +106,7 @@
 	NSString *filePath = [self saveAttachmentToPath:@"/tmp"];
 
 	if(filePath == nil) {
-		NSLog(@"%s: cannot open attachment", __func__);
+		SM_LOG_DEBUG(@"cannot open attachment");
 		return; // TODO: error popup?
 	}
 	

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMOperationQueue.h"
 
 @implementation SMOperationQueue {
@@ -27,21 +28,21 @@
 }
 
 - (void)popFirstOp {
-    NSLog(@"%s: pop first op %@", __FUNCTION__, _queue[0]);
+    SM_LOG_DEBUG(@"pop first op %@", _queue[0]);
 
     NSAssert(_queue.count != 0, @"queue is empty");
     [_queue removeObjectAtIndex:0];
 }
 
 - (void)replaceFirstOp:(SMOperation*)op {
-    NSLog(@"%s: replace first op %@ -> %@", __FUNCTION__, _queue[0], op);
+    SM_LOG_DEBUG(@"replace first op %@ -> %@", _queue[0], op);
     
     NSAssert(_queue.count != 0, @"queue is empty");
     _queue[0] = op;
 }
 
 - (void)removeOp:(SMOperation*)op {
-    NSLog(@"%s: remove op %@", __FUNCTION__, op);
+    SM_LOG_DEBUG(@"remove op %@", op);
     
     NSAssert(_queue.count != 0, @"queue is empty");
     [_queue removeObject:op];

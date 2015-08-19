@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMMessage.h"
 #import "SMMessageComparators.h"
 #import "SMMessageStorage.h"
@@ -34,7 +35,7 @@
 }
 
 - (void)ensureLocalFolderExists:(NSString*)localFolder {
-	//NSLog(@"%s: folder name '%@", __FUNCTION__, localFolder);
+	//SM_LOG_DEBUG(@"folder name '%@", localFolder);
 	
 	SMMessageThreadCollection *collection = [_foldersMessageThreadsMap objectForKey:localFolder];
 	
@@ -128,7 +129,7 @@
 }
 
 - (void)startUpdate:(NSString*)localFolder {
-	//	NSLog(@"%s: localFolder '%@'", __FUNCTION__, localFolder);
+	//	SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	[self cancelUpdate:localFolder];
 }
@@ -142,7 +143,7 @@
 	for(MCOIMAPMessage *imapMessage in imapMessages) {
 		NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", collection.messageThreads.count, collection.messageThreadsByDate.count);
 
-		//NSLog(@"%s: looking for imap message with uid %u, gmailThreadId %llu", __FUNCTION__, [imapMessage uid], [imapMessage gmailThreadID]);
+		//SM_LOG_DEBUG(@"looking for imap message with uid %u, gmailThreadId %llu", [imapMessage uid], [imapMessage gmailThreadID]);
 
 		const uint64_t threadId = [imapMessage gmailThreadID];
 		NSNumber *threadIdKey = [NSNumber numberWithUnsignedLongLong:threadId];
@@ -194,7 +195,7 @@
 }
 
 - (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeVanishedMessages:(Boolean)removeVanishedMessages {
-//	NSLog(@"%s: localFolder '%@'", __FUNCTION__, localFolder);
+//	SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
 	
@@ -262,7 +263,7 @@
 	SMMessageThread *thread = [self messageThreadById:threadId localFolder:localFolder];
 //	NSAssert(thread != nil, @"thread id %lld not found in local folder %@", threadId, localFolder);
     if(thread == nil) {
-        NSLog(@"%s: thread id %lld not found in local folder %@", __FUNCTION__, threadId, localFolder);
+        SM_LOG_DEBUG(@"thread id %lld not found in local folder %@", threadId, localFolder);
         return NO;
     }
 
@@ -285,7 +286,7 @@
 	NSAssert(collection, @"no thread collection found");
 	
 	if(index >= [collection.messageThreadsByDate count]) {
-		NSLog(@"%s: index %lu is beyond message thread size %lu", __func__, index, [collection.messageThreadsByDate count]);
+		SM_LOG_DEBUG(@"index %lu is beyond message thread size %lu", index, [collection.messageThreadsByDate count]);
 		return nil;
 	}
 

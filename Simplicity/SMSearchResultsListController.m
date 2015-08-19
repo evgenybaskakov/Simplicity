@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMSearchDescriptor.h"
@@ -37,7 +38,7 @@
 }
 
 - (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
-	NSLog(@"%s: searching for string '%@'", __func__, searchString);
+	SM_LOG_DEBUG(@"searching for string '%@'", searchString);
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -53,7 +54,7 @@
 
 		NSString *allMailFolder = [[[[appDelegate model] mailbox] allMailFolder] fullName];
 		if(allMailFolder != nil) {
-			NSLog(@"%s: searching in all mail", __func__);
+			SM_LOG_DEBUG(@"searching in all mail");
 			remoteFolderName = allMailFolder;
 		} else {
 			NSAssert(nil, @"no all mail folder, revise this logic!");
@@ -104,7 +105,7 @@
 	[_currentSearchOp start:^(NSError *error, MCOIndexSet *searchResults) {
 		if(error == nil) {
 			if(searchResults.count > 0) {
-				NSLog(@"%s: %u messages found in remote folder %@, loading to local folder %@", __func__, [searchResults count], remoteFolderName, searchResultsLocalFolder);
+				SM_LOG_DEBUG(@"%u messages found in remote folder %@, loading to local folder %@", [searchResults count], remoteFolderName, searchResultsLocalFolder);
 				
 				searchDescriptor.messagesLoadingStarted = YES;
 				
@@ -112,12 +113,12 @@
 				
 				[[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
 			} else {
-				NSLog(@"%s: nothing found", __func__);
+				SM_LOG_DEBUG(@"nothing found");
 				
 				[[[appDelegate model] searchResultsListController] searchHasFailed:searchResultsLocalFolder];
 			}
 		} else {
-			NSLog(@"%s: search in remote folder %@ failed, error %@", __func__, remoteFolderName, error);
+			SM_LOG_DEBUG(@"search in remote folder %@ failed, error %@", remoteFolderName, error);
 			
 			[[[appDelegate model] searchResultsListController] searchHasFailed:searchResultsLocalFolder];
 		}
@@ -162,7 +163,7 @@
 }
 
 - (void)removeSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 
 	NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 
@@ -171,7 +172,7 @@
 }
 
 - (void)reloadSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 
 	NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 	
@@ -190,7 +191,7 @@
 }
 
 - (void)stopSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 
 	NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 
@@ -212,7 +213,7 @@
 }
 
 - (Boolean)searchStopped:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 	
 	NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 	

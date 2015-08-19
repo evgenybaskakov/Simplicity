@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAttachmentItem.h"
 
 @implementation SMAttachmentItem {
@@ -64,11 +65,11 @@
 	
 	NSError *writeError = nil;
 	if(![fileData writeToURL:fullUrl options:NSDataWritingAtomic error:&writeError]) {
-		NSLog(@"%s: Could not write file %@: %@", __func__, fullUrl, writeError);
+		SM_LOG_DEBUG(@"Could not write file %@: %@", fullUrl, writeError);
 		return FALSE;
 	}
 	
-	NSLog(@"%s: File written: %@", __func__, fullUrl);
+	SM_LOG_DEBUG(@"File written: %@", fullUrl);
 	return TRUE;
 }
 

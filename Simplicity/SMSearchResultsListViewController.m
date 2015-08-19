@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMSimplicityContainer.h"
@@ -89,7 +90,7 @@
 	NSString *searchPattern = [searchResults searchPattern];
 	NSAssert(searchPattern != nil, @"no search pattern");
 
-	NSLog(@"%s: row %ld, searchPattern '%@', searchFailed %d, searchStopped %d", __func__, row, searchResults.searchPattern, searchResults.searchFailed, searchResults.searchStopped);
+	SM_LOG_DEBUG(@"row %ld, searchPattern '%@', searchFailed %d, searchStopped %d", row, searchResults.searchPattern, searchResults.searchFailed, searchResults.searchStopped);
 
 	Boolean stopProgress = NO;
 	
@@ -97,7 +98,7 @@
 		NSString *searchLocalFolderName = searchResults.localFolder;
 		SMLocalFolder *searchFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchLocalFolderName];
 
-		NSLog(@"%s: messagesLoadingStarted %d, searchFolder.isStillUpdating %d", __func__, searchResults.messagesLoadingStarted, [searchFolder messageHeadersAreBeingLoaded]);
+		SM_LOG_DEBUG(@"messagesLoadingStarted %d, searchFolder.isStillUpdating %d", searchResults.messagesLoadingStarted, [searchFolder messageHeadersAreBeingLoaded]);
 
 		if(!searchResults.messagesLoadingStarted) {
 			[result.progressIndicator setIndeterminate:YES];
@@ -110,11 +111,11 @@
 
 			[result.progressIndicator setDoubleValue:loadRatio];
 		} else {
-			NSLog(@"%s: stopping progress indicator (case 1)...", __func__);
+			SM_LOG_DEBUG(@"stopping progress indicator (case 1)...");
 			stopProgress = YES;
 		}
 	} else {
-		NSLog(@"%s: stopping progress indicator (case 2)...", __func__);
+		SM_LOG_DEBUG(@"stopping progress indicator (case 2)...");
 		stopProgress = YES;
 	}
 	
@@ -178,7 +179,7 @@
 	NSInteger index = [[[appDelegate model] searchResultsListController] getSearchIndex:localFolder];
 
 	if(index >= 0) {
-		NSLog(@"%s: reloading table", __func__);
+		SM_LOG_DEBUG(@"reloading table");
 		[self reloadData];
 	}
 }
@@ -194,7 +195,7 @@
 }
 
 - (void)removeSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 	
 	[self stopSearch:index];
 	
@@ -214,7 +215,7 @@
 }
 
 - (void)reloadSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	[[[appDelegate model] searchResultsListController] reloadSearch:index];
@@ -223,7 +224,7 @@
 }
 
 - (void)stopSearch:(NSInteger)index {
-	NSLog(@"%s: request for index %ld", __func__, index);
+	SM_LOG_DEBUG(@"request for index %ld", index);
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 

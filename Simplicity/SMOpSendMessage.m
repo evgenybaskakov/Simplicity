@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMOpSendMessage.h"
 
@@ -35,11 +36,11 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
         if (error == nil || [error code] == MCOErrorNone) {
-            NSLog(@"%s: message sent successfully", __func__);
+            SM_LOG_DEBUG(@"message sent successfully");
             
             [self complete];
         } else {
-            NSLog(@"%s: Error sending message: %@", __func__, error);
+            SM_LOG_ERROR(@"Error sending message: %@", error);
             
             [self fail];
         }

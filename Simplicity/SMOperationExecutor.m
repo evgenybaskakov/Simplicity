@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationQueueWindowController.h"
@@ -43,7 +44,7 @@
 }
 
 - (void)enqueueOperation:(SMOperation*)op {
-    NSLog(@"%s: op %@", __FUNCTION__, op);
+    SM_LOG_DEBUG(@"op %@", op);
     
     SMOperationQueue *queue = [self getQueue:op.kind];
 
@@ -57,7 +58,7 @@
 }
 
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
-    NSLog(@"%s: op %@, replacementOp %@", __FUNCTION__, op, replacementOp);
+    SM_LOG_DEBUG(@"op %@, replacementOp %@", op, replacementOp);
 
     NSAssert(op.kind == replacementOp.kind, @"op kind %u and replacement op kind %u don't match", op.kind, replacementOp.kind);
 
@@ -73,7 +74,7 @@
 }
 
 - (void)completeOperation:(SMOperation*)op {
-    NSLog(@"%s: op %@", __FUNCTION__, op);
+    SM_LOG_DEBUG(@"op %@", op);
     
     SMOperationQueue *queue = [self getQueue:op.kind];
 
@@ -89,7 +90,7 @@
 }
 
 - (void)failedOperation:(SMOperation*)op {
-    NSLog(@"%s: op %@", __FUNCTION__, op);
+    SM_LOG_DEBUG(@"op %@", op);
     
     SMOperationQueue *queue = [self getQueue:op.kind];
     NSAssert([queue getFirstOp] == op, @"first op is not the restarted op");
@@ -100,7 +101,7 @@
 }
 
 - (void)cancelOperation:(SMOperation*)op {
-    NSLog(@"%s: op %@", __FUNCTION__, op);
+    SM_LOG_DEBUG(@"op %@", op);
     
     SMOperationQueue *queue = [self getQueue:op.kind];
     

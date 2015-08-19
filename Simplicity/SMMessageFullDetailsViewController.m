@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMTokenField.h"
 #import "SMMessage.h"
 #import "SMMessageDetailsViewController.h"
@@ -216,7 +217,7 @@
 // ---------------------------------------------------------------------------
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject
 {
-	//	NSLog(@"%s", __func__);
+	//	SM_LOG_DEBUG(@"???");
 	return NSRoundedTokenStyle;
 }
 
@@ -227,7 +228,7 @@
 // ---------------------------------------------------------------------------
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject
 {
-	//	NSLog(@"%s", __func__);
+	//	SM_LOG_DEBUG(@"???");
 	return NO;
 }
 
@@ -239,7 +240,7 @@
 // ---------------------------------------------------------------------------
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 
@@ -254,7 +255,7 @@
 // ---------------------------------------------------------------------------
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 	/*
 	 NSMutableArray *newArray = [NSMutableArray arrayWithArray:tokens];
@@ -288,7 +289,7 @@
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex
 	indexOfSelectedItem:(NSInteger *)selectedIndex
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 
@@ -304,7 +305,7 @@
 // ---------------------------------------------------------------------------
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 	return @"Wilma";
 }
 
@@ -318,7 +319,7 @@
 // ---------------------------------------------------------------------------
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject
 {
-	//	NSLog(@"%s", __func__);
+	//	SM_LOG_DEBUG(@"???");
 	return representedObject;
 }
 

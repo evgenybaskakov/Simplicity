@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
@@ -54,7 +55,7 @@
     MCOMessageBuilder *message = [self createMessageData:messageText subject:subject to:to cc:cc bcc:bcc];
     NSAssert(message != nil, @"no message body");
     
-    NSLog(@"%s: '%@'", __func__, message);
+    SM_LOG_DEBUG(@"'%@'", message);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
@@ -89,7 +90,7 @@
     MCOMessageBuilder *message = [self createMessageData:messageText subject:subject to:to cc:cc bcc:bcc];
     NSAssert(message != nil, @"no message body");
     
-    //NSLog(@"%s: '%@'", __func__, message);
+    //SM_LOG_DEBUG(@"'%@'", message);
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
     
@@ -156,7 +157,7 @@
     MCOMessageBuilder *message = [info objectForKey:@"Message"];
     uint32_t uid = [[info objectForKey:@"UID"] unsignedIntValue];
     
-    NSLog(@"%s: uid %u", __FUNCTION__, uid);
+    SM_LOG_DEBUG(@"uid %u", uid);
     
     if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
         if(_saveDraftUID != 0) {

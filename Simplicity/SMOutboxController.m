@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
@@ -17,7 +18,7 @@
 @implementation SMOutboxController
 
 - (void)sendMessage:(MCOMessageBuilder*)message {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 

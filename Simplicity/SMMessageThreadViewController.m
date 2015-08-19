@@ -7,6 +7,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadCell.h"
@@ -239,7 +240,7 @@ static const CGFloat CELL_SPACING = -1;
 			}
 		}
 		
-		//NSLog(@"%s: message thread id %llu has been updated (old message count %lu, new %ld)", __func__, _currentMessageThread.threadId, _cells.count, _currentMessageThread.messagesCount);
+		//SM_LOG_DEBUG(@"message thread id %llu has been updated (old message count %lu, new %ld)", _currentMessageThread.threadId, _cells.count, _currentMessageThread.messagesCount);
 		
 		// remove old (vanished) messages
 		for(NSInteger t = _cells.count; t > 0; t--) {
@@ -306,7 +307,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		[_messageThreadInfoViewController updateMessageThread];
 	} else {
-		//NSLog(@"%s: message thread id %llu is empty", __func__, _currentMessageThread.threadId);
+		//SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
 
 		[_cells removeAllObjects];
 		[_contentView setSubviews:[NSArray array]];
@@ -433,7 +434,7 @@ static const CGFloat CELL_SPACING = -1;
 		}
 	}
 	
-	NSLog(@"%s: message uid %u doesn't belong to thread id %lld", __func__, uid, threadId);
+	SM_LOG_DEBUG(@"message uid %u doesn't belong to thread id %lld", uid, threadId);
 }
 
 #pragma mark Cells collapsing / uncollapsing
@@ -596,14 +597,14 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)viewBoundsDidChange:(NSNotification *)notification {
 //	NSClipView *changedContentView = [notification object];
-//	NSLog(@"%s: %@", __func__, changedContentView);
+//	SM_LOG_DEBUG(@"%@", changedContentView);
 
 	[self arrangeVisibleCells];
 }
 
 - (void)viewFrameDidChange:(NSNotification *)notification {
 //	NSClipView *changedContentView = [notification object];
-//	NSLog(@"%s: %@", __func__, changedContentView);
+//	SM_LOG_DEBUG(@"%@", changedContentView);
 
 	[self arrangeVisibleCells];
 }
@@ -810,7 +811,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to delete not found", __func__);
+        SM_LOG_DEBUG(@"cell to delete not found");
         return;
     }
 
@@ -846,7 +847,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to change unread flag not found", __func__);
+        SM_LOG_DEBUG(@"cell to change unread flag not found");
         return;
     }
     
@@ -889,7 +890,7 @@ static const CGFloat CELL_SPACING = -1;
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
     if(cellIdx == _cells.count) {
-        NSLog(@"%s: cell to change flagged flag not found", __func__);
+        SM_LOG_DEBUG(@"cell to change flagged flag not found");
         return;
     }
     
@@ -918,7 +919,7 @@ static const CGFloat CELL_SPACING = -1;
         cellIdx = [self findCell:cellViewControllerToReply];
         
         if(cellIdx == _cells.count) {
-            NSLog(@"%s: cell to reply not found", __func__);
+            SM_LOG_DEBUG(@"cell to reply not found");
             return;
         }
     }

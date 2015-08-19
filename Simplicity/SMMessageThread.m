@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMMessage.h"
 #import "SMAppDelegate.h"
 #import "SMMessageComparators.h"
@@ -160,7 +161,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             }
         }
 	} else {
-		NSLog(@"%s: message for uid %u not found in current threadId %llu", __FUNCTION__, uid, _threadId);
+		SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
 	}
 
 	return attributesChanged;
@@ -172,11 +173,11 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	if(message != nil) {
 		NSAssert(message.uid == uid, @"bad message found");
 		
-//		NSLog(@"%s: set message data for uid %u", __FUNCTION__, uid);
+//		SM_LOG_DEBUG(@"set message data for uid %u", uid);
 		
 		[ message setData:data ];
 	} else {
-		NSLog(@"%s: message for uid %u not found in current threadId %llu", __FUNCTION__, uid, _threadId);
+		SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
 	}
 }
 
@@ -194,11 +195,11 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		
 		NSAssert(message.uid == uid, @"bad message found");
 		
-//		NSLog(@"%s: set message data for uid %u", __FUNCTION__, uid);
+//		SM_LOG_DEBUG(@"set message data for uid %u", uid);
 		
 		hasData = [ message hasData ];
 	} else {
-		NSLog(@"%s: message for uid %u not found", __FUNCTION__, uid);
+		SM_LOG_DEBUG(@"message for uid %u not found", uid);
 	}
 	
 	return hasData;
@@ -227,7 +228,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
 	SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
-//	NSLog(@"%s: looking for imap message with uid %u", __FUNCTION__, [imapMessage uid]);
+//	SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
 	
 	NSUInteger messageIndex = [_messageCollection.messages indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:[comparators messagesComparatorByImapMessage]];
 	
@@ -281,7 +282,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 			SMMessage *message = [_messageCollection.messages objectAtIndex:i];
 			
 			if(![message updated]) {
-				NSLog(@"%s: thread %llu, message with uid %u vanished", __FUNCTION__, _threadId, message.uid);
+				SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
 
 				[notUpdatedMessageIndices addIndex:i];
 			}
@@ -303,7 +304,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		[_messageCollection.messagesByDate removeObjectsAtIndexes:notUpdatedMessageIndices];
 
 		if(_messageCollection.count == 0)
-			NSLog(@"%s: thread %llu - all messages vanished", __FUNCTION__, _threadId);
+			SM_LOG_DEBUG(@"thread %llu - all messages vanished", _threadId);
 	}
 	
 	NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
@@ -318,7 +319,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		// clear messages update marks for future updates
 		[message setUpdated:NO];
 
-		//NSLog(@"Thread %llu, message labels %@", _threadId, message.labels);
+		//SM_LOG_DEBUG(@"Thread %llu, message labels %@", _threadId, message.labels);
 		[newLabels addObjectsFromArray:message.labels];
 	}
 	

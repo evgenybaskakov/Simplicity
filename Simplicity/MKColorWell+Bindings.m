@@ -5,6 +5,7 @@
 //  via http://www.tomdalling.com/blog/cocoa/implementing-your-own-cocoa-bindings
 //
 
+#import "SMLog.h"
 #import "MKColorWell+Bindings.h"
 
 @implementation MKColorWell (Bindings)
@@ -33,20 +34,20 @@
 			if ([[transformer class] allowsReverseTransformation]) {
 				value = [transformer reverseTransformedValue:value];
 			} else {
-				NSLog(@"WARNING: binding \"%@\" has value transformer, but it doesn't allow reverse transformations in %s", binding, __PRETTY_FUNCTION__);
+				SM_LOG_DEBUG(@"WARNING: binding \"%@\" has value transformer, but it doesn't allow reverse transformations", binding);
 			}
 		}
 	}
     
 	id boundObject = [bindingInfo objectForKey:NSObservedObjectKey];
 	if (!boundObject || boundObject == [NSNull null]) {
-		NSLog(@"ERROR: NSObservedObjectKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
+		SM_LOG_DEBUG(@"ERROR: NSObservedObjectKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
 		return;
 	}
     
 	NSString* boundKeyPath = [bindingInfo objectForKey:NSObservedKeyPathKey];
 	if (!boundKeyPath || (id)boundKeyPath == [NSNull null]) {
-		NSLog(@"ERROR: NSObservedKeyPathKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
+		SM_LOG_DEBUG(@"ERROR: NSObservedKeyPathKey was nil for binding \"%@\" in %s", binding, __PRETTY_FUNCTION__);
 		return;
 	}
 

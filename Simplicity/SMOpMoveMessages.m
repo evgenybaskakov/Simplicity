@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
@@ -69,7 +70,7 @@
             
             [self replaceWith:op];
         } else {
-            NSLog(@"%s: Error copying messages from %@ to %@: %@", __func__, _srcRemoteFolderName, _dstRemoteFolderName, error);
+            SM_LOG_ERROR(@"Error copying messages from %@ to %@: %@", _srcRemoteFolderName, _dstRemoteFolderName, error);
 
             [self fail];
         }

@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
@@ -22,7 +23,7 @@
 		_model = [ SMSimplicityContainer new ];
 	}
 	
-	//NSLog(@"%s: app delegate initialized", __FUNCTION__);
+	//SM_LOG_DEBUG(@"app delegate initialized");
 	
 	return self;
 }
@@ -40,7 +41,7 @@
 	if([appSupportDirs count] > 0) {
 		appSupportDir = (NSURL*)[appSupportDirs objectAtIndex:0];
 	} else {
-		NSLog(@"%s: cannot get path to app dir", __FUNCTION__);
+		SM_LOG_DEBUG(@"cannot get path to app dir");
 		
 		appSupportDir = [NSURL fileURLWithPath:@"~/Library/Application Support/" isDirectory:YES];
 	}

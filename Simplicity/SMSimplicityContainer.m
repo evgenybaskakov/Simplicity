@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMSimplicityContainer.h"
 #import "SMMailbox.h"
 #import "SMMessageStorage.h"
@@ -62,7 +63,7 @@
 		[self getIMAPServerCapabilities];
 	}
 	
-	//NSLog(@"%s: model initialized", __FUNCTION__);
+	//SM_LOG_DEBUG(@"model initialized");
 		  
 	return self;
 }
@@ -70,7 +71,7 @@
 - (MCOIndexSet*)imapServerCapabilities {
 	MCOIndexSet *capabilities = _imapServerCapabilities;
 
-	//NSLog(@"%s: IMAP server capabilities: %@", __FUNCTION__, capabilities);
+	//SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
 	
 	return capabilities;
 }
@@ -84,11 +85,11 @@
 	
 	opBlock = ^(NSError * error, MCOIndexSet * capabilities) {
 		if(error) {
-			NSLog(@"%s: error getting IMAP capabilities: %@", __FUNCTION__, error);
+			SM_LOG_ERROR(@"error getting IMAP capabilities: %@", error);
 
 			[_capabilitiesOp start:opBlock];
 		} else {
-			//NSLog(@"%s: capabilities: %@", __FUNCTION__, capabilities);
+			//SM_LOG_DEBUG(@"capabilities: %@", capabilities);
 			
 			_imapServerCapabilities = capabilities;
 			_capabilitiesOp = nil;

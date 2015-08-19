@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageListController.h"
 #import "SMOpExpungeFolder.h"
@@ -42,13 +43,13 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
         if(error == nil) {
-            NSLog(@"%s: Flags for remote folder %@ successfully updated", __func__, _remoteFolderName);
+            SM_LOG_DEBUG(@"Flags for remote folder %@ successfully updated", _remoteFolderName);
             
             SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName];
             
             [self replaceWith:op];
         } else {
-            NSLog(@"%s: Error updating flags for remote folder %@: %@", __func__, _remoteFolderName, error);
+            SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
             
             [self fail];
         }

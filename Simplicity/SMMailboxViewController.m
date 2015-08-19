@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMMailbox.h"
@@ -79,7 +80,7 @@
 	if(folder == nil || [folder.fullName isEqualToString:_currentFolderName])
 		return;
 	
-	//NSLog(@"%s: selected row %lu, folder short name '%@', full name '%@'", __func__, selectedRow, folder.shortName, folder.fullName);
+	//SM_LOG_DEBUG(@"selected row %lu, folder short name '%@', full name '%@'", selectedRow, folder.shortName, folder.fullName);
 
 	[self doChangeFolder:folder];
 }
@@ -434,7 +435,7 @@ typedef enum {
 }
 
 - (void)menuDidClose:(NSMenu *)menu {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 
 	_doHightlightRow = NO;
 	
@@ -456,7 +457,7 @@ typedef enum {
 - (void)deleteLabel {
 	NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 	
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 }
 
 - (void)makeLabelFavorite {

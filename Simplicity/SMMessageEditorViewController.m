@@ -11,6 +11,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMFlippedView.h"
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
@@ -215,7 +216,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [alert setAlertStyle:NSWarningAlertStyle];
     
     if([alert runModal] != NSAlertFirstButtonReturn) {
-        NSLog(@"%s: delete cancelled", __func__);
+        SM_LOG_DEBUG(@"delete cancelled");
         return;
     }
     
@@ -299,7 +300,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSInteger index = [_editorToolBoxViewController.textSizeButton indexOfSelectedItem];
     
     if(index < 0 || index >= _editorToolBoxViewController.textSizeButton.numberOfItems) {
-        NSLog(@"%s: selected text size value index %ld is out of range", __func__, index);
+        SM_LOG_DEBUG(@"selected text size value index %ld is out of range", index);
         return;
     }
     

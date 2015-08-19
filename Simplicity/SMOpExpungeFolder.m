@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageListController.h"
 #import "SMOpExpungeFolder.h"
@@ -39,7 +40,7 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
         if(error == nil) {
-            NSLog(@"%s: Remote folder %@ successfully expunged", __func__, _remoteFolderName);
+            SM_LOG_DEBUG(@"Remote folder %@ successfully expunged", _remoteFolderName);
             
             SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
             SMMessageListController *messageListController = [[appDelegate model] messageListController];
@@ -50,7 +51,7 @@
             
             [self complete];
         } else {
-            NSLog(@"%s: Error expunging remote folder %@: %@", __func__, _remoteFolderName, error);
+            SM_LOG_ERROR(@"Error expunging remote folder %@: %@", _remoteFolderName, error);
             
             [self fail];
         }

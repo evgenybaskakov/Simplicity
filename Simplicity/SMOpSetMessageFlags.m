@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMOpSetMessageFlags.h"
 
@@ -44,11 +45,11 @@
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
         if(error == nil) {
-            NSLog(@"%s: Message flags set in remote folder %@", __func__, _remoteFolderName);
+            SM_LOG_DEBUG(@"Message flags set in remote folder %@", _remoteFolderName);
             
             [self complete];
         } else {
-            NSLog(@"%s: Error setting message flags in remote folder %@: %@", __func__, _remoteFolderName, error);
+            SM_LOG_ERROR(@"Error setting message flags in remote folder %@: %@", _remoteFolderName, error);
             
             [self fail];
         }

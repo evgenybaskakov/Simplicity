@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAttachmentStorage.h"
 #import "SMAppDelegate.h"
 
@@ -23,7 +24,7 @@
 	NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid contentId:contentId];
 	
 	if(![self createDirectory:attachmentDir]) {
-		NSLog(@"%s: cannot create directory '%@' for attachment '%@'", __FUNCTION__, [attachmentDir path], contentId);
+		SM_LOG_DEBUG(@"cannot create directory '%@' for attachment '%@'", [attachmentDir path], contentId);
 		
 		return;
 	}
@@ -32,9 +33,9 @@
 	NSString *attachmentFilePath = [attachmentFile path];
 	
 	if(![data writeToFile:attachmentFilePath atomically:YES]) {
-		NSLog(@"%s: cannot write file '%@' (%lu bytes)", __FUNCTION__, attachmentFilePath, (unsigned long)[data length]);
+		SM_LOG_DEBUG(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
 	} else {
-		NSLog(@"%s: file %@ (%lu bytes) written successfully", __FUNCTION__, attachmentFilePath, (unsigned long)[data length]);
+		SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", attachmentFilePath, (unsigned long)[data length]);
 	}
 }
 
@@ -62,11 +63,11 @@
 	NSError *error = nil;
 
 	if(![fileManager createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-		NSLog(@"%s: failed to create directory '%@', error: %@", __FUNCTION__, dirPath, error);
+		SM_LOG_DEBUG(@"failed to create directory '%@', error: %@", dirPath, error);
 		return NO;
 	}
 
-	NSLog(@"%s: directory '%@' created successfully", __FUNCTION__, dirPath);
+	SM_LOG_DEBUG(@"directory '%@' created successfully", dirPath);
 	return YES;
 }
 

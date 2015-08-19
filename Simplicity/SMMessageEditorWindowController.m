@@ -51,7 +51,7 @@
 #pragma mark Actions
 
 //- (BOOL)windowShouldClose:(id)sender {
-//    NSLog(@"%s", __func__);
+//    SM_LOG_DEBUG(@"???");
 //    return YES;
 //}
 

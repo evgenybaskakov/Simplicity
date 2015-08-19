@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMSimplicityContainer.h"
@@ -34,7 +35,7 @@
 }
 
 - (void)scheduleFolderListUpdate:(Boolean)now {
-	//NSLog(@"%s: scheduling folder update after %u sec", __func__, FOLDER_LIST_UPDATE_INTERVAL_SEC);
+	//SM_LOG_DEBUG(@"scheduling folder update after %u sec", FOLDER_LIST_UPDATE_INTERVAL_SEC);
 
 	[self stopFolderListUpdate];
 
@@ -49,7 +50,7 @@
 }
 
 - (void)updateFolders {
-	//NSLog(@"%s: updating folders", __func__);
+	//SM_LOG_DEBUG(@"updating folders");
 
 	MCOIMAPSession *session = [ _model imapSession ];
 	NSAssert(session != nil, @"session is nil");
@@ -65,7 +66,7 @@
 		[self scheduleFolderListUpdate:NO];
 		
 		if (error != nil && [error code] != MCOErrorNone) {
-			NSLog(@"Error downloading folders structure: %@", error);
+			SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
 			return;
 		}
 		
@@ -99,9 +100,9 @@
 		_createFolderOp = nil;
 		
 		if (error != nil && [error code] != MCOErrorNone) {
-			NSLog(@"Error creating folder %@: %@", fullFolderName, error);
+			SM_LOG_ERROR(@"Error creating folder %@: %@", fullFolderName, error);
 		} else {
-			NSLog(@"Folder %@ created", fullFolderName);
+			SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
 
 			SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 			[[[appDelegate model] mailboxController] scheduleFolderListUpdate:YES];
@@ -130,9 +131,9 @@
 		_renameFolderOp = nil;
 
 		if (error != nil && [error code] != MCOErrorNone) {
-			NSLog(@"Error renaming folder %@ to %@: %@", oldFolderName, newFolderName, error);
+			SM_LOG_ERROR(@"Error renaming folder %@ to %@: %@", oldFolderName, newFolderName, error);
 		} else {
-			NSLog(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
+			SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
 
 			SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 			[[[appDelegate model] mailboxController] scheduleFolderListUpdate:YES];

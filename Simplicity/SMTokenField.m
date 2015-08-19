@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMTokenField.h"
 
 @implementation SMTokenField {
@@ -38,7 +39,7 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
 		_height = sizeToFit.height;
 
 		// TODO: not sure if this is an appropriate place to do the intrinsic size invalidation
-        NSLog(@"%s",__func__);
+        SM_LOG_DEBUG(@"???");
         
 //        self.frame = NSMakeRect(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, _height);
 
@@ -53,7 +54,7 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 
 	[super textDidChange:notification];
 	[self invalidateIntrinsicContentSize];
@@ -61,7 +62,7 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
 
 - (void)viewDidEndLiveResize
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 
 	[super viewDidEndLiveResize];
 	[self invalidateIntrinsicContentSize];

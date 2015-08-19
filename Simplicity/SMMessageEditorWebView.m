@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
@@ -98,7 +99,7 @@
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
-        NSLog(@"%s: loaded", __func__);
+        SM_LOG_DEBUG(@"loaded");
 
         [self setCachedContentHeight];
         [self notifyContentHeightChanged];
@@ -155,12 +156,12 @@
 }
 
 - (void)consoleLog:(NSString *)message {
-    NSLog(@"JSLog: %@", message);
+    SM_LOG_DEBUG(@"JSLog: %@", message);
 }
 
 - (void)eventInput:(NSString *)heightString {
     NSUInteger height = [heightString integerValue];
-    NSLog(@"eventInput: contentHeight %ld", height);
+    SM_LOG_DEBUG(@"eventInput: contentHeight %ld", height);
     
     if(height != _cachedContentHeight) {
         _cachedContentHeight = height;
@@ -187,7 +188,7 @@
     if(mainFrame != nil) {
         // TODO: remove duplication, see SMMessageBodyViewController.contentHeight
         _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height;
-        //NSLog(@"_cachedContentHeight: %ld", _cachedContentHeight);
+        //SM_LOG_DEBUG(@"_cachedContentHeight: %ld", _cachedContentHeight);
     }
 }
 
@@ -203,19 +204,19 @@
 
 - (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
     /*
-     NSLog(@"%s: TODO", __func__);
+     SM_LOG_DEBUG(@"TODO");
      */
     return WebDragDestinationActionEdit;
 }
 
 - (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
-    //NSLog(@"%s: TODO", __func__);
+    //SM_LOG_DEBUG(@"TODO");
     return WebDragDestinationActionNone;
 }
 
 - (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
     /*
-     NSLog(@"%s: TODO", __func__);
+     SM_LOG_DEBUG(@"TODO");
      
      if ( [draggingInfo draggingSource] == nil )
      {
@@ -237,7 +238,7 @@
      [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
      [pboard setString: html forType: NSHTMLPboardType];
      
-     NSLog(@"html: %@", html);
+     SM_LOG_DEBUG(@"html: %@", html);
      }
      }
      */
@@ -245,13 +246,13 @@
 
 - (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {
     /*
-     NSLog(@"%s: TODO", __func__);
+     SM_LOG_DEBUG(@"TODO");
      */
 }
 
 - (BOOL)webView:(WebView *)webView shouldInsertNode:(DOMNode *)node replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action {
     /*
-     NSLog(@"%s: node '%@', range '%@'", __func__, node, range);
+     SM_LOG_DEBUG(@"node '%@', range '%@'", node, range);
      */
     return YES;
 }
@@ -365,7 +366,7 @@
     if(fontName != nil) {
         [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
     } else {
-        NSLog(@"%s: no selected font", __func__);
+        SM_LOG_DEBUG(@"no selected font");
     }
 }
 
@@ -406,7 +407,7 @@
 - (void)showSource {
     NSString *messageText = [self getMessageText];
     
-    NSLog(@"%@", messageText);
+    SM_LOG_DEBUG(@"%@", messageText);
 }
 
 #pragma mark Content folding

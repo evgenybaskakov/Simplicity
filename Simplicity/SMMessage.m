@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMSimplicityContainer.h"
 #import "SMAttachmentStorage.h"
@@ -41,7 +42,7 @@
 	self = [ super init ];
 	
 	if(self) {
-		//NSLog(@"%s: uid %u, date %@", __FUNCTION__, uid, date);
+		//SM_LOG_DEBUG(@"uid %u, date %@", uid, date);
 		
 		_uidDB = uid;
 		_dateDB = date;
@@ -68,8 +69,8 @@
 		_remoteFolder = remoteFolderName;
 		_labels = m.gmailLabels;
 
-//		NSLog(@"%s: thread id %llu, subject '%@', labels %@", __FUNCTION__, m.gmailThreadID, m.header.subject, m.gmailLabels);
-//		NSLog(@"%s: uid %u, object %@, date %@", __FUNCTION__, [ m uid ], m, [[m header] date]);
+//		SM_LOG_DEBUG(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
+//		SM_LOG_DEBUG(@"uid %u, object %@, date %@", [ m uid ], m, [[m header] date]);
 	}
 
 	return self;
@@ -201,7 +202,7 @@ static NSString *unquote(NSString *s) {
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");
 	
-//	NSLog(@"from: %@, sent date %@, received date %@", [header from], [header date], [header receivedDate]);
+//	SM_LOG_DEBUG(@"from: %@, sent date %@, received date %@", [header from], [header date], [header receivedDate]);
 
 	return [header date];
 }
@@ -274,7 +275,7 @@ static NSString *unquote(NSString *s) {
 	NSAssert(m, @"bad param message");
 	
 	if(_imapMessage == nil) {
-		NSLog(@"%s: IMAP message is set", __FUNCTION__);
+		SM_LOG_DEBUG(@"IMAP message is set");
 
 		_imapMessage = m;
 
@@ -282,7 +283,7 @@ static NSString *unquote(NSString *s) {
 	} else if(_imapMessage.originalFlags != m.originalFlags) {
 		// TODO: be careful there because in future new flags should combine with the local flags
 		
-		NSLog(@"%s: IMAP message uid %u original flags have changed", __FUNCTION__, _imapMessage.uid);
+		SM_LOG_DEBUG(@"IMAP message uid %u original flags have changed", _imapMessage.uid);
 
 		_imapMessage = m;
 
@@ -294,7 +295,7 @@ static NSString *unquote(NSString *s) {
 
 - (Boolean)unseen {
 	if(_imapMessage == nil) {
-		NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+		SM_LOG_DEBUG(@"IMAP message is not set");
 		return NO;
 	}
     
@@ -303,7 +304,7 @@ static NSString *unquote(NSString *s) {
 
 - (void)setUnseen:(Boolean)unseen {
     if(_imapMessage == nil) {
-        NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+        SM_LOG_DEBUG(@"IMAP message is not set");
         return;
     }
     
@@ -318,7 +319,7 @@ static NSString *unquote(NSString *s) {
 
 - (Boolean)flagged {
 	if(_imapMessage == nil) {
-		NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+		SM_LOG_DEBUG(@"IMAP message is not set");
 		return NO;
 	}
 	
@@ -327,7 +328,7 @@ static NSString *unquote(NSString *s) {
 
 - (void)setFlagged:(Boolean)flagged {
     if(_imapMessage == nil) {
-        NSLog(@"%s: IMAP message is not set", __FUNCTION__);
+        SM_LOG_DEBUG(@"IMAP message is not set");
         return;
     }
     
@@ -346,11 +347,11 @@ static NSString *unquote(NSString *s) {
 	
 	if(_createdFromDB && _imapMessage == nil) {
 		// TODO: handle this!!!!
-		NSLog(@"%s: no attachments available for message loaded from DB", __FUNCTION__);
+		SM_LOG_DEBUG(@"no attachments available for message loaded from DB");
 		return;
 	}
 	
-//	NSLog(@"%s: imap message class %@, message body %@", __FUNCTION__, [_imapMessage class], _imapMessage);
+//	SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
 
 	NSAssert(_imapMessage, @"bad _imapMessage");
 
@@ -364,7 +365,7 @@ static NSString *unquote(NSString *s) {
 		NSString *attachmentContentId = [attachment contentID] != nil? [attachment contentID] : [attachment uniqueID];
 		NSData *attachmentData = [attachment data];
 
-		//NSLog(@"%s: message uid %u, attachment unique id %@, contentID %@, body %@", __FUNCTION__, uid, [attachment uniqueID], attachmentContentId, attachment);
+		//SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
 		
 		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
@@ -372,7 +373,7 @@ static NSString *unquote(NSString *s) {
 		
 		NSError *err;
 		if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
-			//NSLog(@"%s: stored attachment exists at '%@'", __FUNCTION__, attachmentUrl);
+			//SM_LOG_DEBUG(@"stored attachment exists at '%@'", attachmentUrl);
 			continue;
 		}
 		
@@ -389,7 +390,7 @@ static NSString *unquote(NSString *s) {
 			
 			NSAssert([attachmentContentId isEqualToString:[imapPart contentID]], @"Attachment contentId is not equal to part contentId");
 			
-			//NSLog(@"%s: part %@, id %@, contentID %@", __FUNCTION__, part, partId, [imapPart contentID]);
+			//SM_LOG_DEBUG(@"part %@, id %@, contentID %@", part, partId, [imapPart contentID]);
 
 			MCOIMAPSession *session = [[appDelegate model] imapSession];
 			
@@ -406,7 +407,7 @@ static NSString *unquote(NSString *s) {
 					SMAppDelegate *appDelegate =  [[NSApplication sharedApplication] delegate];
 					[[[appDelegate model] attachmentStorage] storeAttachment:data folder:_remoteFolder uid:uid contentId:[imapPart contentID]];
 				} else {
-					NSLog(@"%s: Error downloading message body for msg uid %u, part unique id %@: %@", __func__, uid, partId, error);
+					SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
 				}
 			}];
 		}
@@ -415,14 +416,14 @@ static NSString *unquote(NSString *s) {
 
 - (NSString*)htmlBodyRendering {
 	if(_htmlBodyRendering) {
-		//NSLog(@"%s: html body for message uid %u already generated", __FUNCTION__, [_imapMessage uid]);
+		//SM_LOG_DEBUG(@"html body for message uid %u already generated", [_imapMessage uid]);
 		return _htmlBodyRendering;
 	}
 	
 	if(!_data) {
 		// TODO: Request urgently for the data
 		// TODO: Request future update
-		//NSLog(@"%s: no data for message uid %u", __FUNCTION__, [_imapMessage uid]);
+		//SM_LOG_DEBUG(@"no data for message uid %u", [_imapMessage uid]);
 		return nil;
 	}
 
@@ -430,61 +431,61 @@ static NSString *unquote(NSString *s) {
 	
 	_htmlBodyRendering = [ _msgParser htmlBodyRendering ];
 
-	//NSLog(@"html body '%@'", _htmlBodyRendering);
+	//SM_LOG_DEBUG(@"html body '%@'", _htmlBodyRendering);
 	
 	return _htmlBodyRendering;
 }
 
 - (BOOL) MCOAbstractMessage:(MCOAbstractMessage *)msg canPreviewPart:(MCOAbstractPart *)part {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return YES;
 }
 - (BOOL) MCOAbstractMessage:(MCOAbstractMessage *)msg shouldShowPart:(MCOAbstractPart *)part {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return YES;
 }
 - (NSDictionary *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateValuesForHeader:(MCOMessageHeader *)header {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSDictionary *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateValuesForPart:(MCOAbstractPart *)part {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateForMainHeader:(MCOMessageHeader *)header {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateForImage:(MCOAbstractPart *)header {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateForAttachment:(MCOAbstractPart *)part {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage_templateForMessage:(MCOAbstractMessage *)msg {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateForEmbeddedMessage:(MCOAbstractMessagePart *)part {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg templateForEmbeddedMessageHeader:(MCOMessageHeader *)header {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage_templateForAttachmentSeparator:(MCOAbstractMessage *)msg {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg filterHTMLForPart:(NSString *)html {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg filterHTMLForMessage:(NSString *)html {
-	NSLog(@"%s", __FUNCTION__);
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 

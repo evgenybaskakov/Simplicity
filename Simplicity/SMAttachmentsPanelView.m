@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMImageRegistry.h"
 #import "SMAttachmentsPanelView.h"
@@ -13,7 +14,7 @@
 @implementation SMAttachmentsPanelView
 
 - (void)drawRect:(NSRect)dirtyRect {
-//	NSLog(@"%s", __func__);
+//	SM_LOG_DEBUG(@"???");
 
 	[super drawRect:dirtyRect];
     
@@ -26,16 +27,16 @@
 					   slideBack:(BOOL)slideBack
 						   event:(NSEvent *)theEvent
 {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 	return YES;
 }
 
 //- (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination {
-//	NSLog(@"%s", __func__);
+//	SM_LOG_DEBUG(@"???");
 //}
 
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset {
-	NSLog(@"%s", __func__);
+	SM_LOG_DEBUG(@"???");
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	NSImage *dragImage = appDelegate.imageRegistry.attachmentDocumentImage;

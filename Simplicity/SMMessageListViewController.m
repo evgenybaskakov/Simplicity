@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMImageRegistry.h"
@@ -61,7 +62,7 @@
 	SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
 	NSInteger messageThreadsCount = [[[appDelegate model] messageStorage] messageThreadsCountInLocalFolder:[currentFolder localName]];
 
-//	NSLog(@"%s: self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", __FUNCTION__, self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
+//	SM_LOG_DEBUG(@"self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
 	
 	return messageThreadsCount;
 }
@@ -136,9 +137,9 @@
 			if(messageThread != nil) {
 				[_multipleSelectedMessageThreads addObject:messageThread];
 				
-				//NSLog(@"%s: row %lu, subject %@", __func__, selectedRow, [[[messageThread messagesSortedByDate] firstObject] subject]);
+				//SM_LOG_DEBUG(@"row %lu, subject %@", selectedRow, [[[messageThread messagesSortedByDate] firstObject] subject]);
 			} else {
-				NSLog(@"%s: selected thread at row %lu not found", __func__, selectedRow);
+				SM_LOG_DEBUG(@"selected thread at row %lu not found", selectedRow);
 			}
 
 			selectedRow = [selectedRows indexGreaterThanIndex:selectedRow];
@@ -154,7 +155,7 @@
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-//	NSLog(@"%s: tableView %@, datasource %@, delegate call: %@, row %ld", __FUNCTION__, tableView, [tableView dataSource], [tableColumn identifier], row);
+//	SM_LOG_DEBUG(@"tableView %@, datasource %@, delegate call: %@, row %ld", tableView, [tableView dataSource], [tableColumn identifier], row);
 	
 	SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
 	SMAppController *appController = [appDelegate appController];
@@ -163,7 +164,7 @@
 	SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
 
 	if(messageThread == nil) {
-		NSLog(@"%s: row %ld, message thread is nil", __FUNCTION__, row);
+		SM_LOG_DEBUG(@"row %ld, message thread is nil", row);
 		return nil;
 	}
 	
@@ -175,7 +176,7 @@
 
 	[view initFields];
 
-	//NSLog(@"%s: from '%@', subject '%@', unseen %u", __FUNCTION__, [message from], [message subject], messageThread.unseen);
+	//SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [message from], [message subject], messageThread.unseen);
 	
 	[view.fromTextField setStringValue:[message from]];
 	[view.subjectTextField setStringValue:[message subject]];
@@ -223,7 +224,7 @@
 }
 
 - (void)tableViewSelectionIsChanging:(NSNotification *)notification {
-	//NSLog(@"%s", __func__);
+	//SM_LOG_DEBUG(@"???");
 
 	// cancel scheduled message list update coming from keyboard
 	[self cancelChangeSelectedMessageThread];
@@ -311,7 +312,7 @@
 }
 
 - (IBAction)loadMoreMessages:(id)sender {
-//	NSLog(@"%s: sender %@", __func__, sender);
+//	SM_LOG_DEBUG(@"sender %@", sender);
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	SMMessageListController *messageListController = [[appDelegate model] messageListController];
@@ -369,7 +370,7 @@
 }
 
 - (void)moveSelectedMessageThreadsToFolder:(NSString*)remoteFolderName {
-	NSLog(@"%s: to remote folder %@", __func__, remoteFolderName);
+	SM_LOG_DEBUG(@"to remote folder %@", remoteFolderName);
 	
 	// 1. stop current sync, disable further syncs
 	// 2. remote selected message threads from the list
@@ -387,7 +388,7 @@
 	SMMessageListController *messageListController = [[appDelegate model] messageListController];
 
 	if(_selectedMessageThread == nil && _multipleSelectedMessageThreads.count == 0 && _draggedMessageThread == nil) {
-		NSLog(@"%s: no message threads selected for moving", __func__);
+		SM_LOG_DEBUG(@"no message threads selected for moving");
 		return;
 	}
 
@@ -700,7 +701,7 @@
     SMLocalFolder *localFolder = messageListController.currentLocalFolder;
     
     if(localFolder == nil) {
-        NSLog(@"%s: no local folder", __func__);
+        SM_LOG_DEBUG(@"no local folder");
         return;
     }
     
@@ -718,7 +719,7 @@
                 [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil draftUid:m.uid];
             }
             else {
-                NSLog(@"%s: TODO: handle messageToOpen.htmlBodyRendering is nil", __func__);
+                SM_LOG_DEBUG(@"TODO: handle messageToOpen.htmlBodyRendering is nil");
             }
             
             return;

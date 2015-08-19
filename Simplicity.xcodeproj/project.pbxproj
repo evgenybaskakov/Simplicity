@@ -136,6 +136,7 @@
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
+		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
 		80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B011B5A10BC0049AB88 /* Underline-128.png */; };
 		80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B021B5A10BC0049AB88 /* Italic-128.png */; };
 		80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B031B5A10BC0049AB88 /* Bold-128.png */; };
@@ -436,6 +437,8 @@
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
 		8081A7891B27F65B0081727C /* SMOpAppendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAppendMessage.h; sourceTree = "<group>"; };
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
+		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
+		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
 		80A44B011B5A10BC0049AB88 /* Underline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Underline-128.png"; sourceTree = "<group>"; };
 		80A44B021B5A10BC0049AB88 /* Italic-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Italic-128.png"; sourceTree = "<group>"; };
 		80A44B031B5A10BC0049AB88 /* Bold-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bold-128.png"; sourceTree = "<group>"; };
@@ -572,6 +575,8 @@
 				0082F5FD1A0FFAAC0050578A /* SMLocalFolder.m */,
 				00036D7D1A205FCB0085C266 /* SMLocalFolderRegistry.h */,
 				00036D7E1A205FCB0085C266 /* SMLocalFolderRegistry.m */,
+				80A2EA9B1B844BC8001765EA /* SMLog.h */,
+				80A2EA9C1B844BC8001765EA /* SMLog.m */,
 				009742701957C78E00620145 /* SMMailbox.h */,
 				009742711957C78E00620145 /* SMMailbox.m */,
 				0077C99219E8E58C00118CA5 /* SMMailLogin.h */,
@@ -1108,6 +1113,7 @@
 				802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */,
 				00A085B01A72145300CC4E1C /* SMAttachmentsPanelViewController.m in Sources */,
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,
+				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,
 				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
 			);

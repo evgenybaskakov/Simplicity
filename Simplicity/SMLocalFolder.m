@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
@@ -97,8 +98,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)updateTimeout {
-	NSLog(@"%s: operation timeout", __func__);
-
+	SM_LOG_WARNING(@"operation timeout");
+    
 	[self stopMessagesLoading:NO];
 	[self startLocalFolderSync];
 	[self rescheduleUpdateTimeout];
@@ -108,7 +109,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[self rescheduleMessageListUpdate];
 
 	if(_folderInfoOp != nil || _fetchMessageHeadersOp != nil || _searchMessageThreadsOps.count > 0 || _fetchMessageThreadsHeadersOps.count > 0) {
-		NSLog(@"%s: previous op is still in progress for folder %@", __func__, _localName);
+		SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
 		return;
 	}
 
@@ -137,15 +138,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_folderInfoOp = nil;
 
 		if(error == nil) {
-//			NSLog(@"UIDNEXT: %lu", (unsigned long) [info uidNext]);
-//			NSLog(@"UIDVALIDITY: %lu", (unsigned long) [info uidValidity]);
-//			NSLog(@"Messages count %u", [info messageCount]);
+			SM_LOG_DEBUG(@"UIDNEXT: %lu", (unsigned long) [info uidNext]);
+			SM_LOG_DEBUG(@"UIDVALIDITY: %lu", (unsigned long) [info uidValidity]);
+			SM_LOG_DEBUG(@"Messages count %u", [info messageCount]);
 			
 			_totalMessagesCount = [info messageCount];
 			
 			[self syncFetchMessageHeaders];
 		} else {
-			NSLog(@"Error fetching folder info: %@", error);
+			SM_LOG_ERROR(@"Error fetching folder info: %@", error);
 		}
 	}];
 }
@@ -162,14 +163,14 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)fetchMessageBodies {
-//	NSLog(@"%s: fetching message bodies for folder '%@' (%lu messages in this folder, %lu messages in all mail)", __FUNCTION__, _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
+	SM_LOG_DEBUG(@"fetching message bodies for folder '%@' (%lu messages in this folder, %lu messages in all mail)", _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
 
 	[self recalculateTotalMemorySize];
 	
 	NSUInteger fetchCount = 0;
 	
 	for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
-		//NSLog(@"fetched message id %@", gmailMessageId);
+		SM_LOG_DEBUG(@"fetched message id %@", gmailMessageId);
 
 		MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
 
@@ -182,20 +183,20 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
 	for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
-		//NSLog(@"[all mail] fetched message id %llu", message.gmailMessageID);
+		SM_LOG_DEBUG(@"[all mail] fetched message id %llu", message.gmailMessageID);
 
 		if([self fetchMessageBody:message.uid remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO])
 			fetchCount++;
 	}
 
-//	NSLog(@"%s: fetching %lu message bodies", __func__, fetchCount);
+	SM_LOG_DEBUG(@"fetching %lu message bodies", fetchCount);
 
 	[_fetchedMessageHeaders removeAllObjects];
 	[_fetchedMessageHeadersFromAllMail removeAllObjects];
 }
 
 - (BOOL)fetchMessageBody:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
-	//	NSLog(@"%s: uid %u, remote folder %@, threadId %llu, urgent %s", __FUNCTION__, uid, remoteFolder, threadId, urgent? "YES" : "NO");
+	SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
@@ -213,10 +214,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	void (^opBlock)(NSError *error, NSData * data) = nil;
 
 	opBlock = ^(NSError * error, NSData * data) {
-		//	NSLog(@"%s: msg uid %u", __FUNCTION__, uid);
+		SM_LOG_DEBUG(@"msg uid %u", uid);
 		
 		if (error != nil && [error code] != MCOErrorNone) {
-			NSLog(@"%s: Error downloading message body for uid %u, remote folder %@", __func__, uid, remoteFolderName);
+			SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@", uid, remoteFolderName);
 
 			MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 
@@ -248,7 +249,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)syncFetchMessageThreadsHeaders {
-//	NSLog(@"%s: searching for %lu threads", __func__, _fetchedMessageHeaders.count);
+	SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -258,7 +259,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
 
 	if(allMailFolder == nil) {
-		NSLog(@"%s: no all mail folder!", __func__);
+		SM_LOG_ERROR(@"no all mail folder!");
 
 		[self finishHeadersSync];
 		return;
@@ -292,15 +293,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 			[_searchMessageThreadsOps removeObjectForKey:threadId];
 			
 			if(error == nil) {
-				//NSLog(@"Search for message '%@' thread %llu finished (%lu searches left)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
+				SM_LOG_DEBUG(@"Search for message '%@' thread %llu finished (%lu searches left)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
 
 				if(searchResults.count > 0) {
-					//NSLog(@"%s: %u messages found in '%@', threadId %@", __func__, [searchResults count], allMailFolder, threadId);
+                    SM_LOG_DEBUG(@"%u messages found in '%@', threadId %@", [searchResults count], allMailFolder, threadId);
 					
 					[self fetchMessageThreadsHeaders:threadId uids:searchResults];
 				}
 			} else {
-				NSLog(@"%s: search in '%@' for thread %@ failed, error %@", __func__, allMailFolder, threadId, error);
+				SM_LOG_ERROR(@"search in '%@' for thread %@ failed, error %@", allMailFolder, threadId, error);
 
 				[self markMessageThreadAsUpdated:threadId];
 			}
@@ -308,7 +309,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		
 		[_searchMessageThreadsOps setObject:op forKey:threadId];
 
-		//NSLog(@"Search for message '%@' thread %llu started (%lu searches active)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
+		SM_LOG_DEBUG(@"Search for message '%@' thread %llu started (%lu searches active)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
 	}
 }
 
@@ -333,8 +334,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)fetchMessageThreadsHeaders:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs {
-	//NSLog(@"%s: total %u messages to load", __func__, _selectedMessageUIDsToLoad.count);
-
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	SMMailbox *mailbox = [[appDelegate model] mailbox];
@@ -361,7 +360,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 			[self updateMessages:filteredMessages remoteFolder:allMailFolder];
 		} else {
-			NSLog(@"Error fetching message headers for thread %@: %@", threadId, error);
+			SM_LOG_ERROR(@"Error fetching message headers for thread %@: %@", threadId, error);
 			
 			[self markMessageThreadAsUpdated:threadId];
 		}
@@ -372,7 +371,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 	[_fetchMessageThreadsHeadersOps setObject:op forKey:threadId];
 
-	//NSLog(@"Fetching headers for thread %@ started (%lu fetches active)", threadId, _fetchMessageThreadsHeadersOps.count);
+	SM_LOG_DEBUG(@"Fetching headers for thread %@ started (%lu fetches active)", threadId, _fetchMessageThreadsHeadersOps.count);
 }
 
 - (void)finishHeadersSync {
@@ -393,9 +392,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	BOOL finishFetch = YES;
 	
 	if(_totalMessagesCount == _messageHeadersFetched) {
-//		NSLog(@"%s: all %llu message headers fetched, stopping", __FUNCTION__, _totalMessagesCount);
+		SM_LOG_DEBUG(@"all %llu message headers fetched, stopping", _totalMessagesCount);
 	} else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
-//		NSLog(@"%s: fetched %llu message headers, stopping", __FUNCTION__, _messageHeadersFetched);
+		SM_LOG_DEBUG(@"fetched %llu message headers, stopping", _messageHeadersFetched);
 	} else {
 		finishFetch = NO;
 	}
@@ -443,7 +442,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 			
 			[self syncFetchMessageHeaders];
 		} else {
-			NSLog(@"Error downloading messages list: %@", error);
+			SM_LOG_ERROR(@"Error downloading messages list: %@", error);
 		}
 	}];	
 }
@@ -465,7 +464,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)loadSelectedMessagesInternal {
 	if(_remoteFolderName == nil) {
-		NSLog(@"%s: remote folder is not set", __func__);
+		SM_LOG_WARNING(@"remote folder is not set");
 		return;
 	}
 	
@@ -479,9 +478,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	BOOL finishFetch = YES;
 	
 	if(_totalMessagesCount == _messageHeadersFetched) {
-//		NSLog(@"%s: all %llu message headers fetched, stopping", __FUNCTION__, _totalMessagesCount);
+		SM_LOG_DEBUG(@"all %llu message headers fetched, stopping", _totalMessagesCount);
 	} else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
-//		NSLog(@"%s: fetched %llu message headers, stopping", __FUNCTION__, _messageHeadersFetched);
+		SM_LOG_DEBUG(@"fetched %llu message headers, stopping", _messageHeadersFetched);
 	} else if(_selectedMessageUIDsToLoad.count > 0) {
 		finishFetch = NO;
 	}
@@ -516,7 +515,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		}
 	}
 	
-	NSLog(@"%s: loading %u of %u search results...", __func__, messageUIDsToLoadNow.count, _selectedMessageUIDsToLoad.count);
+	SM_LOG_DEBUG(@"loading %u of %u search results...", messageUIDsToLoadNow.count, _selectedMessageUIDsToLoad.count);
 	
 	NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
 	
@@ -528,7 +527,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_fetchMessageHeadersOp = nil;
 		
 		if(error == nil) {
-			NSLog(@"%s: loaded %lu message headers...", __func__, messages.count);
+			SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
 
 			[_selectedMessageUIDsToLoad removeIndexSet:messageUIDsToLoadNow];
 			
@@ -538,7 +537,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 			
 			[self loadSelectedMessagesInternal];
 		} else {
-			NSLog(@"%s: Error downloading search results: %@", __func__, error);
+			SM_LOG_ERROR(@"Error downloading search results: %@", error);
 		}
 	}];
 }
@@ -751,7 +750,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
 	_totalMemory -= reclaimedMemory;
 
-	NSLog(@"%s: total reclaimed %llu Kb in %lu messages, %llu Kb left in folder %@", __func__, reclaimedMemory / 1024 ,reclaimedMessagesCount, _totalMemory / 1024, _localName);
+	SM_LOG_DEBUG(@"total reclaimed %llu Kb in %lu messages, %llu Kb left in folder %@", reclaimedMemory / 1024 ,reclaimedMessagesCount, _totalMemory / 1024, _localName);
 }
 
 - (void)recalculateTotalMemorySize {
@@ -772,7 +771,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		}
 	}
 
-	NSLog(@"%s: total memory %llu Kb in folder %@", __func__, _totalMemory / 1024, _localName);
+	SM_LOG_DEBUG(@"total memory %llu Kb in folder %@", _totalMemory / 1024, _localName);
 }
 
 - (uint64_t)getTotalMemoryKb {

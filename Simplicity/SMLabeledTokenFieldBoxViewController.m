@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
@@ -80,28 +81,28 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return NSRoundedTokenStyle;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return NO;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	// TODO: scan address books for the recepient name and/or verify the email address for correctness
 	return tokens;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	// TODO: scan address books for the recepient name
 	return nil;
 }
@@ -112,7 +113,7 @@
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 

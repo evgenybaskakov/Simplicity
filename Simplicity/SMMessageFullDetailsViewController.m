@@ -217,7 +217,7 @@
 // ---------------------------------------------------------------------------
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject
 {
-	//	SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return NSRoundedTokenStyle;
 }
 
@@ -228,7 +228,7 @@
 // ---------------------------------------------------------------------------
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject
 {
-	//	SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return NO;
 }
 
@@ -319,7 +319,7 @@
 // ---------------------------------------------------------------------------
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject
 {
-	//	SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 	return representedObject;
 }
 

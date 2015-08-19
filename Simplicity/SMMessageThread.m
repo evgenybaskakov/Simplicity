@@ -173,7 +173,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	if(message != nil) {
 		NSAssert(message.uid == uid, @"bad message found");
 		
-//		SM_LOG_DEBUG(@"set message data for uid %u", uid);
+        SM_LOG_DEBUG(@"set message data for uid %u", uid);
 		
 		[ message setData:data ];
 	} else {
@@ -195,11 +195,11 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		
 		NSAssert(message.uid == uid, @"bad message found");
 		
-//		SM_LOG_DEBUG(@"set message data for uid %u", uid);
+        SM_LOG_DEBUG(@"set message data for uid %u", uid);
 		
 		hasData = [ message hasData ];
 	} else {
-		SM_LOG_DEBUG(@"message for uid %u not found", uid);
+		SM_LOG_WARNING(@"message for uid %u not found", uid);
 	}
 	
 	return hasData;
@@ -228,7 +228,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
 	SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
-//	SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
+    SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
 	
 	NSUInteger messageIndex = [_messageCollection.messages indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:[comparators messagesComparatorByImapMessage]];
 	
@@ -319,7 +319,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 		// clear messages update marks for future updates
 		[message setUpdated:NO];
 
-		//SM_LOG_DEBUG(@"Thread %llu, message labels %@", _threadId, message.labels);
+		SM_LOG_DEBUG(@"Thread %llu, message labels %@", _threadId, message.labels);
 		[newLabels addObjectsFromArray:message.labels];
 	}
 	

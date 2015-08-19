@@ -240,7 +240,7 @@ static const CGFloat CELL_SPACING = -1;
 			}
 		}
 		
-		//SM_LOG_DEBUG(@"message thread id %llu has been updated (old message count %lu, new %ld)", _currentMessageThread.threadId, _cells.count, _currentMessageThread.messagesCount);
+		SM_LOG_DEBUG(@"message thread id %llu has been updated (old message count %lu, new %ld)", _currentMessageThread.threadId, _cells.count, _currentMessageThread.messagesCount);
 		
 		// remove old (vanished) messages
 		for(NSInteger t = _cells.count; t > 0; t--) {
@@ -307,7 +307,7 @@ static const CGFloat CELL_SPACING = -1;
 
 		[_messageThreadInfoViewController updateMessageThread];
 	} else {
-		//SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
+		SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
 
 		[_cells removeAllObjects];
 		[_contentView setSubviews:[NSArray array]];
@@ -596,16 +596,10 @@ static const CGFloat CELL_SPACING = -1;
 }
 
 - (void)viewBoundsDidChange:(NSNotification *)notification {
-//	NSClipView *changedContentView = [notification object];
-//	SM_LOG_DEBUG(@"%@", changedContentView);
-
 	[self arrangeVisibleCells];
 }
 
 - (void)viewFrameDidChange:(NSNotification *)notification {
-//	NSClipView *changedContentView = [notification object];
-//	SM_LOG_DEBUG(@"%@", changedContentView);
-
 	[self arrangeVisibleCells];
 }
 

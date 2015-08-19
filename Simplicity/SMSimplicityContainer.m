@@ -63,7 +63,7 @@
 		[self getIMAPServerCapabilities];
 	}
 	
-	//SM_LOG_DEBUG(@"model initialized");
+	SM_LOG_DEBUG(@"model initialized");
 		  
 	return self;
 }
@@ -71,7 +71,7 @@
 - (MCOIndexSet*)imapServerCapabilities {
 	MCOIndexSet *capabilities = _imapServerCapabilities;
 
-	//SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
+	SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
 	
 	return capabilities;
 }
@@ -89,7 +89,7 @@
 
 			[_capabilitiesOp start:opBlock];
 		} else {
-			//SM_LOG_DEBUG(@"capabilities: %@", capabilities);
+			SM_LOG_DEBUG(@"capabilities: %@", capabilities);
 			
 			_imapServerCapabilities = capabilities;
 			_capabilitiesOp = nil;

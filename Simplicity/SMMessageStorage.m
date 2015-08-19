@@ -35,7 +35,7 @@
 }
 
 - (void)ensureLocalFolderExists:(NSString*)localFolder {
-	//SM_LOG_DEBUG(@"folder name '%@", localFolder);
+	SM_LOG_DEBUG(@"folder name '%@", localFolder);
 	
 	SMMessageThreadCollection *collection = [_foldersMessageThreadsMap objectForKey:localFolder];
 	
@@ -129,7 +129,7 @@
 }
 
 - (void)startUpdate:(NSString*)localFolder {
-	//	SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
+	SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	[self cancelUpdate:localFolder];
 }
@@ -143,7 +143,7 @@
 	for(MCOIMAPMessage *imapMessage in imapMessages) {
 		NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", collection.messageThreads.count, collection.messageThreadsByDate.count);
 
-		//SM_LOG_DEBUG(@"looking for imap message with uid %u, gmailThreadId %llu", [imapMessage uid], [imapMessage gmailThreadID]);
+		SM_LOG_DEBUG(@"looking for imap message with uid %u, gmailThreadId %llu", [imapMessage uid], [imapMessage gmailThreadID]);
 
 		const uint64_t threadId = [imapMessage gmailThreadID];
 		NSNumber *threadIdKey = [NSNumber numberWithUnsignedLongLong:threadId];
@@ -195,7 +195,7 @@
 }
 
 - (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeVanishedMessages:(Boolean)removeVanishedMessages {
-//	SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
+    SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
 	

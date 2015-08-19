@@ -35,7 +35,7 @@
 }
 
 - (void)scheduleFolderListUpdate:(Boolean)now {
-	//SM_LOG_DEBUG(@"scheduling folder update after %u sec", FOLDER_LIST_UPDATE_INTERVAL_SEC);
+	SM_LOG_DEBUG(@"scheduling folder update after %u sec", FOLDER_LIST_UPDATE_INTERVAL_SEC);
 
 	[self stopFolderListUpdate];
 
@@ -50,7 +50,7 @@
 }
 
 - (void)updateFolders {
-	//SM_LOG_DEBUG(@"updating folders");
+	SM_LOG_DEBUG(@"updating folders");
 
 	MCOIMAPSession *session = [ _model imapSession ];
 	NSAssert(session != nil, @"session is nil");

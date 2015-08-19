@@ -51,7 +51,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-	//SM_LOG_DEBUG(@"new folder '%@'", folderName);
+	SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
 	if(folderName != nil) {
 		SMLocalFolder *folder = [[_model localFolderRegistry] getLocalFolder:folderName];
@@ -103,7 +103,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)startMessagesUpdate {
-	//SM_LOG_DEBUG(@"updating message list");
+	SM_LOG_DEBUG(@"updating message list");
 
 	[_currentFolder startLocalFolderSync];
 }
@@ -125,8 +125,6 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 }
 
 - (void)updateMessageList {
-//	SM_LOG_DEBUG(@"new messages count %lu", (unsigned long)[imapMessages count]);
-
 	//TODO:
 	//if(updateResult == SMMesssageStorageUpdateResultNone) {
 		// no updates, so no need to reload the message list
@@ -135,7 +133,7 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	
 	// TODO: special case for flags changed in some cells only
 	
-	//SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
+	SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	SMAppController *appController = [appDelegate appController];
@@ -160,13 +158,13 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	
 	NSTimeInterval delay_sec = now? 0 : MESSAGE_LIST_UPDATE_INTERVAL_SEC;
 	
-	//SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
+	SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
 
 	[self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-	//SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolder, threadId);
+	SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
 
 	[_currentFolder fetchMessageBody:uid remoteFolder:remoteFolderName threadId:threadId urgent:YES];
 }

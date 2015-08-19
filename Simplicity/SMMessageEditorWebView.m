@@ -188,7 +188,7 @@
     if(mainFrame != nil) {
         // TODO: remove duplication, see SMMessageBodyViewController.contentHeight
         _cachedContentHeight = [[[mainFrame frameView] documentView] frame].size.height;
-        //SM_LOG_DEBUG(@"_cachedContentHeight: %ld", _cachedContentHeight);
+        SM_LOG_DEBUG(@"_cachedContentHeight: %ld", _cachedContentHeight);
     }
 }
 
@@ -210,7 +210,7 @@
 }
 
 - (NSUInteger)webView:(WebView *)sender dragSourceActionMaskForPoint:(NSPoint)point {
-    //SM_LOG_DEBUG(@"TODO");
+    SM_LOG_DEBUG(@"TODO");
     return WebDragDestinationActionNone;
 }
 

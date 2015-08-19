@@ -62,7 +62,7 @@
 	SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
 	NSInteger messageThreadsCount = [[[appDelegate model] messageStorage] messageThreadsCountInLocalFolder:[currentFolder localName]];
 
-//	SM_LOG_DEBUG(@"self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
+    SM_LOG_DEBUG(@"self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
 	
 	return messageThreadsCount;
 }
@@ -137,7 +137,7 @@
 			if(messageThread != nil) {
 				[_multipleSelectedMessageThreads addObject:messageThread];
 				
-				//SM_LOG_DEBUG(@"row %lu, subject %@", selectedRow, [[[messageThread messagesSortedByDate] firstObject] subject]);
+				SM_LOG_DEBUG(@"row %lu, subject %@", selectedRow, [[[messageThread messagesSortedByDate] firstObject] subject]);
 			} else {
 				SM_LOG_DEBUG(@"selected thread at row %lu not found", selectedRow);
 			}
@@ -155,7 +155,7 @@
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-//	SM_LOG_DEBUG(@"tableView %@, datasource %@, delegate call: %@, row %ld", tableView, [tableView dataSource], [tableColumn identifier], row);
+    SM_LOG_DEBUG(@"tableView %@, datasource %@, delegate call: %@, row %ld", tableView, [tableView dataSource], [tableColumn identifier], row);
 	
 	SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
 	SMAppController *appController = [appDelegate appController];
@@ -176,7 +176,7 @@
 
 	[view initFields];
 
-	//SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [message from], [message subject], messageThread.unseen);
+	SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [message from], [message subject], messageThread.unseen);
 	
 	[view.fromTextField setStringValue:[message from]];
 	[view.subjectTextField setStringValue:[message subject]];
@@ -224,7 +224,7 @@
 }
 
 - (void)tableViewSelectionIsChanging:(NSNotification *)notification {
-	//SM_LOG_DEBUG(@"???");
+	SM_LOG_DEBUG(@"???");
 
 	// cancel scheduled message list update coming from keyboard
 	[self cancelChangeSelectedMessageThread];
@@ -312,7 +312,7 @@
 }
 
 - (IBAction)loadMoreMessages:(id)sender {
-//	SM_LOG_DEBUG(@"sender %@", sender);
+    SM_LOG_DEBUG(@"sender %@", sender);
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	SMMessageListController *messageListController = [[appDelegate model] messageListController];

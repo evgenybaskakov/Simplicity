@@ -50,7 +50,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)awakeFromNib {
-	//SM_LOG_DEBUG(@"SMAppController: awakeFromNib: _messageListViewController %@", _messageListViewController);
+	SM_LOG_DEBUG(@"SMAppController: awakeFromNib: _messageListViewController %@", _messageListViewController);
 	
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	appDelegate.appController = self;

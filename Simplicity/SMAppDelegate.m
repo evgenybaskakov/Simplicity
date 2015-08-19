@@ -23,7 +23,7 @@
 		_model = [ SMSimplicityContainer new ];
 	}
 	
-	//SM_LOG_DEBUG(@"app delegate initialized");
+	SM_LOG_DEBUG(@"app delegate initialized");
 	
 	return self;
 }

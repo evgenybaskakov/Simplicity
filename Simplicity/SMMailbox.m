@@ -91,7 +91,7 @@
 		}
 
 		if(i == folders.count) {
-			//SM_LOG_DEBUG(@"folders didn't change");
+			SM_LOG_DEBUG(@"folders didn't change");
 			return NO;
 		}
 	}
@@ -107,7 +107,7 @@
 	[self updateMainFolders];
 	[self updateFavoriteFolders];
 
-//	SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
+    SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
 	
 	return YES;
 }

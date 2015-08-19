@@ -90,7 +90,7 @@
     MCOMessageBuilder *message = [self createMessageData:messageText subject:subject to:to cc:cc bcc:bcc];
     NSAssert(message != nil, @"no message body");
     
-    //SM_LOG_DEBUG(@"'%@'", message);
+    SM_LOG_DEBUG(@"'%@'", message);
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
     

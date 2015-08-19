@@ -14,7 +14,7 @@
 @implementation SMAttachmentsPanelView
 
 - (void)drawRect:(NSRect)dirtyRect {
-//	SM_LOG_DEBUG(@"???");
+    SM_LOG_DEBUG(@"???");
 
 	[super drawRect:dirtyRect];
     
@@ -32,7 +32,7 @@
 }
 
 //- (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination {
-//	SM_LOG_DEBUG(@"???");
+//  SM_LOG_DEBUG(@"???");
 //}
 
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset {

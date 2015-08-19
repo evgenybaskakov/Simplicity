@@ -42,7 +42,7 @@
 	self = [ super init ];
 	
 	if(self) {
-		//SM_LOG_DEBUG(@"uid %u, date %@", uid, date);
+		SM_LOG_DEBUG(@"uid %u, date %@", uid, date);
 		
 		_uidDB = uid;
 		_dateDB = date;
@@ -69,8 +69,8 @@
 		_remoteFolder = remoteFolderName;
 		_labels = m.gmailLabels;
 
-//		SM_LOG_DEBUG(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
-//		SM_LOG_DEBUG(@"uid %u, object %@, date %@", [ m uid ], m, [[m header] date]);
+        SM_LOG_DEBUG(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
+        SM_LOG_DEBUG(@"uid %u, object %@, date %@", [ m uid ], m, [[m header] date]);
 	}
 
 	return self;
@@ -202,7 +202,7 @@ static NSString *unquote(NSString *s) {
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");
 	
-//	SM_LOG_DEBUG(@"from: %@, sent date %@, received date %@", [header from], [header date], [header receivedDate]);
+    SM_LOG_DEBUG(@"from: %@, sent date %@, received date %@", [header from], [header date], [header receivedDate]);
 
 	return [header date];
 }
@@ -351,7 +351,7 @@ static NSString *unquote(NSString *s) {
 		return;
 	}
 	
-//	SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
+    SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
 
 	NSAssert(_imapMessage, @"bad _imapMessage");
 
@@ -365,7 +365,7 @@ static NSString *unquote(NSString *s) {
 		NSString *attachmentContentId = [attachment contentID] != nil? [attachment contentID] : [attachment uniqueID];
 		NSData *attachmentData = [attachment data];
 
-		//SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
+		SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
 		
 		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
@@ -373,7 +373,7 @@ static NSString *unquote(NSString *s) {
 		
 		NSError *err;
 		if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
-			//SM_LOG_DEBUG(@"stored attachment exists at '%@'", attachmentUrl);
+			SM_LOG_DEBUG(@"stored attachment exists at '%@'", attachmentUrl);
 			continue;
 		}
 		
@@ -390,7 +390,7 @@ static NSString *unquote(NSString *s) {
 			
 			NSAssert([attachmentContentId isEqualToString:[imapPart contentID]], @"Attachment contentId is not equal to part contentId");
 			
-			//SM_LOG_DEBUG(@"part %@, id %@, contentID %@", part, partId, [imapPart contentID]);
+			SM_LOG_DEBUG(@"part %@, id %@, contentID %@", part, partId, [imapPart contentID]);
 
 			MCOIMAPSession *session = [[appDelegate model] imapSession];
 			
@@ -416,14 +416,14 @@ static NSString *unquote(NSString *s) {
 
 - (NSString*)htmlBodyRendering {
 	if(_htmlBodyRendering) {
-		//SM_LOG_DEBUG(@"html body for message uid %u already generated", [_imapMessage uid]);
+		SM_LOG_DEBUG(@"html body for message uid %u already generated", [_imapMessage uid]);
 		return _htmlBodyRendering;
 	}
 	
 	if(!_data) {
 		// TODO: Request urgently for the data
 		// TODO: Request future update
-		//SM_LOG_DEBUG(@"no data for message uid %u", [_imapMessage uid]);
+		SM_LOG_DEBUG(@"no data for message uid %u", [_imapMessage uid]);
 		return nil;
 	}
 
@@ -431,7 +431,7 @@ static NSString *unquote(NSString *s) {
 	
 	_htmlBodyRendering = [ _msgParser htmlBodyRendering ];
 
-	//SM_LOG_DEBUG(@"html body '%@'", _htmlBodyRendering);
+	SM_LOG_DEBUG(@"html body '%@'", _htmlBodyRendering);
 	
 	return _htmlBodyRendering;
 }

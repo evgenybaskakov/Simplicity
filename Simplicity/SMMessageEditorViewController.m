@@ -428,7 +428,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     const NSUInteger foldButtonHeight = (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0);
 
     _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos - foldButtonHeight);
-    _messageTextEditor.autoresizingMask = NSViewWidthSizable;
+    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     
     if(_foldPanelViewController != nil) {

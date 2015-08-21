@@ -687,6 +687,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [self cancelScheduledMessageListUpdate];
 
     // Remove the deleted message from the current folder in the message storage.
+    // This is necessary to immediately reflect the visual change.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     Boolean needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessage:uid threadId:threadId fromLocalFolder:_localName];
     

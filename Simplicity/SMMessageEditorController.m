@@ -92,7 +92,7 @@
     
     SM_LOG_DEBUG(@"'%@'", message);
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);

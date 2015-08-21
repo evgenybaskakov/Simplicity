@@ -15,14 +15,16 @@
 @implementation SMOpAppendMessage {
     MCOMessageBuilder *_message;
     NSString *_remoteFolderName;
+    MCOMessageFlag _flags;
 }
 
-- (id)initWithMessage:(MCOMessageBuilder*)message remoteFolderName:(NSString*)remoteFolderName {
+- (id)initWithMessage:(MCOMessageBuilder*)message remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags {
     self = [super initWithKind:kIMAPChangeOpKind];
 
     if(self) {
         _message = message;
         _remoteFolderName = remoteFolderName;
+        _flags = flags;
     }
     
     return self;
@@ -33,7 +35,7 @@
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
     
-    MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_message.data flags:MCOMessageFlagNone customFlags:nil];
+    MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_message.data flags:_flags customFlags:nil];
 
     self.currentOp = op;
     

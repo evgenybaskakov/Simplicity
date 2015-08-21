@@ -33,6 +33,8 @@
 
     [[self window] setContentView:_messageEditorViewController.view];
     
+    [_messageEditorViewController setResponders];
+    
     // Editor setup
     
     SMEditorContentsKind editorContentsKind = (_htmlContents == nil? kEmptyEditorContentsKind : kUnfoldedReplyEditorContentsKind);

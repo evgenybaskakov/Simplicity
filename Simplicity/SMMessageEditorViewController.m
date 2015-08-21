@@ -71,7 +71,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         // Cc
         
         _ccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
-        
+
         // Bcc
         
         _bccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
@@ -171,6 +171,19 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+}
+
+- (void)setResponders {
+    NSWindow *window = [[self view] window];
+    NSAssert(window, @"bad window");
+    
+    [window makeFirstResponder:_toBoxViewController.tokenField];
+    
+    _toBoxViewController.tokenField.nextResponder = _ccBoxViewController.tokenField;
+    _toBoxViewController.nextR = _ccBoxViewController.tokenField;
+    
+    _subjectBoxViewController.nextResponder = _toBoxViewController.tokenField;
+    _subjectBoxViewController.textField.nextResponder = _toBoxViewController.tokenField;
 }
 
 #pragma mark Editor startup

@@ -51,6 +51,17 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)notification {
+    SM_LOG_INFO(@"Text editiing finished");
+    NSWindow *window = [_tokenField window];
+
+    SM_LOG_INFO(@"1. firstResponder %@ (self.view %@, _tokenField %@, [self view].nextResponder) %@", window.firstResponder, self.view, _tokenField, [self view].nextResponder);
+    
+    [window makeFirstResponder:_nextR];
+
+  //  SM_LOG_INFO(@"2. firstResponder %@ (self.view %@, _tokenField %@)", window.firstResponder, self.view, _tokenField);
+}
+
 #pragma mark Control switch
 
 - (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action {

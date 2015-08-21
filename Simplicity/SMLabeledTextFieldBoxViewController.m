@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMLabeledTextFieldBoxViewController.h"
 
 @implementation SMLabeledTextFieldBoxViewController
@@ -21,6 +22,17 @@
     [(NSBox*)view setTitlePosition:NSNoTitle];
     [(NSBox*)view setFillColor:[NSColor whiteColor]];
     [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)notification {
+    SM_LOG_INFO(@"Text editiing finished");
+    NSWindow *window = [_textField window];
+    
+    SM_LOG_INFO(@"1. firstResponder %@ (self.view %@, _tokenField %@, _textField.nextResponder) %@", window.firstResponder, self.view, _textField, _textField.nextResponder);
+    
+    [window makeFirstResponder:_textField.nextResponder];
+    
+    //  SM_LOG_INFO(@"2. firstResponder %@ (self.view %@, _tokenField %@)", window.firstResponder, self.view, _tokenField);
 }
 
 @end

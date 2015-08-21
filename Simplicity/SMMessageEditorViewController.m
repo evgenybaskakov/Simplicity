@@ -178,11 +178,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSAssert(window, @"bad window");
     
     [window makeFirstResponder:_toBoxViewController.tokenField];
-    
+
     _toBoxViewController.tokenField.nextResponder = _ccBoxViewController.tokenField;
-    _toBoxViewController.nextR = _ccBoxViewController.tokenField;
-    
-    _subjectBoxViewController.nextResponder = _toBoxViewController.tokenField;
+
     _subjectBoxViewController.textField.nextResponder = _toBoxViewController.tokenField;
 }
 

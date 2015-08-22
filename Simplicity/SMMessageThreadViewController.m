@@ -77,6 +77,7 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellFlaggedFlag:) name:@"ChangeMessageFlaggedFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageThreadCellHeightChanged:) name:@"MessageThreadCellHeightChanged" object:nil];
     }
 	
 	return self;
@@ -990,6 +991,17 @@ static const CGFloat CELL_SPACING = -1;
 - (void)messageEditorContentHeightChanged:(NSNotification *)notification {
     if(_messageEditorViewController != nil) {
         [self updateCellFrames];
+    }
+}
+
+- (void)messageThreadCellHeightChanged:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
+    
+    if(cellViewControllerToReply != nil) {
+        if([self findCell:cellViewControllerToReply] != _cells.count) {
+            [self updateCellFrames];
+        }
     }
 }
 

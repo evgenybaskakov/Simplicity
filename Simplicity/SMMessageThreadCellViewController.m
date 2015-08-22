@@ -234,7 +234,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         return [SMMessageDetailsViewController headerHeight];
     }
     else {
-        return [SMMessageDetailsViewController headerHeight] + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]);
+        return [SMMessageDetailsViewController headerHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]);
     }
 }
 

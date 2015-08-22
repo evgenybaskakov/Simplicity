@@ -480,6 +480,9 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 	// this must be done to keep the proper details panel height
 	[[self view] invalidateIntrinsicContentSize];
+
+    // notify external observers that they should adjust their contents
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageThreadCellHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
 }
 
 - (void)composeReply:(id)sender {

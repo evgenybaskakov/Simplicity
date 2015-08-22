@@ -26,4 +26,6 @@
 - (void)setMessage:(SMMessage*)message;
 - (void)updateMessage;
 
+- (NSSize)intrinsicContentViewSize;
+
 @end

@@ -17,8 +17,6 @@
 @property IBOutlet NSLayoutConstraint *topTokenFieldContraint;
 @property IBOutlet NSLayoutConstraint *bottomTokenFieldContraint;
 
-@property NSResponder *nextR;
-
 @property (readonly) NSButton *controlSwitch;
 
 - (NSSize)intrinsicContentViewSize;

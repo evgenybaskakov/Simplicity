@@ -171,17 +171,53 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controlTextDidEndEditing:) name:@"NSControlTextDidEndEditingNotification" object:nil];
 }
 
 - (void)setResponders {
     NSWindow *window = [[self view] window];
-    NSAssert(window, @"bad window");
+    if(!window) {
+        SM_LOG_DEBUG(@"no window yet");
+        return;
+    }
+
+    [window makeFirstResponder:_subjectBoxViewController.textField];
     
-    [window makeFirstResponder:_toBoxViewController.tokenField];
+    _toBoxViewController.nextResponder = nil;
+    _toBoxViewController.view.nextResponder = nil;
+    _toBoxViewController.tokenField.nextResponder = nil;
+    
+    _ccBoxViewController.nextResponder = nil;
+    _ccBoxViewController.view.nextResponder = nil;
+    _ccBoxViewController.tokenField.nextResponder = nil;
+}
 
-    _toBoxViewController.tokenField.nextResponder = _ccBoxViewController.tokenField;
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    SM_LOG_INFO(@"dd");
+    
+    NSWindow *window = [[self view] window];
+    NSAssert(window, @"no window");
+    
+//    [window.contentView setNextResponder:nil];
 
-    _subjectBoxViewController.textField.nextResponder = _toBoxViewController.tokenField;
+    if(obj.object == _subjectBoxViewController.textField) {
+        [window makeFirstResponder:_toBoxViewController.tokenField];
+    }
+    else if(obj.object == _toBoxViewController.tokenField) {
+        _toBoxViewController.tokenField.nextResponder = nil;
+//        [window makeFirstResponder:_ccBoxViewController.tokenField];
+//        [window makeFirstResponder:_subjectBoxViewController.textField];
+        [window performSelector:@selector(makeFirstResponder:) withObject:_ccBoxViewController.tokenField afterDelay:0];
+    }
+    else if(obj.object == _ccBoxViewController.tokenField) {
+//        [window makeFirstResponder:_bccBoxViewController.tokenField];
+//        [window makeFirstResponder:_subjectBoxViewController.textField];
+        [window performSelector:@selector(makeFirstResponder:) withObject:_bccBoxViewController.tokenField afterDelay:0];
+    }
+    else if(obj.object == _bccBoxViewController.tokenField) {
+//        [window makeFirstResponder:_subjectBoxViewController.textField];
+        [window performSelector:@selector(makeFirstResponder:) withObject:_subjectBoxViewController.textField afterDelay:0];
+    }
 }
 
 #pragma mark Editor startup
@@ -370,6 +406,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     [self adjustFrames];
     [self notifyContentHeightChanged];
+    [self setResponders];
 }
 
 - (void)hideFullAddressPanel {
@@ -379,6 +416,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
     [self adjustFrames];
     [self notifyContentHeightChanged];
+    [self setResponders];
 }
 
 - (void)notifyContentHeightChanged {

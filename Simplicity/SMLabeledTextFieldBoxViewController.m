@@ -24,11 +24,6 @@
     [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
-- (void)controlTextDidEndEditing:(NSNotification *)notification {
-    NSWindow *window = [_textField window];
-    [window makeFirstResponder:_textField.nextResponder];
-}
-
 - (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
     if(commandSelector == @selector(insertTab:)) {
         [textView insertNewline:self];

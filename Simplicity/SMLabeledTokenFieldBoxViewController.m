@@ -51,15 +51,13 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
-- (void)controlTextDidEndEditing:(NSNotification *)notification {
-    SM_LOG_INFO(@"Text editiing finished");
-    NSWindow *window = [_tokenField window];
-
-    SM_LOG_INFO(@"1. firstResponder %@ (self.view %@, _tokenField %@, [self view].nextResponder) %@", window.firstResponder, self.view, _tokenField, [self view].nextResponder);
+- (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
+    if(commandSelector == @selector(insertTab:)) {
+        [textView insertNewline:self];
+        return YES;
+    }
     
-    [window makeFirstResponder:_nextR];
-
-  //  SM_LOG_INFO(@"2. firstResponder %@ (self.view %@, _tokenField %@)", window.firstResponder, self.view, _tokenField);
+    return NO;
 }
 
 #pragma mark Control switch

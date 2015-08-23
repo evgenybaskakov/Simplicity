@@ -171,7 +171,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controlTextDidEndEditing:) name:@"NSControlTextDidEndEditingNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFocusBetweenInputFields:) name:@"NSControlTextDidEndEditingNotification" object:nil];
+}
+
+- (void)viewDidLoad {
+    NSAssert(nil, @"should not happen");
 }
 
 - (void)setResponders {
@@ -181,43 +185,39 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         return;
     }
 
+//    [_subjectBoxViewController.textField setNextKeyView:_toBoxViewController.tokenField];
+//    [_subjectBoxViewController.textField setNextResponder:_toBoxViewController.tokenField];
+//    [_subjectBoxViewController.view setNextKeyView:_toBoxViewController.tokenField];
+//    [_subjectBoxViewController.view setNextResponder:_toBoxViewController.tokenField];
+    
+//    [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
+//    [_ccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+//    [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+
+    [window setInitialFirstResponder:_subjectBoxViewController.textField];
     [window makeFirstResponder:_subjectBoxViewController.textField];
-    
-    _toBoxViewController.nextResponder = nil;
-    _toBoxViewController.view.nextResponder = nil;
-    _toBoxViewController.tokenField.nextResponder = nil;
-    
-    _ccBoxViewController.nextResponder = nil;
-    _ccBoxViewController.view.nextResponder = nil;
-    _ccBoxViewController.tokenField.nextResponder = nil;
 }
 
-- (void)controlTextDidEndEditing:(NSNotification *)obj {
-    SM_LOG_INFO(@"dd");
-    
+- (NSResponder*)nextResponder {
+    NSResponder *r = [super nextResponder];
+    SM_LOG_INFO(@"r: %@, r.n: %@, r.n.n: %@", r, r.nextResponder, r.nextResponder.nextResponder);
+    return r;
+}
+
+- (void)moveFocusBetweenInputFields:(NSNotification *)obj {
+    SM_LOG_INFO(@"obj.object: %@", obj.object);
+/*
     NSWindow *window = [[self view] window];
     NSAssert(window, @"no window");
     
-//    [window.contentView setNextResponder:nil];
-
     if(obj.object == _subjectBoxViewController.textField) {
-        [window makeFirstResponder:_toBoxViewController.tokenField];
+        [window performSelector:@selector(makeFirstResponder:) withObject:_messageTextEditor afterDelay:0];
     }
-    else if(obj.object == _toBoxViewController.tokenField) {
-        _toBoxViewController.tokenField.nextResponder = nil;
-//        [window makeFirstResponder:_ccBoxViewController.tokenField];
-//        [window makeFirstResponder:_subjectBoxViewController.textField];
-        [window performSelector:@selector(makeFirstResponder:) withObject:_ccBoxViewController.tokenField afterDelay:0];
-    }
-    else if(obj.object == _ccBoxViewController.tokenField) {
-//        [window makeFirstResponder:_bccBoxViewController.tokenField];
-//        [window makeFirstResponder:_subjectBoxViewController.textField];
-        [window performSelector:@selector(makeFirstResponder:) withObject:_bccBoxViewController.tokenField afterDelay:0];
-    }
-    else if(obj.object == _bccBoxViewController.tokenField) {
-//        [window makeFirstResponder:_subjectBoxViewController.textField];
+    else if(obj.object == _toBoxViewController.tokenField || obj.object == _ccBoxViewController.tokenField || obj.object == _bccBoxViewController.tokenField)
+    {
         [window performSelector:@selector(makeFirstResponder:) withObject:_subjectBoxViewController.textField afterDelay:0];
     }
+*/
 }
 
 #pragma mark Editor startup

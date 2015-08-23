@@ -60,6 +60,13 @@
     return NO;
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    SM_LOG_INFO(@"obj.object: %@", obj);
+    if (obj.object == _tokenField) {
+        [[[self view] window] selectNextKeyView:self];
+    }
+}
+
 #pragma mark Control switch
 
 - (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action {

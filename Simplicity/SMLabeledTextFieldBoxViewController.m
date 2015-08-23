@@ -33,4 +33,11 @@
     return NO;
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    SM_LOG_INFO(@"obj.object: %@", obj);
+    if (obj.object == _textField) {
+        [[[self view] window] selectNextKeyView:self];
+    }
+}
+
 @end

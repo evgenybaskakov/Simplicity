@@ -68,4 +68,14 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
 	[self invalidateIntrinsicContentSize];
 }
 
+- (BOOL)resignFirstResponder {
+    SM_LOG_INFO(@"Lost Focus: %@", self);
+    return [super resignFirstResponder];
+}
+
+- (BOOL)becomeFirstResponder {
+    SM_LOG_INFO(@"Got Focus: %@", self);
+    return [super becomeFirstResponder];
+}
+
 @end

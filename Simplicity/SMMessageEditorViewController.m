@@ -97,9 +97,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         }
         
         // register events
-        
+        /*
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
-        
+        */
         [self initView];
     }
     
@@ -185,17 +185,13 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         return;
     }
 
-//    [_subjectBoxViewController.textField setNextKeyView:_toBoxViewController.tokenField];
-//    [_subjectBoxViewController.textField setNextResponder:_toBoxViewController.tokenField];
-//    [_subjectBoxViewController.view setNextKeyView:_toBoxViewController.tokenField];
-//    [_subjectBoxViewController.view setNextResponder:_toBoxViewController.tokenField];
-    
-//    [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
-//    [_ccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-//    [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+    [window setInitialFirstResponder:_ccBoxViewController.tokenField];
+    [window makeFirstResponder:_ccBoxViewController.tokenField];
 
-    [window setInitialFirstResponder:_subjectBoxViewController.textField];
-    [window makeFirstResponder:_subjectBoxViewController.textField];
+    [_subjectBoxViewController.textField setNextKeyView:_toBoxViewController.tokenField];
+    [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
+    [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
+    [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
 }
 
 - (NSResponder*)nextResponder {
@@ -498,7 +494,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [self adjustFrames];
     }
 }
-
+/*
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {
     id object = [notification object];
     
@@ -509,7 +505,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         
         [_editorToolBoxViewController.sendButton setEnabled:(toValue.length != 0)];
     }
-}
+}*/
 
 #pragma mark Attachments panel
 

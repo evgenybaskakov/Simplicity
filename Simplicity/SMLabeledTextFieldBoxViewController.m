@@ -36,7 +36,11 @@
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
     SM_LOG_INFO(@"obj.object: %@", obj);
     if (obj.object == _textField) {
-        [[[self view] window] selectNextKeyView:self];
+        unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
+        
+        if (whyEnd == NSTabTextMovement || whyEnd == NSReturnTextMovement) {
+            [[[self view] window] makeFirstResponder:_textField.nextKeyView];
+        }
     }
 }
 

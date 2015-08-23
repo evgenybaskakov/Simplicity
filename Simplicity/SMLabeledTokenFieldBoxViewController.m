@@ -52,18 +52,24 @@
 }
 
 - (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
-    if(commandSelector == @selector(insertTab:)) {
+/*
+ if(commandSelector == @selector(insertTab:)) {
         [textView insertNewline:self];
         return YES;
     }
-    
+*/    
     return NO;
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
     SM_LOG_INFO(@"obj.object: %@", obj);
     if (obj.object == _tokenField) {
-        [[[self view] window] selectNextKeyView:self];
+        unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
+        
+        if (whyEnd == NSTabTextMovement || whyEnd == NSReturnTextMovement) {
+            NSWindow *window = [[self view] window];
+            [window makeFirstResponder:_tokenField.nextKeyView];
+        }
     }
 }
 

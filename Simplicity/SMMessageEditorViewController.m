@@ -181,20 +181,31 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSWindow *window = [[self view] window];
     NSAssert(window, @"no window");
 
+    // Workaround: it is nearly impossible to check if the webview has focus. The first responder in that case has
+    // a type of "WebHTMLView", which is a private Apple class. When the focus is on address or subject fields,
+    // its type is either NSTokenTextView (subclass of NSTextView), or NSWindow.
+    Boolean messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
+    
     if(_fullAddressPanelShown) {
-        [window setInitialFirstResponder:_subjectBoxViewController.textField];
-        [window makeFirstResponder:_subjectBoxViewController.textField];
+        if(!messageEditorFocus) {
+            [window makeFirstResponder:_subjectBoxViewController.textField];
+        }
         
-        [_subjectBoxViewController.textField setNextKeyView:_toBoxViewController.tokenField];
+        [window setInitialFirstResponder:_subjectBoxViewController.textField];
+        
         [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
         [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
         [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+        [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
     }
     else {
-        [window setInitialFirstResponder:_toBoxViewController.tokenField];
-        [window makeFirstResponder:_toBoxViewController.tokenField];
+        if(!messageEditorFocus) {
+            [window makeFirstResponder:_toBoxViewController.tokenField];
+        }
         
-        [_toBoxViewController.tokenField setNextKeyView:_toBoxViewController.tokenField];
+        [window setInitialFirstResponder:_toBoxViewController.tokenField];
+
+        [_toBoxViewController.tokenField setNextKeyView:_messageTextEditor];
     }
 }
 

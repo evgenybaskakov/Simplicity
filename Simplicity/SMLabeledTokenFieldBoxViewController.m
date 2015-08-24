@@ -51,10 +51,16 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
-- (void)controlTextDidEndEditing:(NSNotification *)obj {
-    SM_LOG_DEBUG(@"obj.object: %@", obj);
-
+- (void)controlTextDidBeginEditing:(NSNotification *)obj {
     if (obj.object == _tokenField) {
+        SM_LOG_DEBUG(@"obj.object: %@", obj);
+    }
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    if (obj.object == _tokenField) {
+        SM_LOG_DEBUG(@"obj.object: %@", obj);
+
         unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
         
         if (whyEnd == NSTabTextMovement || whyEnd == NSReturnTextMovement) {

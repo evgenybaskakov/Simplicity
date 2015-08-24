@@ -198,12 +198,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 }
 
-- (NSResponder*)nextResponder {
-    NSResponder *r = [super nextResponder];
-    SM_LOG_INFO(@"r: %@, r.n: %@, r.n.n: %@", r, r.nextResponder, r.nextResponder.nextResponder);
-    return r;
-}
-
 #pragma mark Editor startup
 
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind {

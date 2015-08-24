@@ -342,6 +342,8 @@ static NSString *unquote(NSString *s) {
 }
 
 - (void)fetchInlineAttachments {
+    // TODO: "_data" may be nil, if fetchMessageBody happens to call from another _localFolder,
+    //       other from the local folder where the message header fetch was initiated
 	NSAssert(_data, @"bad _data (reclaimed: %u)", _reclaimed);
 	NSAssert(_msgParser, @"bad _msgParser");
 	

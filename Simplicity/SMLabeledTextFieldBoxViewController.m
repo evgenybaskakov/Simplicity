@@ -25,7 +25,7 @@
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
-    SM_LOG_INFO(@"obj.object: %@", obj);
+    SM_LOG_DEBUG(@"obj.object: %@", obj);
 
     if (obj.object == _textField) {
         unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];

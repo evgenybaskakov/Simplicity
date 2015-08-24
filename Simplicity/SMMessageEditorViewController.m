@@ -46,6 +46,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
     NSView *_innerView;
+    Boolean _fullAddressPanelShown;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
@@ -71,7 +72,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         // Cc
         
         _ccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
-        
+
         // Bcc
         
         _bccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
@@ -97,9 +98,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         }
         
         // register events
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
-        
+
         [self initView];
     }
     
@@ -171,6 +171,31 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+}
+
+- (void)viewDidLoad {
+    NSAssert(nil, @"should not happen");
+}
+
+- (void)setResponders {
+    NSWindow *window = [[self view] window];
+    NSAssert(window, @"no window");
+
+    if(_fullAddressPanelShown) {
+        [window setInitialFirstResponder:_subjectBoxViewController.textField];
+        [window makeFirstResponder:_subjectBoxViewController.textField];
+        
+        [_subjectBoxViewController.textField setNextKeyView:_toBoxViewController.tokenField];
+        [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
+        [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
+        [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+    }
+    else {
+        [window setInitialFirstResponder:_toBoxViewController.tokenField];
+        [window makeFirstResponder:_toBoxViewController.tokenField];
+        
+        [_toBoxViewController.tokenField setNextKeyView:_toBoxViewController.tokenField];
+    }
 }
 
 #pragma mark Editor startup
@@ -350,6 +375,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     else {
         NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
     }
+
+    [self setResponders];
 }
 
 - (void)showFullAddressPanel {
@@ -359,6 +386,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     [self adjustFrames];
     [self notifyContentHeightChanged];
+    
+    _fullAddressPanelShown = YES;
 }
 
 - (void)hideFullAddressPanel {
@@ -368,6 +397,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
     [self adjustFrames];
     [self notifyContentHeightChanged];
+
+    _fullAddressPanelShown = NO;
 }
 
 - (void)notifyContentHeightChanged {

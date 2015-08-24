@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMLabeledTextFieldBoxViewController : NSViewController
+@interface SMLabeledTextFieldBoxViewController : NSViewController<NSTextFieldDelegate>
 
 @property IBOutlet NSTextField *label;
 @property IBOutlet NSTextField *textField;

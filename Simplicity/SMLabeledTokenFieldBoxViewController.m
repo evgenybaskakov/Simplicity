@@ -51,6 +51,19 @@
 	[[self view] setNeedsUpdateConstraints:YES];
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    SM_LOG_INFO(@"obj.object: %@", obj);
+
+    if (obj.object == _tokenField) {
+        unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
+        
+        if (whyEnd == NSTabTextMovement || whyEnd == NSReturnTextMovement) {
+            NSWindow *window = [[self view] window];
+            [window makeFirstResponder:_tokenField.nextKeyView];
+        }
+    }
+}
+
 #pragma mark Control switch
 
 - (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action {

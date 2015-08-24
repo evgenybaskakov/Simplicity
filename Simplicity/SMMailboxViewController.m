@@ -496,7 +496,7 @@ typedef enum {
 	if(_labelToRename == nil)
 		return;
 
-	NSTextField *textField = [obj object];
+    NSTextField *textField = [obj object];
 	NSString *newLabelName = textField.stringValue;
 	
 	if([newLabelName isEqualToString:_labelToRename])

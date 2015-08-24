@@ -118,15 +118,15 @@
     [[builder header] setFrom:[MCOAddress addressWithDisplayName:@"Evgeny Baskakov" mailbox:SMTP_USERNAME]];
     
     // TODO: form an array of addresses and names based on _toField contents
-    NSArray *toAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:@"TODO" mailbox:to]];
+    NSArray *toAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:to mailbox:to]];
     [[builder header] setTo:toAddresses];
     
     // TODO: form an array of addresses and names based on _ccField contents
-    NSArray *ccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:@"TODO" mailbox:cc]];
+    NSArray *ccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:cc mailbox:cc]];
     [[builder header] setCc:ccAddresses];
     
     // TODO: form an array of addresses and names based on _bccField contents
-    NSArray *bccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:@"TODO" mailbox:bcc]];
+    NSArray *bccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:bcc mailbox:bcc]];
     [[builder header] setBcc:bccAddresses];
     
     // TODO: check subject length, issue a warning if empty

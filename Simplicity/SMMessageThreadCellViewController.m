@@ -313,7 +313,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSView *messageBodyView = [_messageBodyViewController view];
 	NSAssert(messageBodyView, @"messageBodyView");
 	
-	[_messageBodyViewController setMessageViewText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
+	[_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
 	
 	[_progressIndicator stopAnimation:self];
 }

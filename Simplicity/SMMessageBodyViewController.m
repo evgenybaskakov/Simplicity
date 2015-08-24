@@ -84,7 +84,7 @@
 	[[view mainFrame] loadHTMLString:_htmlText baseURL:nil];
 }
 
-- (void)setMessageViewText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder {
+- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder {
 	WebView *view = (WebView*)[self view];
 	[view stopLoading:self];
 	

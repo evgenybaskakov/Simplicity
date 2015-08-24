@@ -145,8 +145,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
     [_subjectBoxViewController.label setStringValue:@"Subject:"];
     
-    [_editorToolBoxViewController.sendButton setEnabled:NO];
-    
     // Editor toolbox
     NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
     
@@ -228,6 +226,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [_bccBoxViewController.tokenField setObjectValue:bcc];
     }
     
+    Boolean sendEnabled = (to != nil && to.count != 0);
+    [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
+    
     [_messageTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 
@@ -241,6 +242,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     if(!_embedded) {
         [[[self view] window] close];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageReplySent" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
 }
 
 - (void)deleteMessage {

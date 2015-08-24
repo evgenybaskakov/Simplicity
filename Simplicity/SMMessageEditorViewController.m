@@ -98,9 +98,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         }
         
         // register events
-        /*
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
-        */
+
         [self initView];
     }
     
@@ -487,7 +486,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [self adjustFrames];
     }
 }
-/*
+
 - (void)processAddressFieldEditingEnd:(NSNotification*)notification {
     id object = [notification object];
     
@@ -498,7 +497,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         
         [_editorToolBoxViewController.sendButton setEnabled:(toValue.length != 0)];
     }
-}*/
+}
 
 #pragma mark Attachments panel
 

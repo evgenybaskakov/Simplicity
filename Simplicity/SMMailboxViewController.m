@@ -493,7 +493,6 @@ typedef enum {
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
-/*
 	if(_labelToRename == nil)
 		return;
 
@@ -506,7 +505,6 @@ typedef enum {
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	
 	[[[appDelegate model] mailboxController] renameFolder:_labelToRename newFolderName:newLabelName];
-*/
 }
 
 @end

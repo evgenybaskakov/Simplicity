@@ -53,6 +53,7 @@
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
     SM_LOG_INFO(@"obj.object: %@", obj);
+
     if (obj.object == _tokenField) {
         unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
         

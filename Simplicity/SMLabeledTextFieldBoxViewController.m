@@ -24,17 +24,9 @@
     [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
-- (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
-    if(commandSelector == @selector(insertTab:)) {
-        [textView insertNewline:self];
-        return YES;
-    }
-    
-    return NO;
-}
-
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
     SM_LOG_INFO(@"obj.object: %@", obj);
+
     if (obj.object == _textField) {
         unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
         

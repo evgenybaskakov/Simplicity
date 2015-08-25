@@ -45,10 +45,10 @@
         if(error == nil) {
             SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
 
-            if(_postActionTarget) {
+            if(self.postActionTarget) {
                 NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_message, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
                 
-                [_postActionTarget performSelector:_postActionSelector withObject:messageInfo afterDelay:0];
+                [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
             }
 
             [self complete];

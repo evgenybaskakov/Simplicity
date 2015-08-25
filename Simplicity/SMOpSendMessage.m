@@ -37,9 +37,14 @@
         
         if (error == nil || [error code] == MCOErrorNone) {
             SM_LOG_DEBUG(@"message sent successfully");
+        
+            if(self.postActionTarget) {
+                [self.postActionTarget performSelector:self.postActionSelector withObject:nil afterDelay:0];
+            }
             
             [self complete];
-        } else {
+        }
+        else {
             SM_LOG_ERROR(@"Error sending message: %@", error);
             
             [self fail];

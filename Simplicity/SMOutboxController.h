@@ -12,6 +12,6 @@
 
 @interface SMOutboxController : NSObject
 
-- (void)sendMessage:(MCOMessageBuilder*)message;
+- (void)sendMessage:(MCOMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 
 @end

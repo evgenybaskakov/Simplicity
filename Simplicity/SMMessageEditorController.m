@@ -24,12 +24,12 @@
 
 @implementation SMMessageEditorController {
     NSMutableArray *_attachmentItems;
-    NSString *_draftsFolderName;
     MCOMessageBuilder *_saveDraftMessage;
     SMOpAppendMessage *_saveDraftOp;
     MCOMessageBuilder *_prevSaveDraftMessage;
     SMOpAppendMessage *_prevSaveDraftOp;
     uint32_t _saveDraftUID;
+    Boolean _shouldDeleteSavedDraft;
 }
 
 - (id)initWithDraftUID:(uint32_t)draftMessageUid {
@@ -60,19 +60,23 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [[appController outboxController] sendMessage:message];
+    [[appController outboxController] sendMessage:message postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+}
+
+- (void)messageSentByServer:(NSDictionary*)info {
+    [self deleteSavedDraft];
+
+    if(_saveDraftOp) {
+        if(![_saveDraftOp cancelOp]) {
+            // Could not cancel save op. To avoid orphaned drafts,
+            // schedule its deletion for later.
+            _shouldDeleteSavedDraft = YES;
+        }
+    }
 }
 
 - (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
-    if(_draftsFolderName == nil) {
-        SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
-        NSAssert(draftsFolder, @"no drafts folder");
-        
-        _draftsFolderName = draftsFolder.fullName;
-        NSAssert(_draftsFolderName, @"no drafts folder name");
-    }
+    NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     if(_saveDraftOp) {
         // There may be two last operations: the current one and a previous one
@@ -92,7 +96,11 @@
     
     SM_LOG_DEBUG(@"'%@'", message);
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:_draftsFolderName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
+    NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
+    
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
@@ -160,16 +168,7 @@
     SM_LOG_DEBUG(@"uid %u", uid);
     
     if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
-        if(_saveDraftUID != 0) {
-            // there is a previously saved draft, delete it
-            NSAssert(_draftsFolderName, @"no drafts folder name");
-            SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:[MCOIndexSet indexSetWithIndex:_saveDraftUID] remoteFolderName:_draftsFolderName];
-            
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            [[[appDelegate appController] operationExecutor] enqueueOperation:op];
-            
-            _saveDraftUID = 0;
-        }
+        [self deleteSavedDraft];
         
         if(message == _prevSaveDraftMessage) {
             _prevSaveDraftMessage = nil;
@@ -178,8 +177,31 @@
             _saveDraftMessage = nil;
             _saveDraftOp = nil;
         }
-        
+    
+        NSAssert(_saveDraftUID == 0, @"bad _saveDraftUID %u, expected zero", _saveDraftUID);
         _saveDraftUID = uid;
+
+        if(_shouldDeleteSavedDraft) {
+            // This may happen if, most commonly, while the draft was being saved,
+            // the message writing was finished and the message was sent.
+            // So the draft that's been just saved suddenly became unneeded.
+            // Hence, just delete it right away.
+            [self deleteSavedDraft];
+        }
+    }
+}
+
+- (void)deleteSavedDraft {
+    if(_saveDraftUID != 0) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
+        NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
+        
+        SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:[MCOIndexSet indexSetWithIndex:_saveDraftUID] remoteFolderName:draftsFolder.fullName];
+        
+        [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+        
+        _saveDraftUID = 0;
     }
 }
 

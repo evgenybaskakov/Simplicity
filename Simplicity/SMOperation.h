@@ -22,6 +22,9 @@ typedef enum {
 @property (readonly) NSDate *timeCreated;
 @property (readonly) SMOpKind kind;
 
+@property (nonatomic) id postActionTarget;
+@property (nonatomic) SEL postActionSelector;
+
 @property MCOOperation *currentOp;
 
 - (id)initWithKind:(SMOpKind)kind;

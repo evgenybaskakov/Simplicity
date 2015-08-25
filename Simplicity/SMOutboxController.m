@@ -13,16 +13,22 @@
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
 #import "SMOpSendMessage.h"
+#import "SMOpDeleteMessages.h"
+#import "SMMailbox.h"
+#import "SMFolder.h"
 #import "SMOutboxController.h"
 
 @implementation SMOutboxController
 
-- (void)sendMessage:(MCOMessageBuilder*)message {
-	SM_LOG_DEBUG(@"???");
+- (void)sendMessage:(MCOMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+	SM_LOG_DEBUG(@"Sending message");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithMessage:message];
+
+    op.postActionTarget = target;
+    op.postActionSelector = selector;
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 }
 

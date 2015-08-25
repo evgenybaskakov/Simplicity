@@ -192,6 +192,8 @@
 }
 
 - (void)deleteSavedDraft {
+    // TODO: Actually, should reflect the change in the "Draft" folder momentarily.
+    //       Can implement it via SMLocalFolder, see "deleteMessage" as an example of that logic.
     if(_saveDraftUID != 0) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];

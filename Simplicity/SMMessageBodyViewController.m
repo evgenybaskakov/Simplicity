@@ -181,6 +181,7 @@
 
         if(_mainFrameLoaded) {
             SM_LOG_WARNING(@"!!!!!!!!!!! main frame already loaded !!!!!!!!!!!");
+            return;
         }
 
 		_mainFrameLoaded = YES;

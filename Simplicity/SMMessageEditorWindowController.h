@@ -14,6 +14,6 @@
 
 @property (readonly) SMMessageEditorViewController *messageEditorViewController;
 
-- (void)setHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid;
+- (void)initHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid;
 
 @end

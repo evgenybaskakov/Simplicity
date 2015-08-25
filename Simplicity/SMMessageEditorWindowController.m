@@ -19,6 +19,15 @@
     uint32_t _draftUid;
 }
 
+- (void)initHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid {
+    _htmlContents = htmlContents;
+    _subject = subject;
+    _to = to;
+    _cc = cc;
+    _bcc = bcc;
+    _draftUid = draftUid;
+}
+
 - (void)windowDidLoad {
     [super windowDidLoad];
 
@@ -37,17 +46,18 @@
     
     // Editor setup
     
-    SMEditorContentsKind editorContentsKind = (_htmlContents == nil? kEmptyEditorContentsKind : kUnfoldedReplyEditorContentsKind);
+    SMEditorContentsKind editorContentsKind = kEmptyEditorContentsKind;
+    
+    if(_htmlContents != nil) {
+        if(_draftUid == 0) {
+            editorContentsKind = kUnfoldedReplyEditorContentsKind;
+        }
+        else {
+            editorContentsKind = kUnfoldedDraftEditorContentsKind;
+        }
+    }
+    
     [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind];
-}
-
-- (void)setHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid {
-    _htmlContents = htmlContents;
-    _subject = subject;
-    _to = to;
-    _cc = cc;
-    _bcc = bcc;
-    _draftUid = draftUid;
 }
 
 #pragma mark Actions

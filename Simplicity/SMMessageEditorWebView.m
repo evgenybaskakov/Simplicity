@@ -66,7 +66,8 @@
             bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedDraftEditorContentsKind) {
-            NSAssert(nil, @"TODO 2");
+            // TODO: may need to adjust the HTML body id (set "SimplicityEditor" stuff, etc...)
+            bodyHtml = htmlContents;
         }
         else {
             NSAssert(nil, @"unknown editor contents kind %u", kind);

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"

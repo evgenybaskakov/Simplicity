@@ -43,5 +43,6 @@
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
 - (void)closeEditor:(Boolean)saveDraft;
+- (void)saveDocument:(id)sender;
 
 @end

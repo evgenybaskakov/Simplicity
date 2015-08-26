@@ -577,4 +577,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_messageTextEditor stopTextMonitor];
 }
 
+- (void)saveDocument:(id)sender {
+    [self saveMessage];
+}
+
 @end

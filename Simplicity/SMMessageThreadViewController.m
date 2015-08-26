@@ -72,7 +72,7 @@ static const CGFloat CELL_SPACING = -1;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessageReply:) name:@"DeleteMessageReply" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteEditedMessageDraft:) name:@"DeleteEditedMessageDraft" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSent:) name:@"MessageSent" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
@@ -979,7 +979,7 @@ static const CGFloat CELL_SPACING = -1;
     [self updateCellFrames];
 }
 
-- (void)deleteMessageReply:(NSNotification *)notification {
+- (void)deleteEditedMessageDraft:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
     SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
     

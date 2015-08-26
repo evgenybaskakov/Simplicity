@@ -235,6 +235,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [_bccBoxViewController.tokenField setObjectValue:bcc];
     }
     
+    _lastSubject = _subjectBoxViewController.textField.stringValue;
+    _lastTo = _toBoxViewController.tokenField.stringValue;
+    _lastCc = _ccBoxViewController.tokenField.stringValue;
+    _lastBcc = _bccBoxViewController.tokenField.stringValue;
+    
     Boolean sendEnabled = (to != nil && to.count != 0);
     [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
     

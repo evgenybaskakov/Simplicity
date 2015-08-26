@@ -47,12 +47,21 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSUInteger _panelHeight;
     NSView *_innerView;
     Boolean _fullAddressPanelShown;
+    NSString *_lastSubject;
+    NSString *_lastTo;
+    NSString *_lastCc;
+    NSString *_lastBcc;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
+        _lastSubject = @"";
+        _lastTo = @"";
+        _lastCc = @"";
+        _lastBcc = @"";
+
         NSView *view = [[SMFlippedView alloc] initWithFrame:frame backgroundColor:[NSColor colorWithCalibratedRed:0.90
                                                                                                             green:0.90
                                                                                                              blue:0.90
@@ -268,29 +277,32 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)saveMessage {
-    NSString *messageText = [_messageTextEditor getMessageText];
     NSString *subject = _subjectBoxViewController.textField.stringValue;
     NSString *to = _toBoxViewController.tokenField.stringValue;
     NSString *cc = _ccBoxViewController.tokenField.stringValue;
     NSString *bcc = _bccBoxViewController.tokenField.stringValue;
     
-    if(subject == nil) {
-        subject = @"TODO: subject";
-    }
-    
-    if(to == nil) {
-        to = @"TODO: to";
-    }
-    
-    if(cc == nil) {
-        cc = @"TODO: cc";
-    }
-    
-    if(bcc == nil) {
-        bcc = @"TODO: bcc";
+    NSAssert(subject != nil, @"subject is nil");
+    NSAssert(to != nil, @"to is nil");
+    NSAssert(cc != nil, @"cc is nil");
+    NSAssert(bcc != nil, @"bcc is nil");
+
+    if(!_messageTextEditor.unsavedContentPending && [_lastSubject isEqualToString:subject] && [_lastTo isEqualToString:to] && [_lastCc isEqualToString:cc] && [_lastBcc isEqualToString:bcc]) {
+        SM_LOG_DEBUG(@"Message contains no changes, so no save is neccessary");
+        return;
     }
 
+    SM_LOG_INFO(@"Message has changed, a draft will be saved");
+
+    _lastSubject = subject;
+    _lastTo = to;
+    _lastCc = cc;
+    _lastBcc = bcc;
+    
+    NSString *messageText = [_messageTextEditor getMessageText];
     [_messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
+    
+    _messageTextEditor.unsavedContentPending = NO;
 }
 
 - (void)attachDocument {

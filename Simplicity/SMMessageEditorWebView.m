@@ -169,6 +169,8 @@
 
         [self notifyContentHeightChanged];
     }
+    
+    _unsavedContentPending = YES;
 }
 
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {

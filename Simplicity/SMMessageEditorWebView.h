@@ -25,6 +25,8 @@ typedef enum {
 
 @property (readonly) NSUInteger contentHeight;
 
+@property Boolean unsavedContentPending;
+
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind;
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;

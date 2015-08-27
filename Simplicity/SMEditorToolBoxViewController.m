@@ -19,7 +19,7 @@
 }
 
 - (IBAction)deleteAction:(id)sender {
-    [_messageEditorViewController deleteMessage];
+    [_messageEditorViewController deleteEditedDraft];
 }
 
 - (IBAction)attachAction:(id)sender {

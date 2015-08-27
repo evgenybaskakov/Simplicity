@@ -100,7 +100,7 @@
     }
 }
 
-- (SMMessageThread*)messageThreadByMessageUID:(uint32_t)uid {
+- (NSNumber*)messageThreadByMessageUID:(uint32_t)uid {
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 

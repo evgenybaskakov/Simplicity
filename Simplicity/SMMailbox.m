@@ -166,13 +166,12 @@
 - (void)updateMainFolders {
 	[_mainFolders removeAllObjects];
 	
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"INBOX" setKind:SMFolderKindInbox];
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagImportant orName:nil as:@"Important" setKind:SMFolderKindImportant];
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagSentMail orName:nil as:@"Sent" setKind:SMFolderKindSent];
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagDrafts orName:nil as:@"Drafts" setKind:SMFolderKindDrafts];
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagStarred orName:nil as:@"Starred" setKind:SMFolderKindStarred];
-	[self addMainFolderWithFlags:MCOIMAPFolderFlagSpam orName:nil as:@"Spam" setKind:SMFolderKindSpam];
-
+	_inboxFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"INBOX" setKind:SMFolderKindInbox];
+	_importantFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagImportant orName:nil as:@"Important" setKind:SMFolderKindImportant];
+	_sentFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagSentMail orName:nil as:@"Sent" setKind:SMFolderKindSent];
+    _draftsFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagDrafts orName:nil as:@"Drafts" setKind:SMFolderKindDrafts];
+    _starredFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagStarred orName:nil as:@"Starred" setKind:SMFolderKindStarred];
+	_spamFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagSpam orName:nil as:@"Spam" setKind:SMFolderKindSpam];
 	_trashFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagTrash orName:nil as:@"Trash" setKind:SMFolderKindTrash];
 	_allMailFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagAllMail orName:nil as:@"All Mail" setKind:SMFolderKindAllMail];
 }

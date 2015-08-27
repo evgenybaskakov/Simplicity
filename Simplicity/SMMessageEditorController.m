@@ -20,6 +20,10 @@
 #import "SMOutboxController.h"
 #import "SMMailLogin.h"
 #import "SMAttachmentItem.h"
+#import "SMLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
+#import "SMMessageListController.h"
+#import "SMMessageListViewController.h"
 #import "SMMessageEditorController.h"
 
 @implementation SMMessageEditorController {
@@ -97,7 +101,7 @@
     SM_LOG_DEBUG(@"'%@'", message);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
+    SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
@@ -192,19 +196,43 @@
 }
 
 - (void)deleteSavedDraft {
-    // TODO: Actually, should reflect the change in the "Draft" folder momentarily.
-    //       Can implement it via SMLocalFolder, see "deleteMessage" as an example of that logic.
-    if(_saveDraftUID != 0) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMFolder *draftsFolder = [[[appDelegate model] mailbox] getFolderByKind:SMFolderKindDrafts];
-        NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
-        
-        SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:[MCOIndexSet indexSetWithIndex:_saveDraftUID] remoteFolderName:draftsFolder.fullName];
-        
-        [[[appDelegate appController] operationExecutor] enqueueOperation:op];
-        
-        _saveDraftUID = 0;
+    if(_saveDraftUID == 0) {
+        SM_LOG_DEBUG(@"No saved message draft");
+        return;
     }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSAssert(appDelegate != nil, @"no appDelegate");
+    
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    NSAssert(mailbox != nil, @"no mailbox");
+    
+    SMFolder *trashFolder = [mailbox trashFolder];
+    NSAssert(trashFolder != nil, @"no trash folder");
+    
+    SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
+    NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
+    
+    SMLocalFolder *draftsLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:draftsFolder.fullName];
+    NSAssert(draftsLocalFolder != nil, @"no local drafts folder");
+    
+    SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
+    NSAssert(messageListViewController != nil, @"messageListViewController is nil");
+    
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    NSAssert(messageListController != nil, @"messageListController is nil");
+    
+    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
+    if([draftsLocalFolder moveMessage:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
+        [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    }
+    
+    // TODO: if the current thread contains the draft
+    //    [self updateMessageThread];
+    
+    _saveDraftUID = 0;
 }
 
 @end

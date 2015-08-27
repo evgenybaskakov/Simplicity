@@ -13,8 +13,15 @@
 @interface SMMailbox : NSObject
 
 @property (readonly) SMFolder *rootFolder;
+@property (readonly) SMFolder *inboxFolder;
+@property (readonly) SMFolder *sentFolder;
+@property (readonly) SMFolder *draftsFolder;
+@property (readonly) SMFolder *importantFolder;
+@property (readonly) SMFolder *starredFolder;
+@property (readonly) SMFolder *spamFolder;
 @property (readonly) SMFolder *allMailFolder;
 @property (readonly) SMFolder *trashFolder;
+
 @property (readonly) NSArray *mainFolders;
 @property (readonly) NSOrderedSet *favoriteFolders;
 @property (readonly) NSArray *folders;

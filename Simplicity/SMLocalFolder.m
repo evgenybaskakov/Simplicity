@@ -675,7 +675,21 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 }
 
+- (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSNumber *threadIdNum = [[[appDelegate model] messageStorage] messageThreadByMessageUID:uid];
+
+    const uint64_t threadId = (threadIdNum != nil? [threadIdNum unsignedLongLongValue] : 0);
+    const Boolean useThreadId = (threadIdNum != nil);
+
+    return [self moveMessage:uid threadId:threadId useThreadId:useThreadId toRemoteFolder:destRemoteFolderName];
+}
+
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName {
+    return [self moveMessage:uid threadId:threadId useThreadId:YES toRemoteFolder:destRemoteFolderName];
+}
+
+- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
 
     // Stop current message loading process, except bodies (because bodies can belong to
@@ -689,7 +703,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    Boolean needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName];
+    Boolean needUpdateMessageList = (useThreadId? [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName] : NO);
     
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];

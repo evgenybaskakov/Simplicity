@@ -16,5 +16,6 @@
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc;
 - (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc;
+- (void)deleteSavedDraft;
 
 @end

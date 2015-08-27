@@ -260,7 +260,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageSent" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
 }
 
-- (void)deleteMessage {
+- (void)deleteEditedDraft {
     NSAlert *alert = [[NSAlert alloc] init];
 
     [alert addButtonWithTitle:@"OK"];
@@ -272,12 +272,14 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         SM_LOG_DEBUG(@"delete cancelled");
         return;
     }
-    
-    if(!_embedded) {
-        [[[self view] window] close];
+
+    [_messageEditorController deleteSavedDraft];
+
+    if(_embedded) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteEditedMessageDraft" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
     }
     else {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteEditedMessageDraft" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
+        [[[self view] window] close];
     }
 }
 

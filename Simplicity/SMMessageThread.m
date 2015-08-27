@@ -274,6 +274,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
 	
 	SMMessage *firstMessage = [_messageCollection.messagesByDate firstObject];
+    NSMutableArray *vanishedMessageUIDs = [NSMutableArray array];
 
 	if(removeVanishedMessages) {
 		NSMutableIndexSet *notUpdatedMessageIndices = [NSMutableIndexSet new];
@@ -285,6 +286,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 				SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
 
 				[notUpdatedMessageIndices addIndex:i];
+                [vanishedMessageUIDs addObject:[NSNumber numberWithUnsignedInt:message.uid]];
 			}
 		}
 		
@@ -309,6 +311,9 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	
 	NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
 
+    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    [[[appDelegate model] messageStorage] deleteMessagesFromStorageByUIDs:vanishedMessageUIDs];
+    
 	const ThreadFlags oldThreadFlags = _threadFlags;
 	_threadFlags = ThreadFlagsNone;
 
@@ -354,7 +359,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     }
 }
 
-- (void)removeMessage:(uint32_t)uid {
+- (void)removeMessageFromMessageThread:(uint32_t)uid {
     NSMutableOrderedSet *messages = [_messageCollection messages];
     for(NSUInteger i = 0, count = messages.count; i < count; i++) {
         SMMessage *message = [messages objectAtIndex:i];

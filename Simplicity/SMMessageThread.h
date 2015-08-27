@@ -42,6 +42,6 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 - (Boolean)messageHasData:(uint32_t)uid;
 - (Boolean)updateThreadAttributesFromMessageUID:(uint32_t)uid;
 
-- (void)removeMessage:(uint32_t)uid;
+- (void)removeMessageFromMessageThread:(uint32_t)uid;
 
 @end

@@ -37,4 +37,8 @@
     [_operationQueueViewController reloadData];
 }
 
+- (void)cancelOperation:(id)sender {
+    [self closeOperationQueueWindow];
+}
+
 @end

@@ -42,7 +42,7 @@
 - (void)showSource;
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
-- (void)closeEditor:(Boolean)saveDraft;
+- (void)closeEditor:(Boolean)shouldSaveDraft;
 - (void)saveDocument:(id)sender;
 
 @end

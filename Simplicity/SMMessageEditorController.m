@@ -17,13 +17,16 @@
 #import "SMSimplicityContainer.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMMessage.h"
 #import "SMOutboxController.h"
 #import "SMMailLogin.h"
 #import "SMAttachmentItem.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
+#import "SMMessageThread.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMMessageEditorController.h"
 
 @implementation SMMessageEditorController {
@@ -227,10 +230,27 @@
     
     if([draftsLocalFolder moveMessage:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+
+        SMMessageThread *currentMessageThread = [[[appDelegate appController] messageThreadViewController] currentMessageThread];
+        
+        if(currentMessageThread != nil) {
+            if(currentMessageThread.messagesCount == 1) {
+                SMMessage *firstMessage = currentMessageThread.messagesSortedByDate[0];
+                
+                if(firstMessage.uid == _saveDraftUID) {
+                    [[[appDelegate appController] messageThreadViewController] setMessageThread:nil];
+                }
+            }
+            else {
+                for(SMMessage *m in currentMessageThread.messagesSortedByDate) {
+                    if(m.uid == _saveDraftUID) {
+                        [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+                        break;
+                    }
+                }
+            }
+        }
     }
-    
-    // TODO: if the current thread contains the draft
-    //    [self updateMessageThread];
     
     _saveDraftUID = 0;
 }

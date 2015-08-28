@@ -132,22 +132,26 @@
     NSAssert(messageThread != nil, @"message thread not found for message uid %u, threadId %llu", uid, threadId);
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
-    NSAssert(messageThread.messagesCount > 1, @"there's only one message in message thread %llu", threadId);
-
-    SMMessage *firstMessage = [messageThread.messagesSortedByDate objectAtIndex:0];
-    if(firstMessage.uid == uid) {
-        NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
-        
-        [messageThread removeMessageFromMessageThread:uid];
-        
-        NSAssert(oldIndex != NSNotFound, @"message thread not found");
-        [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
-            
-        return true; // TODO: if the message was first, perhaps we'll need to update the message list
+    if(messageThread.messagesCount == 1) {
+        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder];
+        return true;
     }
     else {
-        [messageThread removeMessageFromMessageThread:uid];
-        return false;
+        SMMessage *firstMessage = [messageThread.messagesSortedByDate objectAtIndex:0];
+        if(firstMessage.uid == uid) {
+            NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
+            
+            [messageThread removeMessageFromMessageThread:uid];
+            
+            NSAssert(oldIndex != NSNotFound, @"message thread not found");
+            [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+                
+            return true;
+        }
+        else {
+            [messageThread removeMessageFromMessageThread:uid];
+            return false;
+        }
     }
 }
 

@@ -51,6 +51,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSString *_lastTo;
     NSString *_lastCc;
     NSString *_lastBcc;
+    Boolean _doNotSaveDraftOnClose;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
@@ -274,6 +275,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 
     [_messageEditorController deleteSavedDraft];
+
+    _doNotSaveDraftOnClose = YES;
 
     if(_embedded) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteEditedMessageDraft" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
@@ -586,8 +589,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 #pragma mark Misc
 
-- (void)closeEditor:(Boolean)saveDraft {
-    if(saveDraft) {
+- (void)closeEditor:(Boolean)shouldSaveDraft {
+    if(shouldSaveDraft && !_doNotSaveDraftOnClose) {
         [self saveMessage];
     }
 

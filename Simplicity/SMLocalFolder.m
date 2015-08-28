@@ -703,7 +703,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    Boolean needUpdateMessageList = (useThreadId? [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName] : NO);
+    Boolean needUpdateMessageList = NO;
+    
+    if(useThreadId) {
+        needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName];
+    }
     
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];

@@ -262,19 +262,21 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)deleteEditedDraft {
-    NSAlert *alert = [[NSAlert alloc] init];
+    if(self.hasUnsavedContents || _messageEditorController.hasSavedDraft) {
+        NSAlert *alert = [[NSAlert alloc] init];
 
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert setMessageText:@"Are you sure to delete this draft?"];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    
-    if([alert runModal] != NSAlertFirstButtonReturn) {
-        SM_LOG_DEBUG(@"delete cancelled");
-        return;
+        [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert setMessageText:@"Are you sure you want to delete this draft?"];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        if([alert runModal] != NSAlertFirstButtonReturn) {
+            SM_LOG_DEBUG(@"delete cancelled");
+            return;
+        }
+        
+        [_messageEditorController deleteSavedDraft];
     }
-
-    [_messageEditorController deleteSavedDraft];
 
     _doNotSaveDraftOnClose = YES;
 
@@ -286,24 +288,28 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 }
 
-- (void)saveMessage {
+- (Boolean)hasUnsavedContents {
     NSString *subject = _subjectBoxViewController.textField.stringValue;
     NSString *to = _toBoxViewController.tokenField.stringValue;
     NSString *cc = _ccBoxViewController.tokenField.stringValue;
     NSString *bcc = _bccBoxViewController.tokenField.stringValue;
     
-    NSAssert(subject != nil, @"subject is nil");
-    NSAssert(to != nil, @"to is nil");
-    NSAssert(cc != nil, @"cc is nil");
-    NSAssert(bcc != nil, @"bcc is nil");
+    return _messageTextEditor.unsavedContentPending || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
+}
 
-    if(!_messageTextEditor.unsavedContentPending && [_lastSubject isEqualToString:subject] && [_lastTo isEqualToString:to] && [_lastCc isEqualToString:cc] && [_lastBcc isEqualToString:bcc]) {
+- (void)saveMessage {
+    if(![self hasUnsavedContents]) {
         SM_LOG_DEBUG(@"Message contains no changes, so no save is neccessary");
         return;
     }
 
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
 
+    NSString *subject = _subjectBoxViewController.textField.stringValue;
+    NSString *to = _toBoxViewController.tokenField.stringValue;
+    NSString *cc = _ccBoxViewController.tokenField.stringValue;
+    NSString *bcc = _bccBoxViewController.tokenField.stringValue;
+    
     _lastSubject = subject;
     _lastTo = to;
     _lastCc = cc;

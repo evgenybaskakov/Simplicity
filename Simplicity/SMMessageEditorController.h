@@ -12,6 +12,8 @@
 
 @interface SMMessageEditorController : NSObject
 
+@property (readonly) Boolean hasSavedDraft;
+
 - (id)initWithDraftUID:(uint32_t)draftMessageUid;
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc;

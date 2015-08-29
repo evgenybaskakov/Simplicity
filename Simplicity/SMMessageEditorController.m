@@ -198,6 +198,10 @@
     }
 }
 
+- (Boolean)hasSavedDraft {
+    return (_saveDraftUID != 0);
+}
+
 - (void)deleteSavedDraft {
     if(_saveDraftUID == 0) {
         SM_LOG_DEBUG(@"No saved message draft");

@@ -100,15 +100,19 @@
 	}
 }
 
-- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
+- (void)addFiles:(NSArray*)files {
     for (NSURL *url in files) {
-        SM_LOG_DEBUG(@"addFileWithPath:%@", [url path]);
-
+        SM_LOG_INFO(@"attachment: %@", [url path]);
+        
         SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithFilePath:[url path]];
         [_arrayController addObject:attachment];
         
         [_messageEditorController addAttachmentItem:attachment];
     }
+}
+
+- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
+    [self addFiles:files];
 
     [_arrayController setSelectedObjects:[NSArray array]];
 }

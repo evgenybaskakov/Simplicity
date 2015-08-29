@@ -20,5 +20,6 @@
 
 - (void)setMessage:(SMMessage*)message;
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController;
+- (void)addFiles:(NSArray*)files;
 
 @end

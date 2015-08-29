@@ -322,7 +322,24 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)attachDocument {
-    [self toggleAttachmentsPanel];
+    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+    
+    [openDlg setCanChooseFiles:YES];
+    [openDlg setAllowsMultipleSelection:YES];
+    [openDlg setCanChooseDirectories:NO];
+    
+    [openDlg setPrompt:@"Select files to attach"];
+    
+    if([openDlg runModal] == NSOKButton) {
+        NSArray* files = [openDlg URLs];
+        
+        if(files && files.count > 0) {
+            [self ensureAttachmentsPanelCreated];
+            [_attachmentsPanelViewController addFiles:files];
+        }
+    }
+    
+//    [self toggleAttachmentsPanel];
 }
 
 #pragma mark Text attrbitute actions
@@ -545,6 +562,12 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 }
 
+- (void)ensureAttachmentsPanelCreated {
+    if(_attachmentsPanelViewController == nil) {
+        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+    }
+}
+
 - (void)showAttachmentsPanel {
     if(_attachmentsPanelShown)
         return;
@@ -552,14 +575,13 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *view = [self view];
     NSAssert(view != nil, @"view is nil");
     
-    if(_attachmentsPanelViewController == nil) {
-        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+    [self ensureAttachmentsPanelCreated];
+
+    if(_attachmentsPanelViewConstraints == nil) {
+        _attachmentsPanelViewConstraints = [NSMutableArray array];
         
         NSView *attachmentsView = _attachmentsPanelViewController.view;
         NSAssert(attachmentsView, @"attachmentsView");
-        
-        NSAssert(_attachmentsPanelViewConstraints == nil, @"_attachmentsPanelViewConstraints already created");
-        _attachmentsPanelViewConstraints = [NSMutableArray array];
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageTextEditor attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         

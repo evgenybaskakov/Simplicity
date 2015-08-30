@@ -15,6 +15,7 @@
 @implementation SMAttachmentsPanelViewController {
     SMMessageEditorController *_messageEditorController;
     SMMessage *_message;
+    id __weak _toggleTarget;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -39,6 +40,27 @@
         NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
         
         [_collectionView registerForDraggedTypes:supportedTypes];
+    }
+}
+
+- (NSUInteger)collapsedHeight {
+    return _togglePanelButton.frame.size.height;
+}
+
+- (NSUInteger)uncollapsedHeight {
+    return _togglePanelButton.frame.size.height + _collectionView.frame.size.height;
+}
+
+- (void)setToggleTarget:(id)toggleTarget {
+    _toggleTarget = toggleTarget;
+}
+
+- (IBAction)togglePanelAction:(id)sender {
+    if(_toggleTarget) {
+        [_toggleTarget performSelector:@selector(toggleAttachmentsPanel:) withObject:self];
+    }
+    else {
+        SM_LOG_WARNING(@"no toggle target");
     }
 }
 

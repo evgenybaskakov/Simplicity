@@ -13,12 +13,18 @@
 
 @interface SMAttachmentsPanelViewController : NSViewController<NSCollectionViewDelegate, NSDraggingSource, NSDraggingDestination>
 
+@property IBOutlet NSButton *togglePanelButton;
 @property IBOutlet NSCollectionView *collectionView;
 @property IBOutlet NSArrayController *arrayController;
 
-@property NSMutableArray *attachmentItems;
+@property (readonly) NSMutableArray *attachmentItems;
+@property (readonly) NSUInteger collapsedHeight;
+@property (readonly) NSUInteger uncollapsedHeight;
+
+- (IBAction)togglePanelAction:(id)sender;
 
 - (void)setMessage:(SMMessage*)message;
+- (void)setToggleTarget:(id)toggleTarget;
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController;
 - (void)addFiles:(NSArray*)files;
 

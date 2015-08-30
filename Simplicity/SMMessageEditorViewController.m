@@ -42,7 +42,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     SMMessageEditorWebView *_messageTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
-    NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
     NSSplitView *_textAndAttachmentsSplitView;
@@ -113,6 +112,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
         _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
         [_attachmentsPanelViewController enableEditing:_messageEditorController];
+        [_attachmentsPanelViewController setToggleTarget:self];
         
         // register events
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
@@ -340,8 +340,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)attachDocument {
-/*
- NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
     
     [openDlg setCanChooseFiles:YES];
     [openDlg setAllowsMultipleSelection:YES];
@@ -358,8 +357,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
             _unsavedAttachmentsPending = YES;
         }
     }
-*/
-    [self toggleAttachmentsPanel];
+
+    [self showAttachmentsPanel];
 }
 
 #pragma mark Text attrbitute actions
@@ -574,6 +573,12 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 #pragma mark Attachments panel
 
+- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender {
+    NSAssert(sender == _attachmentsPanelViewController, @"bad sender");
+    
+    [self toggleAttachmentsPanel];
+}
+
 - (void)toggleAttachmentsPanel {
     if(!_attachmentsPanelShown) {
         [self showAttachmentsPanel];
@@ -589,27 +594,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *view = [self view];
     NSAssert(view != nil, @"view is nil");
     
-/*
-    if(_attachmentsPanelViewConstraints == nil) {
-        _attachmentsPanelViewConstraints = [NSMutableArray array];
-        
-        NSView *attachmentsView = _attachmentsPanelViewController.view;
-        NSAssert(attachmentsView, @"attachmentsView");
-        
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageTextEditor attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-        
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-        
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-        
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-    }
-    
-    [view addSubview:_attachmentsPanelViewController.view];
-    [view addConstraints:_attachmentsPanelViewConstraints];
-*/
-
-    [_textAndAttachmentsSplitView setPosition:(_textAndAttachmentsSplitView.frame.size.height - 100) ofDividerAtIndex:0];
+    [_textAndAttachmentsSplitView setPosition:(_textAndAttachmentsSplitView.frame.size.height - _attachmentsPanelViewController.uncollapsedHeight) ofDividerAtIndex:0];
     
     _attachmentsPanelShown = YES;
 }
@@ -621,10 +606,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *view = [self view];
     NSAssert(view != nil, @"view is nil");
     
-    NSAssert(_attachmentsPanelViewConstraints != nil, @"_attachmentsPanelViewConstraints not created");
-    [view removeConstraints:_attachmentsPanelViewConstraints];
-    
-    [_attachmentsPanelViewController.view removeFromSuperview];
+    [_textAndAttachmentsSplitView setPosition:(_textAndAttachmentsSplitView.frame.size.height - _attachmentsPanelViewController.collapsedHeight) ofDividerAtIndex:0];
     
     _attachmentsPanelShown = NO;
 }

@@ -340,7 +340,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)attachDocument {
-    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+/*
+ NSOpenPanel* openDlg = [NSOpenPanel openPanel];
     
     [openDlg setCanChooseFiles:YES];
     [openDlg setAllowsMultipleSelection:YES];
@@ -357,8 +358,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
             _unsavedAttachmentsPending = YES;
         }
     }
-
- //[self toggleAttachmentsPanel];
+*/
+    [self toggleAttachmentsPanel];
 }
 
 #pragma mark Text attrbitute actions
@@ -607,6 +608,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [view addSubview:_attachmentsPanelViewController.view];
     [view addConstraints:_attachmentsPanelViewConstraints];
 */
+
+    [_textAndAttachmentsSplitView setPosition:(_textAndAttachmentsSplitView.frame.size.height - 100) ofDividerAtIndex:0];
+    
     _attachmentsPanelShown = YES;
 }
 

@@ -192,6 +192,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     _messageTextEditor.messageEditorBase = _messageEditorBase;
     _messageTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
     
+    // other stuff
+    
+    _attachmentsPanelShown = YES;
+    [self hideAttachmentsPanel];
+    
     // Event registration
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];

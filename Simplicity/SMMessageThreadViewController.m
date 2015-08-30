@@ -969,14 +969,19 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
 
-    [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
+    if(cell.message.htmlBodyRendering != nil) {
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
 
-    editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
-    editorSubview.autoresizingMask = NSViewWidthSizable;
-    
-    [_contentView addSubview:editorSubview];
+        editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
+        editorSubview.autoresizingMask = NSViewWidthSizable;
+        
+        [_contentView addSubview:editorSubview];
 
-    [self updateCellFrames];
+        [self updateCellFrames];
+    }
+    else {
+        SM_LOG_WARNING(@"Message body is not yet loaded");
+    }
 }
 
 - (void)deleteEditedMessageDraft:(NSNotification *)notification {

@@ -45,6 +45,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSMutableArray *_attachmentsPanelViewConstraints;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
+    NSSplitView *_textAndAttachmentsSplitView;
     NSView *_innerView;
     Boolean _fullAddressPanelShown;
     NSString *_lastSubject;
@@ -107,6 +108,10 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
             [_foldPanelViewController setButtonTarget:self action:@selector(unfoldHiddenText:)];
         }
         
+        // attachments panel
+
+        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+        
         // register events
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
 
@@ -131,11 +136,20 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 
     [_toBoxViewController addControlSwitch:(_embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
+
+    _textAndAttachmentsSplitView = [[NSSplitView alloc] init];
+    
+    //[_textAndAttachmentsSplitView setDelegate:self];
+    [_textAndAttachmentsSplitView setVertical:NO];
+    [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    [_textAndAttachmentsSplitView addSubview:_messageTextEditor];
+    [_textAndAttachmentsSplitView addSubview:_attachmentsPanelViewController.view];
+    [_textAndAttachmentsSplitView adjustSubviews];
     
     [_innerView addSubview:_toBoxViewController.view];
     [_innerView addSubview:_subjectBoxViewController.view];
     [_innerView addSubview:_editorToolBoxViewController.view];
-    [_innerView addSubview:_messageTextEditor];
+    [_innerView addSubview:_textAndAttachmentsSplitView];
 
     if(_foldPanelViewController != nil) {
         [_innerView addSubview:_foldPanelViewController.view];
@@ -334,12 +348,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         NSArray* files = [openDlg URLs];
         
         if(files && files.count > 0) {
-            [self ensureAttachmentsPanelCreated];
             [_attachmentsPanelViewController addFiles:files];
         }
     }
-    
-//    [self toggleAttachmentsPanel];
+
+ //[self toggleAttachmentsPanel];
 }
 
 #pragma mark Text attrbitute actions
@@ -517,9 +530,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
     const NSUInteger foldButtonHeight = (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0);
 
-    _messageTextEditor.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos - foldButtonHeight);
-    _messageTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    _messageTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    _textAndAttachmentsSplitView.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos - foldButtonHeight);
+    _textAndAttachmentsSplitView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    _textAndAttachmentsSplitView.translatesAutoresizingMaskIntoConstraints = YES;
     
     if(_foldPanelViewController != nil) {
         _foldPanelViewController.view.frame = NSMakeRect(-1, curHeight - foldButtonHeight, curWidth+2, foldButtonHeight);
@@ -562,12 +575,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 }
 
-- (void)ensureAttachmentsPanelCreated {
-    if(_attachmentsPanelViewController == nil) {
-        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
-    }
-}
-
 - (void)showAttachmentsPanel {
     if(_attachmentsPanelShown)
         return;
@@ -575,8 +582,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *view = [self view];
     NSAssert(view != nil, @"view is nil");
     
-    [self ensureAttachmentsPanelCreated];
-
+/*
     if(_attachmentsPanelViewConstraints == nil) {
         _attachmentsPanelViewConstraints = [NSMutableArray array];
         
@@ -596,7 +602,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     [view addSubview:_attachmentsPanelViewController.view];
     [view addConstraints:_attachmentsPanelViewConstraints];
-    
+*/
     _attachmentsPanelShown = YES;
 }
 

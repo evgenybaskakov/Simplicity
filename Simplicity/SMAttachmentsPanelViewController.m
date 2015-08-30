@@ -33,6 +33,13 @@
     NSAssert(_collectionView, @"no collection view");
     
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
+    
+    if(_messageEditorController != nil) {
+        NSAssert(_collectionView, @"no collection view");
+        NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
+        
+        [_collectionView registerForDraggedTypes:supportedTypes];
+    }
 }
 
 - (void)setMessage:(SMMessage*)message {
@@ -52,15 +59,9 @@
 }
 
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController {
-    NSAssert(_collectionView, @"no collection view");
-    
-    NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
-
-    [_collectionView registerForDraggedTypes:supportedTypes];
-
-    NSAssert(messageEditorController != nil, @"no message editor controller provided");
+    NSAssert(messageEditorController, @"no messageEditorController provided");
     NSAssert(_messageEditorController == nil, @"message editor controller already set");
-    
+
     _messageEditorController = messageEditorController;
 }
 
@@ -101,6 +102,8 @@
 }
 
 - (void)addFiles:(NSArray*)files {
+    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
+    
     for (NSURL *url in files) {
         SM_LOG_INFO(@"attachment: %@", [url path]);
         

@@ -53,6 +53,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSString *_lastCc;
     NSString *_lastBcc;
     Boolean _doNotSaveDraftOnClose;
+    Boolean _unsavedAttachmentsPending;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
@@ -111,6 +112,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         // attachments panel
 
         _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+        [_attachmentsPanelViewController enableEditing:_messageEditorController];
         
         // register events
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processAddressFieldEditingEnd:) name:@"LabeledTokenFieldEndedEditing" object:nil];
@@ -308,7 +310,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSString *cc = _ccBoxViewController.tokenField.stringValue;
     NSString *bcc = _bccBoxViewController.tokenField.stringValue;
     
-    return _messageTextEditor.unsavedContentPending || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
+    return _messageTextEditor.unsavedContentPending || _unsavedAttachmentsPending || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
 }
 
 - (void)saveMessage {
@@ -333,6 +335,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
     
     _messageTextEditor.unsavedContentPending = NO;
+    
+    _unsavedAttachmentsPending = NO;
 }
 
 - (void)attachDocument {
@@ -349,6 +353,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         
         if(files && files.count > 0) {
             [_attachmentsPanelViewController addFiles:files];
+            
+            _unsavedAttachmentsPending = YES;
         }
     }
 
@@ -596,8 +602,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-        
-        [_attachmentsPanelViewController enableEditing:_messageEditorController];
     }
     
     [view addSubview:_attachmentsPanelViewController.view];

@@ -333,34 +333,50 @@
 
 - (void)toggleBold {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('Bold')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)toggleItalic {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('Italic')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)toggleUnderline {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('Underline')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)toggleBullets {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertUnorderedList')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)toggleNumbering {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('insertOrderedList')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)toggleQuote {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('formatBlock', false, 'blockquote')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)shiftLeft {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('outdent')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)shiftRight {
     [self stringByEvaluatingJavaScriptFromString:@"document.execCommand('indent')"];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)selectFont:(NSInteger)index {
@@ -368,6 +384,8 @@
     
     if(fontName != nil) {
         [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontName', false, '%@')", fontName]];
+        
+        _unsavedContentPending = YES;
     } else {
         SM_LOG_DEBUG(@"no selected font");
     }
@@ -375,6 +393,8 @@
 
 - (void)setTextSize:(NSInteger)textSize {
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('fontSize', false, %ld)", textSize]];
+    
+    _unsavedContentPending = YES;
 }
 
 - (void)justifyText:(NSInteger)index {    
@@ -389,6 +409,8 @@
     }
     
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('%@', false)", justifyFunc]];
+
+    _unsavedContentPending = YES;
 }
 
 - (NSString*)colorToHex:(NSColor*)color {
@@ -399,12 +421,16 @@
     NSString *hexString = [self colorToHex:color];
     
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('foreColor', false, '%@')", hexString]];
+
+    _unsavedContentPending = YES;
 }
 
 - (void)setTextBackgroundColor:(NSColor*)color {
     NSString *hexString = [self colorToHex:color];
     
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.execCommand('backColor', false, '%@')", hexString]];
+
+    _unsavedContentPending = YES;
 }
 
 - (void)showSource {

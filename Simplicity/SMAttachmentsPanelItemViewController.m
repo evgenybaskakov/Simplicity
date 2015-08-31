@@ -101,14 +101,25 @@
 	[super rightMouseDown:theEvent];
 	
     NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
     
     if(self.collectionView.selectionIndexes.count > 1) {
+        [theMenu addItemWithTitle:@"Open" action:@selector(openSelectedAttachments) keyEquivalent:@""];
+        [theMenu addItemWithTitle:@"Save To Downloads" action:@selector(saveSelectedAttachmentsToDownloads) keyEquivalent:@""];
+        [theMenu addItemWithTitle:@"Save To..." action:@selector(saveSelectedAttachments) keyEquivalent:@""];
         
+        if(panelViewController.enabledEditing) {
+            [theMenu addItemWithTitle:@"Remove" action:@selector(removeSelectedAttachments) keyEquivalent:@""];
+        }
     }
     else {
-        [theMenu insertItemWithTitle:@"Open Attachment" action:@selector(openAttachment) keyEquivalent:@"" atIndex:0];
-        [theMenu insertItemWithTitle:@"Save To Downloads" action:@selector(saveAttachmentToDownloads) keyEquivalent:@"" atIndex:1];
-        [theMenu insertItemWithTitle:@"Save To..." action:@selector(saveAttachment) keyEquivalent:@"" atIndex:2];
+        [theMenu addItemWithTitle:@"Open" action:@selector(openAttachment) keyEquivalent:@""];
+        [theMenu addItemWithTitle:@"Save To Downloads" action:@selector(saveAttachmentToDownloads) keyEquivalent:@""];
+        [theMenu addItemWithTitle:@"Save To..." action:@selector(saveAttachment) keyEquivalent:@""];
+        
+        if(panelViewController.enabledEditing) {
+            [theMenu addItemWithTitle:@"Remove" action:@selector(removeAttachment) keyEquivalent:@""];
+        }
     }
 
     [NSMenu popUpContextMenu:theMenu withEvent:theEvent forView:self.view];
@@ -133,6 +144,31 @@
 - (void)saveAttachmentToDownloads {
     SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
     [panelViewController saveAttachmentToDownloads:self.representedObject];
+}
+
+- (void)removeAttachment {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController removeAttachment:self.representedObject];
+}
+
+- (void)openSelectedAttachments {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController openSelectedAttachments];
+}
+
+- (void)saveSelectedAttachments {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController saveSelectedAttachments];
+}
+
+- (void)saveSelectedAttachmentsToDownloads {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController saveSelectedAttachmentsToDownloads];
+}
+
+- (void)removeSelectedAttachments {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController removeSelectedAttachments];
 }
 
 @end

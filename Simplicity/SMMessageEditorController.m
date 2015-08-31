@@ -56,6 +56,10 @@
     [_attachmentItems addObject:attachmentItem];
 }
 
+- (void)removeAttachmentItems:(NSArray*)attachmentItems {
+    [_attachmentItems removeObjectsInArray:attachmentItems];
+}
+
 #pragma mark Actions
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {

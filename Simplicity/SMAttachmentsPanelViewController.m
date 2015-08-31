@@ -88,6 +88,7 @@
     NSAssert(_messageEditorController == nil, @"message editor controller already set");
 
     _messageEditorController = messageEditorController;
+    _enabledEditing = YES;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
@@ -159,25 +160,7 @@
 }
 
 - (void)saveAttachment:(SMAttachmentItem*)attachmentItem {
-    NSSavePanel *savePanel = [NSSavePanel savePanel];
-    
-    // TODO: get the downloads folder from the user preferences
-    // TODO: use the last used directory
-    [savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
-    
-    // TODO: use a full-sized file panel
-    [savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
-        if(result == NSFileHandlingPanelOKButton) {
-            [savePanel orderOut:self];
-            
-            NSURL *targetFileUrl = [savePanel URL];
-            if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
-                return; // TODO: error popup
-            }
-            
-            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[targetFileUrl]];
-        }
-    }];
+    [self saveAttachmentsWithDialog:@[attachmentItem]];
 }
 
 - (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem {
@@ -204,21 +187,90 @@
     return filePath;
 }
 
+- (void)removeAttachment:(SMAttachmentItem*)attachmentItem {
+    [self removeAttachments:@[attachmentItem]];
+}
+
+- (void)removeAttachments:(NSArray*)attachmentItems {
+    [_arrayController removeObjects:attachmentItems];
+    [_messageEditorController removeAttachmentItems:attachmentItems];
+}
+
 - (void)openSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
     
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [self openAttachment:item];
+    }
 }
 
 - (void)saveSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+              
+    NSMutableArray *selectedItemsArray = [NSMutableArray arrayWithCapacity:selectedItemIndices.count];
     
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [selectedItemsArray addObject:item];
+    }
+
+    [self saveAttachmentsWithDialog:selectedItemsArray];
 }
 
 - (void)saveSelectedAttachmentsToDownloads {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
     
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [self saveAttachmentToDownloads:item];
+    }
 }
 
-- (NSString*)saveSelectedAttachmentsToPath:(NSString*)folderPath {
-    //TODO
-    return nil;
+- (void)removeSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+
+    NSMutableArray *selectedItemsArray = [NSMutableArray arrayWithCapacity:selectedItemIndices.count];
+    
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [selectedItemsArray addObject:item];
+    }
+    
+    [self removeAttachments:selectedItemsArray];
+}
+
+- (void)saveAttachmentsWithDialog:(NSArray*)attachmentItems {
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    
+    // TODO: get the downloads folder from the user preferences
+    // TODO: use the last used directory
+    [savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
+    
+    // TODO: use a full-sized file panel
+    [savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
+        if(result == NSFileHandlingPanelOKButton) {
+            [savePanel orderOut:self];
+            
+            NSMutableArray *savedAttachmentUrls = [NSMutableArray arrayWithCapacity:attachmentItems.count];
+
+            for(SMAttachmentItem *attachmentItem in attachmentItems) {
+                NSURL *targetFileUrl = [savePanel URL];
+                if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
+                    SM_LOG_ERROR(@"Could not save attachment to '%@'", targetFileUrl.baseURL);
+                    return; // TODO: error popup
+                }
+                
+                [savedAttachmentUrls addObject:targetFileUrl];
+            }
+            
+            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:savedAttachmentUrls];
+        }
+    }];
 }
 
 #pragma mark Delegate actions
@@ -227,16 +279,16 @@
     NSPasteboard *pasteboard = [draggingInfo draggingPasteboard];
     NSMutableArray *files = [NSMutableArray array];
     
-    for (NSPasteboardItem *oneItem in [pasteboard pasteboardItems]) {
+    for(NSPasteboardItem *oneItem in [pasteboard pasteboardItems]) {
         NSString *urlString = [oneItem stringForType:(id)kUTTypeFileURL];
         NSURL *url = [NSURL URLWithString:urlString];
         
-        if (url) {
+        if(url) {
             [files addObject:url];
         }
     }
     
-    if ([files count]) {
+    if([files count]) {
         [self insertFiles:files atIndex:index];
     }
 

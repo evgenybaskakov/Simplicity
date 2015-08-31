@@ -22,6 +22,7 @@
 @property (readonly) NSMutableArray *attachmentItems;
 @property (readonly) NSUInteger collapsedHeight;
 @property (readonly) NSUInteger uncollapsedHeight;
+@property (readonly) Boolean enabledEditing;
 
 - (IBAction)togglePanelAction:(id)sender;
 
@@ -34,10 +35,11 @@
 - (void)saveAttachment:(SMAttachmentItem*)attachmentItem;
 - (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem;
 - (NSString*)saveAttachment:(SMAttachmentItem*)attachmentItem toPath:(NSString*)folderPath;
+- (void)removeAttachment:(SMAttachmentItem*)attachmentItem;
 
 - (void)openSelectedAttachments;
 - (void)saveSelectedAttachments;
 - (void)saveSelectedAttachmentsToDownloads;
-- (NSString*)saveSelectedAttachmentsToPath:(NSString*)folderPath;
+- (void)removeSelectedAttachments;
 
 @end

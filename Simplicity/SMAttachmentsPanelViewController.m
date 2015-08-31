@@ -10,6 +10,7 @@
 #import "SMMessage.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
+#import "SMAttachmentsPanelView.h"
 #import "SMAttachmentsPanelViewController.h"
 
 @implementation SMAttachmentsPanelViewController {
@@ -33,6 +34,8 @@
     
     NSAssert(_collectionView, @"no collection view");
     
+    _collectionView.attachmentsPanelViewController = self;
+
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
     
     if(_messageEditorController != nil) {
@@ -141,6 +144,84 @@
 
     [_arrayController setSelectedObjects:[NSArray array]];
 }
+
+#pragma mark Attachment files manipulations
+
+- (void)openAttachment:(SMAttachmentItem*)attachmentItem {
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:@"/tmp"];
+    
+    if(filePath == nil) {
+        SM_LOG_DEBUG(@"cannot open attachment");
+        return; // TODO: error popup?
+    }
+    
+    [[NSWorkspace sharedWorkspace] openFile:filePath];
+}
+
+- (void)saveAttachment:(SMAttachmentItem*)attachmentItem {
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    
+    // TODO: get the downloads folder from the user preferences
+    // TODO: use the last used directory
+    [savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
+    
+    // TODO: use a full-sized file panel
+    [savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
+        if(result == NSFileHandlingPanelOKButton) {
+            [savePanel orderOut:self];
+            
+            NSURL *targetFileUrl = [savePanel URL];
+            if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
+                return; // TODO: error popup
+            }
+            
+            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[targetFileUrl]];
+        }
+    }];
+}
+
+- (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem {
+    // TODO: get the downloads folder from the user preferences
+    
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:NSHomeDirectory()];
+    
+    if(filePath == nil) {
+        return; // TODO: error popup
+    }
+    
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileUrl]];
+}
+
+- (NSString*)saveAttachment:(SMAttachmentItem*)attachmentItem toPath:(NSString*)folderPath {
+    NSString *filePath = [NSString pathWithComponents:@[folderPath, attachmentItem.fileName]];
+    
+    if(![attachmentItem writeAttachmentTo:[NSURL fileURLWithPath:filePath]]) {
+        return nil; // TODO: error popup
+    }
+    
+    return filePath;
+}
+
+- (void)openSelectedAttachments {
+    
+}
+
+- (void)saveSelectedAttachments {
+    
+}
+
+- (void)saveSelectedAttachmentsToDownloads {
+    
+}
+
+- (NSString*)saveSelectedAttachmentsToPath:(NSString*)folderPath {
+    //TODO
+    return nil;
+}
+
+#pragma mark Delegate actions
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
     NSPasteboard *pasteboard = [draggingInfo draggingPasteboard];

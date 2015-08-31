@@ -10,11 +10,13 @@
 
 @class SMMessage;
 @class SMMessageEditorController;
+@class SMAttachmentsPanelView;
+@class SMAttachmentItem;
 
 @interface SMAttachmentsPanelViewController : NSViewController<NSCollectionViewDelegate, NSDraggingSource, NSDraggingDestination>
 
 @property IBOutlet NSButton *togglePanelButton;
-@property IBOutlet NSCollectionView *collectionView;
+@property IBOutlet SMAttachmentsPanelView *collectionView;
 @property IBOutlet NSArrayController *arrayController;
 
 @property (readonly) NSMutableArray *attachmentItems;
@@ -27,5 +29,15 @@
 - (void)setToggleTarget:(id)toggleTarget;
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController;
 - (void)addFiles:(NSArray*)files;
+
+- (void)openAttachment:(SMAttachmentItem*)attachmentItem;
+- (void)saveAttachment:(SMAttachmentItem*)attachmentItem;
+- (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem;
+- (NSString*)saveAttachment:(SMAttachmentItem*)attachmentItem toPath:(NSString*)folderPath;
+
+- (void)openSelectedAttachments;
+- (void)saveSelectedAttachments;
+- (void)saveSelectedAttachmentsToDownloads;
+- (NSString*)saveSelectedAttachmentsToPath:(NSString*)folderPath;
 
 @end

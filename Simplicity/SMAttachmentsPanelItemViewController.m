@@ -8,6 +8,8 @@
 
 #import "SMLog.h"
 #import "SMAttachmentItem.h"
+#import "SMAttachmentsPanelView.h"
+#import "SMAttachmentsPanelViewController.h"
 #import "SMAttachmentsPanelItemViewController.h"
 
 @implementation SMAttachmentsPanelItemViewController {
@@ -50,6 +52,13 @@
     self.collectionView.maxItemSize = NSMakeSize(self.view.frame.size.width, self.view.frame.size.height);
 }
 
+- (SMAttachmentsPanelViewController*)collectionViewController {
+    SMAttachmentsPanelView *collectionView = (SMAttachmentsPanelView *)self.collectionView;
+    NSAssert([collectionView isKindOfClass:[SMAttachmentsPanelView class]], @"bad collection view type: %@", collectionView.class);
+
+    return collectionView.attachmentsPanelViewController;
+}
+
 - (void)setSelected:(BOOL)flag {
 	[super setSelected:flag];
  
@@ -83,87 +92,47 @@
 		SM_LOG_DEBUG(@"double click");
 		//[NSApp sendAction:@selector(collectionItemViewDoubleClick:) to:nil from:[self object]];
 
-		[self openAttachment];
+        SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+        [panelViewController openAttachment:self.representedObject];
 	}
 }
 
 - (void)rightMouseDown:(NSEvent *)theEvent {
 	[super rightMouseDown:theEvent];
 	
-	NSView *view = [self view];
+    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+    
+    if(self.collectionView.selectionIndexes.count > 1) {
+        
+    }
+    else {
+        [theMenu insertItemWithTitle:@"Open Attachment" action:@selector(openAttachment) keyEquivalent:@"" atIndex:0];
+        [theMenu insertItemWithTitle:@"Save To Downloads" action:@selector(saveAttachmentToDownloads) keyEquivalent:@"" atIndex:1];
+        [theMenu insertItemWithTitle:@"Save To..." action:@selector(saveAttachment) keyEquivalent:@"" atIndex:2];
+    }
 
-	NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
-	
-	[theMenu insertItemWithTitle:@"Open Attachment" action:@selector(openAttachment) keyEquivalent:@"" atIndex:0];
-	[theMenu insertItemWithTitle:@"Save To Downloads" action:@selector(saveAttachmentToDownloads) keyEquivalent:@"" atIndex:1];
-	[theMenu insertItemWithTitle:@"Save To..." action:@selector(saveAttachment) keyEquivalent:@"" atIndex:2];
-
-	[NSMenu popUpContextMenu:theMenu withEvent:theEvent forView:view];
+    [NSMenu popUpContextMenu:theMenu withEvent:theEvent forView:self.view];
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent {
 	[super rightMouseUp:theEvent];
 }
 
-- (void)openAttachment {
-	NSString *filePath = [self saveAttachmentToPath:@"/tmp"];
+#pragma mark Menu actions
 
-	if(filePath == nil) {
-		SM_LOG_DEBUG(@"cannot open attachment");
-		return; // TODO: error popup?
-	}
-	
-	[[NSWorkspace sharedWorkspace] openFile:filePath];
+- (void)openAttachment {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController openAttachment:self.representedObject];
 }
 
 - (void)saveAttachment {
-	SMAttachmentItem *attachmentItem = [self representedObject];
-
-	NSSavePanel *savePanel = [NSSavePanel savePanel];
-
-	// TODO: get the downloads folder from the user preferences
-	// TODO: use the last used directory
-	[savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
-	
-	// TODO: use a full-sized file panel
-	[savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
-		if(result == NSFileHandlingPanelOKButton) {
-			[savePanel orderOut:self];
-			
-			NSURL *targetFileUrl = [savePanel URL];
-			if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
-				return; // TODO: error popup
-			}
-			
-			[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[targetFileUrl]];
-		}
-	}];
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController saveAttachment:self.representedObject];
 }
 
 - (void)saveAttachmentToDownloads {
-	// TODO: get the downloads folder from the user preferences
-
-	NSString *filePath = [self saveAttachmentToPath:NSHomeDirectory()];
-	
-	if(filePath == nil) {
-		return; // TODO: error popup
-	}
-	
-	NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-
-	[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileUrl]];
-}
-
-- (NSString*)saveAttachmentToPath:(NSString*)folderPath {
-	SMAttachmentItem *attachmentItem = [self representedObject];
-	
-	NSString *filePath = [NSString pathWithComponents:@[folderPath, attachmentItem.fileName]];
-	
-	if(![attachmentItem writeAttachmentTo:[NSURL fileURLWithPath:filePath]]) {
-		return nil; // TODO: error popup
-	}
-	
-	return filePath;
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController saveAttachmentToDownloads:self.representedObject];
 }
 
 @end

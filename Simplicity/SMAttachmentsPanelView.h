@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMAttachmentsPanelViewController;
+
 @interface SMAttachmentsPanelView : NSCollectionView
+
+@property __weak SMAttachmentsPanelViewController *attachmentsPanelViewController;
 
 @end

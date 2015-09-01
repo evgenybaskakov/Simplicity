@@ -12,12 +12,12 @@
 
 @interface SMAttachmentItem : NSObject
 
+@property (nonatomic, readonly) NSString *localFilePath;
 @property (nonatomic, readonly) NSString *fileName;
-@property (nonatomic, readonly) NSString *filePath;
 @property (nonatomic, readonly) NSData *fileData;
 
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment;
-- (id)initWithFilePath:(NSString*)filePath;
+- (id)initWithLocalFilePath:(NSString*)localFilePath;
 
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl;
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName;

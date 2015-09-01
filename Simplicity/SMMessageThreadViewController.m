@@ -936,6 +936,7 @@ static const CGFloat CELL_SPACING = -1;
     NSAssert(cell.message.subject != nil, @"bad message subject");
     NSString *replySubject = cell.message.subject;
     
+    Boolean reply = NO;
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
     if([replyKind isEqualToString:@"Forward"]) {
         if(![SMStringUtils string:replySubject hasPrefix:@"Fw: " caseInsensitive:YES]) {
@@ -946,7 +947,6 @@ static const CGFloat CELL_SPACING = -1;
         fromAddress = [cell.message from];
         NSAssert(fromAddress != nil, @"bad message from address");
 
-        Boolean reply = NO;
         if([replyKind isEqualToString:@"ReplyAll"]) {
             ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
             // TODO: remove ourselves (myself) from this CC list
@@ -970,7 +970,7 @@ static const CGFloat CELL_SPACING = -1;
     }
 
     if(cell.message.htmlBodyRendering != nil) {
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:(reply? nil : cell.message.attachments)];
 
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;

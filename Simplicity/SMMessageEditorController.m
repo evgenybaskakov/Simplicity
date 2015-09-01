@@ -56,6 +56,10 @@
     [_attachmentItems addObject:attachmentItem];
 }
 
+- (void)removeAttachmentItems:(NSArray*)attachmentItems {
+    [_attachmentItems removeObjectsInArray:attachmentItems];
+}
+
 #pragma mark Actions
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
@@ -116,6 +120,8 @@
     
     _saveDraftMessage = message;
     _saveDraftOp = op;
+    
+    _hasUnsavedAttachments = NO;
 }
 
 #pragma mark Message creation
@@ -154,10 +160,17 @@
     //TODO (local attachments): [builder addAttachment:[MCOAttachment attachmentWithContentsOfFile:@"/Users/foo/Pictures/image.jpg"]];
    
     for(SMAttachmentItem *attachmentItem in _attachmentItems) {
-        NSString *attachmentFilePath = attachmentItem.filePath;
-        NSAssert(attachmentFilePath != nil, @"attachmentFilePath is nil");
+        MCOAttachment *mcoAttachment = nil;
 
-        MCOAttachment *mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentFilePath];
+        if(attachmentItem.fileData != nil) {
+            mcoAttachment = [MCOAttachment attachmentWithData:attachmentItem.fileData filename:attachmentItem.fileName];
+        }
+        else {
+            NSString *attachmentLocalFilePath = attachmentItem.localFilePath;
+            NSAssert(attachmentLocalFilePath != nil, @"attachmentLocalFilePath is nil");
+            
+            mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentLocalFilePath];
+        }
 
         [builder addAttachment:mcoAttachment];
         // TODO: ???    - (void) addRelatedAttachment:(MCOAttachment *)attachment;

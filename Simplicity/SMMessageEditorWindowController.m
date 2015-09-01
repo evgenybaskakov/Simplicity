@@ -18,15 +18,17 @@
     NSArray *_cc;
     NSArray *_bcc;
     uint32_t _draftUid;
+    NSArray *_mcoAttachments;
 }
 
-- (void)initHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid {
+- (void)initHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
     _htmlContents = htmlContents;
     _subject = subject;
     _to = to;
     _cc = cc;
     _bcc = bcc;
     _draftUid = draftUid;
+    _mcoAttachments = mcoAttachments;
 }
 
 - (void)windowDidLoad {
@@ -58,7 +60,7 @@
         }
     }
     
-    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind];
+    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
 }
 
 #pragma mark Actions

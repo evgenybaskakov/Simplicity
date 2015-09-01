@@ -10,11 +10,13 @@
 #import "SMMessage.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
+#import "SMAttachmentsPanelView.h"
 #import "SMAttachmentsPanelViewController.h"
 
 @implementation SMAttachmentsPanelViewController {
     SMMessageEditorController *_messageEditorController;
     SMMessage *_message;
+    id __weak _toggleTarget;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -32,6 +34,8 @@
     
     NSAssert(_collectionView, @"no collection view");
     
+    _collectionView.attachmentsPanelViewController = self;
+
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
     
     if(_messageEditorController != nil) {
@@ -39,6 +43,27 @@
         NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
         
         [_collectionView registerForDraggedTypes:supportedTypes];
+    }
+}
+
+- (NSUInteger)collapsedHeight {
+    return _togglePanelButton.frame.size.height;
+}
+
+- (NSUInteger)uncollapsedHeight {
+    return _togglePanelButton.frame.size.height + _collectionView.frame.size.height;
+}
+
+- (void)setToggleTarget:(id)toggleTarget {
+    _toggleTarget = toggleTarget;
+}
+
+- (IBAction)togglePanelAction:(id)sender {
+    if(_toggleTarget) {
+        [_toggleTarget performSelector:@selector(toggleAttachmentsPanel:) withObject:self];
+    }
+    else {
+        SM_LOG_WARNING(@"no toggle target");
     }
 }
 
@@ -63,6 +88,7 @@
     NSAssert(_messageEditorController == nil, @"message editor controller already set");
 
     _messageEditorController = messageEditorController;
+    _enabledEditing = YES;
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
@@ -101,40 +127,191 @@
 	}
 }
 
-- (void)addFiles:(NSArray*)files {
+- (void)addMCOAttachments:(NSArray*)attachments {
+    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
+    
+    for (MCOAttachment *mcoAttachment in attachments) {
+        SM_LOG_INFO(@"attachment: %@", mcoAttachment.filename);
+        
+        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        [_arrayController addObject:attachment];
+        
+        [_messageEditorController addAttachmentItem:attachment];
+        
+        // NOTE: do not set the unsaved attachments flag
+        //       because in this case, it is an initialization
+        //       from pre-existing MCO objects
+        
+        // TODO: think how to fix this mess
+    }
+}
+
+- (void)addFileAttachments:(NSArray*)files {
     NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
     
     for (NSURL *url in files) {
         SM_LOG_INFO(@"attachment: %@", [url path]);
         
-        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithFilePath:[url path]];
+        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
         [_arrayController addObject:attachment];
         
         [_messageEditorController addAttachmentItem:attachment];
+
+        _messageEditorController.hasUnsavedAttachments = YES;
     }
 }
 
-- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
-    [self addFiles:files];
+- (void)insertFileAttachments:(NSArray *)files atIndex:(NSInteger)index {
+    [self addFileAttachments:files];
 
     [_arrayController setSelectedObjects:[NSArray array]];
 }
+
+#pragma mark Attachment files manipulations
+
+- (void)openAttachment:(SMAttachmentItem*)attachmentItem {
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:@"/tmp"];
+    
+    if(filePath == nil) {
+        SM_LOG_DEBUG(@"cannot open attachment");
+        return; // TODO: error popup?
+    }
+    
+    [[NSWorkspace sharedWorkspace] openFile:filePath];
+}
+
+- (void)saveAttachment:(SMAttachmentItem*)attachmentItem {
+    [self saveAttachmentsWithDialog:@[attachmentItem]];
+}
+
+- (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem {
+    // TODO: get the downloads folder from the user preferences
+    
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:NSHomeDirectory()];
+    
+    if(filePath == nil) {
+        return; // TODO: error popup
+    }
+    
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileUrl]];
+}
+
+- (NSString*)saveAttachment:(SMAttachmentItem*)attachmentItem toPath:(NSString*)folderPath {
+    NSString *filePath = [NSString pathWithComponents:@[folderPath, attachmentItem.fileName]];
+    
+    if(![attachmentItem writeAttachmentTo:[NSURL fileURLWithPath:filePath]]) {
+        return nil; // TODO: error popup
+    }
+    
+    return filePath;
+}
+
+- (void)removeAttachment:(SMAttachmentItem*)attachmentItem {
+    [self removeAttachments:@[attachmentItem]];
+}
+
+- (void)removeAttachments:(NSArray*)attachmentItems {
+    [_arrayController removeObjects:attachmentItems];
+    [_messageEditorController removeAttachmentItems:attachmentItems];
+    _messageEditorController.hasUnsavedAttachments = YES;
+}
+
+- (void)openSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+    
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [self openAttachment:item];
+    }
+}
+
+- (void)saveSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+              
+    NSMutableArray *selectedItemsArray = [NSMutableArray arrayWithCapacity:selectedItemIndices.count];
+    
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [selectedItemsArray addObject:item];
+    }
+
+    [self saveAttachmentsWithDialog:selectedItemsArray];
+}
+
+- (void)saveSelectedAttachmentsToDownloads {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+    
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [self saveAttachmentToDownloads:item];
+    }
+}
+
+- (void)removeSelectedAttachments {
+    NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
+    NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
+
+    NSMutableArray *selectedItemsArray = [NSMutableArray arrayWithCapacity:selectedItemIndices.count];
+    
+    for(NSUInteger i = [selectedItemIndices firstIndex]; i != NSNotFound; i = [selectedItemIndices indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [selectedItemsArray addObject:item];
+    }
+    
+    [self removeAttachments:selectedItemsArray];
+}
+
+- (void)saveAttachmentsWithDialog:(NSArray*)attachmentItems {
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    
+    // TODO: get the downloads folder from the user preferences
+    // TODO: use the last used directory
+    [savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
+    
+    // TODO: use a full-sized file panel
+    [savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
+        if(result == NSFileHandlingPanelOKButton) {
+            [savePanel orderOut:self];
+            
+            NSMutableArray *savedAttachmentUrls = [NSMutableArray arrayWithCapacity:attachmentItems.count];
+
+            for(SMAttachmentItem *attachmentItem in attachmentItems) {
+                NSURL *targetFileUrl = [savePanel URL];
+                if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
+                    SM_LOG_ERROR(@"Could not save attachment to '%@'", targetFileUrl.baseURL);
+                    return; // TODO: error popup
+                }
+                
+                [savedAttachmentUrls addObject:targetFileUrl];
+            }
+            
+            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:savedAttachmentUrls];
+        }
+    }];
+}
+
+#pragma mark Delegate actions
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
     NSPasteboard *pasteboard = [draggingInfo draggingPasteboard];
     NSMutableArray *files = [NSMutableArray array];
     
-    for (NSPasteboardItem *oneItem in [pasteboard pasteboardItems]) {
+    for(NSPasteboardItem *oneItem in [pasteboard pasteboardItems]) {
         NSString *urlString = [oneItem stringForType:(id)kUTTypeFileURL];
         NSURL *url = [NSURL URLWithString:urlString];
         
-        if (url) {
+        if(url) {
             [files addObject:url];
         }
     }
     
-    if ([files count]) {
-        [self insertFiles:files atIndex:index];
+    if([files count]) {
+        [self insertFileAttachments:files atIndex:index];
     }
 
     return YES;

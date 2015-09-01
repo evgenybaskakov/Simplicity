@@ -970,7 +970,7 @@ static const CGFloat CELL_SPACING = -1;
     }
 
     if(cell.message.htmlBodyRendering != nil) {
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind];
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:cell.message.attachments];
 
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;

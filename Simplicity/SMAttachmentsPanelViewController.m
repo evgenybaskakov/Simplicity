@@ -127,21 +127,42 @@
 	}
 }
 
-- (void)addFiles:(NSArray*)files {
+- (void)addMCOAttachments:(NSArray*)attachments {
+    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
+    
+    for (MCOAttachment *mcoAttachment in attachments) {
+        SM_LOG_INFO(@"attachment: %@", mcoAttachment.filename);
+        
+        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        [_arrayController addObject:attachment];
+        
+        [_messageEditorController addAttachmentItem:attachment];
+        
+        // NOTE: do not set the unsaved attachments flag
+        //       because in this case, it is an initialization
+        //       from pre-existing MCO objects
+        
+        // TODO: think how to fix this mess
+    }
+}
+
+- (void)addFileAttachments:(NSArray*)files {
     NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
     
     for (NSURL *url in files) {
         SM_LOG_INFO(@"attachment: %@", [url path]);
         
-        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithFilePath:[url path]];
+        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
         [_arrayController addObject:attachment];
         
         [_messageEditorController addAttachmentItem:attachment];
+
+        _messageEditorController.hasUnsavedAttachments = YES;
     }
 }
 
-- (void)insertFiles:(NSArray *)files atIndex:(NSInteger)index {
-    [self addFiles:files];
+- (void)insertFileAttachments:(NSArray *)files atIndex:(NSInteger)index {
+    [self addFileAttachments:files];
 
     [_arrayController setSelectedObjects:[NSArray array]];
 }
@@ -194,6 +215,7 @@
 - (void)removeAttachments:(NSArray*)attachmentItems {
     [_arrayController removeObjects:attachmentItems];
     [_messageEditorController removeAttachmentItems:attachmentItems];
+    _messageEditorController.hasUnsavedAttachments = YES;
 }
 
 - (void)openSelectedAttachments {
@@ -289,7 +311,7 @@
     }
     
     if([files count]) {
-        [self insertFiles:files atIndex:index];
+        [self insertFileAttachments:files atIndex:index];
     }
 
     return YES;

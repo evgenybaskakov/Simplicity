@@ -29,7 +29,8 @@
 - (void)setMessage:(SMMessage*)message;
 - (void)setToggleTarget:(id)toggleTarget;
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController;
-- (void)addFiles:(NSArray*)files;
+- (void)addFileAttachments:(NSArray*)files;
+- (void)addMCOAttachments:(NSArray*)attachments;
 
 - (void)openAttachment:(SMAttachmentItem*)attachmentItem;
 - (void)saveAttachment:(SMAttachmentItem*)attachmentItem;

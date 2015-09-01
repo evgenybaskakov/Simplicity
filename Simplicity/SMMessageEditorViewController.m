@@ -52,7 +52,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSString *_lastCc;
     NSString *_lastBcc;
     Boolean _doNotSaveDraftOnClose;
-    Boolean _unsavedAttachmentsPending;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
@@ -247,11 +246,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 #pragma mark Editor startup
 
-- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind {
-    
-    //
-    // TODO: handle pre-existing attachments!
-    //
+- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
     
     if(subject) {
         [_subjectBoxViewController.textField setStringValue:subject];
@@ -267,6 +262,14 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     if(bcc) {
         [_bccBoxViewController.tokenField setObjectValue:bcc];
+    }
+    
+    if(mcoAttachments != nil && mcoAttachments.count > 0) {
+        [self ensureAttachmentsPanelCreated];
+        
+        [_attachmentsPanelViewController addMCOAttachments:mcoAttachments];
+        
+        [self showAttachmentsPanel];
     }
     
     _lastSubject = _subjectBoxViewController.textField.stringValue;
@@ -295,7 +298,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 }
 
 - (void)deleteEditedDraft {
-    if(self.hasUnsavedContents || _messageEditorController.hasSavedDraft) {
+    if(self.hasUnsavedContents || _messageEditorController.hasUnsavedAttachments || _messageEditorController.hasSavedDraft) {
         NSAlert *alert = [[NSAlert alloc] init];
 
         [alert addButtonWithTitle:@"OK"];
@@ -326,8 +329,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSString *to = _toBoxViewController.tokenField.stringValue;
     NSString *cc = _ccBoxViewController.tokenField.stringValue;
     NSString *bcc = _bccBoxViewController.tokenField.stringValue;
-    
-    return _messageTextEditor.unsavedContentPending || _unsavedAttachmentsPending || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
+
+    return _messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
 }
 
 - (void)saveMessage {
@@ -352,8 +355,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
     
     _messageTextEditor.unsavedContentPending = NO;
-    
-    _unsavedAttachmentsPending = NO;
 }
 
 - (void)attachDocument {
@@ -371,10 +372,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         if(files && files.count > 0) {
             [self ensureAttachmentsPanelCreated];
 
-            [_attachmentsPanelViewController addFiles:files];
+            [_attachmentsPanelViewController addFileAttachments:files];
             
-            _unsavedAttachmentsPending = YES;
-
             [self showAttachmentsPanel];
         }
     }

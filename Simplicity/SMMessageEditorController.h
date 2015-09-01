@@ -14,6 +14,8 @@
 
 @property (readonly) Boolean hasSavedDraft;
 
+@property Boolean hasUnsavedAttachments;
+
 - (id)initWithDraftUID:(uint32_t)draftMessageUid;
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)removeAttachmentItems:(NSArray*)attachmentItems;

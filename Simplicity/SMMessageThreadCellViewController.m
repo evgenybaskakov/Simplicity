@@ -244,6 +244,12 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	[_messageThreadViewController updateCellFrames];
 }
 
+- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender {
+    NSAssert(sender == _attachmentsPanelViewController, @"bad sender");
+    
+    [self toggleAttachmentsPanel];
+}
+
 - (void)toggleAttachmentsPanel {
 	if(!_attachmentsPanelShown) {
 		[self showAttachmentsPanel];
@@ -265,9 +271,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	if(_attachmentsPanelViewController == nil) {
 		_attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
 		
+        [_attachmentsPanelViewController setToggleTarget:self];
+        
 		NSView *attachmentsView = _attachmentsPanelViewController.view;
 		NSAssert(attachmentsView, @"attachmentsView");
 		
+        attachmentsView.translatesAutoresizingMaskIntoConstraints = NO;
+        
 		NSAssert(_attachmentsPanelViewConstraints == nil, @"_attachmentsPanelViewConstraints already created");
 		_attachmentsPanelViewConstraints = [NSMutableArray array];
 		
@@ -278,7 +288,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-		
+
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:150]];
+
 		// bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];
 	}

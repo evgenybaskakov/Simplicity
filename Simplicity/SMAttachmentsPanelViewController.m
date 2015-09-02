@@ -44,6 +44,15 @@
         
         [_collectionView registerForDraggedTypes:supportedTypes];
     }
+    else {
+        // in the non-editing mode, we don't let the user to show/hide the attachments panel
+        // it should be always shown
+        [self removeToggleButton];
+        
+        // TODO: figure out how to disable scrolling by gestures
+        _collectionView.enclosingScrollView.verticalScrollElasticity = NSScrollElasticityNone;
+        _collectionView.enclosingScrollView.hasVerticalScroller = NO;
+    }
 }
 
 - (NSUInteger)collapsedHeight {
@@ -56,6 +65,11 @@
 
 - (void)setToggleTarget:(id)toggleTarget {
     _toggleTarget = toggleTarget;
+}
+
+- (void)removeToggleButton {
+    [_togglePanelButton removeFromSuperview];
+    _collectionView.frame = self.view.frame;
 }
 
 - (IBAction)togglePanelAction:(id)sender {

@@ -256,8 +256,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 		_attachmentButton.image = appDelegate.imageRegistry.attachmentImage;
 		[_attachmentButton.cell setImageScaling:NSImageScaleProportionallyDown];
 		_attachmentButton.bordered = NO;
-		_attachmentButton.target = self;
-		_attachmentButton.action = @selector(toggleAttachmentsPanel:);
+		//_attachmentButton.target = self;
+		//_attachmentButton.action = @selector(toggleAttachmentsPanel:);
 		
 		// TODO: show popup menu asking the user to save/download the attachments
 		//	_attachmentButton.action = @selector(toggleFullDetails:);
@@ -312,10 +312,6 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	[view addConstraints:_doesntHaveAttachmentsConstraints];
 	
 	_attachmentButtonShown = NO;
-}
-
-- (void)toggleAttachmentsPanel:(id)sender {
-	[_enclosingThreadCell toggleAttachmentsPanel];
 }
 
 - (void)showFullDetails {

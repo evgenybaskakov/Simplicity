@@ -34,8 +34,6 @@
 
 - (void)enableCollapse:(Boolean)enable;
 
-- (void)toggleAttachmentsPanel;
-
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;

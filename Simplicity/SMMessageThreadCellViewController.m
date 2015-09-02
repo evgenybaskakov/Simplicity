@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMBoxView.h"
 #import "SMAttachmentItem.h"
 #import "SMMessage.h"
@@ -183,7 +184,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 				// this means that the message html text was set before,
 				// when there was no body view
 				// so show it now
-				[self showMessageBody];
+				[self setMessageBody];
 			}
 		}
 		
@@ -200,7 +201,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 				[_progressIndicator setHidden:NO];
 			}
 		}
-		
+	
+        [self showAttachmentsPanel];
+
 		_collapsed = NO;
 	}
 
@@ -234,7 +237,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         return [SMMessageDetailsViewController headerHeight];
     }
     else {
-        return [SMMessageDetailsViewController headerHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]);
+        //TODO: figure out why _attachmentsPanelViewController.view.enclosingScrollView height doesn't reduce when expanding width
+        SM_LOG_INFO(@"attachmentsPanel height %g", _attachmentsPanelViewController.view.enclosingScrollView.frame.size.height);
+        
+        return [SMMessageDetailsViewController headerHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + _attachmentsPanelViewController.view.frame.size.height;
     }
 }
 
@@ -244,23 +250,14 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	[_messageThreadViewController updateCellFrames];
 }
 
-- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender {
-    NSAssert(sender == _attachmentsPanelViewController, @"bad sender");
-    
-    [self toggleAttachmentsPanel];
-}
-
-- (void)toggleAttachmentsPanel {
-	if(!_attachmentsPanelShown) {
-		[self showAttachmentsPanel];
-	} else {
-		[self hideAttachmentsPanel];
-	}
-}
-
 - (void)showAttachmentsPanel {
-	if(_attachmentsPanelShown)
+    if(_message.attachments.count == 0) {
+        return;
+    }
+
+    if(_attachmentsPanelShown) {
 		return;
+    }
 
 	NSView *view = [self view];
 	NSAssert(view != nil, @"view is nil");
@@ -271,8 +268,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	if(_attachmentsPanelViewController == nil) {
 		_attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
 		
-        [_attachmentsPanelViewController setToggleTarget:self];
-        
 		NSView *attachmentsView = _attachmentsPanelViewController.view;
 		NSAssert(attachmentsView, @"attachmentsView");
 		
@@ -289,7 +284,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:150]];
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:150]]; // TODO: do not use a fixed height
 
 		// bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];
@@ -319,7 +314,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	_attachmentsPanelShown = NO;
 }
 
-- (void)showMessageBody {
+- (void)setMessageBody {
+    NSAssert(_message != nil, @"_message is nil");
 	NSAssert(_messageBodyViewController != nil, @"not message body view controller");
 		
 	NSView *messageBodyView = [_messageBodyViewController view];
@@ -328,6 +324,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	[_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
 	
 	[_progressIndicator stopAnimation:self];
+    
+    if(!_collapsed) {
+        [self showAttachmentsPanel];
+    }
 }
 
 - (Boolean)loadMessageBody {
@@ -338,11 +338,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 	_htmlText = [_message htmlBodyRendering];
 	
-	if(_htmlText == nil)
+    if(_htmlText == nil) {
 		return FALSE;
+    }
 
-	if(_messageBodyViewController != nil)
-		[self showMessageBody];
+    if(_messageBodyViewController != nil) {
+		[self setMessageBody];
+    }
 
 	_messageTextIsSet = YES;
 	

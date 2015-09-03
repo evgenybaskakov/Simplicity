@@ -209,6 +209,8 @@
 		[view hideAttachmentImage];
 	}
 	
+    [view setMessagesCount:messageThread.messagesCount];
+    
     SMFolder *currentFolder = nil;
 	NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
     if(currentFolderName != nil) {

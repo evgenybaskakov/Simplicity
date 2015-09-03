@@ -125,14 +125,25 @@
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="attachment-icon" id="5zw-26-NG2"/>
                                                     </imageView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
-                                                        <rect key="frame" x="217" y="0.0" width="13" height="47"/>
+                                                        <rect key="frame" x="217" y="22" width="13" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="13" id="Eyo-KN-2gG"/>
                                                         </constraints>
                                                     </customView>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DsX-8X-jlE" userLabel="Messages Count">
+                                                        <rect key="frame" x="215" y="3" width="17" height="17"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="17" id="exA-kj-ZN9"/>
+                                                        </constraints>
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="svx-39-R2d">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystemBold"/>
+                                                        </buttonCell>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" id="3aT-87-YxW"/>
+                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="22" id="3aT-87-YxW"/>
+                                                    <constraint firstAttribute="trailing" secondItem="DsX-8X-jlE" secondAttribute="trailing" id="48O-eh-D1e"/>
                                                     <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="2" id="6Ae-4K-scf"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="8" symbolic="YES" id="7aa-5k-6qD"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="3" id="B7j-aR-abH"/>
@@ -146,8 +157,9 @@
                                                     <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="4" id="SMR-bD-zZT"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
                                                     <constraint firstItem="160" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="pEu-Zu-EPr"/>
+                                                    <constraint firstAttribute="bottom" secondItem="DsX-8X-jlE" secondAttribute="bottom" constant="4" id="sbJ-dE-ntx"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
-                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" id="yef-dg-cQ3"/>
+                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" constant="1" id="yef-dg-cQ3"/>
                                                 </constraints>
                                                 <connections>
                                                     <outlet property="attachmentImage" destination="oxo-5I-gnK" id="RMn-B1-0Lh"/>
@@ -157,6 +169,7 @@
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>
                                                     <outlet property="fromTextField" destination="160" id="163"/>
+                                                    <outlet property="messagesCountButton" destination="DsX-8X-jlE" id="EeX-h5-5xj"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>
                                                     <outlet property="unseenButton" destination="xPq-SM-e48" id="jZS-Ox-jf0"/>

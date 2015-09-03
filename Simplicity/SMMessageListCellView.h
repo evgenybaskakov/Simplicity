@@ -19,6 +19,8 @@
 @property (weak) IBOutlet NSButton *starButton;
 @property (weak) IBOutlet SMMessageBookmarksView *bookmarksView;
 
+@property IBOutlet NSButton *messagesCountButton;
+
 @property IBOutlet NSImageView *attachmentImage;
 @property IBOutlet NSLayoutConstraint *attachmentImageLeftContraint;
 @property IBOutlet NSLayoutConstraint *attachmentImageRightContraint;
@@ -28,5 +30,7 @@
 
 - (void)showAttachmentImage;
 - (void)hideAttachmentImage;
+
+- (void)setMessagesCount:(NSUInteger)messagesCount;
 
 @end

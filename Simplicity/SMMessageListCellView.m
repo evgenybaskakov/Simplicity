@@ -61,4 +61,14 @@
 	_attachmentImageHidden = YES;
 }
 
+- (void)setMessagesCount:(NSUInteger)messagesCount {
+    if(messagesCount == 1) {
+        [_messagesCountButton setHidden:YES];
+    }
+    else {
+        [_messagesCountButton setHidden:NO];
+        [_messagesCountButton setTitle:[NSString stringWithFormat:@"%lu", messagesCount]];
+    }
+}
+
 @end

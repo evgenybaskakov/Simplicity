@@ -125,7 +125,7 @@
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="attachment-icon" id="5zw-26-NG2"/>
                                                     </imageView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
-                                                        <rect key="frame" x="217" y="22" width="13" height="24"/>
+                                                        <rect key="frame" x="218" y="31" width="13" height="13"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="13" id="Eyo-KN-2gG"/>
                                                         </constraints>
@@ -142,24 +142,24 @@
                                                     </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="22" id="3aT-87-YxW"/>
+                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="31" id="3aT-87-YxW"/>
                                                     <constraint firstAttribute="trailing" secondItem="DsX-8X-jlE" secondAttribute="trailing" id="48O-eh-D1e"/>
-                                                    <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="2" id="6Ae-4K-scf"/>
+                                                    <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="1" id="6Ae-4K-scf"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="8" symbolic="YES" id="7aa-5k-6qD"/>
-                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="3" id="B7j-aR-abH"/>
+                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="4" id="B7j-aR-abH"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="xPq-SM-e48" secondAttribute="trailing" constant="4" id="CXh-WQ-V1D"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="Gqa-MK-utm"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="4" id="Iys-BD-NjQ"/>
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="leading" secondItem="164" secondAttribute="trailing" id="LaT-yg-u4W"/>
-                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="4" id="QCM-lj-Yyi"/>
+                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="5" id="QCM-lj-Yyi"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="BTp-sC-DoL" secondAttribute="bottom" constant="4" id="R73-US-hFc"/>
                                                     <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="4" id="SMR-bD-zZT"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
                                                     <constraint firstItem="160" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="pEu-Zu-EPr"/>
                                                     <constraint firstAttribute="bottom" secondItem="DsX-8X-jlE" secondAttribute="bottom" constant="4" id="sbJ-dE-ntx"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
-                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" constant="1" id="yef-dg-cQ3"/>
+                                                    <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="yef-dg-cQ3"/>
                                                 </constraints>
                                                 <connections>
                                                     <outlet property="attachmentImage" destination="oxo-5I-gnK" id="RMn-B1-0Lh"/>

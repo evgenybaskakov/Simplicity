@@ -8,6 +8,8 @@
 
 #import "SMMessageBookmarksView.h"
 
+static NSUInteger MAX_BOOKMARK_COLORS = 1;
+
 @implementation SMMessageBookmarksView {
 	NSArray *_bookmarkColors;
 }
@@ -30,7 +32,7 @@
 		const CGFloat originY = NSMaxY(bounds);
 		const CGFloat step = 12;
 		
-		for(NSUInteger i = 0, n = MIN(_bookmarkColors.count, 4); i < n; i++) {
+		for(NSUInteger i = 0, n = MIN(_bookmarkColors.count, MAX_BOOKMARK_COLORS); i < n; i++) {
 			CGFloat minX = NSMinX(bounds);
 			CGFloat maxY = originY - step * i;
 			CGFloat sz = step;
@@ -38,7 +40,7 @@
 			NSRect circleBounds = NSMakeRect(minX, maxY - sz + 1, sz, sz);
 			NSColor *color = _bookmarkColors[i];
 			
-			CGFloat circleRadius = circleBounds.size.height / 2.5;
+			CGFloat circleRadius = circleBounds.size.height / 2.4;
 			NSRect circleRect = NSMakeRect(NSMidX(circleBounds) - circleRadius, NSMidY(circleBounds) - circleRadius, circleRadius * 2, circleRadius * 2);
 			NSBezierPath *circlePath = [NSBezierPath bezierPathWithOvalInRect:circleRect];
 			NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[color highlightWithLevel:0.45] endingColor:color];

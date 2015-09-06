@@ -599,10 +599,12 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)viewBoundsDidChange:(NSNotification *)notification {
 	[self arrangeVisibleCells];
+    [self updateCellFrames];
 }
 
 - (void)viewFrameDidChange:(NSNotification *)notification {
 	[self arrangeVisibleCells];
+    [self updateCellFrames];
 }
 
 #pragma mark Processing incoming notifications

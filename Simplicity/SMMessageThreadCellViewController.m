@@ -135,7 +135,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 + (NSUInteger)collapsedCellHeight {
-	return [SMMessageDetailsViewController headerHeight];
+	return [SMMessageDetailsViewController messageDetaisHeaderHeight];
 }
 
 - (void)setCollapsed:(Boolean)collapsed {
@@ -225,6 +225,14 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)toggleCollapse {
+    // When the collapse property changes, it also adds/removes subviews and constraints.
+    // The added constraints may conflict with the autoresizing frame
+    // which is set previously, when the message thread cells layout is set.
+    // Therefore, to avoid different heights conflict, just make the height flexible.
+    // After collapsing/uncollapsing, the following message thread cell update
+    // procedure will choose the right frame and the autoresizing mask anyway.
+    _view.autoresizingMask |= NSViewHeightSizable;
+    
 	if(!_collapsed) {
 		[self setCollapsed:YES];
 	} else {
@@ -234,13 +242,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 - (NSUInteger)cellHeight {
     if(_collapsed) {
-        return [SMMessageDetailsViewController headerHeight];
+        return [SMMessageDetailsViewController messageDetaisHeaderHeight];
     }
     else {
-        //TODO: figure out why _attachmentsPanelViewController.view.enclosingScrollView height doesn't reduce when expanding width
-        SM_LOG_INFO(@"attachmentsPanel height %g", _attachmentsPanelViewController.view.enclosingScrollView.frame.size.height);
-        
-        return [SMMessageDetailsViewController headerHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + _attachmentsPanelViewController.view.frame.size.height;
+        return [SMMessageDetailsViewController messageDetaisHeaderHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + _attachmentsPanelViewController.view.frame.size.height;
     }
 }
 

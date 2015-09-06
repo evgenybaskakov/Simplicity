@@ -60,7 +60,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	return self;
 }
 
-+ (NSUInteger)headerHeight {
++ (NSUInteger)messageDetaisHeaderHeight {
 	return 36;
 }
 
@@ -169,7 +169,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 	[view addSubview:_starButton];
 
-	[view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/HEADER_ICON_HEIGHT_RATIO]];
+	[view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
 
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_starButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
 
@@ -264,7 +264,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 		
 		_hasAttachmentsConstraints = [NSMutableArray array];
 		
-		[_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/HEADER_ICON_HEIGHT_RATIO]];
+		[_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
 		
 		[_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
 		
@@ -414,7 +414,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 		_uncollapsedHeaderConstraints = [NSMutableArray array];
 
         for(NSButton *button in [NSArray arrayWithObjects:_infoButton, _replyButton, _messageActionsButton, nil]) {
-            [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/HEADER_ICON_HEIGHT_RATIO]];
+            [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
 
             [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:button attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
             

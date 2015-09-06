@@ -100,7 +100,7 @@
 #define V_GAP 10
 
 + (NSUInteger)infoHeaderHeight {
-	return [SMMessageDetailsViewController headerHeight];
+	return [SMMessageDetailsViewController messageDetaisHeaderHeight]+1;
 }
 
 - (void)initSubviews {
@@ -178,7 +178,7 @@
 
     _collapseButtonsConstraints = [NSMutableArray array];
     
-    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_uncollapseAllButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/2.5]];
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_uncollapseAllButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/2.5]];
     
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_uncollapseAllButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_uncollapseAllButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     
@@ -186,7 +186,7 @@
     
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_uncollapseAllButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
     
-	[_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController headerHeight]/2.5]];
+	[_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/2.5]];
 	
 	[_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_collapseAllButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
 

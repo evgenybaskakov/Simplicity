@@ -331,9 +331,12 @@ static const CGFloat CELL_SPACING = -1;
 }
 
 - (void)updateCellFrames {
+    if(_cells.count == 0) {
+        SM_LOG_DEBUG(@"no cells");
+        return;
+    }
+    
 	_cellsUpdateStarted = YES;
-
-	NSAssert(_cells.count > 0, @"no cells");
 
 	CGFloat fullHeight = 0;
     CGFloat editorHeight = 0;

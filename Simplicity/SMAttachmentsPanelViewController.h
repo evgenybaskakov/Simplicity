@@ -43,4 +43,7 @@
 - (void)saveSelectedAttachmentsToDownloads;
 - (void)removeSelectedAttachments;
 
+- (void)invalidateIntrinsicContentViewSize;
+- (NSSize)intrinsicContentViewSize;
+
 @end

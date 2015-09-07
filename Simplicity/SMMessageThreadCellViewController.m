@@ -29,6 +29,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSProgressIndicator *_progressIndicator;
 	NSLayoutConstraint *_messageDetailsBottomConstraint;
 	NSLayoutConstraint *_messageBodyBottomConstraint;
+    NSLayoutConstraint *_attachmentsPanelViewHeightConstraint;
 	NSMutableArray *_attachmentsPanelViewConstraints;
 	CGFloat _messageViewHeight;
 	NSString *_htmlText;
@@ -101,9 +102,35 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		[self toggleCollapse];
 		
 		_cellInitialized = YES;
-	}
+        
+        // Register observed events
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentsPanelViewHeightChanged:) name:@"SMAttachmentsPanelViewHeightChanged" object:nil];
+    }
 	
 	return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)attachmentsPanelViewHeightChanged:(NSNotification*)notification {
+    SMAttachmentsPanelViewController *attachmentsPanelViewController = [[notification userInfo] objectForKey:@"Object"];
+
+    if(_attachmentsPanelViewController == attachmentsPanelViewController) {
+        NSUInteger newAttachmentsPanelHeight = [_attachmentsPanelViewController intrinsicContentViewSize].height;
+        
+        if(newAttachmentsPanelHeight != _attachmentsPanelViewHeightConstraint.constant) {
+            [_view removeConstraint:_attachmentsPanelViewHeightConstraint];
+
+            _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:_attachmentsPanelViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:newAttachmentsPanelHeight];
+            
+            [_view addConstraint:_attachmentsPanelViewHeightConstraint];
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageThreadCellHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"ThreadCell", nil]];
+        }
+    }
 }
 
 - (void)initProgressIndicator {
@@ -245,7 +272,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         return [SMMessageDetailsViewController messageDetaisHeaderHeight];
     }
     else {
-        return [SMMessageDetailsViewController messageDetaisHeaderHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + _attachmentsPanelViewController.view.frame.size.height;
+        return [SMMessageDetailsViewController messageDetaisHeaderHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + [_attachmentsPanelViewController intrinsicContentViewSize].height;
     }
 }
 
@@ -289,14 +316,16 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 
-        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:150]]; // TODO: do not use a fixed height
+        _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[_attachmentsPanelViewController intrinsicContentViewSize].height];
 
 		// bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];
 	}
 
 	[view addSubview:_attachmentsPanelViewController.view];
-	[view addConstraints:_attachmentsPanelViewConstraints];
+
+    [view addConstraints:_attachmentsPanelViewConstraints];
+    [view addConstraint:_attachmentsPanelViewHeightConstraint];
 
 	_attachmentsPanelShown = YES;
 }
@@ -310,6 +339,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 	NSAssert(_attachmentsPanelViewConstraints != nil, @"_attachmentsPanelViewConstraints not created");
 	[view removeConstraints:_attachmentsPanelViewConstraints];
+    [view removeConstraint:_attachmentsPanelViewHeightConstraint];
 
 	[_attachmentsPanelViewController.view removeFromSuperview];
 

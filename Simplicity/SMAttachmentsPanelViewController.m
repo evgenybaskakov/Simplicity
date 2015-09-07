@@ -95,6 +95,8 @@
     }
     
     [_arrayController setSelectedObjects:[NSArray array]];
+    
+    [self.view invalidateIntrinsicContentSize];
 }
 
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController {
@@ -393,5 +395,15 @@
 
 //- (void)draggingEnded:(id <NSDraggingInfo>)sender {
 //}
+
+#pragma mark Intrinsic content size
+
+- (void)invalidateIntrinsicContentViewSize {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SMAttachmentsPanelViewHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"Object", nil]];
+}
+
+- (NSSize)intrinsicContentViewSize {
+    return [_collectionView intrinsicContentSize];
+}
 
 @end

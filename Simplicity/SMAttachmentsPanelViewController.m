@@ -13,6 +13,8 @@
 #import "SMAttachmentsPanelView.h"
 #import "SMAttachmentsPanelViewController.h"
 
+static NSUInteger _buttonH;
+
 @implementation SMAttachmentsPanelViewController {
     SMMessageEditorController *_messageEditorController;
     SMMessage *_message;
@@ -45,6 +47,10 @@
         [_collectionView registerForDraggedTypes:supportedTypes];
     }
     else {
+        SM_LOG_DEBUG(@"removing the attachments panel toggle button");
+
+        _buttonH = _togglePanelButton.frame.size.height;
+
         // in the non-editing mode, we don't let the user to show/hide the attachments panel
         // it should be always shown
         [self removeToggleButton];
@@ -403,7 +409,10 @@
 }
 
 - (NSSize)intrinsicContentViewSize {
-    return [_collectionView intrinsicContentSize];
+    NSSize intrinsicSize = [_collectionView intrinsicContentSize];
+    intrinsicSize.height += _buttonH*2;
+
+    return intrinsicSize;
 }
 
 @end

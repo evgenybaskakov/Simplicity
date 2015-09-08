@@ -55,10 +55,16 @@
         const NSUInteger itemCount = _attachmentsPanelViewController.attachmentItems.count;
         const NSSize itemSize = [self itemPrototype].view.frame.size;
 
-        const NSUInteger rowItemCount = self.superview.frame.size.width / itemSize.width;
-        const NSUInteger rowCount = (itemCount / rowItemCount) + (itemCount % rowItemCount > 0? 1 : 0);
+        const NSUInteger rowItemCount = self.frame.size.width / itemSize.width;
         
-        resultingHeight = itemSize.height * rowCount;
+        if(rowItemCount > 0) {
+            const NSUInteger rowCount = (itemCount / rowItemCount) + (itemCount % rowItemCount > 0? 1 : 0);
+            
+            resultingHeight = itemSize.height * rowCount;
+        }
+        else {
+            resultingHeight = itemSize.height * itemCount;
+        }
 
         SM_LOG_INFO(@"number of items: %lu, panel height: %lu", _attachmentsPanelViewController.attachmentItems.count, resultingHeight);
     }

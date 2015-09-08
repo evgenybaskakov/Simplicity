@@ -320,7 +320,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 		// bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];
-	}
+    }
 
 	[view addSubview:_attachmentsPanelViewController.view];
 

@@ -55,7 +55,9 @@
         const NSUInteger itemCount = _attachmentsPanelViewController.attachmentItems.count;
         const NSSize itemSize = [self itemPrototype].view.frame.size;
 
-        const NSUInteger rowItemCount = self.frame.size.width / itemSize.width;
+        SM_LOG_DEBUG(@"panel frame %g x %g, scroll view frame %g x %g", self.frame.size.width, self.frame.size.height, self.enclosingScrollView.frame.size.width, self.enclosingScrollView.frame.size.height);
+
+        const NSUInteger rowItemCount = self.enclosingScrollView.frame.size.width / itemSize.width;
         
         if(rowItemCount > 0) {
             const NSUInteger rowCount = (itemCount / rowItemCount) + (itemCount % rowItemCount > 0? 1 : 0);
@@ -66,23 +68,18 @@
             resultingHeight = itemSize.height * itemCount;
         }
 
-        SM_LOG_INFO(@"number of items: %lu, panel height: %lu", _attachmentsPanelViewController.attachmentItems.count, resultingHeight);
+        SM_LOG_DEBUG(@"number of items: %lu, panel height: %lu", _attachmentsPanelViewController.attachmentItems.count, resultingHeight);
     }
 
     return NSMakeSize(-1, resultingHeight);
 }
 
-- (void)invalidateIntrinsicContentSize {
-    [super invalidateIntrinsicContentSize];
-    
+- (void)viewDidEndLiveResize {
+    [super viewDidEndLiveResize];
+
     if(_attachmentsPanelViewController != nil) {
         [_attachmentsPanelViewController invalidateIntrinsicContentViewSize];
     }
-}
-
-- (void)viewDidEndLiveResize {
-    [super viewDidEndLiveResize];
-    [self invalidateIntrinsicContentSize];
 }
 
 @end

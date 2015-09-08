@@ -101,8 +101,8 @@ static NSUInteger _buttonH;
     }
     
     [_arrayController setSelectedObjects:[NSArray array]];
-    
-    [self.view invalidateIntrinsicContentSize];
+  
+    [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
 }
 
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController {

@@ -745,7 +745,9 @@
             unichar pressedUnichar = [pressedChars characterAtIndex:0];
             
             if((pressedUnichar == NSDeleteCharacter) || (pressedUnichar == NSDeleteFunctionKey)) {
-                NSLog(@"delete key pressed");
+                SM_LOG_INFO(@"delete key pressed");
+
+                [self menuActionDelete:self];
             }
         }
     }

@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMBox2;
 @class SMMessage;
 @class SMMessageEditorController;
 @class SMAttachmentsPanelView;
@@ -15,6 +16,7 @@
 
 @interface SMAttachmentsPanelViewController : NSViewController<NSCollectionViewDelegate, NSDraggingSource, NSDraggingDestination>
 
+@property IBOutlet SMBox2 *outerBox;
 @property IBOutlet NSButton *togglePanelButton;
 @property IBOutlet SMAttachmentsPanelView *collectionView;
 @property IBOutlet NSArrayController *arrayController;

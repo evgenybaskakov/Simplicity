@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMMessage.h"
+#import "SMBox2.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
 #import "SMAttachmentsPanelView.h"
@@ -32,10 +33,6 @@ static NSUInteger _buttonH;
 }
 
 - (void)viewDidLoad {
-    SM_LOG_DEBUG(@"???");
-    
-    NSAssert(_collectionView, @"no collection view");
-    
     _collectionView.attachmentsPanelViewController = self;
 
     [_collectionView setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
@@ -45,19 +42,21 @@ static NSUInteger _buttonH;
         NSArray *supportedTypes = [NSArray arrayWithObjects:@"com.simplicity.attachment.collection.item", NSFilenamesPboardType, nil];
         
         [_collectionView registerForDraggedTypes:supportedTypes];
+
+        [_outerBox removeFromSuperview];
     }
     else {
-        SM_LOG_DEBUG(@"removing the attachments panel toggle button");
-
         _buttonH = _togglePanelButton.frame.size.height;
 
         // in the non-editing mode, we don't let the user to show/hide the attachments panel
         // it should be always shown
         [self removeToggleButton];
         
-        // TODO: figure out how to disable scrolling by gestures
-        _collectionView.enclosingScrollView.verticalScrollElasticity = NSScrollElasticityNone;
         _collectionView.enclosingScrollView.hasVerticalScroller = NO;
+        _collectionView.enclosingScrollView.hasHorizontalScroller = NO;
+
+        _outerBox.transparent = YES;
+        _outerBox.frame = self.view.frame;
     }
 }
 

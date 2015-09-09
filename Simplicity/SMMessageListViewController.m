@@ -733,4 +733,22 @@
     [[appDelegate appController] openMessageWindow:messageThread];
 }
 
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent {
+    if(theEvent.type == NSKeyDown && (theEvent.modifierFlags & NSDeviceIndependentModifierFlagsMask) == 0) {
+        NSString *pressedChars = [theEvent characters];
+
+        if([pressedChars length] == 1) {
+            unichar pressedUnichar = [pressedChars characterAtIndex:0];
+            
+            if((pressedUnichar == NSDeleteCharacter) || (pressedUnichar == NSDeleteFunctionKey)) {
+                NSLog(@"delete key pressed");
+            }
+        }
+    }
+}
+
 @end

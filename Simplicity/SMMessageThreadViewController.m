@@ -321,15 +321,18 @@ static const CGFloat CELL_SPACING = -1;
 }
 
 - (Boolean)shouldUseFullHeightForFirstCell {
-/*
-    if(_cells.count == 1 && _messageEditorViewController == nil) {
+    if(_messageEditorViewController == nil && _cells.count == 1) {
         SMMessageThreadCell *firstCell = _cells[0];
-        return !firstCell.viewController.mainFrameLoaded;
+        
+        if(!firstCell.viewController.mainFrameLoaded) {
+            // Reasoning: if the message is not yet loaded (thus we don't know its
+            // real height), it should fit the window. The exceptions are when
+            // there are other messages (cells) in this thread, or when there's
+            // an embedded message editor opened. (May want to reconsider.)
+            return YES;
+        }
     }
-    else {
-        return NO;
-    }
-*/
+    
     return NO;
 }
 
@@ -402,16 +405,17 @@ static const CGFloat CELL_SPACING = -1;
 
 		NSView *subview = cell.viewController.view;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
+        subview.autoresizingMask = NSViewWidthSizable;
 
         if([self shouldUseFullHeightForFirstCell]) {
-            subview.autoresizingMask = NSViewWidthSizable;
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
-        } else {
-            subview.autoresizingMask = NSViewWidthSizable;
-            subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
-        }
 
-        [cell.viewController adjustCellHeightToFitContent];
+            [cell.viewController adjustCellHeightToFitContentResizeable:YES];
+        } else {
+            subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
+
+            [cell.viewController adjustCellHeightToFitContentResizeable:NO];
+        }
         
 		ypos += cell.viewController.cellHeight + CELL_SPACING;
 	}

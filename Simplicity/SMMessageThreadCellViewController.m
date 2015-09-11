@@ -207,7 +207,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
             
 			[_view addConstraint:_messageBodyBottomConstraint];
 			
-            [self adjustCellHeightToFitContent];
+            [self adjustCellHeightToFitContentResizeable:NO];
             
 			if(_htmlText != nil) {
 				// this means that the message html text was set before,
@@ -287,7 +287,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)adjustCellHeightToFitContent {
+- (void)adjustCellHeightToFitContentResizeable:(Boolean)heightResizeable {
     NSView *messageBodyView = [_messageBodyViewController view];
     NSAssert(messageBodyView, @"messageBodyView");
 
@@ -296,11 +296,17 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
     if(_messageBodyHeightConstraint != nil) {
         [_view removeConstraint:_messageBodyHeightConstraint];
+        _messageBodyHeightConstraint = nil;
     }
-    
-    _messageBodyHeightConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:contentHeight];
 
-    [_view addConstraint:_messageBodyHeightConstraint];
+    if(!heightResizeable) {
+        //
+        // Unless requested otherwise, make the message body fixed.
+        //
+        _messageBodyHeightConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:contentHeight];
+
+        [_view addConstraint:_messageBodyHeightConstraint];
+    }
 }
 
 - (void)headerButtonClicked:(id)sender {
@@ -338,6 +344,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        
+        // TODO: this is a workaround for cell height and message body height not being matched
+        ((NSLayoutConstraint*)_attachmentsPanelViewConstraints.lastObject).priority = NSLayoutPriorityDefaultLow;
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 		

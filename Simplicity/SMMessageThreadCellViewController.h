@@ -30,7 +30,7 @@
 - (void)updateMessage;
 - (Boolean)loadMessageBody;
 - (void)enableCollapse:(Boolean)enable;
-- (void)adjustCellHeightToFitContent;
+- (void)adjustCellHeightToFitContentResizeable:(Boolean)heightResizeable;
 
 #pragma mark Finding contents
 

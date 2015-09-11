@@ -27,6 +27,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSView *_messageView;
 	NSButton *_headerButton;
 	NSProgressIndicator *_progressIndicator;
+    NSLayoutConstraint *_messageBodyHeightConstraint;
 	NSLayoutConstraint *_messageDetailsBottomConstraint;
 	NSLayoutConstraint *_messageBodyBottomConstraint;
     NSLayoutConstraint *_attachmentsPanelViewHeightConstraint;
@@ -199,14 +200,15 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 			[_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 			
 			[_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-			
-			[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:[_messageBodyViewController contentHeight]] priority:NSLayoutPriorityDefaultLow];
-			
+            
 			NSAssert(_messageBodyBottomConstraint == nil, @"_messageBodyBottomConstraint already created");
+            
 			_messageBodyBottomConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-1];
-			
+            
 			[_view addConstraint:_messageBodyBottomConstraint];
 			
+            [self adjustCellHeightToFitContent];
+            
 			if(_htmlText != nil) {
 				// this means that the message html text was set before,
 				// when there was no body view
@@ -267,13 +269,38 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	}
 }
 
+- (NSUInteger)messageBodyHeight {
+    return MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]);
+}
+
 - (NSUInteger)cellHeight {
     if(_collapsed) {
         return [SMMessageDetailsViewController messageDetaisHeaderHeight];
     }
     else {
-        return [SMMessageDetailsViewController messageDetaisHeaderHeight] + [_messageDetailsViewController intrinsicContentViewSize].height + MAX(MIN_BODY_HEIGHT, [_messageBodyViewController contentHeight]) + [_attachmentsPanelViewController intrinsicContentViewSize].height;
+        const NSUInteger detailsHeight = [_messageDetailsViewController intrinsicContentViewSize].height;
+        const NSUInteger bodyHeight = [self messageBodyHeight];
+        const NSUInteger attachmentsHeight = (_attachmentsPanelViewController != nil?
+                                              [_attachmentsPanelViewController intrinsicContentViewSize].height : 0);
+        
+        return detailsHeight + bodyHeight + attachmentsHeight;
     }
+}
+
+- (void)adjustCellHeightToFitContent {
+    NSView *messageBodyView = [_messageBodyViewController view];
+    NSAssert(messageBodyView, @"messageBodyView");
+
+    NSUInteger contentHeight = [self messageBodyHeight];
+    SM_LOG_INFO(@"contentHeight: %lu", contentHeight);
+
+    if(_messageBodyHeightConstraint != nil) {
+        [_view removeConstraint:_messageBodyHeightConstraint];
+    }
+    
+    _messageBodyHeightConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:contentHeight];
+
+    [_view addConstraint:_messageBodyHeightConstraint];
 }
 
 - (void)headerButtonClicked:(id)sender {

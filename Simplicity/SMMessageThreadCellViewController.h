@@ -26,13 +26,11 @@
 + (NSUInteger)collapsedCellHeight;
 
 - (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed;
-
 - (void)setMessage:(SMMessage*)message;
 - (void)updateMessage;
-
 - (Boolean)loadMessageBody;
-
 - (void)enableCollapse:(Boolean)enable;
+- (void)adjustCellHeightToFitContent;
 
 #pragma mark Finding contents
 

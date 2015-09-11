@@ -321,6 +321,7 @@ static const CGFloat CELL_SPACING = -1;
 }
 
 - (Boolean)shouldUseFullHeightForFirstCell {
+/*
     if(_cells.count == 1 && _messageEditorViewController == nil) {
         SMMessageThreadCell *firstCell = _cells[0];
         return !firstCell.viewController.mainFrameLoaded;
@@ -328,6 +329,8 @@ static const CGFloat CELL_SPACING = -1;
     else {
         return NO;
     }
+*/
+    return NO;
 }
 
 - (void)updateCellFrames {
@@ -407,6 +410,8 @@ static const CGFloat CELL_SPACING = -1;
             subview.autoresizingMask = NSViewWidthSizable;
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
         }
+
+        [cell.viewController adjustCellHeightToFitContent];
         
 		ypos += cell.viewController.cellHeight + CELL_SPACING;
 	}

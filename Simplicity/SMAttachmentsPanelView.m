@@ -82,4 +82,16 @@
     }
 }
 
+#pragma mark Key handling
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent {
+    [super keyDown:theEvent];
+
+    [_attachmentsPanelViewController keyDown:theEvent];
+}
+
 @end

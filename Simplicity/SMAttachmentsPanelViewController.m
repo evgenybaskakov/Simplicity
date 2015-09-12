@@ -414,4 +414,24 @@ static NSUInteger _buttonH;
     return intrinsicSize;
 }
 
+#pragma mark Key handling
+
+- (void)keyDown:(NSEvent *)theEvent {
+    if(theEvent.type == NSKeyDown && (theEvent.modifierFlags & NSDeviceIndependentModifierFlagsMask) == 0) {
+        NSString *pressedChars = [theEvent characters];
+        
+        if([pressedChars length] == 1) {
+            unichar pressedUnichar = [pressedChars characterAtIndex:0];
+
+            if(_enabledEditing) {
+                if((pressedUnichar == NSDeleteCharacter) || (pressedUnichar == NSDeleteFunctionKey)) {
+                    SM_LOG_DEBUG(@"delete key pressed");
+                    
+                    [self removeSelectedAttachments];
+                }
+            }
+        }
+    }
+}
+
 @end

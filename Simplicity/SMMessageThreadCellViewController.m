@@ -29,7 +29,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSProgressIndicator *_progressIndicator;
     NSLayoutConstraint *_messageBodyHeightConstraint;
 	NSLayoutConstraint *_messageDetailsCollapsedBottomConstraint;
-	NSLayoutConstraint *_messageBodyBottomConstraint;
     NSLayoutConstraint *_attachmentsPanelViewHeightConstraint;
 	NSMutableArray *_attachmentsPanelViewConstraints;
 	CGFloat _messageViewHeight;
@@ -134,23 +133,25 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)initProgressIndicator {
-	NSAssert(_progressIndicator == nil, @"progress indicator already created");
+- (void)showProgressIndicator {
+    if(_progressIndicator == nil) {
+        _progressIndicator = [[NSProgressIndicator alloc] init];
+        _progressIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        [_progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
+        [_progressIndicator setDisplayedWhenStopped:NO];
+        [_progressIndicator startAnimation:self];
+    }
 	
-	_progressIndicator = [[NSProgressIndicator alloc] init];
-	_progressIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+	[_view addSubview:_progressIndicator];
 	
-	[_progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
-	[_progressIndicator setDisplayedWhenStopped:NO];
-	[_progressIndicator startAnimation:self];
+	[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
 	
-	NSView *view = [self view];
-	
-	[view addSubview:_progressIndicator];
-	
-	[self addConstraint:view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:[_messageBodyViewController view] attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
-	
-	[self addConstraint:view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:[_messageBodyViewController view] attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+	[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+}
+
+- (void)hideProgressIndicator {
+    [_progressIndicator removeFromSuperview];
 }
 
 - (void)enableCollapse:(Boolean)enable {
@@ -187,12 +188,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
         _view.drawBottom = YES;
         
-        [_progressIndicator setHidden:YES];
+        [self hideProgressIndicator];
 		
-        if(_messageBodyBottomConstraint != nil) {
-            [_view removeConstraint:_messageBodyBottomConstraint];
-        }
-        
         if(_messageBodyViewController != nil) {
             [_messageBodyViewController.view removeFromSuperview];
         }
@@ -215,10 +212,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
             // Add the view to the superview immediately to have the height calculation take effect.
             [_view addSubview:messageBodyView];
-
-            NSAssert(_messageBodyBottomConstraint == nil, @"_messageBodyBottomConstraint already created");
-            
-            _messageBodyBottomConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-1];
 
             // The cell view is added to the superview, so now we can adjust its height.
             [self adjustCellHeightToFitContentResizeable:NO];
@@ -246,8 +239,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
         
-        [_view addConstraint:_messageBodyBottomConstraint];
-        
         // Set view internals
         
         _view.fillColor = [NSColor whiteColor];
@@ -257,11 +248,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		[_messageBodyViewController uncollapse];
 		
 		if(_htmlText == nil) {
-			if(_progressIndicator == nil) {
-				[self initProgressIndicator];
-			} else {
-				[_progressIndicator setHidden:NO];
-			}
+            [self showProgressIndicator];
 		}
 	
         [self showAttachmentsPanel];
@@ -360,9 +347,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSView *view = [self view];
 	NSAssert(view != nil, @"view is nil");
 
-	NSAssert(_messageBodyBottomConstraint != nil, @"_messageBodyBottomConstraint not created");
-	[view removeConstraint:_messageBodyBottomConstraint];
-	
 	if(_attachmentsPanelViewController == nil) {
 		_attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
 		
@@ -375,8 +359,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 		_attachmentsPanelViewConstraints = [NSMutableArray array];
 		
 		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-		
-		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
         
         // TODO: this is a workaround for cell height and message body height not being matched
         ((NSLayoutConstraint*)_attachmentsPanelViewConstraints.lastObject).priority = NSLayoutPriorityDefaultLow;
@@ -408,7 +390,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	
 	[_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
 	
-	[_progressIndicator stopAnimation:self];
+    if(_progressIndicator != nil) {
+        [_progressIndicator stopAnimation:self];
+
+        [self hideProgressIndicator];
+
+        _progressIndicator = nil;
+    }
     
     if(!_collapsed) {
         [self showAttachmentsPanel];

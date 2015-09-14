@@ -410,11 +410,15 @@ static const CGFloat CELL_SPACING = -1;
         if([self shouldUseFullHeightForFirstCell]) {
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
 
+            NSAssert(!cell.viewController.collapsed, @"cell must not be collapsed");
+
             [cell.viewController adjustCellHeightToFitContentResizeable:YES];
         } else {
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
 
-            [cell.viewController adjustCellHeightToFitContentResizeable:NO];
+            if(!cell.viewController.collapsed) {
+                [cell.viewController adjustCellHeightToFitContentResizeable:NO];
+            }
         }
         
 		ypos += cell.viewController.cellHeight + CELL_SPACING;

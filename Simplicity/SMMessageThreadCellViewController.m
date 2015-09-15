@@ -27,6 +27,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	NSView *_messageView;
 	NSButton *_headerButton;
 	NSProgressIndicator *_progressIndicator;
+    NSLayoutConstraint *_mesageBottomConstraint;
     NSLayoutConstraint *_messageBodyHeightConstraint;
 	NSLayoutConstraint *_messageDetailsCollapsedBottomConstraint;
     NSLayoutConstraint *_attachmentsPanelViewHeightConstraint;
@@ -238,7 +239,11 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
         
         [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+
+        _mesageBottomConstraint = [NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
         
+        [_view addConstraint:_mesageBottomConstraint];
+
         // Set view internals
         
         _view.fillColor = [NSColor whiteColor];
@@ -323,9 +328,15 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         //
         // Unless requested otherwise, make the message body fixed.
         //
+        if(_mesageBottomConstraint != nil) {
+            [_view removeConstraint:_mesageBottomConstraint];
+            _mesageBottomConstraint = nil;
+        }
+        
         _messageBodyHeightConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:contentHeight];
 
         [_view addConstraint:_messageBodyHeightConstraint];
+
     }
 }
 

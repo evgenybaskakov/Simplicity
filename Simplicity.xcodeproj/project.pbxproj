@@ -53,7 +53,6 @@
 		006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */; };
 		006A5DCA17F2F041004D6D78 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006A5DC917F2F041004D6D78 /* WebKit.framework */; };
 		006A5DD517F5EC50004D6D78 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 006A5DD417F5EC50004D6D78 /* libsqlite3.dylib */; };
-		006A5DD717F6C4DC004D6D78 /* Simplicity.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */; };
 		006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 006C34611A181DEC00337A49 /* SMSearchDescriptor.m */; };
 		007A73621A57A95500A4D694 /* SMMessageFullDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 007A73601A57A95500A4D694 /* SMMessageFullDetailsViewController.m */; };
 		0082F5F81A0DD39B0050578A /* SMSearchResultsListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */; };
@@ -303,7 +302,6 @@
 		006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMFindContentsPanelViewController.xib; sourceTree = "<group>"; };
 		006A5DC917F2F041004D6D78 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = ../../../../../../../System/Library/Frameworks/WebKit.framework; sourceTree = "<group>"; };
 		006A5DD417F5EC50004D6D78 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = ../../../../../../../usr/lib/libsqlite3.dylib; sourceTree = "<group>"; };
-		006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Simplicity.sqlite; sourceTree = "<group>"; };
 		006C34601A181DEC00337A49 /* SMSearchDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchDescriptor.h; sourceTree = "<group>"; };
 		006C34611A181DEC00337A49 /* SMSearchDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchDescriptor.m; sourceTree = "<group>"; };
 		0077C99219E8E58C00118CA5 /* SMMailLogin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMailLogin.h; sourceTree = "<group>"; };
@@ -799,7 +797,6 @@
 				8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
-				006A5DD617F6C4DC004D6D78 /* Simplicity.sqlite */,
 				002057CD1A85D2DA00D5FE8A /* spam-white.png */,
 				002556FD1A5A5C6600C864D0 /* star-gray-icon.png */,
 				002057C91A85D2DA00D5FE8A /* star-white.png */,
@@ -1018,7 +1015,6 @@
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
 				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
-				006A5DD717F6C4DC004D6D78 /* Simplicity.sqlite in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
 				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,

@@ -14,12 +14,14 @@
 @implementation SMDatabase {
     NSString *_dbFilePath;
     sqlite3 *_database;
+    dispatch_queue_t _serialQueue;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
     self = [self init];
 
     if(self) {
+        _serialQueue = dispatch_queue_create("com.simplicity.Simplicity.serialDatabaseQueue", DISPATCH_QUEUE_SERIAL);
         _dbFilePath = dbFilePath;
     }
     
@@ -43,30 +45,32 @@
 }
 
 - (void)addDBFolder:(NSString*)folderName {
-    if([self openDatabase]) {
-        char *errMsg = NULL;
-        const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT)";
-        
-        int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
-        if(sqlResult != SQLITE_OK) {
-            SM_LOG_ERROR(@"Failed to create table: %s, error %d", errMsg, sqlResult);
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            char *errMsg = NULL;
+            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT)";
+            
+            int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+            if(sqlResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"Failed to create table: %s, error %d", errMsg, sqlResult);
+            }
+            
+            NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (name) VALUES (\"%@\")", folderName];
+            const char *insertStmt = [insertSql UTF8String];
+            
+            sqlite3_stmt *statement = NULL;
+            sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            
+            sqlResult = sqlite3_step(statement);
+            if(sqlResult != SQLITE_DONE) {
+                SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
+            }
+            
+            sqlite3_finalize(statement);
+            
+            [self closeDatabase];
         }
-        
-        NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (name) VALUES (\"%@\")", folderName];
-        const char *insertStmt = [insertSql UTF8String];
-        
-        sqlite3_stmt *statement = NULL;
-        sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
-        
-        sqlResult = sqlite3_step(statement);
-        if(sqlResult != SQLITE_DONE) {
-            SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
-        }
-        
-        sqlite3_finalize(statement);
-        
-        [self closeDatabase];
-    }
+    });
 }
 
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName {

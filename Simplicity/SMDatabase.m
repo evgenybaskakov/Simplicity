@@ -29,6 +29,8 @@
 }
 
 - (BOOL)openDatabase {
+    NSAssert(_database == nil, @"datase already open");
+
     BOOL openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &_database);
     if(openDatabaseResult == SQLITE_OK) {
         SM_LOG_DEBUG(@"Database %@ open successfully", _dbFilePath);
@@ -42,6 +44,7 @@
 
 - (void)closeDatabase {
     sqlite3_close(_database);
+    _database = NULL;
 }
 
 - (void)addDBFolder:(NSString*)folderName {

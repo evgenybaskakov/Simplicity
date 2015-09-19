@@ -14,6 +14,10 @@
 #import "SMMailbox.h"
 #import "SMFolder.h"
 
+#import "SMAppDelegate.h"
+#import "SMSimplicityContainer.h"
+#import "SMDatabase.h"
+
 @interface SMFolderDesc : NSObject
 @property NSString *folderName;
 @property char delimiter;
@@ -106,17 +110,26 @@
 
 	[self updateMainFolders];
 	[self updateFavoriteFolders];
+    [self addFoldersToDatabase];
 
     SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
-	
+    
 	return YES;
+}
+
+- (void)addFoldersToDatabase {
+    for(SMFolder *folder in _folders) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[[appDelegate model] database] addDBFolder:folder.fullName];
+    }
 }
 
 - (void)dfs:(SMFolder *)folder {
 	[_folders addObject:folder];
 	
-	for(SMFolder *subfolder in folder.subfolders)
+    for(SMFolder *subfolder in folder.subfolders) {
 		[self dfs:subfolder];
+    }
 }
 
 - (void)addFolderToMailbox:(NSString*)folderFullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
@@ -159,8 +172,9 @@
 	
 	NSAssert(_rootFolder.subfolders.count > 0, @"root folder is empty");
 
-	for(SMFolder *subfolder in _rootFolder.subfolders)
+    for(SMFolder *subfolder in _rootFolder.subfolders) {
 		[self dfs:subfolder];
+    }
 }
 
 - (void)updateMainFolders {

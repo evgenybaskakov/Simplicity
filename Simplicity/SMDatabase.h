@@ -61,14 +61,13 @@
 #import <Foundation/Foundation.h>
 
 @class MCOIMAPMessage;
-@class SMFolder;
 
 @interface SMDatabase : NSObject
 
 - (id)initWithFilePath:(NSString*)dbFilePath;
-- (void)addDBFolder:(SMFolder*)folder;
-- (void)renameDBFolder:(SMFolder*)folder newName:(NSString*)newName;
-- (void)deleteDBFolder:(SMFolder*)folder;
+- (void)addDBFolder:(NSString*)folderName;
+- (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
+- (void)deleteDBFolder:(NSString*)folderName;
 - (NSArray*)getDBFolders;
 - (NSArray*)getMessageHeadersFromDBFolder:(NSString*)nameName;
 - (NSArray*)getMessageBodyForUIDFromDB:(uint32_t*)uid;

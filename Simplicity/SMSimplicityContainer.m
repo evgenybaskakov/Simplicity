@@ -10,6 +10,7 @@
 
 #import "SMLog.h"
 #import "SMSimplicityContainer.h"
+#import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
@@ -50,7 +51,9 @@
 		[_smtpSession setUsername:SMTP_USERNAME];
 		[_smtpSession setPassword:SMTP_PASSWORD];
 
-		_mailbox = [ SMMailbox new ];
+        _database = [[SMDatabase alloc] initWithFilePath:@"/Users/evgenybaskakov/Projects/Simplicity/Simplicity.sqlite"];
+
+        _mailbox = [ SMMailbox new ];
 		_messageStorage = [ SMMessageStorage new ];
 		_localFolderRegistry = [ SMLocalFolderRegistry new ];
 		_attachmentStorage = [ SMAttachmentStorage new ];

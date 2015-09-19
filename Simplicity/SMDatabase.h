@@ -65,7 +65,7 @@
 
 @interface SMDatabase : NSObject
 
-- (id)init:(NSString*)dbFilePath;
+- (id)initWithFilePath:(NSString*)dbFilePath;
 - (void)addDBFolder:(SMFolder*)folder;
 - (void)renameDBFolder:(SMFolder*)folder newName:(NSString*)newName;
 - (void)deleteDBFolder:(SMFolder*)folder;

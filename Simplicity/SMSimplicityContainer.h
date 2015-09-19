@@ -10,6 +10,7 @@
 
 #import <MailCore/MailCore.h>
 
+@class SMDatabase;
 @class SMMailbox;
 @class SMMessageStorage;
 @class SMLocalFolderRegistry;
@@ -27,6 +28,7 @@
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
 
+@property (readonly) SMDatabase *database;
 @property (readonly) SMMessageStorage *messageStorage;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
 @property (readonly) SMAttachmentStorage *attachmentStorage;

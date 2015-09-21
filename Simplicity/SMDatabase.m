@@ -47,11 +47,13 @@
     _database = NULL;
 }
 
+// TODO: Check for vanished folders
+
 - (void)addDBFolder:(NSString*)folderName {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             char *errMsg = NULL;
-            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT)";
+            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE)";
             
             int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
             if(sqlResult != SQLITE_OK) {
@@ -65,7 +67,11 @@
             sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
             
             sqlResult = sqlite3_step(statement);
-            if(sqlResult != SQLITE_DONE) {
+            if(sqlResult == SQLITE_DONE) {
+                SM_LOG_DEBUG(@"Folder %@ successfully insered", folderName);
+            } else if(sqlResult == SQLITE_CONSTRAINT) {
+                SM_LOG_DEBUG(@"Folder %@ already exists", folderName);
+            } else {
                 SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
             }
             

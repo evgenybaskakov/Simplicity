@@ -11,35 +11,11 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
-#import "SMMailbox.h"
 #import "SMFolder.h"
-
+#import "SMFolderDesc.h"
 #import "SMAppDelegate.h"
 #import "SMSimplicityContainer.h"
-#import "SMDatabase.h"
-
-@interface SMFolderDesc : NSObject
-@property NSString *folderName;
-@property char delimiter;
-@property MCOIMAPFolderFlag flags;
-- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
-@end
-
-@implementation  SMFolderDesc
-
-- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
-	self = [super init];
-	
-	if(self) {
-		_folderName = folderName;
-		_delimiter = delimiter;
-		_flags = flags;
-	}
-	
-	return self;
-}
-
-@end
+#import "SMMailbox.h"
 
 @implementation SMMailbox {
 	NSMutableArray *_mainFolders;
@@ -67,40 +43,57 @@
 	_folders = [NSMutableArray array];
 }
 
-- (Boolean)updateIMAPFolders:(NSArray *)folders {
-	NSAssert(folders.count > 0, @"No folders in mailbox");
+- (void)loadExistingFolders:(NSArray*)existingFolders {
+    if(existingFolders.count > 0) {
+        SM_LOG_INFO(@"%lu existing folders found", existingFolders.count);
 
-	NSMutableArray *newSortedFlatFolders = [NSMutableArray arrayWithCapacity:folders.count];
-	for(NSUInteger i = 0; i < folders.count; i++) {
-		MCOIMAPFolder *folder = folders[i];
-		NSString *path = folder.path;
-		NSData *pathData = [path dataUsingEncoding:NSUTF8StringEncoding];
-		NSString *pathUtf8 = (__bridge NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
+        [self updateFlatFolders:[NSMutableArray arrayWithArray:existingFolders]];
+    }
+    else {
+        SM_LOG_INFO(@"no existing folders found");
+    }
+}
 
-		[newSortedFlatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
-	}
+- (Boolean)updateIMAPFolders:(NSArray *)imapFolders {
+    NSAssert(imapFolders.count > 0, @"No IMAP folders provided");
+    
+    NSMutableArray *flatFolders = [NSMutableArray arrayWithCapacity:imapFolders.count];
+    for(NSUInteger i = 0; i < imapFolders.count; i++) {
+        MCOIMAPFolder *folder = imapFolders[i];
+        NSString *path = folder.path;
+        NSData *pathData = [path dataUsingEncoding:NSUTF8StringEncoding];
+        NSString *pathUtf8 = (__bridge NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
+        
+        [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
+    }
+    
+    return [self updateFlatFolders:flatFolders];
+}
+        
+- (Boolean)updateFlatFolders:(NSMutableArray *)flatFolders {
+	NSAssert(flatFolders.count > 0, @"No folders provided");
 
-	[newSortedFlatFolders sortUsingComparator:^NSComparisonResult(SMFolderDesc *fd1, SMFolderDesc *fd2) {
+	[flatFolders sortUsingComparator:^NSComparisonResult(SMFolderDesc *fd1, SMFolderDesc *fd2) {
 		return [fd1.folderName compare:fd2.folderName];
 	}];
 
-	if(newSortedFlatFolders.count == _sortedFlatFolders.count) {
+	if(flatFolders.count == _sortedFlatFolders.count) {
 		NSUInteger i = 0;
-		for(; i < folders.count; i++) {
-			SMFolderDesc *fd1 = newSortedFlatFolders[i];
+		for(; i < flatFolders.count; i++) {
+			SMFolderDesc *fd1 = flatFolders[i];
 			SMFolderDesc *fd2 = _sortedFlatFolders[i];
 
 			if(![fd1.folderName isEqualToString:fd2.folderName] || fd1.delimiter != fd2.delimiter || fd1.flags != fd2.flags)
 				break;
 		}
 
-		if(i == folders.count) {
+		if(i == flatFolders.count) {
 			SM_LOG_DEBUG(@"folders didn't change");
 			return NO;
 		}
 	}
 
-	_sortedFlatFolders = newSortedFlatFolders;
+	_sortedFlatFolders = flatFolders;
 	
 	[self cleanFolders];
 
@@ -110,18 +103,10 @@
 
 	[self updateMainFolders];
 	[self updateFavoriteFolders];
-    [self addFoldersToDatabase];
 
     SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
     
 	return YES;
-}
-
-- (void)addFoldersToDatabase {
-    for(SMFolder *folder in _folders) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[[appDelegate model] database] addDBFolder:folder.fullName];
-    }
 }
 
 - (void)dfs:(SMFolder *)folder {

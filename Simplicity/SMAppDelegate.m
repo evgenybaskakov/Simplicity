@@ -31,7 +31,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
 	_window.titleVisibility = NSWindowTitleHidden;
 
-	[[_model mailboxController] scheduleFolderListUpdate:YES];
+	[[_model mailboxController] initFolders];
 }
 
 + (NSURL*)appDataDir {

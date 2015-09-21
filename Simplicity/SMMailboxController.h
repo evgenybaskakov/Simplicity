@@ -13,6 +13,8 @@
 @interface SMMailboxController : NSObject
 
 - (id)initWithModel:(SMSimplicityContainer*)model;
+- (void)initFolders;
+- (void)loadExistingFolders:(NSArray*)folderDescs;
 - (void)scheduleFolderListUpdate:(Boolean)now;
 - (void)stopFolderListUpdate;
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName;

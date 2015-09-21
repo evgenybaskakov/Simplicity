@@ -65,10 +65,10 @@
 @interface SMDatabase : NSObject
 
 - (id)initWithFilePath:(NSString*)dbFilePath;
+- (void)loadDBFolders;
 - (void)addDBFolder:(NSString*)folderName;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)deleteDBFolder:(NSString*)folderName;
-- (NSArray*)getDBFolders;
 - (NSArray*)getMessageHeadersFromDBFolder:(NSString*)nameName;
 - (NSArray*)getMessageBodyForUIDFromDB:(uint32_t*)uid;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;

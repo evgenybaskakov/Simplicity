@@ -9,6 +9,9 @@
 #import <sqlite3.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMFolderDesc.h"
+#import "SMMailboxController.h"
 #import "SMDatabase.h"
 
 @implementation SMDatabase {
@@ -45,6 +48,45 @@
 - (void)closeDatabase {
     sqlite3_close(_database);
     _database = NULL;
+}
+
+- (NSDictionary*)loadDataFromDB:(const char *)sqlQuery {
+    NSAssert(_database != nil, @"no database open");
+    
+    sqlite3_stmt *statement = NULL;
+    sqlite3_prepare_v2(_database, sqlQuery, -1, &statement, NULL);
+    
+    NSMutableArray *arrRows = [[NSMutableArray alloc] init];
+    NSMutableArray *arrColumnNames = [[NSMutableArray alloc] init];
+    const int totalColumns = sqlite3_column_count(statement);
+    
+    while(sqlite3_step(statement) == SQLITE_ROW) {
+        NSMutableArray *arrDataRow = [[NSMutableArray alloc] init];
+        
+        for(int i = 0; i < totalColumns; i++){
+            char *dbDataAsChars = (char *)sqlite3_column_text(statement, i);
+            
+            if(dbDataAsChars != NULL) {
+                [arrDataRow addObject:[NSString  stringWithUTF8String:dbDataAsChars]];
+            }
+            
+            if(arrColumnNames.count != totalColumns) {
+                dbDataAsChars = (char *)sqlite3_column_name(statement, i);
+                [arrColumnNames addObject:[NSString stringWithUTF8String:dbDataAsChars]];
+            }
+        }
+        
+        if(arrDataRow.count > 0) {
+            [arrRows addObject:arrDataRow];
+        }
+    }
+    
+    NSDictionary *results = [[NSMutableDictionary alloc] init];
+    
+    [results setValue:arrColumnNames forKey:@"Columns"];
+    [results setValue:arrRows forKey:@"Rows"];
+    
+    return results;
 }
 
 // TODO: Check for vanished folders
@@ -90,9 +132,44 @@
     NSAssert(nil, @"TODO");
 }
 
-- (NSArray*)getDBFolders {
-    NSAssert(nil, @"TODO");
-    return nil;
+- (void)loadDBFolders {
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            const char *sqlQuery = "SELECT * FROM FOLDERS";
+            NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+            NSArray *columns = [foldersTable objectForKey:@"Columns"];
+            NSArray *rows = [foldersTable objectForKey:@"Rows"];
+            
+            const NSUInteger nameColumn = [columns indexOfObject:@"NAME"];
+            if(nameColumn == NSNotFound) {
+                SM_LOG_ERROR(@"database corrupted: folder name column not found");
+                
+                // TODO: trigger database drop
+                rows = [NSArray array];
+            }
+            
+            SM_LOG_WARNING(@"TODO: folder flags and delimiters not stored in DB");
+            
+            NSMutableArray *folders = [NSMutableArray arrayWithCapacity:rows.count];
+            for(NSUInteger i = 0; i < rows.count; i++) {
+                NSArray *row = rows[i];
+                NSString *name = row[nameColumn];
+                char delimiter = '/'; // TODO!
+                MCOIMAPFolderFlag flags = 0; // TODO!
+                
+                folders[i] = [[SMFolderDesc alloc] initWithFolderName:name delimiter:delimiter flags:flags];
+            }
+
+            [self closeDatabase];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
+                
+                [mailboxController loadExistingFolders:folders];
+            });
+        }
+    });
 }
 
 - (NSArray*)getMessageHeadersFromDBFolder:(NSString*)nameName {

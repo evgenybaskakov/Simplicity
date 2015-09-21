@@ -12,6 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMSimplicityContainer.h"
+#import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
 
@@ -49,6 +50,13 @@
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateFolders) object:nil];
 }
 
+- (void)initFolders {
+    SM_LOG_DEBUG(@"initializing folders");
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] database] loadDBFolders];
+}
+
 - (void)updateFolders {
 	SM_LOG_DEBUG(@"updating folders");
 
@@ -74,12 +82,33 @@
 		NSAssert(mailbox != nil, @"mailbox is nil");
 
 		if([mailbox updateIMAPFolders:folders]) {
-			SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [self addFoldersToDatabase];
+
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 			SMAppController *appController = [appDelegate appController];
 
 			[appController performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 		}
 	}];
+}
+
+- (void)loadExistingFolders:(NSArray*)folderDescs {
+    SMMailbox *mailbox = [_model mailbox];
+    NSAssert(mailbox != nil, @"mailbox is nil");
+
+    [mailbox loadExistingFolders:folderDescs];
+
+    [self scheduleFolderListUpdate:YES];
+}
+
+- (void)addFoldersToDatabase {
+    SMMailbox *mailbox = [_model mailbox];
+    NSAssert(mailbox != nil, @"mailbox is nil");
+
+    for(SMFolder *folder in mailbox.folders) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[[appDelegate model] database] addDBFolder:folder.fullName];
+    }
 }
 
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {

@@ -26,7 +26,8 @@
 @property (readonly) NSOrderedSet *favoriteFolders;
 @property (readonly) NSArray *folders;
 
-- (Boolean)updateIMAPFolders:(NSArray *)folders;
+- (void)loadExistingFolders:(NSArray*)existingFolders;
+- (Boolean)updateIMAPFolders:(NSArray*)imapFolders;
 
 - (SMFolder*)getFolderByKind:(SMFolderKind)kind;
 - (SMFolder*)getFolderByName:(NSString*)folderName;

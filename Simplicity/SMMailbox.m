@@ -94,7 +94,10 @@
 	}
 
     if(vanishedFolders != nil) {
-        for(NSUInteger i = 0, j = 0; i < flatFolders.count && j < _sortedFlatFolders.count;) {
+        NSUInteger i = 0, j = 0;
+        
+        // compare the new and old folder lists, filtering out vanished elements
+        while(i < flatFolders.count && j < _sortedFlatFolders.count) {
             SMFolderDesc *fd1 = flatFolders[i];
             SMFolderDesc *fd2 = _sortedFlatFolders[j];
 
@@ -112,6 +115,13 @@
                 i++;
                 j++;
             }
+        }
+
+        // store the rest of the vanished folders
+        while(j < _sortedFlatFolders.count) {
+            SMFolderDesc *fd2 = _sortedFlatFolders[j++];
+
+            [vanishedFolders addObject:fd2];
         }
     }
 

@@ -16,7 +16,14 @@
 #import "SMFolderColorController.h"
 #import "SMNewLabelWindowController.h"
 
-@implementation SMNewLabelWindowController
+@implementation SMNewLabelWindowController {
+    NSString *_nestingLabel;
+}
+
+- (void)windowDidLoad {
+    [self updateExistingLabelsList];
+    [self updateSuggestedNestingLabel];
+}
 
 - (IBAction)createAction:(id)sender {
 	NSString *folderName = _labelName.stringValue;
@@ -71,9 +78,9 @@
 	[_nestingLabelName addItemsWithTitles:labelsList];
 }
 
-- (void)setSuggestedNestingLabel:(NSString*)nestingLabel {
-	if(nestingLabel != nil) {
-		[_nestingLabelName selectItemWithTitle:nestingLabel];
+- (void)updateSuggestedNestingLabel {
+	if(_suggestedNestingLabel != nil) {
+		[_nestingLabelName selectItemWithTitle:_suggestedNestingLabel];
 		[_nestingLabelName setEnabled:YES];
 		[_labelNestedCheckbox setState:NSOnState];
 	} else {

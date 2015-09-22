@@ -15,11 +15,10 @@
 @property (nonatomic) IBOutlet NSButton *labelNestedCheckbox;
 @property (nonatomic) IBOutlet NSColorWell *labelColorWell;
 
+@property NSString *suggestedNestingLabel;
+
 - (IBAction)createAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)toggleNestedLabelAction:(id)sender;
-
-- (void)updateExistingLabelsList;
-- (void)setSuggestedNestingLabel:(NSString*)nestingLabel;
 
 @end

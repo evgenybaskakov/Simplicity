@@ -471,11 +471,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 #pragma mark New label creation
 
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder {
-	if(_addNewLabelWindowController == nil)
+    if(_addNewLabelWindowController == nil) {
 		_addNewLabelWindowController = [[SMNewLabelWindowController alloc] initWithWindowNibName:@"SMNewLabelWindowController"];
+    }
 
-	[_addNewLabelWindowController updateExistingLabelsList];	
-	[_addNewLabelWindowController setSuggestedNestingLabel:suggestedParentFolder];
+	_addNewLabelWindowController.suggestedNestingLabel = suggestedParentFolder;
 
 	NSWindow *newLabelSheet = _addNewLabelWindowController.window;
 	NSAssert(newLabelSheet != nil, @"newLabelSheet is nil");

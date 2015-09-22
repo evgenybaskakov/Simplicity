@@ -89,20 +89,18 @@
     return results;
 }
 
-// TODO: Check for vanished folders
-
-- (void)addDBFolder:(NSString*)folderName {
+- (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             char *errMsg = NULL;
-            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE)";
+            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
             
             int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
             if(sqlResult != SQLITE_OK) {
                 SM_LOG_ERROR(@"Failed to create table: %s, error %d", errMsg, sqlResult);
             }
             
-            NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (name) VALUES (\"%@\")", folderName];
+            NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (NAME, DELIMITER, FLAGS) VALUES (\"%@\", %ld, %ld)", folderName, (NSInteger)delimiter, (NSInteger)flags];
             const char *insertStmt = [insertSql UTF8String];
             
             sqlite3_stmt *statement = NULL;
@@ -135,29 +133,35 @@
 - (void)loadDBFolders {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
+            NSMutableArray *folders = nil;
+            
             const char *sqlQuery = "SELECT * FROM FOLDERS";
             NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
             NSArray *columns = [foldersTable objectForKey:@"Columns"];
             NSArray *rows = [foldersTable objectForKey:@"Rows"];
             
-            const NSUInteger nameColumn = [columns indexOfObject:@"NAME"];
-            if(nameColumn == NSNotFound) {
-                SM_LOG_ERROR(@"database corrupted: folder name column not found");
+            const NSInteger nameColumn = [columns indexOfObject:@"NAME"];
+            const NSInteger delimiterColumn = [columns indexOfObject:@"DELIMITER"];
+            const NSInteger flagsColumn = [columns indexOfObject:@"FLAGS"];
+
+            if(nameColumn == NSNotFound || delimiterColumn == NSNotFound || flagsColumn == NSNotFound) {
+                if(columns.count > 0 && rows.count > 0) {
+                    SM_LOG_ERROR(@"database corrupted: folder name/delimiter/flags columns not found: %ld/%ld/%ld", nameColumn, delimiterColumn, flagsColumn);
+                }
                 
-                // TODO: trigger database drop
-                rows = [NSArray array];
+                // TODO: trigger database erase
             }
-            
-            SM_LOG_WARNING(@"TODO: folder flags and delimiters not stored in DB");
-            
-            NSMutableArray *folders = [NSMutableArray arrayWithCapacity:rows.count];
-            for(NSUInteger i = 0; i < rows.count; i++) {
-                NSArray *row = rows[i];
-                NSString *name = row[nameColumn];
-                char delimiter = '/'; // TODO!
-                MCOIMAPFolderFlag flags = 0; // TODO!
+            else {
+                folders = [NSMutableArray arrayWithCapacity:rows.count];
                 
-                folders[i] = [[SMFolderDesc alloc] initWithFolderName:name delimiter:delimiter flags:flags];
+                for(NSUInteger i = 0; i < rows.count; i++) {
+                    NSArray *row = rows[i];
+                    NSString *name = row[nameColumn];
+                    char delimiter = [((NSString*)row[delimiterColumn]) integerValue];
+                    MCOIMAPFolderFlag flags = [((NSString*)row[flagsColumn]) integerValue];
+                    
+                    folders[i] = [[SMFolderDesc alloc] initWithFolderName:name delimiter:delimiter flags:flags];
+                }
             }
 
             [self closeDatabase];

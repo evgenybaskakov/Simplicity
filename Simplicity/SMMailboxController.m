@@ -107,7 +107,7 @@
 
     for(SMFolder *folder in mailbox.folders) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[[appDelegate model] database] addDBFolder:folder.fullName];
+        [[[appDelegate model] database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 }
 

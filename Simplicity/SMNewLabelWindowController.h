@@ -11,7 +11,7 @@
 @interface SMNewLabelWindowController : NSWindowController<NSWindowDelegate>
 
 @property (nonatomic) IBOutlet NSTextField *labelName;
-@property (nonatomic) IBOutlet NSPopUpButton *nestingLabelName;
+@property (nonatomic) IBOutlet NSPopUpButton *nestingLabelNameButton;
 @property (nonatomic) IBOutlet NSButton *labelNestedCheckbox;
 @property (nonatomic) IBOutlet NSColorWell *labelColorWell;
 

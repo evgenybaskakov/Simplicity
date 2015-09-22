@@ -10,7 +10,7 @@
                 <outlet property="labelColorWell" destination="uDd-Vj-f8j" id="CTh-zd-yk2"/>
                 <outlet property="labelName" destination="j5Z-WR-z7e" id="BxF-Gn-MH0"/>
                 <outlet property="labelNestedCheckbox" destination="MmM-Wa-hRZ" id="tkF-VG-hCm"/>
-                <outlet property="nestingLabelName" destination="7RD-4l-MNn" id="UZq-h2-ypm"/>
+                <outlet property="nestingLabelNameButton" destination="7RD-4l-MNn" id="fKO-y4-390"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="tQx-Ze-xrs"/>
             </connections>
         </customObject>

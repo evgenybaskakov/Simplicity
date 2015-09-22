@@ -108,7 +108,7 @@
             
             sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
-                SM_LOG_INFO(@"Folder %@ successfully insered", folderName);
+                SM_LOG_INFO(@"Folder %@ successfully inserted", folderName);
             } else if(sqlResult == SQLITE_CONSTRAINT) {
                 SM_LOG_DEBUG(@"Folder %@ already exists", folderName);
             } else {

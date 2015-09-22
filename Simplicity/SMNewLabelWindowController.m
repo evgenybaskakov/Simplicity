@@ -27,7 +27,7 @@
 
 - (IBAction)createAction:(id)sender {
 	NSString *folderName = _labelName.stringValue;
-	NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelName.titleOfSelectedItem : nil;
+	NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
@@ -51,7 +51,7 @@
 - (IBAction)toggleNestedLabelAction:(id)sender {
 	const Boolean nestLabel = (_labelNestedCheckbox.state == NSOnState);
 
-	[_nestingLabelName setEnabled:nestLabel];
+	[_nestingLabelNameButton setEnabled:nestLabel];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
@@ -74,17 +74,17 @@
 	for(SMFolder *folder in mailbox.folders)
 		[labelsList addObject:folder.fullName];
 
-	[_nestingLabelName removeAllItems];
-	[_nestingLabelName addItemsWithTitles:labelsList];
+	[_nestingLabelNameButton removeAllItems];
+	[_nestingLabelNameButton addItemsWithTitles:labelsList];
 }
 
 - (void)updateSuggestedNestingLabel {
 	if(_suggestedNestingLabel != nil) {
-		[_nestingLabelName selectItemWithTitle:_suggestedNestingLabel];
-		[_nestingLabelName setEnabled:YES];
+		[_nestingLabelNameButton selectItemWithTitle:_suggestedNestingLabel];
+		[_nestingLabelNameButton setEnabled:YES];
 		[_labelNestedCheckbox setState:NSOnState];
 	} else {
-		[_nestingLabelName setEnabled:NO];
+		[_nestingLabelNameButton setEnabled:NO];
 		[_labelNestedCheckbox setState:NSOffState];
 	}
 }

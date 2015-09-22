@@ -457,7 +457,7 @@ typedef enum {
 - (void)deleteLabel {
 	NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 	
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_ERROR(@"TODO: NOT IMPLEMENTED");
 }
 
 - (void)makeLabelFavorite {

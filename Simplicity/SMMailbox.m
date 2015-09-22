@@ -47,14 +47,14 @@
     if(existingFolders.count > 0) {
         SM_LOG_INFO(@"%lu existing folders found", existingFolders.count);
 
-        [self updateFlatFolders:[NSMutableArray arrayWithArray:existingFolders]];
+        [self updateFlatFolders:[NSMutableArray arrayWithArray:existingFolders] vanishedFolders:nil];
     }
     else {
         SM_LOG_INFO(@"no existing folders found");
     }
 }
 
-- (Boolean)updateIMAPFolders:(NSArray *)imapFolders {
+- (Boolean)updateIMAPFolders:(NSArray *)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders {
     NSAssert(imapFolders.count > 0, @"No IMAP folders provided");
     
     NSMutableArray *flatFolders = [NSMutableArray arrayWithCapacity:imapFolders.count];
@@ -67,10 +67,10 @@
         [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
     }
     
-    return [self updateFlatFolders:flatFolders];
+    return [self updateFlatFolders:flatFolders vanishedFolders:vanishedFolders];
 }
         
-- (Boolean)updateFlatFolders:(NSMutableArray *)flatFolders {
+- (Boolean)updateFlatFolders:(NSMutableArray *)flatFolders vanishedFolders:(NSMutableArray*)vanishedFolders {
 	NSAssert(flatFolders.count > 0, @"No folders provided");
 
 	[flatFolders sortUsingComparator:^NSComparisonResult(SMFolderDesc *fd1, SMFolderDesc *fd2) {
@@ -92,6 +92,28 @@
 			return NO;
 		}
 	}
+
+    if(vanishedFolders != nil) {
+        for(NSUInteger i = 0, j = 0; i < flatFolders.count && j < _sortedFlatFolders.count;) {
+            SMFolderDesc *fd1 = flatFolders[i];
+            SMFolderDesc *fd2 = _sortedFlatFolders[j];
+
+            NSComparisonResult compareResult = [fd1.folderName compare:fd2.folderName];
+            
+            if(compareResult == NSOrderedAscending) {
+                i++;
+            }
+            else if(compareResult == NSOrderedDescending) {
+                [vanishedFolders addObject:fd2];
+
+                j++;
+            }
+            else {
+                i++;
+                j++;
+            }
+        }
+    }
 
 	_sortedFlatFolders = flatFolders;
 	

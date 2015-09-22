@@ -108,7 +108,7 @@
             
             sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
-                SM_LOG_DEBUG(@"Folder %@ successfully insered", folderName);
+                SM_LOG_INFO(@"Folder %@ successfully insered", folderName);
             } else if(sqlResult == SQLITE_CONSTRAINT) {
                 SM_LOG_DEBUG(@"Folder %@ already exists", folderName);
             } else {
@@ -127,7 +127,26 @@
 }
 
 - (void)deleteDBFolder:(NSString*)folderName {
-    NSAssert(nil, @"TODO");
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+            const char *deleteStmt = [deleteSql UTF8String];
+
+            sqlite3_stmt *statement = NULL;
+            sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+            
+            int sqlResult = sqlite3_step(statement);
+            if(sqlResult == SQLITE_DONE) {
+                SM_LOG_INFO(@"Folder %@ successfully deleted", folderName);
+            } else {
+                SM_LOG_ERROR(@"Failed to delete folder %@, error %d", folderName, sqlResult);
+            }
+            
+            sqlite3_finalize(statement);
+            
+            [self closeDatabase];
+        }
+    });
 }
 
 - (void)loadDBFolders {

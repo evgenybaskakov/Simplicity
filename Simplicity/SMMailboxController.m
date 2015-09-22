@@ -14,6 +14,7 @@
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
+#import "SMFolderDesc.h"
 #import "SMMailboxController.h"
 
 #define FOLDER_LIST_UPDATE_INTERVAL_SEC 5
@@ -81,13 +82,17 @@
 		SMMailbox *mailbox = [ _model mailbox ];
 		NSAssert(mailbox != nil, @"mailbox is nil");
 
-		if([mailbox updateIMAPFolders:folders]) {
+        NSMutableArray *vanishedFolders = [NSMutableArray array];
+		if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+            for(SMFolderDesc *vanishedFolder in vanishedFolders) {
+                [[[appDelegate model] database] deleteDBFolder:vanishedFolder.folderName];
+            }
+            
             [self addFoldersToDatabase];
 
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-			SMAppController *appController = [appDelegate appController];
-
-			[appController performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
+			[[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 		}
 	}];
 }

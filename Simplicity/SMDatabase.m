@@ -58,31 +58,33 @@
 }
 
 - (void)initDatabase {
-    [self openDatabase];
-
-    {
-        char *errMsg = NULL;
-        const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
-        
-        const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
-        if(sqlResult != SQLITE_OK) {
-            SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
-            // TODO: mark the DB as invalid?
-        }
+    if([self openDatabase]) {
+        [self createFoldersTable];
+        [self createMessagesTable];
+        [self closeDatabase];
     }
+}
 
-    {
-        char *errMsg = NULL;
-        const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY, MESSAGE BLOB)";
-        
-        const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
-        if(sqlResult != SQLITE_OK) {
-            SM_LOG_ERROR(@"Failed to create table MESSAGES: %s, error %d", errMsg, sqlResult);
-            // TODO: mark the DB as invalid?
-        }
-    }
+- (void)createFoldersTable {
+    char *errMsg = NULL;
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
     
-    [self closeDatabase];
+    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+        // TODO: mark the DB as invalid?
+    }
+}
+
+- (void)createMessagesTable {
+    char *errMsg = NULL;
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY, MESSAGE BLOB)";
+    
+    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table MESSAGES: %s, error %d", errMsg, sqlResult);
+        // TODO: mark the DB as invalid?
+    }
 }
 
 - (NSDictionary*)loadDataFromDB:(const char *)sqlQuery {
@@ -123,7 +125,10 @@
     
     [results setValue:arrColumnNames forKey:@"Columns"];
     [results setValue:arrRows forKey:@"Rows"];
-    
+
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
     return results;
 }
 
@@ -141,7 +146,7 @@
             
             const int sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
-                SM_LOG_INFO(@"Folder %@ successfully inserted", folderName);
+                SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
             } else if(sqlResult == SQLITE_CONSTRAINT) {
                 SM_LOG_DEBUG(@"Folder %@ already exists", folderName);
             } else {
@@ -266,9 +271,10 @@
             
             const int sqlInsertResult = sqlite3_step(statement);
             if(sqlInsertResult == SQLITE_DONE) {
-                SM_LOG_INFO(@"Message with UID %u successfully inserted", imapMessage.uid);
+                SM_LOG_DEBUG(@"Message with UID %u successfully inserted", imapMessage.uid);
             } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
-                SM_LOG_WARNING(@"Message with UID %u already exists", imapMessage.uid);
+                // TODO: restore WARNING; don't rewrite messages on first launch
+                SM_LOG_DEBUG(@"Message with UID %u already exists", imapMessage.uid);
             } else {
                 SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", imapMessage.uid, sqlInsertResult);
             }
@@ -279,6 +285,10 @@
             [self closeDatabase];
         }
     });
+}
+
+- (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName {
+    SM_LOG_DEBUG(@"TODO");
 }
 
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage {

@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMDatabase.h"
 #import "SMMessage.h"
 #import "SMMessageComparators.h"
 #import "SMMessageStorage.h"
@@ -198,7 +199,19 @@
 			firstMessageDate = [firstMessage date];
 		}
 
-		SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session];
+		const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session];
+        
+        if(threadUpdateResult != SMThreadUpdateResultNone) {
+            if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                [[[appDelegate model] database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
+            }
+            else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                [[[appDelegate model] database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
+            }
+        }
+        
 		if(threadUpdateResult != SMThreadUpdateResultNone) {
 			if(updateResult == SMMesssageStorageUpdateResultNone) {
 				updateResult = (threadUpdateResult == SMThreadUpdateResultStructureChanged? SMMesssageStorageUpdateResultStructureChanged : SMMesssageStorageUpdateResultFlagsChanged);

@@ -59,6 +59,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MailCore/MailCore.h>
 
 @class MCOIMAPMessage;
 
@@ -72,6 +73,7 @@
 - (NSArray*)getMessageHeadersFromDBFolder:(NSString*)nameName;
 - (NSArray*)getMessageBodyForUIDFromDB:(uint32_t*)uid;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;
+- (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;

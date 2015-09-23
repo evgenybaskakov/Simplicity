@@ -248,7 +248,6 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 			} else {
 				return SMThreadUpdateResultNone;
 			}
-			
 		}
 	}
 	

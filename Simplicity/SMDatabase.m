@@ -26,6 +26,8 @@
     if(self) {
         _serialQueue = dispatch_queue_create("com.simplicity.Simplicity.serialDatabaseQueue", DISPATCH_QUEUE_SERIAL);
         _dbFilePath = dbFilePath;
+        
+        [self initDatabase];
     }
     
     return self;
@@ -34,7 +36,7 @@
 - (BOOL)openDatabase {
     NSAssert(_database == nil, @"datase already open");
 
-    BOOL openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &_database);
+    const int openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &_database);
     if(openDatabaseResult == SQLITE_OK) {
         SM_LOG_DEBUG(@"Database %@ open successfully", _dbFilePath);
         return TRUE;
@@ -46,15 +48,51 @@
 }
 
 - (void)closeDatabase {
-    sqlite3_close(_database);
+    const int sqlCloseResult = sqlite3_close(_database);
+    
+    if(sqlCloseResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"could not close database, error %d", sqlCloseResult);
+    }
+    
     _database = NULL;
+}
+
+- (void)initDatabase {
+    [self openDatabase];
+
+    {
+        char *errMsg = NULL;
+        const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
+        
+        const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+        if(sqlResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+            // TODO: mark the DB as invalid?
+        }
+    }
+
+    {
+        char *errMsg = NULL;
+        const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY, MESSAGE BLOB)";
+        
+        const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+        if(sqlResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"Failed to create table MESSAGES: %s, error %d", errMsg, sqlResult);
+            // TODO: mark the DB as invalid?
+        }
+    }
+    
+    [self closeDatabase];
 }
 
 - (NSDictionary*)loadDataFromDB:(const char *)sqlQuery {
     NSAssert(_database != nil, @"no database open");
     
     sqlite3_stmt *statement = NULL;
-    sqlite3_prepare_v2(_database, sqlQuery, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(_database, sqlQuery, -1, &statement, NULL);
+    if(sqlPrepareResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+    }
     
     NSMutableArray *arrRows = [[NSMutableArray alloc] init];
     NSMutableArray *arrColumnNames = [[NSMutableArray alloc] init];
@@ -92,21 +130,16 @@
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
-            char *errMsg = NULL;
-            const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
-            
-            int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
-            if(sqlResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"Failed to create table: %s, error %d", errMsg, sqlResult);
-            }
-            
             NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (NAME, DELIMITER, FLAGS) VALUES (\"%@\", %ld, %ld)", folderName, (NSInteger)delimiter, (NSInteger)flags];
             const char *insertStmt = [insertSql UTF8String];
             
             sqlite3_stmt *statement = NULL;
-            sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
+            }
             
-            sqlResult = sqlite3_step(statement);
+            const int sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
                 SM_LOG_INFO(@"Folder %@ successfully inserted", folderName);
             } else if(sqlResult == SQLITE_CONSTRAINT) {
@@ -115,7 +148,8 @@
                 SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
             }
             
-            sqlite3_finalize(statement);
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
             
             [self closeDatabase];
         }
@@ -133,7 +167,10 @@
             const char *deleteStmt = [deleteSql UTF8String];
 
             sqlite3_stmt *statement = NULL;
-            sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare folders delete statement, error %d", sqlPrepareResult);
+            }
             
             int sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
@@ -142,8 +179,9 @@
                 SM_LOG_ERROR(@"Failed to delete folder %@, error %d", folderName, sqlResult);
             }
             
-            sqlite3_finalize(statement);
-            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
+         
             [self closeDatabase];
         }
     });
@@ -206,7 +244,41 @@
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName {
-    NSAssert(nil, @"TODO");
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            NSData *encodedMessage = [NSKeyedArchiver archivedDataWithRootObject:imapMessage];
+            NSAssert(encodedMessage != nil, @"could not encode IMAP message");
+
+            const char *insertStmt = "INSERT INTO MESSAGES (\"UID\", \"MESSAGE\") VALUES (?, ?)";
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            
+            if(sqlPrepareResult == SQLITE_OK) {
+                int bindResult;
+                if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1", imapMessage.uid);
+                }
+                if((bindResult = sqlite3_bind_blob(statement, 2, [encodedMessage bytes], (int)[encodedMessage length], SQLITE_STATIC)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2", imapMessage.uid);
+                }
+            }
+            
+            const int sqlInsertResult = sqlite3_step(statement);
+            if(sqlInsertResult == SQLITE_DONE) {
+                SM_LOG_INFO(@"Message with UID %u successfully inserted", imapMessage.uid);
+            } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
+                SM_LOG_WARNING(@"Message with UID %u already exists", imapMessage.uid);
+            } else {
+                SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", imapMessage.uid, sqlInsertResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase];
+        }
+    });
 }
 
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage {

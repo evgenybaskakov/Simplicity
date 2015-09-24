@@ -73,6 +73,7 @@
 - (NSArray*)getMessageHeadersFromDBFolder:(NSString*)nameName;
 - (NSArray*)getMessageBodyForUIDFromDB:(uint32_t*)uid;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;
+- (void)removeMessageFromDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName;
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;

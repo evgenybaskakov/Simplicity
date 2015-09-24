@@ -18,6 +18,7 @@
     NSString *_dbFilePath;
     sqlite3 *_database;
     dispatch_queue_t _serialQueue;
+    NSMutableArray *_folderIds;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -61,6 +62,7 @@
     if([self openDatabase]) {
         [self createFoldersTable];
         [self createMessagesTable];
+        [self loadFolderIds];
         [self closeDatabase];
     }
 }
@@ -121,20 +123,48 @@
         }
     }
     
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+    
     NSDictionary *results = [[NSMutableDictionary alloc] init];
     
     [results setValue:arrColumnNames forKey:@"Columns"];
     [results setValue:arrRows forKey:@"Rows"];
 
-    const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
-
     return results;
+}
+
+- (void)loadFolderIds {
+    _folderIds = [NSMutableArray array];
+
+    const char *sqlQuery = "SELECT * FROM FOLDERS";
+    NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+    NSArray *columns = [foldersTable objectForKey:@"Columns"];
+    NSArray *rows = [foldersTable objectForKey:@"Rows"];
+    
+    const NSInteger idColumn = [columns indexOfObject:@"ID"];
+    const NSInteger nameColumn = [columns indexOfObject:@"NAME"];
+    
+    if(idColumn != NSNotFound && nameColumn != NSNotFound) {
+        for(NSUInteger i = 0; i < rows.count; i++) {
+            NSArray *row = rows[i];
+            NSString *idStr = row[idColumn];
+            NSString *nameStr = row[nameColumn];
+            NSUInteger folderId = [idStr integerValue];
+
+            [_folderIds addObject:[NSNumber numberWithUnsignedInteger:folderId]];
+            
+            SM_LOG_DEBUG(@"Folder \"%@\" id %lu", nameStr, folderId);
+        }
+    }
 }
 
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
+            //
+            // Step 1: Add the folder into the DB.
+            //
             NSString *insertSql = [NSString stringWithFormat: @"INSERT INTO FOLDERS (NAME, DELIMITER, FLAGS) VALUES (\"%@\", %ld, %ld)", folderName, (NSInteger)delimiter, (NSInteger)flags];
             const char *insertStmt = [insertSql UTF8String];
             
@@ -144,9 +174,13 @@
                 SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
             }
             
+            BOOL newFolderAdded = NO;
+            
             const int sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
                 SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
+
+                newFolderAdded = YES;
             } else if(sqlResult == SQLITE_CONSTRAINT) {
                 SM_LOG_DEBUG(@"Folder %@ already exists", folderName);
             } else {
@@ -155,6 +189,37 @@
             
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+            if(newFolderAdded) {
+                //
+                // Step 2: For new folders, find out what's the ID of the newly added folder.
+                //
+                NSString *selectSql = [NSString stringWithFormat: @"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+                const char *sqlQuery = [selectSql UTF8String];
+                NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+                NSArray *columns = [foldersTable objectForKey:@"Columns"];
+                NSArray *rows = [foldersTable objectForKey:@"Rows"];
+                
+                const NSInteger idColumn = [columns indexOfObject:@"ID"];
+                
+                if(idColumn != 0) {
+                    SM_LOG_ERROR(@"database corrupted: folder ID column not found (column value %ld)", idColumn);
+                    // TODO: trigger database erase
+                }
+                else if(rows.count != 1) {
+                    SM_LOG_ERROR(@"database corrupted: folder could not be added");
+                    // TODO: trigger database erase
+                }
+                else {
+                    NSArray *row = rows[0];
+                    NSString *idStr = row[0];
+                    NSUInteger folderId = [idStr integerValue];
+                    
+                    [_folderIds addObject:[NSNumber numberWithUnsignedInteger:folderId]];
+
+                    SM_LOG_DEBUG(@"Loaded folder \"%@\" id %lu", folderName, folderId);
+                }
+            }
             
             [self closeDatabase];
         }
@@ -285,6 +350,9 @@
             [self closeDatabase];
         }
     });
+}
+
+- (void)removeMessageFromDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName {
 }
 
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)nameName {

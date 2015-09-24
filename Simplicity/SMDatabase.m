@@ -18,7 +18,7 @@
     NSString *_dbFilePath;
     sqlite3 *_database;
     dispatch_queue_t _serialQueue;
-    NSMutableArray *_folderIds;
+    NSMutableDictionary *_folderIds;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -74,6 +74,24 @@
     const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+        // TODO: mark the DB as invalid?
+    }
+}
+
+- (void)createFolderMessagesTable:(NSString*)folderName {
+    NSNumber *folderId = [_folderIds objectForKey:folderName];
+    if(folderId == nil) {
+        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+        // TODO: mark the DB as invalid?
+    }
+    
+    NSString *createSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY)", folderId];
+    const char *createStmt = [createSql UTF8String];
+    
+    char *errMsg = NULL;
+    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table for folder \"%@\" (id %@): %s, error %d", folderName, folderId, errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
@@ -135,7 +153,7 @@
 }
 
 - (void)loadFolderIds {
-    _folderIds = [NSMutableArray array];
+    _folderIds = [[NSMutableDictionary alloc] init];
 
     const char *sqlQuery = "SELECT * FROM FOLDERS";
     NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
@@ -152,10 +170,38 @@
             NSString *nameStr = row[nameColumn];
             NSUInteger folderId = [idStr integerValue];
 
-            [_folderIds addObject:[NSNumber numberWithUnsignedInteger:folderId]];
+            [_folderIds setObject:[NSNumber numberWithUnsignedInteger:folderId] forKey:nameStr];
             
             SM_LOG_DEBUG(@"Folder \"%@\" id %lu", nameStr, folderId);
         }
+    }
+}
+
+- (void)loadFolderId:(NSString*)folderName {
+    NSString *selectSql = [NSString stringWithFormat: @"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+    const char *sqlQuery = [selectSql UTF8String];
+    NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+    NSArray *columns = [foldersTable objectForKey:@"Columns"];
+    NSArray *rows = [foldersTable objectForKey:@"Rows"];
+    
+    const NSInteger idColumn = [columns indexOfObject:@"ID"];
+    
+    if(idColumn != 0) {
+        SM_LOG_ERROR(@"database corrupted: folder ID column not found (column value %ld)", idColumn);
+        // TODO: trigger database erase
+    }
+    else if(rows.count != 1) {
+        SM_LOG_ERROR(@"database corrupted: folder could not be added");
+        // TODO: trigger database erase
+    }
+    else {
+        NSArray *row = rows[0];
+        NSString *idStr = row[0];
+        NSUInteger folderId = [idStr integerValue];
+        
+        [_folderIds setObject:[NSNumber numberWithUnsignedInteger:folderId] forKey:folderName];
+        
+        SM_LOG_DEBUG(@"Folder \"%@\" id %lu", folderName, folderId);
     }
 }
 
@@ -194,31 +240,12 @@
                 //
                 // Step 2: For new folders, find out what's the ID of the newly added folder.
                 //
-                NSString *selectSql = [NSString stringWithFormat: @"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-                const char *sqlQuery = [selectSql UTF8String];
-                NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
-                NSArray *columns = [foldersTable objectForKey:@"Columns"];
-                NSArray *rows = [foldersTable objectForKey:@"Rows"];
+                [self loadFolderId:folderName];
                 
-                const NSInteger idColumn = [columns indexOfObject:@"ID"];
-                
-                if(idColumn != 0) {
-                    SM_LOG_ERROR(@"database corrupted: folder ID column not found (column value %ld)", idColumn);
-                    // TODO: trigger database erase
-                }
-                else if(rows.count != 1) {
-                    SM_LOG_ERROR(@"database corrupted: folder could not be added");
-                    // TODO: trigger database erase
-                }
-                else {
-                    NSArray *row = rows[0];
-                    NSString *idStr = row[0];
-                    NSUInteger folderId = [idStr integerValue];
-                    
-                    [_folderIds addObject:[NSNumber numberWithUnsignedInteger:folderId]];
-
-                    SM_LOG_DEBUG(@"Loaded folder \"%@\" id %lu", folderName, folderId);
-                }
+                //
+                // Step 3: Create a unique folder table containing message UIDs.
+                //
+                [self createFolderMessagesTable:folderName];
             }
             
             [self closeDatabase];

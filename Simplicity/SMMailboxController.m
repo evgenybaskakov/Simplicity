@@ -107,11 +107,16 @@
 }
 
 - (void)addFoldersToDatabase {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
     SMMailbox *mailbox = [_model mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
+    for(SMFolder *folder in mailbox.mainFolders) {
+        [[[appDelegate model] database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
+    }
+
     for(SMFolder *folder in mailbox.folders) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [[[appDelegate model] database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 }

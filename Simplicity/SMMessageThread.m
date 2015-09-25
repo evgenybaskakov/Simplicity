@@ -268,7 +268,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 	return SMThreadUpdateResultStructureChanged;
 }
 
-- (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages {
+- (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages {
 	NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
 	NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
 	
@@ -285,6 +285,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 				SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
 
 				[notUpdatedMessageIndices addIndex:i];
+
+                [vanishedMessages addObject:message];
                 [vanishedMessageUIDs addObject:[NSNumber numberWithUnsignedInt:message.uid]];
 			}
 		}

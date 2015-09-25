@@ -378,7 +378,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[self cancelScheduledUpdateTimeout];
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeVanishedMessages:YES];
+	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES];
 	Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
 	
 	[self fetchMessageBodies];
@@ -486,7 +486,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	}
 	
 	if(finishFetch) {
-		[[[appDelegate model] messageStorage] endUpdate:_localName removeVanishedMessages:NO];
+		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO];
 		
 		[self fetchMessageBodies];
 		

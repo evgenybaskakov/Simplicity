@@ -474,11 +474,11 @@
     SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
 }
 
-- (void)removeMessageFromDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
+- (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
-            [self deleteUIDFromFolderTable:imapMessage.uid folder:folderName];
-            [self deleteMessageFromMessagesTable:imapMessage.uid];            
+            [self deleteUIDFromFolderTable:uid folder:folderName];
+            [self deleteMessageFromMessagesTable:uid];
             [self closeDatabase];
         }
     });

@@ -101,12 +101,12 @@
     SMMailbox *mailbox = [_model mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
-    [mailbox loadExistingFolders:folderDescs];
+    if([mailbox loadExistingFolders:folderDescs]) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
+    }
 
     [self scheduleFolderListUpdate:YES];
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 }
 
 - (void)addFoldersToDatabase {

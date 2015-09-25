@@ -43,14 +43,16 @@
 	_folders = [NSMutableArray array];
 }
 
-- (void)loadExistingFolders:(NSArray*)existingFolders {
+- (BOOL)loadExistingFolders:(NSArray*)existingFolders {
     if(existingFolders.count > 0) {
         SM_LOG_INFO(@"%lu existing folders found", existingFolders.count);
 
         [self updateFlatFolders:[NSMutableArray arrayWithArray:existingFolders] vanishedFolders:nil];
+        return TRUE;
     }
     else {
         SM_LOG_INFO(@"no existing folders found");
+        return FALSE;
     }
 }
 

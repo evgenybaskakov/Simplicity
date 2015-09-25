@@ -104,6 +104,9 @@
     [mailbox loadExistingFolders:folderDescs];
 
     [self scheduleFolderListUpdate:YES];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 }
 
 - (void)addFoldersToDatabase {

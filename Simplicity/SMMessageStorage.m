@@ -238,7 +238,7 @@
 	return updateResult;
 }
 
-- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeVanishedMessages:(Boolean)removeVanishedMessages {
+- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages {
     SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
@@ -246,14 +246,15 @@
 	SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
 	NSAssert(collection, @"bad thread collection");
 	
-	NSMutableArray *vanishedThreads = [[NSMutableArray alloc] init];
+    NSMutableArray *vanishedMessages = [NSMutableArray array];
+	NSMutableArray *vanishedThreads = [NSMutableArray array];
 
 	for(NSNumber *threadId in collection.messageThreads) {
 		SMMessageThread *messageThread = [collection.messageThreads objectForKey:threadId];
 		NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
 
-		SMThreadUpdateResult threadUpdateResult = [messageThread endUpdate:removeVanishedMessages];
-
+        SMThreadUpdateResult threadUpdateResult = [messageThread endUpdate:removeVanishedMessages vanishedMessages:vanishedMessages];
+        
 		if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
 			NSAssert(oldIndex != NSNotFound, @"message thread not found");
 			[self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
@@ -270,6 +271,15 @@
 
     [self deleteMessageThreads:vanishedThreads fromCollection:collection];
 
+    if(removeVanishedMessages) {
+        for(SMMessage *message in vanishedMessages) {
+            if([message.remoteFolder isEqualToString:remoteFolder]) {
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                [[[appDelegate model] database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
+            }
+        }
+    }
+    
 	NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", collection.messageThreads.count, collection.messageThreadsByDate.count);
 	
 	return updateResult;

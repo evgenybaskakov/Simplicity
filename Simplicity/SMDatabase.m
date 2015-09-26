@@ -12,6 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
 #import "SMMailboxController.h"
+#import "SMCompression.h"
 #import "SMDatabase.h"
 
 @implementation SMDatabase {
@@ -62,6 +63,7 @@
     if([self openDatabase]) {
         [self createFoldersTable];
         [self createMessagesTable];
+        [self createMessageBodiesTable];
         [self loadFolderIds];
         [self closeDatabase];
     }
@@ -103,6 +105,17 @@
     const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table MESSAGES: %s, error %d", errMsg, sqlResult);
+        // TODO: mark the DB as invalid?
+    }
+}
+
+- (void)createMessageBodiesTable {
+    char *errMsg = NULL;
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGEBODIES (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)";
+    
+    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES: %s, error %d", errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
@@ -402,7 +415,12 @@
                 if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
                     SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
                 }
-                if((bindResult = sqlite3_bind_blob(statement, 2, [encodedMessage bytes], (int)[encodedMessage length], SQLITE_STATIC)) != SQLITE_OK) {
+
+                NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
+                
+                SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
+
+                if((bindResult = sqlite3_bind_blob(statement, 2, compressedMessage.bytes, (int)compressedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
                     SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
                 }
                 
@@ -465,7 +483,7 @@
     
     int sqlResult = sqlite3_step(statement);
     if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message with UID %u successfully deleted", uid);
+        SM_LOG_INFO(@"Message with UID %u successfully deleted from message storage", uid);
     } else {
         SM_LOG_ERROR(@"Failed to delete message with UID %u, error %d", uid, sqlResult);
     }
@@ -474,11 +492,17 @@
     SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
 }
 
-- (void)removeMessageFromDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
+- (void)deleteMessageBodyFromMessageBodiesTable:(uint32_t)uid {
+    SM_LOG_WARNING(@"TODO");
+}
+
+- (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
-            [self deleteUIDFromFolderTable:imapMessage.uid folder:folderName];
-            [self deleteMessageFromMessagesTable:imapMessage.uid];            
+            [self deleteUIDFromFolderTable:uid folder:folderName];
+            [self deleteMessageFromMessagesTable:uid];
+            [self deleteMessageBodyFromMessageBodiesTable:uid];
+
             [self closeDatabase];
         }
     });
@@ -500,5 +524,50 @@
     NSAssert(nil, @"TODO");
 }
 
+- (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data {
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            //
+            // Step 2: If the message UID has been inserted, add its body to the DB as well unless it is there yet.
+            //
+            const char *insertStmt = "INSERT INTO MESSAGEBODIES (\"UID\", \"MESSAGEBODY\") VALUES (?, ?)";
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+            }
+            
+            int bindResult;
+            if((bindResult = sqlite3_bind_int(statement, 1, uid)) != SQLITE_OK) {
+                SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", uid, bindResult);
+            }
+            
+            NSData *compressedData = [SMCompression gzipDeflate:data];
+            
+            SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", uid, data.length, compressedData.length, compressedData.length/(data.length/100));
+            
+            if((bindResult = sqlite3_bind_blob(statement, 2, compressedData.bytes, (int)compressedData.length, SQLITE_STATIC)) != SQLITE_OK) {
+                SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGEBODY), error %d", uid, bindResult);
+            }
+            
+            const int sqlInsertResult = sqlite3_step(statement);
+            if(sqlInsertResult == SQLITE_DONE) {
+                SM_LOG_DEBUG(@"Message with UID %u successfully inserted", uid);
+            } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
+                // TODO: restore WARNING; don't rewrite messages on first launch
+                SM_LOG_DEBUG(@"Message with UID %u already exists", uid);
+            } else {
+                SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", uid, sqlInsertResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase];
+        }
+    });
+}
 
 @end

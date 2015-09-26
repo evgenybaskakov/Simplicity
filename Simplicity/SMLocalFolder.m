@@ -235,6 +235,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		
 		[[[appDelegate model] messageStorage] setMessageData:data uid:uid localFolder:_localName threadId:threadId];
 		
+        // TODO: Filter out cases of search, and anything similar?
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[[appDelegate model] database] putMessageBodyToDB:uid data:data];
+        
 		_totalMemory += [data length];
 		
 		NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"UID", @"ThreadId", nil]];

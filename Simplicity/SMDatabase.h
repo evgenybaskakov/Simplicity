@@ -78,5 +78,6 @@
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;
+- (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data;
 
 @end

@@ -471,7 +471,7 @@
     
     int sqlResult = sqlite3_step(statement);
     if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message with UID %u successfully deleted", uid);
+        SM_LOG_INFO(@"Message with UID %u successfully deleted from message storage", uid);
     } else {
         SM_LOG_ERROR(@"Failed to delete message with UID %u, error %d", uid, sqlResult);
     }

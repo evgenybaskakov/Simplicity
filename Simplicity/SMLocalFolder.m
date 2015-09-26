@@ -19,6 +19,7 @@
 #import "SMMessageThread.h"
 #import "SMMessage.h"
 #import "SMMailbox.h"
+#import "SMDatabase.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
@@ -668,6 +669,26 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
     NSAssert(messagesToMoveUids.count != 0, @"no messages to move");
 
+    // Now, delete these messages from the local database as well.
+    MCORange *const ranges = [messagesToMoveUids allRanges];
+    
+    for(unsigned int i = 0; i < messagesToMoveUids.rangesCount; i++) {
+        const MCORange range = ranges[i];
+
+        if(MCORangeLeftBound(range) >= UINT32_MAX || MCORangeRightBound(range) >= UINT32_MAX) {
+            SM_LOG_FATAL(@"UID range is out of bounds: left %llu, right %llu", MCORangeLeftBound(range), MCORangeRightBound(range));
+            abort();
+        }
+        
+        const uint32_t firstUid = (uint32_t)MCORangeLeftBound(range);
+        const uint32_t lastUid = (uint32_t)MCORangeRightBound(range);
+        
+        for(uint32_t uid = firstUid; uid <= lastUid; uid++) {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[[appDelegate model] database] removeMessageFromDBFolder:uid folder:_remoteFolderName];
+        }
+    }
+    
     // After the local storage is cleared and there is no bodies loading,
     // actually move the messages on the server.
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
@@ -719,7 +740,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         [bodyFetchOp cancel];
         [_fetchMessageBodyOps removeObjectForKey:uidNum];
     }
-    
+
+    // Delete the message from the local database.
+    [[[appDelegate model] database] removeMessageFromDBFolder:uid folder:_remoteFolderName];
+
     // After the local storage is cleared and there is no bodies loading,
     // actually move the messages on the server.
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];

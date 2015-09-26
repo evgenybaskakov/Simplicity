@@ -149,6 +149,7 @@
 		80A44B191B5A19260049AB88 /* align_center-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B151B5A19260049AB88 /* align_center-128.png */; };
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
+		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; settings = {ASSET_TAGS = (); }; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -456,6 +457,8 @@
 		80A44B151B5A19260049AB88 /* align_center-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_center-128.png"; sourceTree = "<group>"; };
 		80A44B161B5A19260049AB88 /* align_left-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_left-128.png"; sourceTree = "<group>"; };
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
+		80C69A941BB6553D00F24B9F /* SMCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCompression.h; sourceTree = "<group>"; };
+		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "full_recycle_bin-128.png"; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
@@ -575,6 +578,8 @@
 				00ED317B17F88DA700B04F5B /* SMAttachmentStorage.m */,
 				8088F2411BA7F11B005A29E2 /* SMDatabase.h */,
 				8088F2421BA7F11B005A29E2 /* SMDatabase.m */,
+				80C69A941BB6553D00F24B9F /* SMCompression.h */,
+				80C69A951BB6553D00F24B9F /* SMCompression.m */,
 				00C75607195921AA006ED86B /* SMFolder.h */,
 				00C75608195921AA006ED86B /* SMFolder.m */,
 				804F33411BAFDDBA007E600C /* SMFolderDesc.h */,
@@ -1069,6 +1074,7 @@
 				804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,
 				0097426E195686F900620145 /* SMMailboxViewController.m in Sources */,
+				80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */,
 				0002A0A517D1B1E000EA4AFF /* SMAppDelegate.m in Sources */,
 				00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */,
 				806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */,

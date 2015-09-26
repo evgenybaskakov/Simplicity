@@ -12,6 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
 #import "SMMailboxController.h"
+#import "SMCompression.h"
 #import "SMDatabase.h"
 
 @implementation SMDatabase {
@@ -402,7 +403,12 @@
                 if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
                     SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
                 }
-                if((bindResult = sqlite3_bind_blob(statement, 2, [encodedMessage bytes], (int)[encodedMessage length], SQLITE_STATIC)) != SQLITE_OK) {
+
+                NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
+                
+                SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
+
+                if((bindResult = sqlite3_bind_blob(statement, 2, compressedMessage.bytes, (int)compressedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
                     SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
                 }
                 

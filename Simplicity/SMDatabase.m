@@ -483,7 +483,7 @@
     
     int sqlResult = sqlite3_step(statement);
     if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message with UID %u successfully deleted from message storage", uid);
+        SM_LOG_INFO(@"Message with UID %u successfully deleted from messages table", uid);
     } else {
         SM_LOG_ERROR(@"Failed to delete message with UID %u, error %d", uid, sqlResult);
     }
@@ -493,7 +493,24 @@
 }
 
 - (void)deleteMessageBodyFromMessageBodiesTable:(uint32_t)uid {
-    SM_LOG_WARNING(@"TODO");
+    NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM MESSAGEBODIES WHERE UID = \"%u\"", uid];
+    const char *deleteStmt = [deleteSql UTF8String];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+    if(sqlPrepareResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Could not prepare message body (UID %u) delete statement, error %d", uid, sqlPrepareResult);
+    }
+    
+    int sqlResult = sqlite3_step(statement);
+    if(sqlResult == SQLITE_DONE) {
+        SM_LOG_INFO(@"Message body with UID %u successfully deleted from message bodies table", uid);
+    } else {
+        SM_LOG_ERROR(@"Failed to delete message body with UID %u, error %d", uid, sqlResult);
+    }
+    
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
 }
 
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {

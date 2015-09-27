@@ -191,8 +191,7 @@
 
 - (void)loadFolderId:(NSString*)folderName {
     NSString *selectSql = [NSString stringWithFormat: @"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-    const char *sqlQuery = [selectSql UTF8String];
-    NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+    NSDictionary *foldersTable = [self loadDataFromDB:[selectSql UTF8String]];
     NSArray *columns = [foldersTable objectForKey:@"Columns"];
     NSArray *rows = [foldersTable objectForKey:@"Rows"];
     
@@ -373,19 +372,51 @@
             
             [self closeDatabase];
 
-            getMessagesCountBlock(messagesCount);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessagesCountBlock(messagesCount);
+            });
         }
     });
 }
 
-- (NSArray*)loadMessageHeadersFromDBFolder:(NSString*)folderName {
-    NSAssert(nil, @"TODO");
-    return nil;
+- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock {
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
+
+            NSString *getMessagesSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES ORDER BY UID ASC LIMIT %lu OFFSET %lu", count, offset];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessagesSql UTF8String], -1, &statement, NULL);
+
+            if(sqlPrepareResult == SQLITE_OK) {
+                while(sqlite3_step(statement) == SQLITE_ROW) {
+                    int dataSize = sqlite3_column_bytes(statement, 0);
+                    NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+                    NSData *uncompressedData = [SMCompression gzipInflate:data];
+                    
+                    MCOIMAPMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+                    NSAssert(message != nil, @"could not decode IMAP message");
+                    
+                    [messages addObject:message];
+                }
+            }
+            else {
+                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                // TODO
+            }
+            
+            [self closeDatabase];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessagesBlock(messages);
+            });
+        }
+    });
 }
 
-- (NSArray*)loadMessageBodyForUIDFromDB:(uint32_t*)uid {
+- (void)loadMessageBodyForUIDFromDB:(uint32_t*)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock {
     NSAssert(nil, @"TODO");
-    return nil;
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
@@ -486,7 +517,7 @@
         return;
     }
     
-    NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
+    NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
     const char *deleteStmt = [deleteSql UTF8String];
     
     sqlite3_stmt *statement = NULL;

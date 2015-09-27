@@ -71,8 +71,8 @@
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)deleteDBFolder:(NSString*)folderName;
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
-- (NSArray*)loadMessageHeadersFromDBFolder:(NSString*)folderName;
-- (NSArray*)loadMessageBodyForUIDFromDB:(uint32_t*)uid;
+- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock;
+- (void)loadMessageBodyForUIDFromDB:(uint32_t*)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;

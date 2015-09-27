@@ -24,7 +24,7 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 
-static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 100;
+static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500;
 static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
 static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 20;
 static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
@@ -129,8 +129,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // Get messages count from the database.
     [[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
         SM_LOG_INFO(@"messagesCount=%lu", messagesCount);
-    }];    
+    }];
     
+    [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:0 count:10 block:^(NSArray *messages) {
+        SM_LOG_INFO(@"messages loaded: %lu", messages.count);
+    }];
+
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	
 	NSAssert(session, @"session lost");

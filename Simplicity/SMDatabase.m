@@ -339,8 +339,43 @@
     });
 }
 
-- (void)getMessageHeadersCountInDBFolder:(NSString*)folderName {
-    
+- (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock {
+    dispatch_async(_serialQueue, ^{
+        if([self openDatabase]) {
+            NSUInteger messagesCount = 0;
+
+            NSNumber *folderId = [_folderIds objectForKey:folderName];
+            if(folderId != nil) {
+                NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM FOLDER%@", folderId];
+                const char *getCountStmt = [getCountSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(_database, getCountStmt, -1, &statement, NULL);
+                if(sqlPrepareResult == SQLITE_OK) {
+                    int sqlResult = sqlite3_step(statement);
+                    if(sqlResult == SQLITE_ROW) {
+                        SM_LOG_DEBUG(@"Step for folder %@ is successful", folderName);
+                        
+                        messagesCount = sqlite3_column_int(statement, 0);
+
+                        SM_LOG_DEBUG(@"Messages count in folder %@ is %lu", folderName, messagesCount);
+                    } else {
+                        SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlResult);
+                    }
+                }
+                else {
+                    SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
+                }
+                
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            }
+            
+            [self closeDatabase];
+
+            getMessagesCountBlock(messagesCount);
+        }
+    });
 }
 
 - (NSArray*)loadMessageHeadersFromDBFolder:(NSString*)folderName {

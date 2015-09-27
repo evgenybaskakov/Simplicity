@@ -125,7 +125,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	_messageHeadersFetched = 0;
 	
 	[[[appDelegate model] messageStorage] startUpdate:_localName];
-	
+
+    // Get messages count from the database.
+    [[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
+        SM_LOG_INFO(@"messagesCount=%lu", messagesCount);
+    }];    
+    
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	
 	NSAssert(session, @"session lost");

@@ -70,7 +70,7 @@
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)deleteDBFolder:(NSString*)folderName;
-- (void)getMessageHeadersCountInDBFolder:(NSString*)folderName;
+- (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
 - (NSArray*)loadMessageHeadersFromDBFolder:(NSString*)folderName;
 - (NSArray*)loadMessageBodyForUIDFromDB:(uint32_t*)uid;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;

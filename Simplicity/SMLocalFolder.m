@@ -139,9 +139,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_folderInfoOp = nil;
 
 		if(error == nil) {
-			SM_LOG_DEBUG(@"UIDNEXT: %lu", (unsigned long) [info uidNext]);
-			SM_LOG_DEBUG(@"UIDVALIDITY: %lu", (unsigned long) [info uidValidity]);
-			SM_LOG_DEBUG(@"Messages count %u", [info messageCount]);
+			SM_LOG_DEBUG(@"UIDNEXT: %u, UIDVALIDITY: %u, Messages count %u", info.uidNext, info.uidValidity, info.messageCount);
 			
 			_totalMessagesCount = [info messageCount];
 			
@@ -438,9 +436,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_fetchMessageHeadersOp = nil;
 		
 		if(error == nil) {
-			for(MCOIMAPMessage *m in messages)
+            for(MCOIMAPMessage *m in messages) {
 				[_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
-
+            }
+            
 			_messageHeadersFetched += [messages count];
 
 			[self updateMessages:messages remoteFolder:_remoteFolderName];

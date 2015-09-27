@@ -11,7 +11,6 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
-#import "SMMailboxController.h"
 #import "SMCompression.h"
 #import "SMDatabase.h"
 
@@ -297,7 +296,7 @@
     });
 }
 
-- (void)loadDBFolders {
+- (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock {
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             NSMutableArray *folders = nil;
@@ -334,21 +333,22 @@
             [self closeDatabase];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
-                
-                [mailboxController loadExistingFolders:folders];
+                loadFoldersBlock(folders);
             });
         }
     });
 }
 
-- (NSArray*)getMessageHeadersFromDBFolder:(NSString*)folderName {
+- (void)getMessageHeadersCountInDBFolder:(NSString*)folderName {
+    
+}
+
+- (NSArray*)loadMessageHeadersFromDBFolder:(NSString*)folderName {
     NSAssert(nil, @"TODO");
     return nil;
 }
 
-- (NSArray*)getMessageBodyForUIDFromDB:(uint32_t*)uid {
+- (NSArray*)loadMessageBodyForUIDFromDB:(uint32_t*)uid {
     NSAssert(nil, @"TODO");
     return nil;
 }

@@ -55,7 +55,12 @@
     SM_LOG_DEBUG(@"initializing folders");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] database] loadDBFolders];
+    [[[appDelegate model] database] loadDBFolders:^(NSArray *folders) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
+        
+        [mailboxController loadExistingFolders:folders];
+    }];
 }
 
 - (void)updateFolders {

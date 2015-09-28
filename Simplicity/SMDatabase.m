@@ -384,7 +384,7 @@
         if([self openDatabase]) {
             NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
 
-            NSString *getMessagesSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES ORDER BY UID ASC LIMIT %lu OFFSET %lu", count, offset];
+            NSString *getMessagesSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES ORDER BY UID DESC LIMIT %lu OFFSET %lu", count, offset];
             
             sqlite3_stmt *statement = NULL;
             const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessagesSql UTF8String], -1, &statement, NULL);
@@ -405,7 +405,10 @@
                 SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
                 // TODO
             }
-            
+
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+
             [self closeDatabase];
             
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -19,6 +19,7 @@
     sqlite3 *_database;
     dispatch_queue_t _serialQueue;
     NSMutableDictionary *_folderIds;
+    NSMutableSet *_messagesWithBodies;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -64,6 +65,7 @@
         [self createMessagesTable];
         [self createMessageBodiesTable];
         [self loadFolderIds];
+        [self loadMessageBodiesInfo];
         [self closeDatabase];
     }
 }
@@ -187,6 +189,30 @@
             SM_LOG_DEBUG(@"Folder \"%@\" id %lu", nameStr, folderId);
         }
     }
+}
+
+- (void)loadMessageBodiesInfo {
+    NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT UID FROM MESSAGEBODIES"];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+    
+    if(sqlPrepareResult == SQLITE_OK) {
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            uint32_t uid = sqlite3_column_int(statement, 0);
+            
+            SM_LOG_DEBUG(@"message with UID %u has its body in the database", uid);
+
+            [_messagesWithBodies addObject:[NSNumber numberWithUnsignedInt:uid]];
+        }
+    }
+    else {
+        SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+        // TODO
+    }
+    
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
 }
 
 - (void)loadFolderId:(NSString*)folderName {
@@ -419,8 +445,50 @@
 }
 
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid block:(void (^)(NSData*))getMessageBodyBlock {
-    NSAssert(nil, @"TODO");
-    return FALSE;
+    if(![_messagesWithBodies containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
+        SM_LOG_INFO(@"no message body for message UID %u in the database", uid);
+        return FALSE;
+    }
+    
+    SM_LOG_INFO(@"message UID %u has its body in the database", uid);
+
+    dispatch_async(_serialQueue, ^{
+        SM_LOG_INFO(@"loading message UID %u has its body in the database", uid);
+
+        if([self openDatabase]) {
+            NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGEBODIES WHERE UID = \"%u\"", uid];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+            
+            NSData *messageBody = nil;
+            
+            if(sqlPrepareResult == SQLITE_OK) {
+                while(sqlite3_step(statement) == SQLITE_ROW) {
+                    int dataSize = sqlite3_column_bytes(statement, 0);
+                    NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+                    NSData *uncompressedData = [SMCompression gzipInflate:data];
+
+                    messageBody = uncompressedData;
+                }
+            }
+            else {
+                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                // TODO
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageBodyBlock(messageBody);
+            });
+        }
+    });
+    
+    return TRUE;
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
@@ -584,12 +652,13 @@
 }
 
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
+    [_messagesWithBodies removeObject:[NSNumber numberWithUnsignedInt:uid]];
+
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             [self deleteUIDFromFolderTable:uid folder:folderName];
             [self deleteMessageFromMessagesTable:uid];
             [self deleteMessageBodyFromMessageBodiesTable:uid];
-
             [self closeDatabase];
         }
     });
@@ -612,6 +681,8 @@
 }
 
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data {
+    [_messagesWithBodies addObject:[NSNumber numberWithUnsignedInt:uid]];
+
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             //

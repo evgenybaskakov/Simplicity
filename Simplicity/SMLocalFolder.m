@@ -240,6 +240,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     }
 	
     if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid block:^(NSData *data) {
+        if(data == nil) {
+            SM_LOG_ERROR(@"no data");
+        }
         NSAssert(data != nil, @"data != nil");
         
         [self loadMessageBody:uid threadId:threadId data:data];

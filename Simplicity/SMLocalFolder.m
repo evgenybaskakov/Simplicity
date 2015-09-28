@@ -182,100 +182,107 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	SM_LOG_DEBUG(@"fetching message bodies for folder '%@' (%lu messages in this folder, %lu messages in all mail)", _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
 
 	[self recalculateTotalMemorySize];
-	
-    if(_syncFromDB && _fetchedMessageHeaders.count == 0 && _fetchedMessageHeadersFromAllMail.count == 0) {
-        _syncFromDB = NO;
-        _dbSyncInProgress = NO;
 
-        SM_LOG_INFO(@"no messages loaded from local database, starting remote folder sync");
+    BOOL shouldRestartRemoteSync = _syncFromDB;
+    
+    _syncFromDB = NO;
+    _dbSyncInProgress = NO;
 
-        [self startLocalFolderSync];
+    SM_LOG_INFO(@"fetching %lu messages from remote folder, %lu messages from the 'all mail' folder", _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
+    
+    for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
+        SM_LOG_DEBUG(@"fetched message id %@", gmailMessageId);
+
+        MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
+
+        [self fetchMessageBody:message.uid remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO];
     }
-    else {
-        NSUInteger fetchCount = 0;
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    NSString *allMailFolder = [mailbox.allMailFolder fullName];
+
+    for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
+        SM_LOG_DEBUG(@"[all mail] fetched message id %llu", message.gmailMessageID);
+
+        [self fetchMessageBody:message.uid remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO];
+    }
+
+    [_fetchedMessageHeaders removeAllObjects];
+    [_fetchedMessageHeadersFromAllMail removeAllObjects];
+
+    if(shouldRestartRemoteSync) {
+        SM_LOG_INFO(@"folder %@ loaded from local database, starting remote folder sync", _localName);
         
-        for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
-            SM_LOG_DEBUG(@"fetched message id %@", gmailMessageId);
-
-            MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-
-            if([self fetchMessageBody:message.uid remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO])
-                fetchCount++;
-        }
-
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMMailbox *mailbox = [[appDelegate model] mailbox];
-        NSString *allMailFolder = [mailbox.allMailFolder fullName];
-
-        for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
-            SM_LOG_DEBUG(@"[all mail] fetched message id %llu", message.gmailMessageID);
-
-            if([self fetchMessageBody:message.uid remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO])
-                fetchCount++;
-        }
-
-        SM_LOG_DEBUG(@"fetching %lu message bodies", fetchCount);
-
-        [_fetchedMessageHeaders removeAllObjects];
-        [_fetchedMessageHeadersFromAllMail removeAllObjects];
+        [self startLocalFolderSync];
     }
 }
 
-- (BOOL)fetchMessageBody:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
+- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId data:(NSData*)data {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    [[[appDelegate model] messageStorage] setMessageData:data uid:uid localFolder:_localName threadId:threadId];
+    
+    _totalMemory += [data length];
+    
+    NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"UID", @"ThreadId", nil]];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
+}
+
+- (void)fetchMessageBody:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
 	SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-	if([[[appDelegate model] messageStorage] messageHasData:uid localFolder:_localName threadId:threadId])
-		return NO;
+    if([[[appDelegate model] messageStorage] messageHasData:uid localFolder:_localName threadId:threadId]) {
+        SM_LOG_DEBUG(@"message body for uid %u already loaded", uid);
+		return;
+    }
 	
-	MCOIMAPSession *session = [[appDelegate model] imapSession];
-	
-	NSAssert(session, @"session is nil");
-	
-	MCOIMAPFetchContentOperation *op = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
-	
-	[_fetchMessageBodyOps setObject:op forKey:[NSNumber numberWithUnsignedInt:uid]];
-	
-	void (^opBlock)(NSError *error, NSData * data) = nil;
-
-	opBlock = ^(NSError * error, NSData * data) {
-		SM_LOG_DEBUG(@"msg uid %u", uid);
-		
-		if (error != nil && [error code] != MCOErrorNone) {
-			SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@", uid, remoteFolderName);
-
-			MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
-
-			// restart this message body fetch to prevent data loss
-			// on connectivity/server problems
-			[op start:opBlock];
-
-			return;
-		}
-		
-		[_fetchMessageBodyOps removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
-		
-		NSAssert(data != nil, @"data != nil");
-		
-		[[[appDelegate model] messageStorage] setMessageData:data uid:uid localFolder:_localName threadId:threadId];
-		
-        // TODO: Filter out cases of search, and anything similar?
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[[appDelegate model] database] putMessageBodyToDB:uid data:data];
+    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid block:^(NSData *data) {
+        NSAssert(data != nil, @"data != nil");
         
-		_totalMemory += [data length];
-		
-		NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"UID", @"ThreadId", nil]];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
-	};
-	
-	// TODO: don't fetch if body is already being fetched (non-urgently!)
-	// TODO: if urgent fetch is requested, cancel the non-urgent fetch
-	[op start:opBlock];
-	
-	return YES;
+        [self loadMessageBody:uid threadId:threadId data:data];
+    }]) {
+        MCOIMAPSession *session = [[appDelegate model] imapSession];
+        NSAssert(session, @"session is nil");
+        
+        MCOIMAPFetchContentOperation *op = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
+        
+        [_fetchMessageBodyOps setObject:op forKey:[NSNumber numberWithUnsignedInt:uid]];
+        
+        void (^opBlock)(NSError *error, NSData * data) = nil;
+
+        opBlock = ^(NSError * error, NSData * data) {
+            SM_LOG_DEBUG(@"msg uid %u", uid);
+            
+            if(error == nil || [error code] == MCOErrorNone) {
+                [_fetchMessageBodyOps removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
+                
+                NSAssert(data != nil, @"data != nil");
+                
+                if(_syncedWithRemoteFolder) {
+                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    [[[appDelegate model] database] putMessageBodyToDB:uid data:data];
+                }
+                
+                [self loadMessageBody:uid threadId:threadId data:data];
+            }
+            else {
+                SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@", uid, remoteFolderName);
+
+                MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
+
+                // restart this message body fetch to prevent data loss
+                // on connectivity/server problems
+                [op start:opBlock];
+            }
+        };
+        
+        // TODO: don't fetch if body is already being fetched (non-urgently!)
+        // TODO: if urgent fetch is requested, cancel the non-urgent fetch
+        [op start:opBlock];
+    }
 }
 
 - (void)syncFetchMessageThreadsHeaders {

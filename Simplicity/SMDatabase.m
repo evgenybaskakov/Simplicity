@@ -418,8 +418,9 @@
     });
 }
 
-- (void)loadMessageBodyForUIDFromDB:(uint32_t*)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock {
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid block:(void (^)(NSData*))getMessageBodyBlock {
     NSAssert(nil, @"TODO");
+    return FALSE;
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {

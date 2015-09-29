@@ -248,7 +248,7 @@
 
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -307,7 +307,7 @@
 
 - (void)deleteDBFolder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -341,7 +341,7 @@
 
 - (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -391,7 +391,7 @@
 
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -439,7 +439,7 @@
 
 - (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -493,7 +493,8 @@
 
     // Depending on the user requested urgency, we either select the
     // serial (FIFO) queue, or the concurrent one. In case of concurrent,
-    // it won't have to wait while other non-urgent requests are processed. Note that there may be heavy requests, so the serial
+    // it won't have to wait while other non-urgent requests are processed.
+    // Note that there may be heavy requests, so the serial
     // queue cannot be trusted in terms of response time.
     dispatch_async(urgent? _concurrentQueue : _serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -539,7 +540,7 @@
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -708,7 +709,7 @@
     [_messagesWithBodies removeObject:[NSNumber numberWithUnsignedInt:uid]];
 
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];
@@ -744,7 +745,7 @@
     [_messagesWithBodies addObject:[NSNumber numberWithUnsignedInt:uid]];
 
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         sqlite3 *database = [self openDatabase];

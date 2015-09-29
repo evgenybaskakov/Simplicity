@@ -475,7 +475,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         const uint64_t numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
         [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch block:^(NSArray *messages) {
-            SM_LOG_INFO(@"messages loaded: %lu", messages.count);
+            SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
 
             [self rescheduleUpdateTimeout];
             [self loadMessageHeaders:messages];

@@ -18,6 +18,7 @@
     NSString *_dbFilePath;
     sqlite3 *_database;
     dispatch_queue_t _serialQueue;
+    int32_t _serialQueueLength;
     NSMutableDictionary *_folderIds;
     NSMutableSet *_messagesWithBodies;
 }
@@ -192,6 +193,8 @@
 }
 
 - (void)loadMessageBodiesInfo {
+    _messagesWithBodies = [NSMutableSet set];
+    
     NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT UID FROM MESSAGEBODIES"];
     
     sqlite3_stmt *statement = NULL;
@@ -243,6 +246,9 @@
 }
 
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             //
@@ -287,6 +293,8 @@
             
             [self closeDatabase];
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
@@ -295,6 +303,9 @@
 }
 
 - (void)deleteDBFolder:(NSString*)folderName {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
@@ -318,10 +329,15 @@
          
             [self closeDatabase];
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
 - (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             NSMutableArray *folders = nil;
@@ -361,10 +377,15 @@
                 loadFoldersBlock(folders);
             });
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             NSUInteger messagesCount = 0;
@@ -402,10 +423,15 @@
                 getMessagesCountBlock(messagesCount);
             });
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
 - (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
@@ -441,20 +467,23 @@
                 getMessagesBlock(messages);
             });
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid block:(void (^)(NSData*))getMessageBodyBlock {
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
     if(![_messagesWithBodies containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
-        SM_LOG_INFO(@"no message body for message UID %u in the database", uid);
+        SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
         return FALSE;
     }
     
-    SM_LOG_INFO(@"message UID %u has its body in the database", uid);
+    SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
 
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
-        SM_LOG_INFO(@"loading message UID %u has its body in the database", uid);
-
         if([self openDatabase]) {
             NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGEBODIES WHERE UID = \"%u\"", uid];
             
@@ -464,7 +493,7 @@
             NSData *messageBody = nil;
             
             if(sqlPrepareResult == SQLITE_OK) {
-                while(sqlite3_step(statement) == SQLITE_ROW) {
+                if(sqlite3_step(statement) == SQLITE_ROW) {
                     int dataSize = sqlite3_column_bytes(statement, 0);
                     NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
                     NSData *uncompressedData = [SMCompression gzipInflate:data];
@@ -482,16 +511,23 @@
             
             [self closeDatabase];
             
+            MCOMessageParser *parser = [MCOMessageParser messageParserWithData:messageBody];
+
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(messageBody);
+                getMessageBodyBlock(messageBody, parser, parser.attachments);
             });
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
-    
+
     return TRUE;
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             //
@@ -578,6 +614,8 @@
             
             [self closeDatabase];
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
@@ -654,6 +692,9 @@
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
     [_messagesWithBodies removeObject:[NSNumber numberWithUnsignedInt:uid]];
 
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             [self deleteUIDFromFolderTable:uid folder:folderName];
@@ -661,6 +702,8 @@
             [self deleteMessageBodyFromMessageBodiesTable:uid];
             [self closeDatabase];
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
@@ -683,6 +726,9 @@
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data {
     [_messagesWithBodies addObject:[NSNumber numberWithUnsignedInt:uid]];
 
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
+    
     dispatch_async(_serialQueue, ^{
         if([self openDatabase]) {
             //
@@ -725,6 +771,8 @@
             
             [self closeDatabase];
         }
+
+        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 

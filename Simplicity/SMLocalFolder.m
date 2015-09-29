@@ -218,9 +218,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     }
 }
 
-- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId data:(NSData*)data {
+- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId data:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    [[[appDelegate model] messageStorage] setMessageData:data uid:uid localFolder:_localName threadId:threadId];
+    [[[appDelegate model] messageStorage] setMessageData:data parser:parser attachments:attachments uid:uid localFolder:_localName threadId:threadId];
     
     _totalMemory += [data length];
     
@@ -239,13 +239,13 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
     }
 	
-    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid block:^(NSData *data) {
+    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
         if(data == nil) {
             SM_LOG_ERROR(@"no data");
         }
         NSAssert(data != nil, @"data != nil");
         
-        [self loadMessageBody:uid threadId:threadId data:data];
+        [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:attachments];
     }]) {
         MCOIMAPSession *session = [[appDelegate model] imapSession];
         NSAssert(session, @"session is nil");
@@ -268,8 +268,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
                     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
                     [[[appDelegate model] database] putMessageBodyToDB:uid data:data];
                 }
+
+                // TODO: do it asynchronously!
+                MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                 
-                [self loadMessageBody:uid threadId:threadId data:data];
+                [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:parser.attachments];
             }
             else {
                 SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@", uid, remoteFolderName);

@@ -36,28 +36,6 @@
 
 @synthesize htmlBodyRendering = _htmlBodyRendering;
 
-// TODO: uids not properly used here - they may be changed between sessions!!!
-- (id)initWithRawValues:(int)uid date:(NSDate*)date from:(const unsigned char*)from subject:(const unsigned char*)subject data:(const void*)data dataLength:(int)dataLength remoteFolder:(NSString*)remoteFolderName {
-
-	self = [ super init ];
-	
-	if(self) {
-		SM_LOG_DEBUG(@"uid %u, date %@", uid, date);
-		
-		_uidDB = uid;
-		_dateDB = date;
-		_fromDB = [NSString stringWithUTF8String:(const char*)from];
-		_subjectDB = [NSString stringWithUTF8String:(const char*)subject];
-		_createdFromDB = YES;
-		_remoteFolder = remoteFolderName;
-		_labels = [NSArray array]; // TODO
-
-		[self setData:[NSData dataWithBytes:data length:dataLength]];
-	}
-	
-	return self;
-}
-
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName {
 	NSAssert(m, @"imap message is nil");
 	
@@ -234,33 +212,33 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setData:nil];
+    [self setData:nil parser:nil attachments:nil];
 }
 
-- (void)setData:(NSData*)data {
-	if(data != nil) {
-		if(_data == nil) {
-			_data = data;
-			_msgParser = [MCOMessageParser messageParserWithData:data];
-			_attachments = _msgParser.attachments;
-			_hasAttachments = _attachments.count > 0;
-			
-			NSAssert(_msgParser, @"cannot create message parser");
-		}
-
+- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
+    if(data != nil) {
+        if(_data == nil) {
+            _data = data;
+            _msgParser = parser;
+            _attachments = attachments;
+            _hasAttachments = attachments.count > 0;
+            
+            NSAssert(_msgParser, @"no message parser");
+        }
+        
         _reclaimed = NO;
     } else {
-		_data = nil;
-		_msgParser = nil;
-		_attachments = nil;
-		_htmlBodyRendering = nil;
-
-		// do not reset the attachment count
-		// because it is important to show the attachments flag
-		// in the messages list
-
-		// TODO: figure out a nice way
-	}
+        _data = nil;
+        _msgParser = nil;
+        _attachments = nil;
+        _htmlBodyRendering = nil;
+        
+        // do not reset the attachment count
+        // because it is important to show the attachments flag
+        // in the messages list
+        
+        // TODO: figure out a nice way
+    }
 }
 
 - (NSData*)data {

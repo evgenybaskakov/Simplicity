@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MailCore/MailCore.h>
 
 @class MCOIMAPMessage;
 @class MCOIMAPSession;
@@ -38,7 +39,7 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 
 - (void)cancelUpdate;
 
-- (void)setMessageData:(NSData*)data uid:(uint32_t)uid;
+- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments uid:(uint32_t)uid;
 - (Boolean)messageHasData:(uint32_t)uid;
 - (Boolean)updateThreadAttributesFromMessageUID:(uint32_t)uid;
 

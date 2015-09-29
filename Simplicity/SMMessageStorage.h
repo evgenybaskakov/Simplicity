@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 - (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder;
 - (void)deleteMessagesFromStorageByUIDs:(NSArray*)messageUIDs;
 
-- (void)setMessageData:(NSData*)data uid:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId;
+- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments uid:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId;
 - (BOOL)messageHasData:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId;
 
 @end

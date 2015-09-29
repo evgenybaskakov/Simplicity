@@ -28,15 +28,15 @@
 @property Boolean unseen;
 @property Boolean flagged;
 
-@property (assign) NSData *data;
+@property (readonly) NSData *data;
 
 @property BOOL updated;
 
 + (NSString*)parseAddress:(MCOAddress*)address;
 
-- (id)initWithRawValues:(int)uid date:(NSDate*)date from:(const unsigned char*)from subject:(const unsigned char*)subject data:(const void*)data dataLength:(int)dataLength remoteFolder:(NSString*)remoteFolderName;
-
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName;
+
+- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments;
 
 - (BOOL)hasData;
 - (void)fetchInlineAttachments;

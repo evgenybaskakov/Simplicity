@@ -16,8 +16,8 @@
 
 @implementation SMDatabase {
     NSString *_dbFilePath;
-    sqlite3 *_database;
     dispatch_queue_t _serialQueue;
+    dispatch_queue_t _concurrentQueue;
     int32_t _serialQueueLength;
     NSMutableDictionary *_folderIds;
     NSMutableSet *_messagesWithBodies;
@@ -28,6 +28,7 @@
 
     if(self) {
         _serialQueue = dispatch_queue_create("com.simplicity.Simplicity.serialDatabaseQueue", DISPATCH_QUEUE_SERIAL);
+        _concurrentQueue = dispatch_queue_create("com.simplicity.Simplicity.concurrentDatabaseQueue", DISPATCH_QUEUE_CONCURRENT);
         _dbFilePath = dbFilePath;
         
         [self initDatabase];
@@ -36,53 +37,53 @@
     return self;
 }
 
-- (BOOL)openDatabase {
-    NSAssert(_database == nil, @"datase already open");
-
-    const int openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &_database);
+- (sqlite3*)openDatabase {
+    sqlite3 *database = nil;
+    
+    const int openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &database);
     if(openDatabaseResult == SQLITE_OK) {
         SM_LOG_DEBUG(@"Database %@ open successfully", _dbFilePath);
-        return TRUE;
+        return database;
     }
     else {
         SM_LOG_FATAL(@"Database %@ cannot be open", _dbFilePath);
-        return FALSE;
+        return nil;
     }
 }
 
-- (void)closeDatabase {
-    const int sqlCloseResult = sqlite3_close(_database);
+- (void)closeDatabase:(sqlite3*)database {
+    const int sqlCloseResult = sqlite3_close(database);
     
     if(sqlCloseResult != SQLITE_OK) {
         SM_LOG_ERROR(@"could not close database, error %d", sqlCloseResult);
     }
-    
-    _database = NULL;
 }
 
 - (void)initDatabase {
-    if([self openDatabase]) {
-        [self createFoldersTable];
-        [self createMessagesTable];
-        [self createMessageBodiesTable];
-        [self loadFolderIds];
-        [self loadMessageBodiesInfo];
-        [self closeDatabase];
+    sqlite3 *database = [self openDatabase];
+    
+    if(database != nil) {
+        [self createFoldersTable:database];
+        [self createMessagesTable:database];
+        [self createMessageBodiesTable:database];
+        [self loadFolderIds:database];
+        [self loadMessageBodiesInfo:database];
+        [self closeDatabase:database];
     }
 }
 
-- (void)createFoldersTable {
+- (void)createFoldersTable:(sqlite3*)database {
     char *errMsg = NULL;
     const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
     
-    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
 
-- (void)createFolderMessagesTable:(NSString*)folderName {
+- (void)createFolderMessagesTable:(sqlite3*)database folderName:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
@@ -93,40 +94,40 @@
     const char *createStmt = [createSql UTF8String];
     
     char *errMsg = NULL;
-    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table for folder \"%@\" (id %@): %s, error %d", folderName, folderId, errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
 
-- (void)createMessagesTable {
+- (void)createMessagesTable:(sqlite3*)database {
     char *errMsg = NULL;
     const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)";
     
-    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table MESSAGES: %s, error %d", errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
 
-- (void)createMessageBodiesTable {
+- (void)createMessageBodiesTable:(sqlite3*)database {
     char *errMsg = NULL;
     const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGEBODIES (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)";
     
-    const int sqlResult = sqlite3_exec(_database, createStmt, NULL, NULL, &errMsg);
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES: %s, error %d", errMsg, sqlResult);
         // TODO: mark the DB as invalid?
     }
 }
 
-- (NSDictionary*)loadDataFromDB:(const char *)sqlQuery {
-    NSAssert(_database != nil, @"no database open");
+- (NSDictionary*)loadDataFromDB:(sqlite3*)database query:(const char *)sqlQuery {
+    NSAssert(database != nil, @"no database open");
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(_database, sqlQuery, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, sqlQuery, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
     }
@@ -167,11 +168,11 @@
     return results;
 }
 
-- (void)loadFolderIds {
+- (void)loadFolderIds:(sqlite3*)database {
     _folderIds = [[NSMutableDictionary alloc] init];
 
     const char *sqlQuery = "SELECT * FROM FOLDERS";
-    NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+    NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
     NSArray *columns = [foldersTable objectForKey:@"Columns"];
     NSArray *rows = [foldersTable objectForKey:@"Rows"];
     
@@ -192,13 +193,13 @@
     }
 }
 
-- (void)loadMessageBodiesInfo {
+- (void)loadMessageBodiesInfo:(sqlite3*)database {
     _messagesWithBodies = [NSMutableSet set];
     
     NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT UID FROM MESSAGEBODIES"];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
     
     if(sqlPrepareResult == SQLITE_OK) {
         while(sqlite3_step(statement) == SQLITE_ROW) {
@@ -218,9 +219,9 @@
     SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
 }
 
-- (void)loadFolderId:(NSString*)folderName {
+- (void)loadFolderId:(sqlite3*)database folderName:(NSString*)folderName {
     NSString *selectSql = [NSString stringWithFormat: @"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-    NSDictionary *foldersTable = [self loadDataFromDB:[selectSql UTF8String]];
+    NSDictionary *foldersTable = [self loadDataFromDB:database query:[selectSql UTF8String]];
     NSArray *columns = [foldersTable objectForKey:@"Columns"];
     NSArray *rows = [foldersTable objectForKey:@"Rows"];
     
@@ -250,7 +251,9 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             //
             // Step 1: Add the folder into the DB.
             //
@@ -258,7 +261,7 @@
             const char *insertStmt = [insertSql UTF8String];
             
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
             if(sqlPrepareResult != SQLITE_OK) {
                 SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
             }
@@ -283,15 +286,15 @@
                 //
                 // Step 2: For new folders, find out what's the ID of the newly added folder.
                 //
-                [self loadFolderId:folderName];
+                [self loadFolderId:database folderName:folderName];
                 
                 //
                 // Step 3: Create a unique folder table containing message UIDs.
                 //
-                [self createFolderMessagesTable:folderName];
+                [self createFolderMessagesTable:database folderName:folderName];
             }
             
-            [self closeDatabase];
+            [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);
@@ -307,12 +310,14 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
             const char *deleteStmt = [deleteSql UTF8String];
 
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
             if(sqlPrepareResult != SQLITE_OK) {
                 SM_LOG_ERROR(@"could not prepare folders delete statement, error %d", sqlPrepareResult);
             }
@@ -327,7 +332,7 @@
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
          
-            [self closeDatabase];
+            [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);
@@ -339,11 +344,13 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             NSMutableArray *folders = nil;
             
             const char *sqlQuery = "SELECT * FROM FOLDERS";
-            NSDictionary *foldersTable = [self loadDataFromDB:sqlQuery];
+            NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
             NSArray *columns = [foldersTable objectForKey:@"Columns"];
             NSArray *rows = [foldersTable objectForKey:@"Rows"];
             
@@ -371,7 +378,7 @@
                 }
             }
 
-            [self closeDatabase];
+            [self closeDatabase:database];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 loadFoldersBlock(folders);
@@ -387,7 +394,9 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             NSUInteger messagesCount = 0;
 
             NSNumber *folderId = [_folderIds objectForKey:folderName];
@@ -396,7 +405,7 @@
                 const char *getCountStmt = [getCountSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(_database, getCountStmt, -1, &statement, NULL);
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountStmt, -1, &statement, NULL);
                 if(sqlPrepareResult == SQLITE_OK) {
                     int sqlResult = sqlite3_step(statement);
                     if(sqlResult == SQLITE_ROW) {
@@ -417,7 +426,7 @@
                 SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
             }
             
-            [self closeDatabase];
+            [self closeDatabase:database];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 getMessagesCountBlock(messagesCount);
@@ -433,13 +442,15 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
 
             NSString *getMessagesSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES ORDER BY UID DESC LIMIT %lu OFFSET %lu", count, offset];
             
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessagesSql UTF8String], -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessagesSql UTF8String], -1, &statement, NULL);
 
             if(sqlPrepareResult == SQLITE_OK) {
                 while(sqlite3_step(statement) == SQLITE_ROW) {
@@ -461,7 +472,7 @@
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
 
-            [self closeDatabase];
+            [self closeDatabase:database];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 getMessagesBlock(messages);
@@ -480,15 +491,14 @@
     
     SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
 
-    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
-    
-    dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+    dispatch_async(_concurrentQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGEBODIES WHERE UID = \"%u\"", uid];
             
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
             
             NSData *messageBody = nil;
             
@@ -509,16 +519,15 @@
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
             
-            [self closeDatabase];
+            [self closeDatabase:database];
             
             MCOMessageParser *parser = [MCOMessageParser messageParserWithData:messageBody];
+            NSArray *attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(messageBody, parser, parser.attachments);
+                getMessageBodyBlock(messageBody, parser, attachments);
             });
         }
-
-        OSAtomicAdd32(-1, &_serialQueueLength);
     });
 
     return TRUE;
@@ -529,7 +538,9 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             //
             // Step 1: Add the message UID to the given folder table.
             //
@@ -543,7 +554,7 @@
             const char *folderInsertStmt = [folderInsertSql UTF8String];
 
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, folderInsertStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, folderInsertStmt, -1, &statement, NULL);
             if(sqlPrepareResult != SQLITE_OK) {
                 SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
             }
@@ -579,7 +590,7 @@
                 const char *insertStmt = "INSERT INTO MESSAGES (\"UID\", \"MESSAGE\") VALUES (?, ?)";
                 
                 sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
                 
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
@@ -612,14 +623,14 @@
                 SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
             }
             
-            [self closeDatabase];
+            [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
-- (void)deleteUIDFromFolderTable:(uint32_t)uid folder:(NSString*)folderName {
+- (void)deleteUIDFromFolderTable:(sqlite3*)database uid:(uint32_t)uid folder:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
@@ -631,7 +642,7 @@
     const char *deleteStmt = [deleteSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Could not prepare delete statement for message UID %u, folder %@ (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
     }
@@ -647,12 +658,12 @@
     SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
 }
 
-- (void)deleteMessageFromMessagesTable:(uint32_t)uid {
+- (void)deleteMessageFromMessagesTable:(sqlite3*)database uid:(uint32_t)uid {
     NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM MESSAGES WHERE UID = \"%u\"", uid];
     const char *deleteStmt = [deleteSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Could not prepare message (UID %u) delete statement, error %d", uid, sqlPrepareResult);
     }
@@ -668,12 +679,12 @@
     SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
 }
 
-- (void)deleteMessageBodyFromMessageBodiesTable:(uint32_t)uid {
+- (void)deleteMessageBodyFromMessageBodiesTable:(sqlite3*)database uid:(uint32_t)uid {
     NSString *deleteSql = [NSString stringWithFormat: @"DELETE FROM MESSAGEBODIES WHERE UID = \"%u\"", uid];
     const char *deleteStmt = [deleteSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(_database, deleteStmt, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Could not prepare message body (UID %u) delete statement, error %d", uid, sqlPrepareResult);
     }
@@ -696,11 +707,13 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
-            [self deleteUIDFromFolderTable:uid folder:folderName];
-            [self deleteMessageFromMessagesTable:uid];
-            [self deleteMessageBodyFromMessageBodiesTable:uid];
-            [self closeDatabase];
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            [self deleteUIDFromFolderTable:database uid:uid folder:folderName];
+            [self deleteMessageFromMessagesTable:database uid:uid];
+            [self deleteMessageBodyFromMessageBodiesTable:database uid:uid];
+            [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);
@@ -730,14 +743,16 @@
     SM_LOG_INFO(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        if([self openDatabase]) {
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
             //
             // Step 2: If the message UID has been inserted, add its body to the DB as well unless it is there yet.
             //
             const char *insertStmt = "INSERT INTO MESSAGEBODIES (\"UID\", \"MESSAGEBODY\") VALUES (?, ?)";
             
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(_database, insertStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
             
             if(sqlPrepareResult != SQLITE_OK) {
                 SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
@@ -769,7 +784,7 @@
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
             
-            [self closeDatabase];
+            [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);

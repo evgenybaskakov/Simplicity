@@ -239,7 +239,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
     }
 	
-    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
+    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
         if(data == nil) {
             SM_LOG_ERROR(@"no data");
         }

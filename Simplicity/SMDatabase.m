@@ -483,7 +483,7 @@
     });
 }
 
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
     if(![_messagesWithBodies containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
         SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
         return FALSE;
@@ -491,7 +491,11 @@
     
     SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
 
-    dispatch_async(_concurrentQueue, ^{
+    // Depending on the user requested urgency, we either select the
+    // serial (FIFO) queue, or the concurrent one. In case of concurrent,
+    // it won't have to wait while other non-urgent requests are processed. Note that there may be heavy requests, so the serial
+    // queue cannot be trusted in terms of response time.
+    dispatch_async(urgent? _concurrentQueue : _serialQueue, ^{
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {

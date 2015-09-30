@@ -445,33 +445,77 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
-
-            NSString *getMessagesSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES ORDER BY UID DESC LIMIT %lu OFFSET %lu", count, offset];
+            //
+            // Step 1: Load the requested UID range for given folder.
+            //
+            NSNumber *folderId = [_folderIds objectForKey:folderName];
+            if(folderId == nil) {
+                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                // TODO: mark the DB as invalid?
+            }
+            
+            NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT UID FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
+            const char *folderSelectStmt = [folderSelectSql UTF8String];
             
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessagesSql UTF8String], -1, &statement, NULL);
+            const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
+            if(sqlSelectPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare select statement for folder %@ (id %@), error %d", folderName, folderId, sqlSelectPrepareResult);
+            }
+            
+            NSMutableArray *uids = [NSMutableArray arrayWithCapacity:count];
 
-            if(sqlPrepareResult == SQLITE_OK) {
+            if(sqlSelectPrepareResult == SQLITE_OK) {
                 while(sqlite3_step(statement) == SQLITE_ROW) {
-                    int dataSize = sqlite3_column_bytes(statement, 0);
-                    NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
-                    NSData *uncompressedData = [SMCompression gzipInflate:data];
+                    uint32_t uid = sqlite3_column_int(statement, 0);
                     
-                    MCOIMAPMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
-                    NSAssert(message != nil, @"could not decode IMAP message");
-                    
-                    [messages addObject:message];
+                    [uids addObject:[NSNumber numberWithUnsignedInt:uid]];
                 }
+                // TODO: error handling
             }
             else {
-                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                SM_LOG_ERROR(@"could not prepare select statement from folder %@ (id %@), error %d", folderName, folderId, sqlSelectPrepareResult);
                 // TODO
             }
-
+            
             const int sqlFinalizeResult = sqlite3_finalize(statement);
             SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            
+            //
+            // Step 2: Load the messages using the received UID range.
+            //
+            NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
+            
+            for(NSUInteger i = 0; i < count; i++) {
+                NSString *selectMessageSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM MESSAGES WHERE UID = \"%@\"", uids[i]];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, [selectMessageSql UTF8String], -1, &statement, NULL);
 
+                if(sqlPrepareResult == SQLITE_OK) {
+                    while(sqlite3_step(statement) == SQLITE_ROW) {
+                        int dataSize = sqlite3_column_bytes(statement, 0);
+                        NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+                        NSData *uncompressedData = [SMCompression gzipInflate:data];
+                        
+                        MCOIMAPMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+                        NSAssert(message != nil, @"could not decode IMAP message");
+                        
+                        [messages addObject:message];
+                    }
+                    // TODO: error handling
+                }
+                else {
+                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                    // TODO
+                }
+
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            }
+            
+            uids = nil; // manually reduce memory consumption
+            
             [self closeDatabase:database];
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -608,7 +652,7 @@
                         // TODO: shouldn't crash; this can be caused by DB corruption
                     }
 
-                    SM_LOG_INFO(@"Refcount %d for message with UID", imapMessage.uid);
+                    SM_LOG_INFO(@"Refcount %d for message with UID %u", readRefCount, imapMessage.uid);
 
                     refCount = readRefCount;
                 } else {

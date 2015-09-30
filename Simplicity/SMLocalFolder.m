@@ -24,9 +24,9 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 
-static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500;
+static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
 static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
-static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 60;
+static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
 static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
 
 static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMessagesRequestKind)(
@@ -54,7 +54,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	NSMutableArray *_fetchedMessageHeadersFromAllMail;
 	MCOIndexSet *_selectedMessageUIDsToLoad;
 	uint64_t _totalMemory;
-    BOOL _syncFromDB;
+    BOOL _loadFromDB;
     BOOL _dbSyncInProgress;
 }
 
@@ -75,7 +75,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_syncedWithRemoteFolder = syncWithRemoteFolder;
 		_selectedMessageUIDsToLoad = nil;
 		_totalMemory = 0;
-        _syncFromDB = (syncWithRemoteFolder? YES : NO);
+        _loadFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
 	}
 	
@@ -130,7 +130,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
 	[[[appDelegate model] messageStorage] startUpdate:_localName];
 
-    if(_syncFromDB) {
+    if(_loadFromDB) {
         _dbSyncInProgress = YES;
 
         [[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
@@ -183,12 +183,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 	[self recalculateTotalMemorySize];
 
-    BOOL shouldRestartRemoteSync = _syncFromDB;
+    BOOL shouldRestartRemoteSync = _loadFromDB;
     
-    _syncFromDB = NO;
+    _loadFromDB = NO;
     _dbSyncInProgress = NO;
 
-    SM_LOG_INFO(@"fetching %lu messages from remote folder, %lu messages from the 'all mail' folder", _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
+    SM_LOG_INFO(@"fetching %lu messages from the '%@' remote folder, %lu messages from the 'all mail' folder", _fetchedMessageHeaders.count, _remoteFolderName, _fetchedMessageHeadersFromAllMail.count);
     
     for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
         SM_LOG_DEBUG(@"fetched message id %@", gmailMessageId);
@@ -203,7 +203,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
     for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
-        SM_LOG_DEBUG(@"[all mail] fetched message id %llu", message.gmailMessageID);
+        SM_LOG_DEBUG(@"[all mail] fetched message UID %u, gmailId %llu", message.uid, message.gmailMessageID);
 
         [self fetchMessageBody:message.uid remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO];
     }
@@ -275,7 +275,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
                 [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:parser.attachments];
             }
             else {
-                SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@", uid, remoteFolderName);
+                SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (error code %ld)", uid, remoteFolderName, [error code]);
 
                 MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 
@@ -304,18 +304,18 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	if(allMailFolder == nil) {
 		SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");
 
-		[self finishHeadersSync];
+        [self finishHeadersSync:(_loadFromDB? NO : YES)];
 		return;
 	}
     
 	if(_fetchedMessageHeaders.count == 0) {
-		[self finishHeadersSync];
+        [self finishHeadersSync:(_loadFromDB? NO : YES)];
 		return;
 	}
 
     // TODO: remove this after message thread constructing from DB is fixed
-    if(_syncFromDB) {
-        [self finishHeadersSync];
+    if(_loadFromDB) {
+        [self finishHeadersSync:NO];
         return;
     }
 
@@ -347,7 +347,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 				if(searchResults.count > 0) {
                     SM_LOG_DEBUG(@"%u messages found in '%@', threadId %@", [searchResults count], allMailFolder, threadId);
 					
-					[self fetchMessageThreadsHeaders:threadId uids:searchResults];
+                    [self fetchMessageThreadsHeaders:threadId uids:searchResults updateDatabase:(_loadFromDB? NO : YES)];
 				}
 			} else {
 				SM_LOG_ERROR(@"search in '%@' for thread %@ failed, error %@", allMailFolder, threadId, error);
@@ -369,12 +369,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[storage markMessageThreadAsUpdated:[threadId unsignedLongLongValue] localFolder:_localName];
 }
 
-- (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName {
+- (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	SMMessageStorage *storage = [[appDelegate model] messageStorage];
 	
-	SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session];
+	SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase];
 	
     (void)updateResult;
 
@@ -382,7 +382,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }
 
-- (void)fetchMessageThreadsHeaders:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs {
+- (void)fetchMessageThreadsHeaders:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	SMMailbox *mailbox = [[appDelegate model] mailbox];
@@ -407,15 +407,16 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 				}
 			}
 
-			[self updateMessages:filteredMessages remoteFolder:allMailFolder];
+            [self updateMessages:filteredMessages remoteFolder:allMailFolder updateDatabase:(_loadFromDB? NO : YES)];
 		} else {
 			SM_LOG_ERROR(@"Error fetching message headers for thread %@: %@", threadId, error);
 			
 			[self markMessageThreadAsUpdated:threadId];
 		}
 		
-		if(_searchMessageThreadsOps.count == 0 && _fetchMessageThreadsHeadersOps.count == 0)
-			[self finishHeadersSync];
+        if(_searchMessageThreadsOps.count == 0 && _fetchMessageThreadsHeadersOps.count == 0) {
+            [self finishHeadersSync:updateDatabase];
+        }
 	}];
 
 	[_fetchMessageThreadsHeadersOps setObject:op forKey:threadId];
@@ -423,11 +424,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	SM_LOG_DEBUG(@"Fetching headers for thread %@ started (%lu fetches active)", threadId, _fetchMessageThreadsHeadersOps.count);
 }
 
-- (void)finishHeadersSync {
+- (void)finishHeadersSync:(Boolean)updateDatabase {
 	[self cancelScheduledUpdateTimeout];
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES];
+	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase];
 	Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
 	
 	[self fetchMessageBodies];
@@ -435,14 +436,14 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", nil]];
 }
 
-- (void)loadMessageHeaders:(NSArray*)messages {
+- (void)loadMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
     }
     
     _messageHeadersFetched += [messages count];
     
-    [self updateMessages:messages remoteFolder:_remoteFolderName];
+    [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
 }
 
 - (void)syncFetchMessageHeaders {
@@ -471,14 +472,14 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
 	}
 	
-    if(_syncFromDB) {
+    if(_loadFromDB) {
         const uint64_t numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
         [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch block:^(NSArray *messages) {
             SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
 
             [self rescheduleUpdateTimeout];
-            [self loadMessageHeaders:messages];
+            [self loadMessageHeaders:messages updateDatabase:NO];
             [self syncFetchMessageHeaders];
         }];
     }
@@ -506,7 +507,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             _fetchMessageHeadersOp = nil;
             
             if(error == nil) {
-                [self loadMessageHeaders:messages];
+                [self loadMessageHeaders:messages updateDatabase:YES];
                 [self syncFetchMessageHeaders];
             } else {
                 SM_LOG_ERROR(@"Error downloading messages list: %@", error);
@@ -554,7 +555,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	}
 	
 	if(finishFetch) {
-		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO];
+		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO];
 		
 		[self fetchMessageBodies];
 		
@@ -601,7 +602,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 			
 			_messageHeadersFetched += [messages count];
 			
-			[self updateMessages:messages remoteFolder:_remoteFolderName];
+			[self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
 			
 			[self loadSelectedMessagesInternal];
 		} else {

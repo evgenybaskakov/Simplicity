@@ -103,7 +103,7 @@
 
 - (void)createMessagesTable:(sqlite3*)database {
     char *errMsg = NULL;
-    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)";
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGES (UID INTEGER PRIMARY KEY UNIQUE, REFCOUNT INTEGER, MESSAGE BLOB)";
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
@@ -587,45 +587,112 @@
             
             if(messageUidInserted) {
                 //
-                // Step 2: If the message UID has been inserted, add its body to the DB as well unless it is there yet.
+                // Step 2: Check if this message is already in the database.
                 //
-                NSData *encodedMessage = [NSKeyedArchiver archivedDataWithRootObject:imapMessage];
-                NSAssert(encodedMessage != nil, @"could not encode IMAP message");
-
-                const char *insertStmt = "INSERT INTO MESSAGES (\"UID\", \"MESSAGE\") VALUES (?, ?)";
+                NSString *selectRefCountSql = [NSString stringWithFormat: @"SELECT REFCOUNT FROM MESSAGES WHERE UID = \"%u\"", imapMessage.uid];
+                const char *selectRefCountStmt = [selectRefCountSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
-                
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, selectRefCountStmt, -1, &statement, NULL);
                 if(sqlPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
-                }
-
-                int bindResult;
-                if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
-                }
-
-                NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
-                
-                SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
-
-                if((bindResult = sqlite3_bind_blob(statement, 2, compressedMessage.bytes, (int)compressedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
+                    SM_LOG_ERROR(@"Could not prepare message (UID %u) select refcount statement, error %d", imapMessage.uid, sqlPrepareResult);
+                    // TODO
                 }
                 
-                const int sqlInsertResult = sqlite3_step(statement);
-                if(sqlInsertResult == SQLITE_DONE) {
-                    SM_LOG_DEBUG(@"Message with UID %u successfully inserted", imapMessage.uid);
-                } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
-                    // TODO: restore WARNING; don't rewrite messages on first launch
-                    SM_LOG_DEBUG(@"Message with UID %u already exists", imapMessage.uid);
+                int refCount = 0;
+                
+                if(sqlite3_step(statement) == SQLITE_ROW) {
+                    int readRefCount = sqlite3_column_int(statement, 0);
+                    if(readRefCount <= 0) {
+                        SM_LOG_FATAL(@"bad refcount %d for message with UID %u", readRefCount, imapMessage.uid);
+                        // TODO: shouldn't crash; this can be caused by DB corruption
+                    }
+
+                    SM_LOG_INFO(@"Refcount %d for message with UID", imapMessage.uid);
+
+                    refCount = readRefCount;
                 } else {
-                    SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", imapMessage.uid, sqlInsertResult);
+                    SM_LOG_DEBUG(@"Refcount for message with UID %u doesn't exist in the database", imapMessage.uid);
                 }
-                
+
                 const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+                SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
+                
+                //
+                // Step 3: Either increment and update the refcount value, or save the message for the first time.
+                //
+                if(refCount > 0) {
+                    refCount++;
+                    
+                    NSString *updateRefCountSql = [NSString stringWithFormat:@"UPDATE MESSAGES SET \"REFCOUNT\" = %d WHERE \"UID\" = %u", refCount, imapMessage.uid];
+                    const char *updateRefCountStmt = [updateRefCountSql UTF8String];
+
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, updateRefCountStmt, -1, &statement, NULL);
+                    
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                        // TODO
+                    }
+                    
+                    const int sqlUpdateResult = sqlite3_step(statement);
+                    if(sqlUpdateResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Message with UID %u successfully updated (new refcount %d)", imapMessage.uid, refCount);
+                    } else {
+                        SM_LOG_ERROR(@"Failed to update message with UID %u, error %d", imapMessage.uid, sqlUpdateResult);
+                    }
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+                }
+                else {
+                    refCount = 1;
+                    
+                    NSData *encodedMessage = [NSKeyedArchiver archivedDataWithRootObject:imapMessage];
+                    NSAssert(encodedMessage != nil, @"could not encode IMAP message");
+                    
+                    const char *insertStmt = "INSERT INTO MESSAGES (\"UID\", \"REFCOUNT\", \"MESSAGE\") VALUES (?, ?, ?)";
+                    
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
+                    
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                        // TODO
+                    }
+                    
+                    int bindResult = 0;
+                    if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
+                        // TODO
+                    }
+
+                    if((bindResult = sqlite3_bind_int(statement, 2, refCount)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
+                        // TODO
+                    }
+
+                    NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
+                    
+                    SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
+                    
+                    if((bindResult = sqlite3_bind_blob(statement, 3, compressedMessage.bytes, (int)compressedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGE), error %d", imapMessage.uid, bindResult);
+                    }
+                    
+                    const int sqlInsertResult = sqlite3_step(statement);
+                    if(sqlInsertResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Message with UID %u successfully inserted", imapMessage.uid);
+                    } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
+                        // TODO: restore WARNING; don't rewrite messages on first launch
+                        SM_LOG_DEBUG(@"Message with UID %u already exists", imapMessage.uid);
+                    } else {
+                        SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", imapMessage.uid, sqlInsertResult);
+                    }
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+                }
             }
             
             [self closeDatabase:database];

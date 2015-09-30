@@ -166,7 +166,7 @@
 	[self cancelUpdate:localFolder];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase {
 	SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
 	NSAssert(collection, @"bad folder collection");
 	
@@ -201,14 +201,16 @@
 
 		const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session];
         
-        if(threadUpdateResult != SMThreadUpdateResultNone) {
-            if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
-            }
-            else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
+        if(updateDatabase) {
+            if(threadUpdateResult != SMThreadUpdateResultNone) {
+                if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
+                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    [[[appDelegate model] database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
+                }
+                else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
+                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    [[[appDelegate model] database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
+                }
             }
         }
         
@@ -238,7 +240,7 @@
 	return updateResult;
 }
 
-- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages {
+- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase {
     SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
@@ -272,10 +274,12 @@
     [self deleteMessageThreads:vanishedThreads fromCollection:collection];
 
     if(removeVanishedMessages) {
-        for(SMMessage *message in vanishedMessages) {
-            if([message.remoteFolder isEqualToString:remoteFolder]) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
+        if(updateDatabase) {
+            for(SMMessage *message in vanishedMessages) {
+                if([message.remoteFolder isEqualToString:remoteFolder]) {
+                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    [[[appDelegate model] database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
+                }
             }
         }
     }

@@ -212,7 +212,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [_fetchedMessageHeadersFromAllMail removeAllObjects];
 
     if(shouldRestartRemoteSync) {
-        SM_LOG_INFO(@"folder %@ loaded from local database, starting remote folder sync", _localName);
+        SM_LOG_INFO(@"folder %@ loaded from local database", _localName);
         
         [self startLocalFolderSync];
     }
@@ -239,7 +239,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
     }
 	
-    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
+    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
         if(data == nil) {
             SM_LOG_ERROR(@"no data");
         }
@@ -266,7 +266,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
                 
                 if(_syncedWithRemoteFolder) {
                     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] putMessageBodyToDB:uid data:data];
+                    [[[appDelegate model] database] putMessageBodyToDB:uid data:data folderName:remoteFolderName];
                 }
 
                 // TODO: do it asynchronously!

@@ -72,13 +72,13 @@
 - (void)deleteDBFolder:(NSString*)folderName;
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
 - (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock;
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock;
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;
-- (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data;
+- (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName;
 
 @end

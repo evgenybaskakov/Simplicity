@@ -11,6 +11,8 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
+#import "SMMessage.h"
+#import "SMMessageThread.h"
 #import "SMCompression.h"
 #import "SMDatabase.h"
 
@@ -67,8 +69,20 @@
     
     if(database != nil) {
         [self createFoldersTable:database];
+        [self createMessageThreadsTable:database];
         [self loadFolderIds:database];
         [self closeDatabase:database];
+    }
+}
+
+- (void)createMessageThreadsTable:(sqlite3*)database {
+    char *errMsg = NULL;
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGETHREADS (THREADID INTEGER PRIMARY KEY, UIDARRAY BLOB)";
+    
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+        // TODO: mark the DB as invalid?
     }
 }
 
@@ -765,9 +779,6 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            //
-            // Step 2: If the message UID has been inserted, add its body to the DB as well unless it is there yet.
-            //
             NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGEBODIES%@ (\"UID\", \"MESSAGEBODY\") VALUES (?, ?)", folderId];
             
             sqlite3_stmt *statement = NULL;
@@ -806,6 +817,170 @@
             [self closeDatabase:database];
         }
 
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (NSArray*)serializeMessageThread:(SMMessageThread*)messageThread {
+    NSMutableArray *serializedMessageThread = [NSMutableArray arrayWithCapacity:(messageThread.messagesCount * 2)];
+    
+    for(SMMessage *message in messageThread.messagesSortedByDate) {
+        NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
+        NSNumber *folderId = [_folderIds objectForKey:message.remoteFolder];
+        if(folderId == nil) {
+            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", message.remoteFolder);
+            // TODO: mark the DB as invalid?
+        }
+        
+        [serializedMessageThread addObject:folderId];
+        [serializedMessageThread addObject:uidNumber];
+    }
+    
+    return serializedMessageThread;
+}
+
+- (void)putMessageThreadInDB:(SMMessageThread*)messageThread {
+    const uint64_t messageThreadId = messageThread.threadId;
+    
+    if(messageThread.messagesCount <= 1) {
+        SM_LOG_NOISE(@"message thread %llu is short and won't be saved in the database", messageThreadId);
+        return;
+    }
+    
+    NSArray *serializedMessageThread = [self serializeMessageThread:messageThread];
+    NSAssert(serializedMessageThread != nil, @"Could not serialize message thread (threadId %llu)", messageThreadId);
+    
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            
+            NSString *insertSql = @"INSERT INTO MESSAGETHREADS (\"THREADID\", \"UIDARRAY\") VALUES (?, ?)";
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare insert statement, error %d", sqlPrepareResult);
+            }
+            
+            int bindResult;
+            if((bindResult = sqlite3_bind_int64(statement, 1, messageThreadId)) != SQLITE_OK) {
+                SM_LOG_ERROR(@"message thread %llu, could not bind argument 1 (THREADID), error %d", messageThreadId, bindResult);
+            }
+            
+            NSData *serializedMessageThreadData = [NSKeyedArchiver archivedDataWithRootObject:serializedMessageThread];
+            
+            if((bindResult = sqlite3_bind_blob(statement, 2, serializedMessageThreadData.bytes, (int)serializedMessageThreadData.length, SQLITE_STATIC)) != SQLITE_OK) {
+                SM_LOG_ERROR(@"message thread %llu, could not bind argument 2 (UIDARRAY), error %d", messageThreadId, bindResult);
+            }
+            
+            const int sqlInsertResult = sqlite3_step(statement);
+            if(sqlInsertResult == SQLITE_DONE) {
+                SM_LOG_ERROR(@"message thread %llu successfully inserted", messageThreadId);
+            } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
+                SM_LOG_ERROR(@"message thread %llu already exists in the database", messageThreadId);
+            } else {
+                SM_LOG_ERROR(@"failed to insert message thread %llu, error %d", messageThreadId, sqlInsertResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)updateMessageThreadInDB:(SMMessageThread*)messageThread {
+    const uint64_t messageThreadId = messageThread.threadId;
+    
+    if(messageThread.messagesCount <= 1) {
+        [self removeMessageThreadFromDB:messageThreadId];
+        return;
+    }
+    
+    NSArray *serializedMessageThread = [self serializeMessageThread:messageThread];
+    NSAssert(serializedMessageThread != nil, @"Could not serialize message thread (threadId %llu)", messageThreadId);
+    
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            NSString *insertSql = [NSString stringWithFormat:@"UPDATE MESSAGETHREADS WHERE THREADID = %llu SET UIDARRAY = ?", messageThreadId];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
+            }
+            
+            NSData *serializedMessageThreadData = [NSKeyedArchiver archivedDataWithRootObject:serializedMessageThread];
+            
+            int bindResult = sqlite3_bind_blob(statement, 1, serializedMessageThreadData.bytes, (int)serializedMessageThreadData.length, SQLITE_STATIC);
+            if(bindResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"message thread %llu, could not bind argument 1 (UIDARRAY), error %d", messageThreadId, bindResult);
+            }
+            
+            const int sqlUpdateResult = sqlite3_step(statement);
+            if(sqlUpdateResult == SQLITE_DONE) {
+                SM_LOG_ERROR(@"message thread %llu successfully inserted", messageThreadId);
+            } else if(sqlUpdateResult == SQLITE_CONSTRAINT) {
+                // TODO: restore WARNING; don't rewrite messages on first launch
+                SM_LOG_ERROR(@"message thread %llu already exists in the database", messageThreadId);
+            } else {
+                SM_LOG_ERROR(@"failed to insert message thread %llu, error %d", messageThreadId, sqlUpdateResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)removeMessageThreadFromDB:(uint64_t)messageThreadId {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            NSString *insertSql = [NSString stringWithFormat:@"DELETE FROM MESSAGETHREADS WHERE THREADID = %llu", messageThreadId];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare remove statement, error %d", sqlPrepareResult);
+            }
+            
+            const int sqlRemoveResult = sqlite3_step(statement);
+            if(sqlRemoveResult == SQLITE_DONE) {
+                SM_LOG_ERROR(@"message thread %llu successfully removed", messageThreadId);
+            } else {
+                SM_LOG_ERROR(@"failed to remove message thread %llu, error %d", messageThreadId, sqlRemoveResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+        }
+        
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }

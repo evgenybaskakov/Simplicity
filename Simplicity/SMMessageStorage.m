@@ -185,12 +185,14 @@
 		NSUInteger oldIndex = NSUIntegerMax;
 		
 		Boolean threadUpdated = NO;
+        Boolean newMessageThreadCreated = NO;
 
 		if(messageThread == nil) {
 			messageThread = [[SMMessageThread alloc] initWithThreadId:threadId];
 			[[collection messageThreads] setObject:messageThread forKey:threadIdKey];
 			
 			threadUpdated = YES;
+            newMessageThreadCreated = YES;
 		} else {
 			oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
 			NSAssert(oldIndex != NSNotFound, @"message thread not found");
@@ -234,6 +236,13 @@
 			updateResult = SMMesssageStorageUpdateResultStructureChanged;
 		}
 
+        if(updateDatabase) {
+            if(newMessageThreadCreated) {
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                [[[appDelegate model] database] putMessageThreadInDB:messageThread];
+            }
+        }
+        
 		NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu (oldIndex %lu, threadUpdated %u, threadUpdateResult %lu)", collection.messageThreads.count, collection.messageThreadsByDate.count, oldIndex, threadUpdated, threadUpdateResult);
 	}
 	
@@ -268,6 +277,11 @@
 		
         if(messageThread.messagesCount == 0) {
 			[vanishedThreads addObject:messageThread];
+        }
+
+        if(updateDatabase) {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[[appDelegate model] database] updateMessageThreadInDB:messageThread];
         }
 	}
 

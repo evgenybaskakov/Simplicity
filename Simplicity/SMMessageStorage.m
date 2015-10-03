@@ -186,14 +186,12 @@
 		NSUInteger oldIndex = NSUIntegerMax;
 		
 		Boolean threadUpdated = NO;
-        Boolean newMessageThreadCreated = NO;
 
 		if(messageThread == nil) {
 			messageThread = [[SMMessageThread alloc] initWithThreadId:threadId];
 			[[collection messageThreads] setObject:messageThread forKey:threadIdKey];
 			
 			threadUpdated = YES;
-            newMessageThreadCreated = YES;
 		} else {
 			oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
 			NSAssert(oldIndex != NSNotFound, @"message thread not found");
@@ -236,13 +234,8 @@
 			[self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
 			updateResult = SMMesssageStorageUpdateResultStructureChanged;
 		}
-
-        if(updateDatabase) {
-            if(newMessageThreadCreated) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] putMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
-            }
-        }
+        
+        // NOTE: Do not put the new (allocated) message thread to the DB - there's just 1 message in it.
         
 		NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu (oldIndex %lu, threadUpdated %u, threadUpdateResult %lu)", collection.messageThreads.count, collection.messageThreadsByDate.count, oldIndex, threadUpdated, threadUpdateResult);
 	}
@@ -280,7 +273,7 @@
 			[vanishedThreads addObject:messageThread];
         }
 
-        if(updateDatabase) {
+        if(updateDatabase && updateResult != SMThreadUpdateResultNone) {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             [[[appDelegate model] database] updateMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
         }

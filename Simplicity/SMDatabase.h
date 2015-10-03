@@ -81,7 +81,6 @@
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName;
-- (void)putMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId;
 

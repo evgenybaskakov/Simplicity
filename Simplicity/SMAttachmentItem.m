@@ -58,7 +58,9 @@
 	// TODO: write to the message attachments folder
 	// TODO: write only if not written yet (compare checksum?)
 	// TODO: write asynchronously
-	NSString *encodedFileName = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)fileName, NULL, (__bridge CFStringRef)@"!*'();:@&=+$,/?%#[] ", kCFStringEncodingUTF8);
+    NSString *encodedFileName = [fileName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"!*'();:@&=+$,/?%#[] "]];
+    
+//	NSString *encodedFileName = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)fileName, NULL, (__bridge CFStringRef)@"!*'();:@&=+$,/?%#[] ", kCFStringEncodingUTF8);
 
 	NSURL *fullUrl = [NSURL URLWithString:encodedFileName relativeToURL:baseUrl];
 	NSData *fileData = [self fileData];
@@ -69,7 +71,7 @@
 		return FALSE;
 	}
 	
-	SM_LOG_DEBUG(@"File written: %@", fullUrl);
+	SM_LOG_WARNING(@"File written: %@", fullUrl);
 	return TRUE;
 }
 

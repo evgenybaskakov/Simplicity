@@ -366,7 +366,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     [openDlg setPrompt:@"Select files to attach"];
     
-    if([openDlg runModal] == NSOKButton) {
+    if([openDlg runModal] == NSModalResponseOK) {
         NSArray *files = [openDlg URLs];
         
         if(files && files.count > 0) {

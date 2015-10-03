@@ -224,7 +224,7 @@
                     [[[appDelegate model] database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
                 }
                 
-                if(!newThreadCreated) {
+                if(threadUpdateResult == SMThreadUpdateResultStructureChanged && !newThreadCreated) {
                     // NOTE: Do not put the new (allocated) message thread to the DB - there's just one message in it.
                     // It will be put in the database on endUpdate if any subsequent updates follow.
                     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -289,7 +289,7 @@
 			[vanishedThreads addObject:messageThread];
         }
 
-        if(updateResult != SMThreadUpdateResultNone) {
+        if(updateResult == SMThreadUpdateResultStructureChanged) {
             if(updateDatabase) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
                 [[[appDelegate model] database] updateMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];

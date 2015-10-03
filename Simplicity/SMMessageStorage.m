@@ -106,14 +106,14 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 
-- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder {
+- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
 	SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
 	NSAssert(collection, @"bad folder collection");
 
-    [self deleteMessageThreads:messageThreads fromCollection:collection];
+    [self deleteMessageThreads:messageThreads fromCollection:collection updateDatabase:updateDatabase];
 }
 
-- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection {
+- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection updateDatabase:(Boolean)updateDatabase {
     for(SMMessageThread *thread in messageThreads) {
         for(SMMessage *m in thread.messagesSortedByDate) {
             [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
@@ -121,6 +121,15 @@
 
         [collection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:thread.threadId]];
         [collection.messageThreadsByDate removeObject:thread];
+    }
+    
+    if(updateDatabase) {
+        for(SMMessageThread *thread in messageThreads) {
+            SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
+            
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[[appDelegate model] database] removeMessageThreadFromDB:thread.threadId];
+        }
     }
 }
 
@@ -135,7 +144,7 @@
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
-        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder];
+        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder updateDatabase:YES];
         return true;
     }
     else {
@@ -288,7 +297,9 @@
         }
 	}
 
-    [self deleteMessageThreads:vanishedThreads fromCollection:collection];
+    // Note that we don't explicitly delete this thread from the DB, because the preceding
+    // message thread update automatically removes vanished message threads.
+    [self deleteMessageThreads:vanishedThreads fromCollection:collection updateDatabase:NO];
 
     if(removeVanishedMessages) {
         if(updateDatabase) {

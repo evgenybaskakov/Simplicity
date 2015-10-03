@@ -706,7 +706,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
     // Remove the deleted message threads from the message storage.
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	[[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName];
+	[[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName updateDatabase:YES];
 	
     // Now, we have to cancel message bodies loading for the deleted messages.
 	MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];

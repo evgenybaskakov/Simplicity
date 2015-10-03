@@ -880,7 +880,7 @@
             
             const int sqlInsertResult = sqlite3_step(statement);
             if(sqlInsertResult == SQLITE_DONE) {
-                SM_LOG_ERROR(@"message thread %llu successfully inserted", messageThreadId);
+                SM_LOG_DEBUG(@"message thread %llu successfully inserted", messageThreadId);
             } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
                 SM_LOG_ERROR(@"message thread %llu already exists in the database", messageThreadId);
             } else {
@@ -950,7 +950,7 @@
                 
                 const int sqlUpdateResult = sqlite3_step(statement);
                 if(sqlUpdateResult == SQLITE_DONE) {
-                    SM_LOG_INFO(@"message thread %llu successfully updated", messageThreadId);
+                    SM_LOG_DEBUG(@"message thread %llu successfully updated", messageThreadId);
                 } else {
                     SM_LOG_ERROR(@"failed to update message thread %llu, error %d", messageThreadId, sqlUpdateResult);
                 }
@@ -982,7 +982,7 @@
                 
                 const int sqlInsertResult = sqlite3_step(statement);
                 if(sqlInsertResult == SQLITE_DONE) {
-                    SM_LOG_ERROR(@"message thread %llu successfully inserted", messageThreadId);
+                    SM_LOG_DEBUG(@"message thread %llu successfully inserted", messageThreadId);
                 } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
                     SM_LOG_ERROR(@"message thread %llu already exists in the database", messageThreadId);
                 } else {

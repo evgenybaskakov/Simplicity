@@ -11,8 +11,8 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
-#import "SMMessage.h"
-#import "SMMessageThread.h"
+#import "SMMessageThreadDescriptor.h"
+#import "SMMessageThreadDescriptorEntry.h"
 #import "SMCompression.h"
 #import "SMDatabase.h"
 
@@ -821,14 +821,14 @@
     });
 }
 
-- (NSArray*)serializeMessageThread:(SMMessageThread*)messageThread {
+- (NSArray*)serializeMessageThread:(SMMessageThreadDescriptor*)messageThread {
     NSMutableArray *serializedMessageThread = [NSMutableArray arrayWithCapacity:(messageThread.messagesCount * 2)];
     
-    for(SMMessage *message in messageThread.messagesSortedByDate) {
+    for(SMMessageThreadDescriptorEntry *message in messageThread.entries) {
         NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
-        NSNumber *folderId = [_folderIds objectForKey:message.remoteFolder];
+        NSNumber *folderId = [_folderIds objectForKey:message.folderName];
         if(folderId == nil) {
-            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", message.remoteFolder);
+            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", message.folderName);
             // TODO: mark the DB as invalid?
         }
         
@@ -839,7 +839,7 @@
     return serializedMessageThread;
 }
 
-- (void)putMessageThreadInDB:(SMMessageThread*)messageThread {
+- (void)putMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread {
     const uint64_t messageThreadId = messageThread.threadId;
     
     if(messageThread.messagesCount <= 1) {
@@ -897,7 +897,7 @@
     });
 }
 
-- (void)updateMessageThreadInDB:(SMMessageThread*)messageThread {
+- (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread {
     const uint64_t messageThreadId = messageThread.threadId;
     
     if(messageThread.messagesCount <= 1) {
@@ -915,7 +915,7 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSString *insertSql = [NSString stringWithFormat:@"UPDATE MESSAGETHREADS WHERE THREADID = %llu SET UIDARRAY = ?", messageThreadId];
+            NSString *insertSql = [NSString stringWithFormat:@"UPDATE MESSAGETHREADS SET UIDARRAY = ? WHERE THREADID = %llu", messageThreadId];
             
             sqlite3_stmt *statement = NULL;
             const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);

@@ -62,7 +62,7 @@
 #import <MailCore/MailCore.h>
 
 @class MCOIMAPMessage;
-@class SMMessageThread;
+@class SMMessageThreadDescriptor;
 
 @interface SMDatabase : NSObject
 
@@ -81,8 +81,8 @@
 - (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName;
-- (void)putMessageThreadInDB:(SMMessageThread*)messageThread;
-- (void)updateMessageThreadInDB:(SMMessageThread*)messageThread;
+- (void)putMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
+- (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId;
 
 @end

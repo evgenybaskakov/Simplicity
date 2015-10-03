@@ -13,6 +13,7 @@
 #import "SMMessageStorage.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadCollection.h"
+#import "SMMessageThreadDescriptor.h"
 #import "SMAppDelegate.h"
 
 @implementation SMMessageStorage {
@@ -239,7 +240,7 @@
         if(updateDatabase) {
             if(newMessageThreadCreated) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] putMessageThreadInDB:messageThread];
+                [[[appDelegate model] database] putMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
             }
         }
         
@@ -281,7 +282,7 @@
 
         if(updateDatabase) {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            [[[appDelegate model] database] updateMessageThreadInDB:messageThread];
+            [[[appDelegate model] database] updateMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
         }
 	}
 

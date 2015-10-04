@@ -17,6 +17,7 @@
 #import "SMOpSetMessageFlags.h"
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
+#import "SMMessageThreadDescriptor.h"
 #import "SMMessage.h"
 #import "SMMailbox.h"
 #import "SMDatabase.h"
@@ -313,53 +314,66 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
 	}
 
-    // TODO: remove this after message thread constructing from DB is fixed
+    NSMutableSet *threadIds = [[NSMutableSet alloc] init];
+    
     if(_loadingFromDB) {
+        for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
+            MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
+            uint64_t threadId = message.gmailThreadID;
+
+            if([threadIds containsObject:[NSNumber numberWithUnsignedLongLong:threadId]])
+                continue;
+            
+            [[[appDelegate model] database] loadMessageThreadFromDB:message.gmailThreadID block:^(SMMessageThreadDescriptor *threadDesc) {
+                if(threadDesc != nil) {
+                    SM_LOG_INFO(@"message thread %llu, messages count %lu", threadId, threadDesc.messagesCount);
+                }
+            }];
+        }
+
         [self finishHeadersSync:NO];
-        return;
     }
+    else {
+        for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
+            MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
+            NSNumber *threadId = [NSNumber numberWithUnsignedLongLong:message.gmailThreadID];
+            
+            if([threadIds containsObject:threadId])
+                continue;
+            
+            MCOIMAPSearchExpression *expression = [MCOIMAPSearchExpression searchGmailThreadID:message.gmailThreadID];
+            MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:allMailFolder expression:expression];
+            
+            op.urgent = YES;
+            
+            [op start:^(NSError *error, MCOIndexSet *searchResults) {
+                if([_searchMessageThreadsOps objectForKey:threadId] != op)
+                    return;
 
-	NSMutableSet *threadIds = [[NSMutableSet alloc] init];
+                [self rescheduleUpdateTimeout];
+                
+                [_searchMessageThreadsOps removeObjectForKey:threadId];
+                
+                if(error == nil) {
+                    SM_LOG_DEBUG(@"Search for message '%@' thread %llu finished (%lu searches left)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
 
-	for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
-		MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-		NSNumber *threadId = [NSNumber numberWithUnsignedLongLong:message.gmailThreadID];
-		
-		if([threadIds containsObject:threadId])
-			continue;
-		
-		MCOIMAPSearchExpression *expression = [MCOIMAPSearchExpression searchGmailThreadID:message.gmailThreadID];
-		MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:allMailFolder expression:expression];
-		
-		op.urgent = YES;
-		
-		[op start:^(NSError *error, MCOIndexSet *searchResults) {
-			if([_searchMessageThreadsOps objectForKey:threadId] != op)
-				return;
+                    if(searchResults.count > 0) {
+                        SM_LOG_DEBUG(@"%u messages found in '%@', threadId %@", [searchResults count], allMailFolder, threadId);
+                        
+                        [self fetchMessageThreadsHeadersFromAllMailFolder:threadId uids:searchResults updateDatabase:(_loadingFromDB? NO : YES)];
+                    }
+                } else {
+                    SM_LOG_ERROR(@"search in '%@' for thread %@ failed, error %@", allMailFolder, threadId, error);
 
-			[self rescheduleUpdateTimeout];
-			
-			[_searchMessageThreadsOps removeObjectForKey:threadId];
-			
-			if(error == nil) {
-				SM_LOG_DEBUG(@"Search for message '%@' thread %llu finished (%lu searches left)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
+                    [self markMessageThreadAsUpdated:threadId];
+                }
+            }];
+            
+            [_searchMessageThreadsOps setObject:op forKey:threadId];
 
-				if(searchResults.count > 0) {
-                    SM_LOG_DEBUG(@"%u messages found in '%@', threadId %@", [searchResults count], allMailFolder, threadId);
-					
-                    [self fetchMessageThreadsHeaders:threadId uids:searchResults updateDatabase:(_loadingFromDB? NO : YES)];
-				}
-			} else {
-				SM_LOG_ERROR(@"search in '%@' for thread %@ failed, error %@", allMailFolder, threadId, error);
-
-				[self markMessageThreadAsUpdated:threadId];
-			}
-		}];
-		
-		[_searchMessageThreadsOps setObject:op forKey:threadId];
-
-		SM_LOG_DEBUG(@"Search for message '%@' thread %llu started (%lu searches active)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
-	}
+            SM_LOG_DEBUG(@"Search for message '%@' thread %llu started (%lu searches active)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
+        }
+    }
 }
 
 - (void)markMessageThreadAsUpdated:(NSNumber*)threadId {
@@ -382,7 +396,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }
 
-- (void)fetchMessageThreadsHeaders:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
+- (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	MCOIMAPSession *session = [[appDelegate model] imapSession];
 	SMMailbox *mailbox = [[appDelegate model] mailbox];

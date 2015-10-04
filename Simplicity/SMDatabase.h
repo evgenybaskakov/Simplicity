@@ -80,5 +80,6 @@
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName;
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId;
+- (void)loadMessageThreadFromDB:(uint64_t)messageThreadId block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
 
 @end

@@ -23,6 +23,7 @@
     int32_t _serialQueueLength;
     int _nextFolderId;
     NSMutableDictionary *_folderIds;
+    NSMutableDictionary *_folderNames;
     NSMutableDictionary *_messagesWithBodies;
 }
 
@@ -179,6 +180,7 @@
 
 - (void)loadFolderIds:(sqlite3*)database {
     _folderIds = [[NSMutableDictionary alloc] init];
+    _folderNames = [[NSMutableDictionary alloc] init];
 
     const char *sqlQuery = "SELECT * FROM FOLDERS";
     NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
@@ -196,6 +198,7 @@
             NSNumber *folderId = [NSNumber numberWithUnsignedInteger:[idStr integerValue]];
 
             [_folderIds setObject:folderId forKey:nameStr];
+            [_folderNames setObject:nameStr forKey:folderId];
             
             [self loadMessageBodiesInfo:database folderId:folderId];
             
@@ -251,11 +254,13 @@
     else {
         NSArray *row = rows[0];
         NSString *idStr = row[0];
-        NSUInteger folderId = [idStr integerValue];
+        NSUInteger folderIdNum = [idStr integerValue];
+        NSNumber *folderId = [NSNumber numberWithUnsignedInteger:folderIdNum];
         
-        [_folderIds setObject:[NSNumber numberWithUnsignedInteger:folderId] forKey:folderName];
+        [_folderIds setObject:folderId forKey:folderName];
+        [_folderNames setObject:folderName forKey:folderId];
         
-        SM_LOG_DEBUG(@"Folder \"%@\" id %lu", folderName, folderId);
+        SM_LOG_DEBUG(@"Folder \"%@\" id %@", folderName, folderId);
     }
 }
 
@@ -277,6 +282,8 @@
     NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
 
     [_folderIds setObject:folderId forKey:folderName];
+    [_folderNames setObject:folderName forKey:folderId];
+
     [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
     
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
@@ -879,6 +886,34 @@
     return serializedMessageThreadData;
 }
 
+- (SMMessageThreadDescriptor*)deserializeMessageThread:(uint64_t)threadId data:(NSData*)data {
+    SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThreadId:threadId];
+
+    uint32_t folderId = 0;
+    uint32_t uid = 0;
+    
+    for(NSUInteger i = 0; i + (sizeof(folderId) + sizeof(uid)) <= data.length; i += (sizeof(folderId) + sizeof(uid))) {
+        NSRange range;
+
+        range.location = i;
+        range.length = sizeof(folderId);
+        
+        [data getBytes:&folderId range:range];
+
+        range.location = i + sizeof(folderId);
+        range.length = sizeof(uid);
+        
+        [data getBytes:&uid range:range];
+
+        NSString *folderName = [_folderNames objectForKey:[NSNumber numberWithUnsignedInt:folderId]];
+        SMMessageThreadDescriptorEntry *entry = [[SMMessageThreadDescriptorEntry alloc] initWithFolderName:folderName uid:uid];
+
+        [messageThreadDesc addEntry:entry];
+    }
+
+    return messageThreadDesc;
+}
+
 - (void)putMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread {
     const uint64_t messageThreadId = messageThread.threadId;
     
@@ -1072,6 +1107,53 @@
             SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
             
             [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)loadMessageThreadFromDB:(uint64_t)messageThreadId block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            NSString *insertSql = [NSString stringWithFormat:@"SELECT UIDARRAY FROM MESSAGETHREADS WHERE THREADID = %llu", messageThreadId];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare remove statement, error %d", sqlPrepareResult);
+            }
+            
+            SMMessageThreadDescriptor *messageThreadDesc = nil;
+            
+            const int sqlLoadResult = sqlite3_step(statement);
+            if(sqlLoadResult == SQLITE_ROW) {
+                int dataSize = sqlite3_column_bytes(statement, 0);
+                NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+
+                messageThreadDesc = [self deserializeMessageThread:messageThreadId data:data];
+                NSAssert(messageThreadDesc != nil, @"could not deserialize message thread %llu", messageThreadId);
+
+                SM_LOG_INFO(@"message thread %llu loaded, size %lu", messageThreadId, messageThreadDesc.messagesCount);
+            }
+            else {
+                SM_LOG_ERROR(@"failed to load message thread %llu, error %d", messageThreadId, sqlLoadResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageThreadBlock(messageThreadDesc);
+            });
         }
         
         OSAtomicAdd32(-1, &_serialQueueLength);

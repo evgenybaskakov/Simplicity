@@ -33,4 +33,22 @@
     return self;
 }
 
+- (id)initWithMessageThreadId:(uint64_t)threadId {
+    self = [super init];
+    
+    if(self) {
+        _threadId = threadId;
+        _messagesCount = 0;
+        _entries = [NSMutableArray array];
+    }
+    
+    return self;
+}
+
+- (void)addEntry:(SMMessageThreadDescriptorEntry *)entry {
+    [((NSMutableArray*)_entries) addObject:entry];
+
+    _messagesCount++;
+}
+
 @end

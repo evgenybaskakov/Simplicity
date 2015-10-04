@@ -70,16 +70,13 @@
 - (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock;
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
-- (void)deleteDBFolder:(NSString*)folderName;
+- (void)removeDBFolder:(NSString*)folderName;
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
 - (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock;
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
-- (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
-- (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage;
-- (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage;
-- (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage;
+- (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName;
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId;

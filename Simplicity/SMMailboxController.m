@@ -92,7 +92,7 @@
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
             for(SMFolderDesc *vanishedFolder in vanishedFolders) {
-                [[[appDelegate model] database] deleteDBFolder:vanishedFolder.folderName];
+                [[[appDelegate model] database] removeDBFolder:vanishedFolder.folderName];
             }
             
             [self addFoldersToDatabase];

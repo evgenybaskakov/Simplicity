@@ -13,7 +13,7 @@
 @interface SMMessage : NSObject <MCOHTMLRendererDelegate>
 
 @property (readonly) MCOMessageHeader *header;
-
+@property (readonly) MCOIMAPMessage *imapMessage;
 @property (readonly) NSString *from;
 @property (readonly) NSString *subject;
 @property (readonly) NSDate *date;

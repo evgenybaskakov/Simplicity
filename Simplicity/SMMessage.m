@@ -27,7 +27,6 @@
 	NSDate *_dateDB;
 	NSString *_fromDB;
 	NSString *_subjectDB;
-	MCOIMAPMessage *_imapMessage;
 	MCOMessageParser *_msgParser;
 	NSAttributedString *_htmlMessageBody;
 	NSData *_data;

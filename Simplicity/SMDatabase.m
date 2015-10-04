@@ -342,7 +342,7 @@
     NSAssert(nil, @"TODO");
 }
 
-- (void)deleteDBFolder:(NSString*)folderName {
+- (void)removeDBFolder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -350,24 +350,24 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-            const char *deleteStmt = [deleteSql UTF8String];
+            NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+            const char *removeStmt = [removeSql UTF8String];
 
             sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
             if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare folders delete statement, error %d", sqlPrepareResult);
+                SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
             }
             
             int sqlResult = sqlite3_step(statement);
             if(sqlResult == SQLITE_DONE) {
-                SM_LOG_INFO(@"Folder %@ successfully deleted", folderName);
+                SM_LOG_INFO(@"Folder %@ successfully removed", folderName);
             } else {
-                SM_LOG_ERROR(@"Failed to delete folder %@, error %d", folderName, sqlResult);
+                SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
             }
             
             const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
+            SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
          
             [self closeDatabase:database];
         }
@@ -595,6 +595,17 @@
     return TRUE;
 }
 
+- (NSData*)encodeImapMessage:(MCOIMAPMessage*)imapMessage {
+    NSData *encodedMessage = [NSKeyedArchiver archivedDataWithRootObject:imapMessage];
+    NSAssert(encodedMessage != nil, @"could not encode IMAP message");
+    
+    NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
+    
+    SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
+    
+    return compressedMessage;
+}
+
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
@@ -625,14 +636,9 @@
                 // TODO
             }
             
-            NSData *encodedMessage = [NSKeyedArchiver archivedDataWithRootObject:imapMessage];
-            NSAssert(encodedMessage != nil, @"could not encode IMAP message");
+            NSData *encodedMessage = [self encodeImapMessage:imapMessage];
             
-            NSData *compressedMessage = [SMCompression gzipDeflate:encodedMessage];
-            
-            SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", imapMessage.uid, encodedMessage.length, compressedMessage.length, compressedMessage.length/(encodedMessage.length/100));
-            
-            if((bindResult = sqlite3_bind_blob(statement, 2, compressedMessage.bytes, (int)compressedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+            if((bindResult = sqlite3_bind_blob(statement, 2, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
                 SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
             }
             
@@ -655,7 +661,55 @@
     });
 }
 
-- (void)deleteMessageFromFolderTable:(sqlite3*)database uid:(uint32_t)uid folder:(NSString*)folderName {
+- (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            NSNumber *folderId = [_folderIds objectForKey:folderName];
+            if(folderId == nil) {
+                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                // TODO: mark the DB as invalid?
+            }
+
+            NSString *updateSql = [NSString stringWithFormat:@"UPDATE FOLDER%@ SET MESSAGE = ? WHERE UID = %u", folderId, imapMessage.uid];
+            const char *updateStmt = [updateSql UTF8String];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, updateStmt, -1, &statement, NULL);
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
+                // TODO
+            }
+            
+            NSData *encodedMessage = [self encodeImapMessage:imapMessage];
+            
+            const int bindResult = sqlite3_bind_blob(statement, 1, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC);
+            if(bindResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (MESSAGE), error %d", imapMessage.uid, bindResult);
+            }
+            
+            const int sqlResult = sqlite3_step(statement);
+            if(sqlResult == SQLITE_DONE) {
+                SM_LOG_DEBUG(@"Message with UID %u successfully udpated in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+            } else {
+                SM_LOG_ERROR(@"Failed to upated message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlResult);
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)removeMessageFromFolderTable:(sqlite3*)database uid:(uint32_t)uid folder:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
@@ -663,51 +717,51 @@
         return;
     }
     
-    NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
-    const char *deleteStmt = [deleteSql UTF8String];
+    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
+    const char *removeStmt = [removeSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Could not prepare delete statement for message UID %u, folder %@ (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
+        SM_LOG_ERROR(@"Could not prepare remove statement for message UID %u, folder %@ (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
     }
     
     int sqlResult = sqlite3_step(statement);
     if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message UID %u successfully deleted from folder %@ (%@)", uid, folderName, folderId);
+        SM_LOG_INFO(@"Message UID %u successfully removed from folder %@ (%@)", uid, folderName, folderId);
     } else {
-        SM_LOG_INFO(@"Failed to delete message UID %u from folder %@ (%@)", uid, folderName, folderId);
+        SM_LOG_INFO(@"Failed to remove message UID %u from folder %@ (%@)", uid, folderName, folderId);
     }
     
     const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
+    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
 }
 
-- (void)deleteMessageBodyFromMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName uid:(uint32_t)uid {
+- (void)removeMessageBodyFromMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName uid:(uint32_t)uid {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
         // TODO: mark the DB as invalid?
     }
     
-    NSString *deleteSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
-    const char *deleteStmt = [deleteSql UTF8String];
+    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
+    const char *removeStmt = [removeSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteStmt, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Could not prepare message body (UID %u) delete statement for folder '%@' (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
+        SM_LOG_ERROR(@"Could not prepare message body (UID %u) remove statement for folder '%@' (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
     }
     
     int sqlResult = sqlite3_step(statement);
     if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message body with UID %u successfully deleted from message bodies table for folder '%@' (%@)", uid, folderName, folderId);
+        SM_LOG_INFO(@"Message body with UID %u successfully removed from message bodies table for folder '%@' (%@)", uid, folderName, folderId);
     } else {
-        SM_LOG_ERROR(@"Failed to delete message body with UID %u for folder '%@' (%@), error %d", uid, folderName, folderId, sqlResult);
+        SM_LOG_ERROR(@"Failed to remove message body with UID %u for folder '%@' (%@), error %d", uid, folderName, folderId, sqlResult);
     }
     
     const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize folders delete statement result %d", sqlFinalizeResult);
+    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
 }
 
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
@@ -732,29 +786,13 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            [self deleteMessageFromFolderTable:database uid:uid folder:folderName];
-            [self deleteMessageBodyFromMessageBodiesTable:database folderName:folderName uid:uid];
+            [self removeMessageFromFolderTable:database uid:uid folder:folderName];
+            [self removeMessageBodyFromMessageBodiesTable:database folderName:folderName uid:uid];
             [self closeDatabase:database];
         }
 
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
-}
-
-- (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
-    SM_LOG_DEBUG(@"TODO");
-}
-
-- (void)deleteMessageFromDB:(MCOIMAPMessage*)imapMessage {
-    NSAssert(nil, @"TODO");
-}
-
-- (void)updateMessageFlagsInDB:(MCOIMAPMessage*)imapMessage {
-    NSAssert(nil, @"TODO");
-}
-
-- (void)updateMessageLabelsInDB:(MCOIMAPMessage*)imapMessage {
-    NSAssert(nil, @"TODO");
 }
 
 - (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName {

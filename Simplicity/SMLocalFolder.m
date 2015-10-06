@@ -18,6 +18,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadDescriptor.h"
+#import "SMMessageThreadDescriptorEntry.h"
 #import "SMMessage.h"
 #import "SMMailbox.h"
 #import "SMDatabase.h"
@@ -57,6 +58,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	uint64_t _totalMemory;
     BOOL _loadingFromDB;
     BOOL _dbSyncInProgress;
+    NSUInteger _dbMessageThreadsLoadsCount;
+    NSUInteger _dbMessageThreadHeadersLoadsCount;
 }
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
@@ -78,6 +81,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_totalMemory = 0;
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
+        _dbMessageThreadsLoadsCount = 0;
 	}
 	
 	return self;
@@ -327,11 +331,28 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             [[[appDelegate model] database] loadMessageThreadFromDB:message.gmailThreadID block:^(SMMessageThreadDescriptor *threadDesc) {
                 if(threadDesc != nil) {
                     SM_LOG_INFO(@"message thread %llu, messages count %lu", threadId, threadDesc.messagesCount);
+
+                    [self fetchMessageThreadsHeadersFromDescriptor:threadDesc];
+                }
+                
+                NSAssert(_dbMessageThreadsLoadsCount > 0, @"bad _dbMessageThreadsLoadsCount");
+                _dbMessageThreadsLoadsCount--;
+                
+                if(_dbMessageThreadsLoadsCount == 0 && _dbMessageThreadHeadersLoadsCount == 0) {
+                    // no more threads are loading, and no messages loaded from threads
+                    // so stop loading headers now and start bodies fetching
+                    [self finishHeadersSync:NO];
                 }
             }];
+            
+            _dbMessageThreadsLoadsCount++;
         }
 
-        [self finishHeadersSync:NO];
+        if(_dbMessageThreadsLoadsCount == 0) {
+            // no thread loading was started
+            // so stop loading headers now and start bodies fetching
+            [self finishHeadersSync:NO];
+        }
     }
     else {
         for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
@@ -438,6 +459,36 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	SM_LOG_DEBUG(@"Fetching headers for thread %@ started (%lu fetches active)", threadId, _fetchMessageThreadsHeadersOps.count);
 }
 
+- (void)fetchMessageThreadsHeadersFromDescriptor:(SMMessageThreadDescriptor*)threadDesc {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadDesc.threadId localFolder:_remoteFolderName];
+    NSAssert(messageThread != nil, @"message thread %llu not found in folder %@, although the first message is loaded", threadDesc.threadId, _remoteFolderName);
+
+    for(SMMessageThreadDescriptorEntry *entry in threadDesc.entries) {
+        if([messageThread getMessage:entry.uid] == nil) {
+            [[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
+                if(message != nil) {
+                    SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded", entry.folderName, entry.uid, threadDesc.threadId);
+                
+                    [self updateMessageHeaders:[NSArray arrayWithObject:message] updateDatabase:NO];
+                }
+                
+                NSAssert(_dbMessageThreadHeadersLoadsCount > 0, @"bad _dbMessageThreadHeadersLoadsCount");
+                _dbMessageThreadHeadersLoadsCount--;
+                
+                if(_dbMessageThreadHeadersLoadsCount == 0) {
+                    // all message headers from message threads are finally loaded
+                    // now it's time to load bodies
+                    // so stop loading headers now and start bodies fetching
+                    [self finishHeadersSync:NO];
+                }
+            }];
+            
+            _dbMessageThreadHeadersLoadsCount++;
+        }
+    }
+}
+
 - (void)finishHeadersSync:(Boolean)updateDatabase {
 	[self cancelScheduledUpdateTimeout];
 
@@ -450,7 +501,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", nil]];
 }
 
-- (void)loadMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
     }
@@ -493,7 +544,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
 
             [self rescheduleUpdateTimeout];
-            [self loadMessageHeaders:messages updateDatabase:NO];
+            [self updateMessageHeaders:messages updateDatabase:NO];
             [self syncFetchMessageHeaders];
         }];
     }
@@ -521,7 +572,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             _fetchMessageHeadersOp = nil;
             
             if(error == nil) {
-                [self loadMessageHeaders:messages updateDatabase:YES];
+                [self updateMessageHeaders:messages updateDatabase:YES];
                 [self syncFetchMessageHeaders];
             } else {
                 SM_LOG_ERROR(@"Error downloading messages list: %@", error);
@@ -786,7 +837,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSNumber *threadIdNum = [[[appDelegate model] messageStorage] messageThreadByMessageUID:uid];
+    NSNumber *threadIdNum = [[[appDelegate model] messageStorage] messageThreadByMessageUID:uid]; // TODO: use folder name along with UID!
 
     const uint64_t threadId = (threadIdNum != nil? [threadIdNum unsignedLongLongValue] : 0);
     const Boolean useThreadId = (threadIdNum != nil);

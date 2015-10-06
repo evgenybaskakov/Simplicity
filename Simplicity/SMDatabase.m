@@ -535,6 +535,62 @@
     });
 }
 
+- (void)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        sqlite3 *database = [self openDatabase];
+        
+        if(database != nil) {
+            NSNumber *folderId = [_folderIds objectForKey:folderName];
+            if(folderId == nil) {
+                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                // TODO: mark the DB as invalid?
+            }
+            
+            NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ WHERE UID = %u", folderId, uid];
+            const char *folderSelectStmt = [folderSelectSql UTF8String];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
+            
+            MCOIMAPMessage *message = nil;
+            
+            if(sqlSelectPrepareResult == SQLITE_OK) {
+                const int stepResult = sqlite3_step(statement);
+                if(stepResult == SQLITE_ROW) {
+                    int dataSize = sqlite3_column_bytes(statement, 0);
+                    NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+                    NSData *uncompressedData = [SMCompression gzipInflate:data];
+                    
+                    message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+                    NSAssert(message != nil, @"could not decode IMAP message");
+                }
+                else {
+                    SM_LOG_ERROR(@"could not load message with uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
+                    // TODO: error handling
+                }
+            }
+            else {
+                SM_LOG_ERROR(@"could not prepare select statement for uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
+                // TODO
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            
+            [self closeDatabase:database];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageBlock(message);
+            });
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {

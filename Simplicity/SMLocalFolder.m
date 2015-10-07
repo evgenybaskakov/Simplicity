@@ -323,14 +323,17 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     if(_loadingFromDB) {
         for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
             MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-            uint64_t threadId = message.gmailThreadID;
+            uint64_t threadIdNum = message.gmailThreadID;
+            NSNumber *threadId = [NSNumber numberWithUnsignedLongLong:threadIdNum];
 
-            if([threadIds containsObject:[NSNumber numberWithUnsignedLongLong:threadId]])
+            if([threadIds containsObject:threadId])
                 continue;
             
-            [[[appDelegate model] database] loadMessageThreadFromDB:message.gmailThreadID block:^(SMMessageThreadDescriptor *threadDesc) {
+            [threadIds addObject:threadId];
+            
+            [[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum block:^(SMMessageThreadDescriptor *threadDesc) {
                 if(threadDesc != nil) {
-                    SM_LOG_INFO(@"message thread %llu, messages count %lu", threadId, threadDesc.messagesCount);
+                    SM_LOG_INFO(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
 
                     [self fetchMessageThreadsHeadersFromDescriptor:threadDesc];
                 }
@@ -357,12 +360,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     else {
         for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
             MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-            NSNumber *threadId = [NSNumber numberWithUnsignedLongLong:message.gmailThreadID];
+            uint64_t threadIdNum = message.gmailThreadID;
+            NSNumber *threadId = [NSNumber numberWithUnsignedLongLong:threadIdNum];
             
             if([threadIds containsObject:threadId])
                 continue;
-            
-            MCOIMAPSearchExpression *expression = [MCOIMAPSearchExpression searchGmailThreadID:message.gmailThreadID];
+
+            [threadIds addObject:threadId];
+
+            MCOIMAPSearchExpression *expression = [MCOIMAPSearchExpression searchGmailThreadID:threadIdNum];
             MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:allMailFolder expression:expression];
             
             op.urgent = YES;

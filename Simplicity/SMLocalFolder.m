@@ -193,7 +193,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     _loadingFromDB = NO;
     _dbSyncInProgress = NO;
 
-    SM_LOG_INFO(@"fetching %lu messages from the '%@' remote folder, %lu messages from the 'all mail' folder", _fetchedMessageHeaders.count, _remoteFolderName, _fetchedMessageHeadersFromAllMail.count);
+    SM_LOG_INFO(@"fetching %lu message bodies from the '%@' remote folder, %lu messages from the 'all mail' folder", _fetchedMessageHeaders.count, _remoteFolderName, _fetchedMessageHeadersFromAllMail.count);
     
     for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
         SM_LOG_DEBUG(@"fetched message id %@", gmailMessageId);
@@ -217,7 +217,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [_fetchedMessageHeadersFromAllMail removeAllObjects];
 
     if(shouldRestartRemoteSync) {
-        SM_LOG_INFO(@"folder %@ loaded from local database", _localName);
+        SM_LOG_INFO(@"folder %@ loaded from the local database, starting syncing with server", _localName);
         
         [self startLocalFolderSync];
     }
@@ -468,15 +468,25 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 - (void)fetchMessageThreadsHeadersFromDescriptor:(SMMessageThreadDescriptor*)threadDesc {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadDesc.threadId localFolder:_remoteFolderName];
-    NSAssert(messageThread != nil, @"message thread %llu not found in folder %@, although the first message is loaded", threadDesc.threadId, _remoteFolderName);
+
+    if(messageThread == nil) {
+        // It is possible that the user has a chance to delete something in the middle of loading from DB.
+        SM_LOG_WARNING(@"message thread %llu not found in folder %@, although the first message is loaded", threadDesc.threadId, _remoteFolderName);
+        return;
+    }
 
     for(SMMessageThreadDescriptorEntry *entry in threadDesc.entries) {
         if([messageThread getMessage:entry.uid] == nil) {
+            SM_LOG_INFO(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
+
             [[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
                 if(message != nil) {
-                    SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded", entry.folderName, entry.uid, threadDesc.threadId);
+                    SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
                 
                     [self updateMessageHeaders:[NSArray arrayWithObject:message] updateDatabase:NO];
+                }
+                else {
+                    SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu not found in database", entry.folderName, entry.uid, threadDesc.threadId);
                 }
                 
                 NSAssert(_dbMessageThreadHeadersLoadsCount > 0, @"bad _dbMessageThreadHeadersLoadsCount");
@@ -491,6 +501,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             }];
             
             _dbMessageThreadHeadersLoadsCount++;
+        }
+        else {
+            SM_LOG_INFO(@"Message with UID %u from folder '%@' is already in thread %llu", entry.uid, entry.folderName, threadDesc.threadId);
         }
     }
 }

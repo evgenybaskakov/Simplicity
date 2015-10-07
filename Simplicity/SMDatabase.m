@@ -1196,7 +1196,7 @@
                 messageThreadDesc = [self deserializeMessageThread:messageThreadId data:data];
                 NSAssert(messageThreadDesc != nil, @"could not deserialize message thread %llu", messageThreadId);
 
-                SM_LOG_INFO(@"message thread %llu loaded, messages count %lu", messageThreadId, messageThreadDesc.messagesCount);
+                SM_LOG_DEBUG(@"message thread %llu loaded, messages count %lu", messageThreadId, messageThreadDesc.messagesCount);
             }
             else if(sqlLoadResult == SQLITE_DONE) {
                 SM_LOG_DEBUG(@"message thread %llu not found in the database", messageThreadId);

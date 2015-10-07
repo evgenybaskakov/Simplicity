@@ -106,14 +106,14 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 
-- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder updateDatabase:(Boolean)updateDatabase {
 	SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
 	NSAssert(collection, @"bad folder collection");
 
-    [self deleteMessageThreads:messageThreads fromCollection:collection updateDatabase:updateDatabase];
+    [self deleteMessageThreads:messageThreads fromCollection:collection remoteFolder:remoteFolder updateDatabase:updateDatabase];
 }
 
-- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection updateDatabase:(Boolean)updateDatabase {
+- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection remoteFolder:(NSString*)remoteFolder updateDatabase:(Boolean)updateDatabase {
     for(SMMessageThread *thread in messageThreads) {
         for(SMMessage *m in thread.messagesSortedByDate) {
             [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
@@ -128,12 +128,12 @@
             SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
             
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            [[[appDelegate model] database] removeMessageThreadFromDB:thread.threadId];
+            [[[appDelegate model] database] removeMessageThreadFromDB:thread.threadId folder:remoteFolder];
         }
     }
 }
 
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder {
+- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder {
     [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
     
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
@@ -144,7 +144,7 @@
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
-        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder updateDatabase:YES];
+        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder remoteFolder:remoteFolder updateDatabase:YES];
         return true;
     }
     else {
@@ -228,7 +228,9 @@
                     // NOTE: Do not put the new (allocated) message thread to the DB - there's just one message in it.
                     // It will be put in the database on endUpdate if any subsequent updates follow.
                     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] updateMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
+                    SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
+                    
+                    [[[appDelegate model] database] updateMessageThreadInDB:messageThreadDesc folder:remoteFolderName];
                 }
             }
         }
@@ -292,14 +294,16 @@
         if(updateResult == SMThreadUpdateResultStructureChanged) {
             if(updateDatabase) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                [[[appDelegate model] database] updateMessageThreadInDB:[[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread]];
+                SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
+                
+                [[[appDelegate model] database] updateMessageThreadInDB:messageThreadDesc folder:remoteFolder];
             }
         }
 	}
 
     // Note that we don't explicitly delete this thread from the DB, because the preceding
     // message thread update automatically removes vanished message threads.
-    [self deleteMessageThreads:vanishedThreads fromCollection:collection updateDatabase:NO];
+    [self deleteMessageThreads:vanishedThreads fromCollection:collection remoteFolder:remoteFolder updateDatabase:NO];
 
     if(removeVanishedMessages) {
         if(updateDatabase) {

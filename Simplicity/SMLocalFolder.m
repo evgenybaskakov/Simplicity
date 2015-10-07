@@ -331,9 +331,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             
             [threadIds addObject:threadId];
             
-            [[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum block:^(SMMessageThreadDescriptor *threadDesc) {
+            [[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMMessageThreadDescriptor *threadDesc) {
                 if(threadDesc != nil) {
-                    SM_LOG_INFO(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
+                    SM_LOG_DEBUG(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
 
                     [self fetchMessageThreadsHeadersFromDescriptor:threadDesc];
                 }
@@ -503,7 +503,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             _dbMessageThreadHeadersLoadsCount++;
         }
         else {
-            SM_LOG_INFO(@"Message with UID %u from folder '%@' is already in thread %llu", entry.uid, entry.folderName, threadDesc.threadId);
+            SM_LOG_DEBUG(@"Message with UID %u from folder '%@' is already in thread %llu", entry.uid, entry.folderName, threadDesc.threadId);
         }
     }
 }
@@ -796,7 +796,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
     // Remove the deleted message threads from the message storage.
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	[[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName updateDatabase:YES];
+	[[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName remoteFolder:_remoteFolderName updateDatabase:YES];
 	
     // Now, we have to cancel message bodies loading for the deleted messages.
 	MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
@@ -885,7 +885,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     Boolean needUpdateMessageList = NO;
     
     if(useThreadId) {
-        needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName];
+        needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName remoteFolder:_remoteFolderName];
     }
     
     // Now, we have to cancel message bodies loading for the deleted messages.

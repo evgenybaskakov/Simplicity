@@ -141,7 +141,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         _dbSyncInProgress = YES;
 
         [[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
-            SM_LOG_INFO(@"messagesCount=%lu", messagesCount);
+            SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
             _totalMessagesCount = messagesCount;
             
@@ -193,7 +193,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     _loadingFromDB = NO;
     _dbSyncInProgress = NO;
 
-    SM_LOG_INFO(@"fetching message bodies from folder '%@' (%lu messages in this folder, %lu messages in 'all mail')", _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
+    SM_LOG_DEBUG(@"fetching message bodies from folder '%@' (%lu messages in this folder, %lu messages in 'all mail')", _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
     
     for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
         SM_LOG_DEBUG(@"fetching message body, gmail message id %@", gmailMessageId);
@@ -224,7 +224,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     for(NSString *folder in _fetchedMessageHeadersFromThreads) {
         NSArray *folderMessages = [_fetchedMessageHeadersFromThreads objectForKey:folder];
 
-        SM_LOG_INFO(@"fetching %lu message bodies from folder '%@'", folderMessages.count, folder);
+        SM_LOG_DEBUG(@"fetching %lu message bodies from folder '%@'", folderMessages.count, folder);
 
         for(MCOIMAPMessage *message in folderMessages) {
             SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, folder);
@@ -498,11 +498,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
     for(SMMessageThreadDescriptorEntry *entry in threadDesc.entries) {
         if([messageThread getMessage:entry.uid] == nil) {
-            SM_LOG_INFO(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
+            SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
             [[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
                 if(message != nil) {
-                    SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
+                    SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
                 
                     NSMutableArray *threadMessageSet = [_fetchedMessageHeadersFromThreads objectForKey:entry.folderName];
                     if(threadMessageSet == nil) {

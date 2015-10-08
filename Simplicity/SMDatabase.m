@@ -78,7 +78,7 @@
 
 - (void)createMessageThreadsTable:(sqlite3*)database {
     char *errMsg = NULL;
-    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGETHREADS (THREADID INTEGER PRIMARY KEY, FOLDERID INTEGER, UIDARRAY BLOB)";
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGETHREADS (THREADID INTEGER, FOLDERID INTEGER, UIDARRAY BLOB)";
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
@@ -265,7 +265,7 @@
 }
 
 - (int)generateFolderId {
-    while([_folderIds objectForKey:[NSNumber numberWithInt:_nextFolderId]] != nil) {
+    while([_folderNames objectForKey:[NSNumber numberWithInt:_nextFolderId]] != nil) {
         _nextFolderId++;
 
         if(_nextFolderId < 0) {

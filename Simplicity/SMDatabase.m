@@ -25,6 +25,7 @@
     NSMutableDictionary *_folderIds;
     NSMutableDictionary *_folderNames;
     NSMutableDictionary *_messagesWithBodies;
+    BOOL _dbInvalid;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -38,6 +39,11 @@
         
         [self checkDatabase];
         [self initDatabase];
+
+        if(_dbInvalid) {
+            [self resetDatabase];
+            [self initDatabase];
+        }
     }
     
     return self;
@@ -87,60 +93,100 @@
     }
     
     if(!databaseValid) {
-        NSError *error = nil;
-        [[NSFileManager defaultManager] removeItemAtPath:_dbFilePath error:&error];
-        
-        if(error != nil && error.code != NSFileNoSuchFileError) {
-            SM_LOG_ERROR(@"Cannot remove database file '%@': %@", _dbFilePath, error);
-            // TODO: mark db as invalid
-        }
-        else {
-            SM_LOG_WARNING(@"Database '%@' has been erased as inconsistent.", _dbFilePath);
-        }
+        SM_LOG_ERROR(@"Database '%@' is inconsistent and will be reset.", _dbFilePath);
+
+        [self resetDatabase];
     }
     else {
         SM_LOG_INFO(@"Database '%@' is consistent.", _dbFilePath);
     }
 }
 
-- (void)initDatabase {
-    sqlite3 *const database = [self openDatabase];
+- (void)resetDatabase {
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:_dbFilePath error:&error];
     
-    if(database != nil) {
-        [self createFoldersTable:database];
-        [self createMessageThreadsTable:database];
-        [self loadFolderIds:database];
-        [self closeDatabase:database];
+    if(error != nil && error.code != NSFileNoSuchFileError) {
+        SM_LOG_ERROR(@"Cannot remove database file '%@': %@", _dbFilePath, error);
+
+        _dbInvalid = YES;
+    }
+    else {
+        SM_LOG_INFO(@"Database '%@' has been erased as inconsistent.", _dbFilePath);
+        
+        _dbInvalid = NO;
     }
 }
 
-- (void)createMessageThreadsTable:(sqlite3*)database {
+- (void)initDatabase {
+    BOOL initSuccessful = NO;
+    
+    sqlite3 *const database = [self openDatabase];
+    
+    if(database != nil) {
+        if([self createFoldersTable:database]) {
+            if([self createMessageThreadsTable:database]) {
+                if([self loadFolderIds:database]) {
+                    SM_LOG_INFO(@"Database initialized successfully");
+
+                    initSuccessful = YES;
+                } else {
+                    SM_LOG_ERROR(@"Failed to load folder ids");
+                }
+            }
+            else {
+                SM_LOG_ERROR(@"Failed to init message thread table");
+            }
+        }
+        else {
+            SM_LOG_ERROR(@"Failed to init folder table");
+        }
+
+        [self closeDatabase:database];
+    }
+    else {
+        SM_LOG_ERROR(@"Cannot open database file '%@'. Database will be reset.", _dbFilePath);
+    }
+
+    if(initSuccessful) {
+        _dbInvalid = NO;
+    }
+    else {
+        _dbInvalid = YES;
+    }
+}
+
+- (BOOL)createMessageThreadsTable:(sqlite3*)database {
     char *errMsg = NULL;
     const char *createStmt = "CREATE TABLE IF NOT EXISTS MESSAGETHREADS (THREADID INTEGER, FOLDERID INTEGER, UIDARRAY BLOB)";
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
+    
+    return TRUE;
 }
 
-- (void)createFoldersTable:(sqlite3*)database {
+- (BOOL)createFoldersTable:(sqlite3*)database {
     char *errMsg = NULL;
     const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
+    
+    return TRUE;
 }
 
-- (void)createFolderMessagesTable:(sqlite3*)database folderName:(NSString*)folderName {
+- (BOOL)createFolderMessagesTable:(sqlite3*)database folderName:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
     
     NSString *createSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)", folderId];
@@ -150,15 +196,17 @@
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table for folder \"%@\" (id %@): %s, error %d", folderName, folderId, errMsg, sqlResult);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
+
+    return TRUE;
 }
 
-- (void)createMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName {
+- (BOOL)createMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
 
     NSString *createSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)", folderId];
@@ -167,8 +215,10 @@
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
     if(sqlResult != SQLITE_OK) {
         SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES%@: error %d", folderId, sqlResult);
-        // TODO: mark the DB as invalid?
+        return FALSE;
     }
+    
+    return TRUE;
 }
 
 - (NSDictionary*)loadDataFromDB:(sqlite3*)database query:(const char *)sqlQuery {
@@ -178,6 +228,7 @@
     const int sqlPrepareResult = sqlite3_prepare_v2(database, sqlQuery, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+        return NULL;
     }
     
     NSMutableArray *arrRows = [[NSMutableArray alloc] init];
@@ -225,12 +276,17 @@
     return results;
 }
 
-- (void)loadFolderIds:(sqlite3*)database {
-    _folderIds = [[NSMutableDictionary alloc] init];
-    _folderNames = [[NSMutableDictionary alloc] init];
+- (BOOL)loadFolderIds:(sqlite3*)database {
+    NSMutableDictionary *folderIds = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *folderNames = [[NSMutableDictionary alloc] init];
 
     const char *sqlQuery = "SELECT * FROM FOLDERS";
     NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
+    if(foldersTable == NULL) {
+        SM_LOG_ERROR(@"Could not load folders from the database.");
+        return FALSE;
+    }
+    
     NSArray *columns = [foldersTable objectForKey:@"Columns"];
     NSArray *rows = [foldersTable objectForKey:@"Rows"];
     
@@ -244,17 +300,27 @@
             NSString *nameStr = row[nameColumn];
             NSNumber *folderId = [NSNumber numberWithUnsignedInteger:[idStr integerValue]];
 
-            [_folderIds setObject:folderId forKey:nameStr];
-            [_folderNames setObject:nameStr forKey:folderId];
+            [folderIds setObject:folderId forKey:nameStr];
+            [folderNames setObject:nameStr forKey:folderId];
             
-            [self loadMessageBodiesInfo:database folderId:folderId];
+            if(![self loadMessageBodiesInfo:database folderId:folderId]) {
+                SM_LOG_ERROR(@"Could not load folder \"%@\" from the database", nameStr);
+                return FALSE;
+            }
             
             SM_LOG_DEBUG(@"Folder \"%@\" id %@", nameStr, folderId);
         }
     }
+
+    _folderIds = folderIds;
+    _folderNames = folderNames;
+    
+    return TRUE;
 }
 
-- (void)loadMessageBodiesInfo:(sqlite3*)database folderId:(NSNumber*)folderId {
+- (BOOL)loadMessageBodiesInfo:(sqlite3*)database folderId:(NSNumber*)folderId {
+    BOOL error = NO;
+    
     NSMutableSet *uidSet = [NSMutableSet set];
 
     NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT UID FROM MESSAGEBODIES%@", folderId];
@@ -270,6 +336,8 @@
             }
             else if(sqlStepResult != SQLITE_ROW) {
                 SM_LOG_ERROR(@"sqlite step error %d", sqlStepResult);
+
+                error = YES;
                 break;
             }
             
@@ -282,16 +350,20 @@
     }
     else {
         SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
-        // TODO
+        error = YES;
     }
     
     const int sqlFinalizeResult = sqlite3_finalize(statement);
     SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
 
-    [_messagesWithBodies setObject:uidSet forKey:folderId];
+    if(!error) {
+        [_messagesWithBodies setObject:uidSet forKey:folderId];
+    }
+    
+    return (error? FALSE : TRUE);
 }
 
-- (void)loadFolderId:(sqlite3*)database folderName:(NSString*)folderName {
+- (BOOL)loadFolderId:(sqlite3*)database folderName:(NSString*)folderName {
     NSString *selectSql = [NSString stringWithFormat:@"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
     NSDictionary *foldersTable = [self loadDataFromDB:database query:[selectSql UTF8String]];
     NSArray *columns = [foldersTable objectForKey:@"Columns"];
@@ -301,11 +373,11 @@
     
     if(idColumn != 0) {
         SM_LOG_ERROR(@"database corrupted: folder ID column not found (column value %ld)", idColumn);
-        // TODO: trigger database erase
+        return FALSE;
     }
     else if(rows.count != 1) {
         SM_LOG_ERROR(@"database corrupted: folder could not be added");
-        // TODO: trigger database erase
+        return FALSE;
     }
     else {
         NSArray *row = rows[0];
@@ -317,6 +389,7 @@
         [_folderNames setObject:folderName forKey:folderId];
         
         SM_LOG_DEBUG(@"Folder \"%@\" id %@", folderName, folderId);
+        return TRUE;
     }
 }
 
@@ -381,17 +454,32 @@
                 //
                 // Step 2: For new folders, find out what's the ID of the newly added folder.
                 //
-                [self loadFolderId:database folderName:folderName];
+                if(![self loadFolderId:database folderName:folderName]) {
+                    SM_LOG_ERROR(@"Could not load id for folder '%@'", folderName);
+
+                    _dbInvalid = YES;
+                    // TODO
+                }
                 
                 //
                 // Step 3: Create a unique folder table containing message UIDs.
                 //
-                [self createFolderMessagesTable:database folderName:folderName];
+                if(![self createFolderMessagesTable:database folderName:folderName]) {
+                    SM_LOG_ERROR(@"Could not load folder '%@' message table", folderName);
+
+                    _dbInvalid = YES;
+                    // TODO
+                }
 
                 //
                 // Step 4: Create a unique folder table containing message bodies.
                 //
-                [self createMessageBodiesTable:database folderName:folderName];
+                if(![self createMessageBodiesTable:database folderName:folderName]) {
+                    SM_LOG_ERROR(@"Could not create message bodies table for folder '%@'", folderName);
+
+                    _dbInvalid = YES;
+                    // TODO
+                }
             }
             
             [self closeDatabase:database];

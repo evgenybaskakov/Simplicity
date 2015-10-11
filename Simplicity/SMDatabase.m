@@ -49,6 +49,14 @@
     return self;
 }
 
+- (void)triggerDBFailure {
+    SM_LOG_ERROR(@"Database '%@' operation has failed. Database will be disabled until the next app. start.", _dbFilePath);
+
+    // TODO: Propagate this to the user via a dialog message
+    
+    _dbInvalid = YES;
+}
+
 - (sqlite3*)openDatabase {
     sqlite3 *database = nil;
     
@@ -422,43 +430,48 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            //
-            // Step 1: Add the folder into the DB.
-            //
-            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS) VALUES (%@, \"%@\", %ld, %ld)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
-            const char *insertStmt = [insertSql UTF8String];
-            
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
-            }
-            
-            BOOL newFolderAdded = NO;
-            
-            const int sqlResult = sqlite3_step(statement);
-            if(sqlResult == SQLITE_DONE) {
-                SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
+            do {
+                //
+                // Step 1: Add the folder into the DB.
+                //
+                NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS) VALUES (%@, \"%@\", %ld, %ld)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
+                const char *insertStmt = [insertSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
 
-                newFolderAdded = YES;
-            } else if(sqlResult == SQLITE_CONSTRAINT) {
-                SM_LOG_ERROR(@"Folder %@ already exists", folderName);
-            } else {
-                SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
-            }
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                const int sqlResult = sqlite3_step(statement);
 
-            if(newFolderAdded) {
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                
+                if(sqlResult == SQLITE_DONE) {
+                    SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
+                }
+                else if(sqlResult == SQLITE_CONSTRAINT) {
+                    SM_LOG_WARNING(@"Folder %@ already exists", folderName);
+                }
+                else {
+                    SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
+
+                    [self triggerDBFailure];
+                    break;
+                }
+                
                 //
                 // Step 2: For new folders, find out what's the ID of the newly added folder.
                 //
                 if(![self loadFolderId:database folderName:folderName]) {
                     SM_LOG_ERROR(@"Could not load id for folder '%@'", folderName);
 
-                    _dbInvalid = YES;
-                    // TODO
+                    [self triggerDBFailure];
+                    break;
                 }
                 
                 //
@@ -467,8 +480,8 @@
                 if(![self createFolderMessagesTable:database folderName:folderName]) {
                     SM_LOG_ERROR(@"Could not load folder '%@' message table", folderName);
 
-                    _dbInvalid = YES;
-                    // TODO
+                    [self triggerDBFailure];
+                    break;
                 }
 
                 //
@@ -477,10 +490,10 @@
                 if(![self createMessageBodiesTable:database folderName:folderName]) {
                     SM_LOG_ERROR(@"Could not create message bodies table for folder '%@'", folderName);
 
-                    _dbInvalid = YES;
-                    // TODO
+                    [self triggerDBFailure];
+                    break;
                 }
-            }
+            } while(FALSE);
             
             [self closeDatabase:database];
         }
@@ -501,24 +514,33 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-            const char *removeStmt = [removeSql UTF8String];
+            do {
+                NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+                const char *removeStmt = [removeSql UTF8String];
 
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
-            }
-            
-            int sqlResult = sqlite3_step(statement);
-            if(sqlResult == SQLITE_DONE) {
-                SM_LOG_INFO(@"Folder %@ successfully removed", folderName);
-            } else {
-                SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
-            }
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
+
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                const int sqlResult = sqlite3_step(statement);
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
+
+                if(sqlResult == SQLITE_DONE) {
+                    SM_LOG_INFO(@"Folder %@ successfully removed", folderName);
+                }
+                else {
+                    SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
+
+                    [self triggerDBFailure];
+                    break;
+                }
+            } while(FALSE);
          
             [self closeDatabase:database];
         }
@@ -586,33 +608,38 @@
         
         if(database != nil) {
             NSUInteger messagesCount = 0;
-
-            NSNumber *folderId = [_folderIds objectForKey:folderName];
-            if(folderId != nil) {
-                NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM FOLDER%@", folderId];
-                const char *getCountStmt = [getCountSql UTF8String];
-                
-                sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountStmt, -1, &statement, NULL);
-                if(sqlPrepareResult == SQLITE_OK) {
-                    const int sqlResult = sqlite3_step(statement);
-                    if(sqlResult == SQLITE_ROW) {
-                        SM_LOG_DEBUG(@"Step for folder %@ is successful", folderName);
+            
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId != nil) {
+                    NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM FOLDER%@", folderId];
+                    const char *getCountStmt = [getCountSql UTF8String];
+                    
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountStmt, -1, &statement, NULL);
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
                         
-                        messagesCount = sqlite3_column_int(statement, 0);
-
-                        SM_LOG_DEBUG(@"Messages count in folder %@ is %lu", folderName, messagesCount);
-                    } else {
-                        SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlResult);
+                        [self triggerDBFailure];
+                        break;
                     }
+
+                    const int sqlStepResult = sqlite3_step(statement);
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+
+                    if(sqlStepResult == SQLITE_ROW) {
+                        SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
+
+                        [self triggerDBFailure];
+                        break;
+                    }
+                    
+                    messagesCount = sqlite3_column_int(statement, 0);
+                    
+                    SM_LOG_DEBUG(@"Messages count in folder %@ is %lu", folderName, messagesCount);
                 }
-                else {
-                    SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
-                }
-                
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
-            }
+            } while(FALSE);
             
             [self closeDatabase:database];
 
@@ -836,45 +863,70 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSNumber *folderId = [_folderIds objectForKey:folderName];
-            if(folderId == nil) {
-                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-                // TODO: mark the DB as invalid?
-            }
-            
-            NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"MESSAGE\") VALUES (?, ?)", folderId];
-            const char *folderInsertStmt = [folderInsertSql UTF8String];
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"MESSAGE\") VALUES (?, ?)", folderId];
+                const char *folderInsertStmt = [folderInsertSql UTF8String];
 
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, folderInsertStmt, -1, &statement, NULL);
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
-                // TODO
-            }
-            
-            int bindResult;
-            if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
-                SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
-                // TODO
-            }
-            
-            NSData *encodedMessage = [self encodeImapMessage:imapMessage];
-            
-            if((bindResult = sqlite3_bind_blob(statement, 2, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
-                SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
-            }
-            
-            const int sqlResult = sqlite3_step(statement);
-            if(sqlResult == SQLITE_DONE) {
-                SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
-            } else if(sqlResult == SQLITE_CONSTRAINT) {
-                SM_LOG_ERROR(@"Message with UID %u already in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
-            } else {
-                SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlResult);
-            }
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, folderInsertStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                int bindResult;
+                if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
+
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                NSData *encodedMessage = [self encodeImapMessage:imapMessage];
+                
+                if((bindResult = sqlite3_bind_blob(statement, 2, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
+
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                const int sqlStepResult = sqlite3_step(statement);
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+                if(sqlStepResult == SQLITE_DONE) {
+                    SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+                }
+                else if(sqlStepResult == SQLITE_CONSTRAINT) {
+                    SM_LOG_ERROR(@"Message with UID %u already in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+                else {
+                    SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlStepResult);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+            } while(FALSE);
             
             [self closeDatabase:database];
         }
@@ -891,38 +943,53 @@
         sqlite3 *database = [self openDatabase];
         
         if(database != nil) {
-            NSNumber *folderId = [_folderIds objectForKey:folderName];
-            if(folderId == nil) {
-                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-                // TODO: mark the DB as invalid?
-            }
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
 
-            NSString *updateSql = [NSString stringWithFormat:@"UPDATE FOLDER%@ SET MESSAGE = ? WHERE UID = %u", folderId, imapMessage.uid];
-            const char *updateStmt = [updateSql UTF8String];
-            
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, updateStmt, -1, &statement, NULL);
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
-                // TODO
-            }
-            
-            NSData *encodedMessage = [self encodeImapMessage:imapMessage];
-            
-            const int bindResult = sqlite3_bind_blob(statement, 1, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC);
-            if(bindResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (MESSAGE), error %d", imapMessage.uid, bindResult);
-            }
-            
-            const int sqlResult = sqlite3_step(statement);
-            if(sqlResult == SQLITE_DONE) {
-                SM_LOG_DEBUG(@"Message with UID %u successfully udpated in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
-            } else {
-                SM_LOG_ERROR(@"Failed to upated message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlResult);
-            }
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                NSString *updateSql = [NSString stringWithFormat:@"UPDATE FOLDER%@ SET MESSAGE = ? WHERE UID = %u", folderId, imapMessage.uid];
+                const char *updateStmt = [updateSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, updateStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                NSData *encodedMessage = [self encodeImapMessage:imapMessage];
+                
+                const int bindResult = sqlite3_bind_blob(statement, 1, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC);
+                if(bindResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (MESSAGE), error %d", imapMessage.uid, bindResult);
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+                    [self triggerDBFailure];
+                    break;
+                }
+                
+                const int sqlResult = sqlite3_step(statement);
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+                if(sqlResult == SQLITE_DONE) {
+                    SM_LOG_DEBUG(@"Message with UID %u successfully udpated in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+                } else {
+                    SM_LOG_ERROR(@"Failed to upated message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlResult);
+                    
+                    [self triggerDBFailure];
+                    break;
+                }
+            } while(FALSE);
             
             [self closeDatabase:database];
         }

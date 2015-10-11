@@ -33,8 +33,10 @@
     if(self) {
         _serialQueue = dispatch_queue_create("com.simplicity.Simplicity.serialDatabaseQueue", DISPATCH_QUEUE_SERIAL);
         _concurrentQueue = dispatch_queue_create("com.simplicity.Simplicity.concurrentDatabaseQueue", DISPATCH_QUEUE_CONCURRENT);
+        _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
         
+        [self checkDatabase];
         [self initDatabase];
     }
     
@@ -44,7 +46,7 @@
 - (sqlite3*)openDatabase {
     sqlite3 *database = nil;
     
-    const int openDatabaseResult = sqlite3_open([_dbFilePath UTF8String], &database);
+    const int openDatabaseResult = sqlite3_open(_dbFilePath.UTF8String, &database);
     if(openDatabaseResult == SQLITE_OK) {
         SM_LOG_DEBUG(@"Database %@ open successfully", _dbFilePath);
         return database;
@@ -63,10 +65,43 @@
     }
 }
 
-- (void)initDatabase {
-    _messagesWithBodies = [NSMutableDictionary dictionary];
+- (void)checkDatabase {
+    BOOL databaseValid = YES;
     
-    sqlite3 *database = [self openDatabase];
+    sqlite3 *const database = [self openDatabase];
+    if(database != nil) {
+        char *errMsg = NULL;
+        const char *checkStmt = "PRAGMA QUICK_CHECK";
+        
+        const int sqlResult = sqlite3_exec(database, checkStmt, NULL, NULL, &errMsg);
+        if(sqlResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"Database '%@' check failed: %s (error %d). Database will be erased and created from ground.", _dbFilePath, errMsg, sqlResult);
+            
+            databaseValid = NO;
+        }
+        
+        [self closeDatabase:database];
+    }
+    
+    if(!databaseValid) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:_dbFilePath error:&error];
+        
+        if(error != nil && error.code != NSFileNoSuchFileError) {
+            SM_LOG_ERROR(@"Cannot remove database file '%@': %@", _dbFilePath, error);
+            // TODO: mark db as invalid
+        }
+        else {
+            SM_LOG_WARNING(@"Database '%@' has been erased as inconsistent.", _dbFilePath);
+        }
+    }
+    else {
+        SM_LOG_INFO(@"Database '%@' is consistent.", _dbFilePath);
+    }
+}
+
+- (void)initDatabase {
+    sqlite3 *const database = [self openDatabase];
     
     if(database != nil) {
         [self createFoldersTable:database];
@@ -146,14 +181,23 @@
     NSMutableArray *arrColumnNames = [[NSMutableArray alloc] init];
     const int totalColumns = sqlite3_column_count(statement);
     
-    while(sqlite3_step(statement) == SQLITE_ROW) {
+    while(true) {
+        const int sqlStepResult = sqlite3_step(statement);
+        if(sqlStepResult == SQLITE_DONE) {
+            break;
+        }
+        else if(sqlStepResult != SQLITE_ROW) {
+            SM_LOG_ERROR(@"sqlite step error %d", sqlStepResult);
+            break;
+        }
+        
         NSMutableArray *arrDataRow = [[NSMutableArray alloc] init];
         
         for(int i = 0; i < totalColumns; i++){
             char *dbDataAsChars = (char *)sqlite3_column_text(statement, i);
             
             if(dbDataAsChars != NULL) {
-                [arrDataRow addObject:[NSString  stringWithUTF8String:dbDataAsChars]];
+                [arrDataRow addObject:[NSString stringWithUTF8String:dbDataAsChars]];
             }
             
             if(arrColumnNames.count != totalColumns) {
@@ -216,7 +260,16 @@
     const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
     
     if(sqlPrepareResult == SQLITE_OK) {
-        while(sqlite3_step(statement) == SQLITE_ROW) {
+        while(true) {
+            const int sqlStepResult = sqlite3_step(statement);
+            if(sqlStepResult == SQLITE_DONE) {
+                break;
+            }
+            else if(sqlStepResult != SQLITE_ROW) {
+                SM_LOG_ERROR(@"sqlite step error %d", sqlStepResult);
+                break;
+            }
+            
             uint32_t uid = sqlite3_column_int(statement, 0);
             
             SM_LOG_DEBUG(@"message with UID %u has its body in the database", uid);
@@ -451,7 +504,7 @@
                 sqlite3_stmt *statement = NULL;
                 const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountStmt, -1, &statement, NULL);
                 if(sqlPrepareResult == SQLITE_OK) {
-                    int sqlResult = sqlite3_step(statement);
+                    const int sqlResult = sqlite3_step(statement);
                     if(sqlResult == SQLITE_ROW) {
                         SM_LOG_DEBUG(@"Step for folder %@ is successful", folderName);
                         
@@ -504,7 +557,16 @@
             NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
             
             if(sqlSelectPrepareResult == SQLITE_OK) {
-                while(sqlite3_step(statement) == SQLITE_ROW) {
+                while(true) {
+                    const int sqlStepResult = sqlite3_step(statement);
+                    if(sqlStepResult == SQLITE_DONE) {
+                        break;
+                    }
+                    else if(sqlStepResult != SQLITE_ROW) {
+                        SM_LOG_ERROR(@"sqlite step error %d", sqlStepResult);
+                        break;
+                    }
+                    
                     int dataSize = sqlite3_column_bytes(statement, 0);
                     NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
                     NSData *uncompressedData = [SMCompression gzipInflate:data];
@@ -628,12 +690,18 @@
             NSData *messageBody = nil;
             
             if(sqlPrepareResult == SQLITE_OK) {
-                if(sqlite3_step(statement) == SQLITE_ROW) {
+                const int sqlStepResult = sqlite3_step(statement);
+
+                if(sqlStepResult == SQLITE_ROW) {
                     int dataSize = sqlite3_column_bytes(statement, 0);
                     NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
                     NSData *uncompressedData = [SMCompression gzipInflate:data];
 
                     messageBody = uncompressedData;
+                }
+                else {
+                    SM_LOG_ERROR(@"sqlite3_step error %d", sqlStepResult);
+                    //TODO
                 }
             }
             else {

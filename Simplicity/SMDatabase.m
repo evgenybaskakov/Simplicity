@@ -66,7 +66,7 @@
 }
 
 - (void)checkDatabase {
-    BOOL databaseValid = YES;
+    BOOL databaseValid = NO;
     
     sqlite3 *const database = [self openDatabase];
     if(database != nil) {
@@ -74,10 +74,13 @@
         const char *checkStmt = "PRAGMA QUICK_CHECK";
         
         const int sqlResult = sqlite3_exec(database, checkStmt, NULL, NULL, &errMsg);
-        if(sqlResult != SQLITE_OK) {
+        if(sqlResult == SQLITE_OK) {
+            SM_LOG_DEBUG(@"Database '%@' check successful.", _dbFilePath);
+
+            databaseValid = YES;
+        }
+        else {
             SM_LOG_ERROR(@"Database '%@' check failed: %s (error %d). Database will be erased and created from ground.", _dbFilePath, errMsg, sqlResult);
-            
-            databaseValid = NO;
         }
         
         [self closeDatabase:database];

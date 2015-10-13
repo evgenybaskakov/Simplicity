@@ -16,6 +16,14 @@
 #import "SMCompression.h"
 #import "SMDatabase.h"
 
+typedef NS_ENUM(NSInteger, DBFailureKind) {
+    DBFailure_NonCriticalDataNotFound,
+    DBFailure_CriticalDataNotFound,
+    DBFailure_LibraryCriticalError,
+    DBFailure_Busy,
+    DBFailure_WriteError
+};
+
 @implementation SMDatabase {
     NSString *_dbFilePath;
     dispatch_queue_t _serialQueue;
@@ -26,6 +34,7 @@
     NSMutableDictionary *_folderNames;
     NSMutableDictionary *_messagesWithBodies;
     BOOL _dbInvalid;
+    BOOL _dbMustBeReset;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -49,15 +58,74 @@
     return self;
 }
 
-- (void)triggerDBFailure {
-    SM_LOG_ERROR(@"Database '%@' operation has failed. Database will be disabled until the next app. start.", _dbFilePath);
-    
-    // TODO: Propagate this to the user via a dialog message
-    
-    _dbInvalid = YES;
+- (void)triggerDBFailureWithSQLiteError:(int)sqliteError {
+    if(sqliteError == SQLITE_BUSY) {
+        SM_LOG_ERROR(@"Database '%@' is busy.", _dbFilePath);
+
+        [self triggerDBFailure:DBFailure_Busy];
+    }
+    else {
+        SM_LOG_ERROR(@"Database '%@' error %d.", _dbFilePath, sqliteError);
+
+        [self triggerDBFailure:DBFailure_LibraryCriticalError];
+    }
+}
+
+- (void)triggerDBFailure:(DBFailureKind)dbFailureKind {
+    switch(dbFailureKind) {
+        case DBFailure_NonCriticalDataNotFound:
+            SM_LOG_ERROR(@"Database '%@': some data not found, considering DB consisteny not compromised. Application will continue working normally.", _dbFilePath);
+            break;
+
+        case DBFailure_CriticalDataNotFound:
+            _dbInvalid = YES;
+            _dbMustBeReset = YES;
+
+            // TODO: Propagate this to the user via a dialog message
+            SM_LOG_ERROR(@"Database '%@': critical data not found, consider DB consistency violated. Database will be dropped.", _dbFilePath);
+            break;
+            
+        case DBFailure_LibraryCriticalError:
+            _dbInvalid = YES;
+            _dbMustBeReset = YES;
+            
+            // TODO: Propagate this to the user via a dialog message
+            SM_LOG_ERROR(@"Database '%@': library function has failed, consider DB consistency violated. Database will be dropped.", _dbFilePath);
+            break;
+
+        case DBFailure_Busy:
+            _dbInvalid = YES;
+            
+            // TODO: Propagate this to the user via a dialog message
+            SM_LOG_ERROR(@"Database '%@': DB is blocked by an external process. Database will not be used or saved until application is restarted.", _dbFilePath);
+            break;
+
+        case DBFailure_WriteError:
+            _dbInvalid = YES;
+
+            // TODO: Propagate this to the user via a dialog message
+            SM_LOG_ERROR(@"Database '%@': disk error. Database will not be used until application is restarted.", _dbFilePath);
+            break;
+    }
 }
 
 - (sqlite3*)openDatabase {
+    if(_dbMustBeReset) {
+        // A previous database operation has failed; the DB is inconsistent.
+        // So just drop and re-initialize it.
+        [self resetDatabase];
+        
+        // Do not use the database afterwards, as it should be re-initialized
+        // with the full application data on startup.
+        _dbInvalid = YES;
+        return nil;
+    }
+    
+    if(_dbInvalid) {
+        // Database is invalid, so just drop every operation.
+        return nil;
+    }
+    
     sqlite3 *database = nil;
     
     const int openDatabaseResult = sqlite3_open(_dbFilePath.UTF8String, &database);
@@ -124,6 +192,8 @@
         
         _dbInvalid = NO;
     }
+    
+    _dbMustBeReset = NO;
 }
 
 - (void)initDatabase {
@@ -442,11 +512,12 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryFailureError = SQLITE_OK;
                 
                 do {
                     const int sqlResult = sqlite3_step(statement);
@@ -459,7 +530,8 @@
                     }
                     else {
                         SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
-                        
+                    
+                        dbQueryFailureError = sqlResult;
                         dbQueryFailed = YES;
                         break;
                     }
@@ -471,7 +543,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"database query failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:dbQueryFailureError];
                     break;
                 }
 
@@ -534,7 +606,7 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
@@ -549,7 +621,7 @@
                 else {
                     SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlResult];
                     break;
                 }
             } while(FALSE);
@@ -584,7 +656,7 @@
                 if(columns.count > 0 && rows.count > 0) {
                     SM_LOG_ERROR(@"database corrupted: folder name/delimiter/flags columns not found: %ld/%ld/%ld", nameColumn, delimiterColumn, flagsColumn);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                 }
             }
             else {
@@ -632,11 +704,12 @@
                     if(sqlPrepareResult != SQLITE_OK) {
                         SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
                         
-                        [self triggerDBFailure];
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                         break;
                     }
                     
                     BOOL dbQueryFailed = NO;
+                    int dbQueryError = SQLITE_OK;
                     
                     do {
                         const int sqlStepResult = sqlite3_step(statement);
@@ -645,6 +718,7 @@
                             SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
 
                             dbQueryFailed = YES;
+                            dbQueryError = sqlStepResult;
                             break;
                         }
                         
@@ -659,7 +733,7 @@
                     if(dbQueryFailed) {
                         SM_LOG_ERROR(@"database query failed");
                         
-                        [self triggerDBFailure];
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
                         break;
                     }
                 }
@@ -691,7 +765,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -702,6 +776,7 @@
                 const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 if(sqlSelectPrepareResult == SQLITE_OK) {
                     while(true) {
@@ -713,6 +788,7 @@
                             SM_LOG_ERROR(@"sqlite step error %d", sqlStepResult);
                             
                             dbQueryFailed = YES;
+                            dbQueryError = sqlStepResult;
                             break;
                         }
                         
@@ -735,6 +811,7 @@
                     SM_LOG_ERROR(@"could not prepare select statement from folder %@ (id %@), error %d", folderName, folderId, sqlSelectPrepareResult);
 
                     dbQueryFailed = YES;
+                    dbQueryError = sqlSelectPrepareResult;
                 }
                 
                 const int sqlFinalizeResult = sqlite3_finalize(statement);
@@ -743,7 +820,13 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"database query failed");
                     
-                    [self triggerDBFailure];
+                    if(dbQueryError != SQLITE_OK) {
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    }
+                    else {
+                        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    }
+                    
                     break;
                 }
             } while(FALSE);
@@ -774,11 +857,12 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ WHERE UID = %u", folderId, uid];
                 const char *folderSelectStmt = [folderSelectSql UTF8String];
@@ -804,12 +888,14 @@
                         SM_LOG_ERROR(@"could not load message with uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = stepResult;
                     }
                 }
                 else {
                     SM_LOG_ERROR(@"could not prepare select statement for uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
 
                     dbQueryFailed = YES;
+                    dbQueryError = sqlSelectPrepareResult;
                 }
                 
                 const int sqlFinalizeResult = sqlite3_finalize(statement);
@@ -818,7 +904,13 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"database query failed");
                     
-                    [self triggerDBFailure];
+                    if(dbQueryError != SQLITE_OK) {
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    }
+                    else {
+                        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    }
+                    
                     break;
                 }
             } while(FALSE);
@@ -883,13 +975,13 @@
                 else {
                     SM_LOG_ERROR(@"sqlite3_step error %d", sqlStepResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlStepResult];
                 }
             }
             else {
                 SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
 
-                [self triggerDBFailure];
+                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
             }
             
             const int sqlFinalizeResult = sqlite3_finalize(statement);
@@ -933,7 +1025,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -945,11 +1037,12 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 do {
                     int bindResult;
@@ -957,6 +1050,7 @@
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = bindResult;
                         break;
                     }
                     
@@ -966,6 +1060,7 @@
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = bindResult;
                         break;
                     }
                     
@@ -981,6 +1076,7 @@
                         }
                         
                         dbQueryFailed = YES;
+                        dbQueryError = sqlStepResult;
                         break;
                     }
                 } while(FALSE);
@@ -991,7 +1087,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
                     break;
                 }
                 
@@ -1018,7 +1114,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -1030,13 +1126,14 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
                 NSData *encodedMessage = [self encodeImapMessage:imapMessage];
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 do {
                     const int bindResult = sqlite3_bind_blob(statement, 1, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC);
@@ -1044,6 +1141,7 @@
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (MESSAGE), error %d", imapMessage.uid, bindResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = bindResult;
                         break;
                     }
                     
@@ -1053,6 +1151,7 @@
                         SM_LOG_ERROR(@"Failed to upated message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = sqlResult;
                         break;
                     }
                 } while(FALSE);
@@ -1063,7 +1162,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
                     break;
                 }
                 
@@ -1187,7 +1286,7 @@
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-        [self triggerDBFailure];
+        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         return;
     }
     
@@ -1195,7 +1294,7 @@
     if(uidSet == nil) {
         SM_LOG_ERROR(@"folder '%@' (%@) is unknown", folderName, folderId);
 
-        [self triggerDBFailure];
+        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         return;
     }
     
@@ -1222,11 +1321,12 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 do {
                     int bindResult;
@@ -1234,6 +1334,7 @@
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", uid, bindResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = bindResult;
                         break;
                     }
                     
@@ -1246,6 +1347,7 @@
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGEBODY), error %d", uid, bindResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = bindResult;
                         break;
                     }
                     
@@ -1258,6 +1360,7 @@
                         SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", uid, sqlInsertResult);
                         
                         dbQueryFailed = YES;
+                        dbQueryError = sqlInsertResult;
                         break;
                     }
                 } while(FALSE);
@@ -1268,7 +1371,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
                     break;
                 }
             } while(FALSE);
@@ -1327,6 +1430,7 @@
     
     return messageThreadDesc;
 }
+
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread folder:(NSString*)folderName {
     const uint64_t messageThreadId = messageThread.threadId;
     
@@ -1355,7 +1459,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -1370,11 +1474,12 @@
                 if(sqlSelectPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare select statement, error %d", sqlSelectPrepareResult);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlSelectPrepareResult];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 const int sqlSelectStepResult = sqlite3_step(selectStatement);
                 if(sqlSelectStepResult == SQLITE_ROW) {
@@ -1389,7 +1494,7 @@
                     if(sqlPrepareResult != SQLITE_OK) {
                         SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
 
-                        [self triggerDBFailure];
+                        [self triggerDBFailure:sqlPrepareResult];
                         break;
                     }
                     
@@ -1399,6 +1504,7 @@
                             SM_LOG_ERROR(@"message thread %llu, could not bind argument 1 (UIDARRAY), error %d", messageThreadId, bindResult);
                             
                             dbQueryFailed = YES;
+                            dbQueryError = bindResult;
                             break;
                         }
                         
@@ -1410,6 +1516,7 @@
                             SM_LOG_ERROR(@"failed to update message thread %llu, error %d", messageThreadId, sqlUpdateResult);
                             
                             dbQueryFailed = YES;
+                            dbQueryError = sqlUpdateResult;
                             break;
                         }
                     } while(FALSE);
@@ -1429,7 +1536,7 @@
                     if(sqlPrepareResult != SQLITE_OK) {
                         SM_LOG_ERROR(@"could not prepare insert statement, error %d", sqlPrepareResult);
                         
-                        [self triggerDBFailure];
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                         break;
                     }
                     
@@ -1439,6 +1546,7 @@
                             SM_LOG_ERROR(@"message thread %llu, folder %@, could not bind argument 1 (THREADID), error %d", messageThreadId, folderId, bindResult);
 
                             dbQueryFailed = YES;
+                            dbQueryError = bindResult;
                             break;
                         }
                         
@@ -1446,6 +1554,7 @@
                             SM_LOG_ERROR(@"message thread %llu, folder %@, could not bind argument 2 (FOLDERID), error %d", messageThreadId, folderId, bindResult);
 
                             dbQueryFailed = YES;
+                            dbQueryError = bindResult;
                             break;
                         }
                         
@@ -1453,6 +1562,7 @@
                             SM_LOG_ERROR(@"message thread %llu, folder %@, could not bind argument 3 (UIDARRAY), error %d", messageThreadId, folderId, bindResult);
 
                             dbQueryFailed = YES;
+                            dbQueryError = bindResult;
                             break;
                         }
                         
@@ -1463,11 +1573,13 @@
                             SM_LOG_ERROR(@"message thread %llu already exists in folder %@ in the database", messageThreadId, folderId);
 
                             dbQueryFailed = YES;
+                            dbQueryError = sqlInsertResult;
                             break;
                         } else {
                             SM_LOG_ERROR(@"failed to insert message thread %llu into folder %@, error %d", messageThreadId, folderId, sqlInsertResult);
 
                             dbQueryFailed = YES;
+                            dbQueryError = sqlInsertResult;
                             break;
                         }
                     } while(FALSE);
@@ -1476,9 +1588,10 @@
                     SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
                 }
                 else {
-                    SM_LOG_ERROR(@"failed select message thread %llu, error %d", messageThreadId, sqlSelectStepResult);
+                    SM_LOG_ERROR(@"failed to select message thread %llu, error %d", messageThreadId, sqlSelectStepResult);
                     
                     dbQueryFailed = YES;
+                    dbQueryError = sqlSelectStepResult;
                 }
                 
                 const int sqlFinalizeResult = sqlite3_finalize(selectStatement);
@@ -1487,7 +1600,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:sqlSelectStepResult];
                     break;
                 }
             } while(FALSE);
@@ -1512,7 +1625,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -1524,7 +1637,7 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare remove statement, error %d", sqlPrepareResult);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
 
@@ -1535,6 +1648,7 @@
                     SM_LOG_INFO(@"message thread %llu successfully removed for folder %@", messageThreadId, folderId);
                 } else {
                     SM_LOG_ERROR(@"failed to remove message thread %llu from folder %@, error %d", messageThreadId, folderId, sqlRemoveResult);
+
                     dbQueryFailed = YES;
                 }
                 
@@ -1544,7 +1658,7 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:sqlRemoveResult];
                     break;
                 }
             } while(FALSE);
@@ -1571,7 +1685,7 @@
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
@@ -1583,11 +1697,12 @@
                 if(sqlPrepareResult != SQLITE_OK) {
                     SM_LOG_ERROR(@"could not prepare remove statement, error %d", sqlPrepareResult);
 
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
                 }
                 
                 BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
                 
                 do {
                     const int sqlLoadResult = sqlite3_step(statement);
@@ -1612,6 +1727,7 @@
                         SM_LOG_ERROR(@"failed to load message thread %llu, folder %@, error %d", messageThreadId, folderId, sqlLoadResult);
 
                         dbQueryFailed = YES;
+                        dbQueryError = sqlLoadResult;
                         break;
                     }
                 } while(FALSE);
@@ -1622,7 +1738,13 @@
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
                     
-                    [self triggerDBFailure];
+                    if(dbQueryError != SQLITE_OK) {
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    }
+                    else {
+                        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    }
+                    
                     break;
                 }
             } while(FALSE);

@@ -583,9 +583,9 @@
             if(nameColumn == NSNotFound || delimiterColumn == NSNotFound || flagsColumn == NSNotFound) {
                 if(columns.count > 0 && rows.count > 0) {
                     SM_LOG_ERROR(@"database corrupted: folder name/delimiter/flags columns not found: %ld/%ld/%ld", nameColumn, delimiterColumn, flagsColumn);
+                    
+                    [self triggerDBFailure];
                 }
-                
-                [self triggerDBFailure];
             }
             else {
                 folders = [NSMutableArray arrayWithCapacity:rows.count];
@@ -1199,6 +1199,11 @@
         return;
     }
     
+    if([uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
+        SM_LOG_DEBUG(@"message with UID %u (folder %@) already has its body in the database", uid, folderName);
+        return;
+    }
+    
     [uidSet addObject:[NSNumber numberWithUnsignedInt:uid]];
     
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
@@ -1248,7 +1253,7 @@
                     if(sqlInsertResult == SQLITE_DONE) {
                         SM_LOG_DEBUG(@"Message with UID %u successfully inserted", uid);
                     } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
-                        SM_LOG_WARNING(@"Message with UID %u already exists (TODO: happens even on a empty DB, when loading a short INBOX!)", uid);
+                        SM_LOG_INFO(@"Message with UID %u already exists", uid);
                     } else {
                         SM_LOG_ERROR(@"Failed to insert message with UID %u, error %d", uid, sqlInsertResult);
                         

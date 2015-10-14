@@ -260,45 +260,6 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     return TRUE;
 }
 
-- (BOOL)createFolderMessagesTable:(sqlite3*)database folderName:(NSString*)folderName {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return FALSE;
-    }
-    
-    NSString *createSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)", folderId];
-    const char *createStmt = [createSql UTF8String];
-    
-    char *errMsg = NULL;
-    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
-    if(sqlResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Failed to create table for folder \"%@\" (id %@): %s, error %d", folderName, folderId, errMsg, sqlResult);
-        return FALSE;
-    }
-    
-    return TRUE;
-}
-
-- (BOOL)createMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return FALSE;
-    }
-    
-    NSString *createSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)", folderId];
-    const char *createStmt = [createSql UTF8String];
-    
-    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
-    if(sqlResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES%@: error %d", folderId, sqlResult);
-        return FALSE;
-    }
-    
-    return TRUE;
-}
-
 - (NSDictionary*)loadDataFromDB:(sqlite3*)database query:(const char *)sqlQuery {
     NSAssert(database != nil, @"no database open");
     
@@ -441,36 +402,6 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     return (error? FALSE : TRUE);
 }
 
-- (BOOL)loadFolderId:(sqlite3*)database folderName:(NSString*)folderName {
-    NSString *selectSql = [NSString stringWithFormat:@"SELECT ID FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-    NSDictionary *foldersTable = [self loadDataFromDB:database query:[selectSql UTF8String]];
-    NSArray *columns = [foldersTable objectForKey:@"Columns"];
-    NSArray *rows = [foldersTable objectForKey:@"Rows"];
-    
-    const NSInteger idColumn = [columns indexOfObject:@"ID"];
-    
-    if(idColumn != 0) {
-        SM_LOG_ERROR(@"database corrupted: folder ID column not found (column value %ld)", idColumn);
-        return FALSE;
-    }
-    else if(rows.count != 1) {
-        SM_LOG_ERROR(@"database corrupted: folder could not be added");
-        return FALSE;
-    }
-    else {
-        NSArray *row = rows[0];
-        NSString *idStr = row[0];
-        NSUInteger folderIdNum = [idStr integerValue];
-        NSNumber *folderId = [NSNumber numberWithUnsignedInteger:folderIdNum];
-        
-        [_folderIds setObject:folderId forKey:folderName];
-        [_folderNames setObject:folderName forKey:folderId];
-        
-        SM_LOG_DEBUG(@"Folder \"%@\" id %@", folderName, folderId);
-        return TRUE;
-    }
-}
-
 - (int)generateFolderId {
     while([_folderNames objectForKey:[NSNumber numberWithInt:_nextFolderId]] != nil) {
         _nextFolderId++;
@@ -546,34 +477,33 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
                     [self triggerDBFailureWithSQLiteError:dbQueryFailureError];
                     break;
                 }
+                
+                //
+                // Step 2: Create a unique folder table containing message UIDs.
+                //
+                NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)", folderId];
+                const char *createMessageTableStmt = [createMessageTableSql UTF8String];
+                
+                char *errMsg = NULL;
+                const int sqlMessageTableResult = sqlite3_exec(database, createMessageTableStmt, NULL, NULL, &errMsg);
+                if(sqlMessageTableResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"Failed to create table for folder id %@: %s, error %d", folderId, errMsg, sqlMessageTableResult);
 
-                //
-                // Step 2: For new folders, find out what's the ID of the newly added folder.
-                //
-                if(![self loadFolderId:database folderName:folderName]) {
-                    SM_LOG_ERROR(@"Could not load id for folder '%@'", folderName);
-                    
-                    [self triggerDBFailure];
+                    [self triggerDBFailureWithSQLiteError:sqlMessageTableResult];
                     break;
                 }
                 
                 //
-                // Step 3: Create a unique folder table containing message UIDs.
+                // Step 2: Create a unique folder table containing message bodies.
                 //
-                if(![self createFolderMessagesTable:database folderName:folderName]) {
-                    SM_LOG_ERROR(@"Could not load folder '%@' message table", folderName);
-                    
-                    [self triggerDBFailure];
-                    break;
-                }
+                NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)", folderId];
+                const char *createStmt = [createBodiesTableSql UTF8String];
                 
-                //
-                // Step 4: Create a unique folder table containing message bodies.
-                //
-                if(![self createMessageBodiesTable:database folderName:folderName]) {
-                    SM_LOG_ERROR(@"Could not create message bodies table for folder '%@'", folderName);
-                    
-                    [self triggerDBFailure];
+                const int sqlBodiesTableResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
+                if(sqlBodiesTableResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES%@: error %d", folderId, sqlBodiesTableResult);
+
+                    [self triggerDBFailureWithSQLiteError:sqlBodiesTableResult];
                     break;
                 }
             } while(FALSE);
@@ -1176,66 +1106,6 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     });
 }
 
-- (BOOL)removeMessageFromFolderTable:(sqlite3*)database uid:(uint32_t)uid folder:(NSString*)folderName {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return FALSE;
-    }
-    
-    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
-    const char *removeStmt = [removeSql UTF8String];
-    
-    sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
-    if(sqlPrepareResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Could not prepare remove statement for message UID %u, folder %@ (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
-        return FALSE;
-    }
-    
-    int sqlResult = sqlite3_step(statement);
-    if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message UID %u successfully removed from folder %@ (%@)", uid, folderName, folderId);
-    } else {
-        SM_LOG_WARNING(@"Could not remove message UID %u from folder %@ (%@)", uid, folderName, folderId);
-    }
-    
-    const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
-
-    return TRUE;
-}
-
-- (BOOL)removeMessageBodyFromMessageBodiesTable:(sqlite3*)database folderName:(NSString*)folderName uid:(uint32_t)uid {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return FALSE;
-    }
-    
-    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
-    const char *removeStmt = [removeSql UTF8String];
-    
-    sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
-    if(sqlPrepareResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Could not prepare message body (UID %u) remove statement for folder '%@' (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
-        return FALSE;
-    }
-    
-    int sqlResult = sqlite3_step(statement);
-    if(sqlResult == SQLITE_DONE) {
-        SM_LOG_INFO(@"Message body with UID %u successfully removed from message bodies table for folder '%@' (%@)", uid, folderName, folderId);
-    } else {
-        SM_LOG_WARNING(@"Failed to remove message body with UID %u for folder '%@' (%@), error %d", uid, folderName, folderId, sqlResult);
-    }
-    
-    const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
-
-    return TRUE;
-}
-
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
@@ -1259,18 +1129,60 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
         
         if(database != nil) {
             do {
-                if(![self removeMessageFromFolderTable:database uid:uid folder:folderName]) {
-                    SM_LOG_ERROR(@"failed to remove message (UID %u) from folder '%@' table", uid, folderName);
+                //
+                // Step 1: Remove message UID from the folder table.
+                //
+                {
+                    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
+                    const char *removeStmt = [removeSql UTF8String];
                     
-                    [self triggerDBFailure];
-                    break;
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"Could not prepare remove statement for message UID %u, folder %@ (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
+                        
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                        break;
+                    }
+                    
+                    int sqlResult = sqlite3_step(statement);
+                    if(sqlResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Message UID %u successfully removed from folder %@ (%@)", uid, folderName, folderId);
+                    } else {
+                        // Don't consider it critical. Should we?
+                        SM_LOG_WARNING(@"Could not remove message UID %u from folder %@ (%@)", uid, folderName, folderId);
+                    }
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
                 }
                 
-                if(![self removeMessageBodyFromMessageBodiesTable:database folderName:folderName uid:uid]) {
-                    SM_LOG_ERROR(@"failed to remove message body (UID %u) from folder '%@' table", uid, folderName);
+                //
+                // Step 2: Remove the message body from the bodies table.
+                //
+                {
+                    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
+                    const char *removeStmt = [removeSql UTF8String];
+                    
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"Could not prepare message body (UID %u) remove statement for folder '%@' (%@), error %d", uid, folderName, folderId, sqlPrepareResult);
 
-                    [self triggerDBFailure];
-                    break;
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                        break;
+                    }
+                    
+                    int sqlResult = sqlite3_step(statement);
+                    if(sqlResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Message body with UID %u successfully removed from message bodies table for folder '%@' (%@)", uid, folderName, folderId);
+                    } else {
+                        // Don't consider it critical. Should we?
+                        SM_LOG_WARNING(@"Could not remove message body with UID %u for folder '%@' (%@), error %d", uid, folderName, folderId, sqlResult);
+                    }
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
                 }
             } while(FALSE);
             
@@ -1443,7 +1355,8 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     if(serializedMessageThread == nil) {
         SM_LOG_ERROR(@"Could not serialize message thread (threadId %llu)", messageThreadId);
         
-        [self triggerDBFailure];
+        // the only possible reason is that folders are unknown, which means 'critical data not found'
+        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         return;
     }
     
@@ -1645,7 +1558,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
                 
                 const int sqlRemoveResult = sqlite3_step(statement);
                 if(sqlRemoveResult == SQLITE_DONE) {
-                    SM_LOG_INFO(@"message thread %llu successfully removed for folder %@", messageThreadId, folderId);
+                    SM_LOG_DEBUG(@"message thread %llu successfully removed from folder %@", messageThreadId, folderId);
                 } else {
                     SM_LOG_ERROR(@"failed to remove message thread %llu from folder %@, error %d", messageThreadId, folderId, sqlRemoveResult);
 

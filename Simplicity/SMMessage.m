@@ -21,12 +21,6 @@
 @end
 
 @implementation SMMessage {
-	BOOL _createdFromDB;
-	
-	uint32_t _uidDB;
-	NSDate *_dateDB;
-	NSString *_fromDB;
-	NSString *_subjectDB;
 	MCOMessageParser *_msgParser;
 	NSAttributedString *_htmlMessageBody;
 	NSData *_data;
@@ -42,7 +36,6 @@
 	
 	if(self) {
 		_imapMessage = m;
-		_createdFromDB = NO;
 		_remoteFolder = remoteFolderName;
 		_labels = m.gmailLabels;
 
@@ -113,11 +106,6 @@ static NSString *unquote(NSString *s) {
 }
 
 - (NSString*)from {
-	if(_createdFromDB) {
-		NSAssert(_fromDB != nil, @"_fromDB is nil");
-		return _fromDB;
-	}
-	
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");
 	
@@ -128,9 +116,6 @@ static NSString *unquote(NSString *s) {
 }
 
 - (NSString*)subject {
-	if(_createdFromDB)
-		return _subjectDB;
-
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");
 
@@ -173,9 +158,6 @@ static NSString *unquote(NSString *s) {
 }
 
 - (NSDate*)date {
-	if(_createdFromDB)
-		return _dateDB;
-	
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");
 	
@@ -198,13 +180,6 @@ static NSString *unquote(NSString *s) {
 }
 
 - (uint32_t)uid {
-	if(_createdFromDB) {
-		if(_imapMessage)
-			NSAssert(_uidDB == [_imapMessage uid], @"actual/db uid mismatch");
-		
-		return _uidDB;
-	}
-
 	return [_imapMessage uid];
 }
 
@@ -323,12 +298,6 @@ static NSString *unquote(NSString *s) {
     //       other from the local folder where the message header fetch was initiated
 	NSAssert(_data, @"bad _data (reclaimed: %u)", _reclaimed);
 	NSAssert(_msgParser, @"bad _msgParser");
-	
-	if(_createdFromDB && _imapMessage == nil) {
-		// TODO: handle this!!!!
-		SM_LOG_DEBUG(@"no attachments available for message loaded from DB");
-		return;
-	}
 	
     SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
 

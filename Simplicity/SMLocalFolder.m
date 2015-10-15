@@ -200,7 +200,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
         MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
 
-        [self fetchMessageBody:message.uid remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO];
+        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO];
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -214,7 +214,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
         SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [all mail]", message.uid, message.gmailMessageID);
 
-        [self fetchMessageBody:message.uid remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO];
+        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO];
     }
 
     if(_fetchedMessageHeadersFromThreads.count > 0) {
@@ -229,7 +229,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         for(MCOIMAPMessage *message in folderMessages) {
             SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, folder);
             
-            [self fetchMessageBody:message.uid remoteFolder:folder threadId:message.gmailThreadID urgent:NO];
+            [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:folder threadId:message.gmailThreadID urgent:NO];
         }
     }
 
@@ -255,7 +255,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
 }
 
-- (void)fetchMessageBody:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
+- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
 	SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
@@ -292,7 +292,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
                 
                 if(_syncedWithRemoteFolder) {
                     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] putMessageBodyToDB:uid data:data folderName:remoteFolderName];
+                    [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data folderName:remoteFolderName];
                 }
 
                 // TODO: do it asynchronously!

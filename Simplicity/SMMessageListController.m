@@ -163,10 +163,10 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	[self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
-- (void)fetchMessageBodyUrgently:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
+- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
 	SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
 
-	[_currentFolder fetchMessageBody:uid remoteFolder:remoteFolderName threadId:threadId urgent:YES];
+	[_currentFolder fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:YES];
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {

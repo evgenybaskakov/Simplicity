@@ -101,7 +101,7 @@ static const CGFloat CELL_SPACING = -1;
 		SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 		SMMessageListController *messageListController = [[appDelegate model] messageListController];
 
-		[messageListController fetchMessageBodyUrgently:[message uid] remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
+		[messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
 	}
 	
 	return messageThreadCellViewController;

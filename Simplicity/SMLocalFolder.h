@@ -32,7 +32,7 @@
 - (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs;
 
 // fetches the body of the message specified by its UID
-- (void)fetchMessageBody:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent;
+- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent;
 
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;

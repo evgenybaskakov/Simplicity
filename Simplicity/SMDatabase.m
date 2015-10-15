@@ -41,6 +41,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     BOOL _dbInvalid;
     BOOL _dbMustBeReset;
     uint64_t _dbFileSizeLimit;
+    uint64_t _dbSizeToReclaim;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -52,6 +53,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
         _dbFileSizeLimit = 1024 * 1024 * 128;
+        _dbSizeToReclaim = 1024 * 1024 * 32;
         
         [self checkDatabase];
         [self initDatabase];
@@ -116,6 +118,20 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
 }
 
+- (sqlite3*)openDatabaseInternal:(NSString*)filename {
+    sqlite3 *database = nil;
+    
+    const int openDatabaseResult = sqlite3_open(filename.UTF8String, &database);
+    if(openDatabaseResult == SQLITE_OK) {
+        SM_LOG_DEBUG(@"Database %@ open successfully", filename);
+        return database;
+    }
+    else {
+        SM_LOG_FATAL(@"Database %@ cannot be open", filename);
+        return nil;
+    }
+}
+
 - (sqlite3*)openDatabase:(DBOpenMode)openMode {
     if(_dbMustBeReset) {
         // A previous database operation has failed; the DB is inconsistent.
@@ -139,22 +155,42 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(fileSize >= _dbFileSizeLimit) {
             SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
-            
-            // TODO: Reclamation.
+           
+            [self reclaimOldData];
         }
     }
     
-    sqlite3 *database = nil;
+    return [self openDatabaseInternal:_dbFilePath];
+}
+
+- (void)reclaimOldData {
+
+    //
+    // The primary target for reclamation is message bodies.
+    // So we reclaim as many bodies as it seems reasonable not to kill the user data at all.
+    // The idea is to balance between message headers and message bodies.
+    // It seems reasonable to keep the ratio bodies/headers between [0.1, 1.0]. That is, in the
+    // worst case, just 1 body per 10 messages. If the ration goes down from that, start
+    // reclaiming headers.
+    //
+    // 1) Collect the counts across all MESSAGES and MESSAGEBODIES tables.
+    // 2) Pick the fattest pair:
+    //    - use absolute number of bodies and headers;
+    //    - if another table has similar counts, pick the one with larger bodies/headers ratio;
+    // 3) Reclaim bodies with smallest TIMESTAMP first; use bulk deletion.
+    // 4) Check the file size; if it's less than ('size limit' - 'size to reclaim'), stop.
+    // 5) Otherwise, repeat from step 2.
+    //
     
-    const int openDatabaseResult = sqlite3_open(_dbFilePath.UTF8String, &database);
-    if(openDatabaseResult == SQLITE_OK) {
-        SM_LOG_DEBUG(@"Database %@ open successfully", _dbFilePath);
-        return database;
-    }
-    else {
-        SM_LOG_FATAL(@"Database %@ cannot be open", _dbFilePath);
-        return nil;
-    }
+/*
+     
+    sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
+
+    
+//    uint64_t _dbFileSizeLimit;
+//    uint64_t _dbSizeToReclaim;
+ 
+*/
 }
 
 - (void)closeDatabase:(sqlite3*)database {
@@ -514,7 +550,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 //
                 // Step 2: Create a unique folder table containing message bodies.
                 //
-                NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGEBODY BLOB)", folderId];
+                NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGEBODY BLOB)", folderId];
                 const char *createStmt = [createBodiesTableSql UTF8String];
                 
                 const int sqlBodiesTableResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
@@ -1211,7 +1247,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)putMessageBodyToDB:(uint32_t)uid data:(NSData*)data folderName:(NSString*)folderName {
+- (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data folderName:(NSString*)folderName {
     NSNumber *folderId = [_folderIds objectForKey:folderName];
     if(folderId == nil) {
         SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
@@ -1243,7 +1279,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGEBODIES%@ (\"UID\", \"MESSAGEBODY\") VALUES (?, ?)", folderId];
+                NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGEBODIES%@ (\"UID\", \"TIMESTAMP\", \"MESSAGEBODY\") VALUES (?, ?, ?)", folderId];
                 
                 sqlite3_stmt *statement = NULL;
                 const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
@@ -1268,13 +1304,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         break;
                     }
                     
+                    NSTimeInterval messageDateSeconds = [messageDate timeIntervalSince1970];
+                    uint64_t timestamp = (uint64_t)messageDateSeconds;
+
+                    if((bindResult = sqlite3_bind_int64(statement, 2, timestamp)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TIMESTAMP), error %d", uid, bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+
                     NSData *compressedData = [SMCompression gzipDeflate:data];
                     NSAssert(compressedData != nil, @"compressed data is nil");
                     
                     SM_LOG_DEBUG(@"message UID %u, data len %lu, compressed len %lu (%lu%% from original)", uid, data.length, compressedData.length, compressedData.length/(data.length/100));
                     
-                    if((bindResult = sqlite3_bind_blob(statement, 2, compressedData.bytes, (int)compressedData.length, SQLITE_STATIC)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGEBODY), error %d", uid, bindResult);
+                    if((bindResult = sqlite3_bind_blob(statement, 3, compressedData.bytes, (int)compressedData.length, SQLITE_STATIC)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGEBODY), error %d", uid, bindResult);
                         
                         dbQueryFailed = YES;
                         dbQueryError = bindResult;

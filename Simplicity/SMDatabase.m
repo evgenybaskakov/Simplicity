@@ -55,12 +55,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _dbFileSizeLimit = 1024 * 1024 * 128;
         _dbSizeToReclaim = 1024 * 1024 * 32;
         
-        [self checkDatabase];
-        [self initDatabase];
+        [self checkDatabase:_dbFilePath];
+        [self initDatabase:_dbFilePath];
         
         if(_dbInvalid) {
-            [self resetDatabase];
-            [self initDatabase];
+            [self resetDatabase:_dbFilePath];
+            [self initDatabase:_dbFilePath];
         }
     }
     
@@ -136,7 +136,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     if(_dbMustBeReset) {
         // A previous database operation has failed; the DB is inconsistent.
         // So just drop and re-initialize it.
-        [self resetDatabase];
+        [self resetDatabase:_dbFilePath];
         
         // Do not use the database afterwards, as it should be re-initialized
         // with the full application data on startup.
@@ -191,6 +191,67 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 //    uint64_t _dbSizeToReclaim;
  
 */
+
+    NSMutableDictionary *folderBodiesCounts = [NSMutableDictionary dictionary];
+    
+    sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
+    
+    if(database != nil) {
+        BOOL dbQueryFailed = NO;
+
+        for(NSNumber *folderId in _folderNames) {
+            NSString *folderName = [_folderNames objectForKey:folderId];
+            NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountSql.UTF8String, -1, &statement, NULL);
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
+                
+                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                break;
+            }
+            
+            int dbQueryError = SQLITE_OK;
+            
+            do {
+                const int sqlStepResult = sqlite3_step(statement);
+                
+                if(sqlStepResult != SQLITE_ROW) {
+                    SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = sqlStepResult;
+                    break;
+                }
+                
+                NSUInteger bodiesCount = sqlite3_column_int(statement, 0);
+                SM_LOG_DEBUG(@"Bodies count in folder %@ is %lu", folderName, bodiesCount);
+                
+                [folderBodiesCounts setObject:[NSNumber numberWithUnsignedInteger:bodiesCount] forKey:folderId];
+            } while(FALSE);
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+            
+            if(dbQueryFailed) {
+                SM_LOG_ERROR(@"database query failed");
+                
+                [self triggerDBFailureWithSQLiteError:dbQueryError];
+                break;
+            }
+        }
+        
+        [self closeDatabase:database];
+        
+        if(dbQueryFailed) {
+            SM_LOG_ERROR(@"Database access/consistency error while reclaiming. Reclamation stopped.");
+
+            // Database will be most probably reset on the next open.
+            // Nothing can be done now.
+            return;
+        }
+    }
 }
 
 - (void)closeDatabase:(sqlite3*)database {
@@ -201,48 +262,48 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
 }
 
-- (void)checkDatabase {
+- (void)checkDatabase:(NSString*)dbFilename {
     BOOL databaseValid = NO;
     
-    sqlite3 *const database = [self openDatabase:DBOpenMode_Read];
+    sqlite3 *const database = [self openDatabaseInternal:dbFilename];
     if(database != nil) {
         char *errMsg = NULL;
         const char *checkStmt = "PRAGMA QUICK_CHECK";
         
         const int sqlResult = sqlite3_exec(database, checkStmt, NULL, NULL, &errMsg);
         if(sqlResult == SQLITE_OK) {
-            SM_LOG_DEBUG(@"Database '%@' check successful.", _dbFilePath);
+            SM_LOG_DEBUG(@"Database '%@' check successful.", dbFilename);
             
             databaseValid = YES;
         }
         else {
-            SM_LOG_ERROR(@"Database '%@' check failed: %s (error %d). Database will be erased and created from ground.", _dbFilePath, errMsg, sqlResult);
+            SM_LOG_ERROR(@"Database '%@' check failed: %s (error %d). Database will be erased and created from ground.", dbFilename, errMsg, sqlResult);
         }
         
         [self closeDatabase:database];
     }
     
     if(!databaseValid) {
-        SM_LOG_ERROR(@"Database '%@' is inconsistent and will be reset.", _dbFilePath);
+        SM_LOG_ERROR(@"Database '%@' is inconsistent and will be reset.", dbFilename);
         
-        [self resetDatabase];
+        [self resetDatabase:dbFilename];
     }
     else {
-        SM_LOG_INFO(@"Database '%@' is consistent.", _dbFilePath);
+        SM_LOG_INFO(@"Database '%@' is consistent.", dbFilename);
     }
 }
 
-- (void)resetDatabase {
+- (void)resetDatabase:(NSString*)dbFilename {
     NSError *error = nil;
-    [[NSFileManager defaultManager] removeItemAtPath:_dbFilePath error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:dbFilename error:&error];
     
     if(error != nil && error.code != NSFileNoSuchFileError) {
-        SM_LOG_ERROR(@"Cannot remove database file '%@': %@", _dbFilePath, error);
+        SM_LOG_ERROR(@"Cannot remove database file '%@': %@", dbFilename, error);
         
         _dbInvalid = YES;
     }
     else {
-        SM_LOG_INFO(@"Database '%@' has been erased as inconsistent.", _dbFilePath);
+        SM_LOG_INFO(@"Database '%@' has been erased as inconsistent.", dbFilename);
         
         _dbInvalid = NO;
     }
@@ -250,10 +311,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     _dbMustBeReset = NO;
 }
 
-- (void)initDatabase {
+- (void)initDatabase:(NSString*)dbFilename {
     BOOL initSuccessful = NO;
     
-    sqlite3 *const database = [self openDatabase:DBOpenMode_Read];
+    sqlite3 *const database = [self openDatabaseInternal:dbFilename];
     
     if(database != nil) {
         if([self createFoldersTable:database]) {
@@ -277,7 +338,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self closeDatabase:database];
     }
     else {
-        SM_LOG_ERROR(@"Cannot open database file '%@'. Database will be reset.", _dbFilePath);
+        SM_LOG_ERROR(@"Cannot open database file '%@'. Database will be reset.", dbFilename);
     }
     
     if(initSuccessful) {
@@ -502,7 +563,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 }
                 
                 BOOL dbQueryFailed = NO;
-                int dbQueryFailureError = SQLITE_OK;
+                int dbQueryError = SQLITE_OK;
                 
                 do {
                     const int sqlResult = sqlite3_step(statement);
@@ -516,7 +577,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     else {
                         SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
                     
-                        dbQueryFailureError = sqlResult;
+                        dbQueryError = sqlResult;
                         dbQueryFailed = YES;
                         break;
                     }
@@ -528,7 +589,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"database query failed");
                     
-                    [self triggerDBFailureWithSQLiteError:dbQueryFailureError];
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
                     break;
                 }
                 

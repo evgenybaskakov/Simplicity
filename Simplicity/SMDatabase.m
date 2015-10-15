@@ -21,7 +21,12 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     DBFailure_CriticalDataNotFound,
     DBFailure_LibraryCriticalError,
     DBFailure_Busy,
-    DBFailure_WriteError
+    DBFailure_WriteError,
+};
+
+typedef NS_ENUM(NSInteger, DBOpenMode) {
+    DBOpenMode_ReadWrite,
+    DBOpenMode_Read,
 };
 
 @implementation SMDatabase {
@@ -35,6 +40,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     NSMutableDictionary *_messagesWithBodies;
     BOOL _dbInvalid;
     BOOL _dbMustBeReset;
+    uint64_t _dbFileSizeLimit;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -45,6 +51,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
         _concurrentQueue = dispatch_queue_create("com.simplicity.Simplicity.concurrentDatabaseQueue", DISPATCH_QUEUE_CONCURRENT);
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
+        _dbFileSizeLimit = 1024 * 1024 * 128;
         
         [self checkDatabase];
         [self initDatabase];
@@ -109,7 +116,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     }
 }
 
-- (sqlite3*)openDatabase {
+- (sqlite3*)openDatabase:(DBOpenMode)openMode {
     if(_dbMustBeReset) {
         // A previous database operation has failed; the DB is inconsistent.
         // So just drop and re-initialize it.
@@ -124,6 +131,17 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     if(_dbInvalid) {
         // Database is invalid, so just drop every operation.
         return nil;
+    }
+    
+    if(openMode == DBOpenMode_ReadWrite) {
+        uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
+        
+        if(fileSize >= _dbFileSizeLimit) {
+            SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+            
+            // TODO: Reclamation.
+        }
     }
     
     sqlite3 *database = nil;
@@ -150,7 +168,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
 - (void)checkDatabase {
     BOOL databaseValid = NO;
     
-    sqlite3 *const database = [self openDatabase];
+    sqlite3 *const database = [self openDatabase:DBOpenMode_Read];
     if(database != nil) {
         char *errMsg = NULL;
         const char *checkStmt = "PRAGMA QUICK_CHECK";
@@ -199,7 +217,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
 - (void)initDatabase {
     BOOL initSuccessful = NO;
     
-    sqlite3 *const database = [self openDatabase];
+    sqlite3 *const database = [self openDatabase:DBOpenMode_Read];
     
     if(database != nil) {
         if([self createFoldersTable:database]) {
@@ -428,7 +446,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -524,7 +542,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -568,7 +586,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             NSMutableArray *folders = nil;
@@ -618,7 +636,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             NSUInteger messagesCount = 0;
@@ -685,7 +703,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
@@ -777,7 +795,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             MCOIMAPMessage *message = nil;
@@ -882,7 +900,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     // Note that there may be heavy requests, so the serial
     // queue cannot be trusted in terms of response time.
     dispatch_async(urgent? _concurrentQueue : _serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
@@ -947,7 +965,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1036,7 +1054,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1125,7 +1143,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1221,7 +1239,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1364,7 +1382,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1530,7 +1548,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
             do {
@@ -1588,7 +1606,7 @@ typedef NS_ENUM(NSInteger, DBFailureKind) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
-        sqlite3 *database = [self openDatabase];
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
             SMMessageThreadDescriptor *messageThreadDesc = nil;

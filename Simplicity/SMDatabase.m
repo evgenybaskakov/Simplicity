@@ -29,6 +29,23 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     DBOpenMode_Read,
 };
 
+@interface FolderWithCount : NSObject
+@property NSUInteger folderId;
+@property NSUInteger count;
+- (id)initWithFolderId:(NSUInteger)folderId count:(NSUInteger)bodiesCount;
+@end
+
+@implementation FolderWithCount
+- (id)initWithFolderId:(NSUInteger)folderId count:(NSUInteger)count {
+    self = [super init];
+    if(self) {
+        _folderId = folderId;
+        _count = count;
+    }
+    return self;
+}
+@end
+
 @implementation SMDatabase {
     NSString *_dbFilePath;
     dispatch_queue_t _serialQueue;
@@ -150,12 +167,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     if(openMode == DBOpenMode_ReadWrite) {
-        uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
-        
-        if(fileSize >= _dbFileSizeLimit) {
-            SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
-           
+        if([self shouldReclaimOldData]) {
             [self reclaimOldData];
         }
     }
@@ -163,8 +175,94 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return [self openDatabaseInternal:_dbFilePath];
 }
 
-- (void)reclaimOldData {
+- (BOOL)shouldReclaimOldData {
+    uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
+    SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
+    
+    if(fileSize >= _dbFileSizeLimit) {
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        
+        return YES;
+    }
+    
+    return NO;
+}
 
+- (void)reclaimMessageBodies:(NSMutableOrderedSet*)folderBodiesCounts {
+    NSAssert(folderBodiesCounts.count > 0, @"no folders with counts");
+    
+    const NSUInteger maxBodiesCountToDelete = 10;
+    
+    do {
+        [folderBodiesCounts sortUsingComparator:^NSComparisonResult(id a, id b) {
+            FolderWithCount *f1 = (FolderWithCount*)a;
+            FolderWithCount *f2 = (FolderWithCount*)b;
+            
+            return f1.count < f2.count? NSOrderedAscending : f1.count > f2.count? NSOrderedDescending : NSOrderedSame;
+        }];
+        
+        FolderWithCount *folderDesc = [folderBodiesCounts lastObject];
+        NSAssert(folderDesc != nil, @"folder not found");
+        
+        SM_LOG_INFO(@"Reclaiming message bodies from folder id %lu, which has %lu bodies in the database", folderDesc.folderId, folderDesc.count);
+
+        if(folderDesc.count == 0) {
+            SM_LOG_WARNING(@"No more message bodies in the database to reclaim!");
+            break;
+        }
+        
+        sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
+        if(database == nil) {
+            SM_LOG_ERROR(@"could not open database");
+            break;
+        }
+        
+        const NSUInteger bodiesCountToDelete = (folderDesc.count >= maxBodiesCountToDelete? maxBodiesCountToDelete : folderDesc.count);
+        
+        BOOL dbQueryFailed = NO;
+        
+        do {
+            NSString *deleteMessageBodiesSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%lu WHERE TIMESTAMP IN (SELECT TIMESTAMP FROM MESSAGEBODIES%lu ORDER BY TIMESTAMP ASC LIMIT %lu)", folderDesc.folderId, folderDesc.folderId, bodiesCountToDelete];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteMessageBodiesSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"Failed to prepare delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                
+                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                break;
+            }
+            
+            const int sqlStepResult = sqlite3_step(statement);
+            if(sqlStepResult != SQLITE_ROW) {
+                SM_LOG_ERROR(@"Failed to execute delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                dbQueryFailed = YES;
+            }
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+            
+            if(dbQueryFailed) {
+                [self triggerDBFailureWithSQLiteError:sqlStepResult];
+                break;
+            }
+        } while(FALSE);
+
+        [self closeDatabase:database];
+        
+        if(dbQueryFailed) {
+            SM_LOG_ERROR(@"Database query failed");
+            break;
+        }
+
+        NSAssert(folderDesc.count >= bodiesCountToDelete, @"folderDesc.count %lu < bodiesCountToDelete %lu", folderDesc.count, bodiesCountToDelete);
+
+        folderDesc.count -= bodiesCountToDelete;
+    } while([self shouldReclaimOldData]);
+}
+
+- (void)reclaimOldData {
     //
     // The primary target for reclamation is message bodies.
     // So we reclaim as many bodies as it seems reasonable not to kill the user data at all.
@@ -181,77 +279,61 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     // 4) Check the file size; if it's less than ('size limit' - 'size to reclaim'), stop.
     // 5) Otherwise, repeat from step 2.
     //
-    
-/*
-     
-    sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
-
-    
-//    uint64_t _dbFileSizeLimit;
-//    uint64_t _dbSizeToReclaim;
- 
-*/
-
-    NSMutableDictionary *folderBodiesCounts = [NSMutableDictionary dictionary];
+    NSMutableOrderedSet *folderBodiesCounts = [[NSMutableOrderedSet alloc] init];
     
     sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
+    if(database == nil) {
+        SM_LOG_ERROR(@"could not open database");
+        return;
+    }
     
-    if(database != nil) {
-        BOOL dbQueryFailed = NO;
-
-        for(NSNumber *folderId in _folderNames) {
-            NSString *folderName = [_folderNames objectForKey:folderId];
-            NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
+    for(NSNumber *folderId in _folderNames) {
+        NSString *folderName = [_folderNames objectForKey:folderId];
+        NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
+        
+        sqlite3_stmt *statement = NULL;
+        const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountSql.UTF8String, -1, &statement, NULL);
+        if(sqlPrepareResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
             
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountSql.UTF8String, -1, &statement, NULL);
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
-                
-                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                break;
-            }
-            
-            int dbQueryError = SQLITE_OK;
-            
-            do {
-                const int sqlStepResult = sqlite3_step(statement);
-                
-                if(sqlStepResult != SQLITE_ROW) {
-                    SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
-                    
-                    dbQueryFailed = YES;
-                    dbQueryError = sqlStepResult;
-                    break;
-                }
-                
-                NSUInteger bodiesCount = sqlite3_column_int(statement, 0);
-                SM_LOG_DEBUG(@"Bodies count in folder %@ is %lu", folderName, bodiesCount);
-                
-                [folderBodiesCounts setObject:[NSNumber numberWithUnsignedInteger:bodiesCount] forKey:folderId];
-            } while(FALSE);
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
-            
-            if(dbQueryFailed) {
-                SM_LOG_ERROR(@"database query failed");
-                
-                [self triggerDBFailureWithSQLiteError:dbQueryError];
-                break;
-            }
+            [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+            break;
         }
         
-        [self closeDatabase:database];
+        BOOL dbQueryFailed = NO;
+        int dbQueryError = SQLITE_OK;
+        
+        do {
+            const int sqlStepResult = sqlite3_step(statement);
+            
+            if(sqlStepResult != SQLITE_ROW) {
+                SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
+                
+                dbQueryFailed = YES;
+                dbQueryError = sqlStepResult;
+                break;
+            }
+            
+            NSUInteger bodiesCount = sqlite3_column_int(statement, 0);
+            SM_LOG_DEBUG(@"Bodies count in folder %@ is %lu", folderName, bodiesCount);
+            
+            [folderBodiesCounts addObject:[[FolderWithCount alloc] initWithFolderId:[folderId unsignedIntegerValue] count:bodiesCount]];
+        } while(FALSE);
+        
+        const int sqlFinalizeResult = sqlite3_finalize(statement);
+        SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
         
         if(dbQueryFailed) {
-            SM_LOG_ERROR(@"Database access/consistency error while reclaiming. Reclamation stopped.");
-
-            // Database will be most probably reset on the next open.
-            // Nothing can be done now.
-            return;
+            SM_LOG_ERROR(@"database query failed");
+            
+            [self triggerDBFailureWithSQLiteError:dbQueryError];
+            break;
         }
     }
+    
+    [self closeDatabase:database];
+    
+    [self reclaimMessageBodies:folderBodiesCounts];
 }
 
 - (void)closeDatabase:(sqlite3*)database {

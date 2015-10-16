@@ -167,7 +167,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     if(openMode == DBOpenMode_ReadWrite) {
-        if([self shouldReclaimOldData]) {
+        if([self shouldStartReclaimingOldData]) {
             [self reclaimOldData];
         }
     }
@@ -175,11 +175,26 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return [self openDatabaseInternal:_dbFilePath];
 }
 
-- (BOOL)shouldReclaimOldData {
+- (BOOL)shouldStartReclaimingOldData {
     uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
     SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
     
     if(fileSize >= _dbFileSizeLimit) {
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)shouldReclaimMoreOldData {
+    uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
+    SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
+    
+    NSAssert(_dbFileSizeLimit > _dbSizeToReclaim, @"bad reclamation size limits _dbFileSizeLimit %llu, _dbSizeToReclaim %llu", _dbFileSizeLimit, _dbSizeToReclaim);
+    
+    if(fileSize >= _dbFileSizeLimit - _dbSizeToReclaim) {
         SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;
@@ -259,7 +274,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         NSAssert(folderDesc.count >= bodiesCountToDelete, @"folderDesc.count %lu < bodiesCountToDelete %lu", folderDesc.count, bodiesCountToDelete);
 
         folderDesc.count -= bodiesCountToDelete;
-    } while([self shouldReclaimOldData]);
+    } while([self shouldReclaimMoreOldData]);
 }
 
 - (void)reclaimOldData {

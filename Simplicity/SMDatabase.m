@@ -287,6 +287,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         return;
     }
     
+    BOOL dbQueryFailed = NO;
+
     for(NSNumber *folderId in _folderNames) {
         NSString *folderName = [_folderNames objectForKey:folderId];
         NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
@@ -296,11 +298,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         if(sqlPrepareResult != SQLITE_OK) {
             SM_LOG_ERROR(@"could not prepare messages count statement, error %d", sqlPrepareResult);
             
+            dbQueryFailed = YES;
+
             [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
             break;
         }
         
-        BOOL dbQueryFailed = NO;
         int dbQueryError = SQLITE_OK;
         
         do {
@@ -333,7 +336,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     [self closeDatabase:database];
     
-    [self reclaimMessageBodies:folderBodiesCounts];
+    if(!dbQueryFailed) {
+        SM_LOG_INFO(@"Starting database data reclamation");
+
+        [self reclaimMessageBodies:folderBodiesCounts];
+    }
+    else {
+        SM_LOG_ERROR(@"Database is inconsistent, data reclamation cannot start");
+    }
 }
 
 - (void)closeDatabase:(sqlite3*)database {

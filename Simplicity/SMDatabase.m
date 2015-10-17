@@ -175,12 +175,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return [self openDatabaseInternal:_dbFilePath];
 }
 
-- (BOOL)shouldStartReclaimingOldData {
-    uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
-    SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
+- (uint64_t)dbFileSize {
+    const uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
+
+    SM_LOG_DEBUG(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
     
+    return fileSize;
+}
+
+- (BOOL)shouldStartReclaimingOldData {
+    const uint64_t fileSize = [self dbFileSize];
+
     if(fileSize >= _dbFileSizeLimit) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of %llu bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;
     }
@@ -189,13 +196,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (BOOL)shouldReclaimMoreOldData {
-    uint64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:_dbFilePath error:nil] fileSize];
-    SM_LOG_INFO(@"Database file '%@' size is %llu bytes", _dbFilePath, fileSize);
+    const uint64_t fileSize = [self dbFileSize];
     
     NSAssert(_dbFileSizeLimit > _dbSizeToReclaim, @"bad reclamation size limits _dbFileSizeLimit %llu, _dbSizeToReclaim %llu", _dbFileSizeLimit, _dbSizeToReclaim);
     
     if(fileSize >= _dbFileSizeLimit - _dbSizeToReclaim) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of '%llu' bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of %llu bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;
     }
@@ -204,11 +210,21 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)reclaimMessageBodies:(NSMutableOrderedSet*)folderBodiesCounts {
-    NSAssert(folderBodiesCounts.count > 0, @"no folders with counts");
+    NSDate *timeBefore = [NSDate date];
+    const uint64_t fileSizeBefore = [self dbFileSize];
     
+    SM_LOG_INFO(@"Database '%@' reclamation is starting, file size %llu, limit %llu, size to reclaim %llu", _dbFilePath, fileSizeBefore, _dbFileSizeLimit, _dbSizeToReclaim);
+    
+    NSAssert(folderBodiesCounts.count > 0, @"no folders with counts");
+
     const NSUInteger maxBodiesCountToDelete = 10;
+    NSUInteger bodiedCountReclaimed = 0;
+    
+    BOOL dbQueryFailed = NO;
     
     do {
+        dbQueryFailed = NO;
+        
         [folderBodiesCounts sortUsingComparator:^NSComparisonResult(id a, id b) {
             FolderWithCount *f1 = (FolderWithCount*)a;
             FolderWithCount *f2 = (FolderWithCount*)b;
@@ -219,22 +235,23 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         FolderWithCount *folderDesc = [folderBodiesCounts lastObject];
         NSAssert(folderDesc != nil, @"folder not found");
         
-        SM_LOG_INFO(@"Reclaiming message bodies from folder id %lu, which has %lu bodies in the database", folderDesc.folderId, folderDesc.count);
-
         if(folderDesc.count == 0) {
             SM_LOG_WARNING(@"No more message bodies in the database to reclaim!");
             break;
         }
         
+        const NSUInteger bodiesCountToDelete = (folderDesc.count >= maxBodiesCountToDelete? maxBodiesCountToDelete : folderDesc.count);
+        NSAssert(bodiesCountToDelete > 0, @"no bodies to delete");
+        
+        SM_LOG_INFO(@"Reclaiming %lu message bodies from folder %lu, which has %lu bodies in the database", bodiesCountToDelete, folderDesc.folderId, folderDesc.count);
+        
         sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
         if(database == nil) {
             SM_LOG_ERROR(@"could not open database");
+            
+            dbQueryFailed = YES;
             break;
         }
-        
-        const NSUInteger bodiesCountToDelete = (folderDesc.count >= maxBodiesCountToDelete? maxBodiesCountToDelete : folderDesc.count);
-        
-        BOOL dbQueryFailed = NO;
         
         do {
             NSString *deleteMessageBodiesSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%lu WHERE TIMESTAMP IN (SELECT TIMESTAMP FROM MESSAGEBODIES%lu ORDER BY TIMESTAMP ASC LIMIT %lu)", folderDesc.folderId, folderDesc.folderId, bodiesCountToDelete];
@@ -246,24 +263,42 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 SM_LOG_ERROR(@"Failed to prepare delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
                 
                 [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                break;
-            }
-            
-            const int sqlStepResult = sqlite3_step(statement);
-            if(sqlStepResult != SQLITE_ROW) {
-                SM_LOG_ERROR(@"Failed to execute delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                
                 dbQueryFailed = YES;
-            }
-            
-            const int sqlFinalizeResult = sqlite3_finalize(statement);
-            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
-            
-            if(dbQueryFailed) {
-                [self triggerDBFailureWithSQLiteError:sqlStepResult];
                 break;
+            }
+            else {
+                const int sqlStepResult = sqlite3_step(statement);
+
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                
+                if(sqlStepResult != SQLITE_DONE) {
+                    SM_LOG_ERROR(@"Failed to execute delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+
+                    [self triggerDBFailureWithSQLiteError:sqlStepResult];
+
+                    dbQueryFailed = YES;
+                    break;
+                }
             }
         } while(FALSE);
 
+        if(!dbQueryFailed) {
+            const char *vacuumStmt = "VACUUM";
+            const int sqlVacuumResult = sqlite3_exec(database, vacuumStmt, NULL, NULL, NULL);
+            if(sqlVacuumResult == SQLITE_OK) {
+                SM_LOG_DEBUG(@"Database cleanup successful");
+            }
+            else {
+                SM_LOG_ERROR(@"Database cleanup failed, error %d", sqlVacuumResult);
+
+                [self triggerDBFailureWithSQLiteError:sqlVacuumResult];
+
+                dbQueryFailed = YES;
+            }
+        }
+        
         [self closeDatabase:database];
         
         if(dbQueryFailed) {
@@ -274,7 +309,13 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         NSAssert(folderDesc.count >= bodiesCountToDelete, @"folderDesc.count %lu < bodiesCountToDelete %lu", folderDesc.count, bodiesCountToDelete);
 
         folderDesc.count -= bodiesCountToDelete;
+        bodiedCountReclaimed += bodiesCountToDelete;
     } while([self shouldReclaimMoreOldData]);
+
+    NSDate *timeAfter = [NSDate date];
+    const uint64_t fileSizeAfter = [self dbFileSize];
+
+    SM_LOG_INFO(@"Database '%@' reclamation %@, reclaimed %lu message bodies (total %llu bytes), current file size %llu. Total %f ms spent.", _dbFilePath, (dbQueryFailed? @"failed" : @"completed"), bodiedCountReclaimed, fileSizeBefore - fileSizeAfter, fileSizeAfter, [timeAfter timeIntervalSinceDate:timeBefore]);
 }
 
 - (void)reclaimOldData {
@@ -1220,16 +1261,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     
                     if(sqlStepResult != SQLITE_DONE) {
                         if(sqlStepResult == SQLITE_CONSTRAINT) {
-                            // TODO: This happened once. How could it happen?..
-                            SM_LOG_ERROR(@"Message with UID %u already in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+                            SM_LOG_WARNING(@"Message with UID %u already in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
                         }
                         else {
                             SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlStepResult);
+
+                            dbQueryFailed = YES;
+                            dbQueryError = sqlStepResult;
+                            break;
                         }
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = sqlStepResult;
-                        break;
                     }
                 } while(FALSE);
                 

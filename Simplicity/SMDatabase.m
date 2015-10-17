@@ -336,12 +336,45 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_INFO(@"Database '%@' reclamation %@, reclaimed %lu message bodies (total %llu bytes), current file size %llu. Total %f ms spent.", _dbFilePath, (dbQueryFailed? @"failed" : @"completed"), bodiedCountReclaimed, fileSizeBefore - fileSizeAfter, fileSizeAfter, [timeAfter timeIntervalSinceDate:timeBefore]);
 }
 
-- (NSNumber*)getBodiesCount:(sqlite3*)database folderId:(NSNumber*)folderId {
+- (NSNumber*)getHeadersCountNoChecks:(sqlite3*)database folderId:(NSNumber*)folderId {
     NSString *folderName = [_folderNames objectForKey:folderId];
-    NSString *getBodiesCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
+    NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM FOLDER%@", folderId];
     
     sqlite3_stmt *statement = NULL;
-    const int sqlPrepareResult = sqlite3_prepare_v2(database, getBodiesCountSql.UTF8String, -1, &statement, NULL);
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountSql.UTF8String, -1, &statement, NULL);
+    if(sqlPrepareResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"could not prepare messages headers count statement, error %d", sqlPrepareResult);
+        return nil;
+    }
+    
+    NSNumber *headersCountResult = nil;
+    
+    do {
+        const int sqlStepResult = sqlite3_step(statement);
+        
+        if(sqlStepResult != SQLITE_ROW) {
+            SM_LOG_ERROR(@"Failed to get message headers count from folder %@, error %d", folderName, sqlStepResult);
+            break;
+        }
+        
+        NSUInteger headersCount = sqlite3_column_int(statement, 0);
+        SM_LOG_DEBUG(@"Headers count in folder %@ is %lu", folderName, headersCount);
+        
+        headersCountResult = [NSNumber numberWithUnsignedInteger:headersCount];
+    } while(FALSE);
+    
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize message headers count statement result %d", sqlFinalizeResult);
+    
+    return headersCountResult;
+}
+
+- (NSNumber*)getBodiesCountNoChecks:(sqlite3*)database folderId:(NSNumber*)folderId {
+    NSString *folderName = [_folderNames objectForKey:folderId];
+    NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM MESSAGEBODIES%@", folderId];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, getCountSql.UTF8String, -1, &statement, NULL);
     if(sqlPrepareResult != SQLITE_OK) {
         SM_LOG_ERROR(@"could not prepare messages bodies count statement, error %d", sqlPrepareResult);
         return nil;
@@ -353,7 +386,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         const int sqlStepResult = sqlite3_step(statement);
         
         if(sqlStepResult != SQLITE_ROW) {
-            SM_LOG_ERROR(@"Failed to get messages count from folder %@, error %d", folderName, sqlStepResult);
+            SM_LOG_ERROR(@"Failed to get message bodies count from folder %@, error %d", folderName, sqlStepResult);
             break;
         }
         
@@ -364,7 +397,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     } while(FALSE);
     
     const int sqlFinalizeResult = sqlite3_finalize(statement);
-    SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+    SM_LOG_NOISE(@"finalize message bodies count statement result %d", sqlFinalizeResult);
 
     return bodiesCountResult;
 }
@@ -398,8 +431,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
     for(NSNumber *folderId in _folderNames) {
         NSString *folderName = [_folderNames objectForKey:folderId];
-        NSNumber *headersCount = nil;//[self getHeadersCount:database folderId:folderId];
-        NSNumber *bodiesCount = [self getBodiesCount:database folderId:folderId];
+        NSNumber *headersCount = [self getHeadersCountNoChecks:database folderId:folderId];
+        NSNumber *bodiesCount = [self getBodiesCountNoChecks:database folderId:folderId];
 
         if(headersCount != nil || bodiesCount != nil) {
             [folderBodiesCounts addObject:[[FolderWithCounts alloc] initWithFolderId:[folderId unsignedIntegerValue] headersCount:(headersCount != nil? [headersCount unsignedIntegerValue] : 0) bodiesCount:(bodiesCount != nil? [bodiesCount unsignedIntegerValue] : 0)]];

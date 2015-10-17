@@ -200,7 +200,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
         MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
 
-        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO];
+        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -214,7 +214,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     for(MCOIMAPMessage *message in _fetchedMessageHeadersFromAllMail) {
         SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [all mail]", message.uid, message.gmailMessageID);
 
-        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO];
+        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:allMailFolder threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
     }
 
     if(_fetchedMessageHeadersFromThreads.count > 0) {
@@ -229,7 +229,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         for(MCOIMAPMessage *message in folderMessages) {
             SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, folder);
             
-            [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:folder threadId:message.gmailThreadID urgent:NO];
+            [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:folder threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
         }
     }
 
@@ -255,7 +255,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
 }
 
-- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent {
+- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase {
 	SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
 
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
@@ -265,13 +265,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
     }
 	
-    if(![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
+    if(tryLoadFromDatabase && ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
         if(data == nil) {
-            SM_LOG_ERROR(@"no data");
+            SM_LOG_INFO(@"Message UID %u (remove folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
+
+            [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
         }
-        NSAssert(data != nil, @"data != nil");
-        
-        [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:attachments];
+        else {
+            [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:attachments];
+        }
     }]) {
         MCOIMAPSession *session = [[appDelegate model] imapSession];
         NSAssert(session, @"session is nil");
@@ -280,7 +282,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         
         [_fetchMessageBodyOps setObject:op forKey:[NSNumber numberWithUnsignedInt:uid]];
         
-        void (^opBlock)(NSError *error, NSData * data) = nil;
+        void (^opBlock)(NSError *error, NSData *data) = nil;
 
         opBlock = ^(NSError * error, NSData * data) {
             SM_LOG_DEBUG(@"msg uid %u", uid);

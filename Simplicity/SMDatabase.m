@@ -1165,6 +1165,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     
                     messageBody = uncompressedData;
                 }
+                else if(sqlStepResult == SQLITE_DONE) {
+                    SM_LOG_DEBUG(@"message body (UID %u) not found in the database folder %@ (id %@)", uid, folderName, folderId);
+                }
                 else {
                     SM_LOG_ERROR(@"sqlite3_step error %d", sqlStepResult);
                     

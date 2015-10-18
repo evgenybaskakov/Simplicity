@@ -16,6 +16,10 @@
 #import "SMCompression.h"
 #import "SMDatabase.h"
 
+static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30;
+static const NSUInteger BODIES_COUNT_RECLAIM_STEP = 50;
+static const NSUInteger HEADERS_COUNT_RECLAIM_STEP = BODIES_COUNT_RECLAIM_STEP * HEADERS_BODIES_RECLAIM_RATIO;
+
 typedef NS_ENUM(NSInteger, DBFailureKind) {
     DBFailure_NonCriticalDataNotFound,
     DBFailure_CriticalDataNotFound,
@@ -219,8 +223,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     NSAssert(folderBodiesCounts.count > 0, @"no folders with counts");
 
-    const NSUInteger maxBodiesCountToDelete = 10;
-    NSUInteger bodiedCountReclaimed = 0;
+    NSUInteger bodiedCountReclaimed = 0, headersCountReclaimed = 0;
     
     BOOL dbQueryFailed = NO;
     
@@ -231,22 +234,17 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             FolderWithCounts *f1 = (FolderWithCounts*)a;
             FolderWithCounts *f2 = (FolderWithCounts*)b;
             
-            if(f1.bodiesCount < f2.bodiesCount) {
+            const NSUInteger c1 = f1.bodiesCount + f1.headersCount / HEADERS_BODIES_RECLAIM_RATIO;
+            const NSUInteger c2 = f2.bodiesCount + f2.headersCount / HEADERS_BODIES_RECLAIM_RATIO;
+
+            if(c1 < c2) {
                 return NSOrderedAscending;
             }
-            else if(f1.bodiesCount > f2.bodiesCount) {
+            else if(c1 > c2) {
                 return NSOrderedDescending;
             }
             else {
-                if(f1.headersCount < f2.headersCount) {
-                    return NSOrderedAscending;
-                }
-                else if(f1.headersCount > f2.headersCount) {
-                    return NSOrderedDescending;
-                }
-                else {
-                    return NSOrderedSame;
-                }
+                return NSOrderedSame;
             }
         }];
         
@@ -258,11 +256,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             break;
         }
         
-        const NSUInteger bodiesCountToDelete = (folderDesc.bodiesCount >= maxBodiesCountToDelete? maxBodiesCountToDelete : folderDesc.bodiesCount);
-        NSAssert(bodiesCountToDelete > 0, @"no bodies to delete");
-        
-        SM_LOG_INFO(@"Reclaiming %lu message bodies from folder %lu, which has %lu headers and %lu bodies in the database", bodiesCountToDelete, folderDesc.folderId, folderDesc.headersCount, folderDesc.bodiesCount);
-        
         sqlite3 *database = [self openDatabaseInternal:_dbFilePath];
         if(database == nil) {
             SM_LOG_ERROR(@"could not open database");
@@ -271,37 +264,101 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             break;
         }
         
-        do {
-            NSString *deleteMessageBodiesSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%lu WHERE TIMESTAMP IN (SELECT TIMESTAMP FROM MESSAGEBODIES%lu ORDER BY TIMESTAMP ASC LIMIT %lu)", folderDesc.folderId, folderDesc.folderId, bodiesCountToDelete];
-            
-            sqlite3_stmt *statement = NULL;
-            const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteMessageBodiesSql.UTF8String, -1, &statement, NULL);
-            
-            if(sqlPrepareResult != SQLITE_OK) {
-                SM_LOG_ERROR(@"Failed to prepare delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+        // Choose what to reclaim: headers or bodies from this folder.
+        if(folderDesc.bodiesCount >= folderDesc.headersCount / HEADERS_BODIES_RECLAIM_RATIO) {
+            // Case 1: there are too many bodies, that is, too many old messages have its bodies stored.
+            //         So we reclaim these old bodies, leaving bodyless headers alone.
+            do {
+                const NSUInteger bodiesCountToDelete = (folderDesc.bodiesCount >= BODIES_COUNT_RECLAIM_STEP? BODIES_COUNT_RECLAIM_STEP : folderDesc.bodiesCount);
+                NSAssert(bodiesCountToDelete > 0, @"no bodies to delete");
                 
-                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                SM_LOG_INFO(@"Reclaiming %lu message bodies from folder %lu, which has %lu headers and %lu bodies", bodiesCountToDelete, folderDesc.folderId, folderDesc.headersCount, folderDesc.bodiesCount);
                 
-                dbQueryFailed = YES;
-                break;
-            }
-            else {
-                const int sqlStepResult = sqlite3_step(statement);
-
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                NSString *deleteMessageBodiesSql = [NSString stringWithFormat:@"DELETE FROM MESSAGEBODIES%lu WHERE TIMESTAMP IN (SELECT TIMESTAMP FROM MESSAGEBODIES%lu ORDER BY TIMESTAMP ASC LIMIT %lu)", folderDesc.folderId, folderDesc.folderId, bodiesCountToDelete];
                 
-                if(sqlStepResult != SQLITE_DONE) {
-                    SM_LOG_ERROR(@"Failed to execute delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteMessageBodiesSql.UTF8String, -1, &statement, NULL);
+                
+                if(sqlPrepareResult == SQLITE_OK) {
+                    const int sqlStepResult = sqlite3_step(statement);
 
-                    [self triggerDBFailureWithSQLiteError:sqlStepResult];
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders bodies delete statement result %d", sqlFinalizeResult);
+                    
+                    if(sqlStepResult != SQLITE_DONE) {
+                        SM_LOG_ERROR(@"Failed to execute bodies delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
 
+                        [self triggerDBFailureWithSQLiteError:sqlStepResult];
+
+                        dbQueryFailed = YES;
+                        break;
+                    }
+                    
+                    NSAssert(folderDesc.bodiesCount >= bodiesCountToDelete, @"folderDesc.bodiesCount %lu < bodiesCountToDelete %lu", folderDesc.bodiesCount, bodiesCountToDelete);
+                    
+                    folderDesc.bodiesCount -= bodiesCountToDelete;
+                    bodiedCountReclaimed += bodiesCountToDelete;
+                }
+                else {
+                    SM_LOG_ERROR(@"Failed to prepare bodies delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                    
                     dbQueryFailed = YES;
                     break;
                 }
-            }
-        } while(FALSE);
-
+            } while(FALSE);
+        }
+        else {
+            // Case 2: there so many headers, that for very few of them there is a body stored.
+            //         So just wipe out empty headers.
+            
+            // TODO: Implement elaboration: no point to wipe out headers for which there _is_ a body
+            //       stored in the DB. That is, simple logic "just remove oldest headers" is too simple.
+            //       So for every header pre-selected to be removed we should check whether it is bodyless.
+            
+            do {
+                const NSUInteger headersCountToDelete = (folderDesc.headersCount >= HEADERS_COUNT_RECLAIM_STEP? HEADERS_COUNT_RECLAIM_STEP : folderDesc.headersCount);
+                NSAssert(headersCountToDelete > 0, @"no headers to delete");
+                
+                SM_LOG_INFO(@"Reclaiming %lu message headers from folder %lu, which has %lu headers and %lu bodies", headersCountToDelete, folderDesc.folderId, folderDesc.headersCount, folderDesc.bodiesCount);
+                
+                NSString *deleteMessageHeadersSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%lu WHERE TIMESTAMP IN (SELECT TIMESTAMP FROM FOLDER%lu ORDER BY TIMESTAMP ASC LIMIT %lu)", folderDesc.folderId, folderDesc.folderId, headersCountToDelete];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, deleteMessageHeadersSql.UTF8String, -1, &statement, NULL);
+                
+                if(sqlPrepareResult == SQLITE_OK) {
+                    const int sqlStepResult = sqlite3_step(statement);
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders headers delete statement result %d", sqlFinalizeResult);
+                    
+                    if(sqlStepResult != SQLITE_DONE) {
+                        SM_LOG_ERROR(@"Failed to execute headers delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                        
+                        [self triggerDBFailureWithSQLiteError:sqlStepResult];
+                        
+                        dbQueryFailed = YES;
+                        break;
+                    }
+                    
+                    NSAssert(folderDesc.headersCount >= headersCountToDelete, @"folderDesc.headersCount %lu < headersCountToDelete %lu", folderDesc.headersCount, headersCountToDelete);
+                    
+                    folderDesc.headersCount -= headersCountToDelete;
+                    headersCountReclaimed += headersCountToDelete;
+                }
+                else {
+                    SM_LOG_ERROR(@"Failed to prepare headers delete statement for folder id %lu, error %d", folderDesc.folderId, sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                    
+                    dbQueryFailed = YES;
+                    break;
+                }
+            } while(FALSE);
+        }
+        
         if(!dbQueryFailed) {
             const char *vacuumStmt = "VACUUM";
             const int sqlVacuumResult = sqlite3_exec(database, vacuumStmt, NULL, NULL, NULL);
@@ -323,11 +380,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_ERROR(@"Database query failed");
             break;
         }
-
-        NSAssert(folderDesc.bodiesCount >= bodiesCountToDelete, @"folderDesc.count %lu < bodiesCountToDelete %lu", folderDesc.bodiesCount, bodiesCountToDelete);
-
-        folderDesc.bodiesCount -= bodiesCountToDelete;
-        bodiedCountReclaimed += bodiesCountToDelete;
     } while([self shouldReclaimMoreOldData]);
 
     NSDate *timeAfter = [NSDate date];

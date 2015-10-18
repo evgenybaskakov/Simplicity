@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _concurrentQueue = dispatch_queue_create("com.simplicity.Simplicity.concurrentDatabaseQueue", DISPATCH_QUEUE_CONCURRENT);
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
-        _dbFileSizeLimit = 1024 * 1024 * 64;
+        _dbFileSizeLimit = 1024 * 1024 * 128;
         _dbSizeToReclaim = 1024 * 1024 * 32;
         
         [self checkDatabase:_dbFilePath];
@@ -796,7 +796,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 //
                 // Step 2: Create a unique folder table containing message UIDs.
                 //
-                NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, MESSAGE BLOB)", folderId];
+                NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGE BLOB)", folderId];
                 const char *createMessageTableStmt = [createMessageTableSql UTF8String];
                 
                 char *errMsg = NULL;
@@ -1277,7 +1277,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"MESSAGE\") VALUES (?, ?)", folderId];
+                NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?)", folderId];
                 const char *folderInsertStmt = [folderInsertSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
@@ -1301,11 +1301,22 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         dbQueryError = bindResult;
                         break;
                     }
-                    
+
+                    NSTimeInterval messageDateSeconds = [[[imapMessage header] date] timeIntervalSince1970];
+                    uint64_t timestamp = (uint64_t)messageDateSeconds;
+
+                    if((bindResult = sqlite3_bind_int64(statement, 2, timestamp)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TIMESTAMP), error %d", imapMessage.uid, bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+
                     NSData *encodedMessage = [self encodeImapMessage:imapMessage];
                     
-                    if((bindResult = sqlite3_bind_blob(statement, 2, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (MESSAGE), error %d", imapMessage.uid, bindResult);
+                    if((bindResult = sqlite3_bind_blob(statement, 3, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGE), error %d", imapMessage.uid, bindResult);
                         
                         dbQueryFailed = YES;
                         dbQueryError = bindResult;

@@ -294,6 +294,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         break;
                     }
                     
+                    //
+                    // TODO: Remove the reclaimed messages UIDs from _messagesWithBodies.
+                    //
+                    
                     NSAssert(folderDesc.bodiesCount >= bodiesCountToDelete, @"folderDesc.bodiesCount %lu < bodiesCountToDelete %lu", folderDesc.bodiesCount, bodiesCountToDelete);
                     
                     folderDesc.bodiesCount -= bodiesCountToDelete;
@@ -789,8 +793,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     [_folderIds setObject:folderId forKey:folderName];
     [_folderNames setObject:folderName forKey:folderId];
     
-    [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -873,6 +875,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     [self triggerDBFailureWithSQLiteError:sqlBodiesTableResult];
                     break;
                 }
+
+                [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
             } while(FALSE);
             
             [self closeDatabase:database];
@@ -1233,25 +1237,39 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         return FALSE;
     }
     
-    NSSet *uidSet = [_messagesWithBodies objectForKey:folderId];
-    if(uidSet == nil) {
-        SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
-        return FALSE;
-    }
-    
-    if(![uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
-        SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
-        return FALSE;
-    }
-    
-    SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
-    
     // Depending on the user requested urgency, we either select the
     // serial (FIFO) queue, or the concurrent one. In case of concurrent,
     // it won't have to wait while other non-urgent requests are processed.
     // Note that there may be heavy requests, so the serial
     // queue cannot be trusted in terms of response time.
     dispatch_async(urgent? _concurrentQueue : _serialQueue, ^{
+        if(!urgent) {
+            // Note that the _messagesWithBodies cache must not be accessed from the concurrent
+            // queue (on urgents requests), as it is not thread safe.
+            NSSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+            if(uidSet == nil) {
+                SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    getMessageBodyBlock(nil, nil, nil);
+                });
+                
+                return;
+            }
+            
+            if(![uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
+                SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    getMessageBodyBlock(nil, nil, nil);
+                });
+
+                return;
+            }
+            
+            SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
+        }
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -1496,14 +1514,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         return;
     }
     
-    NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
-    if(uidSet == nil) {
-        SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
-        return;
-    }
-    
-    [uidSet removeObject:[NSNumber numberWithUnsignedInt:uid]];
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -1515,6 +1525,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 //
                 // Step 1: Remove message UID from the folder table.
                 //
+                NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+                if(uidSet == nil) {
+                    SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
+                }
+                else {
+                    [uidSet removeObject:[NSNumber numberWithUnsignedInt:uid]];
+                }
+                
                 {
                     NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDER%@ WHERE UID = \"%u\"", folderId, uid];
                     const char *removeStmt = [removeSql UTF8String];
@@ -1585,28 +1603,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         return;
     }
     
-    NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
-    if(uidSet == nil) {
-        SM_LOG_ERROR(@"folder '%@' (%@) is unknown", folderName, folderId);
-
-        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
-        return;
-    }
-    
-    if([uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
-        SM_LOG_DEBUG(@"message with UID %u (folder %@) already has its body in the database", uid, folderName);
-        return;
-    }
-    
-    [uidSet addObject:[NSNumber numberWithUnsignedInt:uid]];
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+        if(uidSet == nil) {
+            SM_LOG_ERROR(@"folder '%@' (%@) is unknown", folderName, folderId);
+        }
+        else if([uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
+            SM_LOG_DEBUG(@"message with UID %u (folder %@) already has its body in the database", uid, folderName);
+            return;
+        }
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
+            BOOL dbQueryFailed = NO;
+
             do {
                 NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGEBODIES%@ (\"UID\", \"TIMESTAMP\", \"MESSAGEBODY\") VALUES (?, ?, ?)", folderId];
                 
@@ -1620,7 +1634,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                BOOL dbQueryFailed = NO;
                 int dbQueryError = SQLITE_OK;
                 
                 do {
@@ -1683,6 +1696,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
             
             [self closeDatabase:database];
+
+            if(!dbQueryFailed) {
+                [uidSet addObject:[NSNumber numberWithUnsignedInt:uid]];
+            }
         }
         
         OSAtomicAdd32(-1, &_serialQueueLength);

@@ -265,9 +265,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		return;
     }
 	
-    if(tryLoadFromDatabase && ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
+    if(!tryLoadFromDatabase || ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments) {
         if(data == nil) {
-            SM_LOG_INFO(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
+            SM_LOG_DEBUG(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
 
             [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
         }

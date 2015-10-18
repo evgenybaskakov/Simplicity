@@ -1181,6 +1181,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                             dbQueryFailed = YES;
                         }
                     }
+                    else if(stepResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"message with uid %u from folder '%@' (%@) not found", uid, folderName, folderId);
+                    }
                     else {
                         SM_LOG_ERROR(@"could not load message with uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
                         

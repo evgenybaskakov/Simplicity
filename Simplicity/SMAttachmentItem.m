@@ -58,12 +58,13 @@
 	// TODO: write to the message attachments folder
 	// TODO: write only if not written yet (compare checksum?)
 	// TODO: write asynchronously
-    NSString *encodedFileName = [fileName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"!*'();:@&=+$,/?%#[] "]];
-    
-//	NSString *encodedFileName = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)fileName, NULL, (__bridge CFStringRef)@"!*'();:@&=+$,/?%#[] ", kCFStringEncodingUTF8);
+    NSString *encodedFileName = [fileName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
 
 	NSURL *fullUrl = [NSURL URLWithString:encodedFileName relativeToURL:baseUrl];
+    NSAssert(fullUrl != nil, @"could not construct full URL from base URL '%@', filename '%@'", baseUrl, fileName);
+    
 	NSData *fileData = [self fileData];
+    NSAssert(fileData != nil, @"attachment file data is absent");
 	
 	NSError *writeError = nil;
 	if(![fileData writeToURL:fullUrl options:NSDataWritingAtomic error:&writeError]) {

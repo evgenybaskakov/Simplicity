@@ -220,12 +220,13 @@ static NSUInteger _buttonH;
 }
 
 - (NSString*)saveAttachment:(SMAttachmentItem*)attachmentItem toPath:(NSString*)folderPath {
-    NSString *filePath = [NSString pathWithComponents:@[folderPath, attachmentItem.fileName]];
+    NSString *fileName = attachmentItem.fileName;
     
-    if(![attachmentItem writeAttachmentTo:[NSURL fileURLWithPath:filePath]]) {
+    if(![attachmentItem writeAttachmentTo:[NSURL fileURLWithPath:folderPath] withFileName:fileName]) {
         return nil; // TODO: error popup
     }
     
+    NSString *filePath = [NSString pathWithComponents:@[folderPath, fileName]];
     return filePath;
 }
 

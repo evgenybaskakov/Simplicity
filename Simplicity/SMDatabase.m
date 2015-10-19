@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     const uint64_t fileSize = [self dbFileSize];
 
     if(fileSize >= _dbFileSizeLimit) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of %llu bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the max database size (%llu bytes)", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;
     }
@@ -207,7 +207,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     NSAssert(_dbFileSizeLimit > _dbSizeToReclaim, @"bad reclamation size limits _dbFileSizeLimit %llu, _dbSizeToReclaim %llu", _dbFileSizeLimit, _dbSizeToReclaim);
     
     if(fileSize >= _dbFileSizeLimit - _dbSizeToReclaim) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the limit of %llu bytes", _dbFilePath, fileSize, _dbFileSizeLimit);
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which still exceeds the reasonable database size (%llu bytes)", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;
     }

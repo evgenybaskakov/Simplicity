@@ -152,6 +152,7 @@
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; settings = {ASSET_TAGS = (); }; };
+		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; settings = {ASSET_TAGS = (); }; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -465,6 +466,8 @@
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
 		80C69A941BB6553D00F24B9F /* SMCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCompression.h; sourceTree = "<group>"; };
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
+		80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMThreadSafeOperationQueue.h; sourceTree = "<group>"; };
+		80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMThreadSafeOperationQueue.m; sourceTree = "<group>"; };
 		80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "full_recycle_bin-128.png"; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
@@ -642,6 +645,8 @@
 				00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */,
 				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
 				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
+				80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */,
+				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1119,6 +1124,7 @@
 				801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */,
 				804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */,
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
+				80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */,
 				8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */,
 				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,

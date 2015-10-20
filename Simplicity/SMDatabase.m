@@ -14,6 +14,7 @@
 #import "SMMessageThreadDescriptor.h"
 #import "SMMessageThreadDescriptorEntry.h"
 #import "SMCompression.h"
+#import "SMThreadSafeOperationQueue.h"
 #import "SMDatabase.h"
 
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30;
@@ -55,7 +56,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 @implementation SMDatabase {
     NSString *_dbFilePath;
     dispatch_queue_t _serialQueue;
-    dispatch_queue_t _concurrentQueue;
     int32_t _serialQueueLength;
     int _nextFolderId;
     NSMutableDictionary *_folderIds;
@@ -65,6 +65,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     BOOL _dbMustBeReset;
     uint64_t _dbFileSizeLimit;
     uint64_t _dbSizeToReclaim;
+    SMThreadSafeOperationQueue *_urgentTaskQueue;
 }
 
 - (id)initWithFilePath:(NSString*)dbFilePath {
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     if(self) {
         _serialQueue = dispatch_queue_create("com.simplicity.Simplicity.serialDatabaseQueue", DISPATCH_QUEUE_SERIAL);
-        _concurrentQueue = dispatch_queue_create("com.simplicity.Simplicity.concurrentDatabaseQueue", DISPATCH_QUEUE_CONCURRENT);
+        _urgentTaskQueue = [[SMThreadSafeOperationQueue alloc] init];
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
         _dbFileSizeLimit = 1024 * 1024 * 128;
@@ -790,13 +791,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     const int generatedFolderId = [self generateFolderId];
     NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
     
-    [_folderIds setObject:folderId forKey:folderName];
-    [_folderNames setObject:folderName forKey:folderId];
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        [_folderIds setObject:folderId forKey:folderName];
+        [_folderNames setObject:folderName forKey:folderId];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -895,6 +898,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -939,6 +944,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -989,6 +996,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -1056,6 +1065,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -1148,6 +1159,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -1231,44 +1244,47 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return FALSE;
-    }
-    
     // Depending on the user requested urgency, we either select the
     // serial (FIFO) queue, or the concurrent one. In case of concurrent,
     // it won't have to wait while other non-urgent requests are processed.
     // Note that there may be heavy requests, so the serial
     // queue cannot be trusted in terms of response time.
-    dispatch_async(urgent? _concurrentQueue : _serialQueue, ^{
-        if(!urgent) {
-            // Note that the _messagesWithBodies cache must not be accessed from the concurrent
-            // queue (on urgents requests), as it is not thread safe.
-            NSSet *uidSet = [_messagesWithBodies objectForKey:folderId];
-            if(uidSet == nil) {
-                SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
+    void (^op)() = ^{
+        [self runUrgentTasks];
+        
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId == nil) {
+            SM_LOG_ERROR(@"no id for folder \"%@\" found in DB", folderName);
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    getMessageBodyBlock(nil, nil, nil);
-                });
-                
-                return;
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageBodyBlock(nil, nil, nil);
+            });
             
-            if(![uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
-                SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    getMessageBodyBlock(nil, nil, nil);
-                });
-
-                return;
-            }
-            
-            SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
+            return;
         }
+
+        NSSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+        if(uidSet == nil) {
+            SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageBodyBlock(nil, nil, nil);
+            });
+            
+            return;
+        }
+        
+        if(![uidSet containsObject:[NSNumber numberWithUnsignedInt:uid]]) {
+            SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                getMessageBodyBlock(nil, nil, nil);
+            });
+
+            return;
+        }
+        
+        SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1317,7 +1333,21 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 getMessageBodyBlock(messageBody, parser, attachments);
             });
         }
-    });
+    };
+    
+    if(urgent) {
+        [_urgentTaskQueue pushBackOperation:op];
+        
+        // now run an "generic" urgent op handler just in case if the serial queue is empty
+        // just to ensure that the urgent task will be executed as soon as possible
+        // in any case
+        dispatch_async(_serialQueue, ^{
+            [self runUrgentTasks];
+        });
+    }
+    else {
+        dispatch_async(_serialQueue, op);
+    }
     
     return TRUE;
 }
@@ -1338,6 +1368,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -1437,6 +1469,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -1508,16 +1542,18 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-        return;
-    }
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId == nil) {
+            SM_LOG_ERROR(@"attempt to delete message UID %u: no id for folder \"%@\" found in DB", uid, folderName);
+            return;
+        }
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -1595,18 +1631,20 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data folderName:(NSString*)folderName {
-    NSNumber *folderId = [_folderIds objectForKey:folderName];
-    if(folderId == nil) {
-        SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-
-        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
-        return;
-    }
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId == nil) {
+            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+            
+            [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+            return;
+        }
+        
         NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
         if(uidSet == nil) {
             SM_LOG_ERROR(@"folder '%@' (%@) is unknown", folderName, folderId);
@@ -1775,6 +1813,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -1941,6 +1981,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
         
         if(database != nil) {
@@ -1999,6 +2041,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -2082,6 +2126,23 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
+}
+
+- (void)runUrgentTasks {
+    while(TRUE) {
+        void (^op)() = [_urgentTaskQueue popFrontOperation];
+        
+        if(op == nil) {
+            SM_LOG_NOISE(@"no urgent operations to run");
+            break;
+        }
+        
+        SM_LOG_DEBUG(@"running urgent operation");
+        
+        op();
+        
+        SM_LOG_DEBUG(@"urgent operation has finished");
+    }
 }
 
 @end

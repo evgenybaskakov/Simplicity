@@ -275,6 +275,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:attachments];
         }
     }]) {
+        if(urgent) {
+            SM_LOG_INFO(@"Urgently downloading body for message UID %u from folder '%@'; there are %lu requests in the queue", uid, remoteFolderName, _fetchMessageBodyOps.count);
+        }
+        
         MCOIMAPSession *session = [[appDelegate model] imapSession];
         NSAssert(session, @"session is nil");
         

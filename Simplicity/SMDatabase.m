@@ -1250,7 +1250,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     // Note that there may be heavy requests, so the serial
     // queue cannot be trusted in terms of response time.
     void (^op)() = ^{
-        [self runUrgentTasks];
+        if(!urgent) {
+            // Don't run other urgent ops that are waiting in the queue.
+            // Otherwise it would lead to weird out of order op execution.
+            [self runUrgentTasks];
+        }
         
         NSNumber *folderId = [_folderIds objectForKey:folderName];
         if(folderId == nil) {

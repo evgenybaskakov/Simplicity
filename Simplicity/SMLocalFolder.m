@@ -26,10 +26,28 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 
+@interface FetchOpDesc : NSObject
+@property (readonly) NSUInteger opId;
+@property (readonly) void (^op)();
+- (id)initWithOpId:(NSUInteger)opId op:(void (^)())op;
+@end
+
+@implementation FetchOpDesc
+- (id)initWithOpId:(NSUInteger)opId op:(void (^)())op {
+    self = [super init];
+    if(self) {
+        _opId = opId;
+        _op = op;
+    }
+    return self;
+}
+@end
+
 static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
 static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
 static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
 static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
+static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 
 static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMessagesRequestKind)(
 	MCOIMAPMessagesRequestKindUid |
@@ -61,6 +79,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     BOOL _dbSyncInProgress;
     NSUInteger _dbMessageThreadsLoadsCount;
     NSUInteger _dbMessageThreadHeadersLoadsCount;
+    NSMutableArray *_nonUrgentfetchMessageBodyOpQueue;
+    NSUInteger _nextFetchOpId;
 }
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
@@ -84,6 +104,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
+        _nonUrgentfetchMessageBodyOpQueue = [NSMutableArray array];
 	}
 	
 	return self;
@@ -283,43 +304,86 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         NSAssert(session, @"session is nil");
         
         MCOIMAPFetchContentOperation *op = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
+        op.urgent = urgent;
+        
+        NSUInteger opId = _nextFetchOpId++;
         
         [_fetchMessageBodyOps setObject:op forKey:[NSNumber numberWithUnsignedInt:uid]];
-        
-        void (^opBlock)(NSError *error, NSData *data) = nil;
 
-        opBlock = ^(NSError * error, NSData * data) {
-            SM_LOG_DEBUG(@"msg uid %u", uid);
-            
-            if(error == nil || [error code] == MCOErrorNone) {
-                [_fetchMessageBodyOps removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
+        void (^fullOp)() = ^{
+            void (^opBlock)(NSError *error, NSData *data) = nil;
+
+            opBlock = ^(NSError * error, NSData * data) {
+                SM_LOG_DEBUG(@"msg uid %u", uid);
                 
-                NSAssert(data != nil, @"data != nil");
-                
-                if(_syncedWithRemoteFolder) {
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data folderName:remoteFolderName];
+                if(error == nil || [error code] == MCOErrorNone) {
+                    [_fetchMessageBodyOps removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
+                    
+                    NSAssert(data != nil, @"data != nil");
+                    
+                    if(_syncedWithRemoteFolder) {
+                        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                        [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data folderName:remoteFolderName];
+                    }
+
+                    // TODO: do it asynchronously!
+                    MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
+                    
+                    [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:parser.attachments];
+
+                    if(!urgent) {
+                        NSAssert(_nonUrgentfetchMessageBodyOpQueue.count > 0, @"no ops in the queue");
+
+                        FetchOpDesc *currentOp = nil;
+                        for(NSUInteger i = 0; i < MAX_BODY_FETCH_OPS; i++) {
+                            if(((FetchOpDesc*)_nonUrgentfetchMessageBodyOpQueue[i]).opId == opId) {
+                                currentOp = _nonUrgentfetchMessageBodyOpQueue[i];
+
+                                [_nonUrgentfetchMessageBodyOpQueue removeObjectAtIndex:i];
+                                break;
+                            }
+                        }
+                        
+                        NSAssert(currentOp != nil, @"cur op not found");
+                        
+                        SM_LOG_INFO(@"fetch op finished (message UID %u, foler '%@'), non-urgent body op count: %lu", uid, remoteFolderName, _nonUrgentfetchMessageBodyOpQueue.count);
+
+                        if(_nonUrgentfetchMessageBodyOpQueue.count > 0) {
+                            FetchOpDesc *nextOp = _nonUrgentfetchMessageBodyOpQueue[0];
+                            nextOp.op();
+                        }
+                    }
                 }
+                else {
+                    SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (error code %ld)", uid, remoteFolderName, [error code]);
 
-                // TODO: do it asynchronously!
-                MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
-                
-                [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:parser.attachments];
-            }
-            else {
-                SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (error code %ld)", uid, remoteFolderName, [error code]);
+                    MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 
-                MCOIMAPFetchContentOperation *op = [_fetchMessageBodyOps objectForKey:[NSNumber numberWithUnsignedInt:uid]];
-
-                // restart this message body fetch to prevent data loss
-                // on connectivity/server problems
-                [op start:opBlock];
-            }
+                    // TODO: bug! opBlock is always nil.
+                    
+                    // restart this message body fetch to prevent data loss
+                    // on connectivity/server problems
+                    [op start:opBlock];
+                }
+            };
+            
+            // TODO: don't fetch if body is already being fetched (non-urgently!)
+            // TODO: if urgent fetch is requested, cancel the non-urgent fetch
+            [op start:opBlock];
         };
         
-        // TODO: don't fetch if body is already being fetched (non-urgently!)
-        // TODO: if urgent fetch is requested, cancel the non-urgent fetch
-        [op start:opBlock];
+        if(urgent) {
+            fullOp();
+        }
+        else {
+            [_nonUrgentfetchMessageBodyOpQueue addObject:[[FetchOpDesc alloc] initWithOpId:opId op:fullOp]];
+
+            SM_LOG_INFO(@"new fetch op added (message UID %u, foler '%@'), non-urgent body op count: %lu", uid, remoteFolderName, _nonUrgentfetchMessageBodyOpQueue.count);
+
+            if(_nonUrgentfetchMessageBodyOpQueue.count <= MAX_BODY_FETCH_OPS) {
+                fullOp();
+            }
+        }
     }
 }
 
@@ -773,7 +837,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 			[[_fetchMessageBodyOps objectForKey:uid] cancel];
 		
 		[_fetchMessageBodyOps removeAllObjects];
-	}
+
+        [_nonUrgentfetchMessageBodyOpQueue removeAllObjects];
+    }
 }
 
 - (void)clear {

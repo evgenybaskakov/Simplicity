@@ -206,23 +206,13 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)fetchMessageBodies {
+- (void)finishMessageHeadersFetching {
 	[self recalculateTotalMemorySize];
 
     BOOL shouldStartRemoteSync = _loadingFromDB;
     
     _loadingFromDB = NO;
     _dbSyncInProgress = NO;
-
-    SM_LOG_DEBUG(@"fetching message bodies from folder '%@' (%lu messages in this folder, %lu messages in 'all mail')", _remoteFolderName, _fetchedMessageHeaders.count, _fetchedMessageHeadersFromAllMail.count);
-    
-    for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
-        SM_LOG_DEBUG(@"fetching message body, gmail message id %@", gmailMessageId);
-
-        MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-
-        [self fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:_remoteFolderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
-    }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [[appDelegate model] mailbox];
@@ -614,7 +604,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase];
 	Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
 	
-	[self fetchMessageBodies];
+	[self finishMessageHeadersFetching];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", nil]];
 }
@@ -622,6 +612,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 - (void)updateMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
+
+        SM_LOG_DEBUG(@"fetching message body, gmail message id %llu", m.gmailMessageID);
+        
+        [self fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
     }
     
     _messageHeadersFetched += [messages count];
@@ -650,7 +644,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             _fetchMessageHeadersOp = nil;
         }
 		
-        [self fetchMessageBodies];
 		[self syncFetchMessageThreadsHeaders];
 		
 		return;
@@ -741,7 +734,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	if(finishFetch) {
 		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO];
 		
-		[self fetchMessageBodies];
+		[self finishMessageHeadersFetching];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObject:_localName forKey:@"LocalFolderName"]];
 

@@ -788,14 +788,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
-    const int generatedFolderId = [self generateFolderId];
-    NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
-    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
+        
+        const int generatedFolderId = [self generateFolderId];
+        NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
         
         [_folderIds setObject:folderId forKey:folderName];
         [_folderNames setObject:folderName forKey:folderId];

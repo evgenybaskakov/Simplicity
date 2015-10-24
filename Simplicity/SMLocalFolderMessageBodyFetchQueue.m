@@ -184,6 +184,8 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         [bodyFetchOp cancel];
         [_fetchMessageBodyOps removeObjectForKey:uidNum];
     }
+    
+    // TODO: remove it from _nonUrgentfetchMessageBodyOpQueue
 }
 
 - (void)stopBodiesLoading {

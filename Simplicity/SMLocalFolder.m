@@ -731,7 +731,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 				[messagesToMoveUids addIndex:message.uid];
 
                 // Cancel message body fetching.
-                [_messageBodyFetchQueue cancelBodyLoading:message.uid];
+                [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName];
 			}
 		}
 	}
@@ -803,7 +803,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];
     
     // Cancel message body fetching.
-    [_messageBodyFetchQueue cancelBodyLoading:uid];
+    [_messageBodyFetchQueue cancelBodyLoading:uid remoteFolder:_remoteFolderName];
 
     // Delete the message from the local database.
     [[[appDelegate model] database] removeMessageFromDBFolder:uid folder:_remoteFolderName];

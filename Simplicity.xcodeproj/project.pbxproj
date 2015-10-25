@@ -135,6 +135,7 @@
 		806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */ = {isa = PBXBuildFile; fileRef = 806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */; };
 		806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E7C261B9FFD940081FD8E /* SMBox2.m */; };
 		8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */; settings = {ASSET_TAGS = (); }; };
+		8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */; settings = {ASSET_TAGS = (); }; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */; settings = {ASSET_TAGS = (); }; };
@@ -444,6 +445,8 @@
 		806E7C261B9FFD940081FD8E /* SMBox2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBox2.m; sourceTree = "<group>"; };
 		8071EDF71BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLocalFolderMessageBodyFetchQueue.h; sourceTree = "<group>"; };
 		8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLocalFolderMessageBodyFetchQueue.m; sourceTree = "<group>"; };
+		8071EE011BDBFF8800175A7B /* SMFolderUIDDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderUIDDictionary.h; sourceTree = "<group>"; };
+		8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderUIDDictionary.m; sourceTree = "<group>"; };
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
@@ -596,6 +599,8 @@
 				00C75608195921AA006ED86B /* SMFolder.m */,
 				804F33411BAFDDBA007E600C /* SMFolderDesc.h */,
 				804F33421BAFDDBA007E600C /* SMFolderDesc.m */,
+				8071EE011BDBFF8800175A7B /* SMFolderUIDDictionary.h */,
+				8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */,
 				802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */,
 				802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */,
 				0082F5FC1A0FFAAC0050578A /* SMLocalFolder.h */,
@@ -1113,6 +1118,7 @@
 				800C67901B499DA900272D60 /* NSColor+ColorExtensions.m in Sources */,
 				00172FF0198B3BB700DB975E /* SMMessageBodyViewController.m in Sources */,
 				006709341A99A77600C0C9CC /* SMFindContentsPanelViewController.m in Sources */,
+				8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */,
 				0002A0B817D224C600EA4AFF /* SMMessageListCellView.m in Sources */,
 				8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */,
 				00AD52EF1AA81C7900627433 /* SMNewLabelWindowController.m in Sources */,

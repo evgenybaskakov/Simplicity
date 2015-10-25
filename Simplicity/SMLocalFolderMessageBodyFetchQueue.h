@@ -14,7 +14,7 @@
 
 - (id)initWithLocalFolder:(SMLocalFolder*)localFolder;
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase;
-- (void)cancelBodyLoading:(uint32_t)uid;
+- (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder;
 - (void)stopBodiesLoading;
 
 @end

@@ -17,7 +17,7 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 
-static const NSUInteger MAX_BODY_FETCH_OPS = 5;
+static const NSUInteger MAX_BODY_FETCH_OPS = 3;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) void (^op)();
@@ -123,9 +123,17 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                         
                         SM_LOG_INFO(@"fetch op finished (message UID %u, folder '%@'), non-urgent body op count: %lu", uid, remoteFolderName, _nonUrgentfetchMessageBodyOpQueue.count);
                         
-                        if(_nonUrgentfetchMessageBodyOpQueue.count > 0) {
+                        while(_nonUrgentfetchMessageBodyOpQueue.count > 0) {
                             FetchOpDesc *nextOp = _nonUrgentfetchMessageBodyOpQueue[0];
-                            nextOp.op();
+                            
+                            // skip all completed/urgent/cancelled ops
+                            if([_fetchMessageBodyOps objectForUID:nextOp.uid folder:nextOp.folderName] != nil) {
+                                nextOp.op();
+                                break;
+                            }
+                            else {
+                                [_nonUrgentfetchMessageBodyOpQueue removeObjectAtIndex:0];
+                            }
                         }
                     }
                 }

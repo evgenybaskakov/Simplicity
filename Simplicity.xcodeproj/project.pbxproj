@@ -302,7 +302,6 @@
 		005F0D381A86BC980093E96D /* SMMessageBookmarksView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBookmarksView.m; sourceTree = "<group>"; };
 		005F9A391AAD46500022EDEF /* SMMailboxTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxTableView.h; sourceTree = "<group>"; };
 		005F9A3A1AAD46500022EDEF /* SMMailboxTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxTableView.m; sourceTree = "<group>"; };
-		006709271A99980D00C0C9CC /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		0067092E1A99989900C0C9CC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		006709311A99A77600C0C9CC /* SMFindContentsPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFindContentsPanelViewController.h; sourceTree = "<group>"; };
 		006709321A99A77600C0C9CC /* SMFindContentsPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFindContentsPanelViewController.m; sourceTree = "<group>"; };
@@ -540,7 +539,6 @@
 			children = (
 				80E657331B182AF700A0AA81 /* mailcore2.xcodeproj */,
 				0067092E1A99989900C0C9CC /* CFNetwork.framework */,
-				006709271A99980D00C0C9CC /* libstdc++.dylib */,
 				005B086117D4F00200341051 /* Security.framework */,
 				0002A09117D1B1E000EA4AFF /* Cocoa.framework */,
 				0002A09317D1B1E000EA4AFF /* Other Frameworks */,

@@ -46,7 +46,7 @@
 - (void)enqueueOperation:(SMOperation*)op {
     SM_LOG_DEBUG(@"op %@", op);
     
-    SMOperationQueue *queue = [self getQueue:op.kind];
+    SMOperationQueue *queue = [self getQueue:op.opKind];
 
     [queue putOp:op];
 
@@ -60,9 +60,9 @@
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
     SM_LOG_DEBUG(@"op %@, replacementOp %@", op, replacementOp);
 
-    NSAssert(op.kind == replacementOp.kind, @"op kind %u and replacement op kind %u don't match", op.kind, replacementOp.kind);
+    NSAssert(op.opKind == replacementOp.opKind, @"op kind %u and replacement op kind %u don't match", op.opKind, replacementOp.opKind);
 
-    SMOperationQueue *queue = [self getQueue:op.kind];
+    SMOperationQueue *queue = [self getQueue:op.opKind];
     
     NSAssert([queue getFirstOp] == op, @"current first op doesn't match the op being replaced");
 
@@ -76,7 +76,7 @@
 - (void)completeOperation:(SMOperation*)op {
     SM_LOG_DEBUG(@"op %@", op);
     
-    SMOperationQueue *queue = [self getQueue:op.kind];
+    SMOperationQueue *queue = [self getQueue:op.opKind];
 
     NSAssert([queue getFirstOp] == op, @"first op is not the completed op");
 
@@ -92,7 +92,7 @@
 - (void)failedOperation:(SMOperation*)op {
     SM_LOG_DEBUG(@"op %@", op);
     
-    SMOperationQueue *queue = [self getQueue:op.kind];
+    SMOperationQueue *queue = [self getQueue:op.opKind];
     NSAssert([queue getFirstOp] == op, @"first op is not the restarted op");
 
     // TODO: should monitor the connection status, not just re-trying...
@@ -103,7 +103,7 @@
 - (void)cancelOperation:(SMOperation*)op {
     SM_LOG_DEBUG(@"op %@", op);
     
-    SMOperationQueue *queue = [self getQueue:op.kind];
+    SMOperationQueue *queue = [self getQueue:op.opKind];
     
     if([queue getFirstOp] == op) {
         [queue popFirstOp];

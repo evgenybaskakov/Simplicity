@@ -23,6 +23,20 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+
+    if (self) {
+        NSAssert(nil, @"TODO");
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    NSAssert(nil, @"TODO");
+}
+
 - (void)putOp:(SMOperation*)op {
     [_queue addObject:op];
 }

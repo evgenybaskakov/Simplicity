@@ -14,15 +14,34 @@
 
 @implementation SMOperation
 
-- (id)initWithKind:(SMOpKind)kind {
+- (id)initWithKind:(SMOpKind)opKind {
     self = [super init];
     
     if(self) {
-        _kind = kind;
+        _opKind = opKind;
         _timeCreated = [NSDate dateWithTimeIntervalSinceNow:0];
     }
     
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+
+    if (self) {
+        _postActionTarget = nil;
+        _postActionSelector = nil;
+        _currentOp = nil;
+        _timeCreated = [coder decodeObjectForKey:@"_timeCreated"];
+        _opKind = (SMOpKind)[coder decodeIntegerForKey:@"_opKind"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_timeCreated forKey:@"_timeCreated"];
+    [coder encodeInteger:_opKind forKey:@"_opKind"];
 }
 
 - (void)start {

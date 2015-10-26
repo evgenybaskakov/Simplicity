@@ -15,7 +15,7 @@
 @implementation SMOpSetMessageFlags {
     MCOIndexSet *_uids;
     NSString *_remoteFolderName;
-    MCOIMAPStoreFlagsRequestKind _kind;
+    MCOIMAPStoreFlagsRequestKind _requestKind;
     MCOMessageFlag _flags;
 }
 
@@ -25,11 +25,33 @@
     if(self) {
         _uids = uids;
         _remoteFolderName = remoteFolderName;
-        _kind = kind;
+        _requestKind = kind;
         _flags = flags;
     }
     
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+
+    if (self) {
+        _uids = [coder decodeObjectForKey:@"_uids"];
+        _remoteFolderName = [coder decodeObjectForKey:@"_remoteFolderName"];
+        _requestKind = (MCOIMAPStoreFlagsRequestKind)[coder decodeIntegerForKey:@"_requestKind"];
+        _flags = (MCOMessageFlag)[coder decodeIntegerForKey:@"_flags"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    
+    [coder encodeObject:_uids forKey:@"_uids"];
+    [coder encodeObject:_remoteFolderName forKey:@"_remoteFolderName"];
+    [coder encodeInteger:_requestKind forKey:@"_requestKind"];
+    [coder encodeInteger:_flags forKey:@"_flags"];
 }
 
 - (void)start {
@@ -37,7 +59,7 @@
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
     
-    MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:_kind flags:_flags];
+    MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:_requestKind flags:_flags];
 
     self.currentOp = op;
     

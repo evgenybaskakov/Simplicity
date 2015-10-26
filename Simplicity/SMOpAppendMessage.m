@@ -30,6 +30,26 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+
+    if (self) {
+        _message = [coder decodeObjectForKey:@"_message"];
+        _remoteFolderName = [coder decodeObjectForKey:@"_remoteFolderName"];
+        _flags = (MCOMessageFlag)[coder decodeIntegerForKey:@"_flags"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    
+    [coder encodeObject:_message forKey:@"_message"];
+    [coder encodeObject:_remoteFolderName forKey:@"_remoteFolderName"];
+    [coder encodeInteger:_flags forKey:@"_flags"];
+}
+
 - (void)start {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];

@@ -10,7 +10,7 @@
 
 @class SMOperation;
 
-@interface SMOperationQueue : NSObject
+@interface SMOperationQueue : NSObject<NSCoding>
 
 @property (readonly) NSUInteger size;
 

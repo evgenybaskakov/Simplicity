@@ -92,8 +92,10 @@
 
 			[_capabilitiesOp start:opBlock];
 		} else {
-			SM_LOG_DEBUG(@"capabilities: %@", capabilities);
+			SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
 			
+            SM_LOG_INFO(@"IMAP server folder concurrent access is %@, maximum %u connections allowed", _imapSession.allowsFolderConcurrentAccessEnabled? @"ENABLED" : @"DISABLED", _imapSession.maximumConnections);
+            
 			_imapServerCapabilities = capabilities;
 			_capabilitiesOp = nil;
 		}

@@ -24,6 +24,9 @@
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;
 
+// increases the memory amount implicitly occupied by this folder
+- (void)increaseLocalFolderFootprint:(uint64_t)size;
+
 // these two methods are used to sync the content of this folder
 // with the remote folder with the same name
 - (void)startLocalFolderSync;
@@ -31,8 +34,8 @@
 // loads the messages specified by their UIDs from the remote folder
 - (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs;
 
-// fetches the body of the message specified by its UID
-- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase;
+// urgently fetches the body of the message specified by its UID
+- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
 
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;

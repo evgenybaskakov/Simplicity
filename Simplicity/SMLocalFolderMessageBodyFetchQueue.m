@@ -17,7 +17,7 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 
-static const NSUInteger MAX_BODY_FETCH_OPS = 3;
+static const NSUInteger MAX_BODY_FETCH_OPS = 10;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;
@@ -55,7 +55,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 3;
     SMLocalFolder *__weak _localFolder;
     SMFolderUIDDictionary *_fetchMessageBodyOps;
     NSMutableArray *_nonUrgentfetchMessageBodyOpQueue;
-    NSUInteger _nextFetchOpId;
+    NSUInteger _activeIMAPOpCount;
 }
 
 - (id)initWithLocalFolder:(SMLocalFolder*)localFolder {
@@ -93,10 +93,11 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 3;
         if(urgent) {
             SM_LOG_INFO(@"Urgently downloading body for message UID %u from folder '%@'; there are %lu requests in the queue", uid, remoteFolderName, _fetchMessageBodyOps.count);
         }
-        
-        if([_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName] != nil) {
-            SM_LOG_INFO(@"Body for message UID %u from folder '%@' is already being downloaded", uid, remoteFolderName);
-            return;
+        else {
+            if([_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName] != nil) {
+                SM_LOG_INFO(@"Body for message UID %u from folder '%@' is already being downloaded", uid, remoteFolderName);
+                return;
+            }
         }
         
         FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
@@ -114,16 +115,22 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 3;
             
             NSAssert(currentOpDesc == opDesc, @"bad op desc");
 
-            SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' started, attempt %lu", uid, remoteFolderName, currentOpDesc.attempt);
-
             MCOIMAPSession *session = [[appDelegate model] imapSession];
             NSAssert(session, @"session is nil");
             
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
             imapOp.urgent = urgent;
+
+            _activeIMAPOpCount++;
+            
+            SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' started, attempt %lu (_activeIMAPOpCount %lu)", uid, remoteFolderName, currentOpDesc.attempt, _activeIMAPOpCount);
             
             [imapOp start:^(NSError * error, NSData * data) {
-                SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' ended", uid, remoteFolderName);
+                NSAssert(_activeIMAPOpCount > 0, @"_activeIMAPOpCount is zero");
+                
+                _activeIMAPOpCount--;
+                
+                SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' ended (_activeIMAPOpCount %lu)", uid, remoteFolderName, _activeIMAPOpCount);
 
                 FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
                 if(currentOpDesc == nil) {
@@ -134,8 +141,6 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 3;
                     SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' skipped (completed before or cancelled)", uid, remoteFolderName);
                     return;
                 }
-
-                NSAssert(currentOpDesc == opDesc, @"bad op desc");
 
                 if(error == nil || [error code] == MCOErrorNone) {
                     [_fetchMessageBodyOps removeObjectforUID:uid folder:remoteFolderName];
@@ -155,7 +160,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 3;
                     if(!urgent) {
                         NSAssert(_nonUrgentfetchMessageBodyOpQueue.count > 0, @"no ops in the queue");
                         
-                        [_nonUrgentfetchMessageBodyOpQueue removeObject:currentOpDesc];
+                        [_nonUrgentfetchMessageBodyOpQueue removeObject:opDesc];
                         
                         SM_LOG_INFO(@"fetch op finished (message UID %u, folder '%@'), body fetch op count: %lu", uid, remoteFolderName, _fetchMessageBodyOps.count);
                         

@@ -27,14 +27,14 @@
     self = [super init];
 
     if (self) {
-        NSAssert(nil, @"TODO");
+        _queue = [coder decodeObjectForKey:@"_queue"];
     }
     
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    NSAssert(nil, @"TODO");
+    [coder encodeObject:_queue forKey:@"_queue"];
 }
 
 - (void)putOp:(SMOperation*)op {

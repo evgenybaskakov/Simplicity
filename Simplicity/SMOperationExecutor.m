@@ -32,6 +32,24 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    
+    if (self) {
+        _smtpQueue = [coder decodeObjectForKey:@"_smtpQueue"];
+        _imapChangeQueue = [coder decodeObjectForKey:@"_imapChangeQueue"];
+        _imapCheckQueue = [coder decodeObjectForKey:@"_imapCheckQueue"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_smtpQueue forKey:@"_smtpQueue"];
+    [coder encodeObject:_imapChangeQueue forKey:@"_imapChangeQueue"];
+    [coder encodeObject:_imapCheckQueue forKey:@"_imapCheckQueue"];
+}
+
 - (SMOperationQueue*)getQueue:(SMOpKind)kind {
     switch(kind) {
         case kSMTPOpKind: return _smtpQueue;

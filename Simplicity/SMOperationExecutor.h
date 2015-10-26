@@ -10,7 +10,7 @@
 
 @class SMOperation;
 
-@interface SMOperationExecutor : NSObject
+@interface SMOperationExecutor : NSObject<NSCoding>
 
 - (void)enqueueOperation:(SMOperation*)op;
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;

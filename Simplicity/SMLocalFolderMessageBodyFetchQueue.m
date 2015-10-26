@@ -17,7 +17,7 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 
-static const NSUInteger MAX_BODY_FETCH_OPS = 10;
+static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;

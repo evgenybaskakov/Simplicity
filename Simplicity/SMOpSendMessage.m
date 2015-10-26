@@ -26,6 +26,22 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+
+    if (self) {
+        _message = [coder decodeObjectForKey:@"_message"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    
+    [coder encodeObject:_message forKey:@"_message"];
+}
+
 - (void)start {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_message.data];

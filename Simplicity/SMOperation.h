@@ -17,17 +17,17 @@ typedef enum {
 @class SMOperation;
 @class MCOOperation;
 
-@interface SMOperation : NSObject
+@interface SMOperation : NSObject<NSCoding>
 
 @property (readonly) NSDate *timeCreated;
-@property (readonly) SMOpKind kind;
+@property (readonly) SMOpKind opKind;
 
 @property (nonatomic) id postActionTarget;
 @property (nonatomic) SEL postActionSelector;
 
 @property MCOOperation *currentOp;
 
-- (id)initWithKind:(SMOpKind)kind;
+- (id)initWithKind:(SMOpKind)opKind;
 - (void)start;
 - (void)fail;
 - (Boolean)cancelOp;
@@ -36,5 +36,7 @@ typedef enum {
 - (void)replaceWith:(SMOperation*)op;
 - (NSString*)name;
 - (NSString*)details;
+- (void)encodeWithCoder:(NSCoder*)coder;
+- (id)initWithCoder:(NSCoder*)coder;
 
 @end

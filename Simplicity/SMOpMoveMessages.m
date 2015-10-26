@@ -35,6 +35,26 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+
+    if (self) {
+        _uids = [coder decodeObjectForKey:@"_uids"];
+        _srcRemoteFolderName = [coder decodeObjectForKey:@"_srcRemoteFolderName"];
+        _dstRemoteFolderName = [coder decodeObjectForKey:@"_dstRemoteFolderName"];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    
+    [coder encodeObject:_uids forKey:@"_uids"];
+    [coder encodeObject:_srcRemoteFolderName forKey:@"_srcRemoteFolderName"];
+    [coder encodeObject:_dstRemoteFolderName forKey:@"_dstRemoteFolderName"];
+}
+
 - (void)start {
     NSAssert(_uids.count > 0, @"no message uids to move from %@ to %@", _srcRemoteFolderName, _dstRemoteFolderName);
     

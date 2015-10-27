@@ -20,7 +20,7 @@
 }
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName kind:(MCOIMAPStoreFlagsRequestKind)kind flags:(MCOMessageFlag)flags {
-    self = [super initWithKind:kIMAPChangeOpKind];
+    self = [super initWithKind:kIMAPOpKind];
     
     if(self) {
         _uids = uids;

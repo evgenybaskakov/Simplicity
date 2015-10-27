@@ -16,45 +16,24 @@
 
 @implementation SMOperationExecutor {
     SMOperationQueue *_smtpQueue;
-    SMOperationQueue *_imapChangeQueue;
-    SMOperationQueue *_imapCheckQueue;
+    SMOperationQueue *_imapQueue;
 }
 
-- (id)init {
+- (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue {
     self = [super init];
     
     if(self) {
-        _smtpQueue = [[SMOperationQueue alloc] init];
-        _imapChangeQueue = [[SMOperationQueue alloc] init];
-        _imapCheckQueue = [[SMOperationQueue alloc] init];
+        _smtpQueue = (smtpQueue != nil? smtpQueue : [[SMOperationQueue alloc] init]);
+        _imapQueue = (imapQueue != nil? imapQueue : [[SMOperationQueue alloc] init]);
     }
     
     return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super init];
-    
-    if (self) {
-        _smtpQueue = [coder decodeObjectForKey:@"_smtpQueue"];
-        _imapChangeQueue = [coder decodeObjectForKey:@"_imapChangeQueue"];
-        _imapCheckQueue = [coder decodeObjectForKey:@"_imapCheckQueue"];
-    }
-    
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeObject:_smtpQueue forKey:@"_smtpQueue"];
-    [coder encodeObject:_imapChangeQueue forKey:@"_imapChangeQueue"];
-    [coder encodeObject:_imapCheckQueue forKey:@"_imapCheckQueue"];
 }
 
 - (SMOperationQueue*)getQueue:(SMOpKind)kind {
     switch(kind) {
         case kSMTPOpKind: return _smtpQueue;
-        case kIMAPChangeOpKind: return _imapChangeQueue;
-        case kIMAPCheckOpKind: return _imapCheckQueue;
+        case kIMAPOpKind: return _imapQueue;
     }
     
     NSAssert(false, @"bad op kind %u", kind);
@@ -137,23 +116,24 @@
 }
 
 - (NSUInteger)operationsCount {
-    return _smtpQueue.size + _imapChangeQueue.size + _imapCheckQueue.size;
+    return _smtpQueue.size + _imapQueue.size;
 }
 
 - (SMOperation*)getOpAtIndex:(NSUInteger)index {
-    if(index < _smtpQueue.size)
-        return [_smtpQueue getOpAtIndex:index];
+    NSUInteger offset = index;
     
-    index -= _smtpQueue.size;
+    if(offset < _smtpQueue.size) {
+        return [_smtpQueue getOpAtIndex:offset];
+    }
+    
+    offset -= _smtpQueue.size;
 
-    if(index < _imapChangeQueue.size)
-        return [_imapChangeQueue getOpAtIndex:index];
+    if(offset < _imapQueue.size) {
+        return [_imapQueue getOpAtIndex:offset];
+    }
     
-    index -= _imapChangeQueue.size;
-    
-    NSAssert(index < _imapCheckQueue.size, @"bad index %lu", index);
-
-    return [_imapCheckQueue getOpAtIndex:index];
+    NSAssert(nil, @"bad index %lu (_smtpQueue.size %lu, imap _imapQueue.size %lu)", index, _smtpQueue.size, _imapQueue.size);
+    return nil;
 }
 
 - (void)notifyController {

@@ -44,6 +44,8 @@
 @property SMOutboxController *outboxController;
 @property SMOperationExecutor *operationExecutor;
 
+- (void)initOpExecutor;
+
 - (void)updateMailboxFolderList;
 - (void)toggleSearchResultsView;
 

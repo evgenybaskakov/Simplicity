@@ -63,6 +63,7 @@
 
 @class MCOIMAPMessage;
 @class SMMessageThreadDescriptor;
+@class SMOperationQueue;
 
 @interface SMDatabase : NSObject
 
@@ -82,5 +83,7 @@
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread folder:(NSString*)folderName;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName;
 - (void)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
+- (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName;
+- (void)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock;
 
 @end

@@ -19,7 +19,7 @@
 }
 
 - (id)initWithMessage:(MCOMessageBuilder*)message remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags {
-    self = [super initWithKind:kIMAPChangeOpKind];
+    self = [super initWithKind:kIMAPOpKind];
 
     if(self) {
         _message = message;

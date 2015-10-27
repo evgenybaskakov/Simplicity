@@ -10,8 +10,7 @@
 
 typedef enum {
     kSMTPOpKind,
-    kIMAPChangeOpKind,
-    kIMAPCheckOpKind
+    kIMAPOpKind
 } SMOpKind;
 
 @class SMOperation;

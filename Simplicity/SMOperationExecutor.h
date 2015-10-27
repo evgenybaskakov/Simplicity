@@ -9,9 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @class SMOperation;
+@class SMOperationQueue;
 
-@interface SMOperationExecutor : NSObject<NSCoding>
+@interface SMOperationExecutor : NSObject
 
+- (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue;
 - (void)enqueueOperation:(SMOperation*)op;
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;
 - (void)completeOperation:(SMOperation*)op;

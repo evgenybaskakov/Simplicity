@@ -574,23 +574,31 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     sqlite3 *const database = [self openDatabaseInternal:dbFilename];
     
     if(database != nil) {
-        if([self createFoldersTable:database]) {
-            if([self createMessageThreadsTable:database]) {
-                if([self loadFolderIds:database]) {
-                    SM_LOG_INFO(@"Database initialized successfully");
-                    
-                    initSuccessful = YES;
-                } else {
-                    SM_LOG_ERROR(@"Failed to load folder ids");
-                }
+        do {
+            if(![self createOpQueuesTable:database]) {
+                SM_LOG_ERROR(@"Failed to init op queues table");
+                break;
             }
-            else {
+            
+            if(![self createFoldersTable:database]) {
+                SM_LOG_ERROR(@"Failed to init folder table");
+                break;
+            }
+            
+            if(![self createMessageThreadsTable:database]) {
                 SM_LOG_ERROR(@"Failed to init message thread table");
+                break;
             }
-        }
-        else {
-            SM_LOG_ERROR(@"Failed to init folder table");
-        }
+            
+            if(![self loadFolderIds:database]) {
+                SM_LOG_ERROR(@"Failed to load folder ids");
+                break;
+            }
+            
+            SM_LOG_INFO(@"Database initialized successfully");
+            
+            initSuccessful = YES;
+        } while(FALSE);
         
         [self closeDatabase:database];
     }
@@ -604,6 +612,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     else {
         _dbInvalid = YES;
     }
+}
+
+- (BOOL)createOpQueuesTable:(sqlite3*)database {
+    char *errMsg = NULL;
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS OPQUEUES (NAME TEXT UNIQUE, CONTENTS BLOB)";
+    
+    const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
+    if(sqlResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+        return FALSE;
+    }
+    
+    return TRUE;
 }
 
 - (BOOL)createMessageThreadsTable:(sqlite3*)database {
@@ -630,6 +651,164 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     return TRUE;
+}
+
+- (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName {
+    NSData *encodedOpQueue = [NSKeyedArchiver archivedDataWithRootObject:opQueue];
+    NSAssert(encodedOpQueue != nil, @"could not encode op queue");
+
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+        
+        if(database != nil) {
+            do {
+                NSString *opQueueInsertSql = [NSString stringWithFormat:@"INSERT INTO OPQUEUES (\"NAME\", \"CONTENTS\") VALUES (?, ?)"];
+                const char *opQueueInsertStmt = [opQueueInsertSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, opQueueInsertStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                    break;
+                }
+                
+                BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
+                
+                do {
+                    int bindResult;
+                    if((bindResult = sqlite3_bind_text(statement, 1, queueName.UTF8String, 5, SQLITE_STATIC)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"op queue '%@', could not bind argument 1 (NAME), error %d", queueName, bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+                    
+                    if((bindResult = sqlite3_bind_blob(statement, 2, encodedOpQueue.bytes, (int)encodedOpQueue.length, SQLITE_STATIC)) != SQLITE_OK) {
+                        SM_LOG_ERROR(@"op queue '%@', could not bind argument 2 (CONTENTS), error %d", queueName, bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+                    
+                    const int sqlStepResult = sqlite3_step(statement);
+                    
+                    if(sqlStepResult != SQLITE_DONE) {
+                        SM_LOG_ERROR(@"Failed to insert op queue '%@', error %d", queueName, sqlStepResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = sqlStepResult;
+                        break;
+                    }
+                } while(FALSE);
+                
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize op queue insert statement result %d", sqlFinalizeResult);
+                
+                if(dbQueryFailed) {
+                    SM_LOG_ERROR(@"SQL query has failed");
+                    
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    break;
+                }
+                
+                SM_LOG_DEBUG(@"Op queue '%@' successfully inserted to database", queueName);
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        SMOperationQueue *opQueue = nil;
+
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
+        
+        if(database != nil) {
+            do {
+                BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
+                
+                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT CONTENTS FROM OPQUEUES WHERE NAME = \"%@\"", queueName];
+                const char *folderSelectStmt = [folderSelectSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
+                
+                if(sqlSelectPrepareResult == SQLITE_OK) {
+                    const int stepResult = sqlite3_step(statement);
+                    if(stepResult == SQLITE_ROW) {
+                        int dataSize = sqlite3_column_bytes(statement, 0);
+                        NSData *queueData = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+                        
+                        opQueue = [NSKeyedUnarchiver unarchiveObjectWithData:queueData];
+                        if(opQueue == nil) {
+                            SM_LOG_ERROR(@"could not decode op queue '%@'", queueName);
+                            
+                            dbQueryFailed = YES;
+                        }
+                    }
+                    else if(stepResult == SQLITE_DONE) {
+                        SM_LOG_INFO(@"op queue '%@' not found", queueName);
+                    }
+                    else {
+                        SM_LOG_ERROR(@"could not load op queue '%@', error %d", queueName, sqlSelectPrepareResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = stepResult;
+                    }
+                }
+                else {
+                    SM_LOG_ERROR(@"could not prepare select statement for op queue '%@', error %d", queueName, sqlSelectPrepareResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = sqlSelectPrepareResult;
+                }
+                
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize op load statement result %d", sqlFinalizeResult);
+                
+                if(dbQueryFailed) {
+                    SM_LOG_ERROR(@"database query failed");
+                    
+                    if(dbQueryError != SQLITE_OK) {
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    }
+                    else {
+                        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    }
+                    
+                    break;
+                }
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getQueueBlock(opQueue);
+        });
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
 }
 
 - (NSDictionary*)loadDataFromDB:(sqlite3*)database query:(const char *)sqlQuery {
@@ -946,11 +1125,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
+        NSMutableArray *folders = nil;
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            NSMutableArray *folders = nil;
-            
             const char *sqlQuery = "SELECT * FROM FOLDERS";
             NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
             NSArray *columns = [foldersTable objectForKey:@"Columns"];
@@ -981,11 +1160,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             }
             
             [self closeDatabase:database];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                loadFoldersBlock(folders);
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            loadFoldersBlock(folders);
+        });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
@@ -998,11 +1177,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
+        NSUInteger messagesCount = 0;
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            NSUInteger messagesCount = 0;
-            
             do {
                 NSNumber *folderId = [_folderIds objectForKey:folderName];
                 if(folderId != nil) {
@@ -1050,11 +1229,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
             
             [self closeDatabase:database];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                getMessagesCountBlock(messagesCount);
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessagesCountBlock(messagesCount);
+        });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
@@ -1067,11 +1246,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
+        NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
-            
             do {
                 NSNumber *folderId = [_folderIds objectForKey:folderName];
                 if(folderId == nil) {
@@ -1144,11 +1323,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
             
             [self closeDatabase:database];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                getMessagesBlock(messages);
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessagesBlock(messages);
+        });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
@@ -1161,11 +1340,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
+        MCOIMAPMessage *message = nil;
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            MCOIMAPMessage *message = nil;
-            
             do {
                 NSNumber *folderId = [_folderIds objectForKey:folderName];
                 if(folderId == nil) {
@@ -1233,11 +1412,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
             
             [self closeDatabase:database];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBlock(message);
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessageBlock(message);
+        });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
@@ -1290,6 +1469,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
         
+        NSData *messageBody = nil;
+        MCOMessageParser *parser = nil;
+        NSArray *attachments = nil;
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
@@ -1297,8 +1480,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             
             sqlite3_stmt *statement = NULL;
             const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
-            
-            NSData *messageBody = nil;
             
             if(sqlPrepareResult == SQLITE_OK) {
                 const int sqlStepResult = sqlite3_step(statement);
@@ -1330,13 +1511,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             
             [self closeDatabase:database];
             
-            MCOMessageParser *parser = (messageBody != nil? [MCOMessageParser messageParserWithData:messageBody] : nil);
-            NSArray *attachments = (messageBody != nil? parser.attachments : nil); // note that this is potentially long operation, so do it in the current thread, not in the main thread
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(messageBody, parser, attachments);
-            });
+            if(messageBody != nil) {
+                parser = [MCOMessageParser messageParserWithData:messageBody];
+                attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread, not in the main thread
+            }
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessageBodyBlock(messageBody, parser, attachments);
+        });
     };
     
     if(urgent) {
@@ -2047,11 +2230,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
+        SMMessageThreadDescriptor *messageThreadDesc = nil;
+        
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            SMMessageThreadDescriptor *messageThreadDesc = nil;
-            
             do {
                 NSNumber *folderId = [_folderIds objectForKey:folderName];
                 if(folderId == nil) {
@@ -2122,11 +2305,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
             
             [self closeDatabase:database];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageThreadBlock(messageThreadDesc);
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessageThreadBlock(messageThreadDesc);
+        });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMDatabase.h"
 #import "SMMessageEditorWindowController.h"
 #import "SMNewLabelWindowController.h"
 #import "SMMailboxViewController.h"
@@ -25,6 +26,7 @@
 #import "SMOutboxController.h"
 #import "SMOperationExecutor.h"
 #import "SMMailbox.h"
+#import "SMMailboxController.h"
 #import "SMFolder.h"
 #import "SMMessageThread.h"
 #import "SMMessageWindowController.h"
@@ -227,12 +229,25 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	//
 	
 	_outboxController = [[SMOutboxController alloc] init];
-    
-    //
-    
-    _operationExecutor = [[SMOperationExecutor alloc] init];
 }
 
+- (void)initOpExecutor {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    [[[appDelegate model] database] loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
+        [[[appDelegate model] database] loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
+            _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
+            
+            [[[appDelegate model] mailboxController] initFolders];
+        }];
+    }];
+}
+
+ - (void)saveOpExecutor {
+     // TODO
+     SM_LOG_ERROR(@"NOT IMPLEMENTED");
+ }
+     
 - (void)updateMailboxFolderList {
 	[ _mailboxViewController updateFolderListView ];
 

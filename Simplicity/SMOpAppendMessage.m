@@ -45,7 +45,9 @@
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
     
+    NSAssert(nil, @"BUG: MCOMessageBuilder is not serializable");
     [coder encodeObject:_message forKey:@"_message"];
+
     [coder encodeObject:_remoteFolderName forKey:@"_remoteFolderName"];
     [coder encodeInteger:_flags forKey:@"_flags"];
 }

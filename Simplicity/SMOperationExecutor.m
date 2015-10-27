@@ -9,10 +9,13 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMDatabase.h"
 #import "SMOperationQueueWindowController.h"
 #import "SMOperation.h"
 #import "SMOperationQueue.h"
 #import "SMOperationExecutor.h"
+
+static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 
 @implementation SMOperationExecutor {
     SMOperationQueue *_smtpQueue;
@@ -47,11 +50,12 @@
 
     [queue putOp:op];
 
-    if(queue.size == 1) {
+    if(queue.count == 1) {
         [op start];
     }
 
     [self notifyController];
+    [self scheduleOpQueuesSave];
 }
 
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp {
@@ -68,6 +72,7 @@
     [replacementOp start];
 
     [self notifyController];
+    [self scheduleOpQueuesSave];
 }
 
 - (void)completeOperation:(SMOperation*)op {
@@ -79,11 +84,12 @@
 
     [queue popFirstOp];
 
-    if(queue.size > 0) {
+    if(queue.count > 0) {
         [[queue getFirstOp] start];
     }
 
     [self notifyController];
+    [self scheduleOpQueuesSave];
 }
 
 - (void)failedOperation:(SMOperation*)op {
@@ -105,7 +111,7 @@
     if([queue getFirstOp] == op) {
         [queue popFirstOp];
         
-        if(queue.size > 0) {
+        if(queue.count > 0) {
             [[queue getFirstOp] start];
         }
     } else {
@@ -113,32 +119,45 @@
     }
     
     [self notifyController];
+    [self scheduleOpQueuesSave];
 }
 
 - (NSUInteger)operationsCount {
-    return _smtpQueue.size + _imapQueue.size;
+    return _smtpQueue.count + _imapQueue.count;
 }
 
 - (SMOperation*)getOpAtIndex:(NSUInteger)index {
     NSUInteger offset = index;
     
-    if(offset < _smtpQueue.size) {
+    if(offset < _smtpQueue.count) {
         return [_smtpQueue getOpAtIndex:offset];
     }
     
-    offset -= _smtpQueue.size;
+    offset -= _smtpQueue.count;
 
-    if(offset < _imapQueue.size) {
+    if(offset < _imapQueue.count) {
         return [_imapQueue getOpAtIndex:offset];
     }
     
-    NSAssert(nil, @"bad index %lu (_smtpQueue.size %lu, imap _imapQueue.size %lu)", index, _smtpQueue.size, _imapQueue.size);
+    NSAssert(nil, @"bad index %lu (_smtpQueue.size %lu, imap _imapQueue.size %lu)", index, _smtpQueue.count, _imapQueue.count);
     return nil;
 }
 
 - (void)notifyController {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationQueueWindowController] reloadData];
+}
+
+- (void)scheduleOpQueuesSave {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(saveOpQueues) object:nil];
+    [self performSelector:@selector(saveOpQueues) withObject:nil afterDelay:OP_QUEUES_SAVE_DELAY_SEC];
+}
+
+- (void)saveOpQueues {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    [[[appDelegate model] database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
+    [[[appDelegate model] database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
 }
 
 @end

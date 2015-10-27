@@ -15,6 +15,7 @@
 #import "SMMessageThreadDescriptorEntry.h"
 #import "SMCompression.h"
 #import "SMThreadSafeOperationQueue.h"
+#import "SMOperationQueue.h"
 #import "SMDatabase.h"
 
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30;
@@ -654,6 +655,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName {
+    SM_LOG_INFO(@"scheduling save for op queue '%@', length %lu", queueName, opQueue.count);
+
     NSData *encodedOpQueue = [NSKeyedArchiver archivedDataWithRootObject:opQueue];
     NSAssert(encodedOpQueue != nil, @"could not encode op queue");
 
@@ -667,6 +670,35 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
+                {
+                    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM OPQUEUES WHERE NAME = \"%@\"", queueName];
+                    const char *removeStmt = [removeSql UTF8String];
+                    
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
+                        
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                        break;
+                    }
+                    
+                    const int sqlResult = sqlite3_step(statement);
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize up queue statement result %d", sqlFinalizeResult);
+                    
+                    if(sqlResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Op queue %@ successfully removed", queueName);
+                    }
+                    else {
+                        SM_LOG_ERROR(@"Failed to remove op queue %@, error %d", queueName, sqlResult);
+                        
+                        [self triggerDBFailureWithSQLiteError:sqlResult];
+                        break;
+                    }
+                }
+                
                 NSString *opQueueInsertSql = [NSString stringWithFormat:@"INSERT INTO OPQUEUES (\"NAME\", \"CONTENTS\") VALUES (?, ?)"];
                 const char *opQueueInsertStmt = [opQueueInsertSql UTF8String];
                 
@@ -684,7 +716,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 
                 do {
                     int bindResult;
-                    if((bindResult = sqlite3_bind_text(statement, 1, queueName.UTF8String, 5, SQLITE_STATIC)) != SQLITE_OK) {
+                    if((bindResult = sqlite3_bind_text(statement, 1, queueName.UTF8String, (int)queueName.length, SQLITE_STATIC)) != SQLITE_OK) {
                         SM_LOG_ERROR(@"op queue '%@', could not bind argument 1 (NAME), error %d", queueName, bindResult);
                         
                         dbQueryFailed = YES;
@@ -721,7 +753,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                SM_LOG_DEBUG(@"Op queue '%@' successfully inserted to database", queueName);
+                SM_LOG_INFO(@"Op queue '%@' successfully saved to database", queueName);
             } while(FALSE);
             
             [self closeDatabase:database];
@@ -732,12 +764,16 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock {
+    SM_LOG_INFO(@"scheduling load for op queue '%@'", queueName);
+
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
+        SM_LOG_INFO(@"loading op queue '%@'", queueName);
+
         SMOperationQueue *opQueue = nil;
 
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
@@ -764,6 +800,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                             SM_LOG_ERROR(@"could not decode op queue '%@'", queueName);
                             
                             dbQueryFailed = YES;
+                        }
+                        else {
+                            SM_LOG_INFO(@"loaded op queue '%@', length %lu", queueName, opQueue.count);
                         }
                     }
                     else if(stepResult == SQLITE_DONE) {

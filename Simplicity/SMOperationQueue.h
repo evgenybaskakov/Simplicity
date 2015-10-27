@@ -12,7 +12,7 @@
 
 @interface SMOperationQueue : NSObject<NSCoding>
 
-@property (readonly) NSUInteger size;
+@property (readonly) NSUInteger count;
 
 - (void)putOp:(SMOperation*)op;
 - (void)popFirstOp;

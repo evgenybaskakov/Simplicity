@@ -72,7 +72,7 @@
     return _queue[index];
 }
 
-- (NSUInteger)size {
+- (NSUInteger)count {
     return _queue.count;
 }
 

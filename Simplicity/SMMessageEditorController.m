@@ -15,6 +15,7 @@
 #import "SMOpAppendMessage.h"
 #import "SMOpDeleteMessages.h"
 #import "SMSimplicityContainer.h"
+#import "SMMessageBuilder.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
@@ -63,8 +64,9 @@
 #pragma mark Actions
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
-    MCOMessageBuilder *message = [self createMessageData:messageText subject:subject to:to cc:cc bcc:bcc];
-    NSAssert(message != nil, @"no message body");
+    MCOMessageBuilder *message = [SMMessageBuilder createMessage:messageText subject:subject to:to cc:cc bcc:bcc fromMailbox:SMTP_USERNAME attachmentItems:_attachmentItems];
+
+    NSAssert(message != nil, @"failed to create message body");
     
     SM_LOG_DEBUG(@"'%@'", message);
     
@@ -101,9 +103,10 @@
         _saveDraftMessage = nil;
         _saveDraftOp = nil;
     }
+
+    MCOMessageBuilder *message = [SMMessageBuilder createMessage:messageText subject:subject to:to cc:cc bcc:bcc fromMailbox:SMTP_USERNAME attachmentItems:_attachmentItems];
     
-    MCOMessageBuilder *message = [self createMessageData:messageText subject:subject to:to cc:cc bcc:bcc];
-    NSAssert(message != nil, @"no message body");
+    NSAssert(message != nil, @"failed to create message body");
     
     SM_LOG_DEBUG(@"'%@'", message);
     
@@ -122,61 +125,6 @@
     _saveDraftOp = op;
     
     _hasUnsavedAttachments = NO;
-}
-
-#pragma mark Message creation
-
-- (MCOMessageBuilder*)createMessageData:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
-    NSAssert(messageText, @"messageText is nil");
-    NSAssert(subject, @"subject is nil");
-    NSAssert(to, @"to is nil");
-    NSAssert(cc, @"cc is nil");
-    NSAssert(bcc, @"bcc is nil");
-
-    MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
-    
-    //TODO: custom from
-    [[builder header] setFrom:[MCOAddress addressWithDisplayName:@"Evgeny Baskakov" mailbox:SMTP_USERNAME]];
-    
-    // TODO: form an array of addresses and names based on _toField contents
-    NSArray *toAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:to mailbox:to]];
-    [[builder header] setTo:toAddresses];
-    
-    // TODO: form an array of addresses and names based on _ccField contents
-    NSArray *ccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:cc mailbox:cc]];
-    [[builder header] setCc:ccAddresses];
-    
-    // TODO: form an array of addresses and names based on _bccField contents
-    NSArray *bccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:bcc mailbox:bcc]];
-    [[builder header] setBcc:bccAddresses];
-    
-    // TODO: check subject length, issue a warning if empty
-    [[builder header] setSubject:subject];
-    
-    //TODO (send plain text): [(DOMHTMLElement *)[[[webView mainFrame] DOMDocument] documentElement] outerText];
-    
-    [builder setHTMLBody:messageText];
-    
-    //TODO (local attachments): [builder addAttachment:[MCOAttachment attachmentWithContentsOfFile:@"/Users/foo/Pictures/image.jpg"]];
-   
-    for(SMAttachmentItem *attachmentItem in _attachmentItems) {
-        MCOAttachment *mcoAttachment = nil;
-
-        if(attachmentItem.fileData != nil) {
-            mcoAttachment = [MCOAttachment attachmentWithData:attachmentItem.fileData filename:attachmentItem.fileName];
-        }
-        else {
-            NSString *attachmentLocalFilePath = attachmentItem.localFilePath;
-            NSAssert(attachmentLocalFilePath != nil, @"attachmentLocalFilePath is nil");
-            
-            mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentLocalFilePath];
-        }
-
-        [builder addAttachment:mcoAttachment];
-        // TODO: ???    - (void) addRelatedAttachment:(MCOAttachment *)attachment;
-    }
-    
-    return builder;
 }
 
 #pragma mark Message after-saving actions

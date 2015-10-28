@@ -10,19 +10,20 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMMessageBuilder.h"
 #import "SMOpAppendMessage.h"
 
 @implementation SMOpAppendMessage {
-    MCOMessageBuilder *_message;
+    SMMessageBuilder *_messageBuilder;
     NSString *_remoteFolderName;
     MCOMessageFlag _flags;
 }
 
-- (id)initWithMessage:(MCOMessageBuilder*)message remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags {
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags {
     self = [super initWithKind:kIMAPOpKind];
 
     if(self) {
-        _message = message;
+        _messageBuilder = messageBuilder;
         _remoteFolderName = remoteFolderName;
         _flags = flags;
     }
@@ -30,11 +31,11 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)coder {
+- (id)initWithCoder:(NSCoder*)coder {
     self = [super initWithCoder:coder];
 
     if (self) {
-        _message = [coder decodeObjectForKey:@"_message"];
+        _messageBuilder = [coder decodeObjectForKey:@"_messageBuilder"];
         _remoteFolderName = [coder decodeObjectForKey:@"_remoteFolderName"];
         _flags = (MCOMessageFlag)[coder decodeIntegerForKey:@"_flags"];
     }
@@ -42,12 +43,10 @@
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder {
+- (void)encodeWithCoder:(NSCoder*)coder {
     [super encodeWithCoder:coder];
     
-    NSAssert(nil, @"BUG: MCOMessageBuilder is not serializable");
-    [coder encodeObject:_message forKey:@"_message"];
-
+    [coder encodeObject:_messageBuilder forKey:@"_messageBuilder"];
     [coder encodeObject:_remoteFolderName forKey:@"_remoteFolderName"];
     [coder encodeInteger:_flags forKey:@"_flags"];
 }
@@ -57,7 +56,7 @@
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     NSAssert(session, @"session lost");
     
-    MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_message.data flags:_flags customFlags:nil];
+    MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_messageBuilder.mcoMessageBuilder.data flags:_flags customFlags:nil];
 
     self.currentOp = op;
     
@@ -68,7 +67,7 @@
             SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
 
             if(self.postActionTarget) {
-                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_message, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
+                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
                 
                 [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
             }

@@ -64,16 +64,14 @@
 #pragma mark Actions
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
-    MCOMessageBuilder *message = [SMMessageBuilder createMessage:messageText subject:subject to:to cc:cc bcc:bcc fromMailbox:SMTP_USERNAME attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressWithDisplayName:to mailbox:to] cc:[MCOAddress addressWithDisplayName:cc mailbox:cc] bcc:[MCOAddress addressWithDisplayName:bcc mailbox:bcc] attachmentItems:_attachmentItems];
 
-    NSAssert(message != nil, @"failed to create message body");
-    
-    SM_LOG_DEBUG(@"'%@'", message);
+    SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [[appController outboxController] sendMessage:message postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[appController outboxController] sendMessage:messageBuilder.mcoMessageBuilder postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(NSDictionary*)info {
@@ -104,24 +102,22 @@
         _saveDraftOp = nil;
     }
 
-    MCOMessageBuilder *message = [SMMessageBuilder createMessage:messageText subject:subject to:to cc:cc bcc:bcc fromMailbox:SMTP_USERNAME attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressWithDisplayName:to mailbox:to] cc:[MCOAddress addressWithDisplayName:cc mailbox:cc] bcc:[MCOAddress addressWithDisplayName:bcc mailbox:bcc] attachmentItems:_attachmentItems];
     
-    NSAssert(message != nil, @"failed to create message body");
-    
-    SM_LOG_DEBUG(@"'%@'", message);
+    SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessage:message remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
     
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
     
-    _saveDraftMessage = message;
+    _saveDraftMessage = messageBuilder.mcoMessageBuilder;
     _saveDraftOp = op;
     
     _hasUnsavedAttachments = NO;

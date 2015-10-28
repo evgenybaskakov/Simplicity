@@ -10,7 +10,7 @@
 
 @class MCOAttachment;
 
-@interface SMAttachmentItem : NSObject
+@interface SMAttachmentItem : NSObject<NSCoding>
 
 @property (nonatomic, readonly) NSString *localFilePath;
 @property (nonatomic, readonly) NSString *fileName;

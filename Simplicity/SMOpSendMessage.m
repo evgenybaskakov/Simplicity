@@ -10,17 +10,18 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMMessageBuilder.h"
 #import "SMOpSendMessage.h"
 
 @implementation SMOpSendMessage {
-    MCOMessageBuilder *_message;
+    SMMessageBuilder *_messageBuilder;
 }
 
-- (id)initWithMessage:(MCOMessageBuilder*)message {
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder {
     self = [super initWithKind:kSMTPOpKind];
     
     if(self) {
-        _message = message;
+        _messageBuilder = messageBuilder;
     }
     
     return self;
@@ -30,7 +31,7 @@
     self = [super initWithCoder:coder];
 
     if (self) {
-        _message = [coder decodeObjectForKey:@"_message"];
+        _messageBuilder = [coder decodeObjectForKey:@"_messageBuilder"];
     }
     
     return self;
@@ -39,12 +40,12 @@
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
     
-    [coder encodeObject:_message forKey:@"_message"];
+    [coder encodeObject:_messageBuilder forKey:@"_messageBuilder"];
 }
 
 - (void)start {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_message.data];
+    MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_messageBuilder.mcoMessageBuilder.data];
     
     self.currentOp = op;
     

@@ -38,6 +38,25 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    
+    if (self) {
+        NSString *attachmentFilename = [coder decodeObjectForKey:@"_mcoAttachment.filename"];
+        NSData *attachmentData = [coder decodeObjectForKey:@"_mcoAttachment.data"];
+        _localFilePath = [coder decodeObjectForKey:@"_localFilePath"];
+        _mcoAttachment = [MCOAttachment attachmentWithData:attachmentData filename:attachmentFilename];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_mcoAttachment.filename forKey:@"_mcoAttachment.filename"];
+    [coder encodeObject:_mcoAttachment.data forKey:@"_mcoAttachment.data"];
+    [coder encodeObject:_localFilePath forKey:@"_localFilePath"];
+}
+
 - (NSString*)fileName {
 	return _mcoAttachment.filename;
 }

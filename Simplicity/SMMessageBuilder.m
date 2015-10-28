@@ -14,7 +14,7 @@
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc fromMailbox:(NSString*)fromMailbox attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(MCOAddress*)to cc:(MCOAddress*)cc bcc:(MCOAddress*)bcc attachmentItems:(NSArray*)attachmentItems {
     NSAssert(messageText, @"messageText is nil");
     NSAssert(subject, @"subject is nil");
     NSAssert(to, @"to is nil");
@@ -23,19 +23,18 @@
     
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
-    //TODO: custom from
-    [[builder header] setFrom:[MCOAddress addressWithDisplayName:@"Evgeny Baskakov" mailbox:fromMailbox]];
+    [[builder header] setFrom:from];
     
     // TODO: form an array of addresses and names based on _toField contents
-    NSArray *toAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:to mailbox:to]];
+    NSArray *toAddresses = [NSArray arrayWithObject:to];
     [[builder header] setTo:toAddresses];
     
     // TODO: form an array of addresses and names based on _ccField contents
-    NSArray *ccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:cc mailbox:cc]];
+    NSArray *ccAddresses = [NSArray arrayWithObject:cc];
     [[builder header] setCc:ccAddresses];
     
     // TODO: form an array of addresses and names based on _bccField contents
-    NSArray *bccAddresses = [NSArray arrayWithObject:[MCOAddress addressWithDisplayName:bcc mailbox:bcc]];
+    NSArray *bccAddresses = [NSArray arrayWithObject:bcc];
     [[builder header] setBcc:bccAddresses];
     
     // TODO: check subject length, issue a warning if empty
@@ -67,14 +66,61 @@
     return builder;
 }
 
-+ (NSData*)serializeMessage:(MCOMessageBuilder*)messageBuilder {
-    SM_LOG_ERROR(@"TODO");
-    return nil;
+- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(MCOAddress*)to cc:(MCOAddress*)cc bcc:(MCOAddress*)bcc attachmentItems:(NSArray*)attachmentItems {
+    NSAssert(messageText, @"messageText is nil");
+    NSAssert(subject, @"subject is nil");
+    NSAssert(to, @"to is nil");
+    NSAssert(cc, @"cc is nil");
+    NSAssert(bcc, @"bcc is nil");
+    
+    self = [super init];
+    
+    if(self) {
+        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _attachments = attachmentItems;
+    }
+    
+    return self;
 }
 
-+ (MCOMessageBuilder*)deserializeMessage:(NSData*)data {
-    SM_LOG_ERROR(@"TODO");
-    return nil;
+- (id)initWithMCOMessageBuilder:(MCOMessageBuilder*)mcoMessageBuilder attachments:(NSArray*)attachments {
+    self = [super init];
+    
+    if(self) {
+        _mcoMessageBuilder = mcoMessageBuilder;
+        _attachments = attachments;
+    }
+    
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder*)coder {
+    self = [super init];
+    
+    if (self) {
+        NSString *messageText = [coder decodeObjectForKey:@"messageText"];
+        NSString *subject = [coder decodeObjectForKey:@"subject"];
+        MCOAddress *from = [coder decodeObjectForKey:@"from"];
+        MCOAddress *to = [coder decodeObjectForKey:@"to"];
+        MCOAddress *cc = [coder decodeObjectForKey:@"cc"];
+        MCOAddress *bcc = [coder decodeObjectForKey:@"bcc"];
+        NSArray *attachmentItems = [coder decodeObjectForKey:@"attachmentItems"];
+    
+        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _attachments = attachmentItems;
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+    [coder encodeObject:[_mcoMessageBuilder htmlBody] forKey:@"messageText"];
+    [coder encodeObject:[[_mcoMessageBuilder header] subject] forKey:@"subject"];
+    [coder encodeObject:[[_mcoMessageBuilder header] from] forKey:@"from"];
+    [coder encodeObject:[[_mcoMessageBuilder header] to] forKey:@"to"];
+    [coder encodeObject:[[_mcoMessageBuilder header] cc] forKey:@"cc"];
+    [coder encodeObject:[[_mcoMessageBuilder header] bcc] forKey:@"bcc"];
+    [coder encodeObject:_attachments forKey:@"attachmentItems"];
 }
 
 @end

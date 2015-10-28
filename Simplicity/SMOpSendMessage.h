@@ -10,10 +10,10 @@
 
 #import "SMOperation.h"
 
-@class MCOMessageBuilder;
+@class SMMessageBuilder;
 
 @interface SMOpSendMessage : SMOperation
 
-- (id)initWithMessage:(MCOMessageBuilder*)message;
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder;
 
 @end

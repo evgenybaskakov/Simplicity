@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
-#import <MailCore/MailCore.h>
-
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -16,14 +14,15 @@
 #import "SMOpDeleteMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMMessageBuilder.h"
 #import "SMOutboxController.h"
 
 @implementation SMOutboxController
 
-- (void)sendMessage:(MCOMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+- (void)sendMessage:(SMMessageBuilder*)messageBuilder postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
 	SM_LOG_DEBUG(@"Sending message");
     
-    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithMessage:message];
+    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithMessageBuilder:messageBuilder];
 
     op.postActionTarget = target;
     op.postActionSelector = selector;

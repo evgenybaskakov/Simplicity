@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner"/>
@@ -14,12 +15,13 @@
             <subviews>
                 <box autoresizesSubviews="NO" borderWidth="2" cornerRadius="2" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="m9l-6y-ZFj">
                     <rect key="frame" x="0.0" y="0.0" width="243" height="52"/>
-                    <view key="contentView">
+                    <view key="contentView" id="BmD-Hs-SFq">
                         <rect key="frame" x="2" y="2" width="239" height="48"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i4E-vf-ypC">
                                 <rect key="frame" x="1" y="30" width="222" height="17"/>
+                                <animations/>
                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Search query text field" id="44e-Kn-1cz">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -28,6 +30,7 @@
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r2A-kG-ZUF" userLabel="Remove Button">
                                 <rect key="frame" x="227" y="33" width="11" height="15"/>
+                                <animations/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="FUu-na-bNV">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -38,6 +41,7 @@
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sz0-K7-IDe" userLabel="Reload Button">
                                 <rect key="frame" x="227" y="16" width="11" height="16"/>
+                                <animations/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSRefreshTemplate" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="AoS-7C-ER9">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -48,6 +52,7 @@
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="651-hE-2bo" userLabel="Stop Button">
                                 <rect key="frame" x="227" y="0.0" width="11" height="15"/>
+                                <animations/>
                                 <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSStopProgressTemplate" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="ayh-8Y-yfh">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -56,27 +61,30 @@
                                     <action selector="stopSearch:" target="cu9-mq-9j6" id="KYL-nk-BZW"/>
                                 </connections>
                             </button>
-                            <progressIndicator maxValue="100" doubleValue="40" displayedWhenStopped="NO" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="aPL-vU-Oio">
+                            <progressIndicator wantsLayer="YES" maxValue="100" doubleValue="40" displayedWhenStopped="NO" controlSize="small" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="aPL-vU-Oio">
                                 <rect key="frame" x="3" y="6" width="218" height="14"/>
+                                <animations/>
                             </progressIndicator>
                         </subviews>
+                        <animations/>
                     </view>
                     <constraints>
-                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="centerX" secondItem="651-hE-2bo" secondAttribute="centerX" id="5vI-Zd-6KK"/>
-                        <constraint firstItem="aPL-vU-Oio" firstAttribute="leading" secondItem="m9l-6y-ZFj" secondAttribute="leading" constant="5" id="Djd-3b-wZu"/>
-                        <constraint firstItem="651-hE-2bo" firstAttribute="top" secondItem="sz0-K7-IDe" secondAttribute="bottom" constant="1" id="EjB-IH-pcH"/>
-                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="centerX" secondItem="sz0-K7-IDe" secondAttribute="centerX" id="F9T-hE-W1P"/>
-                        <constraint firstAttribute="bottom" secondItem="651-hE-2bo" secondAttribute="bottom" constant="2" id="MsX-Ds-gGX"/>
-                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="leading" secondItem="i4E-vf-ypC" secondAttribute="trailing" constant="6" id="NW1-SM-fbX"/>
-                        <constraint firstItem="i4E-vf-ypC" firstAttribute="top" secondItem="m9l-6y-ZFj" secondAttribute="top" constant="3" id="ObO-X1-9kM"/>
-                        <constraint firstItem="651-hE-2bo" firstAttribute="leading" secondItem="aPL-vU-Oio" secondAttribute="trailing" constant="6" id="PSa-iB-k8x"/>
-                        <constraint firstItem="sz0-K7-IDe" firstAttribute="top" secondItem="r2A-kG-ZUF" secondAttribute="bottom" constant="1" id="Rz1-KT-OtB"/>
-                        <constraint firstAttribute="trailing" secondItem="r2A-kG-ZUF" secondAttribute="trailing" constant="3" id="YMN-va-1gW"/>
-                        <constraint firstAttribute="bottom" secondItem="aPL-vU-Oio" secondAttribute="bottom" constant="8" id="chH-PW-wtD"/>
-                        <constraint firstItem="i4E-vf-ypC" firstAttribute="leading" secondItem="m9l-6y-ZFj" secondAttribute="leading" constant="5" id="dYW-1Q-qzb"/>
-                        <constraint firstItem="aPL-vU-Oio" firstAttribute="top" secondItem="i4E-vf-ypC" secondAttribute="bottom" constant="10" id="kEA-rx-euI"/>
-                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="top" secondItem="m9l-6y-ZFj" secondAttribute="top" constant="2" id="lvJ-qQ-bFb"/>
+                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="centerX" secondItem="651-hE-2bo" secondAttribute="centerX" id="4tv-tc-knm"/>
+                        <constraint firstAttribute="bottom" secondItem="aPL-vU-Oio" secondAttribute="bottom" constant="8" id="7cA-3O-1nk"/>
+                        <constraint firstItem="651-hE-2bo" firstAttribute="top" secondItem="sz0-K7-IDe" secondAttribute="bottom" constant="1" id="Giy-zr-lBi"/>
+                        <constraint firstItem="sz0-K7-IDe" firstAttribute="top" secondItem="r2A-kG-ZUF" secondAttribute="bottom" constant="1" id="H28-OH-leb"/>
+                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="top" secondItem="m9l-6y-ZFj" secondAttribute="top" constant="2" id="RfY-ky-b9i"/>
+                        <constraint firstItem="651-hE-2bo" firstAttribute="leading" secondItem="aPL-vU-Oio" secondAttribute="trailing" constant="6" id="Sj6-cL-wh3"/>
+                        <constraint firstItem="i4E-vf-ypC" firstAttribute="leading" secondItem="m9l-6y-ZFj" secondAttribute="leading" constant="5" id="Stb-xH-6On"/>
+                        <constraint firstItem="aPL-vU-Oio" firstAttribute="leading" secondItem="m9l-6y-ZFj" secondAttribute="leading" constant="5" id="ZCm-CJ-Hz0"/>
+                        <constraint firstAttribute="bottom" secondItem="651-hE-2bo" secondAttribute="bottom" constant="2" id="ZFx-ot-PNS"/>
+                        <constraint firstItem="aPL-vU-Oio" firstAttribute="top" secondItem="i4E-vf-ypC" secondAttribute="bottom" constant="10" id="kQd-Kf-20w"/>
+                        <constraint firstAttribute="trailing" secondItem="r2A-kG-ZUF" secondAttribute="trailing" constant="3" id="t3e-jD-CrR"/>
+                        <constraint firstItem="i4E-vf-ypC" firstAttribute="top" secondItem="m9l-6y-ZFj" secondAttribute="top" constant="3" id="twr-JE-uAC"/>
+                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="leading" secondItem="i4E-vf-ypC" secondAttribute="trailing" constant="6" id="vUu-Hh-ZZd"/>
+                        <constraint firstItem="r2A-kG-ZUF" firstAttribute="centerX" secondItem="sz0-K7-IDe" secondAttribute="centerX" id="xJ9-kf-qBC"/>
                     </constraints>
+                    <animations/>
                     <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
@@ -87,6 +95,7 @@
                 <constraint firstAttribute="trailing" secondItem="m9l-6y-ZFj" secondAttribute="trailing" id="epn-hK-7ci"/>
                 <constraint firstAttribute="bottom" secondItem="m9l-6y-ZFj" secondAttribute="bottom" id="l5I-Dj-JKs"/>
             </constraints>
+            <animations/>
             <connections>
                 <outlet property="progressIndicator" destination="aPL-vU-Oio" id="OIS-px-cr9"/>
                 <outlet property="reloadButton" destination="sz0-K7-IDe" id="Xxx-WB-vAy"/>

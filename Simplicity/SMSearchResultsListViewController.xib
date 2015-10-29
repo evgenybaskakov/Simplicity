@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6751" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6751"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMSearchResultsListViewController">
@@ -18,12 +18,14 @@
             <subviews>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWT-bz-Ncf">
                     <rect key="frame" x="0.0" y="0.0" width="202" height="373"/>
-                    <clipView key="contentView" misplaced="YES" id="4Br-5T-O5l">
-                        <rect key="frame" x="1" y="0.0" width="238" height="134"/>
+                    <clipView key="contentView" id="4Br-5T-O5l">
+                        <rect key="frame" x="1" y="0.0" width="200" height="372"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="P0J-k6-aBo" viewBased="YES" id="60q-Gj-Hc3">
+                                <rect key="frame" x="0.0" y="0.0" width="200" height="349"/>
                                 <autoresizingMask key="autoresizingMask"/>
+                                <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -48,18 +50,23 @@
                                 </connections>
                             </tableView>
                         </subviews>
+                        <animations/>
                     </clipView>
+                    <animations/>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="wxL-kv-cou">
                         <rect key="frame" x="1" y="119" width="223" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="SRg-eT-VYZ">
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="SRg-eT-VYZ">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </scroller>
                     <tableHeaderView key="headerView" id="P0J-k6-aBo">
-                        <rect key="frame" x="0.0" y="0.0" width="10000" height="17"/>
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="23"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </tableHeaderView>
                 </scrollView>
             </subviews>
@@ -69,6 +76,7 @@
                 <constraint firstAttribute="trailing" secondItem="xWT-bz-Ncf" secondAttribute="trailing" id="Vh9-mU-ywS"/>
                 <constraint firstItem="xWT-bz-Ncf" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="cex-lg-8lW"/>
             </constraints>
+            <animations/>
             <point key="canvasLocation" x="220" y="179.5"/>
         </customView>
     </objects>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMFindContentsPanelViewController">
@@ -20,10 +20,11 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="31"/>
             <subviews>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gDP-QU-xiS">
-                    <rect key="frame" x="5" y="4" width="250" height="22"/>
+                    <rect key="frame" x="5" y="4" width="253" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="bMj-oA-gEu"/>
                     </constraints>
+                    <animations/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Find" usesSingleLineMode="YES" bezelStyle="round" id="SWO-x6-ba8">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -34,7 +35,8 @@
                     </connections>
                 </searchField>
                 <button horizontalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="fxh-1y-lXc">
-                    <rect key="frame" x="261" y="6" width="96" height="18"/>
+                    <rect key="frame" x="264" y="5" width="94" height="18"/>
+                    <animations/>
                     <buttonCell key="cell" type="check" title="Match Case" bezelStyle="regularSquare" imagePosition="left" inset="2" id="pyf-LS-I1u">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -44,7 +46,8 @@
                     </connections>
                 </button>
                 <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QOq-jk-Bxe" userLabel="Forward And Backwards">
-                    <rect key="frame" x="363" y="5" width="43" height="21"/>
+                    <rect key="frame" x="364" y="5" width="43" height="21"/>
+                    <animations/>
                     <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="qeX-yV-cdS">
                         <font key="font" metaFont="smallSystem"/>
                         <segments>
@@ -57,7 +60,8 @@
                     </connections>
                 </segmentedControl>
                 <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="lXS-2i-rpF">
-                    <rect key="frame" x="408" y="-2" width="73" height="32"/>
+                    <rect key="frame" x="409" y="-2" width="72" height="32"/>
+                    <animations/>
                     <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="JEC-fC-RrF">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -82,6 +86,7 @@
                 <constraint firstAttribute="bottom" secondItem="lXS-2i-rpF" secondAttribute="bottom" constant="5" id="q1r-W6-bvs"/>
                 <constraint firstItem="gDP-QU-xiS" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="rhD-Gb-rsj"/>
             </constraints>
+            <animations/>
             <point key="canvasLocation" x="370" y="187.5"/>
         </customView>
     </objects>

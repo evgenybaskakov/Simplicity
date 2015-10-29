@@ -123,7 +123,7 @@
 		8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */; };
 		8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */; };
 		804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 804711C01B7B153B00399942 /* SMMessageListTableView.m */; };
-		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; settings = {ASSET_TAGS = (); }; };
+		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
 		80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */; };
@@ -134,14 +134,15 @@
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
 		806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */ = {isa = PBXBuildFile; fileRef = 806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */; };
 		806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E7C261B9FFD940081FD8E /* SMBox2.m */; };
-		8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */; settings = {ASSET_TAGS = (); }; };
-		8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */; settings = {ASSET_TAGS = (); }; };
+		8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */; };
+		8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
-		8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */; settings = {ASSET_TAGS = (); }; };
-		8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9F11BBF770300446DFA /* SMMessageThreadDescriptorEntry.m */; settings = {ASSET_TAGS = (); }; };
+		8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */; };
+		8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9F11BBF770300446DFA /* SMMessageThreadDescriptorEntry.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
+		8092A4E71BE1F33600107747 /* SMPreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */; };
 		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
 		80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B011B5A10BC0049AB88 /* Underline-128.png */; };
 		80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B021B5A10BC0049AB88 /* Italic-128.png */; };
@@ -153,9 +154,9 @@
 		80A44B191B5A19260049AB88 /* align_center-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B151B5A19260049AB88 /* align_center-128.png */; };
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
-		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; settings = {ASSET_TAGS = (); }; };
-		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; settings = {ASSET_TAGS = (); }; };
-		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; settings = {ASSET_TAGS = (); }; };
+		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
+		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
+		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -458,6 +459,7 @@
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
+		8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindow.xib; sourceTree = "<group>"; };
 		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
 		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
 		80A44B011B5A10BC0049AB88 /* Underline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Underline-128.png"; sourceTree = "<group>"; };
@@ -805,6 +807,7 @@
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
 				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
+				8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */,
 				00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */,
 				003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */,
 			);
@@ -1016,6 +1019,7 @@
 				80533AD41B41189B00A0A67F /* Quote-50.png in Resources */,
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
 				80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */,
+				8092A4E71BE1F33600107747 /* SMPreferencesWindow.xib in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
 				80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */,
 				80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */,

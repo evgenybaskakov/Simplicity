@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Preferences" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <animations/>
+            </view>
+            <toolbar key="toolbar" implicitIdentifier="211F3F04-4718-4ED0-8156-66AA90DA28E2" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="O7F-Mj-9fD">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="026FDEE1-E54F-41F9-BA52-8656F4DAAD77" label="Local storage" paletteLabel="Local storage" tag="-1" image="NSFolderSmart" id="1be-7x-Uzy"/>
+                    <toolbarItem implicitItemIdentifier="FB69BF17-A8BF-4BF1-ABAA-D4A5D425CC62" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" id="MOs-Ow-R50"/>
+                    <toolbarItem implicitItemIdentifier="9178BE5A-1A10-4252-8B10-B98490CA772C" label="Advanced" paletteLabel="Advanced" tag="-1" image="NSAdvanced" id="vtI-gT-y7u"/>
+                    <toolbarItem implicitItemIdentifier="287C5D21-8B74-4185-8A4E-237C3B3D58AE" label="Signature" paletteLabel="Signature" tag="-1" image="Quote-50" id="tRY-HJ-bbZ"/>
+                    <toolbarItem implicitItemIdentifier="24D1909D-24B3-421C-8531-E2BB30A897EA" label="Accounts" paletteLabel="Accounts" tag="-1" image="NSUser" id="1Di-fo-Rp3"/>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="1Di-fo-Rp3"/>
+                    <toolbarItem reference="MOs-Ow-R50"/>
+                    <toolbarItem reference="tRY-HJ-bbZ"/>
+                    <toolbarItem reference="1be-7x-Uzy"/>
+                    <toolbarItem reference="vtI-gT-y7u"/>
+                </defaultToolbarItems>
+            </toolbar>
+        </window>
+    </objects>
+    <resources>
+        <image name="NSAdvanced" width="32" height="32"/>
+        <image name="NSFolderSmart" width="32" height="32"/>
+        <image name="NSPreferencesGeneral" width="32" height="32"/>
+        <image name="NSUser" width="32" height="32"/>
+        <image name="Quote-50" width="50" height="50"/>
+    </resources>
+</document>

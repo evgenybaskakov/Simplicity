@@ -14,36 +14,53 @@
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(MCOAddress*)to cc:(MCOAddress*)cc bcc:(MCOAddress*)bcc attachmentItems:(NSArray*)attachmentItems {
-    NSAssert(messageText, @"messageText is nil");
-    NSAssert(subject, @"subject is nil");
-    NSAssert(to, @"to is nil");
-    NSAssert(cc, @"cc is nil");
-    NSAssert(bcc, @"bcc is nil");
-    
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
-    [[builder header] setFrom:from];
+    if(from != nil) {
+        [[builder header] setFrom:from];
+    }
+    else {
+        SM_LOG_WARNING(@"from is not set");
+    }
     
-    // TODO: form an array of addresses and names based on _toField contents
-    NSArray *toAddresses = [NSArray arrayWithObject:to];
-    [[builder header] setTo:toAddresses];
+    if(to != nil) {
+        [[builder header] setTo:to];
+    }
+    else {
+        SM_LOG_WARNING(@"to is not set");
+    }
     
-    // TODO: form an array of addresses and names based on _ccField contents
-    NSArray *ccAddresses = [NSArray arrayWithObject:cc];
-    [[builder header] setCc:ccAddresses];
-    
-    // TODO: form an array of addresses and names based on _bccField contents
-    NSArray *bccAddresses = [NSArray arrayWithObject:bcc];
-    [[builder header] setBcc:bccAddresses];
-    
-    // TODO: check subject length, issue a warning if empty
-    [[builder header] setSubject:subject];
-    
+    if(cc != nil) {
+        [[builder header] setCc:cc];
+    }
+    else {
+        SM_LOG_WARNING(@"cc is not set");
+    }
+
+    if(bcc != nil) {
+        [[builder header] setBcc:bcc];
+    }
+    else {
+        SM_LOG_WARNING(@"bcc is not set");
+    }
+
+    if(subject != nil) {
+        [[builder header] setSubject:subject];
+    }
+    else {
+        SM_LOG_WARNING(@"subject is not set");
+    }
+
     //TODO (send plain text): [(DOMHTMLElement *)[[[webView mainFrame] DOMDocument] documentElement] outerText];
     
-    [builder setHTMLBody:messageText];
-    
+    if(messageText != nil) {
+        [builder setHTMLBody:messageText];
+    }
+    else {
+        SM_LOG_WARNING(@"messageText is not set");
+    }
+
     //TODO (local attachments): [builder addAttachment:[MCOAttachment attachmentWithContentsOfFile:@"/Users/foo/Pictures/image.jpg"]];
     
     for(SMAttachmentItem *attachmentItem in attachmentItems) {
@@ -66,13 +83,7 @@
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(MCOAddress*)to cc:(MCOAddress*)cc bcc:(MCOAddress*)bcc attachmentItems:(NSArray*)attachmentItems {
-    NSAssert(messageText, @"messageText is nil");
-    NSAssert(subject, @"subject is nil");
-    NSAssert(to, @"to is nil");
-    NSAssert(cc, @"cc is nil");
-    NSAssert(bcc, @"bcc is nil");
-    
+- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
     self = [super init];
     
     if(self) {
@@ -101,9 +112,9 @@
         NSString *messageText = [coder decodeObjectForKey:@"messageText"];
         NSString *subject = [coder decodeObjectForKey:@"subject"];
         MCOAddress *from = [coder decodeObjectForKey:@"from"];
-        MCOAddress *to = [coder decodeObjectForKey:@"to"];
-        MCOAddress *cc = [coder decodeObjectForKey:@"cc"];
-        MCOAddress *bcc = [coder decodeObjectForKey:@"bcc"];
+        NSArray *to = [coder decodeObjectForKey:@"to"];
+        NSArray *cc = [coder decodeObjectForKey:@"cc"];
+        NSArray *bcc = [coder decodeObjectForKey:@"bcc"];
         NSArray *attachmentItems = [coder decodeObjectForKey:@"attachmentItems"];
     
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];

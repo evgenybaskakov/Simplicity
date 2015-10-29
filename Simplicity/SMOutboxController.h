@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@class MCOMessageBuilder;
+@class SMMessageBuilder;
 
 @interface SMOutboxController : NSObject
 
-- (void)sendMessage:(MCOMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
+- (void)sendMessage:(SMMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 
 @end

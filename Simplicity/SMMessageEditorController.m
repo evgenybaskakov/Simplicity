@@ -64,14 +64,14 @@
 #pragma mark Actions
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressWithDisplayName:to mailbox:to] cc:[MCOAddress addressWithDisplayName:cc mailbox:cc] bcc:[MCOAddress addressWithDisplayName:bcc mailbox:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressesWithNonEncodedRFC822String:to] cc:[MCOAddress addressesWithNonEncodedRFC822String:cc] bcc:[MCOAddress addressesWithNonEncodedRFC822String:bcc] attachmentItems:_attachmentItems];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [[appController outboxController] sendMessage:messageBuilder.mcoMessageBuilder postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[appController outboxController] sendMessage:messageBuilder postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(NSDictionary*)info {
@@ -102,7 +102,7 @@
         _saveDraftOp = nil;
     }
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressWithDisplayName:to mailbox:to] cc:[MCOAddress addressWithDisplayName:cc mailbox:cc] bcc:[MCOAddress addressWithDisplayName:bcc mailbox:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:SMTP_USERNAME mailbox:SMTP_USERNAME] to:[MCOAddress addressesWithNonEncodedRFC822String:to] cc:[MCOAddress addressesWithNonEncodedRFC822String:cc] bcc:[MCOAddress addressesWithNonEncodedRFC822String:bcc] attachmentItems:_attachmentItems];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

@@ -28,6 +28,16 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
     if(self) {
         _smtpQueue = (smtpQueue != nil? smtpQueue : [[SMOperationQueue alloc] init]);
         _imapQueue = (imapQueue != nil? imapQueue : [[SMOperationQueue alloc] init]);
+
+        if(_smtpQueue.count > 0) {
+            [[_smtpQueue getFirstOp] start];
+        }
+
+        if(_imapQueue.count > 0) {
+            [[_imapQueue getFirstOp] start];
+        }
+
+        [self notifyController];
     }
     
     return self;

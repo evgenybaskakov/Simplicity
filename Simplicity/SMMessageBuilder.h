@@ -15,7 +15,7 @@
 @property (readonly) MCOMessageBuilder *mcoMessageBuilder;
 @property (readonly) NSArray *attachments;
 
-- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(MCOAddress*)to cc:(MCOAddress*)cc bcc:(MCOAddress*)bcc attachmentItems:(NSArray*)attachmentItems;
+- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems;
 - (id)initWithMCOMessageBuilder:(MCOMessageBuilder*)mcoMessageBuilder attachments:(NSArray*)attachments;
 
 @end

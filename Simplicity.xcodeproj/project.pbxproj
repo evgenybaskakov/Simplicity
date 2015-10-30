@@ -112,6 +112,8 @@
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
+		80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */; };
+		80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */; };
 		802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 802408ED1B786FC80072FB98 /* SMBoxView.m */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
@@ -411,6 +413,9 @@
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
+		80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountPreferencesViewController.h; sourceTree = "<group>"; };
+		80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountPreferencesViewController.m; sourceTree = "<group>"; };
+		80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAccountPreferencesViewController.xib; sourceTree = "<group>"; };
 		802408EC1B786FC80072FB98 /* SMBoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMBoxView.h; sourceTree = "<group>"; };
 		802408ED1B786FC80072FB98 /* SMBoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMBoxView.m; sourceTree = "<group>"; };
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
@@ -669,6 +674,7 @@
 		005B086C17D4F5D000341051 /* Control */ = {
 			isa = PBXGroup;
 			children = (
+				80238AF01BE32BCE009E090C /* Preferences */,
 				0002A0B317D1BB0100EA4AFF /* SMAppController.h */,
 				0002A0B417D1BB0100EA4AFF /* SMAppController.m */,
 				003DFF161A73681A003C26E2 /* SMAttachmentsPanelItemViewController.h */,
@@ -791,6 +797,7 @@
 		00621CF619230D4200BF1C01 /* Forms */ = {
 			isa = PBXGroup;
 			children = (
+				80238AEF1BE32BB2009E090C /* Preferences */,
 				0002A0A617D1B1E000EA4AFF /* MainMenu.xib */,
 				003DFF181A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
@@ -807,7 +814,6 @@
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
 				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
-				8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */,
 				00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */,
 				003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */,
 			);
@@ -847,6 +853,24 @@
 				0047416B1AA42115002566E8 /* uncollapse-all.png */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		80238AEF1BE32BB2009E090C /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
+				8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
+		80238AF01BE32BCE009E090C /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
+				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
+			);
+			name = Preferences;
 			sourceTree = "<group>";
 		};
 		80533AD51B4118B800A0A67F /* TextEditorIcons */ = {
@@ -1046,6 +1070,7 @@
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */,
 				80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */,
+				80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */,
 				80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */,
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
@@ -1088,6 +1113,7 @@
 				00DC84961967A70E00577667 /* SMMailboxController.m in Sources */,
 				00EB7E87199C70FA00CA2B1B /* SMMessageThread.m in Sources */,
 				00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */,
+				80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */,
 				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,

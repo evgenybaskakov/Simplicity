@@ -12,8 +12,8 @@
 
 #pragma mark Panel views
 
-@property (strong) IBOutlet NSBox *serversPanelView;
 @property (strong) IBOutlet NSBox *accountSettingsPanelView;
+@property (strong) IBOutlet NSBox *serversPanelView;
 
 #pragma mark Main account settings controls
 
@@ -55,12 +55,25 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do view setup here.
+
+    [self togglePanel:0];
+}
+
+- (void)togglePanel:(NSUInteger)panelIdx {
+    NSView *panel = nil;
     
-    [_accountSettingsPanelView setFrameSize:_accountSettingsPanel.frame.size];
-    [_accountSettingsPanelView setFrameOrigin:NSMakePoint(0, 0)];
+    if(panelIdx == 0) {
+        panel = _accountSettingsPanelView;
+    }
+    else {
+        panel = _serversPanelView;
+    }
     
-    [_accountSettingsPanel addSubview:_accountSettingsPanelView];
+    [panel setFrameSize:_accountSettingsPanel.frame.size];
+    [panel setFrameOrigin:NSMakePoint(0, 0)];
+    
+    [[[_accountSettingsPanel subviews] firstObject] removeFromSuperview];
+    [_accountSettingsPanel addSubview:panel];
 }
 
 #pragma mark Main account settings actions
@@ -72,6 +85,7 @@
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {
+    [self togglePanel:_toggleAccountSettingsPanelButton.selectedSegment];
 }
 
 #pragma mark Account settings actions

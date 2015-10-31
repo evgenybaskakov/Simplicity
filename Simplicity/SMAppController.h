@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+@class SMPreferencesWindowController;
 @class SMMailboxViewController;
 @class SMSearchResultsListViewController;
 @class SMMessageListViewController;
@@ -66,5 +67,9 @@
 - (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
 
 - (void)moveSelectedMessageThreadsToTrash;
+
+@property (nonatomic) SMPreferencesWindowController *preferencesWindowController;
+
+- (void)hidePreferences;
 
 @end

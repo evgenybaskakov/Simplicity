@@ -117,6 +117,7 @@
 		802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 802408ED1B786FC80072FB98 /* SMBoxView.m */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
+		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
@@ -144,7 +145,7 @@
 		8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9F11BBF770300446DFA /* SMMessageThreadDescriptorEntry.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
-		8092A4E71BE1F33600107747 /* SMPreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */; };
+		8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */; };
 		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
 		80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B011B5A10BC0049AB88 /* Underline-128.png */; };
 		80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B021B5A10BC0049AB88 /* Italic-128.png */; };
@@ -421,6 +422,8 @@
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
+		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
+		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
@@ -464,7 +467,7 @@
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
-		8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindow.xib; sourceTree = "<group>"; };
+		8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindowController.xib; sourceTree = "<group>"; };
 		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
 		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
 		80A44B011B5A10BC0049AB88 /* Underline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Underline-128.png"; sourceTree = "<group>"; };
@@ -859,7 +862,7 @@
 			isa = PBXGroup;
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
-				8092A4E61BE1F33600107747 /* SMPreferencesWindow.xib */,
+				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";
@@ -869,6 +872,8 @@
 			children = (
 				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
+				803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */,
+				803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";
@@ -1043,7 +1048,7 @@
 				80533AD41B41189B00A0A67F /* Quote-50.png in Resources */,
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
 				80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */,
-				8092A4E71BE1F33600107747 /* SMPreferencesWindow.xib in Resources */,
+				8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
 				80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */,
 				80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */,
@@ -1170,6 +1175,7 @@
 				804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */,
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
 				80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */,
+				803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */,
 				8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */,
 				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,

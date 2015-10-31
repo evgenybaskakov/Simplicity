@@ -30,6 +30,7 @@
 #import "SMFolder.h"
 #import "SMMessageThread.h"
 #import "SMMessageWindowController.h"
+#import "SMPreferencesWindowController.h"
 
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
@@ -243,11 +244,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }];
 }
 
- - (void)saveOpExecutor {
-     // TODO
-     SM_LOG_ERROR(@"NOT IMPLEMENTED");
- }
-     
 - (void)updateMailboxFolderList {
 	[ _mailboxViewController updateFolderListView ];
 
@@ -509,7 +505,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 	[NSApp endSheet:newLabelSheet];
 }
 
-
 #pragma mark Operation Queue Window
 
 - (void)toggleOperationQueueSheet {
@@ -568,6 +563,30 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [messageWindowController showWindow:self];
     
     [_messageWindowControllers addObject:messageWindowController];
+}
+
+#pragma mark Menu actions
+
+- (IBAction)showPreferencesAction:(id)sender {
+    if(_preferencesWindowController == nil) {
+        _preferencesWindowController = [[SMPreferencesWindowController alloc] initWithWindowNibName:@"SMPreferencesWindowController"];
+    }
+    
+    NSWindow *preferencesSheet = _preferencesWindowController.window;
+    NSAssert(preferencesSheet != nil, @"preferencesSheet is nil");
+    
+    [NSApp runModalForWindow:preferencesSheet];
+}
+
+- (void)hidePreferences {
+    NSAssert(_preferencesWindowController != nil, @"_preferencesWindowController is nil");
+    
+    NSWindow *preferencesSheet = _preferencesWindowController.window;
+    NSAssert(preferencesSheet != nil, @"newLabelSheet is nil");
+    
+    [preferencesSheet orderOut:self];
+    
+    [NSApp endSheet:preferencesSheet];
 }
 
 @end

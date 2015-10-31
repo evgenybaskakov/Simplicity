@@ -9,19 +9,36 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAccountPreferencesViewController.h"
 #import "SMPreferencesWindowController.h"
 
-@implementation SMPreferencesWindowController
+@implementation SMPreferencesWindowController {
+    SMAccountPreferencesViewController *_accountPreferencesViewController;
+}
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+
+    [_preferencesToolbar setSelectedItemIdentifier:@"Accounts"];
+
+    _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+    [_preferencesView addSubview:_accountPreferencesViewController.view];
+    
+    _preferencesView.frame = _accountPreferencesViewController.view.frame;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hidePreferences];
+}
+
+- (IBAction)toolbarToggleAccountAction:(id)sender {
+    SM_LOG_INFO(@"toolbarToggleAccountAction");
+}
+
+- (IBAction)toolbarToggleGeneralAction:(id)sender {
+    SM_LOG_INFO(@"toolbarToggleGeneralAction");
 }
 
 @end

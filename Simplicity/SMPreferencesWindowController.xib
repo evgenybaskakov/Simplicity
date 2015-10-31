@@ -7,6 +7,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
             <connections>
+                <outlet property="preferencesToolbar" destination="O7F-Mj-9fD" id="VdQ-Fa-ODM"/>
+                <outlet property="preferencesView" destination="EiT-Mj-1SZ" id="cfd-Qu-deG"/>
+                <outlet property="toolbar" destination="O7F-Mj-9fD" id="Svc-N5-JGP"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="YeT-jX-ifs"/>
             </connections>
         </customObject>
@@ -24,11 +27,19 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="211F3F04-4718-4ED0-8156-66AA90DA28E2" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="O7F-Mj-9fD">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="026FDEE1-E54F-41F9-BA52-8656F4DAAD77" label="Local storage" paletteLabel="Local storage" tag="-1" image="NSFolderSmart" id="1be-7x-Uzy"/>
-                    <toolbarItem implicitItemIdentifier="FB69BF17-A8BF-4BF1-ABAA-D4A5D425CC62" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" id="MOs-Ow-R50"/>
-                    <toolbarItem implicitItemIdentifier="9178BE5A-1A10-4252-8B10-B98490CA772C" label="Advanced" paletteLabel="Advanced" tag="-1" image="NSAdvanced" id="vtI-gT-y7u"/>
-                    <toolbarItem implicitItemIdentifier="287C5D21-8B74-4185-8A4E-237C3B3D58AE" label="Signature" paletteLabel="Signature" tag="-1" image="Quote-50" id="tRY-HJ-bbZ"/>
-                    <toolbarItem implicitItemIdentifier="24D1909D-24B3-421C-8531-E2BB30A897EA" label="Accounts" paletteLabel="Accounts" tag="-1" image="NSUser" id="1Di-fo-Rp3"/>
+                    <toolbarItem implicitItemIdentifier="026FDEE1-E54F-41F9-BA52-8656F4DAAD77" explicitItemIdentifier="Local storage" label="Local storage" paletteLabel="Local storage" tag="-1" image="NSFolderSmart" selectable="YES" id="1be-7x-Uzy"/>
+                    <toolbarItem implicitItemIdentifier="FB69BF17-A8BF-4BF1-ABAA-D4A5D425CC62" explicitItemIdentifier="General" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" selectable="YES" id="MOs-Ow-R50">
+                        <connections>
+                            <action selector="toolbarToggleGeneralAction:" target="-2" id="vpn-bj-mG1"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="9178BE5A-1A10-4252-8B10-B98490CA772C" explicitItemIdentifier="Advanced" label="Advanced" paletteLabel="Advanced" tag="-1" image="NSAdvanced" selectable="YES" id="vtI-gT-y7u"/>
+                    <toolbarItem implicitItemIdentifier="287C5D21-8B74-4185-8A4E-237C3B3D58AE" explicitItemIdentifier="Signature" label="Signature" paletteLabel="Signature" tag="-1" image="Quote-50" selectable="YES" id="tRY-HJ-bbZ"/>
+                    <toolbarItem implicitItemIdentifier="24D1909D-24B3-421C-8531-E2BB30A897EA" explicitItemIdentifier="Accounts" label="Accounts" paletteLabel="Accounts" tag="-1" image="NSUser" selectable="YES" id="1Di-fo-Rp3">
+                        <connections>
+                            <action selector="toolbarToggleAccountAction:" target="-2" id="ndw-7g-uIu"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="1Di-fo-Rp3"/>

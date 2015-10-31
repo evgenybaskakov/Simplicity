@@ -267,7 +267,7 @@
                         </connections>
                     </textField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="D6v-f0-WcR">
-                        <rect key="frame" x="13" y="257" width="316" height="5"/>
+                        <rect key="frame" x="13" y="257" width="316" height="4"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -364,7 +364,7 @@
                         </connections>
                     </secureTextField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kMn-7J-YNk">
-                        <rect key="frame" x="13" y="167" width="316" height="5"/>
+                        <rect key="frame" x="13" y="167" width="316" height="4"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

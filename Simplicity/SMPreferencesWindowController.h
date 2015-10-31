@@ -10,4 +10,7 @@
 
 @interface SMPreferencesWindowController : NSWindowController<NSWindowDelegate>
 
+@property (weak) IBOutlet NSToolbar *preferencesToolbar;
+@property (weak) IBOutlet NSView *preferencesView;
+
 @end

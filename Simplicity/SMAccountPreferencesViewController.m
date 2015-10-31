@@ -10,6 +10,11 @@
 
 @interface SMAccountPreferencesViewController ()
 
+#pragma mark Panel views
+
+@property (strong) IBOutlet NSBox *serversPanelView;
+@property (strong) IBOutlet NSBox *accountSettingsPanelView;
+
 #pragma mark Main account settings controls
 
 @property (weak) IBOutlet NSScrollView *accountTableView;
@@ -17,11 +22,6 @@
 @property (weak) IBOutlet NSButton *removeAccountButton;
 @property (weak) IBOutlet NSSegmentedControl *toggleAccountSettingsPanelButton;
 @property (weak) IBOutlet NSView *accountSettingsPanel;
-
-#pragma mark Panel views
-
-@property (strong) IBOutlet NSBox *serversPanelView;
-@property (strong) IBOutlet NSBox *accountSettingsPanelView;
 
 #pragma mark Account settings panel
 
@@ -56,6 +56,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
+    
+    [_accountSettingsPanelView setFrameSize:_accountSettingsPanel.frame.size];
+    [_accountSettingsPanelView setFrameOrigin:NSMakePoint(0, 0)];
+    
+    [_accountSettingsPanel addSubview:_accountSettingsPanelView];
 }
 
 #pragma mark Main account settings actions

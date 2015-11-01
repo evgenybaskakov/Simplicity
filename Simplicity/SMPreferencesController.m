@@ -111,71 +111,71 @@
 }
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setFullUserName:(NSUInteger)idx userName:(NSString*)fullUserName {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setUserEmail:(NSUInteger)idx email:(NSString*)userEmail {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapPort:(NSUInteger)idx port:(unsigned int)port {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapUserName:(NSUInteger)idx userName:(NSString*)imapUserName {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
-- (void)setImapAuthType:(NSUInteger)idx connectionType:(SMServerAuthType)authType {
-    // TODO
+- (void)setImapAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setImapNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpServer:(NSUInteger)idx server:(NSString*)server {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpPort:(NSUInteger)idx port:(unsigned int)port {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)imapUserName {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
-- (void)setSmtpAuthType:(NSUInteger)idx connectionType:(SMServerAuthType)authType {
-    // TODO
+- (void)setSmtpAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)setSmtpNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    // TODO
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (NSString*)accountName:(NSUInteger)idx {

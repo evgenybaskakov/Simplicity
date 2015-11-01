@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 - (void)setImapUserName:(NSUInteger)idx userName:(NSString*)imapUserName;
 - (void)setImapPassword:(NSUInteger)idx password:(NSString*)password;
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType;
-- (void)setImapAuthType:(NSUInteger)idx connectionType:(SMServerAuthType)authType;
+- (void)setImapAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType;
 - (void)setImapNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate;
 
 - (void)setSmtpServer:(NSUInteger)idx server:(NSString*)server;
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 - (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)imapUserName;
 - (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password;
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType;
-- (void)setSmtpAuthType:(NSUInteger)idx connectionType:(SMServerAuthType)authType;
+- (void)setSmtpAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType;
 - (void)setSmtpNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate;
 
 - (NSString*)accountName:(NSUInteger)idx;

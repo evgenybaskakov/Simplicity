@@ -42,11 +42,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY" userLabel="Account preferences">
-            <rect key="frame" x="0.0" y="0.0" width="499" height="362"/>
+            <rect key="frame" x="0.0" y="0.0" width="569" height="362"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yxo-rK-Plg">
-                    <rect key="frame" x="150" y="35" width="342" height="311"/>
+                    <rect key="frame" x="150" y="35" width="413" height="311"/>
                     <animations/>
                 </customView>
                 <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TPC-Sa-QOM">
@@ -115,20 +115,6 @@
                         <animations/>
                     </scroller>
                 </scrollView>
-                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A8X-Bf-nYO">
-                    <rect key="frame" x="237" y="333" width="168" height="20"/>
-                    <animations/>
-                    <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="06r-TA-byk">
-                        <font key="font" metaFont="smallSystem"/>
-                        <segments>
-                            <segment label="Account settings" selected="YES"/>
-                            <segment label="Servers"/>
-                        </segments>
-                    </segmentedCell>
-                    <connections>
-                        <action selector="toggleAccountPanelAction:" target="-2" id="1MX-th-2c0"/>
-                    </connections>
-                </segmentedControl>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u7b-99-Xnr">
                     <rect key="frame" x="8" y="7" width="27" height="21"/>
                     <animations/>
@@ -151,28 +137,33 @@
                         <action selector="removeAccountAction:" target="-2" id="ybx-Cw-EAD"/>
                     </connections>
                 </button>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A8X-Bf-nYO">
+                    <rect key="frame" x="272" y="333" width="168" height="20"/>
+                    <animations/>
+                    <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="06r-TA-byk">
+                        <font key="font" metaFont="smallSystem"/>
+                        <segments>
+                            <segment label="Account settings" selected="YES"/>
+                            <segment label="Servers"/>
+                        </segments>
+                    </segmentedCell>
+                    <connections>
+                        <action selector="toggleAccountPanelAction:" target="-2" id="1MX-th-2c0"/>
+                    </connections>
+                </segmentedControl>
             </subviews>
             <animations/>
-            <point key="canvasLocation" x="359.5" y="53"/>
+            <point key="canvasLocation" x="394.5" y="53"/>
         </customView>
         <box title="Account settings" borderType="bezel" titlePosition="noTitle" id="paW-wP-LSC" userLabel="Account settings">
-            <rect key="frame" x="0.0" y="0.0" width="342" height="311"/>
+            <rect key="frame" x="0.0" y="0.0" width="413" height="311"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" id="Hhf-qF-Qgp">
-                <rect key="frame" x="3" y="3" width="336" height="305"/>
+                <rect key="frame" x="3" y="3" width="407" height="305"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="abK-uH-CYF">
-                        <rect key="frame" x="34" y="264" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="4ww-vG-z79">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WI7-hk-cnZ" userLabel="Account name field">
-                        <rect key="frame" x="166" y="264" width="156" height="19"/>
+                        <rect key="frame" x="207" y="264" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="RMy-jS-tmf">
                             <font key="font" metaFont="smallSystem"/>
@@ -183,26 +174,8 @@
                             <action selector="enterAccountNameAction:" target="-2" id="TpH-Vz-9Ba"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GgO-jq-bYG">
-                        <rect key="frame" x="34" y="237" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Full user name:" id="oOE-M8-Rzz">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QZF-ru-j6B">
-                        <rect key="frame" x="34" y="210" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Email address:" id="UZU-tY-MVO">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dRv-uh-S20" userLabel="Email address field">
-                        <rect key="frame" x="166" y="210" width="156" height="19"/>
+                        <rect key="frame" x="207" y="210" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="bDH-Zb-Qb7">
                             <font key="font" metaFont="smallSystem"/>
@@ -213,17 +186,8 @@
                             <action selector="enterEmailAddressAction:" target="-2" id="d5p-fa-KVA"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="beb-3F-I1t">
-                        <rect key="frame" x="34" y="174" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP server:" id="8F4-wf-lKu">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2S-tZ-HMH" userLabel="IMAP server field">
-                        <rect key="frame" x="166" y="174" width="156" height="19"/>
+                        <rect key="frame" x="207" y="174" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="H8K-1Y-IFq">
                             <font key="font" metaFont="smallSystem"/>
@@ -234,17 +198,8 @@
                             <action selector="enterImapServerAction:" target="-2" id="goa-tp-b8b"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NDY-sL-bvo" userLabel="User name:">
-                        <rect key="frame" x="33" y="147" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="User name:" id="GNp-qa-PTo">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6dn-9Z-m2c" userLabel="IMAP server user name field">
-                        <rect key="frame" x="165" y="147" width="157" height="19"/>
+                        <rect key="frame" x="207" y="147" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="E0e-7L-qhX">
                             <font key="font" metaFont="smallSystem"/>
@@ -256,23 +211,14 @@
                         </connections>
                     </textField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="D6v-f0-WcR">
-                        <rect key="frame" x="13" y="199" width="316" height="5"/>
+                        <rect key="frame" x="10" y="199" width="387" height="5"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oCz-NV-2AG">
-                        <rect key="frame" x="33" y="120" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="f0a-yb-QyY">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PRm-k8-u9g" userLabel="IMAP server password field">
-                        <rect key="frame" x="165" y="120" width="157" height="19"/>
+                        <rect key="frame" x="207" y="120" width="180" height="19"/>
                         <animations/>
                         <secureTextFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="uEb-ow-8bL">
                             <font key="font" metaFont="smallSystem"/>
@@ -286,17 +232,8 @@
                             <action selector="enterImapPasswordAction:" target="-2" id="Pkq-js-sdn"/>
                         </connections>
                     </secureTextField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8LY-eL-nkC">
-                        <rect key="frame" x="34" y="84" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP server:" id="IMu-Jz-oXJ">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kTr-WN-zmg" userLabel="SMTP server field">
-                        <rect key="frame" x="166" y="84" width="156" height="19"/>
+                        <rect key="frame" x="207" y="84" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="uvf-iF-tJ1">
                             <font key="font" metaFont="smallSystem"/>
@@ -307,17 +244,8 @@
                             <action selector="enterSmtpServerAction:" target="-2" id="LFZ-kv-aYM"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="am9-Zb-Jzm" userLabel="User name:">
-                        <rect key="frame" x="33" y="57" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="User name:" id="ETa-us-9Iq">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XCF-NV-29U" userLabel="SMTP server user name field">
-                        <rect key="frame" x="165" y="57" width="157" height="19"/>
+                        <rect key="frame" x="207" y="57" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="eYA-gJ-nFe">
                             <font key="font" metaFont="smallSystem"/>
@@ -328,17 +256,8 @@
                             <action selector="enterSmtpUserNameAction:" target="-2" id="X9q-6d-6qT"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NFh-3l-g9n">
-                        <rect key="frame" x="33" y="30" width="126" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="ePq-GL-Yli">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QOO-gf-a0x" userLabel="SMTP server password field">
-                        <rect key="frame" x="165" y="30" width="157" height="19"/>
+                        <rect key="frame" x="207" y="30" width="180" height="19"/>
                         <animations/>
                         <secureTextFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="sce-Sq-khl">
                             <font key="font" metaFont="smallSystem"/>
@@ -353,14 +272,14 @@
                         </connections>
                     </secureTextField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="kMn-7J-YNk">
-                        <rect key="frame" x="13" y="109" width="316" height="5"/>
+                        <rect key="frame" x="10" y="109" width="387" height="5"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G7n-Xr-V43" userLabel="Full user name field">
-                        <rect key="frame" x="166" y="237" width="156" height="19"/>
+                        <rect key="frame" x="207" y="237" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="xp8-0T-OTU">
                             <font key="font" metaFont="smallSystem"/>
@@ -371,23 +290,104 @@
                             <action selector="enterFullUserNameAction:" target="-2" id="MuW-vl-AQx"/>
                         </connections>
                     </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="abK-uH-CYF">
+                        <rect key="frame" x="18" y="264" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="4ww-vG-z79">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GgO-jq-bYG">
+                        <rect key="frame" x="18" y="237" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Full user name:" id="oOE-M8-Rzz">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QZF-ru-j6B">
+                        <rect key="frame" x="18" y="210" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Email address:" id="UZU-tY-MVO">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="beb-3F-I1t">
+                        <rect key="frame" x="18" y="174" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP server:" id="8F4-wf-lKu">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NDY-sL-bvo" userLabel="User name:">
+                        <rect key="frame" x="18" y="147" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="User name:" id="GNp-qa-PTo">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oCz-NV-2AG">
+                        <rect key="frame" x="18" y="120" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="f0a-yb-QyY">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8LY-eL-nkC">
+                        <rect key="frame" x="18" y="84" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP server:" id="IMu-Jz-oXJ">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="am9-Zb-Jzm" userLabel="User name:">
+                        <rect key="frame" x="18" y="57" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="User name:" id="ETa-us-9Iq">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NFh-3l-g9n">
+                        <rect key="frame" x="18" y="30" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="ePq-GL-Yli">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
                 <animations/>
             </view>
             <animations/>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
             <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-            <point key="canvasLocation" x="219" y="-391.5"/>
+            <point key="canvasLocation" x="196.5" y="-391.5"/>
         </box>
         <box title="Box" borderType="bezel" titlePosition="noTitle" id="If8-PP-kc0" userLabel="Servers">
-            <rect key="frame" x="0.0" y="0.0" width="342" height="311"/>
+            <rect key="frame" x="0.0" y="0.0" width="413" height="311"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" id="gge-7w-08Q">
-                <rect key="frame" x="3" y="3" width="336" height="305"/>
+                <rect key="frame" x="3" y="3" width="407" height="305"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uio-0L-TLP" userLabel="IMAP server connection type">
-                        <rect key="frame" x="34" y="264" width="126" height="17"/>
+                        <rect key="frame" x="17" y="264" width="184" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP connection type:" id="PTR-80-l4R">
                             <font key="font" metaFont="smallSystem"/>
@@ -396,7 +396,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BA6-3Y-2ML" userLabel="IMAP server user name field">
-                        <rect key="frame" x="165" y="237" width="157" height="19"/>
+                        <rect key="frame" x="207" y="239" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="kE3-kB-veT">
                             <font key="font" metaFont="smallSystem"/>
@@ -408,7 +408,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6R8-Np-u9w" userLabel="IMAP server port">
-                        <rect key="frame" x="34" y="238" width="126" height="17"/>
+                        <rect key="frame" x="17" y="239" width="184" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP server port:" id="azG-jc-aR2">
                             <font key="font" metaFont="smallSystem"/>
@@ -417,7 +417,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m5y-FJ-DFs" userLabel="IMAP server connection type">
-                        <rect key="frame" x="31" y="121" width="127" height="17"/>
+                        <rect key="frame" x="17" y="123" width="184" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP connection type:" id="FMS-TP-hFa">
                             <font key="font" metaFont="smallSystem"/>
@@ -425,17 +425,8 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uoc-bv-RCV" userLabel="IMAP server connection type">
-                        <rect key="frame" x="15" y="96" width="143" height="17"/>
-                        <animations/>
-                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP authentication type:" id="gzt-h9-qke">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rb4-Eb-vY9" userLabel="IMAP server user name field">
-                        <rect key="frame" x="165" y="71" width="157" height="19"/>
+                        <rect key="frame" x="207" y="73" width="180" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="TJW-1p-Bog">
                             <font key="font" metaFont="smallSystem"/>
@@ -447,7 +438,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kan-46-7b2" userLabel="IMAP server port">
-                        <rect key="frame" x="32" y="71" width="126" height="17"/>
+                        <rect key="frame" x="17" y="73" width="184" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP server port:" id="ybC-MM-RHB">
                             <font key="font" metaFont="smallSystem"/>
@@ -456,19 +447,19 @@
                         </textFieldCell>
                     </textField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="zKJ-IN-Khn">
-                        <rect key="frame" x="10" y="146" width="316" height="5"/>
+                        <rect key="frame" x="10" y="147" width="386" height="5"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R0p-as-9me">
-                        <rect key="frame" x="302" y="180" width="20" height="20"/>
+                        <rect key="frame" x="367" y="182" width="20" height="20"/>
                         <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusAvailable" id="8nV-Vb-1sP"/>
                     </imageView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g6s-E7-EMV">
-                        <rect key="frame" x="38" y="183" width="263" height="14"/>
+                        <rect key="frame" x="38" y="185" width="330" height="14"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Connected" id="ujo-80-Ref">
                             <font key="font" metaFont="smallSystem"/>
@@ -477,7 +468,7 @@
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dJq-Dg-mFn">
-                        <rect key="frame" x="206" y="151" width="121" height="28"/>
+                        <rect key="frame" x="271" y="153" width="121" height="28"/>
                         <animations/>
                         <buttonCell key="cell" type="push" title="Check connection" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f06-jA-DHm">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -488,12 +479,12 @@
                         </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1cC-bn-JiN">
-                        <rect key="frame" x="302" y="43" width="20" height="20"/>
+                        <rect key="frame" x="367" y="45" width="20" height="20"/>
                         <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusAvailable" id="os1-lt-QmQ"/>
                     </imageView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j6R-Ku-xjL">
-                        <rect key="frame" x="206" y="14" width="121" height="28"/>
+                        <rect key="frame" x="271" y="16" width="121" height="28"/>
                         <animations/>
                         <buttonCell key="cell" type="push" title="Check connection" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pVD-wC-UHA">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -504,7 +495,7 @@
                         </connections>
                     </button>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TEv-jM-Kcc">
-                        <rect key="frame" x="163" y="262" width="162" height="22"/>
+                        <rect key="frame" x="204" y="264" width="186" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FXu-nU-yje" id="zfv-FH-RYv">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -522,7 +513,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dgd-gL-pH0">
-                        <rect key="frame" x="163" y="94" width="162" height="22"/>
+                        <rect key="frame" x="204" y="96" width="186" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="xED-vJ-me5">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -540,7 +531,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5hN-G1-83T">
-                        <rect key="frame" x="163" y="119" width="162" height="22"/>
+                        <rect key="frame" x="204" y="121" width="186" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="275-4U-lcm" id="17C-ot-UyF">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -558,7 +549,7 @@
                         </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rse-Xm-fRH">
-                        <rect key="frame" x="37" y="46" width="263" height="14"/>
+                        <rect key="frame" x="37" y="48" width="331" height="14"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Connected" id="MXt-W3-7zr">
                             <font key="font" metaFont="smallSystem"/>
@@ -567,7 +558,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wKk-7t-Chc" userLabel="IMAP server connection type">
-                        <rect key="frame" x="15" y="210" width="143" height="17"/>
+                        <rect key="frame" x="17" y="213" width="184" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP authentication type:" id="wmi-FI-TZf">
                             <font key="font" metaFont="smallSystem"/>
@@ -576,7 +567,7 @@
                         </textFieldCell>
                     </textField>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wqi-Ho-jhd" userLabel="IMAP auto type">
-                        <rect key="frame" x="163" y="208" width="162" height="22"/>
+                        <rect key="frame" x="204" y="210" width="186" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="6nI-OG-VSX">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -593,13 +584,22 @@
                             <action selector="selectImapAuthTypeAction:" target="-2" id="WPV-La-uvM"/>
                         </connections>
                     </popUpButton>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uoc-bv-RCV" userLabel="IMAP server connection type">
+                        <rect key="frame" x="17" y="98" width="184" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP authentication type:" id="gzt-h9-qke">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
                 <animations/>
             </view>
             <animations/>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
             <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-            <point key="canvasLocation" x="621" y="-391.5"/>
+            <point key="canvasLocation" x="654.5" y="-391.5"/>
         </box>
     </objects>
     <resources>

@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMPreferencesController.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
@@ -18,9 +19,11 @@
 
 - (id)init {
 	self = [ super init ];
-	if(self) {
-		_imageRegistry = [ SMImageRegistry new ];
-		_model = [ SMSimplicityContainer new ];
+
+    if(self) {
+        _preferencesController = [[SMPreferencesController alloc] init];
+		_model = [[SMSimplicityContainer alloc] initWithPreferencesController:_preferencesController];
+        _imageRegistry = [[SMImageRegistry alloc] init];
 	}
 	
 	SM_LOG_DEBUG(@"app delegate initialized");

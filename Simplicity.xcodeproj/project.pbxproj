@@ -118,6 +118,7 @@
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
 		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
+		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
@@ -424,6 +425,8 @@
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
 		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
 		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
+		803A83181BE59059006520DD /* SMPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesController.h; sourceTree = "<group>"; };
+		803A83191BE59059006520DD /* SMPreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesController.m; sourceTree = "<group>"; };
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
@@ -662,6 +665,8 @@
 				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
 				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
 				806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */,
+				803A83181BE59059006520DD /* SMPreferencesController.h */,
+				803A83191BE59059006520DD /* SMPreferencesController.m */,
 				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
@@ -1129,6 +1134,7 @@
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
 				802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */,
+				803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */,
 				8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */,
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,

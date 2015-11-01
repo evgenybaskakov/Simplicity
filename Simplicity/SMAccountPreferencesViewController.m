@@ -6,6 +6,8 @@
 //  Copyright © 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMAccountPreferencesViewController.h"
 
 @interface SMAccountPreferencesViewController ()
@@ -39,6 +41,7 @@
 
 @property (weak) IBOutlet NSPopUpButton *imapConnectionTypeList;
 @property (weak) IBOutlet NSTextField *imapPortField;
+@property (weak) IBOutlet NSPopUpButton *imapAuthTypeList;
 @property (weak) IBOutlet NSTextField *imapConnectionStatusLabel;
 @property (weak) IBOutlet NSImageView *imapConnectionStatusImage;
 @property (weak) IBOutlet NSButton *imapConnectionCheckButton;
@@ -55,8 +58,31 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    [self setUserDefaults];
     [self togglePanel:0];
+}
+
+- (void)setUserDefaults {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    
+    _accountNameField.stringValue = [preferencesController accountName:0];
+    _fullUserNameField.stringValue = [preferencesController fullUserName:0];
+    
+    _emailAddressField.stringValue = [preferencesController userEmail:0];
+    _imapServerField.stringValue = [preferencesController imapServer:0];
+    _imapUserNameField.stringValue = [preferencesController imapUserName:0];
+    _imapPasswordField.stringValue = [preferencesController imapPassword:0];
+    _smtpServerField.stringValue = [preferencesController smtpServer:0];
+    _smtpUserNameField.stringValue = [preferencesController smtpUserName:0];
+    _smtpPasswordField.stringValue = [preferencesController smtpPassword:0];
+    //NSPopUpButton *imapConnectionTypeList;
+    _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:0]];
+    //NSPopUpButton *imapAuthTypeList;
+    //NSPopUpButton *smtpConnectionTypeList;
+    //NSPopUpButton *smtpAuthTypeList;
+    _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:0]];
 }
 
 - (void)togglePanel:(NSUInteger)panelIdx {
@@ -120,6 +146,9 @@
 #pragma mark Servers actions
 
 - (IBAction)selectImapConnectionTypeAction:(id)sender {
+}
+
+- (IBAction)selectImapAuthTypeAction:(id)sender {
 }
 
 - (IBAction)enterImapPortAction:(id)sender {

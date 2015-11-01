@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMPreferencesController.h"
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
@@ -19,37 +20,38 @@
 #import "SMSearchResultsListController.h"
 #import "SMMailboxController.h"
 #import "SMMessageComparators.h"
-#import "SMMailLogin.h"
 
 @implementation SMSimplicityContainer {
+    SMPreferencesController __weak *_preferencesController;
 	MCOIMAPCapabilityOperation *_capabilitiesOp;
 }
 
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 
-- (id)init {
+- (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {
 	self = [ super init ];
 	
 	if(self) {
 //		MCLogEnabled = 1;
 
+        _preferencesController = preferencesController;
 		_imapSession = [[MCOIMAPSession alloc] init];
 		
-		[_imapSession setPort:IMAP_SERVER_PORT];
-		[_imapSession setHostname:IMAP_SERVER_HOSTNAME];
-		[_imapSession setConnectionType:IMAP_SERVER_CONNECTION_TYPE];
-		[_imapSession setUsername:IMAP_USERNAME];
-		[_imapSession setPassword:IMAP_PASSWORD];
+		[_imapSession setPort:[_preferencesController imapPort:0]];
+		[_imapSession setHostname:[_preferencesController imapServer:0]];
+		[_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:0]]];
+		[_imapSession setUsername:[_preferencesController imapUserName:0]];
+		[_imapSession setPassword:[_preferencesController imapPassword:0]];
 
 		_smtpSession = [[MCOSMTPSession alloc] init];
 		
-		[_smtpSession setAuthType:SMTP_SERVER_AUTH_TYPE];
-		[_smtpSession setHostname:SMTP_SERVER_HOSTNAME];
-		[_smtpSession setPort:SMTP_SERVER_PORT];
-		[_smtpSession setCheckCertificateEnabled:SMTP_SERVER_CHECK_CERTIFICATE];
-		[_smtpSession setConnectionType:SMTP_SERVER_CONNECTION_TYPE];
-		[_smtpSession setUsername:SMTP_USERNAME];
-		[_smtpSession setPassword:SMTP_PASSWORD];
+		[_smtpSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:0]]];
+		[_smtpSession setHostname:[_preferencesController smtpServer:0]];
+		[_smtpSession setPort:[_preferencesController smtpPort:0]];
+		[_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:0]];
+		[_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:0]]];
+		[_smtpSession setUsername:[_preferencesController smtpUserName:0]];
+		[_smtpSession setPassword:[_preferencesController smtpPassword:0]];
 
         _database = [[SMDatabase alloc] initWithFilePath:@"/Users/evgenybaskakov/Projects/Simplicity/Simplicity.sqlite"];
 

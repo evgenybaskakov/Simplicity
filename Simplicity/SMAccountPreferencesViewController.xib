@@ -15,6 +15,7 @@
                 <outlet property="addAccountButton" destination="u7b-99-Xnr" id="wzr-je-kWS"/>
                 <outlet property="emailAddressField" destination="dRv-uh-S20" id="4GY-ex-zi8"/>
                 <outlet property="fullUserNameField" destination="G7n-Xr-V43" id="lNa-C0-Pe3"/>
+                <outlet property="imapAuthTypeList" destination="Wqi-Ho-jhd" id="MeP-Df-4XR"/>
                 <outlet property="imapConnectionCheckButton" destination="dJq-Dg-mFn" id="HKR-bY-uqZ"/>
                 <outlet property="imapConnectionStatusImage" destination="R0p-as-9me" id="cjG-4E-WHj"/>
                 <outlet property="imapConnectionStatusLabel" destination="g6s-E7-EMV" id="BLn-JS-tsP"/>
@@ -395,7 +396,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BA6-3Y-2ML" userLabel="IMAP server user name field">
-                        <rect key="frame" x="166" y="237" width="157" height="19"/>
+                        <rect key="frame" x="165" y="237" width="157" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="kE3-kB-veT">
                             <font key="font" metaFont="smallSystem"/>
@@ -407,7 +408,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6R8-Np-u9w" userLabel="IMAP server port">
-                        <rect key="frame" x="34" y="237" width="126" height="17"/>
+                        <rect key="frame" x="34" y="238" width="126" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP server port:" id="azG-jc-aR2">
                             <font key="font" metaFont="smallSystem"/>
@@ -416,7 +417,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m5y-FJ-DFs" userLabel="IMAP server connection type">
-                        <rect key="frame" x="31" y="150" width="127" height="17"/>
+                        <rect key="frame" x="31" y="121" width="127" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP connection type:" id="FMS-TP-hFa">
                             <font key="font" metaFont="smallSystem"/>
@@ -425,7 +426,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uoc-bv-RCV" userLabel="IMAP server connection type">
-                        <rect key="frame" x="15" y="125" width="143" height="17"/>
+                        <rect key="frame" x="15" y="96" width="143" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP authentication type:" id="gzt-h9-qke">
                             <font key="font" metaFont="smallSystem"/>
@@ -434,7 +435,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rb4-Eb-vY9" userLabel="IMAP server user name field">
-                        <rect key="frame" x="165" y="100" width="157" height="19"/>
+                        <rect key="frame" x="165" y="71" width="157" height="19"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="TJW-1p-Bog">
                             <font key="font" metaFont="smallSystem"/>
@@ -446,7 +447,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kan-46-7b2" userLabel="IMAP server port">
-                        <rect key="frame" x="32" y="100" width="126" height="17"/>
+                        <rect key="frame" x="32" y="71" width="126" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="SMTP server port:" id="ybC-MM-RHB">
                             <font key="font" metaFont="smallSystem"/>
@@ -455,19 +456,19 @@
                         </textFieldCell>
                     </textField>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="zKJ-IN-Khn">
-                        <rect key="frame" x="10" y="175" width="316" height="5"/>
+                        <rect key="frame" x="10" y="146" width="316" height="5"/>
                         <animations/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R0p-as-9me">
-                        <rect key="frame" x="302" y="209" width="20" height="20"/>
+                        <rect key="frame" x="302" y="180" width="20" height="20"/>
                         <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusAvailable" id="8nV-Vb-1sP"/>
                     </imageView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g6s-E7-EMV">
-                        <rect key="frame" x="39" y="212" width="263" height="14"/>
+                        <rect key="frame" x="38" y="183" width="263" height="14"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Connected" id="ujo-80-Ref">
                             <font key="font" metaFont="smallSystem"/>
@@ -476,7 +477,7 @@
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dJq-Dg-mFn">
-                        <rect key="frame" x="204" y="180" width="121" height="28"/>
+                        <rect key="frame" x="206" y="151" width="121" height="28"/>
                         <animations/>
                         <buttonCell key="cell" type="push" title="Check connection" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f06-jA-DHm">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -487,12 +488,12 @@
                         </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1cC-bn-JiN">
-                        <rect key="frame" x="302" y="72" width="20" height="20"/>
+                        <rect key="frame" x="302" y="43" width="20" height="20"/>
                         <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusAvailable" id="os1-lt-QmQ"/>
                     </imageView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j6R-Ku-xjL">
-                        <rect key="frame" x="206" y="43" width="121" height="28"/>
+                        <rect key="frame" x="206" y="14" width="121" height="28"/>
                         <animations/>
                         <buttonCell key="cell" type="push" title="Check connection" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pVD-wC-UHA">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -503,7 +504,7 @@
                         </connections>
                     </button>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TEv-jM-Kcc">
-                        <rect key="frame" x="164" y="262" width="162" height="22"/>
+                        <rect key="frame" x="163" y="262" width="162" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FXu-nU-yje" id="zfv-FH-RYv">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -521,7 +522,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dgd-gL-pH0">
-                        <rect key="frame" x="161" y="123" width="162" height="22"/>
+                        <rect key="frame" x="163" y="94" width="162" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="xED-vJ-me5">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -539,7 +540,7 @@
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5hN-G1-83T">
-                        <rect key="frame" x="161" y="148" width="162" height="22"/>
+                        <rect key="frame" x="163" y="119" width="162" height="22"/>
                         <animations/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="275-4U-lcm" id="17C-ot-UyF">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -557,7 +558,7 @@
                         </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rse-Xm-fRH">
-                        <rect key="frame" x="39" y="75" width="263" height="14"/>
+                        <rect key="frame" x="37" y="46" width="263" height="14"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Connected" id="MXt-W3-7zr">
                             <font key="font" metaFont="smallSystem"/>
@@ -565,6 +566,33 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wKk-7t-Chc" userLabel="IMAP server connection type">
+                        <rect key="frame" x="15" y="210" width="143" height="17"/>
+                        <animations/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="IMAP authentication type:" id="wmi-FI-TZf">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wqi-Ho-jhd" userLabel="IMAP auto type">
+                        <rect key="frame" x="163" y="208" width="162" height="22"/>
+                        <animations/>
+                        <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="6nI-OG-VSX">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <menu key="menu" id="QZD-D2-LBM">
+                                <items>
+                                    <menuItem title="Item 1" id="21D-wq-bhs"/>
+                                    <menuItem title="Item 2" id="tta-OD-CHy"/>
+                                    <menuItem title="Item 3" id="HYM-Ri-lLL"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="selectImapAuthTypeAction:" target="-2" id="WPV-La-uvM"/>
+                        </connections>
+                    </popUpButton>
                 </subviews>
                 <animations/>
             </view>

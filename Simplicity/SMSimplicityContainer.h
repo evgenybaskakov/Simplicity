@@ -10,6 +10,7 @@
 
 #import <MailCore/MailCore.h>
 
+@class SMPreferencesController;
 @class SMDatabase;
 @class SMMailbox;
 @class SMMessageStorage;
@@ -38,5 +39,7 @@
 @property (readonly) SMMailboxController *mailboxController;
 @property (readonly) SMMailbox *mailbox;
 @property (readonly) SMMessageComparators *messageComparators;
+
+- (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 
 @end

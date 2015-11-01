@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server;
 - (void)setImapPort:(NSUInteger)idx port:(unsigned int)port;
-- (void)setImapUserName:(NSUInteger)idx userName:(NSString*)imapUserName;
+- (void)setImapUserName:(NSUInteger)idx userName:(NSString*)userName;
 - (void)setImapPassword:(NSUInteger)idx password:(NSString*)password;
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType;
 - (void)setImapAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType;
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 
 - (void)setSmtpServer:(NSUInteger)idx server:(NSString*)server;
 - (void)setSmtpPort:(NSUInteger)idx port:(unsigned int)port;
-- (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)imapUserName;
+- (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)userName;
 - (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password;
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType;
 - (void)setSmtpAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType;

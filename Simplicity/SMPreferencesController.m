@@ -10,21 +10,24 @@
 #import "SMMailLogin.h"
 #import "SMPreferencesController.h"
 
-#define kAccountName         @"PreferencesAccountName"
-#define kFullUserName        @"PreferencesFullUserName"
-#define kUserEmail           @"PreferencesUserEmail"
-#define kImapServer          @"PreferencesImapServer"
-#define kImapPort            @"PreferencesImapPort"
-#define kImapUserName        @"PreferencesImapUserName"
-#define kImapPassword        @"PreferencesImapPassword"
-#define kImapConnectionType  @"PreferencesImapConnectionType"
-#define kImapAuthType        @"PreferencesImapAuthType"
-#define kSmtpServer          @"PreferencesSmtpServer"
-#define kSmtpPort            @"PreferencesSmtpPort"
-#define kSmtpUserName        @"PreferencesSmtpUserName"
-#define kSmtpPassword        @"PreferencesSmtpPassword"
-#define kSmtpConnectionType  @"PreferencesSmtpConnectionType"
-#define kSmtpAuthType        @"PreferencesSmtpAuthType"
+#define kAccountsCount              @"AccountsCount"
+#define kAccountName                @"AccountName"
+#define kFullUserName               @"FullUserName"
+#define kUserEmail                  @"UserEmail"
+#define kImapServer                 @"ImapServer"
+#define kImapPort                   @"ImapPort"
+#define kImapUserName               @"ImapUserName"
+#define kImapPassword               @"ImapPassword"
+#define kImapConnectionType         @"ImapConnectionType"
+#define kImapAuthType               @"ImapAuthType"
+#define kImapNeedCheckCertificate   @"ImapNeedCheckCertificate"
+#define kSmtpServer                 @"SmtpServer"
+#define kSmtpPort                   @"SmtpPort"
+#define kSmtpUserName               @"SmtpUserName"
+#define kSmtpPassword               @"SmtpPassword"
+#define kSmtpConnectionType         @"SmtpConnectionType"
+#define kSmtpAuthType               @"SmtpAuthType"
+#define kSmtpNeedCheckCertificate   @"SmtpNeedCheckCertificate"
 
 @implementation SMPreferencesController
 
@@ -88,6 +91,13 @@
     return MCOAuthTypeSASLNone;
 }
 
++ (void)initialize {
+    // TODO: register non-account related preferences
+    
+    NSDictionary *defaults = [NSDictionary dictionary];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+}
+
 - (id)init {
     self = [super init];
     
@@ -96,10 +106,6 @@
     }
     
     return self;
-}
-
-- (NSUInteger)accountsCount {
-    return 1; // TODO
 }
 
 - (void)addAccountWithName:(NSString*)name {
@@ -111,139 +117,143 @@
 }
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:name forKey:kAccountName];
 }
 
 - (void)setFullUserName:(NSUInteger)idx userName:(NSString*)fullUserName {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:fullUserName forKey:kFullUserName];
 }
 
 - (void)setUserEmail:(NSUInteger)idx email:(NSString*)userEmail {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:userEmail forKey:kUserEmail];
 }
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:server forKey:kImapServer];
 }
 
 - (void)setImapPort:(NSUInteger)idx port:(unsigned int)port {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)port forKey:kImapPort];
 }
 
-- (void)setImapUserName:(NSUInteger)idx userName:(NSString*)imapUserName {
-    SM_LOG_WARNING(@"TODO");
+- (void)setImapUserName:(NSUInteger)idx userName:(NSString*)userName {
+    [[NSUserDefaults standardUserDefaults] setObject:userName forKey:kImapUserName];
 }
 
 - (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:password forKey:kImapPassword];
 }
 
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:connectionType forKey:kImapConnectionType];
 }
 
 - (void)setImapAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:authType forKey:kImapAuthType];
 }
 
 - (void)setImapNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setBool:checkCertificate forKey:kImapNeedCheckCertificate];
 }
 
 - (void)setSmtpServer:(NSUInteger)idx server:(NSString*)server {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:server forKey:kSmtpServer];
 }
 
 - (void)setSmtpPort:(NSUInteger)idx port:(unsigned int)port {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)port forKey:kSmtpPort];
 }
 
-- (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)imapUserName {
-    SM_LOG_WARNING(@"TODO");
+- (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)userName {
+    [[NSUserDefaults standardUserDefaults] setObject:userName forKey:kSmtpUserName];
 }
 
 - (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setObject:password forKey:kSmtpPassword];
 }
 
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:connectionType forKey:kSmtpConnectionType];
 }
 
 - (void)setSmtpAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setInteger:authType forKey:kSmtpAuthType];
 }
 
 - (void)setSmtpNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    SM_LOG_WARNING(@"TODO");
+    [[NSUserDefaults standardUserDefaults] setBool:checkCertificate forKey:kSmtpNeedCheckCertificate];
+}
+
+- (NSUInteger)accountsCount {
+    return 1;//TODO: return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
 }
 
 - (NSString*)accountName:(NSUInteger)idx {
-    return @"Google"; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kAccountName];
 }
 
 - (NSString*)fullUserName:(NSUInteger)idx {
-    return @"Evgeny Baskakov"; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kFullUserName];
 }
 
 - (NSString*)userEmail:(NSUInteger)idx {
-    return @"evgeny.baskakov@gmail.com"; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kUserEmail];
 }
 
 - (NSString*)imapServer:(NSUInteger)idx {
-    return @"imap.gmail.com"; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kImapServer];
 }
 
 - (unsigned int)imapPort:(NSUInteger)idx {
-    return 993; // TODO
+    return (unsigned int)[[NSUserDefaults standardUserDefaults] integerForKey:kImapPort];
 }
 
 - (NSString*)imapUserName:(NSUInteger)idx {
-    return [self userEmail:idx]; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kImapUserName];
 }
 
 - (NSString*)imapPassword:(NSUInteger)idx {
-    return IMAP_PASSWORD; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kImapPassword];
 }
 
 - (SMServerConnectionType)imapConnectionType:(NSUInteger)idx {
-    return SMServerConnectionType_TLS; // TODO
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kImapConnectionType];
 }
 
 - (SMServerAuthType)imapAuthType:(NSUInteger)idx {
-    return SMServerAuthType_SASLNone; // TODO
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kImapAuthType];
 }
 
 - (BOOL)imapNeedCheckCertificate:(NSUInteger)idx {
-    return NO; // TODO
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kImapNeedCheckCertificate];
 }
 
 - (NSString*)smtpServer:(NSUInteger)idx {
-    return @"smtp.gmail.com"; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kSmtpServer];
 }
 
 - (unsigned int)smtpPort:(NSUInteger)idx {
-    return 465; // TODO
+    return (unsigned int)[[NSUserDefaults standardUserDefaults] integerForKey:kSmtpPort];
 }
 
 - (NSString*)smtpUserName:(NSUInteger)idx {
-    return [self userEmail:idx]; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kSmtpUserName];
 }
 
 - (NSString*)smtpPassword:(NSUInteger)idx {
-    return SMTP_PASSWORD; // TODO
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kSmtpPassword];
 }
 
 - (SMServerConnectionType)smtpConnectionType:(NSUInteger)idx {
-    return SMServerConnectionType_TLS; // TODO
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kSmtpConnectionType];
 }
 
 - (SMServerAuthType)smtpAuthType:(NSUInteger)idx {
-    return SMServerAuthType_SASLLogin; // TODO
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kSmtpAuthType];
 }
 
 - (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
-    return NO; // TODO
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kSmtpNeedCheckCertificate];
 }
 
 @end

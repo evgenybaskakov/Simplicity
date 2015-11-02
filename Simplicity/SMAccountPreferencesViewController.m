@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -168,6 +169,55 @@
     return 0;
 }
 
+- (NSString*)connectionErrorMessage:(MCOErrorCode)mcoError {
+    NSAssert(mcoError != MCOErrorNone, @"trying to get error message for non-error");
+
+    switch(mcoError) {
+        case MCOErrorConnection:
+            return @"Connection failed";
+        case MCOErrorTLSNotAvailable:
+            return @"TLS/SSL connection was not available";
+        case MCOErrorParse:
+            return @"The protocol could not be parsed";
+        case MCOErrorCertificate:
+            return @"Certificate invalid";
+        case MCOErrorAuthentication:
+            return @"Authentication failed";
+        case MCOErrorGmailIMAPNotEnabled:
+            return @"IMAP not enabled";
+        case MCOErrorGmailExceededBandwidthLimit:
+            return @"Bandwidth limit exceeded";
+        case MCOErrorGmailTooManySimultaneousConnections:
+            return @"Too many simultaneous connections";
+        case MCOErrorMobileMeMoved:
+            return @"Mobile Me is offline";
+        case MCOErrorYahooUnavailable:
+            return @"Yahoo is not available";
+        case MCOErrorCapability:
+            return @"IMAP: Error while getting capabilities";
+        case MCOErrorStartTLSNotAvailable:
+            return @"STARTTLS is not available";
+        case MCOErrorNeedsConnectToWebmail:
+            return @"Hotmail: Needs to connect to webmail";
+        case MCOErrorAuthenticationRequired:
+            return @"Authentication required";
+        case MCOErrorInvalidAccount:
+            return @"Account check error";
+        case MCOErrorCompression:
+            return @"Compression enabling error";
+        case MCOErrorNoop:
+            return @"Noop operation failed";
+        case MCOErrorGmailApplicationSpecificPasswordRequired:
+            return @"Second factor authentication failed";
+        case MCOErrorServerDate:
+            return @"NNTP date requesting error";
+        case MCOErrorNoValidServerFound:
+            return @"No valid server found";
+        default:
+            return [NSString stringWithFormat:@"Unknown connection error %lu", mcoError];
+    };
+}
+
 - (void)togglePanel:(NSUInteger)panelIdx {
     NSView *panel = nil;
     
@@ -263,8 +313,48 @@
     [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPort:0 port:(unsigned int)[_imapPortField.stringValue integerValue]];
 }
 
+- (NSString*)connectionStatusText:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
+    switch(status) {
+        case SMConnectionStatus_NotConnected:
+            return @"Not connected";
+            
+        case SMConnectionStatus_Connected:
+            return @"Connected";
+            
+        case SMConnectionStatus_ConnectionFailed:
+            return [self connectionErrorMessage:mcoError];
+            
+        default:
+            NSAssert(nil, @"Unknown status %lu", status);
+            return nil;
+    }
+}
+
+- (NSImage*)connectionStatusImage:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
+    switch(status) {
+        case SMConnectionStatus_NotConnected:
+            return [NSImage imageNamed:NSImageNameStatusNone];
+            
+        case SMConnectionStatus_Connected:
+            return [NSImage imageNamed:NSImageNameStatusAvailable];
+            
+        case SMConnectionStatus_ConnectionFailed:
+            return [NSImage imageNamed:NSImageNameStatusUnavailable];
+            
+        default:
+            NSAssert(nil, @"Unknown status %lu", status);
+            return nil;
+    }
+}
+
 - (IBAction)checkImapConnectionAciton:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    SMConnectionCheck *connectionCheck = [[SMConnectionCheck alloc] init];
+    [connectionCheck checkImapConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
+
+        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+    }];
 }
 
 - (IBAction)selectSmtpConnectionTypeAction:(id)sender {
@@ -283,7 +373,13 @@
 }
 
 - (IBAction)checkSmtpConnectionAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    SMConnectionCheck *connectionCheck = [[SMConnectionCheck alloc] init];
+    [connectionCheck checkSmtpConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+        SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
+        
+        [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+        [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+    }];
 }
 
 @end

@@ -185,7 +185,7 @@
 }
 
 - (NSUInteger)accountsCount {
-    return 1;//TODO: return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
 }
 
 - (NSString*)accountName:(NSUInteger)idx {

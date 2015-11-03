@@ -269,7 +269,7 @@
     [SSKeychain setPassword:password forService:kSimplicityServiceName account:serviceAccount error:&error];
     
     if(error != nil && error.code != noErr) {
-        SM_LOG_ERROR(@"Cannot save password for IMAP account %@", accountName);
+        SM_LOG_ERROR(@"Cannot save password for %@ account %@", serverType, accountName);
     }
 }
 
@@ -279,7 +279,7 @@
     NSString *password = [SSKeychain passwordForService:kSimplicityServiceName account:serviceAccount];
     
     if(password == nil) {
-        SM_LOG_ERROR(@"Cannot load password for IMAP account %@", accountName);
+        SM_LOG_ERROR(@"Cannot load password for %@ account %@", serverType, accountName);
         return @"";
     }
     

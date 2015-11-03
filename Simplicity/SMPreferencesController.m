@@ -6,9 +6,16 @@
 //  Copyright © 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SSKeychain.h"
+
 #import "SMLog.h"
 #import "SMMailLogin.h"
 #import "SMPreferencesController.h"
+
+#define kSimplicityServiceName  @"com.simplicity.mail.service"
+
+#define kServerTypeIMAP         @"IMAP"
+#define kServerTypeSMTP         @"SMTP"
 
 #define kAccountsCount              @"AccountsCount"
 #define kAccountName                @"AccountName"
@@ -17,14 +24,12 @@
 #define kImapServer                 @"ImapServer"
 #define kImapPort                   @"ImapPort"
 #define kImapUserName               @"ImapUserName"
-#define kImapPassword               @"ImapPassword"
 #define kImapConnectionType         @"ImapConnectionType"
 #define kImapAuthType               @"ImapAuthType"
 #define kImapNeedCheckCertificate   @"ImapNeedCheckCertificate"
 #define kSmtpServer                 @"SmtpServer"
 #define kSmtpPort                   @"SmtpPort"
 #define kSmtpUserName               @"SmtpUserName"
-#define kSmtpPassword               @"SmtpPassword"
 #define kSmtpConnectionType         @"SmtpConnectionType"
 #define kSmtpAuthType               @"SmtpAuthType"
 #define kSmtpNeedCheckCertificate   @"SmtpNeedCheckCertificate"
@@ -141,7 +146,7 @@
 }
 
 - (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
-    [[NSUserDefaults standardUserDefaults] setObject:password forKey:kImapPassword];
+    [self savePassword:idx serverType:kServerTypeIMAP password:password];
 }
 
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
@@ -169,7 +174,7 @@
 }
 
 - (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
-    [[NSUserDefaults standardUserDefaults] setObject:password forKey:kSmtpPassword];
+    [self savePassword:idx serverType:kServerTypeSMTP password:password];
 }
 
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
@@ -213,7 +218,7 @@
 }
 
 - (NSString*)imapPassword:(NSUInteger)idx {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kImapPassword];
+    return [self loadPassword:idx serverType:kServerTypeIMAP];
 }
 
 - (SMServerConnectionType)imapConnectionType:(NSUInteger)idx {
@@ -241,7 +246,7 @@
 }
 
 - (NSString*)smtpPassword:(NSUInteger)idx {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kSmtpPassword];
+    return [self loadPassword:idx serverType:kServerTypeSMTP];
 }
 
 - (SMServerConnectionType)smtpConnectionType:(NSUInteger)idx {
@@ -254,6 +259,31 @@
 
 - (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kSmtpNeedCheckCertificate];
+}
+
+- (void)savePassword:(NSUInteger)idx serverType:(NSString*)serverType password:(NSString*)password {
+    NSString *accountName = [self accountName:idx];
+    NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
+    
+    NSError *error = nil;
+    [SSKeychain setPassword:password forService:kSimplicityServiceName account:serviceAccount error:&error];
+    
+    if(error != nil && error.code != noErr) {
+        SM_LOG_ERROR(@"Cannot save password for IMAP account %@", accountName);
+    }
+}
+
+- (NSString*)loadPassword:(NSUInteger)idx serverType:(NSString*)serverType {
+    NSString *accountName = [self accountName:idx];
+    NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
+    NSString *password = [SSKeychain passwordForService:kSimplicityServiceName account:serviceAccount];
+    
+    if(password == nil) {
+        SM_LOG_ERROR(@"Cannot load password for IMAP account %@", accountName);
+        return @"";
+    }
+    
+    return password;
 }
 
 @end

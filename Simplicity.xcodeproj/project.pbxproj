@@ -135,6 +135,7 @@
 		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
+		80628B551BE87A3400016803 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 80628B541BE87A3400016803 /* SSKeychain.m */; };
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
 		806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */ = {isa = PBXBuildFile; fileRef = 806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */; };
 		806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E7C261B9FFD940081FD8E /* SMBox2.m */; };
@@ -450,6 +451,8 @@
 		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
+		80628B531BE87A3400016803 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
+		80628B541BE87A3400016803 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorViewController.h; sourceTree = "<group>"; };
 		8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorViewController.m; sourceTree = "<group>"; };
 		806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSetMessageFlags.h; sourceTree = "<group>"; };
@@ -622,6 +625,7 @@
 				8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */,
 				802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */,
 				802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */,
+				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
 				0082F5FC1A0FFAAC0050578A /* SMLocalFolder.h */,
 				0082F5FD1A0FFAAC0050578A /* SMLocalFolder.m */,
 				8071EDF71BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.h */,
@@ -680,6 +684,8 @@
 				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
 				80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */,
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
+				80628B531BE87A3400016803 /* SSKeychain.h */,
+				80628B541BE87A3400016803 /* SSKeychain.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -751,7 +757,6 @@
 				0082F5F61A0DD39B0050578A /* SMSearchResultsListController.h */,
 				0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */,
 				003858FE1A4D024500D4FD70 /* SMSearchResultsListViewController.h */,
-				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1212,6 +1217,7 @@
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,
+				80628B551BE87A3400016803 /* SSKeychain.m in Sources */,
 				802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */,
 				00A085B01A72145300CC4E1C /* SMAttachmentsPanelViewController.m in Sources */,
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,

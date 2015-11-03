@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
@@ -17,6 +16,7 @@
                 <outlet property="fullUserNameField" destination="G7n-Xr-V43" id="lNa-C0-Pe3"/>
                 <outlet property="imapAuthTypeList" destination="Wqi-Ho-jhd" id="MeP-Df-4XR"/>
                 <outlet property="imapConnectionCheckButton" destination="dJq-Dg-mFn" id="HKR-bY-uqZ"/>
+                <outlet property="imapConnectionProgressIndicator" destination="glv-L8-Jw4" id="7Op-en-AZi"/>
                 <outlet property="imapConnectionStatusImage" destination="R0p-as-9me" id="cjG-4E-WHj"/>
                 <outlet property="imapConnectionStatusLabel" destination="g6s-E7-EMV" id="BLn-JS-tsP"/>
                 <outlet property="imapConnectionTypeList" destination="TEv-jM-Kcc" id="fLj-Oj-5Cg"/>
@@ -28,6 +28,7 @@
                 <outlet property="serversPanelView" destination="If8-PP-kc0" id="5Da-hH-v6I"/>
                 <outlet property="smtpAuthTypeList" destination="dgd-gL-pH0" id="uwX-Hc-gz3"/>
                 <outlet property="smtpConnectionCheckButton" destination="j6R-Ku-xjL" id="9mw-PS-47E"/>
+                <outlet property="smtpConnectionProgressIndicator" destination="Nvo-M0-Chl" id="f3x-3m-cmH"/>
                 <outlet property="smtpConnectionStatusImage" destination="1cC-bn-JiN" id="msj-sf-Va3"/>
                 <outlet property="smtpConnectionStatusLabel" destination="rse-Xm-fRH" id="cLQ-SB-bz1"/>
                 <outlet property="smtpConnectionTypeList" destination="5hN-G1-83T" id="WMb-OV-NYT"/>
@@ -56,7 +57,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnSelection="YES" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="qrn-8h-9Eb">
-                                <rect key="frame" x="0.0" y="0.0" width="132" height="316"/>
+                                <rect key="frame" x="0.0" y="0.0" width="132" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
@@ -475,7 +476,7 @@
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
                         <connections>
-                            <action selector="checkImapConnectionAciton:" target="-2" id="iX6-OJ-7xm"/>
+                            <action selector="checkImapConnectionAction:" target="-2" id="L4G-a7-rqw"/>
                         </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1cC-bn-JiN">
@@ -593,6 +594,14 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="glv-L8-Jw4" userLabel="IMAP connection progress">
+                        <rect key="frame" x="369" y="184" width="16" height="16"/>
+                        <animations/>
+                    </progressIndicator>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Nvo-M0-Chl" userLabel="SNMP connection progress">
+                        <rect key="frame" x="369" y="47" width="16" height="16"/>
+                        <animations/>
+                    </progressIndicator>
                 </subviews>
                 <animations/>
             </view>

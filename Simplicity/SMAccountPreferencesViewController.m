@@ -47,12 +47,15 @@
 @property (weak) IBOutlet NSTextField *imapConnectionStatusLabel;
 @property (weak) IBOutlet NSImageView *imapConnectionStatusImage;
 @property (weak) IBOutlet NSButton *imapConnectionCheckButton;
+@property (weak) IBOutlet NSProgressIndicator *imapConnectionProgressIndicator;
+
 @property (weak) IBOutlet NSPopUpButton *smtpConnectionTypeList;
 @property (weak) IBOutlet NSPopUpButton *smtpAuthTypeList;
 @property (weak) IBOutlet NSTextField *smtpPortField;
 @property (weak) IBOutlet NSTextField *smtpConnectionStatusLabel;
 @property (weak) IBOutlet NSImageView *smtpConnectionStatusImage;
 @property (weak) IBOutlet NSButton *smtpConnectionCheckButton;
+@property (weak) IBOutlet NSProgressIndicator *smtpConnectionProgressIndicator;
 
 @end
 
@@ -61,6 +64,7 @@
     NSArray *_connectionTypeConstants;
     NSArray *_authTypeStrings;
     NSArray *_authTypeConstants;
+    SMConnectionCheck *_connectionCheck;
 }
 
 - (void)viewDidLoad {
@@ -118,8 +122,16 @@
     [_smtpAuthTypeList removeAllItems];
     [_smtpAuthTypeList addItemsWithTitles:_authTypeStrings];
     
+    _imapConnectionProgressIndicator.hidden = YES;
+    _smtpConnectionProgressIndicator.hidden = YES;
+    
+    _connectionCheck = [[SMConnectionCheck alloc] init];
+    
     [self setUserDefaults];
     [self togglePanel:0];
+
+    [self checkImapConnectionAction:self];
+    [self checkSmtpConnectionAction:self];
 }
 
 - (void)setUserDefaults {
@@ -347,16 +359,6 @@
     }
 }
 
-- (IBAction)checkImapConnectionAciton:(id)sender {
-    SMConnectionCheck *connectionCheck = [[SMConnectionCheck alloc] init];
-    [connectionCheck checkImapConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
-
-        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
-    }];
-}
-
 - (IBAction)selectSmtpConnectionTypeAction:(id)sender {
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_smtpConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
     [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpConnectionType:0 connectionType:connectionType];
@@ -372,13 +374,41 @@
     [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPort:0 port:(unsigned int)[_smtpPortField.stringValue integerValue]];
 }
 
+- (IBAction)checkImapConnectionAction:(id)sender {
+    [_imapConnectionStatusLabel setStringValue:@"Connecting..."];
+
+    _imapConnectionStatusImage.hidden = YES;
+    _imapConnectionProgressIndicator.hidden = NO;
+    
+    [_imapConnectionProgressIndicator startAnimation:self];
+    
+    [_connectionCheck checkImapConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
+        
+        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+        
+        _imapConnectionStatusImage.hidden = NO;
+        _imapConnectionProgressIndicator.hidden = YES;
+    }];
+}
+
 - (IBAction)checkSmtpConnectionAction:(id)sender {
-    SMConnectionCheck *connectionCheck = [[SMConnectionCheck alloc] init];
-    [connectionCheck checkSmtpConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+    [_smtpConnectionStatusLabel setStringValue:@"Connecting..."];
+    
+    _smtpConnectionStatusImage.hidden = YES;
+    _smtpConnectionProgressIndicator.hidden = NO;
+    
+    [_smtpConnectionProgressIndicator startAnimation:self];
+    
+    [_connectionCheck checkSmtpConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
         SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
         
         [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
         [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+        
+        _smtpConnectionStatusImage.hidden = NO;
+        _smtpConnectionProgressIndicator.hidden = YES;
     }];
 }
 

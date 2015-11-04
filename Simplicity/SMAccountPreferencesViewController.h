@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMAccountPreferencesViewController : NSViewController
+@interface SMAccountPreferencesViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
 @end

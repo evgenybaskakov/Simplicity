@@ -16,22 +16,27 @@
 
 #pragma mark Panel views
 
-@property (strong) IBOutlet NSBox *accountSettingsPanelView;
+@property (strong) IBOutlet NSBox *generalPanelView;
 @property (strong) IBOutlet NSBox *serversPanelView;
+@property (strong) IBOutlet NSBox *advancedPanelView;
 
 #pragma mark Main account settings controls
 
-@property (weak) IBOutlet NSScrollView *accountTableView;
+@property (weak) IBOutlet NSTableView *accountTableView;
 @property (weak) IBOutlet NSButton *addAccountButton;
 @property (weak) IBOutlet NSButton *removeAccountButton;
 @property (weak) IBOutlet NSSegmentedControl *toggleAccountSettingsPanelButton;
 @property (weak) IBOutlet NSView *accountSettingsPanel;
 
-#pragma mark Account settings panel
+#pragma mark General panel
 
+@property (weak) IBOutlet NSButton *accountImageButton;
 @property (weak) IBOutlet NSTextField *accountNameField;
 @property (weak) IBOutlet NSTextField *fullUserNameField;
 @property (weak) IBOutlet NSTextField *emailAddressField;
+
+#pragma mark Servers panel
+
 @property (weak) IBOutlet NSTextField *imapServerField;
 @property (weak) IBOutlet NSTextField *imapUserNameField;
 @property (weak) IBOutlet NSSecureTextField *imapPasswordField;
@@ -39,7 +44,7 @@
 @property (weak) IBOutlet NSTextField *smtpUserNameField;
 @property (weak) IBOutlet NSSecureTextField *smtpPasswordField;
 
-#pragma mark Servers panel
+#pragma mark Advanced panel
 
 @property (weak) IBOutlet NSPopUpButton *imapConnectionTypeList;
 @property (weak) IBOutlet NSTextField *imapPortField;
@@ -127,14 +132,14 @@
     
     _connectionCheck = [[SMConnectionCheck alloc] init];
     
-    [self setUserDefaults];
+    [self loadCurrentValues];
     [self togglePanel:0];
 
     [self checkImapConnectionAction:self];
     [self checkSmtpConnectionAction:self];
 }
 
-- (void)setUserDefaults {
+- (void)loadCurrentValues {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
@@ -157,6 +162,8 @@
 
     [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:0]]];
     [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:0]]];
+    
+    [_accountTableView reloadData];
 }
 
 - (NSUInteger)connectionTypeIndex:(SMServerConnectionType)connectionType {
@@ -234,10 +241,13 @@
     NSView *panel = nil;
     
     if(panelIdx == 0) {
-        panel = _accountSettingsPanelView;
+        panel = _generalPanelView;
+    }
+    else if(panelIdx == 1) {
+        panel = _serversPanelView;
     }
     else {
-        panel = _serversPanelView;
+        panel = _advancedPanelView;
     }
     
     [panel setFrameSize:_accountSettingsPanel.frame.size];
@@ -410,6 +420,33 @@
         _smtpConnectionStatusImage.hidden = NO;
         _smtpConnectionProgressIndicator.hidden = YES;
     }];
+}
+
+#pragma mark Account list table
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    return [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount];
+}
+
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row {
+    if(row < 0) {
+        return nil;
+    }
+    
+    NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"MainCell" owner:self];
+    
+    cellView.imageView.image = _accountImageButton.image;
+    cellView.textField.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
+    
+    return cellView;
+}
+
+- (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
+    return;
+}
+
+- (void)tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
+    return;
 }
 
 @end

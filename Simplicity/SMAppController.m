@@ -29,6 +29,7 @@
 #import "SMMailboxController.h"
 #import "SMFolder.h"
 #import "SMMessageThread.h"
+#import "SMNewAccountWindowController.h"
 #import "SMMessageWindowController.h"
 #import "SMPreferencesWindowController.h"
 
@@ -567,7 +568,29 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 #pragma mark Menu actions
 
-- (IBAction)showPreferencesAction:(id)sender {
+- (IBAction)showNewAccountWindowAction:(id)sender {
+    if(_createNewAccountWindowController == nil) {
+       _createNewAccountWindowController = [[SMNewAccountWindowController alloc] initWithWindowNibName:@"SMNewAccountWindowController"];
+    }
+    
+    NSWindow *newAccountSheet = _createNewAccountWindowController.window;
+    NSAssert(newAccountSheet != nil, @"newAccountSheet is nil");
+    
+    [NSApp runModalForWindow:newAccountSheet];
+}
+
+- (void)closeNewAccountWindow {
+    NSAssert(_createNewAccountWindowController != nil, @"_createNewAccountWindowController is nil");
+    
+    NSWindow *newAccountSheet = _createNewAccountWindowController.window;
+    NSAssert(newAccountSheet != nil, @"newAccountSheet is nil");
+    
+    [newAccountSheet orderOut:self];
+    
+    [NSApp endSheet:newAccountSheet];
+}
+
+- (IBAction)showPreferencesWindowAction:(id)sender {
     if(_preferencesWindowController == nil) {
         _preferencesWindowController = [[SMPreferencesWindowController alloc] initWithWindowNibName:@"SMPreferencesWindowController"];
     }
@@ -582,7 +605,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSAssert(_preferencesWindowController != nil, @"_preferencesWindowController is nil");
     
     NSWindow *preferencesSheet = _preferencesWindowController.window;
-    NSAssert(preferencesSheet != nil, @"newLabelSheet is nil");
+    NSAssert(preferencesSheet != nil, @"preferencesSheet is nil");
     
     [preferencesSheet orderOut:self];
     

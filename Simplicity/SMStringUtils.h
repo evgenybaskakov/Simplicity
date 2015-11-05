@@ -11,5 +11,6 @@
 @interface SMStringUtils : NSObject
 
 + (BOOL)string:(NSString *)string hasPrefix:(NSString *)prefix caseInsensitive:(BOOL)caseInsensitive;
++ (BOOL)emailAddressValid:(NSString*)emailAddress;
 
 @end

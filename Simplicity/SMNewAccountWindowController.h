@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMNewAccountWindowController : NSWindowController
+@interface SMNewAccountWindowController : NSWindowController<NSWindowDelegate>
 
 @end

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+@class SMNewAccountWindowController;
 @class SMPreferencesWindowController;
 @class SMMailboxViewController;
 @class SMSearchResultsListViewController;
@@ -71,5 +72,9 @@
 @property (nonatomic) SMPreferencesWindowController *preferencesWindowController;
 
 - (void)hidePreferences;
+
+@property (nonatomic) SMNewAccountWindowController *createNewAccountWindowController;
+
+- (void)closeNewAccountWindow;
 
 @end

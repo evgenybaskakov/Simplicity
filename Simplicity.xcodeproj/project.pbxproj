@@ -114,12 +114,11 @@
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
 		801EDEE81BE9E96800A16E85 /* SMNewAccountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */; };
 		801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */; };
-		801EDEED1BE9E9A800A16E85 /* SMNewAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801EDEEB1BE9E9A700A16E85 /* SMNewAccountViewController.m */; };
-		801EDEEE1BE9E9A800A16E85 /* SMNewAccountViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEEC1BE9E9A700A16E85 /* SMNewAccountViewController.xib */; };
 		801EDEF01BE9EB6700A16E85 /* at_sign.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEEF1BE9EB6700A16E85 /* at_sign.png */; };
 		801EDEF21BE9F01800A16E85 /* gmail_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEF11BE9F01800A16E85 /* gmail_logo.png */; };
 		801EDEF51BE9F06500A16E85 /* yahoo_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEF31BE9F06500A16E85 /* yahoo_logo.png */; };
 		801EDEF61BE9F06500A16E85 /* yandex_logo_en.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEF41BE9F06500A16E85 /* yandex_logo_en.png */; };
+		801EDEF81BEA784500A16E85 /* outlook_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEF71BEA784500A16E85 /* outlook_logo.png */; };
 		80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */; };
 		80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */; };
 		802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 802408ED1B786FC80072FB98 /* SMBoxView.m */; };
@@ -428,13 +427,11 @@
 		801EDEE51BE9E96800A16E85 /* SMNewAccountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNewAccountWindowController.h; sourceTree = "<group>"; };
 		801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNewAccountWindowController.m; sourceTree = "<group>"; };
 		801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMNewAccountWindowController.xib; sourceTree = "<group>"; };
-		801EDEEA1BE9E9A700A16E85 /* SMNewAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNewAccountViewController.h; sourceTree = "<group>"; };
-		801EDEEB1BE9E9A700A16E85 /* SMNewAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNewAccountViewController.m; sourceTree = "<group>"; };
-		801EDEEC1BE9E9A700A16E85 /* SMNewAccountViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMNewAccountViewController.xib; sourceTree = "<group>"; };
 		801EDEEF1BE9EB6700A16E85 /* at_sign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = at_sign.png; sourceTree = "<group>"; };
 		801EDEF11BE9F01800A16E85 /* gmail_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gmail_logo.png; sourceTree = "<group>"; };
 		801EDEF31BE9F06500A16E85 /* yahoo_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yahoo_logo.png; sourceTree = "<group>"; };
 		801EDEF41BE9F06500A16E85 /* yandex_logo_en.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yandex_logo_en.png; sourceTree = "<group>"; };
+		801EDEF71BEA784500A16E85 /* outlook_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = outlook_logo.png; sourceTree = "<group>"; };
 		80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountPreferencesViewController.h; sourceTree = "<group>"; };
 		80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountPreferencesViewController.m; sourceTree = "<group>"; };
 		80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAccountPreferencesViewController.xib; sourceTree = "<group>"; };
@@ -897,6 +894,7 @@
 			isa = PBXGroup;
 			children = (
 				801EDEF11BE9F01800A16E85 /* gmail_logo.png */,
+				801EDEF71BEA784500A16E85 /* outlook_logo.png */,
 				801EDEF31BE9F06500A16E85 /* yahoo_logo.png */,
 				801EDEF41BE9F06500A16E85 /* yandex_logo_en.png */,
 			);
@@ -907,7 +905,6 @@
 			isa = PBXGroup;
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
-				801EDEEC1BE9E9A700A16E85 /* SMNewAccountViewController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
 				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,
 			);
@@ -919,8 +916,6 @@
 			children = (
 				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
-				801EDEEA1BE9E9A700A16E85 /* SMNewAccountViewController.h */,
-				801EDEEB1BE9E9A700A16E85 /* SMNewAccountViewController.m */,
 				801EDEE51BE9E96800A16E85 /* SMNewAccountWindowController.h */,
 				801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */,
 				803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */,
@@ -1133,6 +1128,7 @@
 				80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */,
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
+				801EDEF81BEA784500A16E85 /* outlook_logo.png in Resources */,
 				00DBA6D81AC25FD500DFE03D /* SMMessageEditorWindowController.xib in Resources */,
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
 				8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */,
@@ -1157,7 +1153,6 @@
 				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				800C67921B499F0700272D60 /* Images.xcassets in Resources */,
-				801EDEEE1BE9E9A800A16E85 /* SMNewAccountViewController.xib in Resources */,
 				80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */,
 				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,
 			);
@@ -1207,7 +1202,6 @@
 				00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */,
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
-				801EDEED1BE9E9A800A16E85 /* SMNewAccountViewController.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
 				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,

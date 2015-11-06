@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMNewAccountWindowController : NSWindowController<NSWindowDelegate>
+@interface SMNewAccountWindowController : NSWindowController<NSWindowDelegate, NSTextFieldDelegate>
 
 @end

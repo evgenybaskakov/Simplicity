@@ -11,6 +11,7 @@
                 <outlet property="accountImageButton" destination="bEp-M7-nCy" id="VfN-CC-1K9"/>
                 <outlet property="accountImageField" destination="bEp-M7-nCy" id="yxB-Lw-QQY"/>
                 <outlet property="accountNameField" destination="kKd-jf-W9F" id="taY-RV-N9b"/>
+                <outlet property="accountNameInvalidMarker" destination="IlH-pY-YaW" id="4tt-Nn-jQh"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
                 <outlet property="customServerSelectionButton" destination="Eau-SN-Ure" id="lL4-wX-MSh"/>
@@ -149,6 +150,7 @@ Gw
                     </textFieldCell>
                     <connections>
                         <action selector="fullNameEnterAction:" target="-2" id="LKI-on-DwV"/>
+                        <outlet property="delegate" destination="-2" id="T5R-Ob-U5m"/>
                     </connections>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Y9-pv-HRt">
@@ -161,6 +163,7 @@ Gw
                     </textFieldCell>
                     <connections>
                         <action selector="emailAddressEnterAction:" target="-2" id="IlN-8T-5vG"/>
+                        <outlet property="delegate" destination="-2" id="wvK-ZK-W0R"/>
                     </connections>
                 </textField>
                 <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aGg-6X-E3Q">
@@ -313,6 +316,14 @@ Gw
             <rect key="frame" x="0.0" y="0.0" width="474" height="311"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="BPU-oZ-5b2">
+                    <rect key="frame" x="0.0" y="161" width="161" height="150"/>
+                    <shadow key="shadow">
+                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </shadow>
+                    <animations/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="hap-fn-D0w"/>
+                </imageView>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PsN-oe-VGb">
                     <rect key="frame" x="167" y="182" width="268" height="40"/>
                     <animations/>
@@ -330,6 +341,10 @@ Gw
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
+                    <connections>
+                        <action selector="accountNameEnterAction:" target="-2" id="d38-Xq-9og"/>
+                        <outlet property="delegate" destination="-2" id="KUY-Pm-ekS"/>
+                    </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jG2-gd-lVh">
                     <rect key="frame" x="18" y="111" width="152" height="17"/>
@@ -356,14 +371,14 @@ Gw
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="accountImageSelectAction:" target="-2" id="Qsm-er-wAw"/>
+                    </connections>
                 </button>
-                <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="BPU-oZ-5b2">
-                    <rect key="frame" x="0.0" y="161" width="161" height="150"/>
-                    <shadow key="shadow">
-                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                    </shadow>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IlH-pY-YaW">
+                    <rect key="frame" x="424" y="107" width="23" height="23"/>
                     <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="hap-fn-D0w"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="OCs-5c-RMw"/>
                 </imageView>
             </subviews>
             <animations/>

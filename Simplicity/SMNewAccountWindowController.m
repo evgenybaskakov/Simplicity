@@ -47,12 +47,17 @@ static const NSUInteger LAST_STEP = 2;
 @property (strong) IBOutlet NSView *step3PanelView;
 @property (weak) IBOutlet NSTextField *accountNameField;
 @property (weak) IBOutlet NSButton *accountImageButton;
+@property (weak) IBOutlet NSImageView *accountNameInvalidMarker;
 
 @end
 
 @implementation SMNewAccountWindowController {
+    BOOL _fullNameEntered;
+    BOOL _emailAddressEntered;
+    BOOL _accountNameEntered;
     BOOL _fullNameValid;
     BOOL _emailAddressValid;
+    BOOL _accountNameValid;
     NSUInteger _curStep;
     NSArray *_mailServiceProviderButtons;
     NSArray *_mailServiceProviderTypes;
@@ -69,6 +74,7 @@ static const NSUInteger LAST_STEP = 2;
     
     _fullNameInvalidMarker.hidden = YES;
     _emailInvalidMarker.hidden = YES;
+    _accountNameInvalidMarker.hidden = YES;
     
     [self showStep:0];
 }
@@ -105,18 +111,47 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (IBAction)fullNameEnterAction:(id)sender {
+    [self validateUserName];
+    
+    _fullNameEntered = YES;
+}
+
+- (IBAction)emailAddressEnterAction:(id)sender {
+    [self validateEmailAddress];
+    
+    _emailAddressEntered = YES;
+}
+
+- (IBAction)passwordEnterAction:(id)sender {
+    // Nothing to do.
+}
+
+- (IBAction)accountNameEnterAction:(id)sender {
+    [self validateAccountName];
+
+    _accountNameEntered = YES;
+}
+
+- (IBAction)accountImageSelectAction:(id)sender {
+    SM_LOG_WARNING(@"TODO");
+}
+
+- (void)validateUserName {
     _fullNameValid = (_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0)? YES : NO;
     _fullNameInvalidMarker.hidden = (_fullNameValid? YES : NO);
     _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
 }
 
-- (IBAction)emailAddressEnterAction:(id)sender {
+- (void)validateEmailAddress {
     _emailAddressValid = [SMStringUtils emailAddressValid:_emailAddressField.stringValue];
     _emailInvalidMarker.hidden = (_emailAddressValid? YES : NO);
     _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
 }
 
-- (IBAction)passwordEnterAction:(id)sender {
+- (void)validateAccountName {
+    _accountNameValid = (_accountNameField.stringValue != nil && _accountNameField.stringValue.length > 0? YES : NO);
+    _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);
+    _nextButton.enabled = (_accountNameValid? YES : NO);
 }
 
 - (void)showStep:(NSUInteger)step {
@@ -156,7 +191,7 @@ static const NSUInteger LAST_STEP = 2;
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
         _nextButton.title = @"Finish";
-        _nextButton.enabled = YES;
+        _nextButton.enabled = (_accountNameValid? YES : NO);
     }
 }
 
@@ -177,6 +212,24 @@ static const NSUInteger LAST_STEP = 2;
     }
     
     _nextButton.enabled = YES;
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj {
+    if([obj object] == _fullNameField) {
+        if(_fullNameEntered) {
+            [self validateUserName];
+        }
+    }
+    else if([obj object] == _emailAddressField) {
+        if(_emailAddressEntered) {
+            [self validateEmailAddress];
+        }
+    }
+    else if([obj object] == _accountNameField) {
+        if(_accountNameEntered) {
+            [self validateAccountName];
+        }
+    }
 }
 
 - (void)finishAccountCreation {

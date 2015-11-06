@@ -10,6 +10,14 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, SMServiceProviderType) {
+    SMServiceProviderType_Gmail,
+    SMServiceProviderType_Yahoo,
+    SMServiceProviderType_Outlook,
+    SMServiceProviderType_Yandex,
+    SMServiceProviderType_Custom
+};
+
 typedef NS_ENUM(NSInteger, SMServerConnectionType) {
     SMServerConnectionType_Clear,
     SMServerConnectionType_StartTLS,
@@ -40,7 +48,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 
 - (NSUInteger)accountsCount;
 
-- (void)addAccountWithName:(NSString*)name;
+- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress password:(NSString*)password type:(SMServiceProviderType)type;
 - (void)removeAccount:(NSUInteger)idx;
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name;

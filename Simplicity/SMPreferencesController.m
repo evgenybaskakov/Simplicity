@@ -113,8 +113,10 @@
     return self;
 }
 
-- (void)addAccountWithName:(NSString*)name {
-    NSAssert(nil, @"TODO");
+- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress password:(NSString*)password type:(SMServiceProviderType)type {
+
+    SM_LOG_INFO(@"New account '%@', userName '%@', emailAddress '%@', type %lu", accountName, userName, emailAddress, type);
+
 }
 
 - (void)removeAccount:(NSUInteger)idx {

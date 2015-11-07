@@ -136,13 +136,13 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (IBAction)fullNameEnterAction:(id)sender {
-    [self validateUserName];
+    [self validateUserName:NO];
     
     _fullNameEntered = YES;
 }
 
 - (IBAction)emailAddressEnterAction:(id)sender {
-    [self validateEmailAddress];
+    [self validateEmailAddress:NO];
     
     _emailAddressEntered = YES;
 }
@@ -152,7 +152,7 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (IBAction)accountNameEnterAction:(id)sender {
-    [self validateAccountName];
+    [self validateAccountName:NO];
 
     _accountNameEntered = YES;
 }
@@ -161,21 +161,33 @@ static const NSUInteger LAST_STEP = 2;
     SM_LOG_WARNING(@"TODO");
 }
 
-- (void)validateUserName {
+- (void)validateUserName:(BOOL)checkFirst {
     _fullNameValid = (_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0)? YES : NO;
-    _fullNameInvalidMarker.hidden = (_fullNameValid? YES : NO);
+
+    if(checkFirst && _fullNameEntered) {
+        _fullNameInvalidMarker.hidden = (_fullNameValid? YES : NO);
+    }
+    
     _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
 }
 
-- (void)validateEmailAddress {
+- (void)validateEmailAddress:(BOOL)checkFirst {
     _emailAddressValid = [SMStringUtils emailAddressValid:_emailAddressField.stringValue];
-    _emailInvalidMarker.hidden = (_emailAddressValid? YES : NO);
+
+    if(checkFirst && _emailAddressEntered) {
+        _emailInvalidMarker.hidden = (_emailAddressValid? YES : NO);
+    }
+
     _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
 }
 
-- (void)validateAccountName {
+- (void)validateAccountName:(BOOL)checkFirst {
     _accountNameValid = (_accountNameField.stringValue != nil && _accountNameField.stringValue.length > 0? YES : NO);
-    _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);
+    
+    if(checkFirst && _accountNameEntered) {
+        _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);
+    }
+    
     _nextButton.enabled = (_accountNameValid? YES : NO);
 }
 
@@ -241,19 +253,13 @@ static const NSUInteger LAST_STEP = 2;
 
 - (void)controlTextDidChange:(NSNotification *)obj {
     if([obj object] == _fullNameField) {
-        if(_fullNameEntered) {
-            [self validateUserName];
-        }
+        [self validateUserName:YES];
     }
     else if([obj object] == _emailAddressField) {
-        if(_emailAddressEntered) {
-            [self validateEmailAddress];
-        }
+        [self validateEmailAddress:YES];
     }
     else if([obj object] == _accountNameField) {
-        if(_accountNameEntered) {
-            [self validateAccountName];
-        }
+        [self validateAccountName:YES];
     }
 }
 

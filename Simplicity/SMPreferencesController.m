@@ -170,6 +170,12 @@
     NSAssert(nil, @"TODO");
 }
 
+- (NSUInteger)accountsCount {
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
+}
+
+#pragma Property accessors
+
 - (void)setProperty:(NSString*)propertyName idx:(NSUInteger)idx obj:(NSObject*)obj {
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
@@ -196,9 +202,7 @@
     }
 }
 
-- (NSUInteger)accountsCount {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
-}
+#pragma mark Property setters
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name {
     [self setProperty:kAccountName idx:idx obj:name];
@@ -222,10 +226,6 @@
 
 - (void)setImapUserName:(NSUInteger)idx userName:(NSString*)userName {
     [self setProperty:kImapUserName idx:idx obj:userName];
-}
-
-- (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
-    [self savePassword:idx serverType:kServerTypeIMAP password:password];
 }
 
 - (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
@@ -252,10 +252,6 @@
     [self setProperty:kSmtpUserName idx:idx obj:userName];
 }
 
-- (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
-    [self savePassword:idx serverType:kServerTypeSMTP password:password];
-}
-
 - (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
     [self setProperty:kSmtpConnectionType idx:idx obj:[NSNumber numberWithUnsignedInteger:connectionType]];
 }
@@ -267,6 +263,8 @@
 - (void)setSmtpNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
     [self setProperty:kSmtpNeedCheckCertificate idx:idx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
 }
+
+#pragma mark Property getters
 
 - (NSString*)accountName:(NSUInteger)idx {
     return (NSString*)[self loadProperty:kAccountName idx:idx];
@@ -292,10 +290,6 @@
     return (NSString*)[self loadProperty:kImapUserName idx:idx];
 }
 
-- (NSString*)imapPassword:(NSUInteger)idx {
-    return (NSString*)[self loadPassword:idx serverType:kServerTypeIMAP];
-}
-
 - (SMServerConnectionType)imapConnectionType:(NSUInteger)idx {
     return [(NSNumber*)[self loadProperty:kImapConnectionType idx:idx] unsignedIntegerValue];
 }
@@ -313,15 +307,11 @@
 }
 
 - (unsigned int)smtpPort:(NSUInteger)idx {
-    return (unsigned int)[self loadProperty:kSmtpPort idx:idx];
+    return [(NSNumber*)[self loadProperty:kSmtpPort idx:idx] unsignedIntValue];
 }
 
 - (NSString*)smtpUserName:(NSUInteger)idx {
     return (NSString*)[self loadProperty:kSmtpUserName idx:idx];
-}
-
-- (NSString*)smtpPassword:(NSUInteger)idx {
-    return [self loadPassword:idx serverType:kServerTypeSMTP];
 }
 
 - (SMServerConnectionType)smtpConnectionType:(NSUInteger)idx {
@@ -335,6 +325,26 @@
 - (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
     return [(NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate idx:idx] unsignedIntegerValue];
 }
+
+#pragma mark Password management
+
+- (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
+    [self savePassword:idx serverType:kServerTypeIMAP password:password];
+}
+
+- (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
+    [self savePassword:idx serverType:kServerTypeSMTP password:password];
+}
+
+- (NSString*)imapPassword:(NSUInteger)idx {
+    return [self loadPassword:idx serverType:kServerTypeIMAP];
+}
+
+- (NSString*)smtpPassword:(NSUInteger)idx {
+    return [self loadPassword:idx serverType:kServerTypeSMTP];
+}
+
+#pragma mark Secured data accessors
 
 - (void)savePassword:(NSUInteger)idx serverType:(NSString*)serverType password:(NSString*)password {
     NSString *accountName = [self accountName:idx];

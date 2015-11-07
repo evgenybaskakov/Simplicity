@@ -75,6 +75,7 @@
 
 @property (nonatomic) SMNewAccountWindowController *createNewAccountWindowController;
 
+- (void)showNewAccountWindow;
 - (void)closeNewAccountWindow;
 
 @end

@@ -9,7 +9,10 @@
 #import "SSKeychain.h"
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMMailLogin.h"
+#import "SMMailServiceProvider.h"
 #import "SMPreferencesController.h"
 
 #define kSimplicityServiceName  @"com.simplicity.mail.service"
@@ -113,10 +116,44 @@
     return self;
 }
 
-- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress password:(NSString*)password type:(SMServiceProviderType)type {
+- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider {
 
-    SM_LOG_INFO(@"New account '%@', userName '%@', emailAddress '%@', type %lu", accountName, userName, emailAddress, type);
+    SM_LOG_INFO(@"New account '%@', userName '%@', emailAddress '%@'", accountName, userName, emailAddress);
 
+    [self setAccountName:0 name:accountName];
+    [self setFullUserName:0 userName:userName];
+    [self setUserEmail:0 email:emailAddress];
+    
+    [self setImapServer:0 server:provider.imapServer];
+    [self setImapPort:0 port:provider.imapPort];
+    [self setImapUserName:0 userName:provider.imapUserName];
+    [self setImapPassword:0 password:provider.imapPassword];
+    [self setImapConnectionType:0 connectionType:provider.imapConnectionType];
+    [self setImapAuthType:0 authType:provider.imapAuthType];
+    [self setImapNeedCheckCertificate:0 checkCertificate:provider.imapNeedCheckCertificate];
+    
+    [self setSmtpServer:0 server:provider.smtpServer];
+    [self setSmtpPort:0 port:provider.smtpPort];
+    [self setSmtpUserName:0 userName:provider.smtpUserName];
+    [self setSmtpPassword:0 password:provider.smtpPassword];
+    [self setSmtpConnectionType:0 connectionType:provider.smtpConnectionType];
+    [self setSmtpAuthType:0 authType:provider.smtpAuthType];
+    [self setSmtpNeedCheckCertificate:0 checkCertificate:provider.smtpNeedCheckCertificate];
+
+    NSUInteger currentAccountCount = [self accountsCount];
+
+    if(currentAccountCount == 0) {
+        // TODO: move up
+        [[NSUserDefaults standardUserDefaults] setInteger:(currentAccountCount + 1) forKey:kAccountsCount];
+
+        SM_LOG_INFO(@"Starting processing email account");
+
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[appDelegate appController] initOpExecutor];
+    }
+    else {
+        SM_LOG_WARNING(@"New account has not been added, there are %lu accounts already", currentAccountCount);
+    }
 }
 
 - (void)removeAccount:(NSUInteger)idx {
@@ -192,8 +229,7 @@
 }
 
 - (NSUInteger)accountsCount {
-    return 1;
-//TODO    return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
 }
 
 - (NSString*)accountName:(NSUInteger)idx {

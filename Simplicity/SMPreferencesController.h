@@ -10,33 +10,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, SMServiceProviderType) {
-    SMServiceProviderType_Gmail,
-    SMServiceProviderType_Yahoo,
-    SMServiceProviderType_Outlook,
-    SMServiceProviderType_Yandex,
-    SMServiceProviderType_Custom
-};
-
-typedef NS_ENUM(NSInteger, SMServerConnectionType) {
-    SMServerConnectionType_Clear,
-    SMServerConnectionType_StartTLS,
-    SMServerConnectionType_TLS,
-};
-
-typedef NS_ENUM(NSInteger, SMServerAuthType) {
-    SMServerAuthType_SASLNone,
-    SMServerAuthType_SASLCRAMMD5,
-    SMServerAuthType_SASLPlain,
-    SMServerAuthType_SASLGSSAPI,
-    SMServerAuthType_SASLDIGESTMD5,
-    SMServerAuthType_SASLLogin,
-    SMServerAuthType_SASLSRP,
-    SMServerAuthType_SASLNTLM,
-    SMServerAuthType_SASLKerberosV4,
-    SMServerAuthType_XOAuth2,
-    SMServerAuthType_XOAuth2Outlook,
-};
+#import "SMMailServiceProvider.h"
 
 @interface SMPreferencesController : NSObject
 
@@ -48,7 +22,7 @@ typedef NS_ENUM(NSInteger, SMServerAuthType) {
 
 - (NSUInteger)accountsCount;
 
-- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress password:(NSString*)password type:(SMServiceProviderType)type;
+- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;
 - (void)removeAccount:(NSUInteger)idx;
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name;

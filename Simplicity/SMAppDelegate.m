@@ -34,7 +34,12 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
 	_window.titleVisibility = NSWindowTitleHidden;
 
-    [[self appController] initOpExecutor];
+    if([_preferencesController accountsCount] == 0) {
+        [_appController showNewAccountWindow];
+    }
+    else {
+        [[self appController] initOpExecutor];
+    }
 }
 
 + (NSURL*)appDataDir {

@@ -11,6 +11,12 @@
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
 #import "SMPreferencesController.h"
+#import "SMMailServiceProvider.h"
+#import "SMMailServiceProviderGmail.h"
+#import "SMMailServiceProviderYahoo.h"
+#import "SMMailServiceProviderOutlook.h"
+#import "SMMailServiceProviderYandex.h"
+#import "SMMailServiceProviderCustom.h"
 #import "SMNewAccountWindowController.h"
 
 static const NSUInteger LAST_STEP = 2;
@@ -67,21 +73,40 @@ static const NSUInteger LAST_STEP = 2;
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    _mailServiceProvierIdx = NSUIntegerMax;
-    
     _mailServiceProviderButtons = @[ _gmailSelectionButton, _yahooSelectionButton, _outlookSelectionButton, _yandexSelectionButton, _customServerSelectionButton ];
-    _mailServiceProviderTypes = @[ @(SMServiceProviderType_Gmail), @(SMServiceProviderType_Yahoo), @(SMServiceProviderType_Outlook), @(SMServiceProviderType_Yandex), @(SMServiceProviderType_Custom) ];
     
-    _fullNameInvalidMarker.hidden = YES;
-    _emailInvalidMarker.hidden = YES;
-    _accountNameInvalidMarker.hidden = YES;
-    
-    [self showStep:0];
+    [self resetState];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] closeNewAccountWindow];
+}
+
+- (void)resetState {
+    _fullNameEntered = NO;
+    _emailAddressEntered = NO;
+    _accountNameEntered = NO;
+    _fullNameValid = NO;
+    _emailAddressValid = NO;
+    _accountNameValid = NO;
+    _curStep = 0;
+    
+    if(_mailServiceProvierIdx != NSUIntegerMax) {
+        ((NSButton*)_mailServiceProviderButtons[_mailServiceProvierIdx]).state = NSOffState;
+        _mailServiceProvierIdx = NSUIntegerMax;
+    }
+    
+    [self showStep:0];
+
+    _fullNameField.stringValue = @"";
+    _emailAddressField.stringValue = @"";
+    _passwordField.stringValue = @"";
+    _accountNameField.stringValue = @"";
+    
+    _fullNameInvalidMarker.hidden = YES;
+    _emailInvalidMarker.hidden = YES;
+    _accountNameInvalidMarker.hidden = YES;
 }
 
 //- (IBAction)closeNewAccountAction:(id)sender {
@@ -241,7 +266,31 @@ static const NSUInteger LAST_STEP = 2;
     NSAssert(_emailAddressField.stringValue != nil && _emailAddressField.stringValue.length > 0, @"no email address");
     NSAssert(_accountImageButton.image != nil, @"no account image");
     
-    [[appDelegate preferencesController] addAccountWithName:_accountNameField.stringValue image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil) type:[_mailServiceProviderTypes[_mailServiceProvierIdx] intValue]];
+    SMMailServiceProvider *provider = nil;
+    id selectedMailProviderButton = _mailServiceProviderButtons[_mailServiceProvierIdx];
+    
+    if(selectedMailProviderButton == _gmailSelectionButton) {
+        provider = [[SMMailServiceProviderGmail alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+    }
+    else if(selectedMailProviderButton == _yahooSelectionButton) {
+        provider = [[SMMailServiceProviderYahoo alloc] init];
+    }
+    else if(selectedMailProviderButton == _outlookSelectionButton) {
+        provider = [[SMMailServiceProviderOutlook alloc] init];
+    }
+    else if(selectedMailProviderButton == _yandexSelectionButton) {
+        provider = [[SMMailServiceProviderYandex alloc] init];
+    }
+    else if(selectedMailProviderButton == _customServerSelectionButton) {
+        provider = [[SMMailServiceProviderCustom alloc] init];
+    }
+    else {
+        NSAssert(nil, @"bad _mailServiceProvierIdx %ld", _mailServiceProvierIdx);
+    }
+  
+    NSAssert(provider != nil, @"no mail provider");
+    
+    [[appDelegate preferencesController] addAccountWithName:_accountNameField.stringValue image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
 }
 
 @end

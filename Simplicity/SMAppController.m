@@ -569,8 +569,15 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 #pragma mark Menu actions
 
 - (IBAction)showNewAccountWindowAction:(id)sender {
+    [self showNewAccountWindow];
+}
+
+- (void)showNewAccountWindow {
     if(_createNewAccountWindowController == nil) {
-       _createNewAccountWindowController = [[SMNewAccountWindowController alloc] initWithWindowNibName:@"SMNewAccountWindowController"];
+        _createNewAccountWindowController = [[SMNewAccountWindowController alloc] initWithWindowNibName:@"SMNewAccountWindowController"];
+    }
+    else {
+        [_createNewAccountWindowController resetState];
     }
     
     NSWindow *newAccountSheet = _createNewAccountWindowController.window;

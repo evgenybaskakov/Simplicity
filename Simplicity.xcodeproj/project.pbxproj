@@ -167,6 +167,12 @@
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
+		80BFC3B51BEDC49900467243 /* SMMailServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */; };
+		80BFC3BF1BEDC67800467243 /* SMMailServiceProviderGmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3BE1BEDC67800467243 /* SMMailServiceProviderGmail.m */; };
+		80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C11BEDCA5C00467243 /* SMMailServiceProviderYandex.m */; };
+		80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C41BEDCAA200467243 /* SMMailServiceProviderYahoo.m */; };
+		80BFC3C81BEDCACA00467243 /* SMMailServiceProviderOutlook.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */; };
+		80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
 		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
@@ -504,6 +510,18 @@
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
+		80BFC3B31BEDC49900467243 /* SMMailServiceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProvider.h; sourceTree = "<group>"; };
+		80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProvider.m; sourceTree = "<group>"; };
+		80BFC3BD1BEDC67800467243 /* SMMailServiceProviderGmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderGmail.h; sourceTree = "<group>"; };
+		80BFC3BE1BEDC67800467243 /* SMMailServiceProviderGmail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderGmail.m; sourceTree = "<group>"; };
+		80BFC3C01BEDCA5C00467243 /* SMMailServiceProviderYandex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderYandex.h; sourceTree = "<group>"; };
+		80BFC3C11BEDCA5C00467243 /* SMMailServiceProviderYandex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderYandex.m; sourceTree = "<group>"; };
+		80BFC3C31BEDCAA200467243 /* SMMailServiceProviderYahoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderYahoo.h; sourceTree = "<group>"; };
+		80BFC3C41BEDCAA200467243 /* SMMailServiceProviderYahoo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderYahoo.m; sourceTree = "<group>"; };
+		80BFC3C61BEDCACA00467243 /* SMMailServiceProviderOutlook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderOutlook.h; sourceTree = "<group>"; };
+		80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderOutlook.m; sourceTree = "<group>"; };
+		80BFC3C91BEDCAE900467243 /* SMMailServiceProviderCustom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderCustom.h; sourceTree = "<group>"; };
+		80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderCustom.m; sourceTree = "<group>"; };
 		80C69A941BB6553D00F24B9F /* SMCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCompression.h; sourceTree = "<group>"; };
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMThreadSafeOperationQueue.h; sourceTree = "<group>"; };
@@ -916,6 +934,18 @@
 			children = (
 				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
+				80BFC3B31BEDC49900467243 /* SMMailServiceProvider.h */,
+				80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */,
+				80BFC3C91BEDCAE900467243 /* SMMailServiceProviderCustom.h */,
+				80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */,
+				80BFC3BD1BEDC67800467243 /* SMMailServiceProviderGmail.h */,
+				80BFC3BE1BEDC67800467243 /* SMMailServiceProviderGmail.m */,
+				80BFC3C61BEDCACA00467243 /* SMMailServiceProviderOutlook.h */,
+				80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */,
+				80BFC3C31BEDCAA200467243 /* SMMailServiceProviderYahoo.h */,
+				80BFC3C41BEDCAA200467243 /* SMMailServiceProviderYahoo.m */,
+				80BFC3C01BEDCA5C00467243 /* SMMailServiceProviderYandex.h */,
+				80BFC3C11BEDCA5C00467243 /* SMMailServiceProviderYandex.m */,
 				801EDEE51BE9E96800A16E85 /* SMNewAccountWindowController.h */,
 				801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */,
 				803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */,
@@ -1183,6 +1213,7 @@
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
 				802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */,
 				803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */,
+				80BFC3BF1BEDC67800467243 /* SMMailServiceProviderGmail.m in Sources */,
 				8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */,
 				80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */,
 				00036D7F1A205FCB0085C266 /* SMLocalFolderRegistry.m in Sources */,
@@ -1197,11 +1228,13 @@
 				0002A0A517D1B1E000EA4AFF /* SMAppDelegate.m in Sources */,
 				00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */,
 				806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */,
+				80BFC3C81BEDCACA00467243 /* SMMailServiceProviderOutlook.m in Sources */,
 				007A73621A57A95500A4D694 /* SMMessageFullDetailsViewController.m in Sources */,
 				004741651AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m in Sources */,
 				00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */,
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
+				80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
 				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,
@@ -1251,12 +1284,15 @@
 				8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */,
 				00A681701A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m in Sources */,
 				8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */,
+				80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
+				80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,
 				80628B551BE87A3400016803 /* SSKeychain.m in Sources */,
 				802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */,
 				801EDEE81BE9E96800A16E85 /* SMNewAccountWindowController.m in Sources */,
+				80BFC3B51BEDC49900467243 /* SMMailServiceProvider.m in Sources */,
 				00A085B01A72145300CC4E1C /* SMAttachmentsPanelViewController.m in Sources */,
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,
 				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,

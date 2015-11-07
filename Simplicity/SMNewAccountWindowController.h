@@ -10,4 +10,6 @@
 
 @interface SMNewAccountWindowController : NSWindowController<NSWindowDelegate, NSTextFieldDelegate>
 
+- (void)resetState;
+
 @end

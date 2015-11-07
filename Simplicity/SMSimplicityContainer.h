@@ -42,4 +42,6 @@
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 
+- (void)getIMAPServerCapabilities;
+
 @end

@@ -66,8 +66,6 @@
 		_searchResultsListController = [[SMSearchResultsListController alloc] init];
 		_mailboxController = [[ SMMailboxController alloc ] initWithModel:self ];
 		_messageComparators = [SMMessageComparators new];
-
-		[self getIMAPServerCapabilities];
 	}
 	
 	SM_LOG_DEBUG(@"model initialized");

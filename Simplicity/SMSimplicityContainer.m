@@ -35,26 +35,7 @@
 //		MCLogEnabled = 1;
 
         _preferencesController = preferencesController;
-		_imapSession = [[MCOIMAPSession alloc] init];
-		
-		[_imapSession setPort:[_preferencesController imapPort:0]];
-		[_imapSession setHostname:[_preferencesController imapServer:0]];
-        [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:0]];
-        [_imapSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:0]]];
-		[_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:0]]];
-		[_imapSession setUsername:[_preferencesController imapUserName:0]];
-		[_imapSession setPassword:[_preferencesController imapPassword:0]];
-
-		_smtpSession = [[MCOSMTPSession alloc] init];
-		
-		[_smtpSession setHostname:[_preferencesController smtpServer:0]];
-		[_smtpSession setPort:[_preferencesController smtpPort:0]];
-		[_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:0]];
-        [_smtpSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:0]]];
-		[_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:0]]];
-		[_smtpSession setUsername:[_preferencesController smtpUserName:0]];
-		[_smtpSession setPassword:[_preferencesController smtpPassword:0]];
-
+        
         _database = [[SMDatabase alloc] initWithFilePath:@"/Users/evgenybaskakov/Projects/Simplicity/Simplicity.sqlite"];
 
         _mailbox = [ SMMailbox new ];
@@ -79,6 +60,28 @@
 	SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
 	
 	return capabilities;
+}
+
+- (void)initServerSession {
+    _imapSession = [[MCOIMAPSession alloc] init];
+    
+    [_imapSession setPort:[_preferencesController imapPort:0]];
+    [_imapSession setHostname:[_preferencesController imapServer:0]];
+    [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:0]];
+    [_imapSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:0]]];
+    [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:0]]];
+    [_imapSession setUsername:[_preferencesController imapUserName:0]];
+    [_imapSession setPassword:[_preferencesController imapPassword:0]];
+    
+    _smtpSession = [[MCOSMTPSession alloc] init];
+    
+    [_smtpSession setHostname:[_preferencesController smtpServer:0]];
+    [_smtpSession setPort:[_preferencesController smtpPort:0]];
+    [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:0]];
+    [_smtpSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:0]]];
+    [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:0]]];
+    [_smtpSession setUsername:[_preferencesController smtpUserName:0]];
+    [_smtpSession setPassword:[_preferencesController smtpPassword:0]];
 }
 
 - (void)getIMAPServerCapabilities {

@@ -110,6 +110,9 @@
     self = [super init];
     
     if(self) {
+#if 0
+        // TODO: Create a "clear settings" button.
+        
         NSDictionary *allObjects = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
         
         for(NSString *key in allObjects) {
@@ -117,6 +120,7 @@
         }
         
         [[NSUserDefaults standardUserDefaults] synchronize];
+#endif
     }
     
     return self;
@@ -126,9 +130,11 @@
     
     SM_LOG_INFO(@"New account '%@', userName '%@', emailAddress '%@'", accountName, userName, emailAddress);
     
-    NSUInteger currentAccountCount = [self accountsCount];
-    NSUInteger newAccountIdx = currentAccountCount;
+    NSUInteger prevAccountCount = [self accountsCount];
+    NSUInteger newAccountIdx = prevAccountCount;
     
+    [[NSUserDefaults standardUserDefaults] setInteger:(prevAccountCount + 1) forKey:kAccountsCount];
+
     [self setAccountName:newAccountIdx name:accountName];
     [self setFullUserName:newAccountIdx userName:userName];
     [self setUserEmail:newAccountIdx email:emailAddress];
@@ -149,19 +155,14 @@
     [self setSmtpAuthType:newAccountIdx authType:provider.smtpAuthType];
     [self setSmtpNeedCheckCertificate:newAccountIdx checkCertificate:provider.smtpNeedCheckCertificate];
     
-    if(currentAccountCount == 0) {
-        // TODO: move up
-        [[NSUserDefaults standardUserDefaults] setInteger:(currentAccountCount + 1) forKey:kAccountsCount];
-        
+    if(prevAccountCount == 0) {
         SM_LOG_INFO(@"Starting processing email account");
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+        [[appDelegate model] initServerSession];
         [[appDelegate model] getIMAPServerCapabilities];
         [[appDelegate appController] initOpExecutor];
-    }
-    else {
-        SM_LOG_WARNING(@"New account has not been added, there are %lu accounts already", currentAccountCount);
     }
 }
 
@@ -173,7 +174,7 @@
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
     NSMutableArray *newArr = [NSMutableArray arrayWithArray:arr];
-    if(arr.count <= idx) {
+    if(newArr.count <= idx) {
         [newArr addObject:obj];
     }
     else {
@@ -186,7 +187,7 @@
 - (NSObject*)loadProperty:(NSString*)propertyName idx:(NSUInteger)idx {
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
-    if(idx < arr.count) {
+    if(arr != nil && idx < arr.count) {
         return arr[idx];
     }
     else {

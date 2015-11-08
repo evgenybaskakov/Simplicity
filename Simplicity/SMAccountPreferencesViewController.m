@@ -76,9 +76,9 @@
     [super viewDidLoad];
     
     _connectionTypeStrings = @[
-                               @"Clear text",
-                               @"Clear text + TLS/SSL",
-                               @"TLS/SSL",
+                               @"Clear",
+                               @"STARTTLS",
+                               @"TLS",
                                ];
     
     _connectionTypeConstants = @[
@@ -94,13 +94,13 @@
     [_smtpConnectionTypeList addItemsWithTitles:_connectionTypeStrings];
     
     _authTypeStrings = @[
-                         @"No authentication",
+                         @"None",
                          @"CRAM-MD5",
                          @"PLAIN",
                          @"GSSAPI",
                          @"DIGEST-MD5",
                          @"LOGIN",
-                         @"Secure remote password",
+                         @"SRP",
                          @"NTLM",
                          @"Kerberos V4",
                          @"OAuth2",

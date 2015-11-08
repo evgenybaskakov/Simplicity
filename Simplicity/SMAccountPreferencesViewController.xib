@@ -610,17 +610,13 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="glv-L8-Jw4" userLabel="IMAP connection progress">
-                        <rect key="frame" x="250" y="188" width="16" height="16"/>
-                        <animations/>
-                    </progressIndicator>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1cC-bn-JiN">
-                        <rect key="frame" x="248" y="69" width="20" height="20"/>
+                        <rect key="frame" x="246" y="69" width="20" height="20"/>
                         <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusAvailable" id="os1-lt-QmQ"/>
                     </imageView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rse-Xm-fRH">
-                        <rect key="frame" x="18" y="72" width="231" height="14"/>
+                        <rect key="frame" x="18" y="72" width="229" height="14"/>
                         <animations/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Connected" id="MXt-W3-7zr">
                             <font key="font" metaFont="smallSystem"/>
@@ -628,8 +624,12 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="glv-L8-Jw4" userLabel="IMAP connection progress">
+                        <rect key="frame" x="250" y="188" width="16" height="16"/>
+                        <animations/>
+                    </progressIndicator>
                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Nvo-M0-Chl" userLabel="SNMP connection progress">
-                        <rect key="frame" x="250" y="71" width="16" height="16"/>
+                        <rect key="frame" x="248" y="71" width="16" height="16"/>
                         <animations/>
                     </progressIndicator>
                 </subviews>

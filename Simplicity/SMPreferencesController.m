@@ -133,8 +133,6 @@
     NSUInteger prevAccountCount = [self accountsCount];
     NSUInteger newAccountIdx = prevAccountCount;
     
-    [[NSUserDefaults standardUserDefaults] setInteger:(prevAccountCount + 1) forKey:kAccountsCount];
-
     [self setAccountName:newAccountIdx name:accountName];
     [self setFullUserName:newAccountIdx userName:userName];
     [self setUserEmail:newAccountIdx email:emailAddress];
@@ -155,11 +153,14 @@
     [self setSmtpAuthType:newAccountIdx authType:provider.smtpAuthType];
     [self setSmtpNeedCheckCertificate:newAccountIdx checkCertificate:provider.smtpNeedCheckCertificate];
     
+    // Increment account acount after evething is set.
+    [[NSUserDefaults standardUserDefaults] setInteger:(prevAccountCount + 1) forKey:kAccountsCount];
+    
     if(prevAccountCount == 0) {
         SM_LOG_INFO(@"Starting processing email account");
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
+        
         [[appDelegate model] initServerSession];
         [[appDelegate model] getIMAPServerCapabilities];
         [[appDelegate appController] initOpExecutor];
@@ -181,7 +182,9 @@
     
     NSMutableArray *newArr = [NSMutableArray arrayWithArray:arr];
     if(newArr.count <= idx) {
-        [newArr addObject:obj];
+        while(newArr.count <= idx) {
+            [newArr addObject:obj];
+        }
     }
     else {
         newArr[idx] = obj;
@@ -267,63 +270,78 @@
 #pragma mark Property getters
 
 - (NSString*)accountName:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kAccountName idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kAccountName idx:idx];
+    return str? str : @"";
 }
 
 - (NSString*)fullUserName:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kFullUserName idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kFullUserName idx:idx];
+    return str? str : @"";
 }
 
 - (NSString*)userEmail:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kUserEmail idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kUserEmail idx:idx];
+    return str? str : @"";
 }
 
 - (NSString*)imapServer:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kImapServer idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kImapServer idx:idx];
+    return str? str : @"";
 }
 
 - (unsigned int)imapPort:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kImapPort idx:idx] unsignedIntValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapPort idx:idx];
+    return number? [number unsignedIntValue] : 0;
 }
 
 - (NSString*)imapUserName:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kImapUserName idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kImapUserName idx:idx];
+    return str? str : @"";
 }
 
 - (SMServerConnectionType)imapConnectionType:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kImapConnectionType idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapConnectionType idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 - (SMServerAuthType)imapAuthType:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kImapAuthType idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapAuthType idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 - (BOOL)imapNeedCheckCertificate:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kImapNeedCheckCertificate idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapNeedCheckCertificate idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 - (NSString*)smtpServer:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kSmtpServer idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kSmtpServer idx:idx];
+    return str? str : @"";
 }
 
 - (unsigned int)smtpPort:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kSmtpPort idx:idx] unsignedIntValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpPort idx:idx];
+    return number? [number unsignedIntValue] : 0;
 }
 
 - (NSString*)smtpUserName:(NSUInteger)idx {
-    return (NSString*)[self loadProperty:kSmtpUserName idx:idx];
+    NSString *str = (NSString*)[self loadProperty:kSmtpUserName idx:idx];
+    return str? str : @"";
 }
 
 - (SMServerConnectionType)smtpConnectionType:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kSmtpConnectionType idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpConnectionType idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 - (SMServerAuthType)smtpAuthType:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kSmtpAuthType idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpAuthType idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 - (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
-    return [(NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate idx:idx] unsignedIntegerValue];
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate idx:idx];
+    return number? [number unsignedIntegerValue] : 0;
 }
 
 #pragma mark Password management
@@ -337,11 +355,13 @@
 }
 
 - (NSString*)imapPassword:(NSUInteger)idx {
-    return [self loadPassword:idx serverType:kServerTypeIMAP];
+    NSString *str = [self loadPassword:idx serverType:kServerTypeIMAP];
+    return str? str : @"";
 }
 
 - (NSString*)smtpPassword:(NSUInteger)idx {
-    return [self loadPassword:idx serverType:kServerTypeSMTP];
+    NSString *str = [self loadPassword:idx serverType:kServerTypeSMTP];
+    return str? str : @"";
 }
 
 #pragma mark Secured data accessors

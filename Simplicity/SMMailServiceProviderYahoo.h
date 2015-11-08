@@ -10,4 +10,6 @@
 
 @interface SMMailServiceProviderYahoo : SMMailServiceProvider
 
+- (id)initWithEmailAddress:(NSString*)emailAddress password:(NSString*)password;
+
 @end

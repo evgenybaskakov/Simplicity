@@ -80,16 +80,16 @@
                                @"Clear text + TLS/SSL",
                                @"TLS/SSL",
                                ];
-
+    
     _connectionTypeConstants = @[
                                  [NSNumber numberWithUnsignedInteger:SMServerConnectionType_Clear],
                                  [NSNumber numberWithUnsignedInteger:SMServerConnectionType_StartTLS],
                                  [NSNumber numberWithUnsignedInteger:SMServerConnectionType_TLS],
                                  ];
-
+    
     [_imapConnectionTypeList removeAllItems];
     [_imapConnectionTypeList addItemsWithTitles:_connectionTypeStrings];
-
+    
     [_smtpConnectionTypeList removeAllItems];
     [_smtpConnectionTypeList addItemsWithTitles:_connectionTypeStrings];
     
@@ -120,10 +120,10 @@
                            [NSNumber numberWithUnsignedInt:SMServerAuthType_XOAuth2],
                            [NSNumber numberWithUnsignedInt:SMServerAuthType_XOAuth2Outlook],
                            ];
-
+    
     [_imapAuthTypeList removeAllItems];
     [_imapAuthTypeList addItemsWithTitles:_authTypeStrings];
-
+    
     [_smtpAuthTypeList removeAllItems];
     [_smtpAuthTypeList addItemsWithTitles:_authTypeStrings];
     
@@ -134,14 +134,14 @@
     
     [self loadCurrentValues:0];
     [self togglePanel:0];
-
+    
     [self checkImapConnectionAction:self];
     [self checkSmtpConnectionAction:self];
 }
 
 - (void)viewDidAppear {
     [_accountTableView reloadData];
-
+    
     [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
 }
 
@@ -159,13 +159,13 @@
     
     [_imapConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController imapConnectionType:accountIdx]]];
     [_imapAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController imapAuthType:accountIdx]]];
-
+    
     _smtpServerField.stringValue = [preferencesController smtpServer:accountIdx];
     _smtpUserNameField.stringValue = [preferencesController smtpUserName:accountIdx];
     _smtpPasswordField.stringValue = [preferencesController smtpPassword:accountIdx];
     _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:accountIdx]];
     _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:accountIdx]];
-
+    
     [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:accountIdx]]];
     [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
 }
@@ -194,7 +194,7 @@
 
 - (NSString*)connectionErrorMessage:(MCOErrorCode)mcoError {
     NSAssert(mcoError != MCOErrorNone, @"trying to get error message for non-error");
-
+    
     switch(mcoError) {
         case MCOErrorConnection:
             return @"Connection failed";
@@ -278,65 +278,101 @@
 #pragma mark Account settings actions
 
 - (IBAction)enterAccountNameAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setAccountName:0 name:_accountNameField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setAccountName:selectedAccount name:_accountNameField.stringValue];
 }
 
 - (IBAction)enterFullUserNameAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setFullUserName:0 userName:_fullUserNameField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setFullUserName:selectedAccount userName:_fullUserNameField.stringValue];
 }
 
 - (IBAction)enterEmailAddressAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:0 email:_emailAddressField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
 }
 
 - (IBAction)enterImapServerAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapServer:0 server:_imapServerField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapServer:selectedAccount server:_imapServerField.stringValue];
 }
 
 - (IBAction)enterImapUserNameAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapUserName:0 userName:_imapUserNameField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapUserName:selectedAccount userName:_imapUserNameField.stringValue];
 }
 
 - (IBAction)enterImapPasswordAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPassword:0 password:_imapPasswordField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPassword:selectedAccount password:_imapPasswordField.stringValue];
 }
 
 - (IBAction)enterSmtpServerAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpServer:0 server:_smtpServerField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpServer:selectedAccount server:_smtpServerField.stringValue];
 }
 
 - (IBAction)enterSmtpUserNameAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpUserName:0 userName:_smtpUserNameField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpUserName:selectedAccount userName:_smtpUserNameField.stringValue];
 }
 
 - (IBAction)enterSmtpPasswordAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPassword:0 password:_smtpPasswordField.stringValue];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPassword:selectedAccount password:_smtpPasswordField.stringValue];
 }
 
 #pragma mark Servers actions
 
 - (IBAction)selectImapConnectionTypeAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_imapConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapConnectionType:0 connectionType:connectionType];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapConnectionType:selectedAccount connectionType:connectionType];
 }
 
 - (IBAction)selectImapAuthTypeAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_imapAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapAuthType:0 authType:authType];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapAuthType:selectedAccount authType:authType];
 }
 
 - (IBAction)enterImapPortAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPort:0 port:(unsigned int)[_imapPortField.stringValue integerValue]];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPort:selectedAccount port:(unsigned int)[_imapPortField.stringValue integerValue]];
 }
 
 - (NSString*)connectionStatusText:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
@@ -374,70 +410,71 @@
 }
 
 - (IBAction)selectSmtpConnectionTypeAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_smtpConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpConnectionType:0 connectionType:connectionType];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpConnectionType:selectedAccount connectionType:connectionType];
 }
 
 - (IBAction)selectSmtpAuthTypeAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_smtpAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpAuthType:0 authType:authType];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpAuthType:selectedAccount authType:authType];
 }
 
 - (IBAction)enterSmtpPortAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+    
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPort:0 port:(unsigned int)[_smtpPortField.stringValue integerValue]];
+    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPort:selectedAccount port:(unsigned int)[_smtpPortField.stringValue integerValue]];
 }
 
 - (IBAction)checkImapConnectionAction:(id)sender {
-    const NSInteger selectedAccount = [self selectedAccount];
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
-    if(selectedAccount < 0) {
-        SM_LOG_ERROR(@"No account selected");
-    }
-    else {
-        [_imapConnectionStatusLabel setStringValue:@"Connecting..."];
-
-        _imapConnectionStatusImage.hidden = YES;
-        _imapConnectionProgressIndicator.hidden = NO;
+    [_imapConnectionStatusLabel setStringValue:@"Connecting..."];
+    
+    _imapConnectionStatusImage.hidden = YES;
+    _imapConnectionProgressIndicator.hidden = NO;
+    
+    [_imapConnectionProgressIndicator startAnimation:self];
+    
+    [_connectionCheck checkImapConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
         
-        [_imapConnectionProgressIndicator startAnimation:self];
+        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
         
-        [_connectionCheck checkImapConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-            SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
-            
-            [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-            [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
-            
-            _imapConnectionStatusImage.hidden = NO;
-            _imapConnectionProgressIndicator.hidden = YES;
-        }];
-    }
+        _imapConnectionStatusImage.hidden = NO;
+        _imapConnectionProgressIndicator.hidden = YES;
+    }];
 }
 
 - (IBAction)checkSmtpConnectionAction:(id)sender {
-    const NSInteger selectedAccount = [self selectedAccount];
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
-    if(selectedAccount < 0) {
-        SM_LOG_ERROR(@"No account selected");
-    }
-    else {
-        [_smtpConnectionStatusLabel setStringValue:@"Connecting..."];
+    [_smtpConnectionStatusLabel setStringValue:@"Connecting..."];
+    
+    _smtpConnectionStatusImage.hidden = YES;
+    _smtpConnectionProgressIndicator.hidden = NO;
+    
+    [_smtpConnectionProgressIndicator startAnimation:self];
+    
+    [_connectionCheck checkSmtpConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+        SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
         
-        _smtpConnectionStatusImage.hidden = YES;
-        _smtpConnectionProgressIndicator.hidden = NO;
+        [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+        [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
         
-        [_smtpConnectionProgressIndicator startAnimation:self];
-        
-        [_connectionCheck checkSmtpConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-            SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
-            
-            [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-            [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
-            
-            _smtpConnectionStatusImage.hidden = NO;
-            _smtpConnectionProgressIndicator.hidden = YES;
-        }];
-    }
+        _smtpConnectionStatusImage.hidden = NO;
+        _smtpConnectionProgressIndicator.hidden = YES;
+    }];
 }
 
 #pragma mark Account list table
@@ -464,7 +501,7 @@
     if(selectedRow < 0 || selectedRow >= [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount]) {
         return;
     }
-
+    
     [self loadCurrentValues:selectedRow];
     
     [self checkImapConnectionAction:self];

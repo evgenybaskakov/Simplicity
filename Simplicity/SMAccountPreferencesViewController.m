@@ -389,41 +389,55 @@
 }
 
 - (IBAction)checkImapConnectionAction:(id)sender {
-    [_imapConnectionStatusLabel setStringValue:@"Connecting..."];
+    const NSInteger selectedAccount = [self selectedAccount];
+    
+    if(selectedAccount < 0) {
+        SM_LOG_ERROR(@"No account selected");
+    }
+    else {
+        [_imapConnectionStatusLabel setStringValue:@"Connecting..."];
 
-    _imapConnectionStatusImage.hidden = YES;
-    _imapConnectionProgressIndicator.hidden = NO;
-    
-    [_imapConnectionProgressIndicator startAnimation:self];
-    
-    [_connectionCheck checkImapConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
+        _imapConnectionStatusImage.hidden = YES;
+        _imapConnectionProgressIndicator.hidden = NO;
         
-        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+        [_imapConnectionProgressIndicator startAnimation:self];
         
-        _imapConnectionStatusImage.hidden = NO;
-        _imapConnectionProgressIndicator.hidden = YES;
-    }];
+        [_connectionCheck checkImapConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+            SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
+            
+            [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+            [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+            
+            _imapConnectionStatusImage.hidden = NO;
+            _imapConnectionProgressIndicator.hidden = YES;
+        }];
+    }
 }
 
 - (IBAction)checkSmtpConnectionAction:(id)sender {
-    [_smtpConnectionStatusLabel setStringValue:@"Connecting..."];
+    const NSInteger selectedAccount = [self selectedAccount];
     
-    _smtpConnectionStatusImage.hidden = YES;
-    _smtpConnectionProgressIndicator.hidden = NO;
-    
-    [_smtpConnectionProgressIndicator startAnimation:self];
-    
-    [_connectionCheck checkSmtpConnection:0 statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
+    if(selectedAccount < 0) {
+        SM_LOG_ERROR(@"No account selected");
+    }
+    else {
+        [_smtpConnectionStatusLabel setStringValue:@"Connecting..."];
         
-        [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-        [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+        _smtpConnectionStatusImage.hidden = YES;
+        _smtpConnectionProgressIndicator.hidden = NO;
         
-        _smtpConnectionStatusImage.hidden = NO;
-        _smtpConnectionProgressIndicator.hidden = YES;
-    }];
+        [_smtpConnectionProgressIndicator startAnimation:self];
+        
+        [_connectionCheck checkSmtpConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
+            SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
+            
+            [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+            [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+            
+            _smtpConnectionStatusImage.hidden = NO;
+            _smtpConnectionProgressIndicator.hidden = YES;
+        }];
+    }
 }
 
 #pragma mark Account list table
@@ -452,6 +466,9 @@
     }
 
     [self loadCurrentValues:selectedRow];
+    
+    [self checkImapConnectionAction:self];
+    [self checkSmtpConnectionAction:self];
 }
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
@@ -460,6 +477,10 @@
 
 - (void)tableView:(NSTableView *)tableView didRemoveRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
     return;
+}
+
+- (NSInteger)selectedAccount {
+    return [_accountTableView selectedRow];
 }
 
 @end

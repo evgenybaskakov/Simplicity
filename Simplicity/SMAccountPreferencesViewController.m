@@ -132,38 +132,42 @@
     
     _connectionCheck = [[SMConnectionCheck alloc] init];
     
-    [self loadCurrentValues];
+    [self loadCurrentValues:0];
     [self togglePanel:0];
 
     [self checkImapConnectionAction:self];
     [self checkSmtpConnectionAction:self];
 }
 
-- (void)loadCurrentValues {
+- (void)viewDidAppear {
+    [_accountTableView reloadData];
+
+    [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+}
+
+- (void)loadCurrentValues:(NSUInteger)accountIdx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
-    _accountNameField.stringValue = [preferencesController accountName:0];
-    _fullUserNameField.stringValue = [preferencesController fullUserName:0];
+    _accountNameField.stringValue = [preferencesController accountName:accountIdx];
+    _fullUserNameField.stringValue = [preferencesController fullUserName:accountIdx];
     
-    _emailAddressField.stringValue = [preferencesController userEmail:0];
-    _imapServerField.stringValue = [preferencesController imapServer:0];
-    _imapUserNameField.stringValue = [preferencesController imapUserName:0];
-    _imapPasswordField.stringValue = [preferencesController imapPassword:0];
+    _emailAddressField.stringValue = [preferencesController userEmail:accountIdx];
+    _imapServerField.stringValue = [preferencesController imapServer:accountIdx];
+    _imapUserNameField.stringValue = [preferencesController imapUserName:accountIdx];
+    _imapPasswordField.stringValue = [preferencesController imapPassword:accountIdx];
     
-    [_imapConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController imapConnectionType:0]]];
-    [_imapAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController imapAuthType:0]]];
+    [_imapConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController imapConnectionType:accountIdx]]];
+    [_imapAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController imapAuthType:accountIdx]]];
 
-    _smtpServerField.stringValue = [preferencesController smtpServer:0];
-    _smtpUserNameField.stringValue = [preferencesController smtpUserName:0];
-    _smtpPasswordField.stringValue = [preferencesController smtpPassword:0];
-    _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:0]];
-    _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:0]];
+    _smtpServerField.stringValue = [preferencesController smtpServer:accountIdx];
+    _smtpUserNameField.stringValue = [preferencesController smtpUserName:accountIdx];
+    _smtpPasswordField.stringValue = [preferencesController smtpPassword:accountIdx];
+    _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:accountIdx]];
+    _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:accountIdx]];
 
-    [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:0]]];
-    [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:0]]];
-    
-    [_accountTableView reloadData];
+    [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:accountIdx]]];
+    [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
 }
 
 - (NSUInteger)connectionTypeIndex:(SMServerConnectionType)connectionType {
@@ -439,6 +443,15 @@
     cellView.textField.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
     
     return cellView;
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification {
+    NSInteger selectedRow = [_accountTableView selectedRow];
+    if(selectedRow < 0 || selectedRow >= [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount]) {
+        return;
+    }
+
+    [self loadCurrentValues:selectedRow];
 }
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {

@@ -263,6 +263,12 @@ static const NSUInteger LAST_STEP = 2;
     }
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+    if([[[obj userInfo] objectForKey:@"NSTextMovement"] intValue] == NSReturnTextMovement) {
+        SM_LOG_INFO(@"enter key pressed");
+    }
+}
+
 - (void)finishAccountCreation {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] closeNewAccountWindow];

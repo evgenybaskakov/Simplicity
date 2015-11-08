@@ -42,7 +42,14 @@
     [_imapSession setPort:[preferencesController imapPort:accountIdx]];
     [_imapSession setHostname:[preferencesController imapServer:accountIdx]];
     [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[preferencesController imapConnectionType:accountIdx]]];
-    [_imapSession setAuthType:[SMPreferencesController smToMCOAuthType:[preferencesController imapAuthType:accountIdx]]];
+    
+    MCOAuthType authType = [SMPreferencesController smToMCOAuthType:[preferencesController imapAuthType:accountIdx]];
+    if(authType == MCOAuthTypeXOAuth2 || authType == MCOAuthTypeXOAuth2Outlook) {
+        // TODO: Workaround for not having OAuth2 token input means.
+        [_imapSession setOAuth2Token:@""];
+    }
+    
+    [_imapSession setAuthType:authType];
     [_imapSession setUsername:[preferencesController imapUserName:accountIdx]];
     [_imapSession setPassword:[preferencesController imapPassword:accountIdx]];
 
@@ -81,7 +88,14 @@
     [_smtpSession setPort:[preferencesController smtpPort:accountIdx]];
     [_smtpSession setHostname:[preferencesController smtpServer:accountIdx]];
     [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[preferencesController smtpConnectionType:accountIdx]]];
-    [_smtpSession setAuthType:[SMPreferencesController smToMCOAuthType:[preferencesController smtpAuthType:accountIdx]]];
+    
+    MCOAuthType authType = [SMPreferencesController smToMCOAuthType:[preferencesController smtpAuthType:accountIdx]];
+    if(authType == MCOAuthTypeXOAuth2 || authType == MCOAuthTypeXOAuth2Outlook) {
+        // TODO: Workaround for not having OAuth2 token input means.
+        [_smtpSession setOAuth2Token:@""];
+    }
+    
+    [_smtpSession setAuthType:authType];
     [_smtpSession setUsername:[preferencesController smtpUserName:accountIdx]];
     [_smtpSession setPassword:[preferencesController smtpPassword:accountIdx]];
     

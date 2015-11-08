@@ -68,7 +68,14 @@
     [_imapSession setPort:[_preferencesController imapPort:0]];
     [_imapSession setHostname:[_preferencesController imapServer:0]];
     [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:0]];
-    [_imapSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:0]]];
+
+    MCOAuthType imapAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:0]];
+    if(imapAuthType == MCOAuthTypeXOAuth2 || imapAuthType == MCOAuthTypeXOAuth2Outlook) {
+        // TODO: Workaround for not having OAuth2 token input means.
+        [_imapSession setOAuth2Token:@""];
+    }
+
+    [_imapSession setAuthType:imapAuthType];
     [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:0]]];
     [_imapSession setUsername:[_preferencesController imapUserName:0]];
     [_imapSession setPassword:[_preferencesController imapPassword:0]];
@@ -78,7 +85,14 @@
     [_smtpSession setHostname:[_preferencesController smtpServer:0]];
     [_smtpSession setPort:[_preferencesController smtpPort:0]];
     [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:0]];
-    [_smtpSession setAuthType:[SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:0]]];
+    
+    MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:0]];
+    if(smtpAuthType == MCOAuthTypeXOAuth2 || smtpAuthType == MCOAuthTypeXOAuth2Outlook) {
+        // TODO: Workaround for not having OAuth2 token input means.
+        [_smtpSession setOAuth2Token:@""];
+    }
+
+    [_smtpSession setAuthType:smtpAuthType];
     [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:0]]];
     [_smtpSession setUsername:[_preferencesController smtpUserName:0]];
     [_smtpSession setPassword:[_preferencesController smtpPassword:0]];

@@ -288,7 +288,7 @@ static const NSUInteger LAST_STEP = 2;
         provider = [[SMMailServiceProviderYahoo alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
     else if(selectedMailProviderButton == _outlookSelectionButton) {
-        provider = [[SMMailServiceProviderOutlook alloc] init];
+        provider = [[SMMailServiceProviderOutlook alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
     else if(selectedMailProviderButton == _yandexSelectionButton) {
         provider = [[SMMailServiceProviderYandex alloc] init];

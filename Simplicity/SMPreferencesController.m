@@ -140,7 +140,6 @@
     [self setImapServer:newAccountIdx server:provider.imapServer];
     [self setImapPort:newAccountIdx port:provider.imapPort];
     [self setImapUserName:newAccountIdx userName:provider.imapUserName];
-    [self setImapPassword:newAccountIdx password:provider.imapPassword];
     [self setImapConnectionType:newAccountIdx connectionType:provider.imapConnectionType];
     [self setImapAuthType:newAccountIdx authType:provider.imapAuthType];
     [self setImapNeedCheckCertificate:newAccountIdx checkCertificate:provider.imapNeedCheckCertificate];
@@ -148,14 +147,17 @@
     [self setSmtpServer:newAccountIdx server:provider.smtpServer];
     [self setSmtpPort:newAccountIdx port:provider.smtpPort];
     [self setSmtpUserName:newAccountIdx userName:provider.smtpUserName];
-    [self setSmtpPassword:newAccountIdx password:provider.smtpPassword];
     [self setSmtpConnectionType:newAccountIdx connectionType:provider.smtpConnectionType];
     [self setSmtpAuthType:newAccountIdx authType:provider.smtpAuthType];
     [self setSmtpNeedCheckCertificate:newAccountIdx checkCertificate:provider.smtpNeedCheckCertificate];
-    
+
+    [self setImapPassword:newAccountIdx password:provider.imapPassword];
+    [self setSmtpPassword:newAccountIdx password:provider.smtpPassword];
+
     // Increment account acount after evething is set.
     [[NSUserDefaults standardUserDefaults] setInteger:(prevAccountCount + 1) forKey:kAccountsCount];
-    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
     if(prevAccountCount == 0) {
         SM_LOG_INFO(@"Starting processing email account");
         
@@ -168,7 +170,30 @@
 }
 
 - (void)removeAccount:(NSUInteger)idx {
-    NSAssert(nil, @"TODO");
+    NSUInteger accountCount = [self accountsCount];
+    NSAssert(idx < accountCount, @"bad idx %lu, account count %lu", idx, accountCount);
+
+    [self removePassword:idx serverType:kServerTypeIMAP];
+    [self removePassword:idx serverType:kServerTypeSMTP];
+
+    [self removeProperty:kAccountName idx:idx];
+    [self removeProperty:kFullUserName idx:idx];
+    [self removeProperty:kUserEmail idx:idx];
+    [self removeProperty:kImapServer idx:idx];
+    [self removeProperty:kImapPort idx:idx];
+    [self removeProperty:kImapUserName idx:idx];
+    [self removeProperty:kImapConnectionType idx:idx];
+    [self removeProperty:kImapAuthType idx:idx];
+    [self removeProperty:kImapNeedCheckCertificate idx:idx];
+    [self removeProperty:kSmtpServer idx:idx];
+    [self removeProperty:kSmtpPort idx:idx];
+    [self removeProperty:kSmtpUserName idx:idx];
+    [self removeProperty:kSmtpConnectionType idx:idx];
+    [self removeProperty:kSmtpAuthType idx:idx];
+    [self removeProperty:kSmtpNeedCheckCertificate idx:idx];
+    
+    [[NSUserDefaults standardUserDefaults] setInteger:(accountCount - 1) forKey:kAccountsCount];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSUInteger)accountsCount {
@@ -191,6 +216,20 @@
     }
     
     [[NSUserDefaults standardUserDefaults] setObject:newArr forKey:propertyName];
+}
+
+- (void)removeProperty:(NSString*)propertyName idx:(NSUInteger)idx {
+    NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
+    
+    if(idx < arr.count) {
+        NSMutableArray *newArr = [NSMutableArray arrayWithArray:arr];
+        [newArr removeObjectAtIndex:idx];
+    
+        [[NSUserDefaults standardUserDefaults] setObject:newArr forKey:propertyName];
+    }
+    else {
+        SM_LOG_ERROR(@"Could not remove property %@ for idx %lu", propertyName, idx);
+    }
 }
 
 - (NSObject*)loadProperty:(NSString*)propertyName idx:(NSUInteger)idx {
@@ -374,21 +413,35 @@
     [SSKeychain setPassword:password forService:kSimplicityServiceName account:serviceAccount error:&error];
     
     if(error != nil && error.code != noErr) {
-        SM_LOG_ERROR(@"Cannot save password for %@ account %@", serverType, accountName);
+        SM_LOG_ERROR(@"Cannot save password for %@ account '%@', error '%@' (code %ld)", serverType, accountName, error, error? error.code : noErr);
     }
 }
 
 - (NSString*)loadPassword:(NSUInteger)idx serverType:(NSString*)serverType {
     NSString *accountName = [self accountName:idx];
     NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
-    NSString *password = [SSKeychain passwordForService:kSimplicityServiceName account:serviceAccount];
     
-    if(password == nil) {
-        SM_LOG_ERROR(@"Cannot load password for %@ account %@", serverType, accountName);
+    NSError *error = nil;
+    NSString *password = [SSKeychain passwordForService:kSimplicityServiceName account:serviceAccount error:&error];
+    
+    if((error != nil && error.code != noErr) || password == nil) {
+        SM_LOG_ERROR(@"Cannot load password for %@ account '%@', error '%@' (code %ld)", serverType, accountName, error, error? error.code : noErr);
         return @"";
     }
     
     return password;
+}
+
+- (void)removePassword:(NSUInteger)idx serverType:(NSString*)serverType {
+    NSString *accountName = [self accountName:idx];
+    NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
+    
+    NSError *error = nil;
+    [SSKeychain deletePasswordForService:kSimplicityServiceName account:serviceAccount error:&error];
+    
+    if(error != nil && error.code != noErr) {
+        SM_LOG_ERROR(@"Cannot delete password for %@ account '%@', error '%@' (code %ld)", serverType, accountName, error, error? error.code : noErr);
+    }
 }
 
 @end

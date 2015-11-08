@@ -270,8 +270,30 @@
 }
 
 - (IBAction)removeAccountAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+
+    NSString *accountName = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:selectedAccount];
+
+    NSAlert *alert = [[NSAlert alloc] init];
     
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:[NSString stringWithFormat:@"Are you sure you want to delete account %@?", accountName]];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    if([alert runModal] != NSAlertFirstButtonReturn) {
+        SM_LOG_DEBUG(@"Account deletion cancelled");
+        return;
+    }
+    
+    [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:selectedAccount];
+
+    [_accountTableView reloadData];
+
+    if(selectedAccount > 0) {
+        [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
+    }
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {
@@ -448,7 +470,7 @@
     [_imapConnectionProgressIndicator startAnimation:self];
     
     [_connectionCheck checkImapConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"IMAP connection status %lu, error %lu", status, mcoError);
+        SM_LOG_INFO(@"IMAP connection status %lu, code %lu", status, mcoError);
         
         [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
         [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
@@ -470,7 +492,7 @@
     [_smtpConnectionProgressIndicator startAnimation:self];
     
     [_connectionCheck checkSmtpConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"SMTP connection status %lu, error %lu", status, mcoError);
+        SM_LOG_INFO(@"SMTP connection status %lu, code %lu", status, mcoError);
         
         [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
         [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
@@ -509,6 +531,14 @@
     
     [self checkImapConnectionAction:self];
     [self checkSmtpConnectionAction:self];
+    
+    if(selectedRow == 0) {
+        // TODO: temp hack for not being able to remove account 0
+        _removeAccountButton.enabled = NO;
+    }
+    else {
+        _removeAccountButton.enabled = YES;
+    }
 }
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {

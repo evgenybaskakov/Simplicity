@@ -14,13 +14,16 @@
                 <outlet property="accountNameInvalidMarker" destination="IlH-pY-YaW" id="4tt-Nn-jQh"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
+                <outlet property="customServerImageButton" destination="yg6-6V-3b9" id="Mgd-rA-P3o"/>
                 <outlet property="customServerSelectionButton" destination="Eau-SN-Ure" id="lL4-wX-MSh"/>
                 <outlet property="emailAddressField" destination="3Y9-pv-HRt" id="EhQ-8q-1TP"/>
                 <outlet property="emailInvalidMarker" destination="wVU-Sg-Zra" id="PfV-yU-cKb"/>
                 <outlet property="fullNameField" destination="gnT-qd-R3y" id="kH9-KB-RA3"/>
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
+                <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
                 <outlet property="gmailSelectionButton" destination="8UA-AN-Msr" id="VDx-OE-RH7"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
+                <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookSelectionButton" destination="lnO-nl-8UL" id="BdK-d9-gLa"/>
                 <outlet property="passwordField" destination="aGg-6X-E3Q" id="Duz-97-mcH"/>
                 <outlet property="step1PanelView" destination="2aQ-49-ULg" id="rKo-ru-j11"/>
@@ -28,7 +31,9 @@
                 <outlet property="step3PanelView" destination="b8y-vJ-qkK" id="eHf-47-g6C"/>
                 <outlet property="stepPanelView" destination="Ng8-gI-fXx" id="hQ2-rs-meJ"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+                <outlet property="yahooImageButton" destination="KLO-OC-1KQ" id="Nxt-BJ-11s"/>
                 <outlet property="yahooSelectionButton" destination="gFK-cw-Gwg" id="vRB-di-1xQ"/>
+                <outlet property="yandexImageButton" destination="fKn-WB-ttx" id="Edy-Tt-J5i"/>
                 <outlet property="yandexSelectionButton" destination="gbl-3c-3Mn" id="rHQ-oV-JUm"/>
             </connections>
         </customObject>
@@ -308,6 +313,61 @@ Gw
                     <animations/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="Q2r-Mp-aPs"/>
                 </imageView>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CZm-9p-tYu">
+                    <rect key="frame" x="287" y="247" width="167" height="54"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="FhU-fP-lmU">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="I1Y-Oo-tAy"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KLO-OC-1KQ">
+                    <rect key="frame" x="287" y="191" width="167" height="46"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="wyF-cW-fsL">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="DBF-SV-UtB"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bmw-Nr-vkt">
+                    <rect key="frame" x="286" y="130" width="167" height="46"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="R7P-Is-qOu">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="6qH-NM-r2z"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fKn-WB-ttx">
+                    <rect key="frame" x="287" y="63" width="167" height="46"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="mM0-M3-K8j">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="JHf-z9-5n7"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yg6-6V-3b9">
+                    <rect key="frame" x="286" y="16" width="167" height="25"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="Qxu-zQ-pnv">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="kuA-1F-PvS"/>
+                    </connections>
+                </button>
             </subviews>
             <animations/>
             <point key="canvasLocation" x="944" y="-30.5"/>

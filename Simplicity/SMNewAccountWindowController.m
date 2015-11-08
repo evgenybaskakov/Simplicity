@@ -42,11 +42,18 @@ static const NSUInteger LAST_STEP = 2;
 #pragma mark Step 2
 
 @property (strong) IBOutlet NSView *step2PanelView;
+
 @property (weak) IBOutlet NSButton *gmailSelectionButton;
 @property (weak) IBOutlet NSButton *yahooSelectionButton;
 @property (weak) IBOutlet NSButton *outlookSelectionButton;
 @property (weak) IBOutlet NSButton *yandexSelectionButton;
 @property (weak) IBOutlet NSButton *customServerSelectionButton;
+
+@property (weak) IBOutlet NSButton *gmailImageButton;
+@property (weak) IBOutlet NSButton *yahooImageButton;
+@property (weak) IBOutlet NSButton *outlookImageButton;
+@property (weak) IBOutlet NSButton *yandexImageButton;
+@property (weak) IBOutlet NSButton *customServerImageButton;
 
 #pragma mark Step 3
 
@@ -66,6 +73,7 @@ static const NSUInteger LAST_STEP = 2;
     BOOL _accountNameValid;
     NSUInteger _curStep;
     NSArray *_mailServiceProviderButtons;
+    NSArray *_mailServiceProviderImageButtons;
     NSArray *_mailServiceProviderTypes;
     NSUInteger _mailServiceProvierIdx;
 }
@@ -74,6 +82,8 @@ static const NSUInteger LAST_STEP = 2;
     [super windowDidLoad];
     
     _mailServiceProviderButtons = @[ _gmailSelectionButton, _yahooSelectionButton, _outlookSelectionButton, _yandexSelectionButton, _customServerSelectionButton ];
+
+    _mailServiceProviderImageButtons = @[ _gmailImageButton, _yahooImageButton, _outlookImageButton, _yandexImageButton, _customServerImageButton ];
     
     [self resetState];
 }
@@ -236,7 +246,7 @@ static const NSUInteger LAST_STEP = 2;
     NSUInteger i = 0;
     
     for(NSButton *b in _mailServiceProviderButtons) {
-        if(sender == b) {
+        if(sender == b || sender == _mailServiceProviderImageButtons[i]) {
             _mailServiceProvierIdx = i;
 
             b.state = NSOnState;

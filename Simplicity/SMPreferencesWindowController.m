@@ -41,7 +41,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] hidePreferences];
+    [[appDelegate appController] hidePreferencesWindow];
 }
 
 - (IBAction)toolbarToggleAccountAction:(id)sender {
@@ -54,7 +54,15 @@
 
 - (IBAction)closePreferencesAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] hidePreferences];
+    [[appDelegate appController] hidePreferencesWindow];
+}
+
+- (void)reloadAccounts {
+    [_accountPreferencesViewController reloadAccounts];
+}
+
+- (void)showAccount:(NSString*)accountName {
+    [_accountPreferencesViewController showAccount:accountName];
 }
 
 @end

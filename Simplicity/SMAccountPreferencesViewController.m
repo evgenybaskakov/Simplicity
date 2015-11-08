@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
 #import "SMAccountPreferencesViewController.h"
@@ -264,11 +265,13 @@
 #pragma mark Main account settings actions
 
 - (IBAction)addAccountAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] showNewAccountWindow];
 }
 
 - (IBAction)removeAccountAction:(id)sender {
     SM_LOG_WARNING(@"TODO");
+    
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {
@@ -518,6 +521,27 @@
 
 - (NSInteger)selectedAccount {
     return [_accountTableView selectedRow];
+}
+
+- (void)reloadAccounts {
+    NSInteger selectedRow = [_accountTableView selectedRow];
+
+    [_accountTableView reloadData];
+    
+    if(selectedRow >= 0 && selectedRow < [_accountTableView numberOfRows]) {
+        [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
+    }
+}
+
+- (void)showAccount:(NSString*)accountName {
+    for(NSInteger row = 0; row < [_accountTableView numberOfRows]; row++) {
+        NSString *accountInRow = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
+        
+        if([accountInRow isEqualToString:accountName]) {
+            [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+            break;
+        }
+    }
 }
 
 @end

@@ -10,4 +10,7 @@
 
 @interface SMAccountPreferencesViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
+- (void)reloadAccounts;
+- (void)showAccount:(NSString*)accountName;
+
 @end

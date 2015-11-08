@@ -51,6 +51,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSMutableArray *_messageWindowControllers;
     Boolean _operationQueueShown;
     Boolean _inboxNotInitializedYet;
+    BOOL _preferencesWindowShown;
 }
 
 - (void)awakeFromNib {
@@ -598,6 +599,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (IBAction)showPreferencesWindowAction:(id)sender {
+    _preferencesWindowShown = YES;
+    
     if(_preferencesWindowController == nil) {
         _preferencesWindowController = [[SMPreferencesWindowController alloc] initWithWindowNibName:@"SMPreferencesWindowController"];
     }
@@ -608,7 +611,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [NSApp runModalForWindow:preferencesSheet];
 }
 
-- (void)hidePreferences {
+- (BOOL)preferencesWindowShown {
+    return _preferencesWindowShown;
+}
+
+- (void)hidePreferencesWindow {
     NSAssert(_preferencesWindowController != nil, @"_preferencesWindowController is nil");
     
     NSWindow *preferencesSheet = _preferencesWindowController.window;
@@ -617,6 +624,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [preferencesSheet orderOut:self];
     
     [NSApp endSheet:preferencesSheet];
+    
+    _preferencesWindowShown = NO;
 }
 
 @end

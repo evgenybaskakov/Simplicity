@@ -137,7 +137,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="addAccountAction:" target="-2" id="7AO-VI-9qG"/>
+                        <action selector="addAccountAction:" target="-2" id="DHT-2j-RrT"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lgt-Vk-SUE">
@@ -148,7 +148,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="removeAccountAction:" target="-2" id="ybx-Cw-EAD"/>
+                        <action selector="removeAccountAction:" target="-2" id="YSc-Ep-CgH"/>
                     </connections>
                 </button>
                 <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A8X-Bf-nYO">

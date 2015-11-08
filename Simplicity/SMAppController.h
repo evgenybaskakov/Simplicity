@@ -71,7 +71,8 @@
 
 @property (nonatomic) SMPreferencesWindowController *preferencesWindowController;
 
-- (void)hidePreferences;
+- (BOOL)preferencesWindowShown;
+- (void)hidePreferencesWindow;
 
 @property (nonatomic) SMNewAccountWindowController *createNewAccountWindowController;
 

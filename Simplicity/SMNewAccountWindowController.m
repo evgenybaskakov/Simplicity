@@ -11,6 +11,7 @@
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
 #import "SMPreferencesController.h"
+#import "SMPreferencesWindowController.h"
 #import "SMMailServiceProvider.h"
 #import "SMMailServiceProviderGmail.h"
 #import "SMMailServiceProviderYahoo.h"
@@ -312,7 +313,13 @@ static const NSUInteger LAST_STEP = 2;
   
     NSAssert(provider != nil, @"no mail provider");
     
-    [[appDelegate preferencesController] addAccountWithName:_accountNameField.stringValue image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
+    NSString *accountName = _accountNameField.stringValue;
+    [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
+    
+    if([[appDelegate appController] preferencesWindowShown]) {
+        [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+        [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
+    }
 }
 
 @end

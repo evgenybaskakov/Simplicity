@@ -173,6 +173,7 @@
 		80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C41BEDCAA200467243 /* SMMailServiceProviderYahoo.m */; };
 		80BFC3C81BEDCACA00467243 /* SMMailServiceProviderOutlook.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */; };
 		80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */; };
+		80BFC3CD1BEF357E00467243 /* icloud.png in Resources */ = {isa = PBXBuildFile; fileRef = 80BFC3CC1BEF357E00467243 /* icloud.png */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
 		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
@@ -522,6 +523,7 @@
 		80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderOutlook.m; sourceTree = "<group>"; };
 		80BFC3C91BEDCAE900467243 /* SMMailServiceProviderCustom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderCustom.h; sourceTree = "<group>"; };
 		80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderCustom.m; sourceTree = "<group>"; };
+		80BFC3CC1BEF357E00467243 /* icloud.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icloud.png; sourceTree = "<group>"; };
 		80C69A941BB6553D00F24B9F /* SMCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCompression.h; sourceTree = "<group>"; };
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMThreadSafeOperationQueue.h; sourceTree = "<group>"; };
@@ -892,6 +894,7 @@
 				00DBA6DD1AC2705F00DFE03D /* new-message.png */,
 				002057CC1A85D2DA00D5FE8A /* outbox-white.png */,
 				801B8E881B23B1BC00B144C0 /* queue-icon.png */,
+				80BFC3CC1BEF357E00467243 /* icloud.png */,
 				8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */,
 				8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */,
 				8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */,
@@ -1179,6 +1182,7 @@
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
+				80BFC3CD1BEF357E00467243 /* icloud.png in Resources */,
 				801EDEF21BE9F01800A16E85 /* gmail_logo.png in Resources */,
 				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
@@ -21,8 +22,8 @@
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
                 <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
                 <outlet property="gmailRadioButton" destination="8UA-AN-Msr" id="UoO-Lz-vA1"/>
-                <outlet property="iCloudImageButton" destination="Amy-Co-tEB" id="H8U-dK-f8a"/>
-                <outlet property="iCloudRadioButton" destination="g0i-Se-Q2u" id="MUT-sU-cDs"/>
+                <outlet property="icloudImageButton" destination="Amy-Co-tEB" id="A7N-6R-1dj"/>
+                <outlet property="icloudRadioButton" destination="g0i-Se-Q2u" id="OXa-lZ-wiU"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
@@ -263,7 +264,7 @@ Gw
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="8k6-qH-uVd"/>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="lKf-dp-uB1"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Amy-Co-tEB" userLabel="iCloud Button">
@@ -274,7 +275,7 @@ Gw
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="Qds-Sj-a3J"/>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="spD-ul-P1O"/>
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q3W-r0-zbI" userLabel="iCloud Label">

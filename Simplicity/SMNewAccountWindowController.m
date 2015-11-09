@@ -46,14 +46,14 @@ static const NSUInteger LAST_STEP = 2;
 @property (strong) IBOutlet NSView *step2PanelView;
 
 @property (weak) IBOutlet NSButton *gmailRadioButton;
-@property (weak) IBOutlet NSButton *iCloudRadioButton;
+@property (weak) IBOutlet NSButton *icloudRadioButton;
 @property (weak) IBOutlet NSButton *yahooRadioButton;
 @property (weak) IBOutlet NSButton *outlookRadioButton;
 @property (weak) IBOutlet NSButton *yandexRadioButton;
 @property (weak) IBOutlet NSButton *customServerRadioButton;
 
 @property (weak) IBOutlet NSButton *gmailImageButton;
-@property (weak) IBOutlet NSButton *iCloudImageButton;
+@property (weak) IBOutlet NSButton *icloudImageButton;
 @property (weak) IBOutlet NSButton *yahooImageButton;
 @property (weak) IBOutlet NSButton *outlookImageButton;
 @property (weak) IBOutlet NSButton *yandexImageButton;
@@ -80,14 +80,16 @@ static const NSUInteger LAST_STEP = 2;
     NSArray *_mailServiceProviderImageButtons;
     NSArray *_mailServiceProviderTypes;
     NSUInteger _mailServiceProvierIdx;
+    BOOL _skipProviderSelection;
+    BOOL _shouldResetSelectedProvier;
 }
 
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    _mailServiceProviderButtons = @[ _gmailRadioButton, _iCloudRadioButton, _yahooRadioButton, _outlookRadioButton, _customServerRadioButton ];
+    _mailServiceProviderButtons = @[ _gmailRadioButton, _icloudRadioButton, _yahooRadioButton, _outlookRadioButton, _customServerRadioButton ];
 
-    _mailServiceProviderImageButtons = @[ _gmailImageButton, _iCloudImageButton, _yahooImageButton, _outlookImageButton, _customServerImageButton ];
+    _mailServiceProviderImageButtons = @[ _gmailImageButton, _icloudImageButton, _yahooImageButton, _outlookImageButton, _customServerImageButton ];
     
     [self resetState];
 }
@@ -104,13 +106,8 @@ static const NSUInteger LAST_STEP = 2;
     _fullNameValid = NO;
     _emailAddressValid = NO;
     _accountNameValid = NO;
-    _curStep = 0;
     
-    if(_mailServiceProvierIdx != NSUIntegerMax) {
-        ((NSButton*)_mailServiceProviderButtons[_mailServiceProvierIdx]).state = NSOffState;
-        _mailServiceProvierIdx = NSUIntegerMax;
-    }
-    
+    [self resetSelectedProvider];
     [self showStep:0];
 
     _fullNameField.stringValue = @"";
@@ -130,7 +127,7 @@ static const NSUInteger LAST_STEP = 2;
 
 - (IBAction)backAction:(id)sender {
     NSAssert(_curStep > 0, @"bad _curStep");
-    [self showStep:--_curStep];
+    [self showStep:_curStep - 1];
 }
 
 - (IBAction)nextAction:(id)sender {
@@ -140,7 +137,7 @@ static const NSUInteger LAST_STEP = 2;
         [self finishAccountCreation];
     }
     else {
-        [self showStep:++_curStep];
+        [self showStep:_curStep + 1];
     }
 }
 
@@ -200,17 +197,75 @@ static const NSUInteger LAST_STEP = 2;
     _nextButton.enabled = (_accountNameValid? YES : NO);
 }
 
+- (void)resetSelectedProvider {
+    if(_mailServiceProvierIdx != NSUIntegerMax) {
+        ((NSButton*)_mailServiceProviderButtons[_mailServiceProvierIdx]).state = NSOffState;
+        _mailServiceProvierIdx = NSUIntegerMax;
+    }
+}
+
+- (BOOL)autoSelectServiceProvider {
+    NSString *userEmail = [_emailAddressField.stringValue lowercaseString];
+    NSAssert(userEmail != nil, @"no user email");
+
+    if([userEmail hasSuffix:@"@gmail.com"]) {
+        [self serviceProviderSelectAction:_gmailRadioButton];
+    }
+    else if([userEmail hasSuffix:@"@icloud.com"]) {
+        [self serviceProviderSelectAction:_icloudRadioButton];
+    }
+    else if([userEmail hasSuffix:@"@outlook.com"] || [userEmail hasSuffix:@"@hotmail.com"]) {
+        [self serviceProviderSelectAction:_outlookRadioButton];
+    }
+    else if([userEmail hasSuffix:@"@yahoo.com"]) {
+        [self serviceProviderSelectAction:_yahooRadioButton];
+    }
+    else {
+        return FALSE;
+    }
+    
+    return TRUE;
+}
+
 - (void)showStep:(NSUInteger)step {
     NSView *subview = nil;
     
     if(step == 0) {
+        _skipProviderSelection = NO;
+
         subview = _step1PanelView;
     }
     else if(step == 1) {
+        if(_curStep == step - 1) {
+            if(_shouldResetSelectedProvier) {
+                _shouldResetSelectedProvier = NO;
+
+                [self resetSelectedProvider];
+            }
+            
+            if([self autoSelectServiceProvider]) {
+                _skipProviderSelection = YES;
+                
+                [self showStep:step + 1];
+                return;
+            }
+        }
+        else if(_curStep == step + 1) {
+            if(_skipProviderSelection) {
+                _skipProviderSelection = NO;
+                
+                [self showStep:step - 1];
+                return;
+            }
+        }
+        
         subview = _step2PanelView;
     }
     else if(step == 2) {
         subview = _step3PanelView;
+    }
+    else {
+        NSAssert(nil, @"unknown step %lu", step);
     }
     
     for(NSView *v in _stepPanelView.subviews) {
@@ -239,6 +294,8 @@ static const NSUInteger LAST_STEP = 2;
         _nextButton.title = @"Finish";
         _nextButton.enabled = (_accountNameValid? YES : NO);
     }
+
+    _curStep = step;
 }
 
 - (IBAction)serviceProviderSelectAction:(id)sender {
@@ -265,6 +322,8 @@ static const NSUInteger LAST_STEP = 2;
         [self validateUserName:YES];
     }
     else if([obj object] == _emailAddressField) {
+        _shouldResetSelectedProvier = YES;
+
         [self validateEmailAddress:YES];
     }
     else if([obj object] == _accountNameField) {
@@ -293,7 +352,7 @@ static const NSUInteger LAST_STEP = 2;
     if(selectedMailProviderButton == _gmailRadioButton) {
         provider = [[SMMailServiceProviderGmail alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
-    else if(selectedMailProviderButton == _iCloudRadioButton) {
+    else if(selectedMailProviderButton == _icloudRadioButton) {
         provider = [[SMMailServiceProviderICloud alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
     else if(selectedMailProviderButton == _yahooRadioButton) {

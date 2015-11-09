@@ -338,9 +338,6 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (void)finishAccountCreation {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] closeNewAccountWindow];
-    
     NSAssert(_accountNameField.stringValue != nil && _accountNameField.stringValue.length > 0, @"no account name");
     NSAssert(_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0, @"no user name");
     NSAssert(_emailAddressField.stringValue != nil && _emailAddressField.stringValue.length > 0, @"no email address");
@@ -370,15 +367,34 @@ static const NSUInteger LAST_STEP = 2;
     else {
         NSAssert(nil, @"bad _mailServiceProvierIdx %ld", _mailServiceProvierIdx);
     }
-  
+
     NSAssert(provider != nil, @"no mail provider");
     
     NSString *accountName = _accountNameField.stringValue;
-    [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
-    
-    if([[appDelegate appController] preferencesWindowShown]) {
-        [[[appDelegate appController] preferencesWindowController] reloadAccounts];
-        [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[appDelegate preferencesController] accountExists:accountName]) {
+        SM_LOG_WARNING(@"Account '%@' already exists", accountName);
+        
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", accountName]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        [alert runModal];
+    }
+    else {
+        SM_LOG_INFO(@"Account '%@' does not yet exist, creating it", accountName);
+
+        [[appDelegate appController] closeNewAccountWindow];
+        
+        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
+        
+        if([[appDelegate appController] preferencesWindowShown]) {
+            [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+            [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
+        }
     }
 }
 

@@ -196,6 +196,18 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (BOOL)accountExists:(NSString*)accountName {
+    NSUInteger accountCount = [self accountsCount];
+    
+    for(NSUInteger i = 0; i < accountCount; i++) {
+        if([[self accountName:i] isEqualToString:accountName]) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 - (NSUInteger)accountsCount {
     return [[NSUserDefaults standardUserDefaults] integerForKey:kAccountsCount];
 }

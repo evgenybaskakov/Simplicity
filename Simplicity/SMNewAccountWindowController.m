@@ -14,6 +14,7 @@
 #import "SMPreferencesWindowController.h"
 #import "SMMailServiceProvider.h"
 #import "SMMailServiceProviderGmail.h"
+#import "SMMailServiceProviderICloud.h"
 #import "SMMailServiceProviderYahoo.h"
 #import "SMMailServiceProviderOutlook.h"
 #import "SMMailServiceProviderYandex.h"
@@ -44,13 +45,15 @@ static const NSUInteger LAST_STEP = 2;
 
 @property (strong) IBOutlet NSView *step2PanelView;
 
-@property (weak) IBOutlet NSButton *gmailSelectionButton;
-@property (weak) IBOutlet NSButton *yahooSelectionButton;
-@property (weak) IBOutlet NSButton *outlookSelectionButton;
-@property (weak) IBOutlet NSButton *yandexSelectionButton;
-@property (weak) IBOutlet NSButton *customServerSelectionButton;
+@property (weak) IBOutlet NSButton *gmailRadioButton;
+@property (weak) IBOutlet NSButton *iCloudRadioButton;
+@property (weak) IBOutlet NSButton *yahooRadioButton;
+@property (weak) IBOutlet NSButton *outlookRadioButton;
+@property (weak) IBOutlet NSButton *yandexRadioButton;
+@property (weak) IBOutlet NSButton *customServerRadioButton;
 
 @property (weak) IBOutlet NSButton *gmailImageButton;
+@property (weak) IBOutlet NSButton *iCloudImageButton;
 @property (weak) IBOutlet NSButton *yahooImageButton;
 @property (weak) IBOutlet NSButton *outlookImageButton;
 @property (weak) IBOutlet NSButton *yandexImageButton;
@@ -82,9 +85,9 @@ static const NSUInteger LAST_STEP = 2;
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    _mailServiceProviderButtons = @[ _gmailSelectionButton, _yahooSelectionButton, _outlookSelectionButton, _yandexSelectionButton, _customServerSelectionButton ];
+    _mailServiceProviderButtons = @[ _gmailRadioButton, _iCloudRadioButton, _yahooRadioButton, _outlookRadioButton, _customServerRadioButton ];
 
-    _mailServiceProviderImageButtons = @[ _gmailImageButton, _yahooImageButton, _outlookImageButton, _yandexImageButton, _customServerImageButton ];
+    _mailServiceProviderImageButtons = @[ _gmailImageButton, _iCloudImageButton, _yahooImageButton, _outlookImageButton, _customServerImageButton ];
     
     [self resetState];
 }
@@ -119,11 +122,6 @@ static const NSUInteger LAST_STEP = 2;
     _emailInvalidMarker.hidden = YES;
     _accountNameInvalidMarker.hidden = YES;
 }
-
-//- (IBAction)closeNewAccountAction:(id)sender {
-//    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-//    [[appDelegate appController] closeNewAccountWindow];
-//}
 
 - (IBAction)cancelAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -292,19 +290,22 @@ static const NSUInteger LAST_STEP = 2;
     SMMailServiceProvider *provider = nil;
     id selectedMailProviderButton = _mailServiceProviderButtons[_mailServiceProvierIdx];
     
-    if(selectedMailProviderButton == _gmailSelectionButton) {
+    if(selectedMailProviderButton == _gmailRadioButton) {
         provider = [[SMMailServiceProviderGmail alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
-    else if(selectedMailProviderButton == _yahooSelectionButton) {
+    else if(selectedMailProviderButton == _iCloudRadioButton) {
+        provider = [[SMMailServiceProviderICloud alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+    }
+    else if(selectedMailProviderButton == _yahooRadioButton) {
         provider = [[SMMailServiceProviderYahoo alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
-    else if(selectedMailProviderButton == _outlookSelectionButton) {
+    else if(selectedMailProviderButton == _outlookRadioButton) {
         provider = [[SMMailServiceProviderOutlook alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
-    else if(selectedMailProviderButton == _yandexSelectionButton) {
+    else if(selectedMailProviderButton == _yandexRadioButton) {
         provider = [[SMMailServiceProviderYandex alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
     }
-    else if(selectedMailProviderButton == _customServerSelectionButton) {
+    else if(selectedMailProviderButton == _customServerRadioButton) {
         provider = [[SMMailServiceProviderCustom alloc] init];
     }
     else {

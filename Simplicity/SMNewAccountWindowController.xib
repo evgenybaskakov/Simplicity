@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
@@ -15,16 +14,18 @@
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
                 <outlet property="customServerImageButton" destination="yg6-6V-3b9" id="Mgd-rA-P3o"/>
-                <outlet property="customServerSelectionButton" destination="Eau-SN-Ure" id="lL4-wX-MSh"/>
+                <outlet property="customServerRadioButton" destination="Eau-SN-Ure" id="F4i-30-crO"/>
                 <outlet property="emailAddressField" destination="3Y9-pv-HRt" id="EhQ-8q-1TP"/>
                 <outlet property="emailInvalidMarker" destination="wVU-Sg-Zra" id="PfV-yU-cKb"/>
                 <outlet property="fullNameField" destination="gnT-qd-R3y" id="kH9-KB-RA3"/>
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
                 <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
-                <outlet property="gmailSelectionButton" destination="8UA-AN-Msr" id="VDx-OE-RH7"/>
+                <outlet property="gmailRadioButton" destination="8UA-AN-Msr" id="UoO-Lz-vA1"/>
+                <outlet property="iCloudImageButton" destination="Amy-Co-tEB" id="H8U-dK-f8a"/>
+                <outlet property="iCloudRadioButton" destination="g0i-Se-Q2u" id="MUT-sU-cDs"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
-                <outlet property="outlookSelectionButton" destination="lnO-nl-8UL" id="BdK-d9-gLa"/>
+                <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
                 <outlet property="passwordField" destination="aGg-6X-E3Q" id="Duz-97-mcH"/>
                 <outlet property="step1PanelView" destination="2aQ-49-ULg" id="rKo-ru-j11"/>
                 <outlet property="step2PanelView" destination="sT1-xN-fty" id="Bhg-O1-5bk"/>
@@ -32,9 +33,7 @@
                 <outlet property="stepPanelView" destination="Ng8-gI-fXx" id="hQ2-rs-meJ"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
                 <outlet property="yahooImageButton" destination="KLO-OC-1KQ" id="Nxt-BJ-11s"/>
-                <outlet property="yahooSelectionButton" destination="gFK-cw-Gwg" id="vRB-di-1xQ"/>
-                <outlet property="yandexImageButton" destination="fKn-WB-ttx" id="Edy-Tt-J5i"/>
-                <outlet property="yandexSelectionButton" destination="gbl-3c-3Mn" id="rHQ-oV-JUm"/>
+                <outlet property="yahooRadioButton" destination="gFK-cw-Gwg" id="NDI-e5-1gq"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -212,6 +211,14 @@ Gw
             <rect key="frame" x="0.0" y="0.0" width="474" height="311"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="5ZP-aY-aq4">
+                    <rect key="frame" x="0.0" y="161" width="161" height="150"/>
+                    <shadow key="shadow">
+                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </shadow>
+                    <animations/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="Q2r-Mp-aPs"/>
+                </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WRC-Tx-7xr">
                     <rect key="frame" x="18" y="136" width="226" height="17"/>
                     <animations/>
@@ -221,80 +228,12 @@ Gw
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N8b-S3-6Ty">
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N8b-S3-6Ty" userLabel="Gmail Image">
                     <rect key="frame" x="273" y="247" width="147" height="54"/>
                     <animations/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="gmail_logo" id="Ae2-yT-0EE"/>
                 </imageView>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8EV-wS-J4R">
-                    <rect key="frame" x="273" y="63" width="154" height="47"/>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="yandex_logo_en" id="lIH-th-1fT"/>
-                </imageView>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qnu-QE-yD9">
-                    <rect key="frame" x="287" y="191" width="167" height="48"/>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="yahoo_logo" id="c7U-d8-UFt"/>
-                </imageView>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gFK-cw-Gwg">
-                    <rect key="frame" x="249" y="206" width="18" height="18"/>
-                    <animations/>
-                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="w6T-1w-Nef">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="gx7-LU-I8Y"/>
-                    </connections>
-                </button>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gbl-3c-3Mn">
-                    <rect key="frame" x="249" y="77" width="18" height="18"/>
-                    <animations/>
-                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="8Y7-UP-THf">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="U7B-zL-r6O"/>
-                    </connections>
-                </button>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Eau-SN-Ure">
-                    <rect key="frame" x="249" y="19" width="18" height="18"/>
-                    <animations/>
-                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="yZO-ZZ-WVu">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="DBY-S5-kBb"/>
-                    </connections>
-                </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hjv-xy-58W">
-                    <rect key="frame" x="285" y="20" width="191" height="17"/>
-                    <animations/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Custom server settings" id="ycB-Lh-vVO">
-                        <font key="font" metaFont="systemBold"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPi-cq-Got">
-                    <rect key="frame" x="287" y="123" width="166" height="60"/>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="outlook_logo" id="iod-9K-1Lm"/>
-                </imageView>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lnO-nl-8UL">
-                    <rect key="frame" x="249" y="144" width="18" height="18"/>
-                    <animations/>
-                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="esH-rD-Wyc">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="sGR-NQ-uO9"/>
-                    </connections>
-                </button>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8UA-AN-Msr">
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8UA-AN-Msr" userLabel="Gmail Radio">
                     <rect key="frame" x="249" y="265" width="18" height="18"/>
                     <animations/>
                     <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Xmf-ah-ex1">
@@ -305,15 +244,7 @@ Gw
                         <action selector="serviceProviderSelectAction:" target="-2" id="tav-ww-3jI"/>
                     </connections>
                 </button>
-                <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="5ZP-aY-aq4">
-                    <rect key="frame" x="0.0" y="161" width="161" height="150"/>
-                    <shadow key="shadow">
-                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                    </shadow>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="Q2r-Mp-aPs"/>
-                </imageView>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CZm-9p-tYu">
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CZm-9p-tYu" userLabel="Gmail Button">
                     <rect key="frame" x="287" y="247" width="167" height="54"/>
                     <animations/>
                     <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="FhU-fP-lmU">
@@ -324,19 +255,60 @@ Gw
                         <action selector="serviceProviderSelectAction:" target="-2" id="I1Y-Oo-tAy"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KLO-OC-1KQ">
-                    <rect key="frame" x="287" y="191" width="167" height="46"/>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g0i-Se-Q2u" userLabel="iCloud Radio">
+                    <rect key="frame" x="249" y="202" width="18" height="18"/>
                     <animations/>
-                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="wyF-cW-fsL">
+                    <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="aSO-8V-Mue">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="8k6-qH-uVd"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Amy-Co-tEB" userLabel="iCloud Button">
+                    <rect key="frame" x="286" y="192" width="167" height="46"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="3VD-ie-x4G">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="DBF-SV-UtB"/>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="Qds-Sj-a3J"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bmw-Nr-vkt">
-                    <rect key="frame" x="286" y="130" width="167" height="46"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q3W-r0-zbI" userLabel="iCloud Label">
+                    <rect key="frame" x="347" y="195" width="102" height="44"/>
+                    <animations/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="iCloud" id="LKj-x7-7jp">
+                        <font key="font" size="34" name="AppleSDGothicNeo-Thin"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iTY-EL-9VR" userLabel="iCloud Image">
+                    <rect key="frame" x="286" y="200" width="55" height="31"/>
+                    <animations/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="icloud_logo" id="tzr-3t-k1m"/>
+                </imageView>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lPi-cq-Got" userLabel="Outlook Image">
+                    <rect key="frame" x="287" y="119" width="166" height="60"/>
+                    <animations/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="outlook_logo" id="iod-9K-1Lm"/>
+                </imageView>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lnO-nl-8UL" userLabel="Outlook Radio">
+                    <rect key="frame" x="249" y="140" width="18" height="18"/>
+                    <animations/>
+                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="esH-rD-Wyc">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="sGR-NQ-uO9"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bmw-Nr-vkt" userLabel="Outlook Button">
+                    <rect key="frame" x="286" y="126" width="167" height="46"/>
                     <animations/>
                     <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="R7P-Is-qOu">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -346,18 +318,54 @@ Gw
                         <action selector="serviceProviderSelectAction:" target="-2" id="6qH-NM-r2z"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fKn-WB-ttx">
-                    <rect key="frame" x="287" y="63" width="167" height="46"/>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qnu-QE-yD9" userLabel="Yahoo Image">
+                    <rect key="frame" x="287" y="67" width="133" height="31"/>
                     <animations/>
-                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="mM0-M3-K8j">
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="yahoo_logo" id="c7U-d8-UFt"/>
+                </imageView>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gFK-cw-Gwg" userLabel="Yahoo Radio">
+                    <rect key="frame" x="249" y="76" width="18" height="18"/>
+                    <animations/>
+                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="w6T-1w-Nef">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="gx7-LU-I8Y"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KLO-OC-1KQ" userLabel="Yahoo Button">
+                    <rect key="frame" x="287" y="67" width="167" height="31"/>
+                    <animations/>
+                    <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="wyF-cW-fsL">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="serviceProviderSelectAction:" target="-2" id="JHf-z9-5n7"/>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="DBF-SV-UtB"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yg6-6V-3b9">
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Eau-SN-Ure" userLabel="Custom Radio">
+                    <rect key="frame" x="249" y="19" width="18" height="18"/>
+                    <animations/>
+                    <buttonCell key="cell" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="yZO-ZZ-WVu">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="serviceProviderSelectAction:" target="-2" id="DBY-S5-kBb"/>
+                    </connections>
+                </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hjv-xy-58W" userLabel="Custom Label">
+                    <rect key="frame" x="285" y="20" width="191" height="17"/>
+                    <animations/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Custom server settings" id="ycB-Lh-vVO">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yg6-6V-3b9" userLabel="Custom Button">
                     <rect key="frame" x="286" y="16" width="167" height="25"/>
                     <animations/>
                     <buttonCell key="cell" type="square" title="Button" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="Qxu-zQ-pnv">
@@ -450,8 +458,8 @@ Gw
         <image name="NSUserGuest" width="32" height="32"/>
         <image name="at_sign" width="2000" height="2000"/>
         <image name="gmail_logo" width="3600" height="1485"/>
+        <image name="icloud_logo" width="596" height="382"/>
         <image name="outlook_logo" width="1427" height="351"/>
         <image name="yahoo_logo" width="1000" height="233"/>
-        <image name="yandex_logo_en" width="1000" height="392"/>
     </resources>
 </document>

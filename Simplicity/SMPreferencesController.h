@@ -50,6 +50,7 @@
 - (NSString*)fullUserName:(NSUInteger)idx;
 - (NSString*)userEmail:(NSUInteger)idx;
 - (NSString*)databaseFilePath:(NSUInteger)idx;
+- (NSString*)cacheDirPath:(NSUInteger)idx;
 
 - (NSString*)imapServer:(NSUInteger)idx;
 - (unsigned int)imapPort:(NSUInteger)idx;

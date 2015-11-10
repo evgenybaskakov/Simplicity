@@ -7,8 +7,9 @@
 //
 
 #import "SMLog.h"
-#import "SMAttachmentStorage.h"
 #import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
+#import "SMAttachmentStorage.h"
 
 @interface SMAttachmentStorage()
 
@@ -49,21 +50,22 @@
 }
 
 - (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
-	NSURL* appDataDir = [SMAppDelegate appDataDir];
-	
-	NSAssert(appDataDir, @"no app data dir");
-	
-	return [[appDataDir URLByAppendingPathComponent:folder isDirectory:YES] URLByAppendingPathComponent:[[NSNumber numberWithInt:uid] stringValue] isDirectory:YES];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
+    NSString *accountCacheDirPath = [preferencesController cacheDirPath:0]; // TODO: use the current account
+    NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
+    
+    return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];
 }
 
 - (BOOL)createDirectory:(NSURL*)dir {
 	NSString *dirPath = [dir path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
 	
-	NSFileManager *fileManager= [NSFileManager defaultManager];
 	NSError *error = nil;
-
-	if(![fileManager createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-		SM_LOG_DEBUG(@"failed to create directory '%@', error: %@", dirPath, error);
+	if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
+		SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
 		return NO;
 	}
 

@@ -38,7 +38,7 @@
         [_appController showNewAccountWindow];
     }
     else {
-        [_model initServerSession];
+        [_model initAccountSession];
         [_model getIMAPServerCapabilities];
         
         [[self appController] initOpExecutor];

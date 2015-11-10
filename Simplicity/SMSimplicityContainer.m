@@ -36,8 +36,6 @@
 
         _preferencesController = preferencesController;
         
-        _database = [[SMDatabase alloc] initWithFilePath:@"/Users/evgenybaskakov/Projects/Simplicity/Simplicity.sqlite"];
-
         _mailbox = [ SMMailbox new ];
 		_messageStorage = [ SMMessageStorage new ];
 		_localFolderRegistry = [ SMLocalFolderRegistry new ];
@@ -62,7 +60,11 @@
 	return capabilities;
 }
 
-- (void)initServerSession {
+- (void)initAccountSession {
+    // Init the database.
+    _database = [[SMDatabase alloc] initWithFilePath:[_preferencesController databaseFilePath:0]];
+    
+    // Init the IMAP server.
     _imapSession = [[MCOIMAPSession alloc] init];
     
     [_imapSession setPort:[_preferencesController imapPort:0]];
@@ -80,6 +82,7 @@
     [_imapSession setUsername:[_preferencesController imapUserName:0]];
     [_imapSession setPassword:[_preferencesController imapPassword:0]];
     
+    // Init the SMTP server.
     _smtpSession = [[MCOSMTPSession alloc] init];
     
     [_smtpSession setHostname:[_preferencesController smtpServer:0]];

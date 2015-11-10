@@ -163,8 +163,9 @@
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         
-        [[appDelegate model] initServerSession];
+        [[appDelegate model] initAccountSession];
         [[appDelegate model] getIMAPServerCapabilities];
+        
         [[appDelegate appController] initOpExecutor];
     }
 }
@@ -172,7 +173,16 @@
 - (void)removeAccount:(NSUInteger)idx {
     NSUInteger accountCount = [self accountsCount];
     NSAssert(idx < accountCount, @"bad idx %lu, account count %lu", idx, accountCount);
+    
+    NSString *accountDatabaseFilePath = [self databaseFilePath:idx];
 
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:accountDatabaseFilePath error:&error];
+
+    if(error != nil && error.code != noErr) {
+        SM_LOG_ERROR(@"Could not remove '%@', error '%@'", accountDatabaseFilePath, error);
+    }
+    
     [self removePassword:idx serverType:kServerTypeIMAP];
     [self removePassword:idx serverType:kServerTypeSMTP];
 
@@ -333,6 +343,19 @@
 - (NSString*)userEmail:(NSUInteger)idx {
     NSString *str = (NSString*)[self loadProperty:kUserEmail idx:idx];
     return str? str : @"";
+}
+
+- (NSString*)databaseFilePath:(NSUInteger)idx {
+    NSURL* appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+
+    NSString *accountName = [self accountName:idx];
+    NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
+
+    NSURL *url = [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", accountName] isDirectory:NO];
+    NSAssert(url, @"no data url");
+    
+    return [url path];
 }
 
 - (NSString*)imapServer:(NSUInteger)idx {

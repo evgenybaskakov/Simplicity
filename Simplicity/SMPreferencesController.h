@@ -49,6 +49,7 @@
 - (NSString*)accountName:(NSUInteger)idx;
 - (NSString*)fullUserName:(NSUInteger)idx;
 - (NSString*)userEmail:(NSUInteger)idx;
+- (NSString*)databaseFilePath:(NSUInteger)idx;
 
 - (NSString*)imapServer:(NSUInteger)idx;
 - (unsigned int)imapPort:(NSUInteger)idx;

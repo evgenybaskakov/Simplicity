@@ -41,7 +41,8 @@
 @property (readonly) SMMessageComparators *messageComparators;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
-- (void)initServerSession;
+
+- (void)initAccountSession;
 - (void)getIMAPServerCapabilities;
 
 @end

@@ -188,7 +188,10 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (void)validateAccountName:(BOOL)checkFirst {
-    _accountNameValid = (_accountNameField.stringValue != nil && _accountNameField.stringValue.length > 0? YES : NO);
+    NSCharacterSet *illegalNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
+    NSString *accountName = _accountNameField.stringValue;
+
+    _accountNameValid = (accountName != nil && accountName.length > 0 && ([accountName rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)? YES : NO);
     
     if(checkFirst && _accountNameEntered) {
         _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);

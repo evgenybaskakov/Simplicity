@@ -9,8 +9,8 @@
 #import "SMLog.h"
 #import "SMAccountImageSelection.h"
 
-static const NSUInteger MIN_ACCOUNT_IMAGE_SIZE = 64;
-static const NSUInteger MAX_ACCOUNT_IMAGE_SIZE = 1024;
+static const CGFloat MIN_ACCOUNT_IMAGE_SIZE = 64;
+static const CGFloat MAX_ACCOUNT_IMAGE_SIZE = 1024;
 
 @implementation SMAccountImageSelection
 
@@ -32,16 +32,28 @@ static const NSUInteger MAX_ACCOUNT_IMAGE_SIZE = 1024;
         NSURL *accountImageURL = [openDlg URL];
         
         if(accountImageURL != nil) {
-            NSImage *image = [[NSImage alloc] initWithContentsOfFile:[accountImageURL path]];
+            NSString *imagePath = [accountImageURL path];
+            NSString *imageFileName = [imagePath lastPathComponent];
+            NSImage *image = [[NSImage alloc] initWithContentsOfFile:imagePath];
             
             if(image == nil) {
-                // TODO
-                SM_LOG_ERROR(@"Could not load image file '%@'", accountImageURL);
+                NSAlert *alert = [[NSAlert alloc] init];
+                
+                [alert addButtonWithTitle:@"OK"];
+                [alert setMessageText:[NSString stringWithFormat:@"Error loading file %@. Please select another image file.", imageFileName]];
+                [alert setAlertStyle:NSWarningAlertStyle];
+                [alert runModal];
+
                 return nil;
             }
             else if(image.size.width < MIN_ACCOUNT_IMAGE_SIZE || image.size.height < MIN_ACCOUNT_IMAGE_SIZE) {
-                // TODO
-                SM_LOG_ERROR(@"Bad image file '%@' size %g x %g", accountImageURL, image.size.width, image.size.height);
+                NSAlert *alert = [[NSAlert alloc] init];
+                
+                [alert addButtonWithTitle:@"OK"];
+                [alert setMessageText:[NSString stringWithFormat:@"Size of the selected image is %g x %g. Please select an image with size at least %g x %g.", image.size.width, image.size.height, MIN_ACCOUNT_IMAGE_SIZE, MIN_ACCOUNT_IMAGE_SIZE]];
+                [alert setAlertStyle:NSWarningAlertStyle];
+                [alert runModal];
+                
                 return nil;
             }
             else {

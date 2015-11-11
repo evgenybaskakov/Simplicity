@@ -49,6 +49,7 @@
 - (NSString*)accountName:(NSUInteger)idx;
 - (NSString*)fullUserName:(NSUInteger)idx;
 - (NSString*)userEmail:(NSUInteger)idx;
+- (NSString*)accountImagePath:(NSUInteger)idx;
 - (NSString*)databaseFilePath:(NSUInteger)idx;
 - (NSString*)cacheDirPath:(NSUInteger)idx;
 

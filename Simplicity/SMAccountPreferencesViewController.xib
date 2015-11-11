@@ -394,13 +394,16 @@
                             <action selector="enterAccountNameAction:" target="-2" id="TpH-Vz-9Ba"/>
                         </connections>
                     </textField>
-                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2LO-i6-vTl">
-                        <rect key="frame" x="20" y="214" width="75" height="71"/>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2LO-i6-vTl">
+                        <rect key="frame" x="20" y="210" width="73" height="73"/>
                         <animations/>
-                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSUserGuest" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="umk-tH-v2c">
+                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSUserGuest" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="umk-tH-v2c">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="selectAccountImageAction:" target="-2" id="eue-jF-Ibb"/>
+                        </connections>
                     </button>
                 </subviews>
                 <animations/>

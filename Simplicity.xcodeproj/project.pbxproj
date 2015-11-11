@@ -177,6 +177,9 @@
 		80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
 		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; };
+		80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */; };
+		80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */; };
+		80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -531,6 +534,11 @@
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMThreadSafeOperationQueue.h; sourceTree = "<group>"; };
 		80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMThreadSafeOperationQueue.m; sourceTree = "<group>"; };
+		80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMGeneralPreferencesViewController.h; sourceTree = "<group>"; };
+		80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMGeneralPreferencesViewController.m; sourceTree = "<group>"; };
+		80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMGeneralPreferencesViewController.xib; sourceTree = "<group>"; };
+		80CEFA301BF30C4E002A7F96 /* SMAccountImageSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountImageSelection.h; sourceTree = "<group>"; };
+		80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountImageSelection.m; sourceTree = "<group>"; };
 		80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "full_recycle_bin-128.png"; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
@@ -929,6 +937,7 @@
 			isa = PBXGroup;
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
+				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
 				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,
 			);
@@ -938,8 +947,12 @@
 		80238AF01BE32BCE009E090C /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
+				80CEFA301BF30C4E002A7F96 /* SMAccountImageSelection.h */,
+				80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */,
 				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
+				80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */,
+				80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */,
 				80BFC3B31BEDC49900467243 /* SMMailServiceProvider.h */,
 				80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */,
 				80BFC3C91BEDCAE900467243 /* SMMailServiceProviderCustom.h */,
@@ -1174,6 +1187,7 @@
 				00E9107F17D2F6F50028C679 /* SMMessageListViewController.xib in Resources */,
 				00A6817A1A7DEDB800DAD2BD /* attachment-document.png in Resources */,
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
+				80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */,
 				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
@@ -1264,6 +1278,7 @@
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMLabeledTokenFieldBoxViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
+				80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */,
 				00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */,
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,
@@ -1281,6 +1296,7 @@
 				0082F5F81A0DD39B0050578A /* SMSearchResultsListController.m in Sources */,
 				8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */,
 				8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */,
+				80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */,
 				8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */,
 				800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */,
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,

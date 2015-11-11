@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
+#import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
 @interface SMAccountPreferencesViewController ()
@@ -70,6 +71,7 @@
     NSArray *_connectionTypeConstants;
     NSArray *_authTypeStrings;
     NSArray *_authTypeConstants;
+    NSMutableArray *_accountImages;
     SMConnectionCheck *_connectionCheck;
 }
 
@@ -133,6 +135,8 @@
     
     _connectionCheck = [[SMConnectionCheck alloc] init];
     
+    [self reloadAccountImages];
+    
     [self loadCurrentValues:0];
     [self togglePanel:0];
     
@@ -141,9 +145,7 @@
 }
 
 - (void)viewDidAppear {
-    [_accountTableView reloadData];
-    
-    [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    [self reloadAccounts];
 }
 
 - (void)loadCurrentValues:(NSUInteger)accountIdx {
@@ -169,6 +171,28 @@
     
     [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:accountIdx]]];
     [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
+    
+    _accountImageButton.image = _accountImages[accountIdx];
+}
+
+- (void)reloadAccountImages {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
+    NSUInteger accountsCount = [preferencesController accountsCount];
+    
+    _accountImages = [NSMutableArray arrayWithCapacity:accountsCount];
+    
+    for(NSUInteger i = 0; i < accountsCount; i++) {
+        NSString *accountImagePath = [preferencesController accountImagePath:i];
+        NSImage *accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+        
+        if(accountImage == nil) {
+            accountImage = [SMAccountImageSelection defaultImage];
+        }
+        
+        _accountImages[i] = accountImage;
+    }
 }
 
 - (NSUInteger)connectionTypeIndex:(SMServerConnectionType)connectionType {
@@ -289,6 +313,7 @@
     
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:selectedAccount];
 
+    [_accountImages removeObjectAtIndex:selectedAccount];
     [_accountTableView reloadData];
 
     if(selectedAccount > 0) {
@@ -301,6 +326,25 @@
 }
 
 #pragma mark Account settings actions
+
+- (IBAction)selectAccountImageAction:(id)sender {
+    NSImage *newAccountImage = [SMAccountImageSelection promptForImage];
+    
+    if(newAccountImage != nil) {
+        NSInteger selectedAccount = [self selectedAccount];
+        NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+
+        NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:selectedAccount];
+        NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+
+        [SMAccountImageSelection saveImageFile:accountImagePath image:newAccountImage];
+        
+        _accountImages[selectedAccount] = newAccountImage;
+        _accountImageButton.image = newAccountImage;
+        
+        [self reloadAccounts];
+    }
+}
 
 - (IBAction)enterAccountNameAction:(id)sender {
     NSInteger selectedAccount = [self selectedAccount];
@@ -515,7 +559,7 @@
     
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"MainCell" owner:self];
     
-    cellView.imageView.image = _accountImageButton.image;
+    cellView.imageView.image = _accountImages[row];
     cellView.textField.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
     
     return cellView;
@@ -554,12 +598,17 @@
 }
 
 - (void)reloadAccounts {
+    [self reloadAccountImages];
+
     NSInteger selectedRow = [_accountTableView selectedRow];
 
     [_accountTableView reloadData];
     
     if(selectedRow >= 0 && selectedRow < [_accountTableView numberOfRows]) {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
+    }
+    else {
+        [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
 }
 

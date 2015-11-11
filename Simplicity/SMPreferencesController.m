@@ -13,6 +13,7 @@
 #import "SMAppController.h"
 #import "SMMailLogin.h"
 #import "SMMailServiceProvider.h"
+#import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"
 
 #define kSimplicityServiceName      @"com.simplicity.mail.service"
@@ -165,6 +166,14 @@
     if(![[NSFileManager defaultManager] createDirectoryAtPath:cacheDirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
         SM_LOG_ERROR(@"failed to create cache directory '%@', error: %@", cacheDirPath, error);
     }
+
+    // Save the account image;
+    if(image != nil) {
+        NSString *accountImagePath = [self accountImagePath:newAccountIdx];
+        NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+    
+        [SMAccountImageSelection saveImageFile:accountImagePath image:image];
+    }
     
     // Now start normal account operationing.
     if(prevAccountCount == 0) {
@@ -185,6 +194,12 @@
     
     NSError *error = nil;
 
+    NSString *accountImageFilePath = [self accountImagePath:idx];
+    [[NSFileManager defaultManager] removeItemAtPath:accountImageFilePath error:&error];
+    if(error != nil && error.code != noErr) {
+        SM_LOG_ERROR(@"Could not remove '%@', error '%@'", accountImageFilePath, error);
+    }
+
     NSString *accountDatabaseFilePath = [self databaseFilePath:idx];
     [[NSFileManager defaultManager] removeItemAtPath:accountDatabaseFilePath error:&error];
     if(error != nil && error.code != noErr) {
@@ -195,7 +210,7 @@
     if(![[NSFileManager defaultManager] removeItemAtPath:cacheDirPath error:&error]) {
         SM_LOG_ERROR(@"Could not remove cache directory '%@', error: %@", cacheDirPath, error);
     }
-
+    
     [self removePassword:idx serverType:kServerTypeIMAP];
     [self removePassword:idx serverType:kServerTypeSMTP];
 
@@ -356,6 +371,19 @@
 - (NSString*)userEmail:(NSUInteger)idx {
     NSString *str = (NSString*)[self loadProperty:kUserEmail idx:idx];
     return str? str : @"";
+}
+
+- (NSString*)accountImagePath:(NSUInteger)idx {
+    NSURL* appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    NSString *accountName = [self accountName:idx];
+    NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
+    
+    NSURL *url = [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", accountName] isDirectory:NO];
+    NSAssert(url, @"no image url");
+    
+    return [url path];
 }
 
 - (NSString*)databaseFilePath:(NSUInteger)idx {

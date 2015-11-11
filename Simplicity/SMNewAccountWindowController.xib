@@ -433,10 +433,15 @@ Gw
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bEp-M7-nCy">
-                    <rect key="frame" x="175" y="20" width="75" height="71"/>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IlH-pY-YaW">
+                    <rect key="frame" x="424" y="107" width="23" height="23"/>
                     <animations/>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSUserGuest" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="BPk-MR-uKF">
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="OCs-5c-RMw"/>
+                </imageView>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bEp-M7-nCy">
+                    <rect key="frame" x="175" y="17" width="75" height="75"/>
+                    <animations/>
+                    <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSUserGuest" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="BPk-MR-uKF">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -444,11 +449,6 @@ Gw
                         <action selector="accountImageSelectAction:" target="-2" id="Qsm-er-wAw"/>
                     </connections>
                 </button>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IlH-pY-YaW">
-                    <rect key="frame" x="424" y="107" width="23" height="23"/>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="OCs-5c-RMw"/>
-                </imageView>
             </subviews>
             <animations/>
             <point key="canvasLocation" x="421" y="-394.5"/>

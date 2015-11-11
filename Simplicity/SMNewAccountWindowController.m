@@ -10,6 +10,7 @@
 #import "SMAppController.h"
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
+#import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMMailServiceProvider.h"
@@ -82,6 +83,7 @@ static const NSUInteger LAST_STEP = 2;
     NSUInteger _mailServiceProvierIdx;
     BOOL _skipProviderSelection;
     BOOL _shouldResetSelectedProvier;
+    NSImage *_accountImage;
 }
 
 - (void)windowDidLoad {
@@ -164,7 +166,14 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (IBAction)accountImageSelectAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    NSImage *accountImage = [SMAccountImageSelection promptForImage];
+
+    if(accountImage == nil) {
+        accountImage = [SMAccountImageSelection defaultImage];
+    }
+
+    _accountImage = accountImage;
+    _accountImageButton.image = accountImage;
 }
 
 - (void)validateUserName:(BOOL)checkFirst {
@@ -392,7 +401,7 @@ static const NSUInteger LAST_STEP = 2;
 
         [[appDelegate appController] closeNewAccountWindow];
         
-        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImageButton.image userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
+        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider ];
         
         if([[appDelegate appController] preferencesWindowShown]) {
             [[[appDelegate appController] preferencesWindowController] reloadAccounts];

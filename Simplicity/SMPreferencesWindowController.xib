@@ -10,7 +10,6 @@
                 <outlet property="closeButton" destination="wHn-Ze-q3z" id="Ci7-dz-FYj"/>
                 <outlet property="preferencesToolbar" destination="O7F-Mj-9fD" id="VdQ-Fa-ODM"/>
                 <outlet property="preferencesView" destination="ZEG-0x-jrA" id="Wd7-5E-7sh"/>
-                <outlet property="toolbar" destination="O7F-Mj-9fD" id="Svc-N5-JGP"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="YeT-jX-ifs"/>
             </connections>
         </customObject>

@@ -7,9 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMNewAccountWindowController">
             <connections>
-                <outlet property="accountImage" destination="bEp-M7-nCy" id="sEk-Wk-HSo"/>
                 <outlet property="accountImageButton" destination="bEp-M7-nCy" id="VfN-CC-1K9"/>
-                <outlet property="accountImageField" destination="bEp-M7-nCy" id="yxB-Lw-QQY"/>
                 <outlet property="accountNameField" destination="kKd-jf-W9F" id="taY-RV-N9b"/>
                 <outlet property="accountNameInvalidMarker" destination="IlH-pY-YaW" id="4tt-Nn-jQh"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>

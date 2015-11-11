@@ -188,6 +188,8 @@
         NSImage *accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
         
         if(accountImage == nil) {
+            SM_LOG_INFO(@"Using default image for account %lu", i);
+            
             accountImage = [SMAccountImageSelection defaultImage];
         }
         

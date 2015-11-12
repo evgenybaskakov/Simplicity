@@ -37,14 +37,17 @@
         [subview removeFromSuperview];
     }
     
-    [_preferencesToolbar setSelectedItemIdentifier:_tabNames[idx]];
+//    [_preferencesToolbar setSelectedItemIdentifier:_tabNames[idx]];
     
     NSViewController *tabViewController = _tabViewControllers[idx];
     
     [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
     
     [_preferencesView addSubview:tabViewController.view];
-    _preferencesView.frame = tabViewController.view.frame;
+    [_preferencesView setFrameSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
+    
+    [tabViewController.view setFrameOrigin:NSMakePoint(0, 0)];
+//    [_preferencesView setFrameOrigin:NSMakePoint(0, 0)];
 }
 
 - (void)setInnerSize:(NSSize)innerSize {
@@ -67,7 +70,7 @@
 }
 
 - (IBAction)toolbarToggleGeneralAction:(id)sender {
-    [self selectTab:0];
+    [self selectTab:1];
 }
 
 - (IBAction)closePreferencesAction:(id)sender {

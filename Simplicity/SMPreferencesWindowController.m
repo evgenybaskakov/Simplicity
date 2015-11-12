@@ -10,23 +10,41 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMAccountPreferencesViewController.h"
+#import "SMGeneralPreferencesViewController.h"
 #import "SMPreferencesWindowController.h"
 
 @implementation SMPreferencesWindowController {
+    NSArray *_tabNames;
+    NSArray *_tabViewControllers;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
+    SMGeneralPreferencesViewController *_generalPreferencesViewController;
 }
 
 - (void)windowDidLoad {
     [super windowDidLoad];
 
-    [_preferencesToolbar setSelectedItemIdentifier:@"Accounts"];
-    
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
+    _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
 
-    [self setInnerSize:NSMakeSize(_accountPreferencesViewController.view.frame.size.width, _accountPreferencesViewController.view.frame.size.height)];
+    _tabNames = @[@"Accounts", @"General"];
+    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController];
     
-    [_preferencesView addSubview:_accountPreferencesViewController.view];
-    _preferencesView.frame = _accountPreferencesViewController.view.frame;
+    [self toolbarToggleAccountAction:self];
+}
+
+- (void)selectTab:(NSUInteger)idx {
+    for(NSView *subview in _preferencesView.subviews) {
+        [subview removeFromSuperview];
+    }
+    
+    [_preferencesToolbar setSelectedItemIdentifier:_tabNames[idx]];
+    
+    NSViewController *tabViewController = _tabViewControllers[idx];
+    
+    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
+    
+    [_preferencesView addSubview:tabViewController.view];
+    _preferencesView.frame = tabViewController.view.frame;
 }
 
 - (void)setInnerSize:(NSSize)innerSize {
@@ -45,11 +63,11 @@
 }
 
 - (IBAction)toolbarToggleAccountAction:(id)sender {
-    SM_LOG_INFO(@"toolbarToggleAccountAction");
+    [self selectTab:0];
 }
 
 - (IBAction)toolbarToggleGeneralAction:(id)sender {
-    SM_LOG_INFO(@"toolbarToggleGeneralAction");
+    [self selectTab:0];
 }
 
 - (IBAction)closePreferencesAction:(id)sender {

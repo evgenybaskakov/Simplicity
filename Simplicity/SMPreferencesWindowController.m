@@ -16,6 +16,7 @@
 @implementation SMPreferencesWindowController {
     NSArray *_tabNames;
     NSArray *_tabViewControllers;
+    NSArray *_tabViewHeights;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
 }
@@ -23,40 +24,41 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
 
+    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
+
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
 
     _tabNames = @[@"Accounts", @"General"];
     _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController];
+    _tabViewHeights = @[[NSNumber numberWithFloat:_accountPreferencesViewController.view.frame.size.height+toolbarHeight], [NSNumber numberWithFloat:_generalPreferencesViewController.view.frame.size.height+toolbarHeight]];
     
     [self toolbarToggleAccountAction:self];
 }
 
 - (void)selectTab:(NSUInteger)idx {
-    for(NSView *subview in _preferencesView.subviews) {
+    NSView *view = [self window].contentView;
+    
+    for(NSView *subview in view.subviews) {
         [subview removeFromSuperview];
     }
     
-//    [_preferencesToolbar setSelectedItemIdentifier:_tabNames[idx]];
-    
     NSViewController *tabViewController = _tabViewControllers[idx];
     
-    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
+    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, [_tabViewHeights[idx] floatValue])];
     
-    [_preferencesView addSubview:tabViewController.view];
-    [_preferencesView setFrameSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
+    [view addSubview:tabViewController.view];
+    [view setFrameSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
     
     [tabViewController.view setFrameOrigin:NSMakePoint(0, 0)];
-//    [_preferencesView setFrameOrigin:NSMakePoint(0, 0)];
 }
 
 - (void)setInnerSize:(NSSize)innerSize {
-    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
-    innerSize.height += toolbarHeight;
-    
-    NSRect windowFrame = [NSWindow contentRectForFrameRect:[[self window] frame] styleMask:[[self window] styleMask]];
-    NSRect newWindowFrame = [NSWindow frameRectForContentRect:NSMakeRect(NSMinX(windowFrame), NSMaxY(windowFrame) - innerSize.height, innerSize.width, innerSize.height) styleMask:[[self window] styleMask]];
+    NSRect origWindowFrame = [NSWindow contentRectForFrameRect:[[self window] frame] styleMask:[[self window] styleMask]];
+    NSRect newWindowFrame = [NSWindow frameRectForContentRect:NSMakeRect(NSMinX(origWindowFrame), NSMaxY(origWindowFrame) - origWindowFrame.size.height, origWindowFrame.size.width, innerSize.height) styleMask:[[self window] styleMask]];
 
+    newWindowFrame.size = innerSize;
+    
     [[self window] setFrame:newWindowFrame display:YES animate:[[self window] isVisible]];
 }
 

@@ -7,9 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
             <connections>
-                <outlet property="closeButton" destination="wHn-Ze-q3z" id="Ci7-dz-FYj"/>
                 <outlet property="preferencesToolbar" destination="O7F-Mj-9fD" id="VdQ-Fa-ODM"/>
-                <outlet property="preferencesView" destination="ZEG-0x-jrA" id="Wd7-5E-7sh"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="YeT-jX-ifs"/>
             </connections>
         </customObject>
@@ -23,28 +21,6 @@
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZEG-0x-jrA">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                        <subviews>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wHn-Ze-q3z">
-                                <rect key="frame" x="388" y="13" width="75" height="32"/>
-                                <animations/>
-                                <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="aFv-yf-7lk">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="closePreferencesAction:" target="-2" id="bwi-SO-00q"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <animations/>
-                    </customView>
-                </subviews>
                 <animations/>
             </view>
             <toolbar key="toolbar" implicitIdentifier="211F3F04-4718-4ED0-8156-66AA90DA28E2" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="O7F-Mj-9fD">

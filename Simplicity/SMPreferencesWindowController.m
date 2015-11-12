@@ -16,7 +16,6 @@
 @implementation SMPreferencesWindowController {
     NSArray *_tabNames;
     NSArray *_tabViewControllers;
-    NSArray *_tabViewHeights;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
 }
@@ -24,14 +23,11 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
 
-    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
-
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
 
     _tabNames = @[@"Accounts", @"General"];
     _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController];
-    _tabViewHeights = @[[NSNumber numberWithFloat:_accountPreferencesViewController.view.frame.size.height+toolbarHeight], [NSNumber numberWithFloat:_generalPreferencesViewController.view.frame.size.height+toolbarHeight]];
     
     [self toolbarToggleAccountAction:self];
 }
@@ -45,7 +41,10 @@
     
     NSViewController *tabViewController = _tabViewControllers[idx];
     
-    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, [_tabViewHeights[idx] floatValue])];
+    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
+    CGFloat windowHeight = tabViewController.view.frame.size.height + toolbarHeight;
+
+    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, windowHeight)];
     
     [view addSubview:tabViewController.view];
     [view setFrameSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];

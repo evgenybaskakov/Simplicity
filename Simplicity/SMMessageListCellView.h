@@ -12,7 +12,11 @@
 
 @interface SMMessageListCellView : NSTableCellView
 
-@property (weak) IBOutlet NSTextField *fromTextField;
+@property IBOutlet NSImageView *fromUserImage;
+
+@property IBOutlet NSTextField *fromTextField;
+@property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;
+
 @property (weak) IBOutlet NSTextField *subjectTextField;
 @property (weak) IBOutlet NSTextField *dateTextField;
 @property (weak) IBOutlet NSButton *unseenButton;

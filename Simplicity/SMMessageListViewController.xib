@@ -32,7 +32,7 @@
                         <action selector="updateMessagesNow:" target="-2" id="dKY-hg-gSQ"/>
                     </connections>
                 </button>
-                <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
                     <rect key="frame" x="0.0" y="21" width="235" height="249"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="HA8-Z9-Dlo">
                         <rect key="frame" x="1" y="1" width="213" height="470"/>
@@ -65,7 +65,7 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField autoresizesSubviews="NO" horizontalHuggingPriority="248" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="160">
-                                                        <rect key="frame" x="17" y="22" width="161" height="22"/>
+                                                        <rect key="frame" x="62" y="22" width="120" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="22" id="Ev7-eg-biG"/>
                                                         </constraints>
@@ -77,7 +77,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="164">
-                                                        <rect key="frame" x="17" y="4" width="181" height="18"/>
+                                                        <rect key="frame" x="62" y="4" width="136" height="18"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="18" id="JjZ-Gf-iYl"/>
                                                         </constraints>
@@ -150,14 +150,19 @@
                                                             <font key="font" metaFont="smallSystemBold"/>
                                                         </buttonCell>
                                                     </button>
+                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO">
+                                                        <rect key="frame" x="18" y="2" width="43" height="43"/>
+                                                        <animations/>
+                                                        <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" image="NSUserGuest" id="Whf-mb-hsn"/>
+                                                    </imageView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="31" id="3aT-87-YxW"/>
                                                     <constraint firstAttribute="trailing" secondItem="DsX-8X-jlE" secondAttribute="trailing" id="48O-eh-D1e"/>
                                                     <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="1" id="6Ae-4K-scf"/>
-                                                    <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="8" symbolic="YES" id="7aa-5k-6qD"/>
+                                                    <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="4" id="7aa-5k-6qD"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="oxo-5I-gnK" secondAttribute="trailing" constant="4" id="B7j-aR-abH"/>
-                                                    <constraint firstItem="160" firstAttribute="leading" secondItem="xPq-SM-e48" secondAttribute="trailing" constant="4" id="CXh-WQ-V1D"/>
+                                                    <constraint firstItem="160" firstAttribute="leading" secondItem="xPq-SM-e48" secondAttribute="trailing" constant="49" id="CXh-WQ-V1D"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="Gqa-MK-utm"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="4" id="Iys-BD-NjQ"/>
@@ -180,6 +185,8 @@
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>
                                                     <outlet property="fromTextField" destination="160" id="163"/>
+                                                    <outlet property="fromTextFieldLeftContraint" destination="CXh-WQ-V1D" id="lDB-8c-kfn"/>
+                                                    <outlet property="fromUserImage" destination="2Rg-A8-3PO" id="OKc-Ii-GPi"/>
                                                     <outlet property="messagesCountButton" destination="DsX-8X-jlE" id="EeX-h5-5xj"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>
@@ -254,6 +261,7 @@
         </customView>
     </objects>
     <resources>
+        <image name="NSUserGuest" width="32" height="32"/>
         <image name="attachment-icon" width="128" height="128"/>
         <image name="circle-blue" width="256" height="256"/>
         <image name="star-gray-icon" width="286" height="286"/>

@@ -53,10 +53,13 @@
 }
 
 - (void)setInnerSize:(NSSize)innerSize {
+    CGFloat origY = NSMaxY([[self window] frame]);
+    
     NSRect origWindowFrame = [NSWindow contentRectForFrameRect:[[self window] frame] styleMask:[[self window] styleMask]];
-    NSRect newWindowFrame = [NSWindow frameRectForContentRect:NSMakeRect(NSMinX(origWindowFrame), NSMaxY(origWindowFrame) - origWindowFrame.size.height, origWindowFrame.size.width, innerSize.height) styleMask:[[self window] styleMask]];
+    NSRect newWindowFrame = [NSWindow frameRectForContentRect:NSMakeRect(NSMinX(origWindowFrame), NSMaxY(origWindowFrame), origWindowFrame.size.width, innerSize.height) styleMask:[[self window] styleMask]];
 
     newWindowFrame.size = innerSize;
+    newWindowFrame.origin.y = origY - innerSize.height;
     
     [[self window] setFrame:newWindowFrame display:YES animate:[[self window] isVisible]];
 }

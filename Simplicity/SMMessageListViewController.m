@@ -21,6 +21,7 @@
 #import "SMFolderColorController.h"
 #import "SMMessageBookmarksView.h"
 #import "SMSimplicityContainer.h"
+#import "SMPreferencesController.h"
 #import "SMLocalFolder.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
@@ -221,6 +222,19 @@
 	NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
 	
 	[view.bookmarksView setBookmarkColors:bookmarkColors];
+
+    if([[appDelegate preferencesController] shouldShowContactImages]) {
+        [view showContactImage];
+    }
+    else {
+        [view hideContactImage];
+    }
+
+    if(messageThread.hasAttachments) {
+        [view showAttachmentImage];
+    } else {
+        [view hideAttachmentImage];
+    }
 
 	return view;
 }

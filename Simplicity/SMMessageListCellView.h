@@ -12,7 +12,7 @@
 
 @interface SMMessageListCellView : NSTableCellView
 
-@property IBOutlet NSImageView *fromUserImage;
+@property IBOutlet NSImageView *contactImage;
 
 @property IBOutlet NSTextField *fromTextField;
 @property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;
@@ -31,6 +31,9 @@
 @property IBOutlet NSLayoutConstraint *attachmentImageBottomContraint;
 
 - (void)initFields;
+
+- (void)showContactImage;
+- (void)hideContactImage;
 
 - (void)showAttachmentImage;
 - (void)hideAttachmentImage;

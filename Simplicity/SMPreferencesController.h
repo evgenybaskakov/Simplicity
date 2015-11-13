@@ -14,6 +14,8 @@
 
 @interface SMPreferencesController : NSObject
 
+@property (nonatomic) BOOL shouldShowContactImages;
+
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;
 

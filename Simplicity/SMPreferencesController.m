@@ -37,8 +37,11 @@
 #define kSmtpConnectionType         @"SmtpConnectionType"
 #define kSmtpAuthType               @"SmtpAuthType"
 #define kSmtpNeedCheckCertificate   @"SmtpNeedCheckCertificate"
+#define kDoNotShowContactImages     @"DoNotShowContactImages"
 
-@implementation SMPreferencesController
+@implementation SMPreferencesController {
+    BOOL _shouldShowContactImagesCached;
+}
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
     switch(mcoConnectionType) {
@@ -531,6 +534,23 @@
     if(error != nil && error.code != noErr) {
         SM_LOG_ERROR(@"Cannot delete password for %@ account '%@', error '%@' (code %ld)", serverType, accountName, error, error? error.code : noErr);
     }
+}
+
+- (BOOL)shouldShowContactImages {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        _shouldShowContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kDoNotShowContactImages]? NO : YES);
+        skipUserDefaults = YES;
+    }
+
+    return _shouldShowContactImagesCached;
+}
+
+- (void)setShouldShowContactImages:(BOOL)flag {
+    _shouldShowContactImagesCached = flag;
+
+    [[NSUserDefaults standardUserDefaults] setBool:(_shouldShowContactImagesCached? NO : YES) forKey:kDoNotShowContactImages];
 }
 
 @end

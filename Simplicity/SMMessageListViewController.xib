@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListViewController">
@@ -183,10 +182,10 @@
                                                     <outlet property="attachmentImageLeftContraint" destination="LaT-yg-u4W" id="6Nb-iT-3ye"/>
                                                     <outlet property="attachmentImageRightContraint" destination="B7j-aR-abH" id="Q1X-wI-yT0"/>
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
+                                                    <outlet property="contactImage" destination="2Rg-A8-3PO" id="Ua0-DW-kkt"/>
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>
                                                     <outlet property="fromTextField" destination="160" id="163"/>
                                                     <outlet property="fromTextFieldLeftContraint" destination="CXh-WQ-V1D" id="lDB-8c-kfn"/>
-                                                    <outlet property="fromUserImage" destination="2Rg-A8-3PO" id="OKc-Ii-GPi"/>
                                                     <outlet property="messagesCountButton" destination="DsX-8X-jlE" id="EeX-h5-5xj"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>

@@ -23,8 +23,18 @@
 	font = [[NSFontManager sharedFontManager] convertFont:font toHaveTrait:NSFontBoldTrait];
 	
 	[_fromTextField setFont:font];
-	
+
 	_fieldsInitialized = true;
+}
+
+- (void)showContactImage {
+    _fromTextFieldLeftContraint.constant = 49;
+    _contactImage.hidden = NO;
+}
+
+- (void)hideContactImage {
+    _fromTextFieldLeftContraint.constant = 5;
+    _contactImage.hidden = YES;
 }
 
 - (void)showAttachmentImage {

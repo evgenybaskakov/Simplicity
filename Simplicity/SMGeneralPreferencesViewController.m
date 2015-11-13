@@ -9,6 +9,10 @@
 //#include <Automator/Automator.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMPreferencesController.h"
+#import "SMMessageListViewController.h"
 #import "SMGeneralPreferencesViewController.h"
 
 @interface SMGeneralPreferencesViewController ()
@@ -42,12 +46,21 @@
     [_messageCheckPeriodList addItemWithTitle:@"20 minutes"];
     [_messageCheckPeriodList addItemWithTitle:@"30 minutes"];
     [_messageCheckPeriodList addItemWithTitle:@"1 hour"];
-    
+
+    // Load current properties
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    _showContactImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldShowContactImages]? NSOnState : NSOffState);
+
 //    [_downloadsFolderPopup ];
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
+    
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 - (IBAction)messageBodyLinesPreviewListAction:(id)sender {

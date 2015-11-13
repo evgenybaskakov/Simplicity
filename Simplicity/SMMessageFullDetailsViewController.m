@@ -13,7 +13,10 @@
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
 
+static const NSUInteger CONTACT_IMAGE_SIZE = 45;
+
 @implementation SMMessageFullDetailsViewController {
+    NSButton *_fromButton;
 	NSTextField *_fromLabel;
 	NSTokenField *_fromAddress;
 	NSTextField *_toLabel;
@@ -31,7 +34,7 @@
 	
 	if(self) {
 		_addressListsFramesValid = NO;
-		
+        
 		SMMessageFullDetailsView *view = [[SMMessageFullDetailsView alloc] init];
 		view.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -43,11 +46,34 @@
 	return self;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #define V_GAP 10
 #define V_GAP_HALF (V_GAP/2)
 
+#define H_GAP 3
+
 - (void)createSubviews {
 	NSView *view = [self view];
+
+    // init 'from' button
+/*
+ 
+ TODO
+ 
+    _fromButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, CONTACT_IMAGE_SIZE, CONTACT_IMAGE_SIZE)];
+    _fromButton.image = [NSImage imageNamed:NSImageNameUserGuest];
+    _fromButton.title = @"";
+    _fromButton.bezelStyle = NSRegularSquareBezelStyle; // Also works: NSTexturedSquareBezelStyle
+    
+    [view addSubview:_fromButton];
+ 
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_fromButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_fromButton attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+ */
 
 	// init 'from' label
 	
@@ -56,7 +82,7 @@
 	
 	[view addSubview:_fromLabel];
 	
-	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]]; //TODO: -CONTACT_IMAGE_SIZE
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
 	
@@ -68,7 +94,9 @@
 	_fromAddress.translatesAutoresizingMaskIntoConstraints = NO;
 	[_fromAddress setBordered:NO];
 	[_fromAddress setDrawsBackground:NO];
-	
+    [_fromAddress setEditable:NO];
+    [_fromAddress setSelectable:YES];
+
 	[view addSubview:_fromAddress];
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:_fromLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_fromAddress attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
@@ -84,7 +112,7 @@
 	
 	[view addSubview:_toLabel];
 	
-	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]]; //TODO: -CONTACT_IMAGE_SIZE
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
 	
@@ -96,7 +124,9 @@
 	_toAddresses.translatesAutoresizingMaskIntoConstraints = NO;
 	[_toAddresses setBordered:NO];
 	[_toAddresses setDrawsBackground:NO];
-	
+    [_toAddresses setEditable:NO];
+    [_toAddresses setSelectable:YES];
+
 	[view addSubview:_toAddresses];
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:_toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_toAddresses attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
@@ -139,6 +169,8 @@
 		_ccAddresses.translatesAutoresizingMaskIntoConstraints = NO;
 		[_ccAddresses setBordered:NO];
 		[_ccAddresses setDrawsBackground:NO];
+        [_ccAddresses setEditable:NO];
+        [_ccAddresses setSelectable:YES];
 		
 		[_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_ccLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 
@@ -147,7 +179,8 @@
 		[_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeWidth multiplier:1.0 constant:_ccLabel.frame.size.width]];
 
 		[_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-	} else {
+	}
+    else {
 		NSAssert(_ccAddresses != nil, @"cc addresses not created");
 		NSAssert(_ccConstraints != nil, @"cc constraints not created");
 	}

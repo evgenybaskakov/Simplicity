@@ -194,6 +194,10 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)ensureAttachmentsPanelCreated {
     if(_attachmentsPanelViewController != nil) {
         SM_LOG_DEBUG(@"attachments panel already created");

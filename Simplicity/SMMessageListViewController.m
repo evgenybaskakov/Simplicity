@@ -170,18 +170,18 @@
 	}
 	
 	NSAssert([messageThread messagesCount], @"no messages in the thread");
-	SMMessage *message = [messageThread messagesSortedByDate][0];
+	SMMessage *firstMessage = [messageThread messagesSortedByDate][0];
 	
 	SMMessageListCellView *view = [tableView makeViewWithIdentifier:@"MessageCell" owner:self];
 	NSAssert(view != nil, @"view is nil");
 
 	[view initFields];
 
-	SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [message from], [message subject], messageThread.unseen);
+	SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [firstMessage from], [firstMessage subject], messageThread.unseen);
 	
-	[view.fromTextField setStringValue:[message from]];
-	[view.subjectTextField setStringValue:[message subject]];
-	[view.dateTextField setStringValue:[message localizedDate]];
+	[view.fromTextField setStringValue:[firstMessage from]];
+	[view.subjectTextField setStringValue:[firstMessage subject]];
+	[view.dateTextField setStringValue:[firstMessage localizedDate]];
 
 	if(messageThread.unseen) {
 		[view.unseenButton setState:NSOnState];
@@ -203,12 +203,6 @@
 
     [self setToggleButtonAlpha:view.unseenButton];
     [self setToggleButtonAlpha:view.starButton];
-    
-	if(messageThread.hasAttachments) {
-		[view showAttachmentImage];
-	} else {
-		[view hideAttachmentImage];
-	}
 	
     [view setMessagesCount:messageThread.messagesCount];
     
@@ -235,6 +229,8 @@
     } else {
         [view hideAttachmentImage];
     }
+    
+    [view.messagePreviewTextField setStringValue:[firstMessage bodyPreview]];
 
 	return view;
 }

@@ -14,6 +14,8 @@
 #import "SMAttachmentStorage.h"
 #import "SMMessage.h"
 
+#define MAX_BODY_PREVIEW_LENGTH 512
+
 @interface SMMessage()
 
 + (NSString*)trimTextField:(NSString*)str;
@@ -25,6 +27,7 @@
 	NSAttributedString *_htmlMessageBody;
 	NSData *_data;
 	Boolean _hasAttachments;
+    NSString *_bodyPreview;
 }
 
 @synthesize htmlBodyRendering = _htmlBodyRendering;
@@ -177,6 +180,22 @@ static NSString *unquote(NSString *s) {
 	} else {
 		return [NSDateFormatter localizedStringFromDate:messageDate dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle];
 	}
+}
+
+- (NSString*)bodyPreview {
+    if(_msgParser == nil) {
+        return @"";
+    }
+    
+    if(_bodyPreview != nil) {
+        return _bodyPreview;
+    }
+    
+    NSString *plainText = [_msgParser plainTextBodyRendering];
+    
+    _bodyPreview = [[_msgParser plainTextBodyRendering] substringToIndex:MIN(plainText.length, MAX_BODY_PREVIEW_LENGTH)];
+    
+    return _bodyPreview;
 }
 
 - (uint32_t)uid {

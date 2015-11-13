@@ -24,6 +24,7 @@
 @property (readonly) NSArray *attachments;
 @property (readonly) NSArray *labels;
 @property (readonly) Boolean reclaimed;
+@property (readonly) NSString *bodyPreview;
 
 @property Boolean unseen;
 @property Boolean flagged;

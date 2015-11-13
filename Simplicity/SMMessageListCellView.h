@@ -17,6 +17,7 @@
 @property IBOutlet NSTextField *fromTextField;
 @property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;
 
+@property (weak) IBOutlet NSTextField *messagePreviewTextField;
 @property (weak) IBOutlet NSTextField *subjectTextField;
 @property (weak) IBOutlet NSTextField *dateTextField;
 @property (weak) IBOutlet NSButton *unseenButton;

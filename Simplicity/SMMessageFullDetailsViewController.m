@@ -13,7 +13,7 @@
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
 
-static const NSUInteger CONTACT_IMAGE_SIZE = 45;
+//static const NSUInteger CONTACT_IMAGE_SIZE = 45;
 
 @implementation SMMessageFullDetailsViewController {
     NSButton *_fromButton;

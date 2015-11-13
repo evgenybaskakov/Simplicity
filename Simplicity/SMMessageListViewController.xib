@@ -32,13 +32,13 @@
                         <action selector="updateMessagesNow:" target="-2" id="dKY-hg-gSQ"/>
                     </connections>
                 </button>
-                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="65" horizontalPageScroll="10" verticalLineScroll="65" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
                     <rect key="frame" x="0.0" y="21" width="235" height="249"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="HA8-Z9-Dlo">
                         <rect key="frame" x="1" y="1" width="213" height="470"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="47" rowSizeStyle="automatic" viewBased="YES" id="4" customClass="SMMessageListTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="63" rowSizeStyle="automatic" viewBased="YES" id="4" customClass="SMMessageListTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="235" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <animations/>
@@ -61,11 +61,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="MessageCell" id="32" customClass="SMMessageListCellView">
-                                                <rect key="frame" x="1" y="1" width="232" height="47"/>
+                                                <rect key="frame" x="1" y="1" width="232" height="63"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField autoresizesSubviews="NO" horizontalHuggingPriority="248" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="160">
-                                                        <rect key="frame" x="62" y="22" width="120" height="22"/>
+                                                        <rect key="frame" x="62" y="38" width="120" height="22"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="22" id="Ev7-eg-biG"/>
                                                         </constraints>
@@ -77,7 +77,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="164">
-                                                        <rect key="frame" x="62" y="4" width="136" height="18"/>
+                                                        <rect key="frame" x="62" y="20" width="136" height="18"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="18" id="JjZ-Gf-iYl"/>
                                                         </constraints>
@@ -89,7 +89,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="BTp-sC-DoL">
-                                                        <rect key="frame" x="182" y="26" width="33" height="22"/>
+                                                        <rect key="frame" x="182" y="42" width="33" height="22"/>
                                                         <animations/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" alignment="right" title="Date" usesSingleLineMode="YES" id="6AZ-7v-HGf">
                                                             <font key="font" metaFont="system"/>
@@ -98,7 +98,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
-                                                        <rect key="frame" x="0.0" y="25" width="18" height="18"/>
+                                                        <rect key="frame" x="0.0" y="41" width="18" height="18"/>
                                                         <animations/>
                                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="star-gray-icon" imagePosition="only" alignment="center" alternateImage="star-yellow-icon" state="on" imageScaling="proportionallyDown" inset="2" id="foW-9l-eeJ">
                                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -109,7 +109,7 @@
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="xPq-SM-e48" userLabel="Unseen">
-                                                        <rect key="frame" x="4" y="7" width="11" height="11"/>
+                                                        <rect key="frame" x="4" y="23" width="11" height="11"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="11" id="DAJ-2M-z4Z"/>
                                                             <constraint firstAttribute="height" constant="11" id="ryl-2u-xHg"/>
@@ -124,7 +124,7 @@
                                                         </connections>
                                                     </button>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oxo-5I-gnK" userLabel="Attachment">
-                                                        <rect key="frame" x="196" y="4" width="18" height="18"/>
+                                                        <rect key="frame" x="196" y="20" width="18" height="18"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="18" id="1ah-1k-1Su"/>
                                                             <constraint firstAttribute="height" constant="18" id="3XB-gh-oZB"/>
@@ -133,14 +133,14 @@
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="attachment-icon" id="5zw-26-NG2"/>
                                                     </imageView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
-                                                        <rect key="frame" x="218" y="31" width="13" height="13"/>
+                                                        <rect key="frame" x="218" y="47" width="13" height="13"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="13" id="Eyo-KN-2gG"/>
                                                         </constraints>
                                                         <animations/>
                                                     </customView>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DsX-8X-jlE" userLabel="Messages Count">
-                                                        <rect key="frame" x="215" y="3" width="17" height="17"/>
+                                                        <rect key="frame" x="215" y="19" width="17" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="17" id="exA-kj-ZN9"/>
                                                         </constraints>
@@ -151,13 +151,22 @@
                                                         </buttonCell>
                                                     </button>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO">
-                                                        <rect key="frame" x="18" y="2" width="43" height="43"/>
+                                                        <rect key="frame" x="18" y="18" width="43" height="43"/>
                                                         <animations/>
                                                         <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" image="NSUserGuest" id="Whf-mb-hsn"/>
                                                     </imageView>
+                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ls9-M5-80W" userLabel="Message Preview Label">
+                                                        <rect key="frame" x="19" y="3" width="197" height="16"/>
+                                                        <animations/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Multi-line message body preview" id="Fmr-as-gbm">
+                                                            <font key="font" metaFont="cellTitle"/>
+                                                            <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="31" id="3aT-87-YxW"/>
+                                                    <constraint firstAttribute="bottom" secondItem="hsQ-26-pkV" secondAttribute="bottom" constant="47" id="3aT-87-YxW"/>
                                                     <constraint firstAttribute="trailing" secondItem="DsX-8X-jlE" secondAttribute="trailing" id="48O-eh-D1e"/>
                                                     <constraint firstAttribute="trailing" secondItem="hsQ-26-pkV" secondAttribute="trailing" constant="1" id="6Ae-4K-scf"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="leading" secondItem="160" secondAttribute="trailing" constant="4" id="7aa-5k-6qD"/>
@@ -169,10 +178,13 @@
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="leading" secondItem="164" secondAttribute="trailing" id="LaT-yg-u4W"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="5" id="QCM-lj-Yyi"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="BTp-sC-DoL" secondAttribute="bottom" constant="4" id="R73-US-hFc"/>
-                                                    <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="4" id="SMR-bD-zZT"/>
+                                                    <constraint firstAttribute="bottom" secondItem="oxo-5I-gnK" secondAttribute="bottom" constant="20" id="SMR-bD-zZT"/>
+                                                    <constraint firstAttribute="trailing" secondItem="ls9-M5-80W" secondAttribute="trailing" constant="18" id="Sgd-Kn-LA0"/>
+                                                    <constraint firstItem="ls9-M5-80W" firstAttribute="top" secondItem="164" secondAttribute="bottom" constant="1" id="Wis-Bn-gtb"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
+                                                    <constraint firstItem="ls9-M5-80W" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="21" id="lM9-UG-dkT"/>
                                                     <constraint firstItem="160" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="pEu-Zu-EPr"/>
-                                                    <constraint firstAttribute="bottom" secondItem="DsX-8X-jlE" secondAttribute="bottom" constant="4" id="sbJ-dE-ntx"/>
+                                                    <constraint firstAttribute="bottom" secondItem="DsX-8X-jlE" secondAttribute="bottom" constant="20" id="sbJ-dE-ntx"/>
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="yef-dg-cQ3"/>
                                                 </constraints>
@@ -187,6 +199,7 @@
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>
                                                     <outlet property="fromTextField" destination="160" id="163"/>
                                                     <outlet property="fromTextFieldLeftContraint" destination="CXh-WQ-V1D" id="lDB-8c-kfn"/>
+                                                    <outlet property="messagePreviewTextField" destination="ls9-M5-80W" id="gVE-Ev-ijh"/>
                                                     <outlet property="messagesCountButton" destination="DsX-8X-jlE" id="EeX-h5-5xj"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>

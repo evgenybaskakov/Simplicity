@@ -21,7 +21,7 @@
 @property (weak) IBOutlet NSButton *showContactImagesInMessageListCheckBox;
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
-//@property (weak) IBOutlet AMPathPopUpButton *downloadsFolderPopup;
+@property (weak) IBOutlet NSPathControl *downloadsFolderPopup;
 
 @end
 
@@ -55,8 +55,12 @@
     // Load current properties
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+    //
+    
     _showContactImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldShowContactImages]? NSOnState : NSOffState);
 
+    //
+    
     NSUInteger messageListPreviewLineCount = [[appDelegate preferencesController] messageListPreviewLineCount];
     NSUInteger currentLinesCountItem = [_messageListPreviewLinesValues indexOfObject:[NSNumber numberWithUnsignedInteger:messageListPreviewLineCount]];
     if(currentLinesCountItem == NSNotFound) {
@@ -66,6 +70,8 @@
 
     [_messageBodyLinesPreviewList selectItemAtIndex:currentLinesCountItem];
 
+    //
+    
     NSUInteger messageCheckPeriodSec = [[appDelegate preferencesController] messageCheckPeriodSec];
     NSUInteger currentMessageCheckPeriodItem = [_messageCheckPeriodValues indexOfObject:[NSNumber numberWithUnsignedInteger:messageCheckPeriodSec]];
     if(currentMessageCheckPeriodItem == NSNotFound) {
@@ -74,6 +80,12 @@
     }
     
     [_messageCheckPeriodList selectItemAtIndex:currentMessageCheckPeriodItem];
+    
+    //
+    
+    _downloadsFolderPopup.URL = [NSURL fileURLWithPath:[[appDelegate preferencesController] downloadsFolder]];
+
+    [[_downloadsFolderPopup cell] setAllowedTypes:[NSArray arrayWithObject:@"public.folder"]];
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
@@ -102,7 +114,10 @@
 }
 
 - (IBAction)downloadsFolderPopupAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    if(_downloadsFolderPopup.stringValue != nil) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[appDelegate preferencesController] setDownloadsFolder:[_downloadsFolderPopup.URL path]];
+    }
 }
 
 @end

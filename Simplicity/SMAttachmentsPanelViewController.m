@@ -7,6 +7,8 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMBox2.h"
 #import "SMAttachmentItem.h"
@@ -206,12 +208,21 @@ static NSUInteger _buttonH;
 }
 
 - (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem {
-    // TODO: get the downloads folder from the user preferences
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSString *downloadsFolder = [[appDelegate preferencesController] downloadsFolder];
+    NSAssert(downloadsFolder != nil, @"downloadsFolder is nil");
     
-    NSString *filePath = [self saveAttachment:attachmentItem toPath:NSHomeDirectory()];
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:downloadsFolder];
     
     if(filePath == nil) {
-        return; // TODO: error popup
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Could not save attachment to %@", downloadsFolder]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+
+        return;
     }
     
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];

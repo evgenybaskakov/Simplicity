@@ -40,11 +40,13 @@
 #define kShouldShowContactImages        @"ShouldShowContactImages"
 #define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
 #define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
+#define kDownloadsFolder                @"DownloadsFolder"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowContactImagesCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
+    NSString *_downloadsFolderCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -540,6 +542,8 @@
     }
 }
 
+#pragma mark Should show contact images in message list
+
 - (BOOL)shouldShowContactImages {
     static BOOL skipUserDefaults = NO;
     
@@ -566,6 +570,8 @@
 
     _shouldShowContactImagesCached = flag;
 }
+
+#pragma mark Message list preview lines
 
 - (NSUInteger)messageListPreviewLineCount {
     static BOOL skipUserDefaults = NO;
@@ -594,6 +600,8 @@
     _messageListPreviewLineCountCached = count;
 }
 
+#pragma mark Messages check period
+
 - (NSUInteger)messageCheckPeriodSec {
     static BOOL skipUserDefaults = NO;
     
@@ -619,6 +627,58 @@
     [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageCheckPeriodSec];
     
     _messageCheckPeriodSecCached = sec;
+}
+
+#pragma mark Downloads folder
+
+- (NSString*)downloadsFolder {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        _downloadsFolderCached = (NSString*)[[NSUserDefaults standardUserDefaults] objectForKey:kDownloadsFolder];
+        
+        if(_downloadsFolderCached != nil) {
+            BOOL isDir = NO;
+            BOOL pathExists = [[NSFileManager defaultManager] fileExistsAtPath:_downloadsFolderCached isDirectory:&isDir];
+         
+            if(pathExists) {
+                if(!isDir) {
+                    SM_LOG_WARNING(@"Loaded downloads folder path '%@' is not a directory", _downloadsFolderCached);
+                    _downloadsFolderCached = nil;
+                }
+            }
+            else {
+                SM_LOG_WARNING(@"Loaded downloads folder path '%@' does not exist", _downloadsFolderCached);
+                _downloadsFolderCached = nil;
+            }
+        }
+        
+        if(_downloadsFolderCached == nil) {
+            NSArray *docDirs = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
+            if(docDirs.count > 0) {
+                _downloadsFolderCached = [docDirs objectAtIndex:0];
+            }
+            else {
+                _downloadsFolderCached = @"/";
+            }
+            
+            SM_LOG_INFO(@"Using default _downloadsFolderCached: %@", _downloadsFolderCached);
+        }
+        else {
+            
+            SM_LOG_INFO(@"Using loaded _downloadsFolderCached: %@", _downloadsFolderCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _downloadsFolderCached;
+}
+
+- (void)setDownloadsFolder:(NSString*)folder {
+    [[NSUserDefaults standardUserDefaults] setObject:folder forKey:kDownloadsFolder];
+
+    _downloadsFolderCached = folder;
 }
 
 @end

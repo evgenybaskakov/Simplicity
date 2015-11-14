@@ -17,6 +17,7 @@
 @property (nonatomic) BOOL shouldShowContactImages;
 @property (nonatomic) NSUInteger messageListPreviewLineCount;
 @property (nonatomic) NSUInteger messageCheckPeriodSec;
+@property (nonatomic) NSString *downloadsFolder;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

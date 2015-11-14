@@ -192,7 +192,6 @@
                                                 <animations/>
                                                 <connections>
                                                     <outlet property="attachmentImage" destination="oxo-5I-gnK" id="RMn-B1-0Lh"/>
-                                                    <outlet property="attachmentImageRightContraint" destination="B7j-aR-abH" id="Q1X-wI-yT0"/>
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
                                                     <outlet property="contactImage" destination="2Rg-A8-3PO" id="Ua0-DW-kkt"/>
                                                     <outlet property="dateTextField" destination="BTp-sC-DoL" id="XZN-4J-VP5"/>

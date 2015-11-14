@@ -39,10 +39,12 @@
 #define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
 #define kShouldShowContactImages        @"ShouldShowContactImages"
 #define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
+#define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowContactImagesCached;
     NSUInteger _messageListPreviewLineCountCached;
+    NSUInteger _messageCheckPeriodSecCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -544,9 +546,13 @@
     if(!skipUserDefaults) {
         if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowContactImages] == nil) {
             _shouldShowContactImagesCached = YES;
+
+            SM_LOG_INFO(@"Using default kShouldShowContactImages: %@", _shouldShowContactImagesCached? @"YES" : @"NO");
         }
         else {
             _shouldShowContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowContactImages]);
+            
+            SM_LOG_INFO(@"Loaded kShouldShowContactImages: %@", _shouldShowContactImagesCached? @"YES" : @"NO");
         }
         
         skipUserDefaults = YES;
@@ -567,9 +573,13 @@
     if(!skipUserDefaults) {
         if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageListPreviewLineCount] == nil) {
             _messageListPreviewLineCountCached = 2;
+            
+            SM_LOG_INFO(@"Using default _messageListPreviewLineCountCached: %lu", _messageListPreviewLineCountCached);
         }
         else {
             _messageListPreviewLineCountCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageListPreviewLineCount];
+            
+            SM_LOG_INFO(@"Loaded _messageListPreviewLineCountCached: %lu", _messageListPreviewLineCountCached);
         }
         
         skipUserDefaults = YES;
@@ -582,6 +592,33 @@
     [[NSUserDefaults standardUserDefaults] setInteger:count forKey:kMessageListPreviewLineCount];
 
     _messageListPreviewLineCountCached = count;
+}
+
+- (NSUInteger)messageCheckPeriodSec {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageCheckPeriodSec] == nil) {
+            _messageCheckPeriodSecCached = 0;
+            
+            SM_LOG_INFO(@"Using default _messageCheckPeriodSecCached: %lu", _messageCheckPeriodSecCached);
+        }
+        else {
+            _messageCheckPeriodSecCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageCheckPeriodSec];
+            
+            SM_LOG_INFO(@"Loaded _messageCheckPeriodSecCached: %lu", _messageCheckPeriodSecCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _messageCheckPeriodSecCached;
+}
+
+- (void)setMessageCheckPeriodSec:(NSUInteger)sec {
+    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageCheckPeriodSec];
+    
+    _messageCheckPeriodSecCached = sec;
 }
 
 @end

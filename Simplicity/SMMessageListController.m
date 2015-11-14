@@ -13,6 +13,7 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMSimplicityContainer.h"
+#import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
@@ -20,8 +21,6 @@
 #import "SMLocalFolder.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
-
-static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 
 @interface SMMessageListController()
 - (void)startMessagesUpdate;
@@ -153,10 +152,22 @@ static NSUInteger MESSAGE_LIST_UPDATE_INTERVAL_SEC = 30;
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
 }
 
+- (NSUInteger)messageListUpdateIntervalSec {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
+    
+    if(updateIntervalSec == 0) {
+        // TODO: handle 0 ("auto") value in a more sophisticated way
+        updateIntervalSec = 60;
+    }
+    
+    return updateIntervalSec;
+}
+
 - (void)scheduleMessageListUpdate:(Boolean)now {
 	[self cancelScheduledMessageListUpdate];
 	
-	NSTimeInterval delay_sec = now? 0 : MESSAGE_LIST_UPDATE_INTERVAL_SEC;
+	NSTimeInterval delay_sec = now? 0 : [self messageListUpdateIntervalSec];
 	
 	SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
 

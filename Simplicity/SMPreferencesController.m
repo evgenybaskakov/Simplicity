@@ -16,31 +16,33 @@
 #import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"
 
-#define kSimplicityServiceName      @"com.simplicity.mail.service"
+#define kSimplicityServiceName          @"com.simplicity.mail.service"
 
-#define kServerTypeIMAP             @"IMAP"
-#define kServerTypeSMTP             @"SMTP"
+#define kServerTypeIMAP                 @"IMAP"
+#define kServerTypeSMTP                 @"SMTP"
 
-#define kAccountsCount              @"AccountsCount"
-#define kAccountName                @"AccountName"
-#define kFullUserName               @"FullUserName"
-#define kUserEmail                  @"UserEmail"
-#define kImapServer                 @"ImapServer"
-#define kImapPort                   @"ImapPort"
-#define kImapUserName               @"ImapUserName"
-#define kImapConnectionType         @"ImapConnectionType"
-#define kImapAuthType               @"ImapAuthType"
-#define kImapNeedCheckCertificate   @"ImapNeedCheckCertificate"
-#define kSmtpServer                 @"SmtpServer"
-#define kSmtpPort                   @"SmtpPort"
-#define kSmtpUserName               @"SmtpUserName"
-#define kSmtpConnectionType         @"SmtpConnectionType"
-#define kSmtpAuthType               @"SmtpAuthType"
-#define kSmtpNeedCheckCertificate   @"SmtpNeedCheckCertificate"
-#define kDoNotShowContactImages     @"DoNotShowContactImages"
+#define kAccountsCount                  @"AccountsCount"
+#define kAccountName                    @"AccountName"
+#define kFullUserName                   @"FullUserName"
+#define kUserEmail                      @"UserEmail"
+#define kImapServer                     @"ImapServer"
+#define kImapPort                       @"ImapPort"
+#define kImapUserName                   @"ImapUserName"
+#define kImapConnectionType             @"ImapConnectionType"
+#define kImapAuthType                   @"ImapAuthType"
+#define kImapNeedCheckCertificate       @"ImapNeedCheckCertificate"
+#define kSmtpServer                     @"SmtpServer"
+#define kSmtpPort                       @"SmtpPort"
+#define kSmtpUserName                   @"SmtpUserName"
+#define kSmtpConnectionType             @"SmtpConnectionType"
+#define kSmtpAuthType                   @"SmtpAuthType"
+#define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
+#define kShouldShowContactImages        @"ShouldShowContactImages"
+#define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowContactImagesCached;
+    NSUInteger _messageListPreviewLineCountCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -540,7 +542,13 @@
     static BOOL skipUserDefaults = NO;
     
     if(!skipUserDefaults) {
-        _shouldShowContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kDoNotShowContactImages]? NO : YES);
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowContactImages] == nil) {
+            _shouldShowContactImagesCached = YES;
+        }
+        else {
+            _shouldShowContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowContactImages]);
+        }
+        
         skipUserDefaults = YES;
     }
 
@@ -548,9 +556,32 @@
 }
 
 - (void)setShouldShowContactImages:(BOOL)flag {
-    _shouldShowContactImagesCached = flag;
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowContactImages];
 
-    [[NSUserDefaults standardUserDefaults] setBool:(_shouldShowContactImagesCached? NO : YES) forKey:kDoNotShowContactImages];
+    _shouldShowContactImagesCached = flag;
+}
+
+- (NSUInteger)messageListPreviewLineCount {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageListPreviewLineCount] == nil) {
+            _messageListPreviewLineCountCached = 2;
+        }
+        else {
+            _messageListPreviewLineCountCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageListPreviewLineCount];
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _messageListPreviewLineCountCached;
+}
+
+- (void)setMessageListPreviewLineCount:(NSUInteger)count {
+    [[NSUserDefaults standardUserDefaults] setInteger:count forKey:kMessageListPreviewLineCount];
+
+    _messageListPreviewLineCountCached = count;
 }
 
 @end

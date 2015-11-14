@@ -24,18 +24,23 @@
 
 @end
 
-@implementation SMGeneralPreferencesViewController
+@implementation SMGeneralPreferencesViewController {
+    NSArray *_previewLinesNames;
+    NSArray *_previewLinesValues;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
     
+    _previewLinesNames = @[@"No preview", @"One line", @"Two lines", @"Three lines", @"Four lines"];
+    _previewLinesValues = @[@0, @1, @2, @3, @4];
+    
     [_messageBodyLinesPreviewList removeAllItems];
-    [_messageBodyLinesPreviewList addItemWithTitle:@"No preview"];
-    [_messageBodyLinesPreviewList addItemWithTitle:@"One line"];
-    [_messageBodyLinesPreviewList addItemWithTitle:@"Two lines"];
-    [_messageBodyLinesPreviewList addItemWithTitle:@"Three lines"];
-    [_messageBodyLinesPreviewList addItemWithTitle:@"Four lines"];
+    
+    for(NSString *name in _previewLinesNames) {
+        [_messageBodyLinesPreviewList addItemWithTitle:name];
+    }
 
     [_messageCheckPeriodList removeAllItems];
     [_messageCheckPeriodList addItemWithTitle:@"30 seconds"];
@@ -52,19 +57,28 @@
 
     _showContactImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldShowContactImages]? NSOnState : NSOffState);
 
-//    [_downloadsFolderPopup ];
+    NSUInteger currentLinesCountItem = [[appDelegate preferencesController] messageListPreviewLineCount];
+    if(currentLinesCountItem >= _previewLinesNames.count) {
+        SM_LOG_ERROR(@"Bad messageListPreviewLineCount value %lu, using 0", currentLinesCountItem);
+        currentLinesCountItem = 0;
+    }
+
+    [_messageBodyLinesPreviewList selectItemAtIndex:currentLinesCountItem];
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
-    
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 - (IBAction)messageBodyLinesPreviewListAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    NSUInteger currentLinesCountItem = _messageBodyLinesPreviewList.indexOfSelectedItem;
+    NSAssert(currentLinesCountItem < _previewLinesValues.count, @"bad currentLinesCountItem %lu", currentLinesCountItem);
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].messageListPreviewLineCount = [_previewLinesValues[currentLinesCountItem] unsignedIntegerValue];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 - (IBAction)messageCheckPeriodListAciton:(id)sender {

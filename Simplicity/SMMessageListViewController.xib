@@ -158,7 +158,7 @@
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ls9-M5-80W" userLabel="Message Preview Label">
                                                         <rect key="frame" x="19" y="3" width="197" height="16"/>
                                                         <animations/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Multi-line message body preview" id="Fmr-as-gbm">
+                                                        <textFieldCell key="cell" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Multi-line message body preview" id="Fmr-as-gbm">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -174,13 +174,14 @@
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="top" secondItem="32" secondAttribute="top" constant="25" id="ETR-b7-TqA"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="Gqa-MK-utm"/>
+                                                    <constraint firstItem="DsX-8X-jlE" firstAttribute="leading" secondItem="164" secondAttribute="trailing" constant="19" id="IZk-Yc-7ql"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="4" id="Iys-BD-NjQ"/>
-                                                    <constraint firstItem="oxo-5I-gnK" firstAttribute="leading" secondItem="164" secondAttribute="trailing" id="LaT-yg-u4W"/>
                                                     <constraint firstItem="DsX-8X-jlE" firstAttribute="top" secondItem="32" secondAttribute="top" constant="27" id="Ps2-57-W3o"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="5" id="QCM-lj-Yyi"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="BTp-sC-DoL" secondAttribute="bottom" constant="4" id="R73-US-hFc"/>
                                                     <constraint firstAttribute="trailing" secondItem="ls9-M5-80W" secondAttribute="trailing" constant="18" id="Sgd-Kn-LA0"/>
                                                     <constraint firstItem="ls9-M5-80W" firstAttribute="top" secondItem="164" secondAttribute="bottom" constant="1" id="Wis-Bn-gtb"/>
+                                                    <constraint firstAttribute="bottom" secondItem="ls9-M5-80W" secondAttribute="bottom" constant="3" id="XXc-bZ-nmC"/>
                                                     <constraint firstItem="164" firstAttribute="top" secondItem="160" secondAttribute="bottom" id="gpW-df-S5v"/>
                                                     <constraint firstItem="ls9-M5-80W" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="21" id="lM9-UG-dkT"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="centerY" secondItem="BTp-sC-DoL" secondAttribute="centerY" id="lbB-Zv-y9t"/>
@@ -191,7 +192,6 @@
                                                 <animations/>
                                                 <connections>
                                                     <outlet property="attachmentImage" destination="oxo-5I-gnK" id="RMn-B1-0Lh"/>
-                                                    <outlet property="attachmentImageLeftContraint" destination="LaT-yg-u4W" id="6Nb-iT-3ye"/>
                                                     <outlet property="attachmentImageRightContraint" destination="B7j-aR-abH" id="Q1X-wI-yT0"/>
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
                                                     <outlet property="contactImage" destination="2Rg-A8-3PO" id="Ua0-DW-kkt"/>
@@ -201,6 +201,7 @@
                                                     <outlet property="messagePreviewTextField" destination="ls9-M5-80W" id="gVE-Ev-ijh"/>
                                                     <outlet property="messagesCountButton" destination="DsX-8X-jlE" id="EeX-h5-5xj"/>
                                                     <outlet property="starButton" destination="Clg-UM-hr3" id="hmt-E4-2IV"/>
+                                                    <outlet property="subjectRightContraint" destination="IZk-Yc-7ql" id="7fT-u3-as6"/>
                                                     <outlet property="subjectTextField" destination="164" id="166"/>
                                                     <outlet property="unseenButton" destination="xPq-SM-e48" id="jZS-Ox-jf0"/>
                                                 </connections>

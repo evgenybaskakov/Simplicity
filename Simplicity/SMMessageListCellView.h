@@ -16,6 +16,7 @@
 
 @property IBOutlet NSTextField *fromTextField;
 @property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;
+@property IBOutlet NSLayoutConstraint *subjectRightContraint;
 
 @property (weak) IBOutlet NSTextField *messagePreviewTextField;
 @property (weak) IBOutlet NSTextField *subjectTextField;
@@ -27,9 +28,6 @@
 @property IBOutlet NSButton *messagesCountButton;
 
 @property IBOutlet NSImageView *attachmentImage;
-@property IBOutlet NSLayoutConstraint *attachmentImageLeftContraint;
-@property IBOutlet NSLayoutConstraint *attachmentImageRightContraint;
-@property IBOutlet NSLayoutConstraint *attachmentImageBottomContraint;
 
 - (void)initFields;
 
@@ -40,5 +38,7 @@
 - (void)hideAttachmentImage;
 
 - (void)setMessagesCount:(NSUInteger)messagesCount;
+
++ (NSUInteger)heightForPreviewLines:(NSUInteger)linesCount;
 
 @end

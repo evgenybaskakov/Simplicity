@@ -158,7 +158,7 @@
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SM_LOG_DEBUG(@"tableView %@, datasource %@, delegate call: %@, row %ld", tableView, [tableView dataSource], [tableColumn identifier], row);
 	
-	SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 	SMAppController *appController = [appDelegate appController];
 	SMMessageListController *messageListController = [[appDelegate model] messageListController];
 	SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
@@ -232,7 +232,12 @@
     
     [view.messagePreviewTextField setStringValue:[firstMessage bodyPreview]];
 
-	return view;
+    return view;
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    return [SMMessageListCellView heightForPreviewLines:[[appDelegate preferencesController] messageListPreviewLineCount]];
 }
 
 - (void)tableViewSelectionIsChanging:(NSNotification *)notification {

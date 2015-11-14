@@ -9,7 +9,6 @@
 #import "SMMessageListCellView.h"
 
 @implementation SMMessageListCellView {
-	NSLayoutConstraint *_attachmentImageHiddenConstraint;
 	Boolean _fieldsInitialized;
 	Boolean _attachmentImageHidden;
 }
@@ -41,34 +40,18 @@
 	if(!_attachmentImageHidden)
 		return;
 
-	[self removeConstraint:_attachmentImageHiddenConstraint];
-	
-	[self addSubview:_attachmentImage];
-
-	[self addConstraint:_attachmentImageLeftContraint];
-	[self addConstraint:_attachmentImageRightContraint];
-	[self addConstraint:_attachmentImageBottomContraint];
-
-	_attachmentImageHidden = NO;
+    _subjectRightContraint.constant = 19;
+    _attachmentImage.hidden = NO;
+    _attachmentImageHidden = NO;
 }
 
 - (void)hideAttachmentImage {
 	if(_attachmentImageHidden)
 		return;
-	
-	[self removeConstraint:_attachmentImageLeftContraint];
-	[self removeConstraint:_attachmentImageRightContraint];
-	[self removeConstraint:_attachmentImageBottomContraint];
 
-	[_attachmentImage removeFromSuperview];
-	
-	if(_attachmentImageHiddenConstraint == nil) {
-		_attachmentImageHiddenConstraint = [NSLayoutConstraint constraintWithItem:_messagesCountButton attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_subjectTextField attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:2];
-	}
-
-	[self addConstraint:_attachmentImageHiddenConstraint];
-	
-	_attachmentImageHidden = YES;
+    _subjectRightContraint.constant = 1;
+    _attachmentImage.hidden = YES;
+    _attachmentImageHidden = YES;
 }
 
 - (void)setMessagesCount:(NSUInteger)messagesCount {
@@ -79,6 +62,11 @@
         [_messagesCountButton setHidden:NO];
         [_messagesCountButton setTitle:[NSString stringWithFormat:@"%lu", messagesCount]];
     }
+}
+
++ (NSUInteger)heightForPreviewLines:(NSUInteger)linesCount {
+    const NSUInteger baseHeight = 47;
+    return baseHeight + linesCount * 16;
 }
 
 @end

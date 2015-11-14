@@ -10,4 +10,6 @@
 
 @interface SMMailServiceProviderCustom : SMMailServiceProvider
 
+- (id)initWithEmailAddress:(NSString*)emailAddress password:(NSString*)password;
+
 @end

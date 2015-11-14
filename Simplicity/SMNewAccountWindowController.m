@@ -358,23 +358,28 @@ static const NSUInteger LAST_STEP = 2;
     SMMailServiceProvider *provider = nil;
     id selectedMailProviderButton = _mailServiceProviderButtons[_mailServiceProvierIdx];
     
+    NSString *emailAddress = _emailAddressField.stringValue;
+    NSAssert(emailAddress != nil, @"emailAddress is nil");
+    
+    NSString *password = (_passwordField.stringValue != nil? _passwordField.stringValue : nil);
+    
     if(selectedMailProviderButton == _gmailRadioButton) {
-        provider = [[SMMailServiceProviderGmail alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+        provider = [[SMMailServiceProviderGmail alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _icloudRadioButton) {
-        provider = [[SMMailServiceProviderICloud alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+        provider = [[SMMailServiceProviderICloud alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _yahooRadioButton) {
-        provider = [[SMMailServiceProviderYahoo alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+        provider = [[SMMailServiceProviderYahoo alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _outlookRadioButton) {
-        provider = [[SMMailServiceProviderOutlook alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+        provider = [[SMMailServiceProviderOutlook alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _yandexRadioButton) {
-        provider = [[SMMailServiceProviderYandex alloc] initWithEmailAddress:_emailAddressField.stringValue password:(_passwordField.stringValue != nil? _passwordField.stringValue : nil)];
+        provider = [[SMMailServiceProviderYandex alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _customServerRadioButton) {
-        provider = [[SMMailServiceProviderCustom alloc] init];
+        provider = [[SMMailServiceProviderCustom alloc] initWithEmailAddress:emailAddress password:password];
     }
     else {
         NSAssert(nil, @"bad _mailServiceProvierIdx %ld", _mailServiceProvierIdx);

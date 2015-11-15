@@ -219,7 +219,12 @@
     if(![[NSFileManager defaultManager] removeItemAtPath:cacheDirPath error:&error]) {
         SM_LOG_ERROR(@"Could not remove cache directory '%@', error: %@", cacheDirPath, error);
     }
-    
+
+    NSString *accountDirPath = [self accountDirPath:idx];
+    if(![[NSFileManager defaultManager] removeItemAtPath:accountDirPath error:&error]) {
+        SM_LOG_ERROR(@"Could not remove account directory '%@', error: %@", accountDirPath, error);
+    }
+
     [self removePassword:idx serverType:kServerTypeIMAP];
     [self removePassword:idx serverType:kServerTypeSMTP];
 
@@ -382,40 +387,39 @@
     return str? str : @"";
 }
 
-- (NSString*)accountImagePath:(NSUInteger)idx {
+- (NSURL*)accountDirURL:(NSUInteger)idx {
     NSURL* appDataDir = [SMAppDelegate appDataDir];
     NSAssert(appDataDir, @"no app data dir");
     
     NSString *accountName = [self accountName:idx];
     NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
     
-    NSURL *url = [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", accountName] isDirectory:NO];
+    return [appDataDir URLByAppendingPathComponent:accountName isDirectory:YES];
+}
+
+- (NSString*)accountDirPath:(NSUInteger)idx {
+    return [[self accountDirURL:idx] path];
+}
+
+- (NSString*)accountImagePath:(NSUInteger)idx {
+    NSURL *accountUrl = [self accountDirURL:idx];
+    NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Image.png"] isDirectory:NO];
     NSAssert(url, @"no image url");
     
     return [url path];
 }
 
 - (NSString*)databaseFilePath:(NSUInteger)idx {
-    NSURL* appDataDir = [SMAppDelegate appDataDir];
-    NSAssert(appDataDir, @"no app data dir");
-
-    NSString *accountName = [self accountName:idx];
-    NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
-
-    NSURL *url = [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", accountName] isDirectory:NO];
+    NSURL *accountUrl = [self accountDirURL:idx];
+    NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Database.sqlite"] isDirectory:NO];
     NSAssert(url, @"no data url");
     
     return [url path];
 }
 
 - (NSString*)cacheDirPath:(NSUInteger)idx {
-    NSURL* appDataDir = [SMAppDelegate appDataDir];
-    NSAssert(appDataDir, @"no app data dir");
-    
-    NSString *accountName = [self accountName:idx];
-    NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
-    
-    NSURL *url = [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.cache", accountName] isDirectory:YES];
+    NSURL *accountUrl = [self accountDirURL:idx];
+    NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Cache"] isDirectory:YES];
     NSAssert(url, @"no data url");
     
     return [url path];

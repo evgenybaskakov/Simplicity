@@ -352,8 +352,13 @@
     NSInteger selectedAccount = [self selectedAccount];
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
-    // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setAccountName:selectedAccount name:_accountNameField.stringValue];
+    NSString *accountName = _accountNameField.stringValue;
+    
+    // TODO: Move the validation to PreferencesController
+    NSCharacterSet *illegalNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
+    if(accountName != nil && accountName.length > 0 && ([accountName rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)) {
+        [[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:accountName];
+    }
 }
 
 - (IBAction)enterFullUserNameAction:(id)sender {

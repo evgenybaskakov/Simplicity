@@ -248,6 +248,32 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (BOOL)renameAccount:(NSUInteger)idx newName:(NSString*)newName {
+    NSString *accountDirPath = [self accountDirPath:idx];
+    NSString *newAccountDirPath = [[accountDirPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:newName];
+
+    NSError *error = nil;
+    [[NSFileManager defaultManager] moveItemAtPath:accountDirPath toPath:newAccountDirPath error:&error];
+    
+    if(error && error.code != noErr) {
+        SM_LOG_ERROR(@"Could not rename account '%@' to '%@': %@", [self accountName:idx], newName, error.localizedDescription);
+        return FALSE;
+    }
+    
+    NSString *imapPassword = [self imapPassword:idx];
+    NSString *smtpPassword = [self smtpPassword:idx];
+    
+    [self removePassword:idx serverType:kServerTypeIMAP];
+    [self removePassword:idx serverType:kServerTypeSMTP];
+    
+    [self setAccountName:idx name:newName];
+    
+    [self setImapPassword:idx password:imapPassword];
+    [self setSmtpPassword:idx password:smtpPassword];
+
+    return TRUE;
+}
+
 - (BOOL)accountExists:(NSString*)accountName {
     NSUInteger accountCount = [self accountsCount];
     

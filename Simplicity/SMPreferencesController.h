@@ -29,6 +29,7 @@
 
 - (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;
 - (void)removeAccount:(NSUInteger)idx;
+- (BOOL)renameAccount:(NSUInteger)idx newName:(NSString*)newName;
 - (BOOL)accountExists:(NSString*)accountName;
 
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name;

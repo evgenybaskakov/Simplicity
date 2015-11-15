@@ -352,12 +352,43 @@
     NSInteger selectedAccount = [self selectedAccount];
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
-    NSString *accountName = _accountNameField.stringValue;
+    NSString *newAccountName = _accountNameField.stringValue;
+   
+    if([newAccountName isEqualToString:[[[[NSApplication sharedApplication] delegate] preferencesController] accountName:selectedAccount]]) {
+        SM_LOG_INFO(@"Account name '%@' did not change", newAccountName);
+        return;
+    }
     
     // TODO: Move the validation to PreferencesController
     NSCharacterSet *illegalNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
-    if(accountName != nil && accountName.length > 0 && ([accountName rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)) {
-        [[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:accountName];
+    if(newAccountName != nil && newAccountName.length > 0 && ([newAccountName rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        if([[appDelegate preferencesController] accountExists:newAccountName]) {
+            NSAlert *alert = [[NSAlert alloc] init];
+            
+            [alert addButtonWithTitle:@"OK"];
+            [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", newAccountName]];
+            [alert setAlertStyle:NSWarningAlertStyle];
+            
+            [alert runModal];
+            
+            return;
+        }
+
+        if(![[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:newAccountName]) {
+            NSAlert *alert = [[NSAlert alloc] init];
+            
+            [alert addButtonWithTitle:@"OK"];
+            [alert setMessageText:[NSString stringWithFormat:@"Cannot rename account to '%@', please choose another name", newAccountName]];
+            [alert setAlertStyle:NSWarningAlertStyle];
+            
+            [alert runModal];
+            
+            return;
+        }
+        
+        [self reloadAccounts];
     }
 }
 

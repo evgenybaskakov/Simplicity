@@ -359,37 +359,38 @@
         return;
     }
     
-    // TODO: Move the validation to PreferencesController
-    NSCharacterSet *illegalNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
-    if(newAccountName != nil && newAccountName.length > 0 && ([newAccountName rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-        if([[appDelegate preferencesController] accountExists:newAccountName]) {
-            NSAlert *alert = [[NSAlert alloc] init];
-            
-            [alert addButtonWithTitle:@"OK"];
-            [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", newAccountName]];
-            [alert setAlertStyle:NSWarningAlertStyle];
-            
-            [alert runModal];
-            
-            return;
-        }
-
-        if(![[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:newAccountName]) {
-            NSAlert *alert = [[NSAlert alloc] init];
-            
-            [alert addButtonWithTitle:@"OK"];
-            [alert setMessageText:[NSString stringWithFormat:@"Cannot rename account to '%@', please choose another name", newAccountName]];
-            [alert setAlertStyle:NSWarningAlertStyle];
-            
-            [alert runModal];
-            
-            return;
-        }
-        
-        [self reloadAccounts];
+    if(![SMPreferencesController accountNameValid:newAccountName]) {
+        SM_LOG_INFO(@"Account name '%@' invalid", newAccountName);
+        return;
     }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    if([[appDelegate preferencesController] accountExists:newAccountName]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", newAccountName]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        [alert runModal];
+        
+        return;
+    }
+
+    if(![[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:newAccountName]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot rename account to '%@', please choose another name", newAccountName]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        [alert runModal];
+        
+        return;
+    }
+    
+    [self reloadAccounts];
 }
 
 - (IBAction)enterFullUserNameAction:(id)sender {

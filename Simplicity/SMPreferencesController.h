@@ -25,6 +25,8 @@
 + (SMServerAuthType)mcoToSMAuthType:(MCOAuthType)mcoAuthType;
 + (MCOAuthType)smToMCOAuthType:(SMServerAuthType)smAuthType;
 
++ (BOOL)accountNameValid:(NSString*)name;
+
 - (NSUInteger)accountsCount;
 
 - (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;

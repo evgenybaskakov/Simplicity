@@ -116,6 +116,12 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 }
 
++ (BOOL)accountNameValid:(NSString*)name {
+    NSCharacterSet *illegalNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
+    
+    return (name != nil) && (name.length > 0) && ([name rangeOfCharacterFromSet:illegalNameCharacters].location == NSNotFound)? YES : NO;
+}
+
 - (id)init {
     self = [super init];
     

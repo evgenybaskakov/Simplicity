@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMBox2.h"
@@ -88,6 +89,25 @@ static NSUInteger _buttonH;
     }
 }
 
+static NSSize scalePreviewImage(NSSize imageSize) {
+    const NSSize targetSize = NSMakeSize(115, 87);
+    
+    if(!NSEqualSizes(imageSize, targetSize)) {
+        CGFloat width = imageSize.width;
+        CGFloat height = imageSize.height;
+        
+        CGFloat scaleFactor = MAX(targetSize.width / width, targetSize.height / height);
+        
+        CGFloat scaledWidth = width * scaleFactor;
+        CGFloat scaledHeight = height * scaleFactor;
+        
+        return NSMakeSize(scaledWidth, scaledHeight);
+    }
+    else {
+        return targetSize;
+    }
+}
+
 - (void)setMessage:(SMMessage*)message {
     NSAssert(message != nil, @"message is nil");
     NSAssert(_message == nil, @"_message already set");
@@ -97,13 +117,51 @@ static NSUInteger _buttonH;
     NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
     
     for(NSUInteger i = 0; i < _message.attachments.count; i++) {
-        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:_message.attachments[i]];
+        MCOAttachment *mcoAttachment = _message.attachments[i];
+        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        
         [_arrayController addObject:attachmentItem];
+
+        [self loadAttachmentPreview:mcoAttachment index:i];
     }
     
     [_arrayController setSelectedObjects:[NSArray array]];
-  
+    
     [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
+}
+
+- (void)loadAttachmentPreview:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
+    NSString *attachmentFilename = mcoAttachment.filename;
+    NSString *attachmentFilenameLowercase = [attachmentFilename lowercaseString];
+    
+    if([attachmentFilenameLowercase hasSuffix:@".jpg"] || [attachmentFilenameLowercase hasSuffix:@".jpeg"] || [attachmentFilenameLowercase hasSuffix:@".png"]) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData *attachmentData = mcoAttachment.data;
+            NSImage *image = [[NSImage alloc] initWithData:attachmentData];
+            
+            if(image != nil && [image isValid]) {
+                [image setSize:scalePreviewImage(image.size)];
+                
+                // Use the TIFFRepresentation method to pre-load the image data.
+                // Othwerwise, there will be a noticeable lag in the main event processing,
+                // because NSImage:initWithData method does not actually parse the provided data.
+                [image TIFFRepresentation];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSCollectionViewItem *itemView = [_collectionView itemAtIndex:index];
+                    NSImageView *imageView = itemView.imageView;
+                    
+                    imageView.image = image;
+                    imageView.frame = NSMakeRect(0, 0, itemView.view.frame.size.width, itemView.view.frame.size.height);
+                    imageView.imageScaling = NSImageScaleNone;
+                });
+            }
+            else {
+                SM_LOG_ERROR(@"Could not load attachment image '%@'", attachmentFilename);
+            }
+        });
+    }
 }
 
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController {

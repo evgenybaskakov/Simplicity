@@ -148,6 +148,7 @@
 		806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E7C261B9FFD940081FD8E /* SMBox2.m */; };
 		8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */; };
 		8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */; };
+		80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */; };
@@ -489,6 +490,8 @@
 		8071EDF81BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLocalFolderMessageBodyFetchQueue.m; sourceTree = "<group>"; };
 		8071EE011BDBFF8800175A7B /* SMFolderUIDDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderUIDDictionary.h; sourceTree = "<group>"; };
 		8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderUIDDictionary.m; sourceTree = "<group>"; };
+		80737ED51BFAFF6600E9D58A /* SMRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMRoundedImageView.h; sourceTree = "<group>"; };
+		80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMRoundedImageView.m; sourceTree = "<group>"; };
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
@@ -850,6 +853,8 @@
 				0002A0B717D224C600EA4AFF /* SMMessageListCellView.m */,
 				804711BF1B7B153B00399942 /* SMMessageListTableView.h */,
 				804711C01B7B153B00399942 /* SMMessageListTableView.m */,
+				80737ED51BFAFF6600E9D58A /* SMRoundedImageView.h */,
+				80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */,
 				00414ED61A16454F00068742 /* SMSearchResultsListCellView.h */,
 				00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */,
 				0034EBBF19EA3A3200CDF656 /* SMTokenField.h */,
@@ -1229,6 +1234,7 @@
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */,
+				80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */,
 				008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */,
 				0002A09E17D1B1E000EA4AFF /* main.m in Sources */,
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,

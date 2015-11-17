@@ -12,9 +12,11 @@
 #import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMBox2.h"
+#import "SMRoundedImageView.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
 #import "SMAttachmentsPanelView.h"
+#import "SMAttachmentsPanelViewItem.h"
 #import "SMAttachmentsPanelViewController.h"
 
 static NSUInteger _buttonH;
@@ -149,12 +151,13 @@ static NSSize scalePreviewImage(NSSize imageSize) {
                 [image TIFFRepresentation];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSCollectionViewItem *itemView = [_collectionView itemAtIndex:index];
-                    NSImageView *imageView = itemView.imageView;
+                    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:index];
+                    SMRoundedImageView *imageView = (SMRoundedImageView*)item.imageView;
                     
                     imageView.image = image;
-                    imageView.frame = NSMakeRect(0, 0, itemView.view.frame.size.width, itemView.view.frame.size.height);
+                    imageView.frame = NSMakeRect(0, 0, item.view.frame.size.width, item.view.frame.size.height);
                     imageView.imageScaling = NSImageScaleNone;
+                    imageView.cornerRadius = item.box.cornerRadius;
                 });
             }
             else {

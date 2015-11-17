@@ -10,9 +10,9 @@
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelView.h"
 #import "SMAttachmentsPanelViewController.h"
-#import "SMAttachmentsPanelItemViewController.h"
+#import "SMAttachmentsPanelViewItem.h"
 
-@implementation SMAttachmentsPanelItemViewController {
+@implementation SMAttachmentsPanelViewItem {
 	NSTrackingArea *_trackingArea;
 	Boolean _hasMouseOver;
 }

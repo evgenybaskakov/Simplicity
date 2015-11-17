@@ -34,8 +34,8 @@
 		003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */; };
 		003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */; };
 		0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0039B8511A67948500C03C3C /* SMFlippedView.m */; };
-		003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 003DFF171A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m */; };
-		003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 003DFF181A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib */; };
+		003DFF191A73681A003C26E2 /* SMAttachmentsPanelViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */; };
+		003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */; };
 		0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0040B0F8196A5331004E55CC /* SMFolderCellView.m */; };
 		00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */; };
 		00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */; };
@@ -305,9 +305,9 @@
 		003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSearchResultsListViewController.xib; sourceTree = "<group>"; };
 		0039B8501A67948500C03C3C /* SMFlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFlippedView.h; sourceTree = "<group>"; };
 		0039B8511A67948500C03C3C /* SMFlippedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFlippedView.m; sourceTree = "<group>"; };
-		003DFF161A73681A003C26E2 /* SMAttachmentsPanelItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAttachmentsPanelItemViewController.h; sourceTree = "<group>"; };
-		003DFF171A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAttachmentsPanelItemViewController.m; sourceTree = "<group>"; };
-		003DFF181A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAttachmentsPanelItemViewController.xib; sourceTree = "<group>"; };
+		003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAttachmentsPanelViewItem.h; sourceTree = "<group>"; };
+		003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAttachmentsPanelViewItem.m; sourceTree = "<group>"; };
+		003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAttachmentsPanelViewItem.xib; sourceTree = "<group>"; };
 		0040B0F7196A5331004E55CC /* SMFolderCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderCellView.h; sourceTree = "<group>"; };
 		0040B0F8196A5331004E55CC /* SMFolderCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderCellView.m; sourceTree = "<group>"; };
 		00414ED61A16454F00068742 /* SMSearchResultsListCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchResultsListCellView.h; sourceTree = "<group>"; };
@@ -742,8 +742,8 @@
 				80238AF01BE32BCE009E090C /* Preferences */,
 				0002A0B317D1BB0100EA4AFF /* SMAppController.h */,
 				0002A0B417D1BB0100EA4AFF /* SMAppController.m */,
-				003DFF161A73681A003C26E2 /* SMAttachmentsPanelItemViewController.h */,
-				003DFF171A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m */,
+				003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */,
+				003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */,
 				00A085AD1A72145300CC4E1C /* SMAttachmentsPanelViewController.h */,
 				00A085AE1A72145300CC4E1C /* SMAttachmentsPanelViewController.m */,
 				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
@@ -863,7 +863,7 @@
 			children = (
 				80238AEF1BE32BB2009E090C /* Preferences */,
 				0002A0A617D1B1E000EA4AFF /* MainMenu.xib */,
-				003DFF181A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib */,
+				003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
@@ -1198,7 +1198,7 @@
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
-				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelItemViewController.xib in Resources */,
+				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
 				00A085B11A72145300CC4E1C /* SMAttachmentsPanelViewController.xib in Resources */,
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
@@ -1289,7 +1289,7 @@
 				80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */,
 				803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */,
 				8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */,
-				003DFF191A73681A003C26E2 /* SMAttachmentsPanelItemViewController.m in Sources */,
+				003DFF191A73681A003C26E2 /* SMAttachmentsPanelViewItem.m in Sources */,
 				00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */,
 				800C67761B489FB300272D60 /* SMColorWellWithIcon.m in Sources */,
 				0089D35F1A88084F00C189BB /* SMFolderColorController.m in Sources */,

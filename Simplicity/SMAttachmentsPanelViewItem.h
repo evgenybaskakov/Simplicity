@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMAttachmentsPanelItemViewController : NSCollectionViewItem
+@interface SMAttachmentsPanelViewItem : NSCollectionViewItem
 
 @property IBOutlet NSBox *box;
 @property IBOutlet NSTextField *fileNameField;

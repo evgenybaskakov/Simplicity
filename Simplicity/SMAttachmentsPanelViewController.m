@@ -155,7 +155,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
                     SMRoundedImageView *imageView = (SMRoundedImageView*)item.imageView;
                     
                     imageView.image = image;
-                    imageView.frame = NSMakeRect(0, 0, item.view.frame.size.width, item.view.frame.size.height);
+                    imageView.frame = item.box.frame;
                     imageView.imageScaling = NSImageScaleNone;
                     imageView.cornerRadius = item.box.cornerRadius;
                 });

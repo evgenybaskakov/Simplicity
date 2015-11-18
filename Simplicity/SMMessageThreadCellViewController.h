@@ -32,6 +32,11 @@
 - (void)enableCollapse:(Boolean)enable;
 - (void)adjustCellHeightToFitContentResizeable:(Boolean)heightResizeable;
 
+#pragma mark Saving attachments
+
+- (void)saveAttachments;
+- (void)saveAttachmentsToDownloads;
+
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;

@@ -77,6 +77,8 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellFlaggedFlag:) name:@"ChangeMessageFlaggedFlag" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveAttachments:) name:@"SaveAttachments" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveAttachmentsToDownloads:) name:@"SaveAttachmentsToDownloads" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageThreadCellHeightChanged:) name:@"MessageThreadCellHeightChanged" object:nil];
     }
@@ -918,6 +920,34 @@ static const CGFloat CELL_SPACING = -1;
     [self updateMessageThread];
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+#pragma mark Saving downloads
+
+- (void)saveAttachments:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
+    
+    if(cellIdx == _cells.count) {
+        SM_LOG_DEBUG(@"cell to save downloads not found");
+        return;
+    }
+    
+    SMMessageThreadCell *cell = _cells[cellIdx];
+    [cell.viewController saveAttachments];
+}
+
+- (void)saveAttachmentsToDownloads:(NSNotification *)notification {
+    NSDictionary *messageInfo = [notification userInfo];
+    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
+    
+    if(cellIdx == _cells.count) {
+        SM_LOG_DEBUG(@"cell to save downloads not found");
+        return;
+    }
+    
+    SMMessageThreadCell *cell = _cells[cellIdx];
+    [cell.viewController saveAttachmentsToDownloads];
 }
 
 #pragma mark Message reply composition

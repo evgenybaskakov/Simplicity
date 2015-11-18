@@ -451,6 +451,16 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 	[_messageDetailsViewController updateMessage];
 }
 
+#pragma mark Saving attachments
+
+- (void)saveAttachments {
+    [_attachmentsPanelViewController saveAllAttachments];
+}
+
+- (void)saveAttachmentsToDownloads {
+    [_attachmentsPanelViewController saveAllAttachmentsToDownloads];
+}
+
 #pragma mark Finding contents
 
 - (NSUInteger)stringOccurrencesCount {

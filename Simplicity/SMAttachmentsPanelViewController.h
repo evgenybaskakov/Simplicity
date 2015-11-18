@@ -43,6 +43,8 @@
 - (void)openSelectedAttachments;
 - (void)saveSelectedAttachments;
 - (void)saveSelectedAttachmentsToDownloads;
+- (void)saveAllAttachments;
+- (void)saveAllAttachmentsToDownloads;
 - (void)removeSelectedAttachments;
 
 - (void)invalidateIntrinsicContentViewSize;

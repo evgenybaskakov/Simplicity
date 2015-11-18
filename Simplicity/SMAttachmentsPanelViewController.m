@@ -341,6 +341,22 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
+- (void)saveAllAttachments {
+    NSMutableArray *itemsArray = [NSMutableArray arrayWithCapacity:_attachmentItems.count];
+
+    for(SMAttachmentItem *item in _attachmentItems) {
+        [itemsArray addObject:item];
+    }
+
+    [self saveAttachmentsWithDialog:itemsArray];
+}
+
+- (void)saveAllAttachmentsToDownloads {
+    for(SMAttachmentItem *item in _attachmentItems) {
+        [self saveAttachmentToDownloads:item];
+    }
+}
+
 - (void)removeSelectedAttachments {
     NSIndexSet *selectedItemIndices = _collectionView.selectionIndexes;
     NSAssert(selectedItemIndices.count > 0, @"selectedItemIndices is 0");
@@ -356,32 +372,30 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 }
 
 - (void)saveAttachmentsWithDialog:(NSArray*)attachmentItems {
-    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    NSOpenPanel *openDlg = [NSOpenPanel openPanel];
     
-    // TODO: get the downloads folder from the user preferences
-    // TODO: use the last used directory
-    [savePanel setDirectoryURL:[NSURL fileURLWithPath:NSHomeDirectory()]];
+    [openDlg setCanChooseFiles:NO];
+    [openDlg setAllowsMultipleSelection:NO];
+    [openDlg setCanChooseDirectories:YES];
     
-    // TODO: use a full-sized file panel
-    [savePanel beginSheetModalForWindow:[[NSApplication sharedApplication] mainWindow] completionHandler:^(NSInteger result){
-        if(result == NSFileHandlingPanelOKButton) {
-            [savePanel orderOut:self];
-            
-            NSMutableArray *savedAttachmentUrls = [NSMutableArray arrayWithCapacity:attachmentItems.count];
-
-            for(SMAttachmentItem *attachmentItem in attachmentItems) {
-                NSURL *targetFileUrl = [savePanel URL];
-                if(![attachmentItem writeAttachmentTo:[targetFileUrl baseURL] withFileName:[targetFileUrl relativeString]]) {
-                    SM_LOG_ERROR(@"Could not save attachment to '%@'", targetFileUrl.baseURL);
-                    return; // TODO: error popup
-                }
-                
-                [savedAttachmentUrls addObject:targetFileUrl];
+    [openDlg setPrompt:@"Save attachments"];
+    
+    if([openDlg runModal] == NSModalResponseOK) {
+        NSURL *targetDirUrl = [[openDlg URLs] firstObject];
+        
+        NSMutableArray *savedAttachmentUrls = [NSMutableArray arrayWithCapacity:attachmentItems.count];
+        
+        for(SMAttachmentItem *attachmentItem in attachmentItems) {
+            if(![attachmentItem writeAttachmentTo:targetDirUrl withFileName:attachmentItem.fileName]) {
+                SM_LOG_ERROR(@"Could not save attachment '%@' to '%@'", attachmentItem.fileName, targetDirUrl);
+                return; // TODO: error popup
             }
             
-            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:savedAttachmentUrls];
+            [savedAttachmentUrls addObject:[NSURL URLWithString:attachmentItem.fileName relativeToURL:targetDirUrl]];
         }
-    }];
+        
+        [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:savedAttachmentUrls];
+    }
 }
 
 #pragma mark Delegate actions

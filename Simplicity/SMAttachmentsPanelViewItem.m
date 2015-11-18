@@ -8,13 +8,17 @@
 
 #import "SMLog.h"
 #import "SMAttachmentItem.h"
+#import "SMRoundedImageView.h"
 #import "SMAttachmentsPanelView.h"
 #import "SMAttachmentsPanelViewController.h"
 #import "SMAttachmentsPanelViewItem.h"
 
+static const CGFloat BOX_ALPHA = 0.5;
+
 @implementation SMAttachmentsPanelViewItem {
 	NSTrackingArea *_trackingArea;
 	Boolean _hasMouseOver;
+    Boolean _hasPreview;
 }
 
 - (NSColor*)selectedColor {
@@ -30,7 +34,7 @@
 }
 
 - (NSColor*)unselectedWithMouseOverColor {
-	return [NSColor grayColor];
+    return _hasPreview? [NSColor blackColor] : [NSColor grayColor];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -55,8 +59,22 @@
 - (SMAttachmentsPanelViewController*)collectionViewController {
     SMAttachmentsPanelView *collectionView = (SMAttachmentsPanelView *)self.collectionView;
     NSAssert([collectionView isKindOfClass:[SMAttachmentsPanelView class]], @"bad collection view type: %@", collectionView.class);
-
+    
     return collectionView.attachmentsPanelViewController;
+}
+
+- (void)setPreviewImage:(NSImage *)image {
+    SMRoundedImageView *imageView = (SMRoundedImageView*)self.imageView;
+    
+    imageView.image = image;
+    imageView.frame = self.box.frame;
+    imageView.imageScaling = NSImageScaleNone;
+    imageView.cornerRadius = self.box.cornerRadius;
+    imageView.insetsWidth = 1;
+
+    _box.alphaValue = 0;
+    
+    _hasPreview = YES;
 }
 
 - (void)setSelected:(BOOL)flag {
@@ -64,21 +82,34 @@
  
 	NSAssert(_box != nil, @"no box set");
 
-	NSColor *fillColor = flag? (_hasMouseOver? [self selectedColorWithMouseOver] : [self selectedColor]) : (_hasMouseOver? [self unselectedWithMouseOverColor] : [self unselectedColor]);
+    NSColor *fillColor = nil;
+    
+    if(flag) {
+        fillColor = _hasMouseOver? [self selectedColorWithMouseOver] : [self selectedColor];
+    }
+    else {
+        fillColor = _hasMouseOver? [self unselectedWithMouseOverColor] : [self unselectedColor];
+    }
  
 	[_box setFillColor:fillColor];
+    
+    _box.alphaValue = (_hasPreview && _hasMouseOver)? 0 : 0.5;
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent {
-	NSColor *fillColor = [self isSelected]? [self selectedColorWithMouseOver] : [self unselectedWithMouseOverColor];
+    NSColor *fillColor = [self isSelected]? [self selectedColorWithMouseOver] : [self unselectedWithMouseOverColor];
  
 	[_box setFillColor:fillColor];
 	
 	_hasMouseOver = YES;
+
+    _box.alphaValue = (_hasPreview? BOX_ALPHA : 0);
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
-	NSColor *fillColor = [self isSelected]? [self selectedColor] : [self unselectedColor];
+    _box.alphaValue = (_hasPreview? 0 : 0);
+
+    NSColor *fillColor = [self isSelected]? [self selectedColor] : [self unselectedColor];
  
 	[_box setFillColor:fillColor];
 	

@@ -12,7 +12,6 @@
 #import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMBox2.h"
-#import "SMRoundedImageView.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
 #import "SMAttachmentsPanelView.h"
@@ -152,12 +151,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:index];
-                    SMRoundedImageView *imageView = (SMRoundedImageView*)item.imageView;
                     
-                    imageView.image = image;
-                    imageView.frame = item.box.frame;
-                    imageView.imageScaling = NSImageScaleNone;
-                    imageView.cornerRadius = item.box.cornerRadius;
+                    [item setPreviewImage:image];
                 });
             }
             else {

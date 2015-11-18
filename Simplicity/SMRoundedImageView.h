@@ -11,5 +11,6 @@
 @interface SMRoundedImageView : NSImageView
 
 @property (nonatomic) NSUInteger cornerRadius;
+@property (nonatomic) NSUInteger insetsWidth;
 
 @end

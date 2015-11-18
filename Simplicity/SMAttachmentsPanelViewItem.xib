@@ -20,7 +20,13 @@
             <rect key="frame" x="0.0" y="0.0" width="119" height="91"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <box autoresizesSubviews="NO" cornerRadius="8" title="Box" boxType="custom" borderType="none" titlePosition="noTitle" id="c9T-fl-rVx" userLabel="Selection Box">
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="a8C-XX-hqV" customClass="SMRoundedImageView">
+                    <rect key="frame" x="34" y="35" width="50" height="50"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <animations/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSApplicationIcon" id="Q1d-GG-4CZ"/>
+                </imageView>
+                <box autoresizesSubviews="NO" wantsLayer="YES" alphaValue="0.5" cornerRadius="8" title="Box" boxType="custom" borderType="none" titlePosition="noTitle" id="c9T-fl-rVx" userLabel="Selection Box">
                     <rect key="frame" x="2" y="2" width="115" height="87"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <view key="contentView" id="S0e-y7-hQW">
@@ -45,12 +51,6 @@
                         <binding destination="-2" name="value" keyPath="representedObject.fileName" id="ZxW-ev-keW"/>
                     </connections>
                 </textField>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="a8C-XX-hqV" customClass="SMRoundedImageView">
-                    <rect key="frame" x="34" y="35" width="50" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSApplicationIcon" id="Q1d-GG-4CZ"/>
-                </imageView>
             </subviews>
             <animations/>
             <point key="canvasLocation" x="65.5" y="262.5"/>

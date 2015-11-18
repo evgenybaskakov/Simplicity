@@ -21,7 +21,7 @@
         [super drawRect:dirtyRect];
     }
     else {
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(dirtyRect, 0, 0) xRadius:_cornerRadius yRadius:_cornerRadius];
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(dirtyRect, _insetsWidth, _insetsWidth) xRadius:_cornerRadius yRadius:_cornerRadius];
         
         [path setLineWidth:0];
         [path addClip];

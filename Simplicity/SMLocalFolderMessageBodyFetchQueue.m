@@ -91,11 +91,11 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         }
     }]) {
         if(urgent) {
-            SM_LOG_INFO(@"Urgently downloading body for message UID %u from folder '%@'; there are %lu requests in the queue", uid, remoteFolderName, _fetchMessageBodyOps.count);
+            SM_LOG_DEBUG(@"Urgently downloading body for message UID %u from folder '%@'; there are %lu requests in the queue", uid, remoteFolderName, _fetchMessageBodyOps.count);
         }
         else {
             if([_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName] != nil) {
-                SM_LOG_INFO(@"Body for message UID %u from folder '%@' is already being downloaded", uid, remoteFolderName);
+                SM_LOG_DEBUG(@"Body for message UID %u from folder '%@' is already being downloaded", uid, remoteFolderName);
                 return;
             }
         }
@@ -113,8 +113,6 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 return;
             }
             
-            NSAssert(currentOpDesc == opDesc, @"bad op desc");
-
             MCOIMAPSession *session = [[appDelegate model] imapSession];
             NSAssert(session, @"session is nil");
             
@@ -123,19 +121,19 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 
             _activeIMAPOpCount++;
             
-            SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' started, attempt %lu (_activeIMAPOpCount %lu)", uid, remoteFolderName, currentOpDesc.attempt, _activeIMAPOpCount);
+            SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' started, attempt %lu (_activeIMAPOpCount %lu)", uid, remoteFolderName, currentOpDesc.attempt, _activeIMAPOpCount);
             
             [imapOp start:^(NSError * error, NSData * data) {
                 NSAssert(_activeIMAPOpCount > 0, @"_activeIMAPOpCount is zero");
                 
                 _activeIMAPOpCount--;
                 
-                SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' ended (_activeIMAPOpCount %lu)", uid, remoteFolderName, _activeIMAPOpCount);
+                SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended (_activeIMAPOpCount %lu)", uid, remoteFolderName, _activeIMAPOpCount);
 
                 FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
                 if(currentOpDesc == nil) {
                     if(!urgent) {
-                        [_nonUrgentfetchMessageBodyOpQueue removeObject:opDesc];
+                        [_nonUrgentfetchMessageBodyOpQueue removeObject:currentOpDesc];
                     }
 
                     SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' skipped (completed before or cancelled)", uid, remoteFolderName);
@@ -160,9 +158,9 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     if(!urgent) {
                         NSAssert(_nonUrgentfetchMessageBodyOpQueue.count > 0, @"no ops in the queue");
                         
-                        [_nonUrgentfetchMessageBodyOpQueue removeObject:opDesc];
+                        [_nonUrgentfetchMessageBodyOpQueue removeObject:currentOpDesc];
                         
-                        SM_LOG_INFO(@"fetch op finished (message UID %u, folder '%@'), body fetch op count: %lu", uid, remoteFolderName, _fetchMessageBodyOps.count);
+                        SM_LOG_DEBUG(@"fetch op finished (message UID %u, folder '%@'), body fetch op count: %lu", uid, remoteFolderName, _fetchMessageBodyOps.count);
                         
                         NSUInteger nextOpIndex = 0;
                         while(nextOpIndex < _nonUrgentfetchMessageBodyOpQueue.count) {
@@ -203,7 +201,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         else {
             [_nonUrgentfetchMessageBodyOpQueue addObject:opDesc];
             
-            SM_LOG_INFO(@"new fetch op added (message UID %u, folder '%@'), non-urgent body op count: %lu", uid, remoteFolderName, _nonUrgentfetchMessageBodyOpQueue.count);
+            SM_LOG_DEBUG(@"new fetch op added (message UID %u, folder '%@'), non-urgent body op count: %lu", uid, remoteFolderName, _nonUrgentfetchMessageBodyOpQueue.count);
             
             if(_nonUrgentfetchMessageBodyOpQueue.count <= MAX_BODY_FETCH_OPS) {
                 [opDesc startOp];

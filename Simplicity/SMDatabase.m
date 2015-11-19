@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _urgentTaskQueue = [[SMThreadSafeOperationQueue alloc] init];
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
-        _dbFileSizeLimit = 1024 * 1024 * 128;
+        _dbFileSizeLimit = 1024 * 1024 * 1024 * 4ULL;
         _dbSizeToReclaim = 1024 * 1024 * 32;
         
         [self checkDatabase:_dbFilePath];

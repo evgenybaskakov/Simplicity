@@ -13,7 +13,7 @@
 #import "SMAttachmentsPanelViewController.h"
 #import "SMAttachmentsPanelViewItem.h"
 
-static const CGFloat BOX_ALPHA = 0.5;
+static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 
 @implementation SMAttachmentsPanelViewItem {
 	NSTrackingArea *_trackingArea;
@@ -21,8 +21,12 @@ static const CGFloat BOX_ALPHA = 0.5;
     Boolean _hasPreview;
 }
 
+- (NSColor*)unselectedColor {
+    return [[NSColor whiteColor] colorWithAlphaComponent:0];
+}
+
 - (NSColor*)selectedColor {
-	return [NSColor blueColor];
+	return [[NSColor blueColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
 }
 
 - (NSColor*)selectedColorWithMouseOver {
@@ -30,7 +34,7 @@ static const CGFloat BOX_ALPHA = 0.5;
 }
 
 - (NSColor*)unselectedWithMouseOverColor {
-    return [NSColor blackColor];
+    return [[NSColor blackColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -67,9 +71,10 @@ static const CGFloat BOX_ALPHA = 0.5;
     imageView.imageScaling = NSImageScaleNone;
     imageView.cornerRadius = self.box.cornerRadius;
     imageView.insetsWidth = 0;
-
-    _box.alphaValue = 0;
     
+    _fileNameField.textColor = [NSColor whiteColor];
+    _fileNameField.hidden = YES;
+
     _hasPreview = YES;
 }
 
@@ -79,20 +84,17 @@ static const CGFloat BOX_ALPHA = 0.5;
     if(selected) {
         if(_hasMouseOver) {
             _box.fillColor = [self selectedColorWithMouseOver];
-            _box.alphaValue = BOX_ALPHA;
         }
         else {
             _box.fillColor = [self selectedColor];
-            _box.alphaValue = BOX_ALPHA;
         }
     }
     else {
         if(_hasMouseOver) {
             _box.fillColor = [self unselectedWithMouseOverColor];
-            _box.alphaValue = BOX_ALPHA;
        }
         else {
-            _box.alphaValue = 0;
+            _box.fillColor = [self unselectedColor];
         }
     }
  }
@@ -100,23 +102,34 @@ static const CGFloat BOX_ALPHA = 0.5;
 - (void)mouseEntered:(NSEvent *)theEvent {
     if([self isSelected]) {
         _box.fillColor = [self selectedColorWithMouseOver];
-        _box.alphaValue = BOX_ALPHA;
     }
     else {
         _box.fillColor = [self unselectedWithMouseOverColor];
-        _box.alphaValue = BOX_ALPHA;
     }
-	
+
+    if(_hasPreview) {
+        _fileNameField.hidden = NO;
+    }
+    else {
+        _fileNameField.textColor = [NSColor whiteColor];
+    }
+
 	_hasMouseOver = YES;
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
     if([self isSelected]) {
         _box.fillColor = [self selectedColor];
-        _box.alphaValue = BOX_ALPHA;
     }
     else {
-        _box.alphaValue = 0;
+        _box.fillColor = [self unselectedColor];
+    }
+    
+    if(_hasPreview) {
+        _fileNameField.hidden = YES;
+    }
+    else {
+        _fileNameField.textColor = [NSColor blackColor];
     }
     
 	_hasMouseOver = NO;

@@ -21,12 +21,12 @@
         [super drawRect:dirtyRect];
     }
     else {
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(dirtyRect, _insetsWidth, _insetsWidth) xRadius:_cornerRadius yRadius:_cornerRadius];
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, _insetsWidth, _insetsWidth) xRadius:_cornerRadius yRadius:_cornerRadius];
         
         [path setLineWidth:0];
         [path addClip];
         
-        [self.image drawAtPoint:NSZeroPoint fromRect:dirtyRect operation:NSCompositeSourceOver fraction:1.0];
+        [self.image drawAtPoint:NSZeroPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:1.0];
     }
 }
 

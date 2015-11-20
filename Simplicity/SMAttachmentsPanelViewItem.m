@@ -71,6 +71,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     imageView.imageScaling = NSImageScaleNone;
     imageView.cornerRadius = self.box.cornerRadius;
     imageView.insetsWidth = 0;
+    imageView.nonOriginalBehavior = YES;
     
     _fileNameField.textColor = [NSColor whiteColor];
     _fileNameField.hidden = YES;

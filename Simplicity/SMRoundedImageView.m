@@ -8,7 +8,9 @@
 
 #import "SMRoundedImageView.h"
 
-@implementation SMRoundedImageView
+@implementation SMRoundedImageView {
+    NSImage *_scaledImage;
+}
 
 - (void)setCornerRadius:(NSUInteger)cornerRadius {
     _cornerRadius = cornerRadius;
@@ -17,17 +19,29 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    if(_cornerRadius == 0) {
-        [super drawRect:dirtyRect];
-    }
-    else {
+    if(_nonOriginalBehavior) {
+        if(_scaledImage == nil) {
+            _scaledImage = self.image;
+
+            if(_scaleImage) {
+                _scaledImage.size = self.bounds.size;
+            }
+        }
+        
         NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, _insetsWidth, _insetsWidth) xRadius:_cornerRadius yRadius:_cornerRadius];
         
-        [path setLineWidth:0];
+        [path setLineWidth:_borderWidth];
         [path addClip];
         
-        [self.image drawAtPoint:NSZeroPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:1.0];
+        if(_borderWidth != 0) {
+            [_borderColor set];
+            [path stroke];
+        }
+
+        [_scaledImage drawAtPoint:NSZeroPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:1.0];
+    }
+    else {
+        [super drawRect:dirtyRect];
     }
 }
-
 @end

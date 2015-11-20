@@ -10,7 +10,11 @@
 
 @interface SMRoundedImageView : NSImageView
 
+@property (nonatomic) BOOL nonOriginalBehavior;
+@property (nonatomic) BOOL scaleImage;
 @property (nonatomic) NSUInteger cornerRadius;
+@property (nonatomic) NSUInteger borderWidth;
 @property (nonatomic) NSUInteger insetsWidth;
+@property (nonatomic) NSColor *borderColor;
 
 @end

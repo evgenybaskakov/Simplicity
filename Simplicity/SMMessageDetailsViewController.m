@@ -14,6 +14,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsViewController.h"
 #import "SMMessageThreadCellViewController.h"
+#import "SMRoundedImageView.h"
 #import "SMMessage.h"
 
 static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
@@ -29,6 +30,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	
 	// UI elements
 	NSButton *_starButton;
+    SMRoundedImageView *_contactImageView;
 	NSTextField *_fromAddress;
 	NSTextField *_toList;
 	NSButton *_attachmentButton;
@@ -175,6 +177,27 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_starButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
 	
+    // init contact image view
+    
+    _contactImageView = [[SMRoundedImageView alloc] init];
+    _contactImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _contactImageView.image = [NSImage imageNamed:NSImageNameUserGuest];
+    _contactImageView.cornerRadius = 1;
+    _contactImageView.borderWidth = 1;
+    _contactImageView.borderColor = [NSColor lightGrayColor];
+    _contactImageView.nonOriginalBehavior = YES;
+    _contactImageView.scaleImage = YES;
+    
+    [view addSubview:_contactImageView];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
+    
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_contactImageView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_contactImageView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_starButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+
 	// init from address label
 	
 	_fromAddress = [SMMessageDetailsViewController createLabel:@"" bold:YES];
@@ -185,7 +208,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 	[view addSubview:_fromAddress];
 	
-	[view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_fromAddress attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+	[view addConstraint:[NSLayoutConstraint constraintWithItem:_contactImageView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_fromAddress attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_fromAddress attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
 

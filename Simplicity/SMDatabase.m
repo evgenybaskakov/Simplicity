@@ -18,8 +18,8 @@
 #import "SMOperationQueue.h"
 #import "SMDatabase.h"
 
-static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30;
-static const NSUInteger BODIES_COUNT_RECLAIM_STEP = 50;
+static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30; // TODO: too small for large databases!!!
+static const NSUInteger BODIES_COUNT_RECLAIM_STEP = 50; // TODO: too small for large databases!!!
 static const NSUInteger HEADERS_COUNT_RECLAIM_STEP = BODIES_COUNT_RECLAIM_STEP * HEADERS_BODIES_RECLAIM_RATIO;
 
 typedef NS_ENUM(NSInteger, DBFailureKind) {

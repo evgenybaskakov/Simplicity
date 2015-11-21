@@ -952,8 +952,8 @@
 			isa = PBXGroup;
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
-				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
 				803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */,
+				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
 				803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
 				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,

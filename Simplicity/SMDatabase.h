@@ -67,7 +67,8 @@
 
 @interface SMDatabase : NSObject
 
-- (id)initWithFilePath:(NSString*)dbFilePath;
+- (id)initWithFilePath:(NSString*)dbFilePath localStorageSizeMb:(NSUInteger)localStorageSizeMb;
+- (void)setFileSizeLimitMb:(NSUInteger)sizeMb;
 - (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock;
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;

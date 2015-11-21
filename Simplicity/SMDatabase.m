@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SMThreadSafeOperationQueue *_urgentTaskQueue;
 }
 
-- (id)initWithFilePath:(NSString*)dbFilePath {
+- (id)initWithFilePath:(NSString*)dbFilePath localStorageSizeMb:(NSUInteger)localStorageSizeMb {
     self = [self init];
     
     if(self) {
@@ -77,9 +77,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _urgentTaskQueue = [[SMThreadSafeOperationQueue alloc] init];
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
-        _dbFileSizeLimit = 1024 * 1024 * 1024 * 4ULL;
-        _dbSizeToReclaim = 1024 * 1024 * 32;
-        
+
+        [self setFileSizeLimitMb:localStorageSizeMb];
         [self checkDatabase:_dbFilePath];
         [self initDatabase:_dbFilePath];
         
@@ -90,6 +89,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     return self;
+}
+
+- (void)setFileSizeLimitMb:(NSUInteger)sizeMb {
+    const NSUInteger sizeToReclaimMb = sizeMb / 5;
+    
+    SM_LOG_INFO(@"Database file limit: %lu Mb, size to reclaim: %lu Mb", sizeMb, sizeToReclaimMb);
+
+    _dbFileSizeLimit = ((uint64_t)sizeMb) * 1024 * 1024;
+    _dbSizeToReclaim = ((uint64_t)sizeToReclaimMb) * 1024 * 1024;
 }
 
 - (void)triggerDBFailureWithSQLiteError:(int)sqliteError {
@@ -194,7 +202,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 - (BOOL)shouldStartReclaimingOldData {
     const uint64_t fileSize = [self dbFileSize];
 
-    if(fileSize >= _dbFileSizeLimit) {
+    if(_dbFileSizeLimit != 0 && fileSize >= _dbFileSizeLimit) {
         SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the max database size (%llu bytes)", _dbFilePath, fileSize, _dbFileSizeLimit);
         
         return YES;

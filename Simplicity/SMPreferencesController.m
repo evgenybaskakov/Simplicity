@@ -41,12 +41,14 @@
 #define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
 #define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
 #define kDownloadsFolder                @"DownloadsFolder"
+#define kLocalStorageSizeMb             @"LocalStorageSizeMb"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowContactImagesCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
     NSString *_downloadsFolderCached;
+    NSUInteger _localStorageSizeMbCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -715,6 +717,35 @@
     [[NSUserDefaults standardUserDefaults] setObject:folder forKey:kDownloadsFolder];
 
     _downloadsFolderCached = folder;
+}
+
+#pragma mark Local storage size
+
+- (NSUInteger)localStorageSizeMb {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kLocalStorageSizeMb] == nil) {
+            _localStorageSizeMbCached = 0;
+            
+            SM_LOG_INFO(@"Using default _localStorageSizeMbCached: %lu", _localStorageSizeMbCached);
+        }
+        else {
+            _localStorageSizeMbCached = [[NSUserDefaults standardUserDefaults] integerForKey:kLocalStorageSizeMb];
+            
+            SM_LOG_INFO(@"Loaded _localStorageSizeMbCached: %lu", _localStorageSizeMbCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _localStorageSizeMbCached;
+}
+
+- (void)setLocalStorageSizeMb:(NSUInteger)sizeMb {
+    [[NSUserDefaults standardUserDefaults] setInteger:sizeMb forKey:kLocalStorageSizeMb];
+    
+    _localStorageSizeMbCached = sizeMb;
 }
 
 @end

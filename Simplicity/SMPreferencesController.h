@@ -18,6 +18,7 @@
 @property (nonatomic) NSUInteger messageListPreviewLineCount;
 @property (nonatomic) NSUInteger messageCheckPeriodSec;
 @property (nonatomic) NSString *downloadsFolder;
+@property (nonatomic) NSUInteger localStorageSizeMb;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

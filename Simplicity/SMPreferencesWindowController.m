@@ -11,6 +11,8 @@
 #import "SMAppController.h"
 #import "SMAccountPreferencesViewController.h"
 #import "SMGeneralPreferencesViewController.h"
+#import "SMSignaturePreferencesViewController.h"
+#import "SMAdvancedPreferencesViewController.h"
 #import "SMPreferencesWindowController.h"
 
 @implementation SMPreferencesWindowController {
@@ -18,6 +20,8 @@
     NSArray *_tabViewControllers;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
+    SMSignaturePreferencesViewController *_signaturePreferencesViewController;
+    SMAdvancedPreferencesViewController *_advancedPreferencesViewController;
 }
 
 - (void)windowDidLoad {
@@ -25,9 +29,11 @@
 
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
+    _signaturePreferencesViewController = [[SMSignaturePreferencesViewController alloc] initWithNibName:@"SMSignaturePreferencesViewController" bundle:nil];
+    _advancedPreferencesViewController = [[SMAdvancedPreferencesViewController alloc] initWithNibName:@"SMAdvancedPreferencesViewController" bundle:nil];
 
-    _tabNames = @[@"Accounts", @"General"];
-    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController];
+    _tabNames = @[@"Accounts", @"General", @"Signature", @"Advanced"];
+    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _signaturePreferencesViewController, _advancedPreferencesViewController];
     
     [self toolbarToggleAccountAction:self];
 }
@@ -77,9 +83,12 @@
     [self selectTab:1];
 }
 
-- (IBAction)closePreferencesAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] hidePreferencesWindow];
+- (IBAction)toolbarToggleSignatureAction:(id)sender {
+    [self selectTab:2];
+}
+
+- (IBAction)toolbarToggleAdvancedAction:(id)sender {
+    [self selectTab:3];
 }
 
 - (void)reloadAccounts {

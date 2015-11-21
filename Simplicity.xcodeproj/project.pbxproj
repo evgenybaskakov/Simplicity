@@ -124,6 +124,10 @@
 		802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 802408ED1B786FC80072FB98 /* SMBoxView.m */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
+		803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */; };
+		803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */; };
+		803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */; };
+		803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */; };
 		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
 		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
@@ -452,6 +456,12 @@
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
+		803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAdvancedPreferencesViewController.h; sourceTree = "<group>"; };
+		803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAdvancedPreferencesViewController.m; sourceTree = "<group>"; };
+		803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAdvancedPreferencesViewController.xib; sourceTree = "<group>"; };
+		803A29A21C00399B00FF8D7C /* SMSignaturePreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSignaturePreferencesViewController.h; sourceTree = "<group>"; };
+		803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSignaturePreferencesViewController.m; sourceTree = "<group>"; };
+		803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSignaturePreferencesViewController.xib; sourceTree = "<group>"; };
 		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
 		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
 		803A83181BE59059006520DD /* SMPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesController.h; sourceTree = "<group>"; };
@@ -943,6 +953,8 @@
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
 				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
+				803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */,
+				803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
 				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,
 			);
@@ -956,6 +968,8 @@
 				80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */,
 				80238AE31BE32BA5009E090C /* SMAccountPreferencesViewController.h */,
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
+				803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */,
+				803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */,
 				80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */,
 				80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */,
 				80BFC3B31BEDC49900467243 /* SMMailServiceProvider.h */,
@@ -976,6 +990,8 @@
 				801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */,
 				803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */,
 				803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */,
+				803A29A21C00399B00FF8D7C /* SMSignaturePreferencesViewController.h */,
+				803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";
@@ -1153,6 +1169,7 @@
 				8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
 				801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */,
+				803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */,
 				80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */,
 				80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */,
 				80A44B131B5A18520049AB88 /* quote.png in Resources */,
@@ -1193,6 +1210,7 @@
 				00A6817A1A7DEDB800DAD2BD /* attachment-document.png in Resources */,
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
 				80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */,
+				803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */,
 				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
@@ -1282,6 +1300,7 @@
 				80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */,
 				00A085A01A7206FC00CC4E1C /* SMAttachmentItem.m in Sources */,
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
+				803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMLabeledTokenFieldBoxViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
 				80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */,
@@ -1327,6 +1346,7 @@
 				80BFC3B51BEDC49900467243 /* SMMailServiceProvider.m in Sources */,
 				00A085B01A72145300CC4E1C /* SMAttachmentsPanelViewController.m in Sources */,
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,
+				803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */,
 				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,
 				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,

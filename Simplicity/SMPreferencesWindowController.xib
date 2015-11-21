@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
@@ -25,17 +25,24 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="211F3F04-4718-4ED0-8156-66AA90DA28E2" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="O7F-Mj-9fD">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="026FDEE1-E54F-41F9-BA52-8656F4DAAD77" explicitItemIdentifier="Local storage" label="Local storage" paletteLabel="Local storage" tag="-1" image="NSFolderSmart" selectable="YES" id="1be-7x-Uzy"/>
                     <toolbarItem implicitItemIdentifier="FB69BF17-A8BF-4BF1-ABAA-D4A5D425CC62" explicitItemIdentifier="General" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" selectable="YES" id="MOs-Ow-R50">
                         <connections>
                             <action selector="toolbarToggleGeneralAction:" target="-2" id="vpn-bj-mG1"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="9178BE5A-1A10-4252-8B10-B98490CA772C" explicitItemIdentifier="Advanced" label="Advanced" paletteLabel="Advanced" tag="-1" image="NSAdvanced" selectable="YES" id="vtI-gT-y7u"/>
-                    <toolbarItem implicitItemIdentifier="287C5D21-8B74-4185-8A4E-237C3B3D58AE" explicitItemIdentifier="Signature" label="Signature" paletteLabel="Signature" tag="-1" image="Quote-50" selectable="YES" id="tRY-HJ-bbZ"/>
+                    <toolbarItem implicitItemIdentifier="9178BE5A-1A10-4252-8B10-B98490CA772C" explicitItemIdentifier="Advanced" label="Advanced" paletteLabel="Advanced" tag="-1" image="NSAdvanced" selectable="YES" id="vtI-gT-y7u">
+                        <connections>
+                            <action selector="toolbarToggleAdvancedAction:" target="-2" id="FjU-VZ-Pc7"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="287C5D21-8B74-4185-8A4E-237C3B3D58AE" explicitItemIdentifier="Signature" label="Signature" paletteLabel="Signature" tag="-1" image="Quote-50" selectable="YES" id="tRY-HJ-bbZ">
+                        <connections>
+                            <action selector="toolbarToggleSignatureAction:" target="-2" id="iuF-Dg-ghJ"/>
+                        </connections>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="24D1909D-24B3-421C-8531-E2BB30A897EA" explicitItemIdentifier="Accounts" label="Accounts" paletteLabel="Accounts" tag="-1" image="NSUser" selectable="YES" id="1Di-fo-Rp3">
                         <connections>
-                            <action selector="toolbarToggleAccountAction:" target="-2" id="ndw-7g-uIu"/>
+                            <action selector="toolbarToggleAccountAction:" target="-2" id="fjE-ly-vpa"/>
                         </connections>
                     </toolbarItem>
                 </allowedToolbarItems>
@@ -43,7 +50,6 @@
                     <toolbarItem reference="1Di-fo-Rp3"/>
                     <toolbarItem reference="MOs-Ow-R50"/>
                     <toolbarItem reference="tRY-HJ-bbZ"/>
-                    <toolbarItem reference="1be-7x-Uzy"/>
                     <toolbarItem reference="vtI-gT-y7u"/>
                 </defaultToolbarItems>
             </toolbar>
@@ -55,7 +61,6 @@
     </objects>
     <resources>
         <image name="NSAdvanced" width="32" height="32"/>
-        <image name="NSFolderSmart" width="32" height="32"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUser" width="32" height="32"/>
         <image name="Quote-50" width="50" height="50"/>

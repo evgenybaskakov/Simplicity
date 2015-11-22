@@ -125,16 +125,18 @@
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
     SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
 
-    NSMutableArray *results = [NSMutableArray array];
+    NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
     
     [self searchAddressBookProperty:kABEmailProperty value:substring results:results];
     [self searchAddressBookProperty:kABFirstNameProperty value:substring results:results];
     [self searchAddressBookProperty:kABLastNameProperty value:substring results:results];
     
-    return results;
+    return [results sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+        return [str1 compare:str2];
+    }];
 }
 
-- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableArray*)results {
+- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableOrderedSet*)results {
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
     ABSearchElement *search = [ABPerson searchElementForProperty:property label:nil key:nil value:value comparison:kABPrefixMatchCaseInsensitive];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];

@@ -123,28 +123,31 @@
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
-     SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
-     
-     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-     ABSearchElement *nameIsSmith = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:substring comparison:kABPrefixMatchCaseInsensitive];
+    SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
 
-     NSArray *peopleFound = [ab recordsMatchingSearchElement:nameIsSmith];
-     NSMutableArray *results = [NSMutableArray arrayWithCapacity:peopleFound.count];
-     
-     //kABFirstNameProperty
-     //kABLastNameProperty
+    NSMutableArray *results = [NSMutableArray array];
+    
+    [self searchAddressBookProperty:kABEmailProperty value:substring results:results];
+    [self searchAddressBookProperty:kABFirstNameProperty value:substring results:results];
+    [self searchAddressBookProperty:kABLastNameProperty value:substring results:results];
+    
+    return results;
+}
 
-     for(NSUInteger i = 0; i < peopleFound.count; i++) {
-         ABRecord *record = peopleFound[i];
-         ABMultiValue *emails = [record valueForProperty:kABEmailProperty];
-
-         for(NSUInteger j = 0; j < emails.count; j++) {
-             NSString *email = [emails valueAtIndex:j];
-             [results addObject:email];
-         }
-     }
-     
-     return results;
+- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableArray*)results {
+    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+    ABSearchElement *search = [ABPerson searchElementForProperty:property label:nil key:nil value:value comparison:kABPrefixMatchCaseInsensitive];
+    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
+    
+    for(NSUInteger i = 0; i < foundRecords.count; i++) {
+        ABRecord *record = foundRecords[i];
+        ABMultiValue *emails = [record valueForProperty:kABEmailProperty];
+        
+        for(NSUInteger j = 0; j < emails.count; j++) {
+            NSString *email = [emails valueAtIndex:j];
+            [results addObject:email];
+        }
+    }
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {

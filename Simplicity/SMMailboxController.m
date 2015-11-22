@@ -12,6 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMSimplicityContainer.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMFolderDesc.h"
@@ -97,9 +98,23 @@
             
             [self addFoldersToDatabase];
 
+            [self ensureMainLocalFoldersCreated];
+            
 			[[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
 		}
 	}];
+}
+
+- (void)ensureMainLocalFoldersCreated {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    
+    for(SMFolder *folder in mailbox.mainFolders) {
+        if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
+            [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName syncWithRemoteFolder:YES];
+        }
+    }
 }
 
 - (void)loadExistingFolders:(NSArray*)folderDescs {
@@ -107,6 +122,8 @@
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     if([mailbox loadExistingFolders:folderDescs]) {
+        [self ensureMainLocalFoldersCreated];
+        
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
     }

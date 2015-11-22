@@ -199,17 +199,26 @@
 - (void)updateMainFolders {
 	[_mainFolders removeAllObjects];
 	
-	_inboxFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"INBOX" setKind:SMFolderKindInbox];
-	_importantFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagImportant orName:nil as:@"Important" setKind:SMFolderKindImportant];
-	_sentFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagSentMail orName:nil as:@"Sent" setKind:SMFolderKindSent];
-    _draftsFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagDrafts orName:nil as:@"Drafts" setKind:SMFolderKindDrafts];
-    _starredFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagStarred orName:nil as:@"Starred" setKind:SMFolderKindStarred];
-	_spamFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagSpam orName:nil as:@"Spam" setKind:SMFolderKindSpam];
-	_trashFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagTrash orName:nil as:@"Trash" setKind:SMFolderKindTrash];
-	_allMailFolder = [self addMainFolderWithFlags:MCOIMAPFolderFlagAllMail orName:nil as:@"All Mail" setKind:SMFolderKindAllMail];
+	_inboxFolder = [self addFolderWithFlags:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"INBOX" setKind:SMFolderKindInbox];
+	_importantFolder = [self addFolderWithFlags:MCOIMAPFolderFlagImportant orName:nil as:@"Important" setKind:SMFolderKindImportant];
+	_sentFolder = [self addFolderWithFlags:MCOIMAPFolderFlagSentMail orName:nil as:@"Sent" setKind:SMFolderKindSent];
+    _draftsFolder = [self addFolderWithFlags:MCOIMAPFolderFlagDrafts orName:nil as:@"Drafts" setKind:SMFolderKindDrafts];
+    _starredFolder = [self addFolderWithFlags:MCOIMAPFolderFlagStarred orName:nil as:@"Starred" setKind:SMFolderKindStarred];
+	_spamFolder = [self addFolderWithFlags:MCOIMAPFolderFlagSpam orName:nil as:@"Spam" setKind:SMFolderKindSpam];
+	_trashFolder = [self addFolderWithFlags:MCOIMAPFolderFlagTrash orName:nil as:@"Trash" setKind:SMFolderKindTrash];
+	_allMailFolder = [self addFolderWithFlags:MCOIMAPFolderFlagAllMail orName:nil as:@"All Mail" setKind:SMFolderKindAllMail];
+
+    [_mainFolders addObject:_inboxFolder];
+    [_mainFolders addObject:_importantFolder];
+    [_mainFolders addObject:_sentFolder];
+    [_mainFolders addObject:_draftsFolder];
+    [_mainFolders addObject:_starredFolder];
+    [_mainFolders addObject:_spamFolder];
+    [_mainFolders addObject:_trashFolder];
+    [_mainFolders addObject:_allMailFolder];
 }
 
-- (SMFolder*)addMainFolderWithFlags:(MCOIMAPFolderFlag)flags orName:(NSString*)name as:(NSString*)displayName setKind:(SMFolderKind)kind {
+- (SMFolder*)addFolderWithFlags:(MCOIMAPFolderFlag)flags orName:(NSString*)name as:(NSString*)displayName setKind:(SMFolderKind)kind {
 	for(NSUInteger i = 0; i < _folders.count; i++) {
 		SMFolder *folder = _folders[i];
 		
@@ -218,7 +227,6 @@
 			folder.kind = kind;
 
 			[_folders removeObjectAtIndex:i];
-			[_mainFolders addObject:folder];
 
 			return folder;
 		}

@@ -128,6 +128,7 @@
 		803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */; };
 		803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */; };
 		803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */; };
+		803A29A81C01839E00FF8D7C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803A29A71C01839E00FF8D7C /* AddressBook.framework */; };
 		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
 		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
@@ -462,6 +463,7 @@
 		803A29A21C00399B00FF8D7C /* SMSignaturePreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSignaturePreferencesViewController.h; sourceTree = "<group>"; };
 		803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSignaturePreferencesViewController.m; sourceTree = "<group>"; };
 		803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSignaturePreferencesViewController.xib; sourceTree = "<group>"; };
+		803A29A71C01839E00FF8D7C /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
 		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
 		803A83181BE59059006520DD /* SMPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesController.h; sourceTree = "<group>"; };
@@ -583,6 +585,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				803A29A81C01839E00FF8D7C /* AddressBook.framework in Frameworks */,
 				80E6574E1B182B2B00A0AA81 /* libMailCore.a in Frameworks */,
 				006A5DD517F5EC50004D6D78 /* libsqlite3.dylib in Frameworks */,
 				006A5DCA17F2F041004D6D78 /* WebKit.framework in Frameworks */,
@@ -618,6 +621,7 @@
 		0002A09017D1B1E000EA4AFF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				803A29A71C01839E00FF8D7C /* AddressBook.framework */,
 				80E657331B182AF700A0AA81 /* mailcore2.xcodeproj */,
 				0067092E1A99989900C0C9CC /* CFNetwork.framework */,
 				005B086117D4F00200341051 /* Security.framework */,

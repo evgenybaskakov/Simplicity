@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import <AddressBook/AddressBook.h>
+
 #import "SMLog.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
@@ -115,15 +117,34 @@
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_INFO(@"%@", tokens);
 	// TODO: scan address books for the recepient name and/or verify the email address for correctness
 	return tokens;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
-	SM_LOG_DEBUG(@"???");
-	// TODO: scan address books for the recepient name
-	return nil;
+     SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
+     
+     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+     ABSearchElement *nameIsSmith = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:substring comparison:kABPrefixMatchCaseInsensitive];
+
+     NSArray *peopleFound = [ab recordsMatchingSearchElement:nameIsSmith];
+     NSMutableArray *results = [NSMutableArray arrayWithCapacity:peopleFound.count];
+     
+     //kABFirstNameProperty
+     //kABLastNameProperty
+
+     for(NSUInteger i = 0; i < peopleFound.count; i++) {
+         ABRecord *record = peopleFound[i];
+         ABMultiValue *emails = [record valueForProperty:kABEmailProperty];
+
+         for(NSUInteger j = 0; j < emails.count; j++) {
+             NSString *email = [emails valueAtIndex:j];
+             [results addObject:email];
+         }
+     }
+     
+     return results;
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {

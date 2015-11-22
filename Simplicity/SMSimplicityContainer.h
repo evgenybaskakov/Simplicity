@@ -20,6 +20,7 @@
 @class SMSearchResultsListController;
 @class SMMailboxController;
 @class SMMessageComparators;
+@class SMAddressBookController;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
@@ -39,6 +40,7 @@
 @property (readonly) SMMailboxController *mailboxController;
 @property (readonly) SMMailbox *mailbox;
 @property (readonly) SMMessageComparators *messageComparators;
+@property (readonly) SMAddressBookController *addressBookController;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 

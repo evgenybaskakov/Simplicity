@@ -12,6 +12,11 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMSimplicityContainer.h"
+#import "SMSuggestionProvider.h"
+#import "SMAddressBookController.h"
 #import "SMFlippedView.h"
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
@@ -75,17 +80,22 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
         _messageEditorController = [[SMMessageEditorController alloc] initWithDraftUID:draftUid];
         
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
         // To
         
         _toBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _toBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
         
         // Cc
         
         _ccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _ccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
 
         // Bcc
         
         _bccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _bccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
         
         // subject
         

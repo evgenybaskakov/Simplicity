@@ -20,6 +20,8 @@
 #import "SMSearchResultsListController.h"
 #import "SMMailboxController.h"
 #import "SMMessageComparators.h"
+#import "SMSuggestionProvider.h"
+#import "SMAddressBookController.h"
 
 @implementation SMSimplicityContainer {
     SMPreferencesController __weak *_preferencesController;
@@ -40,11 +42,11 @@
 		_messageStorage = [ SMMessageStorage new ];
 		_localFolderRegistry = [ SMLocalFolderRegistry new ];
 		_attachmentStorage = [ SMAttachmentStorage new ];
-		
 		_messageListController = [[ SMMessageListController alloc ] initWithModel:self ];
 		_searchResultsListController = [[SMSearchResultsListController alloc] init];
 		_mailboxController = [[ SMMailboxController alloc ] initWithModel:self ];
 		_messageComparators = [SMMessageComparators new];
+        _addressBookController = [SMAddressBookController new];
 	}
 	
 	SM_LOG_DEBUG(@"model initialized");

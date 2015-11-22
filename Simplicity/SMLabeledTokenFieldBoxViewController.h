@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "SMSuggestionProvider.h"
+
 @class SMTokenField;
 
 @interface SMLabeledTokenFieldBoxViewController : NSViewController<NSTokenFieldDelegate>
@@ -18,6 +20,8 @@
 @property IBOutlet NSLayoutConstraint *bottomTokenFieldContraint;
 
 @property (readonly) NSButton *controlSwitch;
+
+@property (weak) id<SMSuggestionProvider> suggestionProvider;
 
 - (NSSize)intrinsicContentViewSize;
 - (void)invalidateIntrinsicContentViewSize;

@@ -6,9 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
-#import <AddressBook/AddressBook.h>
-
 #import "SMLog.h"
+#import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
 #import "SMLabeledTokenFieldBoxViewController.h"
@@ -125,31 +124,7 @@
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
     SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
 
-    NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
-    
-    [self searchAddressBookProperty:kABEmailProperty value:substring results:results];
-    [self searchAddressBookProperty:kABFirstNameProperty value:substring results:results];
-    [self searchAddressBookProperty:kABLastNameProperty value:substring results:results];
-    
-    return [results sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [str1 compare:str2];
-    }];
-}
-
-- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableOrderedSet*)results {
-    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-    ABSearchElement *search = [ABPerson searchElementForProperty:property label:nil key:nil value:value comparison:kABPrefixMatchCaseInsensitive];
-    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
-    
-    for(NSUInteger i = 0; i < foundRecords.count; i++) {
-        ABRecord *record = foundRecords[i];
-        ABMultiValue *emails = [record valueForProperty:kABEmailProperty];
-        
-        for(NSUInteger j = 0; j < emails.count; j++) {
-            NSString *email = [emails valueAtIndex:j];
-            [results addObject:email];
-        }
-    }
+    return [_suggestionProvider suggestionsForPrefix:substring];
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {

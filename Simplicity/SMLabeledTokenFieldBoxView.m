@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
-#import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMAddressFieldViewController.h"
 #import "SMLabeledTokenFieldBoxView.h"
 
 @implementation SMLabeledTokenFieldBoxView {
-	SMLabeledTokenFieldBoxViewController *__weak _controller;
+	SMAddressFieldViewController *__weak _controller;
 }
 
-- (void)setViewController:(SMLabeledTokenFieldBoxViewController*)controller {
+- (void)setViewController:(SMAddressFieldViewController*)controller {
 	_controller = controller;
 }
 

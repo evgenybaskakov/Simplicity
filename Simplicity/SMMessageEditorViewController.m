@@ -21,7 +21,7 @@
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
-#import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMAddressFieldViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
 #import "SMInlineButtonPanelViewController.h"
 #import "SMAttachmentItem.h"
@@ -34,9 +34,9 @@
 static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 @interface SMMessageEditorViewController ()
-@property (readonly) SMLabeledTokenFieldBoxViewController *toBoxViewController;
-@property (readonly) SMLabeledTokenFieldBoxViewController *ccBoxViewController;
-@property (readonly) SMLabeledTokenFieldBoxViewController *bccBoxViewController;
+@property (readonly) SMAddressFieldViewController *toBoxViewController;
+@property (readonly) SMAddressFieldViewController *ccBoxViewController;
+@property (readonly) SMAddressFieldViewController *bccBoxViewController;
 @property (readonly) SMLabeledTextFieldBoxViewController *subjectBoxViewController;
 @property (readonly) SMInlineButtonPanelViewController *foldPanelViewController;
 @end
@@ -84,17 +84,17 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
         // To
         
-        _toBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _toBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
         _toBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
         
         // Cc
         
-        _ccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _ccBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
         _ccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
 
         // Bcc
         
-        _bccBoxViewController = [[SMLabeledTokenFieldBoxViewController alloc] initWithNibName:@"SMLabeledTokenFieldBoxViewController" bundle:nil];
+        _bccBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
         _bccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
         
         // subject

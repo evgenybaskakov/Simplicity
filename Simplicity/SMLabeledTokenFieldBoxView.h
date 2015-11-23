@@ -8,10 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class SMLabeledTokenFieldBoxViewController;
+@class SMAddressFieldViewController;
 
 @interface SMLabeledTokenFieldBoxView : NSBox
 
-- (void)setViewController:(SMLabeledTokenFieldBoxViewController*)controller;
+- (void)setViewController:(SMAddressFieldViewController*)controller;
 
 @end

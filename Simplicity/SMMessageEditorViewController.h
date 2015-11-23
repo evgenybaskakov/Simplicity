@@ -10,7 +10,7 @@
 
 #import "SMMessageEditorWebView.h"
 
-@class SMLabeledTokenFieldBoxViewController;
+@class SMAddressFieldViewController;
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorWebView;
 @class SMInlineButtonPanelViewController;

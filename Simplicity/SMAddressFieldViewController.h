@@ -1,5 +1,5 @@
 //
-//  SMLabeledTokenFieldBoxViewController.h
+//  SMAddressFieldViewController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 3/28/15.
@@ -12,7 +12,7 @@
 
 @class SMTokenField;
 
-@interface SMLabeledTokenFieldBoxViewController : NSViewController<NSTokenFieldDelegate>
+@interface SMAddressFieldViewController : NSViewController<NSTokenFieldDelegate>
 
 @property IBOutlet NSTextField *label;
 @property IBOutlet SMTokenField *tokenField;

@@ -21,7 +21,7 @@
 #import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWebView.h"
-#import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMAddressFieldViewController.h"
 #import "SMTokenField.h"
 #import "SMFlippedView.h"
 #import "SMAppDelegate.h"

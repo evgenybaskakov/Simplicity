@@ -1,5 +1,5 @@
 //
-//  SMLabeledTokenFieldBoxViewController.m
+//  SMAddressFieldViewController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 3/28/15.
@@ -10,9 +10,9 @@
 #import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
-#import "SMLabeledTokenFieldBoxViewController.h"
+#import "SMAddressFieldViewController.h"
 
-@implementation SMLabeledTokenFieldBoxViewController {
+@implementation SMAddressFieldViewController {
 	Boolean _tokenFieldFrameValid;
 }
 
@@ -101,17 +101,17 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_INFO(@"???");
 	return NSRoundedTokenStyle;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_INFO(@"???");
 	return NO;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_INFO(@"???");
 	return nil;
 }
 
@@ -133,7 +133,7 @@
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
+	SM_LOG_INFO(@"???");
 	return nil;
 }
 

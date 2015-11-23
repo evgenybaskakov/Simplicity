@@ -10,6 +10,8 @@
 
 #import "SMAddressBookController.h"
 
+#define EMAIL_DELIMITER @" — "
+
 @implementation SMAddressBookController
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix {
@@ -31,11 +33,25 @@
     
     for(NSUInteger i = 0; i < foundRecords.count; i++) {
         ABRecord *record = foundRecords[i];
+        NSString *firstName = [record valueForProperty:kABFirstNameProperty];
+        NSString *lastName = [record valueForProperty:kABLastNameProperty];
         ABMultiValue *emails = [record valueForProperty:kABEmailProperty];
         
         for(NSUInteger j = 0; j < emails.count; j++) {
             NSString *email = [emails valueAtIndex:j];
-            [results addObject:email];
+            NSString *resultingString;
+
+            if(firstName != nil && lastName != nil) {
+                resultingString = [NSString stringWithFormat:@"%@ %@%@%@", firstName, lastName, EMAIL_DELIMITER, email];
+            }
+            else if(firstName != nil || lastName != nil) {
+                resultingString = [NSString stringWithFormat:@"%@%@%@", firstName != nil? firstName : lastName, EMAIL_DELIMITER, email];
+            }
+            else {
+                resultingString = email;
+            }
+            
+            [results addObject:resultingString];
         }
     }
 }

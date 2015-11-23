@@ -130,6 +130,7 @@
 		803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */; };
 		803A29A81C01839E00FF8D7C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803A29A71C01839E00FF8D7C /* AddressBook.framework */; };
 		803A29AB1C02465C00FF8D7C /* SMAddressBookController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29AA1C02465C00FF8D7C /* SMAddressBookController.m */; };
+		803A29B11C02DC8800FF8D7C /* SMAddressListElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29B01C02DC8800FF8D7C /* SMAddressListElement.m */; };
 		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
 		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
@@ -468,6 +469,8 @@
 		803A29A91C02465C00FF8D7C /* SMAddressBookController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAddressBookController.h; sourceTree = "<group>"; };
 		803A29AA1C02465C00FF8D7C /* SMAddressBookController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAddressBookController.m; sourceTree = "<group>"; };
 		803A29AC1C0246E900FF8D7C /* SMSuggestionProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSuggestionProvider.h; sourceTree = "<group>"; };
+		803A29AF1C02DC8800FF8D7C /* SMAddressListElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAddressListElement.h; sourceTree = "<group>"; };
+		803A29B01C02DC8800FF8D7C /* SMAddressListElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAddressListElement.m; sourceTree = "<group>"; };
 		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
 		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
 		803A83181BE59059006520DD /* SMPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesController.h; sourceTree = "<group>"; };
@@ -674,6 +677,8 @@
 			children = (
 				803A29A91C02465C00FF8D7C /* SMAddressBookController.h */,
 				803A29AA1C02465C00FF8D7C /* SMAddressBookController.m */,
+				803A29AF1C02DC8800FF8D7C /* SMAddressListElement.h */,
+				803A29B01C02DC8800FF8D7C /* SMAddressListElement.m */,
 				0002A0A317D1B1E000EA4AFF /* SMAppDelegate.h */,
 				0002A0A417D1B1E000EA4AFF /* SMAppDelegate.m */,
 				00A0859E1A7206FC00CC4E1C /* SMAttachmentItem.h */,
@@ -1316,6 +1321,7 @@
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
 				80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */,
 				00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */,
+				803A29B11C02DC8800FF8D7C /* SMAddressListElement.m in Sources */,
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,
 				0082F5FE1A0FFAAC0050578A /* SMLocalFolder.m in Sources */,

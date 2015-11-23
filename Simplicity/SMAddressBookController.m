@@ -8,9 +8,8 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "SMAddressListElement.h"
 #import "SMAddressBookController.h"
-
-#define EMAIL_DELIMITER @" — "
 
 @implementation SMAddressBookController
 
@@ -39,19 +38,9 @@
         
         for(NSUInteger j = 0; j < emails.count; j++) {
             NSString *email = [emails valueAtIndex:j];
-            NSString *resultingString;
-
-            if(firstName != nil && lastName != nil) {
-                resultingString = [NSString stringWithFormat:@"%@ %@%@%@", firstName, lastName, EMAIL_DELIMITER, email];
-            }
-            else if(firstName != nil || lastName != nil) {
-                resultingString = [NSString stringWithFormat:@"%@%@%@", firstName != nil? firstName : lastName, EMAIL_DELIMITER, email];
-            }
-            else {
-                resultingString = email;
-            }
+            SMAddressListElement *addressElement = [[SMAddressListElement alloc] initWithFirstName:firstName lastName:lastName email:email];
             
-            [results addObject:resultingString];
+            [results addObject:[addressElement stringRepresentation]];
         }
     }
 }

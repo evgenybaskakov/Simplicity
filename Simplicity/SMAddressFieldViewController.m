@@ -10,6 +10,7 @@
 #import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
+#import "SMAddressListElement.h"
 #import "SMAddressFieldViewController.h"
 
 @implementation SMAddressFieldViewController {
@@ -101,40 +102,51 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
+//	SM_LOG_INFO(@"???");
 	return NSRoundedTokenStyle;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
+//	SM_LOG_INFO(@"???");
 	return NO;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
+//	SM_LOG_INFO(@"???");
 	return nil;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	SM_LOG_INFO(@"%@", tokens);
-	// TODO: scan address books for the recepient name and/or verify the email address for correctness
-	return tokens;
+	SM_LOG_DEBUG(@"%@", tokens);
+
+    NSMutableArray *resultingObjects = [NSMutableArray array];
+    
+    for(id token in tokens) {
+        if([token isKindOfClass:[SMAddressListElement class]]) {
+            [resultingObjects addObject:token];
+        }
+        else {
+            [resultingObjects addObject:[[SMAddressListElement alloc] initWithStringRepresentation:token]];
+        }
+    }
+
+    return resultingObjects;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
-    SM_LOG_INFO(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
-
+    SM_LOG_DEBUG(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
+    
     return [_suggestionProvider suggestionsForPrefix:substring];
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-	// TODO: append a recepient name from address books
-	return editingString;
+    SM_LOG_DEBUG(@"editingString: %@", editingString);
+	return [[SMAddressListElement alloc] initWithStringRepresentation:editingString];
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
-	return nil;
+    SMAddressListElement *addressElem = representedObject;
+	return [addressElem stringRepresentationShort];
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {

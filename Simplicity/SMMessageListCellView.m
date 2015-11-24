@@ -27,7 +27,7 @@
     _contactImage.image = [NSImage imageNamed:NSImageNameUserGuest];
     _contactImage.cornerRadius = 3;
     _contactImage.borderWidth = 2;
-    _contactImage.borderColor = [NSColor lightGrayColor];
+    _contactImage.borderColor = [NSColor colorWithWhite:0.9 alpha:1];
     _contactImage.nonOriginalBehavior = YES;
     _contactImage.scaleImage = YES;
     

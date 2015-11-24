@@ -108,6 +108,16 @@ static NSString *unquote(NSString *s) {
 	return @"<unknown>";
 }
 
+- (NSString*)fromAddress {
+    MCOMessageHeader *header = [_imapMessage header];
+    NSAssert(header, @"no header");
+    
+    MCOAddress *from = [header from];
+    NSAssert(header, @"no from field");
+    
+    return [from mailbox];
+}
+
 - (NSString*)from {
 	MCOMessageHeader *header = [_imapMessage header];
 	NSAssert(header, @"no header");

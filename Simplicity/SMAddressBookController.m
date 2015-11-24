@@ -11,7 +11,19 @@
 #import "SMAddressListElement.h"
 #import "SMAddressBookController.h"
 
-@implementation SMAddressBookController
+@implementation SMAddressBookController {
+    NSMutableDictionary *_imageCache;
+}
+
+- (id)init {
+    self = [super init];
+    
+    if(self) {
+        _imageCache = [NSMutableDictionary dictionary];
+    }
+    
+    return self;
+}
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix {
     NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
@@ -43,6 +55,46 @@
             [results addObject:[addressElement stringRepresentation]];
         }
     }
+}
+
+- (NSData*)imageDataForEmail:(NSString*)email {
+    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+    ABSearchElement *search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:email comparison:kABEqualCaseInsensitive];
+    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
+    
+    for(NSUInteger i = 0; i < foundRecords.count; i++) {
+        ABRecord *record = foundRecords[i];
+        
+        if([record isKindOfClass:[ABRecord class]]) {
+            ABPerson *person = (ABPerson*)record;
+            
+            if(person.imageData != nil) {
+                return person.imageData;
+            }
+        }
+    }
+    
+    return nil;
+}
+
+- (NSImage*)pictureForEmail:(NSString*)email {
+    NSImage *image = [_imageCache objectForKey:email];
+    
+    if(image != nil) {
+        return image;
+    }
+    
+    NSData *imageData = [self imageDataForEmail:email];
+    
+    if(imageData == nil) {
+        return [NSImage imageNamed:NSImageNameUserGuest];
+    }
+    
+    image = [[NSImage alloc] initWithData:imageData];
+    
+    [_imageCache setObject:image forKey:email];
+    
+    return image;
 }
 
 @end

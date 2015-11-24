@@ -22,6 +22,7 @@
 #import "SMMessageBookmarksView.h"
 #import "SMSimplicityContainer.h"
 #import "SMPreferencesController.h"
+#import "SMAddressBookController.h"
 #import "SMLocalFolder.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
@@ -231,7 +232,12 @@
     }
     
     [view.messagePreviewTextField setStringValue:[firstMessage bodyPreview]];
-
+    
+    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[firstMessage fromAddress]];
+    if(contactImage != nil) {
+        view.contactImage.image = contactImage;
+    }
+    
     return view;
 }
 

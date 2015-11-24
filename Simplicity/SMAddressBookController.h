@@ -13,5 +13,6 @@
 @interface SMAddressBookController : NSObject<SMSuggestionProvider>
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix;
+- (NSImage*)pictureForEmail:(NSString*)email;
 
 @end

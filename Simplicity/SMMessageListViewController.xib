@@ -150,7 +150,7 @@
                                                             <font key="font" metaFont="smallSystemBold"/>
                                                         </buttonCell>
                                                     </button>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO">
+                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO" customClass="SMRoundedImageView">
                                                         <rect key="frame" x="18" y="18" width="43" height="43"/>
                                                         <animations/>
                                                         <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" image="NSUserGuest" id="Whf-mb-hsn"/>

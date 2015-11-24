@@ -8,11 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMRoundedImageView;
 @class SMMessageBookmarksView;
 
 @interface SMMessageListCellView : NSTableCellView
 
-@property IBOutlet NSImageView *contactImage;
+@property IBOutlet SMRoundedImageView *contactImage;
 
 @property IBOutlet NSTextField *fromTextField;
 @property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;

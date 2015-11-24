@@ -10,6 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMImageRegistry.h"
+#import "SMRoundedImageView.h"
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"

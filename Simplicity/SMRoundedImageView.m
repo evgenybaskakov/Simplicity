@@ -12,6 +12,12 @@
     NSImage *_scaledImage;
 }
 
+- (void)setImage:(NSImage *)image {
+    [super setImage:image];
+    
+    _scaledImage = nil;
+}
+
 - (void)setCornerRadius:(NSUInteger)cornerRadius {
     _cornerRadius = cornerRadius;
     

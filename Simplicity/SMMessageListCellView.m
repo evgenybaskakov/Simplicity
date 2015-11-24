@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMRoundedImageView.h"
 #import "SMMessageListCellView.h"
 
 @implementation SMMessageListCellView {
@@ -23,6 +24,13 @@
 	
 	[_fromTextField setFont:font];
 
+    _contactImage.image = [NSImage imageNamed:NSImageNameUserGuest];
+    _contactImage.cornerRadius = 3;
+    _contactImage.borderWidth = 2;
+    _contactImage.borderColor = [NSColor lightGrayColor];
+    _contactImage.nonOriginalBehavior = YES;
+    _contactImage.scaleImage = YES;
+    
 	_fieldsInitialized = true;
 }
 

@@ -38,13 +38,13 @@
         
         [path setLineWidth:_borderWidth];
         [path addClip];
+
+        [_scaledImage drawAtPoint:NSZeroPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:1.0];
         
         if(_borderWidth != 0) {
             [_borderColor set];
             [path stroke];
         }
-
-        [_scaledImage drawAtPoint:NSZeroPoint fromRect:self.bounds operation:NSCompositeSourceOver fraction:1.0];
     }
     else {
         [super drawRect:dirtyRect];

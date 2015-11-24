@@ -21,7 +21,7 @@
 - (void)drawRect:(NSRect)dirtyRect {
     if(_nonOriginalBehavior) {
         if(_scaledImage == nil) {
-            _scaledImage = self.image;
+            _scaledImage = [self.image copy];
 
             if(_scaleImage) {
                 _scaledImage.size = self.bounds.size;

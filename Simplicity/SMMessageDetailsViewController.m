@@ -14,6 +14,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsViewController.h"
 #import "SMMessageThreadCellViewController.h"
+#import "SMAddressBookController.h"
 #import "SMRoundedImageView.h"
 #import "SMMessage.h"
 
@@ -109,6 +110,11 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	NSAssert(_currentMessage != nil, @"nil message");
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[_currentMessage fromAddress]];
+    if(contactImage != nil) {
+        _contactImageView.image = contactImage;
+    }
 
 	if(_currentMessage.flagged) {
 		_starButton.image = appDelegate.imageRegistry.yellowStarImage;

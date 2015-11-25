@@ -135,6 +135,16 @@ static NSString *unquote(NSString *s) {
 	return @"<no subject>";
 }
 
+- (NSArray*)toAddressList {
+    NSArray *result = [self.header to];
+    return result != nil? result : [NSArray array];
+}
+
+- (NSArray*)ccAddressList {
+    NSArray *result = [self.header cc];
+    return result != nil? result : [NSArray array];
+}
+
 - (NSArray*)parsedToAddressList {
     NSArray *toAddressArray = [self.header to];
     NSMutableArray *newToArray = [[NSMutableArray alloc] initWithCapacity:toAddressArray.count];

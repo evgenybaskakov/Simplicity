@@ -273,17 +273,37 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         for(MCOAddress *address in to) {
             SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
             [addressList addObject:addressElem];
+            
+            SM_LOG_INFO(@"To: %@", addressElem.stringRepresentation);
         }
 
         [_toBoxViewController.tokenField setObjectValue:addressList];
     }
     
     if(cc) {
-        [_ccBoxViewController.tokenField setObjectValue:cc];
+        NSMutableArray *addressList = [NSMutableArray array];
+        
+        for(MCOAddress *address in cc) {
+            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
+            [addressList addObject:addressElem];
+            
+            SM_LOG_INFO(@"Cc: %@", addressElem.stringRepresentation);
+        }
+        
+        [_ccBoxViewController.tokenField setObjectValue:addressList];
     }
     
     if(bcc) {
-        [_bccBoxViewController.tokenField setObjectValue:bcc];
+        NSMutableArray *addressList = [NSMutableArray array];
+        
+        for(MCOAddress *address in bcc) {
+            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
+            [addressList addObject:addressElem];
+            
+            SM_LOG_INFO(@"Bcc: %@", addressElem.stringRepresentation);
+        }
+        
+        [_bccBoxViewController.tokenField setObjectValue:addressList];
     }
     
     if(mcoAttachments != nil && mcoAttachments.count > 0) {

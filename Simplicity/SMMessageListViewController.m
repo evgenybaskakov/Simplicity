@@ -761,7 +761,7 @@
         
         if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
             if(m.htmlBodyRendering != nil) {
-                [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:[m parsedToAddressList] cc:[m parsedCcAddressList] bcc:nil draftUid:m.uid mcoAttachments:m.attachments];
+                [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:m.toAddressList cc:m.ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments];
             }
             else {
                 SM_LOG_DEBUG(@"TODO: handle messageToOpen.htmlBodyRendering is nil");

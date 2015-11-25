@@ -976,7 +976,7 @@ static const CGFloat CELL_SPACING = -1;
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
-    MCOAddress *fromAddress = nil;
+    NSMutableArray *toAddressList = nil;
     NSMutableArray *ccAddressList = nil;
     
     NSAssert(cell.message.subject != nil, @"bad message subject");
@@ -990,24 +990,24 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
     else {
-        fromAddress = [cell.message fromAddress];
-        NSAssert(fromAddress != nil, @"bad message from address");
+        if([replyKind isEqualToString:@"Reply"]) {
+            toAddressList = [NSMutableArray array];
+            
+            reply = YES;
+        }
+        else if([replyKind isEqualToString:@"ReplyAll"]) {
+            toAddressList = [NSMutableArray arrayWithArray:cell.message.toAddressList];
+            ccAddressList = [NSMutableArray arrayWithArray:cell.message.ccAddressList];
+            
+            reply = YES;
+        }
 
-        if([replyKind isEqualToString:@"ReplyAll"]) {
-            ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
-            // TODO: remove ourselves (myself) from this CC list
-            // TODO: add recipients from the message's 'to' to the new draft's 'to'
-            
-            NSArray *parsedMessageCcAddressList = [cell.message parsedCcAddressList];
-            if(parsedMessageCcAddressList != nil && parsedMessageCcAddressList.count != 0) {
-                [ccAddressList addObjectsFromArray:parsedMessageCcAddressList];
-            }
-            
-            reply = YES;
-        }
-        else if([replyKind isEqualToString:@"Reply"]) {
-            reply = YES;
-        }
+        // TODO: remove ourselves (myself) from CC and TO
+        
+        MCOAddress *fromAddress = [cell.message fromAddress];
+        NSAssert(fromAddress != nil, @"bad message from address");
+        
+        [toAddressList addObject:fromAddress];
         
         if(reply) {
             if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
@@ -1017,7 +1017,7 @@ static const CGFloat CELL_SPACING = -1;
     }
 
     if(cell.message.htmlBodyRendering != nil) {
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:(fromAddress? [NSArray arrayWithObject:fromAddress] : nil) cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:(reply? nil : cell.message.attachments)];
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:(reply? nil : cell.message.attachments)];
 
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;

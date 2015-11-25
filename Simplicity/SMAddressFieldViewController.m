@@ -107,13 +107,20 @@
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-//	SM_LOG_INFO(@"???");
-	return NO;
+	SM_LOG_INFO(@"???");
+	return YES;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-//	SM_LOG_INFO(@"???");
-	return nil;
+	SM_LOG_INFO(@"???");
+
+    NSMenu *menu = [[NSMenu alloc] init];
+    
+    [menu addItemWithTitle:@"Address field action 1" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Address field action 2" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Address field action 3" action:@selector(addressAction1) keyEquivalent:@""];
+    
+    return menu;
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {

@@ -238,117 +238,44 @@
 
 #pragma mark - NSTokenFieldDelegate
 
-// ---------------------------------------------------------------------------
-//	styleForRepresentedObject:representedObject
-//
-//	Make sure our tokens are rounded.
-//	The delegate should return:
-//		NSDefaultTokenStyle, NSPlainTextTokenStyle or NSRoundedTokenStyle.
-// ---------------------------------------------------------------------------
-- (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject
-{
+- (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
 	SM_LOG_DEBUG(@"???");
 	return NSRoundedTokenStyle;
 }
 
-// ---------------------------------------------------------------------------
-//	hasMenuForRepresentedObject:representedObject
-//
-//	Make sure our tokens have a menu. By default tokens have no menus.
-// ---------------------------------------------------------------------------
-- (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject
-{
+- (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
 	SM_LOG_DEBUG(@"???");
-	return NO;
+	return YES;
 }
 
-// ---------------------------------------------------------------------------
-//	menuForRepresentedObject:representedObject
-//
-//	User clicked on a token, return the menu we want to represent for our token.
-//	By default tokens have no menus.
-// ---------------------------------------------------------------------------
-- (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject
-{
-	SM_LOG_DEBUG(@"???");
-	return nil;
+- (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
+	SM_LOG_INFO(@"???");
+
+    NSMenu *menu = [[NSMenu alloc] init];
+    
+    [menu addItemWithTitle:@"Details: address action 1" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Details: address action 2" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Details: address action 3" action:@selector(addressAction1) keyEquivalent:@""];
+    
+    return menu;
 }
 
-// ---------------------------------------------------------------------------
-//	shouldAddObjects:tokens:index
-//
-//	Delegate method to decide whether the given token list should be allowed,
-//	we can selectively add/remove any token we want.
-//
-//	The delegate can return the array unchanged or return a modified array of tokens.
-//	To reject the add completely, return an empty array.  Returning nil causes an error.
-// ---------------------------------------------------------------------------
-- (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index
-{
-	SM_LOG_DEBUG(@"???");
-	return nil;
-	/*
-	 NSMutableArray *newArray = [NSMutableArray arrayWithArray:tokens];
-	 
-	 id aToken;
-	 for (aToken in newArray)
-	 {
-		if ([[aToken description] isEqualToString:self.tokenTitleToAdd])
-		{
-	 MyToken *token = [[MyToken alloc] init];
-	 token.name = [aToken description];
-	 [newArray replaceObjectAtIndex:index withObject:token];
-	 break;
-		}
-	 }
-	 
-	 return newArray;
-	 */
-}
-
-// ---------------------------------------------------------------------------
-//	completionsForSubstring:substring:tokenIndex:selectedIndex
-//
-//	Called 1st, and again every time a completion delay finishes.
-//
-//	substring =		the partial string that to be completed.
-//	tokenIndex =	the index of the token being edited.
-//	selectedIndex = allows you to return by-reference an index in the array
-//					specifying which of the completions should be initially selected.
-// ---------------------------------------------------------------------------
-- (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex
-	indexOfSelectedItem:(NSInteger *)selectedIndex
-{
+- (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
 	SM_LOG_DEBUG(@"???");
 	return nil;
 }
 
-// ---------------------------------------------------------------------------
-//	representedObjectForEditingString:editingString
-//
-//	Called 2nd, after you choose a choice from the menu list and press return.
-//
-//	The represented object must implement the NSCoding protocol.
-//	If your application uses some object other than an NSString for their represented objects,
-//	you should return a new instance of that object from this method.
-//
-// ---------------------------------------------------------------------------
-- (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString
-{
+- (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
+	SM_LOG_DEBUG(@"???");
+	return nil;
+}
+
+- (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
 	SM_LOG_DEBUG(@"???");
 	return @"Wilma";
 }
 
-// ---------------------------------------------------------------------------
-//	displayStringForRepresentedObject:representedObject
-//
-//	Called 3rd, once the token is ready to be displayed.
-//
-//	If you return nil or do not implement this method, then representedObject
-//	is displayed as the string. The represented object must implement the NSCoding protocol.
-// ---------------------------------------------------------------------------
-- (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject
-{
+- (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
 	SM_LOG_DEBUG(@"???");
 	return representedObject;
 }

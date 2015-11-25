@@ -99,7 +99,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	if(_currentMessage != message) {
 		_currentMessage = message;
 		
-		[_fromAddress setStringValue:[_currentMessage from]];
+		[_fromAddress setStringValue:[SMMessage parseAddress:_currentMessage.fromAddress]];
 		[_date setStringValue:[_currentMessage localizedDate]];
 	}
 
@@ -111,7 +111,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[_currentMessage fromAddress]];
+    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[_currentMessage.fromAddress mailbox]];
     if(contactImage != nil) {
         _contactImageView.image = contactImage;
     }

@@ -196,10 +196,7 @@
 }
 
 - (void)setMessage:(SMMessage*)message {
-	NSString *fromAddress = [message from];
-	NSArray *newFromArray = [NSArray arrayWithObject:fromAddress];
-	
-	[_fromAddress setObjectValue:newFromArray];
+	[_fromAddress setObjectValue:@[[SMMessage parseAddress:message.fromAddress]]];
     
     NSArray *parsedToAddressList = [message parsedToAddressList];
 	[_toAddresses setObjectValue:parsedToAddressList];

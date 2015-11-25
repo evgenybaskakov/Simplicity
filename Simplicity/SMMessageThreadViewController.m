@@ -976,7 +976,7 @@ static const CGFloat CELL_SPACING = -1;
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
 
-    NSString *fromAddress = nil;
+    MCOAddress *fromAddress = nil;
     NSMutableArray *ccAddressList = nil;
     
     NSAssert(cell.message.subject != nil, @"bad message subject");
@@ -990,12 +990,13 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
     else {
-        fromAddress = [cell.message from];
+        fromAddress = [cell.message fromAddress];
         NSAssert(fromAddress != nil, @"bad message from address");
 
         if([replyKind isEqualToString:@"ReplyAll"]) {
             ccAddressList = [NSMutableArray arrayWithArray:[cell.message parsedToAddressList]];
             // TODO: remove ourselves (myself) from this CC list
+            // TODO: add recipients from the message's 'to' to the new draft's 'to'
             
             NSArray *parsedMessageCcAddressList = [cell.message parsedCcAddressList];
             if(parsedMessageCcAddressList != nil && parsedMessageCcAddressList.count != 0) {

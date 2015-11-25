@@ -179,9 +179,9 @@
 
 	[view initFields];
 
-	SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [firstMessage from], [firstMessage subject], messageThread.unseen);
+    SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [SMMessage parseAddress:firstMessage.fromAddress], [firstMessage subject], messageThread.unseen);
 	
-	[view.fromTextField setStringValue:[firstMessage from]];
+	[view.fromTextField setStringValue:[SMMessage parseAddress:firstMessage.fromAddress]];
 	[view.subjectTextField setStringValue:[firstMessage subject]];
 	[view.dateTextField setStringValue:[firstMessage localizedDate]];
 
@@ -234,7 +234,8 @@
     
     [view.messagePreviewTextField setStringValue:[firstMessage bodyPreview]];
     
-    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[firstMessage fromAddress]];
+    NSString *fromEmail = [firstMessage.fromAddress mailbox];
+    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:fromEmail];
     if(contactImage != nil) {
         view.contactImage.image = contactImage;
     }

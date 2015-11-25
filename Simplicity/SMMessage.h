@@ -14,8 +14,7 @@
 
 @property (readonly) MCOMessageHeader *header;
 @property (readonly) MCOIMAPMessage *imapMessage;
-@property (readonly) NSString *fromAddress;
-@property (readonly) NSString *from;
+@property (readonly) MCOAddress *fromAddress;
 @property (readonly) NSString *subject;
 @property (readonly) NSDate *date;
 @property (readonly) uint32_t uid;

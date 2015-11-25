@@ -14,6 +14,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAddressListElement.h"
 #import "SMSimplicityContainer.h"
 #import "SMSuggestionProvider.h"
 #import "SMAddressBookController.h"
@@ -267,7 +268,14 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
     
     if(to) {
-        [_toBoxViewController.tokenField setObjectValue:to];
+        NSMutableArray *addressList = [NSMutableArray array];
+
+        for(MCOAddress *address in to) {
+            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
+            [addressList addObject:addressElem];
+        }
+
+        [_toBoxViewController.tokenField setObjectValue:addressList];
     }
     
     if(cc) {

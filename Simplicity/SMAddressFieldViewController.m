@@ -145,8 +145,10 @@
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
+    NSAssert([representedObject isKindOfClass:[SMAddressListElement class]], @"bad kind of object: %@", representedObject);
+    
     SMAddressListElement *addressElem = representedObject;
-	return [addressElem stringRepresentationShort];
+    return [addressElem stringRepresentationShort];
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {

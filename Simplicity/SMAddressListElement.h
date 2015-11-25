@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class MCOAddress;
+
 @interface SMAddressListElement : NSObject
 
 @property (readonly) NSString *firstName;
@@ -16,6 +18,7 @@
 
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email;
 - (id)initWithStringRepresentation:(NSString*)string;
+- (id)initWithMCOAddress:(MCOAddress*)mcoAddress;
 
 - (NSString*)stringRepresentation;
 - (NSString*)stringRepresentationShort;

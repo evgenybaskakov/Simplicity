@@ -6,6 +6,9 @@
 //  Copyright © 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import <MailCore/MailCore.h>
+
+#import "SMMessage.h"
 #import "SMAddressListElement.h"
 
 #define EMAIL_DELIMITER @" — "
@@ -28,31 +31,53 @@
     self = [super init];
     
     if(self) {
-        NSRange emailRange = [string rangeOfString:EMAIL_DELIMITER options:NSBackwardsSearch];
-        
-        if(emailRange.location == NSNotFound) {
-            _firstName = nil;
-            _lastName = nil;
-            _email = string;
+        [self initInternalWithString:string];
+    }
+    
+    return self;
+}
+
+- (id)initWithMCOAddress:(MCOAddress*)mcoAddress {
+    self = [super init];
+    
+    if(self) {
+        NSString *parsedAddress = [SMMessage parseAddress:mcoAddress];
+        NSAssert(parsedAddress != nil, @"parsedAddress is nil");
+
+        if([parsedAddress rangeOfString:@"@"].location == NSNotFound) {
+            [self initInternalWithString:[NSString stringWithFormat:@"%@%@%@", parsedAddress, EMAIL_DELIMITER, [mcoAddress mailbox]]];
         }
         else {
-            NSString *fullName = [string substringToIndex:emailRange.location];
-            NSRange firstNameRange = [fullName rangeOfString:@" "];
-            
-            if(firstNameRange.location == NSNotFound) {
-                _firstName = fullName;
-                _lastName = nil;
-            }
-            else {
-                _firstName = [fullName substringToIndex:firstNameRange.location];
-                _lastName = [fullName substringFromIndex:firstNameRange.location + 1];
-            }
-
-            _email = [string substringFromIndex:emailRange.location + EMAIL_DELIMITER.length];
+            [self initInternalWithString:parsedAddress];
         }
     }
     
     return self;
+}
+
+- (void)initInternalWithString:(NSString*)string {
+    NSRange emailRange = [string rangeOfString:EMAIL_DELIMITER options:NSBackwardsSearch];
+    
+    if(emailRange.location == NSNotFound) {
+        _firstName = nil;
+        _lastName = nil;
+        _email = string;
+    }
+    else {
+        NSString *fullName = [string substringToIndex:emailRange.location];
+        NSRange firstNameRange = [fullName rangeOfString:@" "];
+        
+        if(firstNameRange.location == NSNotFound) {
+            _firstName = fullName;
+            _lastName = nil;
+        }
+        else {
+            _firstName = [fullName substringToIndex:firstNameRange.location];
+            _lastName = [fullName substringFromIndex:firstNameRange.location + 1];
+        }
+        
+        _email = [string substringFromIndex:emailRange.location + EMAIL_DELIMITER.length];
+    }
 }
 
 - (NSString*)stringRepresentation {

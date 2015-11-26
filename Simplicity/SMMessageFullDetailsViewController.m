@@ -28,6 +28,7 @@
 	NSMutableArray *_ccConstraints;
 	Boolean _ccCreated;
 	Boolean _addressListsFramesValid;
+    SMAddressListElement __weak *_addressWithMenu;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -246,14 +247,14 @@
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"representeObject: %@", representedObject);
-
     NSMenu *menu = [[NSMenu alloc] init];
+
+    [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction:) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+    [menu addItemWithTitle:@"New message" action:@selector(newMessageAction:) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Reply" action:@selector(replyAction:) keyEquivalent:@""];
     
-    [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction) keyEquivalent:@""];
-    [menu addItemWithTitle:@"New message" action:@selector(newMessageAction) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Reply" action:@selector(replyAction) keyEquivalent:@""];
+    _addressWithMenu = representedObject;
     
     return menu;
 }
@@ -263,6 +264,15 @@
     
     SMAddressListElement *addressElem = representedObject;
     return [addressElem stringRepresentationDetailed];
+}
+
+- (void)copyAddressAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+
+    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+    
+    [pasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+    [pasteBoard setString:_addressWithMenu.stringRepresentationDetailed forType:NSStringPboardType];
 }
 
 @end

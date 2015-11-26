@@ -91,7 +91,7 @@
     }
 }
 
-- (NSString*)stringRepresentation {
+- (NSString*)stringRepresentationForMenu {
     NSString *resultingString;
     
     if(_firstName != nil && _lastName != nil) {
@@ -99,6 +99,23 @@
     }
     else if(_firstName != nil || _lastName != nil) {
         resultingString = [NSString stringWithFormat:@"%@%@%@", _firstName != nil? _firstName : _lastName, EMAIL_DELIMITER, _email];
+    }
+    else {
+        NSAssert(_email != nil, @"no email address");
+        resultingString = _email;
+    }
+    
+    return resultingString;
+}
+
+- (NSString*)stringRepresentationDetailed {
+    NSString *resultingString;
+    
+    if(_firstName != nil && _lastName != nil) {
+        resultingString = [NSString stringWithFormat:@"%@ %@ <%@>", _firstName, _lastName, _email];
+    }
+    else if(_firstName != nil || _lastName != nil) {
+        resultingString = [NSString stringWithFormat:@"%@ <%@>", _firstName != nil? _firstName : _lastName, _email];
     }
     else {
         NSAssert(_email != nil, @"no email address");

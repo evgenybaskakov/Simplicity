@@ -52,7 +52,7 @@
             NSString *email = [emails valueAtIndex:j];
             SMAddressListElement *addressElement = [[SMAddressListElement alloc] initWithFirstName:firstName lastName:lastName email:email];
             
-            [results addObject:[addressElement stringRepresentation]];
+            [results addObject:[addressElement stringRepresentationForMenu]];
         }
     }
 }

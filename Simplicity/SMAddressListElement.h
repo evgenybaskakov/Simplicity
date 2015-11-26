@@ -22,7 +22,8 @@
 - (id)initWithStringRepresentation:(NSString*)string;
 - (id)initWithMCOAddress:(MCOAddress*)mcoAddress;
 
-- (NSString*)stringRepresentation;
+- (NSString*)stringRepresentationForMenu;
+- (NSString*)stringRepresentationDetailed;
 - (NSString*)stringRepresentationShort;
 
 @end

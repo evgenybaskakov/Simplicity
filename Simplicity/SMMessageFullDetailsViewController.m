@@ -262,7 +262,7 @@
     NSAssert([representedObject isKindOfClass:[SMAddressListElement class]], @"bad kind of object: %@", representedObject);
     
     SMAddressListElement *addressElem = representedObject;
-    return [addressElem stringRepresentationShort];
+    return [addressElem stringRepresentationDetailed];
 }
 
 @end

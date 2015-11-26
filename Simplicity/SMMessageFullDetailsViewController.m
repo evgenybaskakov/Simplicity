@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMTokenField.h"
+#import "SMAddressListElement.h"
 #import "SMMessage.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsView.h"
@@ -196,18 +197,16 @@
 }
 
 - (void)setMessage:(SMMessage*)message {
-	[_fromAddress setObjectValue:@[[SMMessage parseAddress:message.fromAddress]]];
-    
-    NSArray *parsedToAddressList = [message parsedToAddressList];
-	[_toAddresses setObjectValue:parsedToAddressList];
+	[_fromAddress setObjectValue:@[[[SMAddressListElement alloc] initWithMCOAddress:message.fromAddress]]];
 
-    NSArray *parsedCcAddressList = [message parsedCcAddressList];
-    if(parsedCcAddressList != nil && parsedCcAddressList.count != 0) {
+    [_toAddresses setObjectValue:[SMAddressListElement mcoAddressesToAddressList:message.toAddressList]];
+
+    if(message.ccAddressList != nil && message.ccAddressList.count != 0) {
         [self createCc];
 
-        [_ccAddresses setObjectValue:parsedCcAddressList];
+        [_ccAddresses setObjectValue:[SMAddressListElement mcoAddressesToAddressList:message.ccAddressList]];
     }
-	
+
 	_addressListsFramesValid = NO;
 }
 
@@ -239,45 +238,31 @@
 #pragma mark - NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
 	return NSRoundedTokenStyle;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
 	return YES;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
+	SM_LOG_INFO(@"representeObject: %@", representedObject);
 
     NSMenu *menu = [[NSMenu alloc] init];
     
-    [menu addItemWithTitle:@"Details: address action 1" action:@selector(addressAction1) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Details: address action 2" action:@selector(addressAction1) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Details: address action 3" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction) keyEquivalent:@""];
+    [menu addItemWithTitle:@"New message" action:@selector(newMessageAction) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Reply" action:@selector(replyAction) keyEquivalent:@""];
     
     return menu;
 }
 
-- (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	SM_LOG_DEBUG(@"???");
-	return nil;
-}
-
-- (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
-	SM_LOG_DEBUG(@"???");
-	return nil;
-}
-
-- (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-	SM_LOG_DEBUG(@"???");
-	return @"Wilma";
-}
-
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-	SM_LOG_DEBUG(@"???");
-	return representedObject;
+    NSAssert([representedObject isKindOfClass:[SMAddressListElement class]], @"bad kind of object: %@", representedObject);
+    
+    SMAddressListElement *addressElem = representedObject;
+    return [addressElem stringRepresentationShort];
 }
 
 @end

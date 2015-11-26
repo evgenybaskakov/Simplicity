@@ -102,17 +102,15 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-//	SM_LOG_INFO(@"???");
 	return NSRoundedTokenStyle;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
 	return YES;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-	SM_LOG_INFO(@"???");
+    SM_LOG_INFO(@"representeObject: %@", representedObject);
 
     NSMenu *menu = [[NSMenu alloc] init];
     

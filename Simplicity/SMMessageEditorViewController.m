@@ -268,42 +268,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
     
     if(to) {
-        NSMutableArray *addressList = [NSMutableArray array];
-
-        for(MCOAddress *address in to) {
-            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
-            [addressList addObject:addressElem];
-            
-            SM_LOG_INFO(@"To: %@", addressElem.stringRepresentation);
-        }
-
-        [_toBoxViewController.tokenField setObjectValue:addressList];
+        [_toBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:to]];
     }
     
     if(cc) {
-        NSMutableArray *addressList = [NSMutableArray array];
-        
-        for(MCOAddress *address in cc) {
-            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
-            [addressList addObject:addressElem];
-            
-            SM_LOG_INFO(@"Cc: %@", addressElem.stringRepresentation);
-        }
-        
-        [_ccBoxViewController.tokenField setObjectValue:addressList];
+        [_ccBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:cc]];
     }
     
     if(bcc) {
-        NSMutableArray *addressList = [NSMutableArray array];
-        
-        for(MCOAddress *address in bcc) {
-            SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
-            [addressList addObject:addressElem];
-            
-            SM_LOG_INFO(@"Bcc: %@", addressElem.stringRepresentation);
-        }
-        
-        [_bccBoxViewController.tokenField setObjectValue:addressList];
+        [_bccBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:bcc]];
     }
     
     if(mcoAttachments != nil && mcoAttachments.count > 0) {

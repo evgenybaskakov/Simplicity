@@ -15,6 +15,17 @@
 
 @implementation SMAddressListElement
 
++ (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses {
+    NSMutableArray *addressList = [NSMutableArray array];
+    
+    for(MCOAddress *address in mcoAddresses) {
+        SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
+        [addressList addObject:addressElem];
+    }
+    
+    return addressList;
+}
+
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email {
     self = [super init];
     

@@ -26,4 +26,6 @@
 - (NSString*)stringRepresentationDetailed;
 - (NSString*)stringRepresentationShort;
 
+- (MCOAddress*)toMCOAddress;
+
 @end

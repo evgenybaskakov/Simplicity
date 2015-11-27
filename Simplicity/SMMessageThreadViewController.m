@@ -27,6 +27,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMStringUtils.h"
+#import "SMAddressListElement.h"
 
 static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 600;
@@ -990,10 +991,19 @@ static const CGFloat CELL_SPACING = -1;
         }
     }
     else {
+        BOOL toAddressIsSet = NO;
+        
         if([replyKind isEqualToString:@"Reply"]) {
             toAddressList = [NSMutableArray array];
             
             reply = YES;
+            
+            SMAddressListElement *toAddress = [messageInfo objectForKey:@"ToAddressListElement"];
+            if(toAddress != nil) {
+                [toAddressList addObject:[toAddress toMCOAddress]];
+
+                toAddressIsSet = YES;
+            }
         }
         else if([replyKind isEqualToString:@"ReplyAll"]) {
             toAddressList = [NSMutableArray arrayWithArray:cell.message.toAddressList];
@@ -1004,10 +1014,12 @@ static const CGFloat CELL_SPACING = -1;
 
         // TODO: remove ourselves (myself) from CC and TO
         
-        MCOAddress *fromAddress = [cell.message fromAddress];
-        NSAssert(fromAddress != nil, @"bad message from address");
-        
-        [toAddressList addObject:fromAddress];
+        if(!toAddressIsSet) {
+            MCOAddress *fromAddress = [cell.message fromAddress];
+            NSAssert(fromAddress != nil, @"bad message from address");
+            
+            [toAddressList addObject:fromAddress];
+        }
         
         if(reply) {
             if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {

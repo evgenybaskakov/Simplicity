@@ -142,4 +142,16 @@
     return resultingString;
 }
 
+- (MCOAddress*)toMCOAddress {
+    if(_firstName != nil && _lastName != nil) {
+        return [MCOAddress addressWithDisplayName:[NSString stringWithFormat:@"%@ %@", _firstName, _lastName] mailbox:_email];
+    }
+    else if(_firstName != nil || _lastName != nil) {
+        return [MCOAddress addressWithDisplayName:(_firstName? _firstName : _lastName) mailbox:_email];
+    }
+    else {
+        return [MCOAddress addressWithMailbox:_email];
+    }
+}
+
 @end

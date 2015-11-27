@@ -29,6 +29,7 @@
 	Boolean _ccCreated;
 	Boolean _addressListsFramesValid;
     SMAddressListElement __weak *_addressWithMenu;
+    SMMessageThreadCellViewController __weak *_enclosingThreadCell;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -50,6 +51,10 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setEnclosingThreadCell:(SMMessageThreadCellViewController *)enclosingThreadCell {
+    _enclosingThreadCell = enclosingThreadCell;
 }
 
 #define V_GAP 10
@@ -273,6 +278,10 @@
     
     [pasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
     [pasteBoard setString:_addressWithMenu.stringRepresentationDetailed forType:NSStringPboardType];
+}
+
+- (void)replyAction:(NSMenuItem*)menuItem {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", nil]];
 }
 
 @end

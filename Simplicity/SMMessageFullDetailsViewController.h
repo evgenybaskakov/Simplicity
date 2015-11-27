@@ -9,9 +9,11 @@
 #import <Cocoa/Cocoa.h>
 
 @class SMMessage;
+@class SMMessageThreadCellViewController;
 
 @interface SMMessageFullDetailsViewController : NSViewController<NSTokenFieldDelegate>
 
+- (void)setEnclosingThreadCell:(SMMessageThreadCellViewController *)enclosingThreadCell;
 - (void)setMessage:(SMMessage*)message;
 
 - (NSSize)intrinsicContentViewSize;

@@ -347,11 +347,14 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 	if(_fullDetailsShown)
 		return;
 
-	if(_fullDetailsViewController == nil)
+    if(_fullDetailsViewController == nil) {
 		_fullDetailsViewController = [[SMMessageFullDetailsViewController alloc] init];
+        [_fullDetailsViewController setEnclosingThreadCell:_enclosingThreadCell];
+    }
 	
-	if(_currentMessage != nil)
+    if(_currentMessage != nil) {
 		[_fullDetailsViewController setMessage:_currentMessage];
+    }
 
 	NSView *view = [self view];
 	NSAssert(view != nil, @"no view");

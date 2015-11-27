@@ -1,5 +1,5 @@
 //
-//  SMAddressListElement.m
+//  SMAddress.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 11/22/15.
@@ -9,17 +9,17 @@
 #import <MailCore/MailCore.h>
 
 #import "SMMessage.h"
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 
 #define EMAIL_DELIMITER @" — "
 
-@implementation SMAddressListElement
+@implementation SMAddress
 
 + (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses {
     NSMutableArray *addressList = [NSMutableArray array];
     
     for(MCOAddress *address in mcoAddresses) {
-        SMAddressListElement *addressElem = [[SMAddressListElement alloc] initWithMCOAddress:address];
+        SMAddress *addressElem = [[SMAddress alloc] initWithMCOAddress:address];
         [addressList addObject:addressElem];
     }
     

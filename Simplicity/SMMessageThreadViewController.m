@@ -27,7 +27,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMStringUtils.h"
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 
 static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 600;
@@ -998,7 +998,7 @@ static const CGFloat CELL_SPACING = -1;
             
             reply = YES;
             
-            SMAddressListElement *toAddress = [messageInfo objectForKey:@"ToAddressListElement"];
+            SMAddress *toAddress = [messageInfo objectForKey:@"ToAddress"];
             if(toAddress != nil) {
                 [toAddressList addObject:[toAddress toMCOAddress]];
 

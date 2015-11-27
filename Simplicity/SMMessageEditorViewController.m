@@ -14,7 +14,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 #import "SMSimplicityContainer.h"
 #import "SMSuggestionProvider.h"
 #import "SMAddressBookController.h"
@@ -268,15 +268,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
     
     if(to) {
-        [_toBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:to]];
+        [_toBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:to]];
     }
     
     if(cc) {
-        [_ccBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:cc]];
+        [_ccBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:cc]];
     }
     
     if(bcc) {
-        [_bccBoxViewController.tokenField setObjectValue:[SMAddressListElement mcoAddressesToAddressList:bcc]];
+        [_bccBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:bcc]];
     }
     
     if(mcoAttachments != nil && mcoAttachments.count > 0) {

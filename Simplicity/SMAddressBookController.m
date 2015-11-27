@@ -8,7 +8,7 @@
 
 #import <AddressBook/AddressBook.h>
 
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 #import "SMAddressBookController.h"
 
 @implementation SMAddressBookController {
@@ -50,7 +50,7 @@
         
         for(NSUInteger j = 0; j < emails.count; j++) {
             NSString *email = [emails valueAtIndex:j];
-            SMAddressListElement *addressElement = [[SMAddressListElement alloc] initWithFirstName:firstName lastName:lastName email:email];
+            SMAddress *addressElement = [[SMAddress alloc] initWithFirstName:firstName lastName:lastName email:email];
             
             [results addObject:[addressElement stringRepresentationForMenu]];
         }

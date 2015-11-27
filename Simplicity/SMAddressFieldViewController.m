@@ -10,7 +10,7 @@
 #import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 #import "SMAddressFieldViewController.h"
 
 @implementation SMAddressFieldViewController {
@@ -127,11 +127,11 @@
     NSMutableArray *resultingObjects = [NSMutableArray array];
     
     for(id token in tokens) {
-        if([token isKindOfClass:[SMAddressListElement class]]) {
+        if([token isKindOfClass:[SMAddress class]]) {
             [resultingObjects addObject:token];
         }
         else {
-            [resultingObjects addObject:[[SMAddressListElement alloc] initWithStringRepresentation:token]];
+            [resultingObjects addObject:[[SMAddress alloc] initWithStringRepresentation:token]];
         }
     }
 
@@ -146,13 +146,13 @@
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
     SM_LOG_DEBUG(@"editingString: %@", editingString);
-	return [[SMAddressListElement alloc] initWithStringRepresentation:editingString];
+	return [[SMAddress alloc] initWithStringRepresentation:editingString];
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-    NSAssert([representedObject isKindOfClass:[SMAddressListElement class]], @"bad kind of object: %@", representedObject);
+    NSAssert([representedObject isKindOfClass:[SMAddress class]], @"bad kind of object: %@", representedObject);
     
-    SMAddressListElement *addressElem = representedObject;
+    SMAddress *addressElem = representedObject;
     return [addressElem stringRepresentationShort];
 }
 

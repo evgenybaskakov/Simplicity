@@ -1,5 +1,5 @@
 //
-//  SMAddressListElement.h
+//  SMAddress.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 11/22/15.
@@ -10,7 +10,7 @@
 
 @class MCOAddress;
 
-@interface SMAddressListElement : NSObject
+@interface SMAddress : NSObject
 
 @property (readonly) NSString *firstName;
 @property (readonly) NSString *lastName;

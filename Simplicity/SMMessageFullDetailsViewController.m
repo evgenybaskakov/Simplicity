@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 #import "SMTokenField.h"
-#import "SMAddressListElement.h"
+#import "SMAddress.h"
 #import "SMMessage.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsView.h"
@@ -28,7 +28,7 @@
 	NSMutableArray *_ccConstraints;
 	Boolean _ccCreated;
 	Boolean _addressListsFramesValid;
-    SMAddressListElement __weak *_addressWithMenu;
+    SMAddress __weak *_addressWithMenu;
     SMMessageThreadCellViewController __weak *_enclosingThreadCell;
 }
 
@@ -203,14 +203,14 @@
 }
 
 - (void)setMessage:(SMMessage*)message {
-	[_fromAddress setObjectValue:@[[[SMAddressListElement alloc] initWithMCOAddress:message.fromAddress]]];
+	[_fromAddress setObjectValue:@[[[SMAddress alloc] initWithMCOAddress:message.fromAddress]]];
 
-    [_toAddresses setObjectValue:[SMAddressListElement mcoAddressesToAddressList:message.toAddressList]];
+    [_toAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.toAddressList]];
 
     if(message.ccAddressList != nil && message.ccAddressList.count != 0) {
         [self createCc];
 
-        [_ccAddresses setObjectValue:[SMAddressListElement mcoAddressesToAddressList:message.ccAddressList]];
+        [_ccAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.ccAddressList]];
     }
 
 	_addressListsFramesValid = NO;
@@ -265,9 +265,9 @@
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
-    NSAssert([representedObject isKindOfClass:[SMAddressListElement class]], @"bad kind of object: %@", representedObject);
+    NSAssert([representedObject isKindOfClass:[SMAddress class]], @"bad kind of object: %@", representedObject);
     
-    SMAddressListElement *addressElem = representedObject;
+    SMAddress *addressElem = representedObject;
     return [addressElem stringRepresentationDetailed];
 }
 
@@ -281,7 +281,7 @@
 }
 
 - (void)replyAction:(NSMenuItem*)menuItem {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", _addressWithMenu, @"ToAddressListElement", nil]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", _addressWithMenu, @"ToAddress", nil]];
 }
 
 @end

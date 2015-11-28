@@ -26,18 +26,18 @@
 }
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix {
-    NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
+    NSMutableArray *results = [NSMutableArray array];
     
-    [self searchAddressBookProperty:kABEmailProperty value:prefix results:results];
     [self searchAddressBookProperty:kABFirstNameProperty value:prefix results:results];
     [self searchAddressBookProperty:kABLastNameProperty value:prefix results:results];
+    [self searchAddressBookProperty:kABEmailProperty value:prefix results:results];
     
-    return [results sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [str1 compare:str2];
-    }];
+    return results;
 }
 
-- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableOrderedSet*)results {
+- (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableArray*)resultArrays {
+    NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
+    
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
     ABSearchElement *search = [ABPerson searchElementForProperty:property label:nil key:nil value:value comparison:kABPrefixMatchCaseInsensitive];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
@@ -55,6 +55,10 @@
             [results addObject:[addressElement stringRepresentationForMenu]];
         }
     }
+    
+    [resultArrays addObjectsFromArray:[results sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+        return [str1 compare:str2];
+    }]];
 }
 
 - (NSData*)imageDataForEmail:(NSString*)email {

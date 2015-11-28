@@ -7,6 +7,8 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMTokenField.h"
 #import "SMAddress.h"
 #import "SMMessage.h"
@@ -282,6 +284,11 @@
 
 - (void)replyAction:(NSMenuItem*)menuItem {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", _addressWithMenu, @"ToAddress", nil]];
+}
+
+- (void)newMessageAction:(NSMenuItem*)menuItem {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] openMessageEditorWindow:nil subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
 }
 
 @end

@@ -1000,7 +1000,7 @@ static const CGFloat CELL_SPACING = -1;
             
             SMAddress *toAddress = [messageInfo objectForKey:@"ToAddress"];
             if(toAddress != nil) {
-                [toAddressList addObject:[toAddress toMCOAddress]];
+                [toAddressList addObject:[toAddress mcoAddress]];
 
                 toAddressIsSet = YES;
             }

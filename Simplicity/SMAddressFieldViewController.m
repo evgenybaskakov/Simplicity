@@ -7,6 +7,8 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
@@ -15,6 +17,7 @@
 
 @implementation SMAddressFieldViewController {
 	Boolean _tokenFieldFrameValid;
+    SMAddress __weak *_addressWithMenu;
 }
 
 - (void)viewDidLoad {
@@ -114,9 +117,15 @@
 
     NSMenu *menu = [[NSMenu alloc] init];
     
-    [menu addItemWithTitle:@"Address field action 1" action:@selector(addressAction1) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Address field action 2" action:@selector(addressAction1) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Address field action 3" action:@selector(addressAction1) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction:) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Edit address" action:@selector(editAddressAction:) keyEquivalent:@""];
+    [menu addItemWithTitle:@"Remove address" action:@selector(removeAddressAction:) keyEquivalent:@""];
+    [menu addItem:[NSMenuItem separatorItem]];
+    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+    [menu addItem:[NSMenuItem separatorItem]];
+    [menu addItemWithTitle:@"New message" action:@selector(newMessageAction:) keyEquivalent:@""];
+    
+    _addressWithMenu = representedObject;
     
     return menu;
 }
@@ -159,6 +168,28 @@
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"LabeledTokenFieldEndedEditing" object:self userInfo:nil];
 	return YES;
+}
+
+- (void)copyAddressAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+    
+    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+    
+    [pasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+    [pasteBoard setString:_addressWithMenu.stringRepresentationDetailed forType:NSStringPboardType];
+}
+
+- (void)editAddressAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+}
+
+- (void)removeAddressAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+}
+
+- (void)newMessageAction:(NSMenuItem*)menuItem {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] openMessageEditorWindow:nil subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
 }
 
 @end

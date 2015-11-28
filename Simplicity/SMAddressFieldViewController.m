@@ -154,7 +154,7 @@
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-    SM_LOG_DEBUG(@"editingString: %@", editingString);
+    SM_LOG_INFO(@"editingString: %@", editingString);
 	return [[SMAddress alloc] initWithStringRepresentation:editingString];
 }
 
@@ -185,6 +185,14 @@
 
 - (void)removeAddressAction:(NSMenuItem*)menuItem {
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+  
+    NSMutableArray *objects = [NSMutableArray arrayWithArray:_tokenField.objectValue];
+    [objects removeObject:_addressWithMenu];
+    
+    [_tokenField setObjectValue:objects];
+    
+    NSTextView *textView = [[_tokenField cell] fieldEditorForView:_tokenField];
+    [textView setSelectedRange:NSMakeRange(0, 0)];
 }
 
 - (void)newMessageAction:(NSMenuItem*)menuItem {

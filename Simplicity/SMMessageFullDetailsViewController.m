@@ -32,7 +32,8 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 	NSMutableArray *_ccConstraints;
 	Boolean _ccCreated;
 	Boolean _addressListsFramesValid;
-    SMAddress __weak *_addressWithMenu;
+    SMAddress *_addressWithMenu;
+    NSString *_addressWithMenuUniqueId;
     SMMessageThreadCellViewController __weak *_enclosingThreadCell;
 }
 
@@ -268,8 +269,10 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
     [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction:) keyEquivalent:@""];
     
+    NSString *addressUniqueId = nil;
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] addressBookController] addressIsKnown:representedObject]) {
+    if([[[appDelegate model] addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
         [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
     }
     else {
@@ -280,6 +283,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     [menu addItemWithTitle:@"Reply" action:@selector(replyAction:) keyEquivalent:@""];
     
     _addressWithMenu = representedObject;
+    _addressWithMenuUniqueId = addressUniqueId;
     
     return menu;
 }
@@ -310,11 +314,24 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 }
 
 - (void)openInAddressBookAction:(NSMenuItem*)menuItem {
-    SM_LOG_WARNING(@"TODO");
+    NSAssert(_addressWithMenu, @"no address for menu");
+    NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
+
+    NSString *urlString = [NSString stringWithFormat:@"addressbook://%@", _addressWithMenuUniqueId];
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
 }
 
 - (void)addToAddressBookAction:(NSMenuItem*)menuItem {
-    SM_LOG_WARNING(@"TODO");
+    NSString *addressUniqueId = nil;
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[[appDelegate model] addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
+        NSString *urlString = [NSString stringWithFormat:@"addressbook://%@?edit", addressUniqueId];
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
+    }
+    else {
+        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);
+    }
 }
 
 @end

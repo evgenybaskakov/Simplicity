@@ -102,34 +102,76 @@
     return image;
 }
 
-- (BOOL)addressIsKnown:(SMAddress*)address {
+- (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
     ABSearchElement *searchFirstName = address.firstName? [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive] : nil;
     ABSearchElement *searchLastName = address.lastName? [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive] : nil;
-    
-    NSAssert(address.email, @"address.email is nil");
-    ABSearchElement *searchEmail = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
+    ABSearchElement *searchEmail = address.email? [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive] : nil;
 
     ABSearchElement *fullSearch;
     
     if(searchFirstName && searchLastName) {
         ABSearchElement *searchFullName = [ABSearchElement searchElementForConjunction:kABSearchAnd children:@[searchFirstName, searchLastName]];
-        fullSearch = [ABSearchElement searchElementForConjunction:kABSearchOr children:@[searchFullName, searchEmail]];
+        
+        if(searchEmail) {
+            fullSearch = [ABSearchElement searchElementForConjunction:kABSearchOr children:@[searchFullName, searchEmail]];
+        }
+        else {
+            fullSearch = searchFullName;
+        }
+    }
+    else if(searchEmail) {
+        fullSearch = searchEmail;
     }
     else {
-        fullSearch = searchEmail;
+        SM_LOG_INFO(@"Address '%@' too short to look for in address book", address.stringRepresentationDetailed);
+        return NO;
     }
 
     NSArray *foundRecords = [ab recordsMatchingSearchElement:fullSearch];
 
     if(foundRecords.count > 0) {
-        SM_LOG_INFO(@"Address '%@' found in address book (%lu records)", address.stringRepresentationDetailed, foundRecords.count);
+        ABRecord *record = foundRecords[0];
+        *uniqueId = record.uniqueId;
+
+        SM_LOG_INFO(@"Address '%@' found in address book (%lu records), first unique id '%@'", address.stringRepresentationDetailed, foundRecords.count, *uniqueId);
         return YES;
     }
     else {
         SM_LOG_INFO(@"Address '%@' not found in address book", address.stringRepresentationDetailed);
         return NO;
     }
+}
+
+- (BOOL)addAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {
+    ABPerson *person = [[ABPerson alloc] init];
+    
+    if(address.firstName) {
+        [person setValue:address.firstName forProperty:kABFirstNameProperty];
+    }
+
+    if(address.lastName) {
+        [person setValue:address.lastName forProperty:kABLastNameProperty];
+    }
+    
+    if(address.email) {
+        ABMutableMultiValue *emailValue = [[ABMutableMultiValue alloc] init];
+        [emailValue addValue:address.email withLabel:kABEmailWorkLabel];
+        
+        [person setValue:emailValue forProperty:kABEmailProperty];
+    }
+    
+    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+
+    if(![ab addRecord:person] || ![ab save]) {
+        SM_LOG_ERROR(@"Failed to add / save address in address book");
+        return NO;
+    }
+    
+    *uniqueId = person.uniqueId;
+
+    SM_LOG_INFO(@"Address '%@' added to address book, unique id '%@'", address.stringRepresentationDetailed, *uniqueId);
+    return YES;
 }
 
 @end

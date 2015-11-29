@@ -16,6 +16,7 @@
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix;
 - (NSImage*)pictureForEmail:(NSString*)email;
-- (BOOL)addressIsKnown:(SMAddress*)address;
+- (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
+- (BOOL)addAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
 
 @end

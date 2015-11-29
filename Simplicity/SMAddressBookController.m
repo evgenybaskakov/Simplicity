@@ -8,6 +8,7 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "SMLog.h"
 #import "SMAddress.h"
 #import "SMAddressBookController.h"
 
@@ -99,6 +100,36 @@
     [_imageCache setObject:image forKey:email];
     
     return image;
+}
+
+- (BOOL)addressIsKnown:(SMAddress*)address {
+    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+    ABSearchElement *searchFirstName = address.firstName? [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive] : nil;
+    ABSearchElement *searchLastName = address.lastName? [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive] : nil;
+    
+    NSAssert(address.email, @"address.email is nil");
+    ABSearchElement *searchEmail = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
+
+    ABSearchElement *fullSearch;
+    
+    if(searchFirstName && searchLastName) {
+        ABSearchElement *searchFullName = [ABSearchElement searchElementForConjunction:kABSearchAnd children:@[searchFirstName, searchLastName]];
+        fullSearch = [ABSearchElement searchElementForConjunction:kABSearchOr children:@[searchFullName, searchEmail]];
+    }
+    else {
+        fullSearch = searchEmail;
+    }
+
+    NSArray *foundRecords = [ab recordsMatchingSearchElement:fullSearch];
+
+    if(foundRecords.count > 0) {
+        SM_LOG_INFO(@"Address '%@' found in address book (%lu records)", address.stringRepresentationDetailed, foundRecords.count);
+        return YES;
+    }
+    else {
+        SM_LOG_INFO(@"Address '%@' not found in address book", address.stringRepresentationDetailed);
+        return NO;
+    }
 }
 
 @end

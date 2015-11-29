@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMSimplicityContainer.h"
 #import "SMAddressBookController.h"
 #import "SMTokenField.h"
 #import "SMAddress.h"
@@ -266,7 +267,15 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     NSMenu *menu = [[NSMenu alloc] init];
 
     [menu addItemWithTitle:@"Copy address" action:@selector(copyAddressAction:) keyEquivalent:@""];
-    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[[appDelegate model] addressBookController] addressIsKnown:representedObject]) {
+        [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+    }
+    else {
+        [menu addItemWithTitle:@"Add to address book" action:@selector(addToAddressBookAction:) keyEquivalent:@""];
+    }
+    
     [menu addItemWithTitle:@"New message" action:@selector(newMessageAction:) keyEquivalent:@""];
     [menu addItemWithTitle:@"Reply" action:@selector(replyAction:) keyEquivalent:@""];
     
@@ -298,6 +307,14 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 - (void)newMessageAction:(NSMenuItem*)menuItem {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] openMessageEditorWindow:nil subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
+}
+
+- (void)openInAddressBookAction:(NSMenuItem*)menuItem {
+    SM_LOG_WARNING(@"TODO");
+}
+
+- (void)addToAddressBookAction:(NSMenuItem*)menuItem {
+    SM_LOG_WARNING(@"TODO");
 }
 
 @end

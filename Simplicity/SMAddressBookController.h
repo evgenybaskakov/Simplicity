@@ -10,9 +10,12 @@
 
 #import "SMSuggestionProvider.h"
 
+@class SMAddress;
+
 @interface SMAddressBookController : NSObject<SMSuggestionProvider>
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix;
 - (NSImage*)pictureForEmail:(NSString*)email;
+- (BOOL)addressIsKnown:(SMAddress*)address;
 
 @end

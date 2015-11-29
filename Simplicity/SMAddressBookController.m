@@ -168,13 +168,17 @@
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
 
     if(![ab addRecord:person] || ![ab save]) {
-        SM_LOG_ERROR(@"Failed to add / save address in address book");
+        SM_LOG_ERROR(@"Failed to add / save address '%@' in address book", address.stringRepresentationDetailed);
+        return NO;
+    }
+
+    SM_LOG_INFO(@"Address '%@' saved to address book", address.stringRepresentationDetailed);
+
+    if(![self findAddress:address uniqueId:uniqueId]) {
+        SM_LOG_ERROR(@"Could not find newly added address '%@' in address book", address.stringRepresentationDetailed);
         return NO;
     }
     
-    *uniqueId = person.uniqueId;
-
-    SM_LOG_INFO(@"Address '%@' added to address book, unique id '%@'", address.stringRepresentationDetailed, *uniqueId);
     return YES;
 }
 

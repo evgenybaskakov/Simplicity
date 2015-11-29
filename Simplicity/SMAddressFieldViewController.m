@@ -138,6 +138,7 @@
     [menu addItemWithTitle:@"New message" action:@selector(newMessageAction:) keyEquivalent:@""];
     
     _addressWithMenu = representedObject;
+    _addressWithMenuUniqueId = addressUniqueId;
     
     return menu;
 }

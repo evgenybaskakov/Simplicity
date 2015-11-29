@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAddressBookController.h"
 #import "SMTokenField.h"
 #import "SMAddress.h"
 #import "SMMessage.h"
@@ -16,10 +17,10 @@
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
 
-//static const NSUInteger CONTACT_IMAGE_SIZE = 45;
+static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
 @implementation SMMessageFullDetailsViewController {
-    NSButton *_fromButton;
+    NSButton *_contactButton;
 	NSTextField *_fromLabel;
 	NSTokenField *_fromAddress;
 	NSTextField *_toLabel;
@@ -68,22 +69,23 @@
 	NSView *view = [self view];
 
     // init 'from' button
-/*
- 
- TODO
- 
-    _fromButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, CONTACT_IMAGE_SIZE, CONTACT_IMAGE_SIZE)];
-    _fromButton.image = [NSImage imageNamed:NSImageNameUserGuest];
-    _fromButton.title = @"";
-    _fromButton.bezelStyle = NSRegularSquareBezelStyle; // Also works: NSTexturedSquareBezelStyle
+    _contactButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, CONTACT_BUTTON_SIZE, CONTACT_BUTTON_SIZE)];
+    _contactButton.image = [NSImage imageNamed:NSImageNameUserGuest];
+    _contactButton.title = @"";
+    _contactButton.bezelStyle = NSTexturedSquareBezelStyle;
+    _contactButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contactButton.cell setImageScaling:NSImageScaleProportionallyUpOrDown];
     
-    [view addSubview:_fromButton];
- 
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_fromButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_fromButton attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
- */
+    [view addSubview:_contactButton];
 
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:CONTACT_BUTTON_SIZE]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:CONTACT_BUTTON_SIZE]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_contactButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_contactButton attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    
 	// init 'from' label
 	
 	_fromLabel = [SMMessageDetailsViewController createLabel:@"From:" bold:NO];
@@ -91,7 +93,7 @@
 	
 	[view addSubview:_fromLabel];
 	
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]]; //TODO: -CONTACT_IMAGE_SIZE
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_fromLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
 	
@@ -121,7 +123,7 @@
 	
 	[view addSubview:_toLabel];
 	
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]]; //TODO: -CONTACT_IMAGE_SIZE
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
 	
 	[view addConstraint:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
 	
@@ -213,6 +215,13 @@
         [self createCc];
 
         [_ccAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.ccAddressList]];
+    }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[message.fromAddress mailbox]];
+    if(contactImage != nil) {
+        _contactButton.image = contactImage;
     }
 
 	_addressListsFramesValid = NO;

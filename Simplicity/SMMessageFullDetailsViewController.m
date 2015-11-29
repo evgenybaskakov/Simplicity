@@ -316,18 +316,17 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 - (void)openInAddressBookAction:(NSMenuItem*)menuItem {
     NSAssert(_addressWithMenu, @"no address for menu");
     NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
-
-    NSString *urlString = [NSString stringWithFormat:@"addressbook://%@", _addressWithMenuUniqueId];
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
 }
 
 - (void)addToAddressBookAction:(NSMenuItem*)menuItem {
     NSString *addressUniqueId = nil;
-
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[[appDelegate model] addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
-        NSString *urlString = [NSString stringWithFormat:@"addressbook://%@?edit", addressUniqueId];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
+        [[[appDelegate model] addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }
     else {
         SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);

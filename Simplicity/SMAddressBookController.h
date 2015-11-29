@@ -18,5 +18,6 @@
 - (NSImage*)pictureForEmail:(NSString*)email;
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
 - (BOOL)addAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
+- (void)openAddressInAddressBook:(NSString*)addressUniqueId edit:(BOOL)edit;
 
 @end

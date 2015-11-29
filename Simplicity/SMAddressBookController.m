@@ -103,6 +103,8 @@
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {
+    NSAssert(address, @"address is nil");
+
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
     ABSearchElement *searchFirstName = address.firstName? [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive] : nil;
     ABSearchElement *searchLastName = address.lastName? [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive] : nil;
@@ -144,6 +146,8 @@
 }
 
 - (BOOL)addAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {
+    NSAssert(address, @"address is nil");
+
     ABPerson *person = [[ABPerson alloc] init];
     
     if(address.firstName) {
@@ -172,6 +176,13 @@
 
     SM_LOG_INFO(@"Address '%@' added to address book, unique id '%@'", address.stringRepresentationDetailed, *uniqueId);
     return YES;
+}
+
+- (void)openAddressInAddressBook:(NSString*)addressUniqueId edit:(BOOL)edit {
+    NSAssert(addressUniqueId, @"addressUniqueId is nil");
+    
+    NSString *urlString = [NSString stringWithFormat:@"addressbook://%@%@", addressUniqueId, edit? @"?edit" : @""];
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
 }
 
 @end

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAddressBookController.h"
 #import "SMSuggestionProvider.h"
 #import "SMTokenField.h"
 #import "SMLabeledTokenFieldBoxView.h"
@@ -17,7 +18,8 @@
 
 @implementation SMAddressFieldViewController {
 	Boolean _tokenFieldFrameValid;
-    SMAddress __weak *_addressWithMenu;
+    SMAddress *_addressWithMenu;
+    NSString *_addressWithMenuUniqueId;
 }
 
 - (void)viewDidLoad {
@@ -121,7 +123,17 @@
     [menu addItemWithTitle:@"Edit address" action:@selector(editAddressAction:) keyEquivalent:@""];
     [menu addItemWithTitle:@"Remove address" action:@selector(removeAddressAction:) keyEquivalent:@""];
     [menu addItem:[NSMenuItem separatorItem]];
-    [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+
+    NSString *addressUniqueId = nil;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[[appDelegate model] addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
+        [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
+    }
+    else {
+        [menu addItemWithTitle:@"Add to address book" action:@selector(addToAddressBookAction:) keyEquivalent:@""];
+    }
+
     [menu addItem:[NSMenuItem separatorItem]];
     [menu addItemWithTitle:@"New message" action:@selector(newMessageAction:) keyEquivalent:@""];
     
@@ -198,6 +210,26 @@
 - (void)newMessageAction:(NSMenuItem*)menuItem {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] openMessageEditorWindow:nil subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
+}
+
+- (void)openInAddressBookAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressWithMenu, @"no address for menu");
+    NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
+}
+
+- (void)addToAddressBookAction:(NSMenuItem*)menuItem {
+    NSString *addressUniqueId = nil;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[[appDelegate model] addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
+        [[[appDelegate model] addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
+    }
+    else {
+        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);
+    }
 }
 
 @end

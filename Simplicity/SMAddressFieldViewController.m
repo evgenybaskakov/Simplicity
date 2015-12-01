@@ -19,7 +19,10 @@
 @implementation SMAddressFieldViewController {
 	Boolean _tokenFieldFrameValid;
     SMAddress *_addressWithMenu;
+    SMAddress *_editedAddress;
+    NSArray *_nonEditedAddresses;
     NSString *_addressWithMenuUniqueId;
+    NSUInteger _addressCountWhenEditStarted;
 }
 
 - (void)viewDidLoad {
@@ -68,6 +71,8 @@
     if (obj.object == _tokenField) {
         SM_LOG_DEBUG(@"obj.object: %@", obj);
 
+        _nonEditedAddresses = nil;
+        
         unsigned int whyEnd = [[[obj userInfo] objectForKey:@"NSTextMovement"] unsignedIntValue];
         
         if (whyEnd == NSTabTextMovement || whyEnd == NSReturnTextMovement) {
@@ -107,7 +112,18 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-	return NSRoundedTokenStyle;
+/*
+    if(_nonEditedAddresses == nil || [_nonEditedAddresses containsObject:representedObject]) {
+        return NSTokenStyleRounded;
+    }
+
+    return NSTokenStyleNone;
+*/
+    if(representedObject == _editedAddress) {
+        return NSTokenStyleNone;
+    }
+
+    return NSTokenStyleRounded;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
@@ -144,19 +160,31 @@
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	SM_LOG_DEBUG(@"%@", tokens);
+	SM_LOG_INFO(@"???");
 
     NSMutableArray *resultingObjects = [NSMutableArray array];
     
     for(id token in tokens) {
+        SMAddress *address = nil;
+        
         if([token isKindOfClass:[SMAddress class]]) {
-            [resultingObjects addObject:token];
+            address = token;
         }
         else {
-            [resultingObjects addObject:[[SMAddress alloc] initWithStringRepresentation:token]];
+            address = [[SMAddress alloc] initWithStringRepresentation:token];
         }
-    }
 
+        if(_addressCountWhenEditStarted > 0) {
+            if(![_nonEditedAddresses containsObject:address]) {
+                _editedAddress = address;
+            }
+
+            _addressCountWhenEditStarted--;
+        }
+            
+        [resultingObjects addObject:address];
+    }
+    
     return resultingObjects;
 }
 
@@ -167,7 +195,7 @@
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-    SM_LOG_INFO(@"editingString: %@", editingString);
+//    SM_LOG_INFO(@"editingString: %@", editingString);
 	return [[SMAddress alloc] initWithStringRepresentation:editingString];
 }
 
@@ -193,19 +221,31 @@
 }
 
 - (void)editAddressAction:(NSMenuItem*)menuItem {
+    NSAssert(_addressCountWhenEditStarted == 0, @"_addressCountWhenEditStarted is %lu", _addressCountWhenEditStarted);
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+    
+    NSArray *objects = [NSArray arrayWithArray:_tokenField.objectValue];
+    NSMutableArray *nonEditedAddresses = [NSMutableArray arrayWithArray:objects];
+    [nonEditedAddresses removeObject:_addressWithMenu];
+    
+    _editedAddress = _addressWithMenu;
+    _nonEditedAddresses = nonEditedAddresses;
+    _addressCountWhenEditStarted = objects.count;
+    
+    [_tokenField setStringValue:@""];
+    [_tokenField setObjectValue:objects];
 }
 
 - (void)removeAddressAction:(NSMenuItem*)menuItem {
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
+    
+    NSTextView *textView = [[_tokenField cell] fieldEditorForView:_tokenField];
+    [textView setSelectedRange:NSMakeRange(0, 0)];
   
     NSMutableArray *objects = [NSMutableArray arrayWithArray:_tokenField.objectValue];
     [objects removeObject:_addressWithMenu];
     
     [_tokenField setObjectValue:objects];
-    
-    NSTextView *textView = [[_tokenField cell] fieldEditorForView:_tokenField];
-    [textView setSelectedRange:NSMakeRange(0, 0)];
 }
 
 - (void)newMessageAction:(NSMenuItem*)menuItem {

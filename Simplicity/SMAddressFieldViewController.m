@@ -19,7 +19,6 @@
 @implementation SMAddressFieldViewController {
 	Boolean _tokenFieldFrameValid;
     SMAddress *_addressWithMenu;
-    SMAddress *_editedAddress;
     NSArray *_nonEditedAddresses;
     NSString *_addressWithMenuUniqueId;
     NSUInteger _addressCountWhenEditStarted;
@@ -112,18 +111,11 @@
 #pragma mark NSTokenFieldDelegate
 
 - (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
-/*
     if(_nonEditedAddresses == nil || [_nonEditedAddresses containsObject:representedObject]) {
         return NSTokenStyleRounded;
     }
 
     return NSTokenStyleNone;
-*/
-    if(representedObject == _editedAddress) {
-        return NSTokenStyleNone;
-    }
-
-    return NSTokenStyleRounded;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
@@ -155,6 +147,7 @@
     
     _addressWithMenu = representedObject;
     _addressWithMenuUniqueId = addressUniqueId;
+    _nonEditedAddresses = nil;
     
     return menu;
 }
@@ -175,11 +168,11 @@
         }
 
         if(_addressCountWhenEditStarted > 0) {
-            if(![_nonEditedAddresses containsObject:address]) {
-                _editedAddress = address;
-            }
-
             _addressCountWhenEditStarted--;
+            SM_LOG_INFO(@"_addressCountWhenEditStarted->%lu",_addressCountWhenEditStarted);
+        }
+        else {
+            _nonEditedAddresses = nil;
         }
             
         [resultingObjects addObject:address];
@@ -195,7 +188,6 @@
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-//    SM_LOG_INFO(@"editingString: %@", editingString);
 	return [[SMAddress alloc] initWithStringRepresentation:editingString];
 }
 
@@ -221,16 +213,17 @@
 }
 
 - (void)editAddressAction:(NSMenuItem*)menuItem {
-    NSAssert(_addressCountWhenEditStarted == 0, @"_addressCountWhenEditStarted is %lu", _addressCountWhenEditStarted);
+    SM_LOG_INFO(@"??");
+
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
     
     NSArray *objects = [NSArray arrayWithArray:_tokenField.objectValue];
     NSMutableArray *nonEditedAddresses = [NSMutableArray arrayWithArray:objects];
     [nonEditedAddresses removeObject:_addressWithMenu];
     
-    _editedAddress = _addressWithMenu;
     _nonEditedAddresses = nonEditedAddresses;
-    _addressCountWhenEditStarted = objects.count;
+    _addressCountWhenEditStarted = objects.lastObject == _addressWithMenu? objects.count : 0;
+    SM_LOG_INFO(@"_addressCountWhenEditStarted->%lu",_addressCountWhenEditStarted);
     
     [_tokenField setStringValue:@""];
     [_tokenField setObjectValue:objects];

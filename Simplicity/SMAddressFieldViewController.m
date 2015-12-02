@@ -110,12 +110,22 @@
 
 #pragma mark NSTokenFieldDelegate
 
-- (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
+- (BOOL)editedAddress:(id)representedObject {
     if(_nonEditedAddresses == nil || [_nonEditedAddresses containsObject:representedObject]) {
+        return NO;
+    }
+    else {
+        return YES;
+    }
+}
+
+- (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject {
+    if([self editedAddress:representedObject]) {
+        return NSTokenStyleNone;
+    }
+    else {
         return NSTokenStyleRounded;
     }
-
-    return NSTokenStyleNone;
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
@@ -194,8 +204,26 @@
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
     NSAssert([representedObject isKindOfClass:[SMAddress class]], @"bad kind of object: %@", representedObject);
     
-    SMAddress *addressElem = representedObject;
-    return [addressElem stringRepresentationShort];
+//    if([self editedAddress:representedObject]) {
+//        SMAddress *addressElem = representedObject;
+//        return [addressElem stringRepresentationDetailed];
+//    }
+//    else {
+        SMAddress *addressElem = representedObject;
+        return [addressElem stringRepresentationShort];
+//    }
+}
+
+- (NSString *)tokenField:(NSTokenField *)tokenField editingStringForRepresentedObject:(id)representedObject {
+    NSAssert([representedObject isKindOfClass:[SMAddress class]], @"bad kind of object: %@", representedObject);
+    
+    if([self editedAddress:representedObject]) {
+        SMAddress *addressElem = representedObject;
+        return [addressElem stringRepresentationDetailed];
+    }
+    else {
+        return nil;
+    }
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {

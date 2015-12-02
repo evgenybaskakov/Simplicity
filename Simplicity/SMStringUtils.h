@@ -12,5 +12,6 @@
 
 + (BOOL)string:(NSString *)string hasPrefix:(NSString *)prefix caseInsensitive:(BOOL)caseInsensitive;
 + (BOOL)emailAddressValid:(NSString*)emailAddress;
++ (NSString*)trimString:(NSString*)str;
 
 @end

@@ -36,6 +36,12 @@ static NSString *emailRegEx =
     }
     
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] %@", emailRegEx];
-    return [emailTest evaluateWithObject:emailAddress];}
+    return [emailTest evaluateWithObject:emailAddress];
+}
+
+// TODO: cache trimmed strings?
++ (NSString*)trimString:(NSString*)str {
+    return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
 
 @end

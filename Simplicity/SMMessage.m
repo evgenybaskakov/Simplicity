@@ -10,17 +10,12 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMStringUtils.h"
 #import "SMSimplicityContainer.h"
 #import "SMAttachmentStorage.h"
 #import "SMMessage.h"
 
 #define MAX_BODY_PREVIEW_LENGTH 512
-
-@interface SMMessage()
-
-+ (NSString*)trimTextField:(NSString*)str;
-
-@end
 
 @implementation SMMessage {
 	MCOMessageParser *_msgParser;
@@ -68,7 +63,7 @@ static NSString *unquote(NSString *s) {
 + (NSString*)parseAddress:(MCOAddress*)address {
 	NSString *fromDisplayName = [address displayName];
 	if(fromDisplayName != nil) {
-		NSString *trimmedFromDisplayName = [SMMessage trimTextField:fromDisplayName];
+		NSString *trimmedFromDisplayName = [SMStringUtils trimString:fromDisplayName];
 		NSAssert(trimmedFromDisplayName, @"trimmed name nil");
 		if([trimmedFromDisplayName length] > 0)
 			return unquote(trimmedFromDisplayName);
@@ -81,7 +76,7 @@ static NSString *unquote(NSString *s) {
 	NSString *mailbox = [address mailbox];
 	NSAssert(mailbox, @"no from mailbox");
 	
-	NSString *mailboxTrimmed = [self trimTextField:mailbox];
+	NSString *mailboxTrimmed = [SMStringUtils trimString:mailbox];
 	if(mailboxTrimmed != nil && [mailboxTrimmed length] > 0)
 		return unquote(mailboxTrimmed);
 	
@@ -125,7 +120,7 @@ static NSString *unquote(NSString *s) {
 	NSString *subject = [header subject];
 	if(subject) {
 		// note: two-pass replacement replacement loop here
-		NSString *trimmedSubject = [[[SMMessage trimTextField:subject] stringByReplacingOccurrencesOfString:@"\n" withString:@""] stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+		NSString *trimmedSubject = [[[SMStringUtils trimString:subject] stringByReplacingOccurrencesOfString:@"\n" withString:@""] stringByReplacingOccurrencesOfString:@"\r" withString:@""];
 
 		if([trimmedSubject length] > 0) {
 			return trimmedSubject;
@@ -464,11 +459,6 @@ static NSString *unquote(NSString *s) {
 - (NSString *) MCOAbstractMessage:(MCOAbstractMessage *)msg filterHTMLForMessage:(NSString *)html {
 	SM_LOG_DEBUG(@"???");
 	return nil;
-}
-
-// TODO: cache trimmed strings
-+ (NSString*)trimTextField:(NSString*)str {
-	return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end

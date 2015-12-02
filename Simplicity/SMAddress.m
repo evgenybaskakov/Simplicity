@@ -8,6 +8,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMStringUtils.h"
 #import "SMMessage.h"
 #import "SMAddress.h"
 
@@ -67,6 +68,20 @@
 }
 
 - (void)initInternalWithString:(NSString*)string {
+    string = [SMStringUtils trimString:string];
+    
+    if([string hasSuffix:@">"]) {
+        NSRange range = [string rangeOfString:@"<" options:NSBackwardsSearch];
+        
+        if(range.length != 0) {
+            [self extractFirstAndLastNames:[string substringToIndex:range.location]];
+
+            _email = [string substringWithRange:NSMakeRange(range.location + 1, string.length - (range.location + 1) - 1)];
+            
+            return;
+        }
+    }
+    
     NSRange emailRange = [string rangeOfString:EMAIL_DELIMITER options:NSBackwardsSearch];
     
     if(emailRange.location == NSNotFound) {
@@ -75,19 +90,24 @@
         _email = string;
     }
     else {
-        NSString *fullName = [string substringToIndex:emailRange.location];
-        NSRange firstNameRange = [fullName rangeOfString:@" "];
-        
-        if(firstNameRange.location == NSNotFound) {
-            _firstName = fullName;
-            _lastName = nil;
-        }
-        else {
-            _firstName = [fullName substringToIndex:firstNameRange.location];
-            _lastName = [fullName substringFromIndex:firstNameRange.location + 1];
-        }
+        [self extractFirstAndLastNames:[string substringToIndex:emailRange.location]];
         
         _email = [string substringFromIndex:emailRange.location + EMAIL_DELIMITER.length];
+    }
+}
+
+- (void)extractFirstAndLastNames:(NSString*)fullName {
+    fullName = [SMStringUtils trimString:fullName];
+    
+    NSRange firstNameRange = [fullName rangeOfString:@" "];
+    
+    if(firstNameRange.location == NSNotFound) {
+        _firstName = fullName;
+        _lastName = nil;
+    }
+    else {
+        _firstName = [fullName substringToIndex:firstNameRange.location];
+        _lastName = [fullName substringFromIndex:firstNameRange.location + 1];
     }
 }
 

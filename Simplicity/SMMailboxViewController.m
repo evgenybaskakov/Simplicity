@@ -48,6 +48,16 @@
 
 	[_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
 	[_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+}
+
+- (void)messageHeadersSyncFinished:(NSNotification *)notification {
+//    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+
+    // TODO: refresh only the folder in question for efficiency
+
+    [self updateFolderListView];
 }
 
 - (void)updateFolderListView {
@@ -274,7 +284,7 @@ typedef enum {
 			[result.textField setStringValue:folder.displayName];
 			[result.imageView setImage:[self mainFolderImage:folder]];
 
-            [self displayUnseenCount:[(SMMailboxMainFolderView*)result unreadCount] folderName:folder.fullName];
+            [self displayUnseenCount:[(SMMailboxMainFolderView*)result unreadCount] folderName:folder];
             
 			break;
 		}
@@ -289,7 +299,7 @@ typedef enum {
 			
 			[result.textField setStringValue:folder.displayName];
 
-            [self displayUnseenCount:[(SMMailboxLabelView*)result unreadCount] folderName:folder.fullName];
+            [self displayUnseenCount:[(SMMailboxLabelView*)result unreadCount] folderName:folder];
 			
 			NSAssert([result.imageView isKindOfClass:[SMColorCircle class]], @"bad type of folder cell image");;
 			
@@ -352,9 +362,16 @@ typedef enum {
 	return result;
 }
 
-- (void)displayUnseenCount:(NSButton*)button folderName:(NSString*)folderName {
+- (void)displayUnseenCount:(NSButton*)button folderName:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    NSUInteger unseenCount = [[[appDelegate model] mailboxController] unseenMessagesCount:folderName];
+    NSUInteger unseenCount;
+    if(folder.kind == SMFolderKindDrafts) {
+        unseenCount = [[[appDelegate model] mailboxController] totalMessagesCount:folder.fullName];
+    }
+    else {
+        unseenCount = [[[appDelegate model] mailboxController] unseenMessagesCount:folder.fullName];
+    }
+    
     if(unseenCount != 0) {
         button.title = [NSString stringWithFormat:@"%lu", unseenCount];
         button.hidden = NO;

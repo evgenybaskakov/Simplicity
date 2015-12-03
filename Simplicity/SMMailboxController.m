@@ -206,6 +206,19 @@
 	}];
 }
 
+- (NSUInteger)totalMessagesCount:(NSString*)folderName {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+    SMLocalFolder *localFolder = [localFolderRegistry getLocalFolder:folderName];
+    
+    if(localFolder != nil) {
+        return localFolder.totalMessagesCount;
+    }
+    else {
+        return 0;
+    }
+}
+
 - (NSUInteger)unseenMessagesCount:(NSString*)folderName {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];

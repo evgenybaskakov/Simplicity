@@ -20,5 +20,6 @@
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName;
 - (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName;
 - (NSUInteger)unseenMessagesCount:(NSString*)folderName;
+- (NSUInteger)totalMessagesCount:(NSString*)folderName;
 
 @end

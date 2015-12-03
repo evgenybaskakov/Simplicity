@@ -80,10 +80,10 @@
                                                         </constraints>
                                                         <animations/>
                                                     </customView>
-                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9fg-dU-pW6">
-                                                        <rect key="frame" x="14" y="0.0" width="180" height="16"/>
+                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9fg-dU-pW6">
+                                                        <rect key="frame" x="14" y="0.0" width="87" height="16"/>
                                                         <animations/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Regular Folder" usesSingleLineMode="YES" id="KYg-7e-QCg">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Regular Folder" usesSingleLineMode="YES" id="KYg-7e-QCg">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -92,13 +92,22 @@
                                                             <outlet property="delegate" destination="-2" id="Lvm-JS-BdI"/>
                                                         </connections>
                                                     </textField>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uKW-ta-vpc">
+                                                        <rect key="frame" x="168" y="0.0" width="26" height="16"/>
+                                                        <animations/>
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="gdd-Eo-rXc">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="systemBold" size="10"/>
+                                                        </buttonCell>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="trailing" secondItem="9fg-dU-pW6" secondAttribute="trailing" constant="5" id="IuF-VU-yNP"/>
-                                                    <constraint firstItem="9fg-dU-pW6" firstAttribute="top" secondItem="ad8-Va-2mb" secondAttribute="top" id="M9H-yF-Hms"/>
+                                                    <constraint firstItem="9fg-dU-pW6" firstAttribute="top" secondItem="ad8-Va-2mb" secondAttribute="top" id="8Mz-JG-P43"/>
+                                                    <constraint firstItem="uKW-ta-vpc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9fg-dU-pW6" secondAttribute="trailing" constant="2" id="JrU-eE-7Kl"/>
                                                     <constraint firstItem="9fg-dU-pW6" firstAttribute="leading" secondItem="bpM-hd-kan" secondAttribute="trailing" id="OdJ-F7-vhP"/>
-                                                    <constraint firstAttribute="bottom" secondItem="9fg-dU-pW6" secondAttribute="bottom" id="Ps9-hL-QCW"/>
                                                     <constraint firstItem="bpM-hd-kan" firstAttribute="leading" secondItem="ad8-Va-2mb" secondAttribute="leading" constant="1" id="UFY-jP-a5V"/>
+                                                    <constraint firstAttribute="trailing" secondItem="uKW-ta-vpc" secondAttribute="trailing" constant="3" id="a9u-kH-IJx"/>
+                                                    <constraint firstItem="uKW-ta-vpc" firstAttribute="centerY" secondItem="ad8-Va-2mb" secondAttribute="centerY" id="kip-Ge-POu"/>
                                                     <constraint firstAttribute="centerY" secondItem="bpM-hd-kan" secondAttribute="centerY" constant="1.5" id="r9i-JJ-7Hi"/>
                                                 </constraints>
                                                 <animations/>

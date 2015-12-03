@@ -188,17 +188,26 @@ static NSString *unquote(NSString *s) {
 }
 
 - (NSString*)bodyPreview {
-    if(_msgParser == nil) {
-        return @"";
-    }
-    
     if(_bodyPreview != nil) {
         return _bodyPreview;
     }
     
+    if(_msgParser == nil) {
+        return @"";
+    }
+    
     NSString *plainText = [_msgParser plainTextBodyRendering];
     
-    _bodyPreview = [[_msgParser plainTextBodyRendering] substringToIndex:MIN(plainText.length, MAX_BODY_PREVIEW_LENGTH)];
+    if(plainText == nil) {
+        return @"";
+    }
+    
+    if(plainText.length <= MAX_BODY_PREVIEW_LENGTH) {
+        _bodyPreview = plainText;
+    }
+    else {
+        _bodyPreview = [plainText substringToIndex:MAX_BODY_PREVIEW_LENGTH];
+    }
     
     return _bodyPreview;
 }

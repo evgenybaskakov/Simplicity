@@ -19,6 +19,8 @@
 #import "SMColorCircle.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
+#import "SMMailboxMainFolderView.h"
+#import "SMMailboxLabelView.h"
 #import "SMFolderColorController.h"
 
 @implementation SMMailboxViewController {
@@ -264,12 +266,14 @@ typedef enum {
 	switch(itemKind) {
 		case kMainFoldersGroupItem: {
 			result = [tableView makeViewWithIdentifier:@"MainFolderCellView" owner:self];
+            NSAssert([result isKindOfClass:[SMMailboxMainFolderView class]], @"bad result class");
 			
 			SMFolder *folder = [self selectedFolder:row];
 			NSAssert(folder != nil, @"bad selected folder");
 			
 			[result.textField setStringValue:folder.displayName];
 			[result.imageView setImage:[self mainFolderImage:folder]];
+            [(SMMailboxMainFolderView*)result unreadCount].title = @"0"; // TODO!!
 			
 			break;
 		}
@@ -277,11 +281,13 @@ typedef enum {
 		case kFavoriteFoldersGroupItem:
 		case kAllFoldersGroupItem: {
 			result = [tableView makeViewWithIdentifier:@"FolderCellView" owner:self];
+            NSAssert([result isKindOfClass:[SMMailboxLabelView class]], @"bad result class");
 			
 			SMFolder *folder = [self selectedFolder:row];
 			NSAssert(folder != nil, @"bad selected folder");
 			
 			[result.textField setStringValue:folder.displayName];
+            [(SMMailboxLabelView*)result unreadCount].title = @"0"; // TODO!!
 			
 			NSAssert([result.imageView isKindOfClass:[SMColorCircle class]], @"bad type of folder cell image");;
 			

@@ -68,8 +68,54 @@
                                                     <outlet property="textField" destination="YU0-Jd-HHA" id="BQL-no-pQE"/>
                                                 </connections>
                                             </tableCellView>
-                                            <tableCellView identifier="FolderCellView" id="ad8-Va-2mb" userLabel="Regular Folder">
-                                                <rect key="frame" x="1" y="20" width="197" height="16"/>
+                                            <tableCellView identifier="MainFolderCellView" id="iXx-Gf-r8K" userLabel="Main Folder" customClass="SMMailboxMainFolderView">
+                                                <rect key="frame" x="1" y="20" width="197" height="20"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkI-fd-8gU">
+                                                        <rect key="frame" x="18" y="2" width="71" height="16"/>
+                                                        <animations/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Main Folder" usesSingleLineMode="YES" id="c2r-0z-Hqw">
+                                                            <font key="font" metaFont="cellTitle"/>
+                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="DV1-dm-EPF" userLabel="Icon" customClass="NSImageView">
+                                                        <rect key="frame" x="2" y="2" width="16" height="16"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="16" id="GDF-Z6-vbw"/>
+                                                            <constraint firstAttribute="width" constant="16" id="oeD-m4-wlw"/>
+                                                        </constraints>
+                                                        <animations/>
+                                                    </customView>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O">
+                                                        <rect key="frame" x="171" y="4" width="26" height="13"/>
+                                                        <animations/>
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="O1d-Gi-pe2">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="systemBold" size="10"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="TkI-fd-8gU" firstAttribute="top" secondItem="iXx-Gf-r8K" secondAttribute="top" constant="2" id="0mr-3N-umT"/>
+                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TkI-fd-8gU" secondAttribute="trailing" id="97D-k7-U8m"/>
+                                                    <constraint firstItem="TkI-fd-8gU" firstAttribute="leading" secondItem="DV1-dm-EPF" secondAttribute="trailing" constant="2" id="DB7-MZ-kze"/>
+                                                    <constraint firstAttribute="centerY" secondItem="DV1-dm-EPF" secondAttribute="centerY" id="UGp-XX-aZe"/>
+                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="centerY" secondItem="iXx-Gf-r8K" secondAttribute="centerY" id="UpE-bc-mp0"/>
+                                                    <constraint firstItem="DV1-dm-EPF" firstAttribute="leading" secondItem="iXx-Gf-r8K" secondAttribute="leading" constant="2" id="Z1w-28-LM9"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" id="cHW-J3-D4E"/>
+                                                </constraints>
+                                                <animations/>
+                                                <connections>
+                                                    <outlet property="imageView" destination="DV1-dm-EPF" id="bAT-xm-qOk"/>
+                                                    <outlet property="textField" destination="TkI-fd-8gU" id="obq-uG-fWs"/>
+                                                    <outlet property="unreadCount" destination="Brj-Ke-Y0O" id="4ki-bd-DhM"/>
+                                                </connections>
+                                            </tableCellView>
+                                            <tableCellView identifier="FolderCellView" id="ad8-Va-2mb" userLabel="Regular Folder" customClass="SMMailboxLabelView">
+                                                <rect key="frame" x="1" y="42" width="197" height="16"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="bpM-hd-kan" userLabel="Color Mark" customClass="SMColorCircle">
@@ -114,51 +160,7 @@
                                                 <connections>
                                                     <outlet property="imageView" destination="bpM-hd-kan" id="xrQ-6k-0tt"/>
                                                     <outlet property="textField" destination="9fg-dU-pW6" id="Ry0-kn-E4M"/>
-                                                </connections>
-                                            </tableCellView>
-                                            <tableCellView identifier="MainFolderCellView" id="iXx-Gf-r8K" userLabel="Main Folder">
-                                                <rect key="frame" x="1" y="38" width="197" height="20"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkI-fd-8gU">
-                                                        <rect key="frame" x="18" y="2" width="71" height="16"/>
-                                                        <animations/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Main Folder" usesSingleLineMode="YES" id="c2r-0z-Hqw">
-                                                            <font key="font" metaFont="cellTitle"/>
-                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
-                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="DV1-dm-EPF" userLabel="Icon" customClass="NSImageView">
-                                                        <rect key="frame" x="2" y="2" width="16" height="16"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="16" id="GDF-Z6-vbw"/>
-                                                            <constraint firstAttribute="width" constant="16" id="oeD-m4-wlw"/>
-                                                        </constraints>
-                                                        <animations/>
-                                                    </customView>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O">
-                                                        <rect key="frame" x="171" y="4" width="26" height="13"/>
-                                                        <animations/>
-                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="O1d-Gi-pe2">
-                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="systemBold" size="10"/>
-                                                        </buttonCell>
-                                                    </button>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="TkI-fd-8gU" firstAttribute="top" secondItem="iXx-Gf-r8K" secondAttribute="top" constant="2" id="0mr-3N-umT"/>
-                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TkI-fd-8gU" secondAttribute="trailing" id="97D-k7-U8m"/>
-                                                    <constraint firstItem="TkI-fd-8gU" firstAttribute="leading" secondItem="DV1-dm-EPF" secondAttribute="trailing" constant="2" id="DB7-MZ-kze"/>
-                                                    <constraint firstAttribute="centerY" secondItem="DV1-dm-EPF" secondAttribute="centerY" id="UGp-XX-aZe"/>
-                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="centerY" secondItem="iXx-Gf-r8K" secondAttribute="centerY" id="UpE-bc-mp0"/>
-                                                    <constraint firstItem="DV1-dm-EPF" firstAttribute="leading" secondItem="iXx-Gf-r8K" secondAttribute="leading" constant="2" id="Z1w-28-LM9"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" id="cHW-J3-D4E"/>
-                                                </constraints>
-                                                <animations/>
-                                                <connections>
-                                                    <outlet property="imageView" destination="DV1-dm-EPF" id="bAT-xm-qOk"/>
-                                                    <outlet property="textField" destination="TkI-fd-8gU" id="obq-uG-fWs"/>
+                                                    <outlet property="unreadCount" destination="uKW-ta-vpc" id="cEB-9Q-Ygm"/>
                                                 </connections>
                                             </tableCellView>
                                         </prototypeCellViews>

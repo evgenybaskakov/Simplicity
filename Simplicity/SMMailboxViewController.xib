@@ -93,9 +93,9 @@
                                                         </connections>
                                                     </textField>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uKW-ta-vpc">
-                                                        <rect key="frame" x="168" y="0.0" width="26" height="16"/>
+                                                        <rect key="frame" x="171" y="2" width="26" height="13"/>
                                                         <animations/>
-                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="gdd-Eo-rXc">
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="gdd-Eo-rXc">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemBold" size="10"/>
                                                         </buttonCell>
@@ -103,10 +103,10 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="9fg-dU-pW6" firstAttribute="top" secondItem="ad8-Va-2mb" secondAttribute="top" id="8Mz-JG-P43"/>
-                                                    <constraint firstItem="uKW-ta-vpc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9fg-dU-pW6" secondAttribute="trailing" constant="2" id="JrU-eE-7Kl"/>
+                                                    <constraint firstItem="uKW-ta-vpc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9fg-dU-pW6" secondAttribute="trailing" id="JrU-eE-7Kl"/>
                                                     <constraint firstItem="9fg-dU-pW6" firstAttribute="leading" secondItem="bpM-hd-kan" secondAttribute="trailing" id="OdJ-F7-vhP"/>
                                                     <constraint firstItem="bpM-hd-kan" firstAttribute="leading" secondItem="ad8-Va-2mb" secondAttribute="leading" constant="1" id="UFY-jP-a5V"/>
-                                                    <constraint firstAttribute="trailing" secondItem="uKW-ta-vpc" secondAttribute="trailing" constant="3" id="a9u-kH-IJx"/>
+                                                    <constraint firstAttribute="trailing" secondItem="uKW-ta-vpc" secondAttribute="trailing" id="a9u-kH-IJx"/>
                                                     <constraint firstItem="uKW-ta-vpc" firstAttribute="centerY" secondItem="ad8-Va-2mb" secondAttribute="centerY" id="kip-Ge-POu"/>
                                                     <constraint firstAttribute="centerY" secondItem="bpM-hd-kan" secondAttribute="centerY" constant="1.5" id="r9i-JJ-7Hi"/>
                                                 </constraints>
@@ -138,9 +138,9 @@
                                                         <animations/>
                                                     </customView>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O">
-                                                        <rect key="frame" x="168" y="2" width="26" height="16"/>
+                                                        <rect key="frame" x="171" y="4" width="26" height="13"/>
                                                         <animations/>
-                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="O1d-Gi-pe2">
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="O1d-Gi-pe2">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemBold" size="10"/>
                                                         </buttonCell>
@@ -148,12 +148,12 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="TkI-fd-8gU" firstAttribute="top" secondItem="iXx-Gf-r8K" secondAttribute="top" constant="2" id="0mr-3N-umT"/>
-                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TkI-fd-8gU" secondAttribute="trailing" constant="2" id="97D-k7-U8m"/>
+                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TkI-fd-8gU" secondAttribute="trailing" id="97D-k7-U8m"/>
                                                     <constraint firstItem="TkI-fd-8gU" firstAttribute="leading" secondItem="DV1-dm-EPF" secondAttribute="trailing" constant="2" id="DB7-MZ-kze"/>
                                                     <constraint firstAttribute="centerY" secondItem="DV1-dm-EPF" secondAttribute="centerY" id="UGp-XX-aZe"/>
                                                     <constraint firstItem="Brj-Ke-Y0O" firstAttribute="centerY" secondItem="iXx-Gf-r8K" secondAttribute="centerY" id="UpE-bc-mp0"/>
                                                     <constraint firstItem="DV1-dm-EPF" firstAttribute="leading" secondItem="iXx-Gf-r8K" secondAttribute="leading" constant="2" id="Z1w-28-LM9"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" constant="3" id="cHW-J3-D4E"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" id="cHW-J3-D4E"/>
                                                 </constraints>
                                                 <animations/>
                                                 <connections>

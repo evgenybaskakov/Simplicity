@@ -111,6 +111,15 @@
                                                 <rect key="frame" x="1" y="38" width="197" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
+                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkI-fd-8gU">
+                                                        <rect key="frame" x="18" y="2" width="71" height="16"/>
+                                                        <animations/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Main Folder" usesSingleLineMode="YES" id="c2r-0z-Hqw">
+                                                            <font key="font" metaFont="cellTitle"/>
+                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="DV1-dm-EPF" userLabel="Icon" customClass="NSImageView">
                                                         <rect key="frame" x="2" y="2" width="16" height="16"/>
                                                         <constraints>
@@ -119,23 +128,23 @@
                                                         </constraints>
                                                         <animations/>
                                                     </customView>
-                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkI-fd-8gU">
-                                                        <rect key="frame" x="18" y="2" width="176" height="16"/>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O">
+                                                        <rect key="frame" x="168" y="2" width="26" height="16"/>
                                                         <animations/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Main Folder" usesSingleLineMode="YES" id="c2r-0z-Hqw">
-                                                            <font key="font" metaFont="cellTitle"/>
-                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
+                                                        <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="O1d-Gi-pe2">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="systemBold" size="10"/>
+                                                        </buttonCell>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="TkI-fd-8gU" firstAttribute="top" secondItem="iXx-Gf-r8K" secondAttribute="top" constant="2" id="0mr-3N-umT"/>
+                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="TkI-fd-8gU" secondAttribute="trailing" constant="2" id="97D-k7-U8m"/>
                                                     <constraint firstItem="TkI-fd-8gU" firstAttribute="leading" secondItem="DV1-dm-EPF" secondAttribute="trailing" constant="2" id="DB7-MZ-kze"/>
-                                                    <constraint firstAttribute="bottom" secondItem="TkI-fd-8gU" secondAttribute="bottom" constant="2" id="T2Y-jb-G17"/>
                                                     <constraint firstAttribute="centerY" secondItem="DV1-dm-EPF" secondAttribute="centerY" id="UGp-XX-aZe"/>
+                                                    <constraint firstItem="Brj-Ke-Y0O" firstAttribute="centerY" secondItem="iXx-Gf-r8K" secondAttribute="centerY" id="UpE-bc-mp0"/>
                                                     <constraint firstItem="DV1-dm-EPF" firstAttribute="leading" secondItem="iXx-Gf-r8K" secondAttribute="leading" constant="2" id="Z1w-28-LM9"/>
-                                                    <constraint firstAttribute="trailing" secondItem="TkI-fd-8gU" secondAttribute="trailing" constant="5" id="buJ-6x-62N"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" constant="3" id="cHW-J3-D4E"/>
                                                 </constraints>
                                                 <animations/>
                                                 <connections>

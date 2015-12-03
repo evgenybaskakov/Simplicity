@@ -21,7 +21,6 @@
     SMAddress *_addressWithMenu;
     NSArray *_nonEditedAddresses;
     NSString *_addressWithMenuUniqueId;
-    NSUInteger _addressCountWhenEditStarted;
 }
 
 - (void)viewDidLoad {
@@ -176,15 +175,7 @@
         else {
             address = [[SMAddress alloc] initWithStringRepresentation:token];
         }
-
-        if(_addressCountWhenEditStarted > 0) {
-            _addressCountWhenEditStarted--;
-            SM_LOG_INFO(@"_addressCountWhenEditStarted->%lu",_addressCountWhenEditStarted);
-        }
-        else {
-            _nonEditedAddresses = nil;
-        }
-            
+        
         [resultingObjects addObject:address];
     }
     
@@ -245,16 +236,38 @@
 
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
     
+    // First, remember which addresses we are not going to change.
+    // This will be used later when proper token style is chosen.
     NSArray *objects = [NSArray arrayWithArray:_tokenField.objectValue];
     NSMutableArray *nonEditedAddresses = [NSMutableArray arrayWithArray:objects];
     [nonEditedAddresses removeObject:_addressWithMenu];
     
     _nonEditedAddresses = nonEditedAddresses;
-    _addressCountWhenEditStarted = objects.lastObject == _addressWithMenu? objects.count : 0;
-    SM_LOG_INFO(@"_addressCountWhenEditStarted->%lu",_addressCountWhenEditStarted);
-    
+
+    // Next, trigger the token field content update.
+    // There's no explicit "reloadData" method, so the only way to force it to redraw the
+    // edited address as plain text is to reset the token field object value.
     [_tokenField setStringValue:@""];
     [_tokenField setObjectValue:objects];
+
+    // Additional step: set the cursor position at the beginning of the
+    // edited address token.
+    NSUInteger addressIndex = [objects indexOfObject:_addressWithMenu];
+    [[_tokenField.cell fieldEditorForView:_tokenField] setSelectedRange:NSMakeRange(addressIndex, 0)];
+    
+    // There is no straight way to tell the token field: "draw this token as plain text only
+    // when it's being edited". Also, we can't mark the address object itself as such, because
+    // they're going to be re-added a random number of times before any user action is taken.
+    // In other words, there's no way to tell whether 'shouldAddObjects' is called because
+    // of a user action or because of some internal token field business logic. So, here's the
+    // solution: shedule a delayed edited address invalidation. After the event is fired,
+    // any user action will trigger the edited address redrawing as 'blue pill', thus
+    // finishing the editing mode.
+    [self performSelector:@selector(disableAddressEditing) withObject:nil afterDelay:0.8];
+}
+
+- (void)disableAddressEditing {
+    _nonEditedAddresses = nil;
 }
 
 - (void)removeAddressAction:(NSMenuItem*)menuItem {

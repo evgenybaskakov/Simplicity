@@ -13,6 +13,7 @@
 #import "SMAppController.h"
 #import "SMSimplicityContainer.h"
 #import "SMLocalFolderRegistry.h"
+#import "SMLocalFolder.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMFolderDesc.h"
@@ -203,6 +204,19 @@
 			[[[appDelegate model] mailboxController] scheduleFolderListUpdate:YES];
 		}
 	}];
+}
+
+- (NSUInteger)unseenMessagesCount:(NSString*)folderName {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+    SMLocalFolder *localFolder = [localFolderRegistry getLocalFolder:folderName];
+    
+    if(localFolder != nil) {
+        return localFolder.unseenMessagesCount;
+    }
+    else {
+        return 0;
+    }
 }
 
 @end

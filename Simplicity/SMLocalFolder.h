@@ -14,9 +14,10 @@
 
 @property (readonly) NSString *localName;
 @property (readonly) NSString *remoteFolderName;
-@property (readonly) uint64_t totalMessagesCount;
-@property (readonly) uint64_t messageHeadersFetched;
-@property (readonly) uint64_t maxMessagesPerThisFolder;
+@property (readonly) NSUInteger unseenMessagesCount;
+@property (readonly) NSUInteger totalMessagesCount;
+@property (readonly) NSUInteger messageHeadersFetched;
+@property (readonly) NSUInteger maxMessagesPerThisFolder;
 @property (readonly) Boolean syncedWithRemoteFolder;
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;

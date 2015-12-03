@@ -69,6 +69,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 		_localName = localFolderName;
 		_remoteFolderName = remoteFolderName;
 		_maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
+        _unseenMessagesCount = 0;
 		_totalMessagesCount = 0;
 		_messageHeadersFetched = 0;
 		_fetchedMessageHeaders = [NSMutableDictionary new];
@@ -429,7 +430,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	[self cancelScheduledUpdateTimeout];
 
 	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase];
+	SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
 	Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
 	
 	[self finishMessageHeadersFetching];
@@ -457,9 +458,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	BOOL finishFetch = YES;
 	
 	if(_totalMessagesCount == _messageHeadersFetched) {
-		SM_LOG_DEBUG(@"all %llu message headers fetched, stopping", _totalMessagesCount);
+		SM_LOG_DEBUG(@"all %lu message headers fetched, stopping", _totalMessagesCount);
 	} else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
-		SM_LOG_DEBUG(@"fetched %llu message headers, stopping", _messageHeadersFetched);
+		SM_LOG_DEBUG(@"fetched %lu message headers, stopping", _messageHeadersFetched);
 	} else {
 		finishFetch = NO;
 	}
@@ -478,7 +479,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	}
 	
     if(_loadingFromDB) {
-        const uint64_t numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
+        const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
         [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch block:^(NSArray *messages) {
             SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
@@ -489,9 +490,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         }];
     }
     else {
-        const uint64_t restOfMessages = _totalMessagesCount - _messageHeadersFetched;
-        const uint64_t numberOfMessagesToFetch = MIN(restOfMessages, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
-        const uint64_t fetchMessagesFromIndex = restOfMessages - numberOfMessagesToFetch + 1;
+        const NSUInteger restOfMessages = _totalMessagesCount - _messageHeadersFetched;
+        const NSUInteger numberOfMessagesToFetch = MIN(restOfMessages, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
+        const NSUInteger fetchMessagesFromIndex = restOfMessages - numberOfMessagesToFetch + 1;
         
         MCOIndexSet *regionToFetch = [MCOIndexSet indexSetWithRange:MCORangeMake(fetchMessagesFromIndex, numberOfMessagesToFetch - 1)];
         MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -552,15 +553,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	BOOL finishFetch = YES;
 	
 	if(_totalMessagesCount == _messageHeadersFetched) {
-		SM_LOG_DEBUG(@"all %llu message headers fetched, stopping", _totalMessagesCount);
+		SM_LOG_DEBUG(@"all %lu message headers fetched, stopping", _totalMessagesCount);
 	} else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
-		SM_LOG_DEBUG(@"fetched %llu message headers, stopping", _messageHeadersFetched);
+		SM_LOG_DEBUG(@"fetched %lu message headers, stopping", _messageHeadersFetched);
 	} else if(_selectedMessageUIDsToLoad.count > 0) {
 		finishFetch = NO;
 	}
 	
 	if(finishFetch) {
-		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO];
+		[[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount];
 		
 		[self finishMessageHeadersFetching];
 		
@@ -574,8 +575,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 	
 	for(unsigned int i = [_selectedMessageUIDsToLoad rangesCount]; i > 0; i--) {
 		const MCORange currentRange = ranges[i-1];
-		const uint64_t len = MCORangeRightBound(currentRange) - MCORangeLeftBound(currentRange) + 1;
-		const uint64_t maxCountToLoad = MESSAGE_HEADERS_TO_FETCH_AT_ONCE - messageUIDsToLoadNow.count;
+		const NSUInteger len = MCORangeRightBound(currentRange) - MCORangeLeftBound(currentRange) + 1;
+		const NSUInteger maxCountToLoad = MESSAGE_HEADERS_TO_FETCH_AT_ONCE - messageUIDsToLoadNow.count;
 		
 		if(len < maxCountToLoad) {
 			[messageUIDsToLoadNow addRange:currentRange];

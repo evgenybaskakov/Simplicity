@@ -17,6 +17,7 @@
 
 @property (readonly) uint64_t threadId;
 @property (readonly) NSInteger messagesCount;
+@property (readonly) NSInteger unseenMessagesCount;
 @property (readonly) Boolean unseen;
 @property (readonly) Boolean flagged;
 @property (readonly) Boolean hasAttachments;

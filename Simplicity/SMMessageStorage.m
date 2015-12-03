@@ -261,7 +261,7 @@
 	return updateResult;
 }
 
-- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase {
+- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
 	
 	SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
@@ -272,6 +272,8 @@
     NSMutableArray *vanishedMessages = [NSMutableArray array];
 	NSMutableArray *vanishedThreads = [NSMutableArray array];
 
+    *unseenMessagesCount = 0;
+    
 	for(NSNumber *threadId in collection.messageThreads) {
 		SMMessageThread *messageThread = [collection.messageThreads objectForKey:threadId];
 		NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
@@ -289,6 +291,9 @@
 		
         if(messageThread.messagesCount == 0) {
 			[vanishedThreads addObject:messageThread];
+        }
+        else {
+            *unseenMessagesCount += messageThread.unseenMessagesCount;
         }
 
         if(updateResult == SMThreadUpdateResultStructureChanged) {

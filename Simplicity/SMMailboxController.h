@@ -19,5 +19,6 @@
 - (void)stopFolderListUpdate;
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName;
 - (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName;
+- (NSUInteger)unseenMessagesCount:(NSString*)folderName;
 
 @end

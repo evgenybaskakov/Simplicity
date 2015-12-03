@@ -256,7 +256,7 @@ typedef enum {
 	NSInteger totalRowCount = [self totalFolderRowsCount];
 	NSAssert(row >= 0 && row < totalRowCount, @"row %ld is beyond folders array size %lu", row, totalRowCount);
 
-	const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
+    const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
 	const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
 	const NSInteger allFoldersGroupOffset = [self allFoldersGroupOffset];
 
@@ -273,8 +273,9 @@ typedef enum {
 			
 			[result.textField setStringValue:folder.displayName];
 			[result.imageView setImage:[self mainFolderImage:folder]];
-            [(SMMailboxMainFolderView*)result unreadCount].title = @"0"; // TODO!!
-			
+
+            [self displayUnseenCount:[(SMMailboxMainFolderView*)result unreadCount] folderName:folder.fullName];
+            
 			break;
 		}
 			
@@ -287,7 +288,8 @@ typedef enum {
 			NSAssert(folder != nil, @"bad selected folder");
 			
 			[result.textField setStringValue:folder.displayName];
-            [(SMMailboxLabelView*)result unreadCount].title = @"0"; // TODO!!
+
+            [self displayUnseenCount:[(SMMailboxLabelView*)result unreadCount] folderName:folder.fullName];
 			
 			NSAssert([result.imageView isKindOfClass:[SMColorCircle class]], @"bad type of folder cell image");;
 			
@@ -348,6 +350,19 @@ typedef enum {
 	NSAssert(result != nil, @"cannot make folder cell view");
 	
 	return result;
+}
+
+- (void)displayUnseenCount:(NSButton*)button folderName:(NSString*)folderName {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    NSUInteger unseenCount = [[[appDelegate model] mailboxController] unseenMessagesCount:folderName];
+    if(unseenCount != 0) {
+        button.title = [NSString stringWithFormat:@"%lu", unseenCount];
+        button.hidden = NO;
+    }
+    else {
+        button.title = @"0";
+        button.hidden = YES;
+    }
 }
 
 #pragma mark Messages drag and drop support

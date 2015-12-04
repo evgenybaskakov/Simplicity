@@ -172,6 +172,16 @@
 	}
 }
 
+- (void)webView:(WebView *)webView decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener {
+    [listener ignore];
+    [[NSWorkspace sharedWorkspace] openURL:[request URL]];
+}
+
+- (void)webView:(WebView *)webView decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener {
+    SM_LOG_INFO(@"");
+}
+
+
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
 	if(_htmlText == nil)
 		return;

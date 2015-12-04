@@ -12,6 +12,11 @@
 
 #import "SMMailServiceProvider.h"
 
+typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
+    SMDefaultReplyAction_ReplyAll,
+    SMDefaultReplyAction_Reply,
+};
+
 @interface SMPreferencesController : NSObject
 
 @property (nonatomic) BOOL shouldShowContactImages;
@@ -19,6 +24,7 @@
 @property (nonatomic) NSUInteger messageCheckPeriodSec;
 @property (nonatomic) NSString *downloadsFolder;
 @property (nonatomic) NSUInteger localStorageSizeMb;
+@property (nonatomic) SMDefaultReplyAction defaultReplyAction;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

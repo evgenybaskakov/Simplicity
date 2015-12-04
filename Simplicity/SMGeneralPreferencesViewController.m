@@ -22,12 +22,14 @@
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
 @property (weak) IBOutlet NSPathControl *downloadsFolderPopup;
+@property (weak) IBOutlet NSPopUpButton *defaultReplyActionList;
 
 @end
 
 @implementation SMGeneralPreferencesViewController {
     NSArray *_messageListPreviewLinesNames, *_messageListPreviewLinesValues;
     NSArray *_messageCheckPeriodNames, *_messageCheckPeriodValues;
+    NSArray *_defaultReplyActionNames;
 }
 
 - (void)viewDidLoad {
@@ -51,6 +53,11 @@
     for(NSString *name in _messageCheckPeriodNames) {
         [_messageCheckPeriodList addItemWithTitle:name];
     }
+    
+    _defaultReplyActionNames = @[@"Reply All", @"Reply"];
+    
+    [_defaultReplyActionList removeAllItems];
+    [_defaultReplyActionList addItemsWithTitles:_defaultReplyActionNames];
 
     // Load current properties
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -86,6 +93,19 @@
     _downloadsFolderPopup.URL = [NSURL fileURLWithPath:[[appDelegate preferencesController] downloadsFolder]];
 
     [[_downloadsFolderPopup cell] setAllowedTypes:[NSArray arrayWithObject:@"public.folder"]];
+    
+    //
+    
+    switch([[appDelegate preferencesController] defaultReplyAction]) {
+        case SMDefaultReplyAction_Reply:
+            [_defaultReplyActionList selectItemAtIndex:1];
+            break;
+            
+        case SMDefaultReplyAction_ReplyAll:
+        default:
+            [_defaultReplyActionList selectItemAtIndex:0];
+            break;
+    }
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
@@ -118,6 +138,21 @@
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [[appDelegate preferencesController] setDownloadsFolder:[_downloadsFolderPopup.URL path]];
     }
+}
+
+- (IBAction)defaultReplyAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    switch([_defaultReplyActionList indexOfSelectedItem]) {
+        case 0:
+            [[appDelegate preferencesController] setDefaultReplyAction:SMDefaultReplyAction_ReplyAll];
+            break;
+            
+        case 1:
+            [[appDelegate preferencesController] setDefaultReplyAction:SMDefaultReplyAction_Reply];
+            break;
+    }
+    
+    // TODO: configure the 'reply button'
 }
 
 @end

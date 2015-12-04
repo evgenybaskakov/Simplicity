@@ -41,6 +41,7 @@
 #define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
 #define kDownloadsFolder                @"DownloadsFolder"
 #define kLocalStorageSizeMb             @"LocalStorageSizeMb"
+#define kDefaultReplyAction             @"DefaultReplyAction"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowContactImagesCached;
@@ -745,6 +746,32 @@
     [[NSUserDefaults standardUserDefaults] setInteger:sizeMb forKey:kLocalStorageSizeMb];
     
     _localStorageSizeMbCached = sizeMb;
+}
+
+#pragma mark Default reply action
+
+- (SMDefaultReplyAction)defaultReplyAction {
+    SMDefaultReplyAction result = SMDefaultReplyAction_ReplyAll;
+    
+    if([[NSUserDefaults standardUserDefaults] objectForKey:kDefaultReplyAction] == nil) {
+        SM_LOG_INFO(@"Value for %@ not found, using defaults", kDefaultReplyAction);
+    }
+    else {
+        NSUInteger value = [[NSUserDefaults standardUserDefaults] integerForKey:kDefaultReplyAction];
+
+        if(value != SMDefaultReplyAction_ReplyAll && value != SMDefaultReplyAction_Reply) {
+            SM_LOG_INFO(@"Value %lu for %@ is invalid, using defaults", value, kDefaultReplyAction);
+        }
+        else {
+            result = value;
+        }
+    }
+    
+    return result;
+}
+
+- (void)setDefaultReplyAction:(SMDefaultReplyAction)value {
+    [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kDefaultReplyAction];
 }
 
 @end

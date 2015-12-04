@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMGeneralPreferencesViewController">
             <connections>
+                <outlet property="defaultReplyActionList" destination="aLX-C6-Ql6" id="F6n-13-Uha"/>
                 <outlet property="downloadsFolderPopup" destination="Hq7-uA-hHG" id="Q2r-tc-qEk"/>
                 <outlet property="messageBodyLinesPreviewList" destination="Po6-Eh-BT8" id="FAE-7R-2J8"/>
                 <outlet property="messageCheckPeriodList" destination="7Dw-A5-Heu" id="o4F-Ej-Td3"/>
@@ -21,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vb1-DB-paf">
-                    <rect key="frame" x="283" y="66" width="184" height="28"/>
+                    <rect key="frame" x="283" y="64" width="184" height="28"/>
                     <animations/>
                     <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Syk-y8-cvR">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -94,7 +95,7 @@
                     </connections>
                 </button>
                 <pathControl verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hq7-uA-hHG" userLabel="Download folder Path Control">
-                    <rect key="frame" x="285" y="70" width="174" height="22"/>
+                    <rect key="frame" x="285" y="68" width="174" height="22"/>
                     <animations/>
                     <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" pathStyle="popUp" id="Npc-5e-MJ5">
                         <font key="font" metaFont="smallSystem"/>
@@ -107,7 +108,7 @@
                     </connections>
                 </pathControl>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkN-oH-ctl">
-                    <rect key="frame" x="108" y="74" width="174" height="14"/>
+                    <rect key="frame" x="108" y="72" width="174" height="14"/>
                     <animations/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Downloads folder:" id="J96-p9-LaT">
                         <font key="font" metaFont="smallSystem"/>
@@ -115,6 +116,33 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lxq-60-uoq">
+                    <rect key="frame" x="108" y="48" width="174" height="14"/>
+                    <animations/>
+                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Default reply action:" id="Spk-Q8-mRf">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aLX-C6-Ql6">
+                    <rect key="frame" x="285" y="43" width="180" height="22"/>
+                    <animations/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AlW-0R-fjU" id="gjJ-aB-H02">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="UNP-gY-wyg">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="AlW-0R-fjU"/>
+                                <menuItem title="Item 2" id="yJu-9j-VcX"/>
+                                <menuItem title="Item 3" id="dVK-v8-JUj"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="defaultReplyAction:" target="-2" id="6rb-3x-Ja3"/>
+                    </connections>
+                </popUpButton>
             </subviews>
             <animations/>
             <point key="canvasLocation" x="396.5" y="268"/>

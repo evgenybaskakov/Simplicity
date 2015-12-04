@@ -17,6 +17,7 @@
 #import "SMAddressBookController.h"
 #import "SMRoundedImageView.h"
 #import "SMMessage.h"
+#import "SMPreferencesController.h"
 
 static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
@@ -428,10 +429,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         _replyButton.translatesAutoresizingMaskIntoConstraints = NO;
         _replyButton.bezelStyle = NSShadowlessSquareBezelStyle;
         _replyButton.target = self;
-        _replyButton.image = appDelegate.imageRegistry.replyImage; // TODO: optionally show replyAll
+        _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
         [_replyButton.cell setImageScaling:NSImageScaleProportionallyDown];
         _replyButton.bordered = NO;
-        _replyButton.action = @selector(composeReply:);
+        _replyButton.action = @selector(composeReplyOrReplyAll:);
 
         _messageActionsButton = [[NSButton alloc] init];
         _messageActionsButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -511,6 +512,17 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
     // notify external observers that they should adjust their contents
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageThreadCellHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+}
+
+- (void)composeReplyOrReplyAll:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    if([[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll) {
+        [self composeReplyAll:sender];
+    }
+    else {
+        [self composeReply:sender];
+    }
 }
 
 - (void)composeReply:(id)sender {

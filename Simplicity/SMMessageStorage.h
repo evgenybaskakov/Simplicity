@@ -24,9 +24,9 @@
 - (NSUInteger)messageThreadsCountInLocalFolder:(NSString*)localFolder;
 
 typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
-	SMMesssageStorageUpdateResultNone,
-	SMMesssageStorageUpdateResultFlagsChanged,
-	SMMesssageStorageUpdateResultStructureChanged
+    SMMesssageStorageUpdateResultNone,
+    SMMesssageStorageUpdateResultFlagsChanged,
+    SMMesssageStorageUpdateResultStructureChanged
 };
 
 - (void)startUpdate:(NSString*)folder;

@@ -17,7 +17,7 @@
 #import "SMAddressFieldViewController.h"
 
 @implementation SMAddressFieldViewController {
-	Boolean _tokenFieldFrameValid;
+    Boolean _tokenFieldFrameValid;
     SMAddress *_addressWithMenu;
     NSArray *_nonEditedAddresses;
     NSString *_addressWithMenuUniqueId;
@@ -26,37 +26,37 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-	NSView *view = [self view];
+    NSView *view = [self view];
 
-	NSAssert([view isKindOfClass:[NSBox class]], @"view not NSBox");
-	NSAssert([view isKindOfClass:[SMLabeledTokenFieldBoxView class]], @"view not SMLabeledTokenFieldBoxView");
-	
-	[(SMLabeledTokenFieldBoxView*)view setViewController:self];
+    NSAssert([view isKindOfClass:[NSBox class]], @"view not NSBox");
+    NSAssert([view isKindOfClass:[SMLabeledTokenFieldBoxView class]], @"view not SMLabeledTokenFieldBoxView");
+    
+    [(SMLabeledTokenFieldBoxView*)view setViewController:self];
 
-	[(NSBox*)view setBoxType:NSBoxCustom];
-	[(NSBox*)view setTitlePosition:NSNoTitle];
-	[(NSBox*)view setFillColor:[NSColor whiteColor]];
+    [(NSBox*)view setBoxType:NSBoxCustom];
+    [(NSBox*)view setTitlePosition:NSNoTitle];
+    [(NSBox*)view setFillColor:[NSColor whiteColor]];
     [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
 - (void)viewDidAppear {
-	if(!_tokenFieldFrameValid) {
-		// this is critical because the frame height for each SMTokenField must be
-		// recalculated after its width is known, which happens when it is drawn
-		// for the first time
+    if(!_tokenFieldFrameValid) {
+        // this is critical because the frame height for each SMTokenField must be
+        // recalculated after its width is known, which happens when it is drawn
+        // for the first time
 
-		[_tokenField invalidateIntrinsicContentSize];
+        [_tokenField invalidateIntrinsicContentSize];
 
-		_tokenFieldFrameValid = YES;
-	}
+        _tokenFieldFrameValid = YES;
+    }
 }
 
 - (NSSize)intrinsicContentViewSize {
-	return NSMakeSize(-1, _tokenField.intrinsicContentSize.height + _topTokenFieldContraint.constant + _bottomTokenFieldContraint.constant);
+    return NSMakeSize(-1, _tokenField.intrinsicContentSize.height + _topTokenFieldContraint.constant + _bottomTokenFieldContraint.constant);
 }
 
 - (void)invalidateIntrinsicContentViewSize {
-	[[self view] setNeedsUpdateConstraints:YES];
+    [[self view] setNeedsUpdateConstraints:YES];
 }
 
 - (void)controlTextDidBeginEditing:(NSNotification *)obj {
@@ -128,7 +128,7 @@
 }
 
 - (BOOL)tokenField:(NSTokenField *)tokenField hasMenuForRepresentedObject:(id)representedObject {
-	return YES;
+    return YES;
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
@@ -162,7 +162,7 @@
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-	SM_LOG_INFO(@"???");
+    SM_LOG_INFO(@"???");
 
     NSMutableArray *resultingObjects = [NSMutableArray array];
     
@@ -189,7 +189,7 @@
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {
-	return [[SMAddress alloc] initWithStringRepresentation:editingString];
+    return [[SMAddress alloc] initWithStringRepresentation:editingString];
 }
 
 - (NSString *)tokenField:(NSTokenField *)tokenField displayStringForRepresentedObject:(id)representedObject {
@@ -218,8 +218,8 @@
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"LabeledTokenFieldEndedEditing" object:self userInfo:nil];
-	return YES;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LabeledTokenFieldEndedEditing" object:self userInfo:nil];
+    return YES;
 }
 
 - (void)copyAddressAction:(NSMenuItem*)menuItem {

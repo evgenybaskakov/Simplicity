@@ -21,22 +21,22 @@
 }
 
 - (void)awakeFromNib {
-	_messageViewController = [[SMMessageViewController alloc] initWithNibName:@"SMMessageViewController" bundle:nil ];
-	
-	NSAssert(_messageViewController, @"_messageViewController");
-	
-	NSView *messageView = [ _messageViewController view ];
-	
-	NSAssert(messageView, @"messageView");
-	NSAssert(_messageView, @"_messageView");
-	
-	[ _messageView addSubview:messageView ];
-	
-	NSRect bounds = [ _messageView bounds ];
-	[ messageView setFrame:bounds ];
+    _messageViewController = [[SMMessageViewController alloc] initWithNibName:@"SMMessageViewController" bundle:nil ];
+    
+    NSAssert(_messageViewController, @"_messageViewController");
+    
+    NSView *messageView = [ _messageViewController view ];
+    
+    NSAssert(messageView, @"messageView");
+    NSAssert(_messageView, @"_messageView");
+    
+    [ _messageView addSubview:messageView ];
+    
+    NSRect bounds = [ _messageView bounds ];
+    [ messageView setFrame:bounds ];
 
-	_headerButton.target = self;
-	_headerButton.action = @selector(buttonClicked:);
+    _headerButton.target = self;
+    _headerButton.action = @selector(buttonClicked:);
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -44,14 +44,14 @@
     [super drawRect:dirtyRect];
     
     // Drawing code here.
-	[_messageView drawRect:dirtyRect];
+    [_messageView drawRect:dirtyRect];
 }
 
 - (void)buttonClicked:(id)sender {
-	const Boolean messageViewWasHidden = [_messageView isHidden];
-	
-	// TODO: apply shown/hidden properties on first thread creation
-	[_messageView setHidden:!messageViewWasHidden];
+    const Boolean messageViewWasHidden = [_messageView isHidden];
+    
+    // TODO: apply shown/hidden properties on first thread creation
+    [_messageView setHidden:!messageViewWasHidden];
 }
 
 @end

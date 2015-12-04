@@ -11,14 +11,14 @@
 @implementation SMMessageThreadCell
 
 - (id)initWithMessage:(SMMessage*)message viewController:(SMMessageThreadCellViewController*)viewController {
-	self = [super init];
+    self = [super init];
 
-	if(self) {
-		_message = message;
-		_viewController = viewController;
-	}
+    if(self) {
+        _message = message;
+        _viewController = viewController;
+    }
 
-	return self;
+    return self;
 }
 
 @end

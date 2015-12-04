@@ -20,7 +20,7 @@
 @implementation SMOutboxController
 
 - (void)sendMessage:(SMMessageBuilder*)messageBuilder postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
-	SM_LOG_DEBUG(@"Sending message");
+    SM_LOG_DEBUG(@"Sending message");
     
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithMessageBuilder:messageBuilder];
 

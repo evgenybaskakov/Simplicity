@@ -45,131 +45,131 @@
 @end
 
 @implementation SMMessageBodyViewController {
-	unsigned long long _nextIdentifier;
-	NSString *_currentFindString;
-	Boolean _currentFindStringMatchCase;
-	NSString *_htmlText;
-	uint32_t _uid;
-	NSString *_folder;
-	Boolean _uncollapsed;
+    unsigned long long _nextIdentifier;
+    NSString *_currentFindString;
+    Boolean _currentFindStringMatchCase;
+    NSString *_htmlText;
+    uint32_t _uid;
+    NSString *_folder;
+    Boolean _uncollapsed;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	
-	if(self) {
-		WebView *view = [[WebView alloc] init];
-		
-		view.translatesAutoresizingMaskIntoConstraints = NO;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if(self) {
+        WebView *view = [[WebView alloc] init];
+        
+        view.translatesAutoresizingMaskIntoConstraints = NO;
 
-		[view setFrameLoadDelegate:self];
-		[view setPolicyDelegate:self];
-		[view setResourceLoadDelegate:self];
-		[view setMaintainsBackForwardList:NO];
-		[view setCanDrawConcurrently:YES];
-		[view setEditable:NO];
-		
-		[self setView:view];
-		
-		_nextIdentifier = 0;
-	}
-	
-	return self;
+        [view setFrameLoadDelegate:self];
+        [view setPolicyDelegate:self];
+        [view setResourceLoadDelegate:self];
+        [view setMaintainsBackForwardList:NO];
+        [view setCanDrawConcurrently:YES];
+        [view setEditable:NO];
+        
+        [self setView:view];
+        
+        _nextIdentifier = 0;
+    }
+    
+    return self;
 }
 
 - (void)loadHTML {
-	NSAssert(_uncollapsed, @"view is collapsed");
+    NSAssert(_uncollapsed, @"view is collapsed");
 
-	WebView *view = (WebView*)[self view];
-	[[view mainFrame] loadHTMLString:_htmlText baseURL:nil];
+    WebView *view = (WebView*)[self view];
+    [[view mainFrame] loadHTMLString:_htmlText baseURL:nil];
 }
 
 - (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder {
-	WebView *view = (WebView*)[self view];
-	[view stopLoading:self];
-	
-	_htmlText = htmlText;
-	_uid = uid;
-	_folder = folder;
-	
-	if(_uncollapsed) {
-		[self loadHTML];
-	}
+    WebView *view = (WebView*)[self view];
+    [view stopLoading:self];
+    
+    _htmlText = htmlText;
+    _uid = uid;
+    _folder = folder;
+    
+    if(_uncollapsed) {
+        [self loadHTML];
+    }
 }
 
 - (void)uncollapse {
-	if(!_uncollapsed) {
-		_uncollapsed = YES;
-		[self loadHTML];
-	}
+    if(!_uncollapsed) {
+        _uncollapsed = YES;
+        [self loadHTML];
+    }
 }
 
 - (id)webView:(WebView *)sender identifierForInitialRequest:(NSURLRequest *)request fromDataSource:(WebDataSource *)dataSource {
-//	SM_LOG_DEBUG(@"request %@, identifier %llu", request, _nextIdentifier);
-	return [NSNumber numberWithUnsignedLongLong:_nextIdentifier++];
+//  SM_LOG_DEBUG(@"request %@, identifier %llu", request, _nextIdentifier);
+    return [NSNumber numberWithUnsignedLongLong:_nextIdentifier++];
 }
 
 - (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
-	
-//	SM_LOG_DEBUG(@"request %@, identifier %@", request, identifier);
-	
-	NSURL *url = [request URL];
-	NSString *absoluteUrl = [url absoluteString];
-	
-//	SM_LOG_DEBUG(@"url absoluteString: %@", absoluteUrl);
-	
-	////
-//	NSScrollView *scrollView = [[[[_view mainFrame] frameView] documentView] enclosingScrollView];
-//	NSRect scrollViewBounds = [[scrollView contentView] bounds];
-//	NSPoint savedScrollPosition = scrollViewBounds.origin;
-//	NSSize savedScrollSize = scrollViewBounds.size;
-//	SM_LOG_DEBUG(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
-//	SM_LOG_DEBUG(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
-	////
-	
-	if([absoluteUrl hasPrefix:@"cid:"]) {
-		// TODO: handle not completely downloaded attachments
-		// TODO: implement a precise contentId matching (to handle the really existing imap parts)
-		NSString *contentId = [absoluteUrl substringFromIndex:4];
-		
-		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-		NSURL *attachmentLocation = [[[appDelegate model] attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
-		
-		if(!attachmentLocation) {
-			SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);
-			return request;
-		}
-		
-//		SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
-		return [NSURLRequest requestWithURL:attachmentLocation];
-	}
-	
-	return request;
+    
+//  SM_LOG_DEBUG(@"request %@, identifier %@", request, identifier);
+    
+    NSURL *url = [request URL];
+    NSString *absoluteUrl = [url absoluteString];
+    
+//  SM_LOG_DEBUG(@"url absoluteString: %@", absoluteUrl);
+    
+    ////
+//  NSScrollView *scrollView = [[[[_view mainFrame] frameView] documentView] enclosingScrollView];
+//  NSRect scrollViewBounds = [[scrollView contentView] bounds];
+//  NSPoint savedScrollPosition = scrollViewBounds.origin;
+//  NSSize savedScrollSize = scrollViewBounds.size;
+//  SM_LOG_DEBUG(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
+//  SM_LOG_DEBUG(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
+    ////
+    
+    if([absoluteUrl hasPrefix:@"cid:"]) {
+        // TODO: handle not completely downloaded attachments
+        // TODO: implement a precise contentId matching (to handle the really existing imap parts)
+        NSString *contentId = [absoluteUrl substringFromIndex:4];
+        
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        NSURL *attachmentLocation = [[[appDelegate model] attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        
+        if(!attachmentLocation) {
+            SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);
+            return request;
+        }
+        
+//      SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        return [NSURLRequest requestWithURL:attachmentLocation];
+    }
+    
+    return request;
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFinishLoadingFromDataSource:(WebDataSource *)dataSource {
-//	SM_LOG_DEBUG(@"identifier %@", identifier);
+//  SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didReceiveResponse:(NSURLResponse *)response fromDataSource:(WebDataSource *)dataSource {
-//	SM_LOG_DEBUG(@"identifier %@", identifier);
+//  SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didReceiveContentLength:(NSUInteger)length fromDataSource:(WebDataSource *)dataSource {
-//	SM_LOG_DEBUG(@"identifier %@", identifier);
+//  SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFailLoadingWithError:(NSError *)error fromDataSource:(WebDataSource *)dataSource {
-//	SM_LOG_DEBUG(@"identifier %@", identifier);
+//  SM_LOG_DEBUG(@"identifier %@", identifier);
 }
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id <WebPolicyDecisionListener>)listener {
-	if ([actionInformation objectForKey:WebActionElementKey]) {
-		[listener ignore];
-		[[NSWorkspace sharedWorkspace] openURL:[request URL]];
-	} else {
-		[listener use];
-	}
+    if ([actionInformation objectForKey:WebActionElementKey]) {
+        [listener ignore];
+        [[NSWorkspace sharedWorkspace] openURL:[request URL]];
+    } else {
+        [listener use];
+    }
 }
 
 - (void)webView:(WebView *)webView decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener {
@@ -183,19 +183,19 @@
 
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
-	if(_htmlText == nil)
-		return;
+    if(_htmlText == nil)
+        return;
 
-	if(sender != nil && frame == sender.mainFrame) {
-		//NSAssert(!_mainFrameLoaded, @"main frame already loaded");
+    if(sender != nil && frame == sender.mainFrame) {
+        //NSAssert(!_mainFrameLoaded, @"main frame already loaded");
 
         if(_mainFrameLoaded) {
             SM_LOG_WARNING(@"!!!!!!!!!!! main frame already loaded !!!!!!!!!!!");
             return;
         }
 
-		_mainFrameLoaded = YES;
-		
+        _mainFrameLoaded = YES;
+        
         // Don't allow message body scrolling.
         // Instead, the thread cell is responsible for setting its
         // content side to fit the whole message. The message thread
@@ -203,9 +203,9 @@
         // enabled to avoid user annoyance.
         [frame.frameView setAllowsScrolling:NO];
 
-		if(_currentFindString != nil && _uncollapsed) {
-			[self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
-		}
+        if(_currentFindString != nil && _uncollapsed) {
+            [self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
+        }
 
         // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
         _contentHeight = [[[frame frameView] documentView] frame].size.height;
@@ -217,48 +217,48 @@
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase {
-	_currentFindString = str;
-	_currentFindStringMatchCase = matchCase;
-	
-	if(!_mainFrameLoaded)
-		return;
-	
-	NSAssert(str != nil, @"str == nil");
+    _currentFindString = str;
+    _currentFindStringMatchCase = matchCase;
+    
+    if(!_mainFrameLoaded)
+        return;
+    
+    NSAssert(str != nil, @"str == nil");
 
-	[self removeAllHighlightedOccurrencesOfString];
+    [self removeAllHighlightedOccurrencesOfString];
 
-	if(str.length > 0) {
-		NSString *path = [[NSBundle mainBundle] pathForResource:@"SearchWebView" ofType:@"js"];
-		NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-		
-		WebView *view = (WebView*)[self view];
-		[view stringByEvaluatingJavaScriptFromString:jsCode];
-		
-		NSString *startSearch = [NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0];
-		[view stringByEvaluatingJavaScriptFromString:startSearch];
-		
-		NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
-		_stringOccurrencesCount = [occurrencesCount integerValue];
-	}
+    if(str.length > 0) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"SearchWebView" ofType:@"js"];
+        NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+        
+        WebView *view = (WebView*)[self view];
+        [view stringByEvaluatingJavaScriptFromString:jsCode];
+        
+        NSString *startSearch = [NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0];
+        [view stringByEvaluatingJavaScriptFromString:startSearch];
+        
+        NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
+        _stringOccurrencesCount = [occurrencesCount integerValue];
+    }
 }
 
 - (void)markOccurrenceOfFoundString:(NSUInteger)index {
-	WebView *view = (WebView*)[self view];
+    WebView *view = (WebView*)[self view];
 
-	NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
-	[view stringByEvaluatingJavaScriptFromString:doMark];
+    NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
+    [view stringByEvaluatingJavaScriptFromString:doMark];
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-	WebView *view = (WebView*)[self view];
-	[view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveMarkedOccurrenceOfFoundString()"];
+    WebView *view = (WebView*)[self view];
+    [view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveMarkedOccurrenceOfFoundString()"];
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-	WebView *view = (WebView*)[self view];
-	[view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
-	
-	_currentFindString = nil;
+    WebView *view = (WebView*)[self view];
+    [view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
+    
+    _currentFindString = nil;
 }
 
 @end

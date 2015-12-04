@@ -10,19 +10,19 @@
 #import "SMMessageListCellView.h"
 
 @implementation SMMessageListCellView {
-	Boolean _fieldsInitialized;
-	Boolean _attachmentImageHidden;
+    Boolean _fieldsInitialized;
+    Boolean _attachmentImageHidden;
 }
 
 - (void)initFields {
-	if(_fieldsInitialized)
-		return;
-	
-	NSFont *font = [_fromTextField font];
-	
-	font = [[NSFontManager sharedFontManager] convertFont:font toHaveTrait:NSFontBoldTrait];
-	
-	[_fromTextField setFont:font];
+    if(_fieldsInitialized)
+        return;
+    
+    NSFont *font = [_fromTextField font];
+    
+    font = [[NSFontManager sharedFontManager] convertFont:font toHaveTrait:NSFontBoldTrait];
+    
+    [_fromTextField setFont:font];
 
     _contactImage.image = [NSImage imageNamed:NSImageNameUserGuest];
     _contactImage.cornerRadius = 3;
@@ -31,7 +31,7 @@
     _contactImage.nonOriginalBehavior = YES;
     _contactImage.scaleImage = YES;
     
-	_fieldsInitialized = true;
+    _fieldsInitialized = true;
 }
 
 - (void)showContactImage {
@@ -45,8 +45,8 @@
 }
 
 - (void)showAttachmentImage {
-	if(!_attachmentImageHidden)
-		return;
+    if(!_attachmentImageHidden)
+        return;
 
     _subjectRightContraint.constant = 19;
     _attachmentImage.hidden = NO;
@@ -54,8 +54,8 @@
 }
 
 - (void)hideAttachmentImage {
-	if(_attachmentImageHidden)
-		return;
+    if(_attachmentImageHidden)
+        return;
 
     _subjectRightContraint.constant = 1;
     _attachmentImage.hidden = YES;

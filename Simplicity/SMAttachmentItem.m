@@ -17,13 +17,13 @@
 }
 
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment {
-	self = [super init];
-	
-	if(self) {
+    self = [super init];
+    
+    if(self) {
         _mcoAttachment = mcoAttachment;
-	}
+    }
 
-	return self;
+    return self;
 }
 
 - (id)initWithLocalFilePath:(NSString*)localFilePath {
@@ -58,7 +58,7 @@
 }
 
 - (NSString*)fileName {
-	return _mcoAttachment.filename;
+    return _mcoAttachment.filename;
 }
 
 - (NSString*)localFilePath {
@@ -66,33 +66,33 @@
 }
 
 - (NSData*)fileData {
-	return _mcoAttachment.data;
+    return _mcoAttachment.data;
 }
 
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl {
-	return [self writeAttachmentTo:baseUrl withFileName:[self fileName]];
+    return [self writeAttachmentTo:baseUrl withFileName:[self fileName]];
 }
 
 - (Boolean)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName {
-	// TODO: write to the message attachments folder
-	// TODO: write only if not written yet (compare checksum?)
-	// TODO: write asynchronously
+    // TODO: write to the message attachments folder
+    // TODO: write only if not written yet (compare checksum?)
+    // TODO: write asynchronously
     NSString *encodedFileName = [fileName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
 
-	NSURL *fullUrl = [NSURL URLWithString:encodedFileName relativeToURL:baseUrl];
+    NSURL *fullUrl = [NSURL URLWithString:encodedFileName relativeToURL:baseUrl];
     NSAssert(fullUrl != nil, @"could not construct full URL from base URL '%@', filename '%@'", baseUrl, fileName);
     
-	NSData *fileData = [self fileData];
+    NSData *fileData = [self fileData];
     NSAssert(fileData != nil, @"attachment file data is absent");
-	
-	NSError *writeError = nil;
-	if(![fileData writeToURL:fullUrl options:NSDataWritingAtomic error:&writeError]) {
-		SM_LOG_DEBUG(@"Could not write file %@: %@", fullUrl, writeError);
-		return FALSE;
-	}
-	
-	SM_LOG_WARNING(@"File written: %@", fullUrl);
-	return TRUE;
+    
+    NSError *writeError = nil;
+    if(![fileData writeToURL:fullUrl options:NSDataWritingAtomic error:&writeError]) {
+        SM_LOG_DEBUG(@"Could not write file %@: %@", fullUrl, writeError);
+        return FALSE;
+    }
+    
+    SM_LOG_WARNING(@"File written: %@", fullUrl);
+    return TRUE;
 }
 
 @end

@@ -14,17 +14,17 @@
 @implementation SMInstrumentPanelViewController
 
 - (IBAction)hideSearchResults:(id)sender {
-	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-	SMAppController *appController = [appDelegate appController];
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-	[appController toggleSearchResultsView];
+    [appController toggleSearchResultsView];
 }
 
 - (IBAction)addNewLabel:(id)sender {
-	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-	SMAppController *appController = [appDelegate appController];
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-	[appController showNewLabelSheet:nil];
+    [appController showNewLabelSheet:nil];
 }
 
 - (IBAction)showOperationQueue:(id)sender {

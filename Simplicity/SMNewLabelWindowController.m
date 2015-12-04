@@ -26,32 +26,32 @@
 }
 
 - (IBAction)createAction:(id)sender {
-	NSString *folderName = _labelName.stringValue;
-	NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
-	
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
+    NSString *folderName = _labelName.stringValue;
+    NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
 
-	NSString *fullFolderName = [mailboxController createFolder:folderName parentFolder:parentFolderName];
-	if(fullFolderName != nil) {
-		
-		// TODO: sophisticated error handling
-		
-		SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
-		[folderColorController setFolderColor:fullFolderName color:_labelColorWell.color];
-	}
+    NSString *fullFolderName = [mailboxController createFolder:folderName parentFolder:parentFolderName];
+    if(fullFolderName != nil) {
+        
+        // TODO: sophisticated error handling
+        
+        SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
+        [folderColorController setFolderColor:fullFolderName color:_labelColorWell.color];
+    }
 
-	[self closeNewLabelWindow];
+    [self closeNewLabelWindow];
 }
 
 - (IBAction)cancelAction:(id)sender {
-	[self closeNewLabelWindow];
+    [self closeNewLabelWindow];
 }
 
 - (IBAction)toggleNestedLabelAction:(id)sender {
-	const Boolean nestLabel = (_labelNestedCheckbox.state == NSOnState);
+    const Boolean nestLabel = (_labelNestedCheckbox.state == NSOnState);
 
-	[_nestingLabelNameButton setEnabled:nestLabel];
+    [_nestingLabelNameButton setEnabled:nestLabel];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
@@ -59,34 +59,34 @@
 }
 
 - (void)closeNewLabelWindow {
-	[_labelColorWell deactivate];
-	[[NSColorPanel sharedColorPanel] orderOut:nil];
-	
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	[[appDelegate appController] hideNewLabelSheet];
+    [_labelColorWell deactivate];
+    [[NSColorPanel sharedColorPanel] orderOut:nil];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] hideNewLabelSheet];
 }
 
 - (void)updateExistingLabelsList {
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
 
-	NSMutableArray *labelsList = [NSMutableArray array];
-	for(SMFolder *folder in mailbox.folders)
-		[labelsList addObject:folder.fullName];
+    NSMutableArray *labelsList = [NSMutableArray array];
+    for(SMFolder *folder in mailbox.folders)
+        [labelsList addObject:folder.fullName];
 
-	[_nestingLabelNameButton removeAllItems];
-	[_nestingLabelNameButton addItemsWithTitles:labelsList];
+    [_nestingLabelNameButton removeAllItems];
+    [_nestingLabelNameButton addItemsWithTitles:labelsList];
 }
 
 - (void)updateSuggestedNestingLabel {
-	if(_suggestedNestingLabel != nil) {
-		[_nestingLabelNameButton selectItemWithTitle:_suggestedNestingLabel];
-		[_nestingLabelNameButton setEnabled:YES];
-		[_labelNestedCheckbox setState:NSOnState];
-	} else {
-		[_nestingLabelNameButton setEnabled:NO];
-		[_labelNestedCheckbox setState:NSOffState];
-	}
+    if(_suggestedNestingLabel != nil) {
+        [_nestingLabelNameButton selectItemWithTitle:_suggestedNestingLabel];
+        [_nestingLabelNameButton setEnabled:YES];
+        [_labelNestedCheckbox setState:NSOnState];
+    } else {
+        [_nestingLabelNameButton setEnabled:NO];
+        [_labelNestedCheckbox setState:NSOffState];
+    }
 }
 
 @end

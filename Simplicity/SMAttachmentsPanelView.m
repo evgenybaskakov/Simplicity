@@ -17,19 +17,19 @@
 - (void)drawRect:(NSRect)dirtyRect {
     SM_LOG_DEBUG(@"???");
 
-	[super drawRect:dirtyRect];
+    [super drawRect:dirtyRect];
     
     // Drawing code here.
 }
 
 - (BOOL)dragPromisedFilesOfTypes:(NSArray *)typeArray
-						fromRect:(NSRect)aRect
-						  source:(id)sourceObject
-					   slideBack:(BOOL)slideBack
-						   event:(NSEvent *)theEvent
+                        fromRect:(NSRect)aRect
+                          source:(id)sourceObject
+                       slideBack:(BOOL)slideBack
+                           event:(NSEvent *)theEvent
 {
-	SM_LOG_DEBUG(@"???");
-	return YES;
+    SM_LOG_DEBUG(@"???");
+    return YES;
 }
 
 //- (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination {
@@ -37,11 +37,11 @@
 //}
 
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset {
-	SM_LOG_DEBUG(@"???");
+    SM_LOG_DEBUG(@"???");
 
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	NSImage *dragImage = appDelegate.imageRegistry.attachmentDocumentImage;
-	return dragImage; // TODO: scale to a size
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSImage *dragImage = appDelegate.imageRegistry.attachmentDocumentImage;
+    return dragImage; // TODO: scale to a size
 }
 
 // Intrinsic content size

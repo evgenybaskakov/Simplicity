@@ -10,20 +10,20 @@
 #import "SMMessageFullDetailsView.h"
 
 @implementation SMMessageFullDetailsView {
-	SMMessageFullDetailsViewController *__weak _controller;
+    SMMessageFullDetailsViewController *__weak _controller;
 }
 
 - (void)setViewController:(SMMessageFullDetailsViewController*)controller {
-	_controller = controller;
+    _controller = controller;
 }
 
 - (NSSize)intrinsicContentSize {
-	return [_controller intrinsicContentViewSize];
+    return [_controller intrinsicContentViewSize];
 }
 
 - (void)invalidateIntrinsicContentSize {
-	[super invalidateIntrinsicContentSize];
-	[_controller invalidateIntrinsicContentViewSize];
+    [super invalidateIntrinsicContentSize];
+    [_controller invalidateIntrinsicContentViewSize];
 }
 
 @end

@@ -27,13 +27,13 @@ static NSUInteger _buttonH;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	
-	if(self) {
-		_attachmentItems = [[NSMutableArray alloc] init];
-	}
-	
-	return self;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if(self) {
+        _attachmentItems = [[NSMutableArray alloc] init];
+    }
+    
+    return self;
 }
 
 - (void)viewDidLoad {
@@ -171,39 +171,39 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 }
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event {
-	SM_LOG_DEBUG(@"indexes %@", indexes);
+    SM_LOG_DEBUG(@"indexes %@", indexes);
 
-	return YES;
+    return YES;
 }
 
 -(BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard {
-	SM_LOG_DEBUG(@"indexes %@", indexes);
+    SM_LOG_DEBUG(@"indexes %@", indexes);
 
-	[pasteboard declareTypes:[NSArray arrayWithObject:NSFilesPromisePboardType] owner:self];
+    [pasteboard declareTypes:[NSArray arrayWithObject:NSFilesPromisePboardType] owner:self];
 
-	NSMutableArray *fileExtensions = [NSMutableArray array];
-	
-	for(NSUInteger i = [indexes firstIndex]; i != NSNotFound; i = [indexes indexGreaterThanIndex:i]) {
-		SMAttachmentItem *item = _attachmentItems[i];
-		[fileExtensions addObject:[item.fileName pathExtension]];
-	}
+    NSMutableArray *fileExtensions = [NSMutableArray array];
+    
+    for(NSUInteger i = [indexes firstIndex]; i != NSNotFound; i = [indexes indexGreaterThanIndex:i]) {
+        SMAttachmentItem *item = _attachmentItems[i];
+        [fileExtensions addObject:[item.fileName pathExtension]];
+    }
 
-	[pasteboard setPropertyList:fileExtensions forType:NSFilesPromisePboardType];
-	
-	return YES;
+    [pasteboard setPropertyList:fileExtensions forType:NSFilesPromisePboardType];
+    
+    return YES;
 }
 
  - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
-	switch(context) {
-		case NSDraggingContextOutsideApplication:
-			return NSDragOperationCopy;
-			
-		case NSDraggingContextWithinApplication:
-			return NSDragOperationCopy; // TODO: composing message with attachments
-			
-		default:
-			return NSDragOperationCopy;
-	}
+    switch(context) {
+        case NSDraggingContextOutsideApplication:
+            return NSDragOperationCopy;
+            
+        case NSDraggingContextWithinApplication:
+            return NSDragOperationCopy; // TODO: composing message with attachments
+            
+        default:
+            return NSDragOperationCopy;
+    }
 }
 
 - (void)addMCOAttachments:(NSArray*)attachments {
@@ -421,8 +421,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 }
 
 -(NSDragOperation)collectionView:(NSCollectionView *)collectionView validateDrop:(id<NSDraggingInfo>)draggingInfo proposedIndex:(NSInteger *)proposedDropIndex dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation {
-	// do not recognize any drop to itself
-	// TODO: may need to add logic for messages being composed
+    // do not recognize any drop to itself
+    // TODO: may need to add logic for messages being composed
 
     if (!draggingInfo.draggingSource)
     {
@@ -439,19 +439,19 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 }
 
 - (NSArray *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes {
-	SM_LOG_DEBUG(@"indexes %@, drop url %@", indexes, dropURL);
+    SM_LOG_DEBUG(@"indexes %@, drop url %@", indexes, dropURL);
 
-	NSMutableArray *fileNames = [NSMutableArray array];
+    NSMutableArray *fileNames = [NSMutableArray array];
 
-	for(NSUInteger i = [indexes firstIndex]; i != NSNotFound; i = [indexes indexGreaterThanIndex:i]){
-		SMAttachmentItem *item = _attachmentItems[i];
+    for(NSUInteger i = [indexes firstIndex]; i != NSNotFound; i = [indexes indexGreaterThanIndex:i]){
+        SMAttachmentItem *item = _attachmentItems[i];
 
-		// TODO: overwriting?
-		[item writeAttachmentTo:dropURL];
-		[fileNames addObject:item.fileName];
-	}
+        // TODO: overwriting?
+        [item writeAttachmentTo:dropURL];
+        [fileNames addObject:item.fileName];
+    }
 
-	return fileNames;
+    return fileNames;
 }
 
 #pragma mark Dragging destination

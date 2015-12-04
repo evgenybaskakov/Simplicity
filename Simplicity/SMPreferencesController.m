@@ -11,7 +11,6 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
-#import "SMMailLogin.h"
 #import "SMMailServiceProvider.h"
 #import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"

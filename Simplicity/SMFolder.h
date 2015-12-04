@@ -11,16 +11,16 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, SMFolderKind) {
-	SMFolderKindRegular,
-	SMFolderKindInbox,
-	SMFolderKindImportant,
-	SMFolderKindSent,
-	SMFolderKindSpam,
-	SMFolderKindOutbox,
-	SMFolderKindStarred,
-	SMFolderKindDrafts,
-	SMFolderKindTrash,
-	SMFolderKindAllMail,
+    SMFolderKindRegular,
+    SMFolderKindInbox,
+    SMFolderKindImportant,
+    SMFolderKindSent,
+    SMFolderKindSpam,
+    SMFolderKindOutbox,
+    SMFolderKindStarred,
+    SMFolderKindDrafts,
+    SMFolderKindTrash,
+    SMFolderKindAllMail,
 };
 
 @interface SMFolder : NSObject

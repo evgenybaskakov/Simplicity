@@ -348,7 +348,6 @@
 		006A5DD417F5EC50004D6D78 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = ../../../../../../../usr/lib/libsqlite3.dylib; sourceTree = "<group>"; };
 		006C34601A181DEC00337A49 /* SMSearchDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchDescriptor.h; sourceTree = "<group>"; };
 		006C34611A181DEC00337A49 /* SMSearchDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchDescriptor.m; sourceTree = "<group>"; };
-		0077C99219E8E58C00118CA5 /* SMMailLogin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMailLogin.h; sourceTree = "<group>"; };
 		007A735F1A57A95500A4D694 /* SMMessageFullDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageFullDetailsViewController.h; sourceTree = "<group>"; };
 		007A73601A57A95500A4D694 /* SMMessageFullDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageFullDetailsViewController.m; sourceTree = "<group>"; };
 		0082F5F61A0DD39B0050578A /* SMSearchResultsListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchResultsListController.h; sourceTree = "<group>"; };
@@ -581,7 +580,6 @@
 		80E3F2321BE724BE0024AB6B /* SMConnectionCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMConnectionCheck.h; sourceTree = "<group>"; };
 		80E3F2331BE724BE0024AB6B /* SMConnectionCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMConnectionCheck.m; sourceTree = "<group>"; };
 		80E657331B182AF700A0AA81 /* mailcore2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mailcore2.xcodeproj; path = "../mailcore2/build-mac/mailcore2.xcodeproj"; sourceTree = "<group>"; };
-		80E657511B182DE300A0AA81 /* SMMailLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailLogin.h; sourceTree = "<group>"; };
 		80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpDeleteMessages.h; sourceTree = "<group>"; };
 		80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpDeleteMessages.m; sourceTree = "<group>"; };
 		80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpMoveMessages.h; sourceTree = "<group>"; };
@@ -722,8 +720,6 @@
 				80A2EA9C1B844BC8001765EA /* SMLog.m */,
 				009742701957C78E00620145 /* SMMailbox.h */,
 				009742711957C78E00620145 /* SMMailbox.m */,
-				80E657511B182DE300A0AA81 /* SMMailLogin.h */,
-				0077C99219E8E58C00118CA5 /* SMMailLogin.h */,
 				00ED317817F88DA700B04F5B /* SMMessage.h */,
 				00ED317917F88DA700B04F5B /* SMMessage.m */,
 				80AB99141BE0925200336A55 /* SMMessageBuilder.h */,

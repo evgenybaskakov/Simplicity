@@ -32,7 +32,7 @@
 }
 
 - (BOOL)isFlipped {
-	return YES;
+    return YES;
 }
 
 @end

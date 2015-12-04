@@ -16,8 +16,8 @@
 static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 
 @implementation SMAttachmentsPanelViewItem {
-	NSTrackingArea *_trackingArea;
-	Boolean _hasMouseOver;
+    NSTrackingArea *_trackingArea;
+    Boolean _hasMouseOver;
     Boolean _hasPreview;
 }
 
@@ -26,11 +26,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 }
 
 - (NSColor*)selectedColor {
-	return [[NSColor blueColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
+    return [[NSColor blueColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
 }
 
 - (NSColor*)selectedColorWithMouseOver {
-	return [[self unselectedWithMouseOverColor] blendedColorWithFraction:0.2 ofColor:[self selectedColor]];
+    return [[self unselectedWithMouseOverColor] blendedColorWithFraction:0.2 ofColor:[self selectedColor]];
 }
 
 - (NSColor*)unselectedWithMouseOverColor {
@@ -38,19 +38,19 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	
-	if(self) {
-		// nothing yet
-	}
-	
-	return self;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if(self) {
+        // nothing yet
+    }
+    
+    return self;
 }
 
 - (void)viewDidLoad {
-	_trackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited) owner:self userInfo:nil];
-	
-	[_box addTrackingArea:_trackingArea];
+    _trackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited) owner:self userInfo:nil];
+    
+    [_box addTrackingArea:_trackingArea];
     
     self.collectionView.minItemSize = NSMakeSize(self.view.frame.size.width, self.view.frame.size.height);
     self.collectionView.maxItemSize = NSMakeSize(self.view.frame.size.width, self.view.frame.size.height);
@@ -80,7 +80,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 }
 
 - (void)setSelected:(BOOL)selected {
-	[super setSelected:selected];
+    [super setSelected:selected];
  
     if(selected) {
         if(_hasMouseOver) {
@@ -115,7 +115,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
         _fileNameField.textColor = [NSColor whiteColor];
     }
 
-	_hasMouseOver = YES;
+    _hasMouseOver = YES;
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
@@ -133,24 +133,24 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
         _fileNameField.textColor = [NSColor blackColor];
     }
     
-	_hasMouseOver = NO;
+    _hasMouseOver = NO;
 }
 
 -(void)mouseDown:(NSEvent *)theEvent {
-	[super mouseDown:theEvent];
+    [super mouseDown:theEvent];
 
-	if([theEvent clickCount] == 2) {
-		SM_LOG_DEBUG(@"double click");
-		//[NSApp sendAction:@selector(collectionItemViewDoubleClick:) to:nil from:[self object]];
+    if([theEvent clickCount] == 2) {
+        SM_LOG_DEBUG(@"double click");
+        //[NSApp sendAction:@selector(collectionItemViewDoubleClick:) to:nil from:[self object]];
 
         SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
         [panelViewController openAttachment:self.representedObject];
-	}
+    }
 }
 
 - (void)rightMouseDown:(NSEvent *)theEvent {
-	[super rightMouseDown:theEvent];
-	
+    [super rightMouseDown:theEvent];
+    
     NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
     SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
     
@@ -177,7 +177,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent {
-	[super rightMouseUp:theEvent];
+    [super rightMouseUp:theEvent];
 }
 
 #pragma mark Menu actions

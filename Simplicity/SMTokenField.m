@@ -10,7 +10,7 @@
 #import "SMTokenField.h"
 
 @implementation SMTokenField {
-	CGFloat _height;
+    CGFloat _height;
 }
 
 // See these topics for explanation:
@@ -20,52 +20,52 @@
 // http://stackoverflow.com/questions/3212279/nstableview-row-height-based-on-nsstrings
 
 static BOOL floats_equal(CGFloat a, CGFloat b) {
-	return fabs(a - b) < 0.00001;
+    return fabs(a - b) < 0.00001;
 }
 
 -(NSSize)intrinsicContentSize
 {
-	if(![self.cell wraps])
-		return [super intrinsicContentSize];
+    if(![self.cell wraps])
+        return [super intrinsicContentSize];
 
-	NSRect frame = [self frame];
-	
-	frame.size.height = CGFLOAT_MAX;
-	
-	NSSize sizeToFit = [self.cell cellSizeForBounds:frame];
+    NSRect frame = [self frame];
+    
+    frame.size.height = CGFLOAT_MAX;
+    
+    NSSize sizeToFit = [self.cell cellSizeForBounds:frame];
 
-	// TODO: all this looks like a big ugly hack - must be fixed
-	if(!floats_equal(_height, sizeToFit.height)) {
-		_height = sizeToFit.height;
+    // TODO: all this looks like a big ugly hack - must be fixed
+    if(!floats_equal(_height, sizeToFit.height)) {
+        _height = sizeToFit.height;
 
-		// TODO: not sure if this is an appropriate place to do the intrinsic size invalidation
+        // TODO: not sure if this is an appropriate place to do the intrinsic size invalidation
         SM_LOG_DEBUG(@"???");
         
 //        self.frame = NSMakeRect(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, _height);
 
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SMTokenFieldHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"Object", nil]];
 
-		[self invalidateIntrinsicContentSize];
-		[self.superview invalidateIntrinsicContentSize];
-	}
-	
-	return NSMakeSize(-1, sizeToFit.height);
+        [self invalidateIntrinsicContentSize];
+        [self.superview invalidateIntrinsicContentSize];
+    }
+    
+    return NSMakeSize(-1, sizeToFit.height);
 }
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	SM_LOG_DEBUG(@"???");
+    SM_LOG_DEBUG(@"???");
 
-	[super textDidChange:notification];
-	[self invalidateIntrinsicContentSize];
+    [super textDidChange:notification];
+    [self invalidateIntrinsicContentSize];
 }
 
 - (void)viewDidEndLiveResize
 {
-	SM_LOG_DEBUG(@"???");
+    SM_LOG_DEBUG(@"???");
 
-	[super viewDidEndLiveResize];
-	[self invalidateIntrinsicContentSize];
+    [super viewDidEndLiveResize];
+    [self invalidateIntrinsicContentSize];
 }
 
 @end

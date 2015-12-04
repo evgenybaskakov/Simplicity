@@ -20,96 +20,96 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 @implementation SMMessageThreadCellViewController {
     SMBoxView *_view;
-	SMMessage *_message;
-	SMMessageDetailsViewController *_messageDetailsViewController;
-	SMMessageBodyViewController *_messageBodyViewController;
-	SMAttachmentsPanelViewController *_attachmentsPanelViewController;
-	NSView *_messageView;
-	NSButton *_headerButton;
-	NSProgressIndicator *_progressIndicator;
+    SMMessage *_message;
+    SMMessageDetailsViewController *_messageDetailsViewController;
+    SMMessageBodyViewController *_messageBodyViewController;
+    SMAttachmentsPanelViewController *_attachmentsPanelViewController;
+    NSView *_messageView;
+    NSButton *_headerButton;
+    NSProgressIndicator *_progressIndicator;
     NSLayoutConstraint *_mesageBottomConstraint;
     NSLayoutConstraint *_messageBodyHeightConstraint;
-	NSLayoutConstraint *_messageDetailsCollapsedBottomConstraint;
+    NSLayoutConstraint *_messageDetailsCollapsedBottomConstraint;
     NSLayoutConstraint *_attachmentsPanelViewHeightConstraint;
-	NSMutableArray *_attachmentsPanelViewConstraints;
-	CGFloat _messageViewHeight;
-	NSString *_htmlText;
-	Boolean _messageTextIsSet;
-	Boolean _attachmentsPanelShown;
-	Boolean _cellInitialized;
+    NSMutableArray *_attachmentsPanelViewConstraints;
+    CGFloat _messageViewHeight;
+    NSString *_htmlText;
+    Boolean _messageTextIsSet;
+    Boolean _attachmentsPanelShown;
+    Boolean _cellInitialized;
 }
 
 - (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed {
-	self = [super init];
-	
-	if(self) {
+    self = [super init];
+    
+    if(self) {
         _messageThreadViewController = messageThreadViewController;
 
-		// init main view
-		
-		_view = [[SMBoxView alloc] init];
+        // init main view
+        
+        _view = [[SMBoxView alloc] init];
         _view.drawTop = YES;
         _view.boxColor = [NSColor lightGrayColor];
-		_view.translatesAutoresizingMaskIntoConstraints = NO;
+        _view.translatesAutoresizingMaskIntoConstraints = NO;
 
-		// init header button
+        // init header button
 
-		_headerButton = [[NSButton alloc] init];
-		_headerButton.translatesAutoresizingMaskIntoConstraints = NO;
-		_headerButton.bezelStyle = NSShadowlessSquareBezelStyle;
-		_headerButton.target = self;
-		_headerButton.action = @selector(headerButtonClicked:);
+        _headerButton = [[NSButton alloc] init];
+        _headerButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _headerButton.bezelStyle = NSShadowlessSquareBezelStyle;
+        _headerButton.target = self;
+        _headerButton.action = @selector(headerButtonClicked:);
 
-		[_headerButton setTransparent:YES];
-		[_headerButton setEnabled:NO];
+        [_headerButton setTransparent:YES];
+        [_headerButton setEnabled:NO];
 
-		[_view addSubview:_headerButton];
+        [_view addSubview:_headerButton];
 
-		[self addConstraint:_headerButton constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:0 constant:[SMMessageThreadCellViewController collapsedCellHeight]] priority:NSLayoutPriorityRequired];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        [self addConstraint:_headerButton constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:0 constant:[SMMessageThreadCellViewController collapsedCellHeight]] priority:NSLayoutPriorityRequired];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
 
-		// init message details view
-		
-		_messageDetailsViewController = [[SMMessageDetailsViewController alloc] init];
-		
-		NSView *messageDetailsView = [ _messageDetailsViewController view ];
-		NSAssert(messageDetailsView, @"messageDetailsView");
-		
-		[_view addSubview:messageDetailsView];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
-		
-		[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
-	
-		_messageDetailsCollapsedBottomConstraint = [NSLayoutConstraint constraintWithItem:messageDetailsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+        // init message details view
+        
+        _messageDetailsViewController = [[SMMessageDetailsViewController alloc] init];
+        
+        NSView *messageDetailsView = [ _messageDetailsViewController view ];
+        NSAssert(messageDetailsView, @"messageDetailsView");
+        
+        [_view addSubview:messageDetailsView];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
+        
+        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+    
+        _messageDetailsCollapsedBottomConstraint = [NSLayoutConstraint constraintWithItem:messageDetailsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
-		[_messageDetailsViewController setEnclosingThreadCell:self];
-		
-		// commit the main view
-		
-		[self setView:_view];
+        [_messageDetailsViewController setEnclosingThreadCell:self];
+        
+        // commit the main view
+        
+        [self setView:_view];
 
-		// now set the view constraints depending on the desired states
+        // now set the view constraints depending on the desired states
 
-		_collapsed = !collapsed;
+        _collapsed = !collapsed;
 
-		[self toggleCollapse];
-		
-		_cellInitialized = YES;
+        [self toggleCollapse];
+        
+        _cellInitialized = YES;
         
         // Register observed events
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentsPanelViewHeightChanged:) name:@"SMAttachmentsPanelViewHeightChanged" object:nil];
     }
-	
-	return self;
+    
+    return self;
 }
 
 - (void)dealloc {
@@ -143,12 +143,12 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         [_progressIndicator setDisplayedWhenStopped:NO];
         [_progressIndicator startAnimation:self];
     }
-	
-	[_view addSubview:_progressIndicator];
-	
-	[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
-	
-	[self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+    
+    [_view addSubview:_progressIndicator];
+    
+    [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+    
+    [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
 }
 
 - (void)hideProgressIndicator {
@@ -156,23 +156,23 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)enableCollapse:(Boolean)enable {
-	[_headerButton setEnabled:enable];
+    [_headerButton setEnabled:enable];
 }
 
 - (void)addConstraint:(NSView*)view constraint:(NSLayoutConstraint*)constraint priority:(NSLayoutPriority)priority {
-	constraint.priority = priority;
-	[view addConstraint:constraint];
+    constraint.priority = priority;
+    [view addConstraint:constraint];
 }
 
 + (NSUInteger)collapsedCellHeight {
-	return [SMMessageDetailsViewController messageDetaisHeaderHeight];
+    return [SMMessageDetailsViewController messageDetaisHeaderHeight];
 }
 
 - (void)setCollapsed:(Boolean)collapsed {
-	if(collapsed) {
-		if(_collapsed)
-			return;
-		
+    if(collapsed) {
+        if(_collapsed)
+            return;
+        
         if(_attachmentsPanelShown) {
             NSAssert(_attachmentsPanelViewConstraints != nil, @"_attachmentsPanelViewConstraints not created");
 
@@ -184,13 +184,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
             _attachmentsPanelShown = NO;
         }
         
-		[_messageDetailsViewController collapse];
+        [_messageDetailsViewController collapse];
         
         _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
         _view.drawBottom = YES;
         
         [self hideProgressIndicator];
-		
+        
         if(_messageBodyViewController != nil) {
             [_messageBodyViewController.view removeFromSuperview];
         }
@@ -198,18 +198,18 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         NSAssert(_messageDetailsCollapsedBottomConstraint != nil, @"_messageDetailsCollapsedBottomConstraint not created");
         [_view addConstraint:_messageDetailsCollapsedBottomConstraint];
         
-		_collapsed = YES;
-	} else {
-		if(!_collapsed)
-			return;
+        _collapsed = YES;
+    } else {
+        if(!_collapsed)
+            return;
 
         // Setup the message body view controller
         
-		if(_messageBodyViewController == nil) {
-			_messageBodyViewController = [[SMMessageBodyViewController alloc] init];
-			
-			NSView *messageBodyView = [_messageBodyViewController view];
-			NSAssert(messageBodyView, @"messageBodyView");
+        if(_messageBodyViewController == nil) {
+            _messageBodyViewController = [[SMMessageBodyViewController alloc] init];
+            
+            NSView *messageBodyView = [_messageBodyViewController view];
+            NSAssert(messageBodyView, @"messageBodyView");
 
             // Add the view to the superview immediately to have the height calculation take effect.
             [_view addSubview:messageBodyView];
@@ -217,13 +217,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
             // The cell view is added to the superview, so now we can adjust its height.
             [self adjustCellHeightToFitContentResizeable:NO];
             
-			if(_htmlText != nil) {
-				// this means that the message html text was set before,
-				// when there was no body view
-				// so show it now
-				[self setMessageBody];
-			}
-		}
+            if(_htmlText != nil) {
+                // this means that the message html text was set before,
+                // when there was no body view
+                // so show it now
+                [self setMessageBody];
+            }
+        }
 
         // Setup body constraints
 
@@ -250,20 +250,20 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
 
         [_messageDetailsViewController uncollapse];
-		[_messageBodyViewController uncollapse];
-		
-		if(_htmlText == nil) {
+        [_messageBodyViewController uncollapse];
+        
+        if(_htmlText == nil) {
             [self showProgressIndicator];
-		}
-	
+        }
+    
         [self showAttachmentsPanel];
 
-		_collapsed = NO;
-	}
+        _collapsed = NO;
+    }
 
-	if(_cellInitialized) {
-		[_messageThreadViewController setCellCollapsed:_collapsed cellIndex:_cellIndex];
-	}
+    if(_cellInitialized) {
+        [_messageThreadViewController setCellCollapsed:_collapsed cellIndex:_cellIndex];
+    }
 }
 
 - (void)setShouldDrawBottomLineWhenUncollapsed:(Boolean)shouldDrawBottomLineWhenUncollapsed {
@@ -275,7 +275,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (Boolean)isCollapsed {
-	return _collapsed;
+    return _collapsed;
 }
 
 - (void)toggleCollapse {
@@ -287,11 +287,11 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     // procedure will choose the right frame and the autoresizing mask anyway.
     _view.autoresizingMask |= NSViewHeightSizable;
     
-	if(!_collapsed) {
-		[self setCollapsed:YES];
-	} else {
-		[self setCollapsed:NO];
-	}
+    if(!_collapsed) {
+        [self setCollapsed:YES];
+    } else {
+        [self setCollapsed:NO];
+    }
 }
 
 - (NSUInteger)messageBodyHeight {
@@ -341,9 +341,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)headerButtonClicked:(id)sender {
-	[self toggleCollapse];
+    [self toggleCollapse];
 
-	[_messageThreadViewController updateCellFrames];
+    [_messageThreadViewController updateCellFrames];
 }
 
 - (void)showAttachmentsPanel {
@@ -352,55 +352,55 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 
     if(_attachmentsPanelShown) {
-		return;
+        return;
     }
 
-	NSView *view = [self view];
-	NSAssert(view != nil, @"view is nil");
+    NSView *view = [self view];
+    NSAssert(view != nil, @"view is nil");
 
-	if(_attachmentsPanelViewController == nil) {
-		_attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
-		
-		NSView *attachmentsView = _attachmentsPanelViewController.view;
-		NSAssert(attachmentsView, @"attachmentsView");
-		
+    if(_attachmentsPanelViewController == nil) {
+        _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
+        
+        NSView *attachmentsView = _attachmentsPanelViewController.view;
+        NSAssert(attachmentsView, @"attachmentsView");
+        
         attachmentsView.translatesAutoresizingMaskIntoConstraints = NO;
         
-		NSAssert(_attachmentsPanelViewConstraints == nil, @"_attachmentsPanelViewConstraints already created");
-		_attachmentsPanelViewConstraints = [NSMutableArray array];
-		
-		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        NSAssert(_attachmentsPanelViewConstraints == nil, @"_attachmentsPanelViewConstraints already created");
+        _attachmentsPanelViewConstraints = [NSMutableArray array];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         
         // TODO: this is a workaround for cell height and message body height not being matched
         ((NSLayoutConstraint*)_attachmentsPanelViewConstraints.lastObject).priority = NSLayoutPriorityDefaultLow;
-		
-		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-		
-		[_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        
+        [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 
         _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[_attachmentsPanelViewController intrinsicContentViewSize].height];
 
-		// bind the message with the the attachment panel
+        // bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];
     }
 
-	[view addSubview:_attachmentsPanelViewController.view];
+    [view addSubview:_attachmentsPanelViewController.view];
 
     [view addConstraints:_attachmentsPanelViewConstraints];
     [view addConstraint:_attachmentsPanelViewHeightConstraint];
 
-	_attachmentsPanelShown = YES;
+    _attachmentsPanelShown = YES;
 }
 
 - (void)setMessageBody {
     NSAssert(_message != nil, @"_message is nil");
-	NSAssert(_messageBodyViewController != nil, @"not message body view controller");
-		
-	NSView *messageBodyView = [_messageBodyViewController view];
-	NSAssert(messageBodyView, @"messageBodyView");
-	
-	[_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
-	
+    NSAssert(_messageBodyViewController != nil, @"not message body view controller");
+        
+    NSView *messageBodyView = [_messageBodyViewController view];
+    NSAssert(messageBodyView, @"messageBodyView");
+    
+    [_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
+    
     if(_progressIndicator != nil) {
         [_progressIndicator stopAnimation:self];
 
@@ -415,24 +415,24 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (Boolean)loadMessageBody {
-	NSAssert(_message != nil, @"no message set");
+    NSAssert(_message != nil, @"no message set");
 
-	if(_htmlText != nil)
-		return TRUE;
+    if(_htmlText != nil)
+        return TRUE;
 
-	_htmlText = [_message htmlBodyRendering];
-	
+    _htmlText = [_message htmlBodyRendering];
+    
     if(_htmlText == nil) {
-		return FALSE;
+        return FALSE;
     }
 
     if(_messageBodyViewController != nil) {
-		[self setMessageBody];
+        [self setMessageBody];
     }
 
-	_messageTextIsSet = YES;
-	
-	return TRUE;
+    _messageTextIsSet = YES;
+    
+    return TRUE;
 }
 
 - (Boolean)mainFrameLoaded {
@@ -440,15 +440,15 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)setMessage:(SMMessage*)message {
-	NSAssert(_message == nil, @"message already set");
+    NSAssert(_message == nil, @"message already set");
 
-	_message = message;
+    _message = message;
 
-	[_messageDetailsViewController setMessage:message];
+    [_messageDetailsViewController setMessage:message];
 }
 
 - (void)updateMessage {
-	[_messageDetailsViewController updateMessage];
+    [_messageDetailsViewController updateMessage];
 }
 
 #pragma mark Saving attachments
@@ -464,23 +464,23 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 #pragma mark Finding contents
 
 - (NSUInteger)stringOccurrencesCount {
-	return _messageBodyViewController.stringOccurrencesCount;
+    return _messageBodyViewController.stringOccurrencesCount;
 }
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase {
-	[_messageBodyViewController highlightAllOccurrencesOfString:str matchCase:matchCase];
+    [_messageBodyViewController highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 
 - (void)markOccurrenceOfFoundString:(NSUInteger)index {
-	[_messageBodyViewController markOccurrenceOfFoundString:index];
+    [_messageBodyViewController markOccurrenceOfFoundString:index];
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-	[_messageBodyViewController removeMarkedOccurrenceOfFoundString];
+    [_messageBodyViewController removeMarkedOccurrenceOfFoundString];
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-	[_messageBodyViewController removeAllHighlightedOccurrencesOfString];
+    [_messageBodyViewController removeAllHighlightedOccurrencesOfString];
 }
 
 @end

@@ -25,41 +25,41 @@
 
 @implementation SMSimplicityContainer {
     SMPreferencesController __weak *_preferencesController;
-	MCOIMAPCapabilityOperation *_capabilitiesOp;
+    MCOIMAPCapabilityOperation *_capabilitiesOp;
 }
 
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {
-	self = [ super init ];
-	
-	if(self) {
-//		MCLogEnabled = 1;
+    self = [ super init ];
+    
+    if(self) {
+//      MCLogEnabled = 1;
 
         _preferencesController = preferencesController;
         
         _mailbox = [ SMMailbox new ];
-		_messageStorage = [ SMMessageStorage new ];
-		_localFolderRegistry = [ SMLocalFolderRegistry new ];
-		_attachmentStorage = [ SMAttachmentStorage new ];
-		_messageListController = [[ SMMessageListController alloc ] initWithModel:self ];
-		_searchResultsListController = [[SMSearchResultsListController alloc] init];
-		_mailboxController = [[ SMMailboxController alloc ] initWithModel:self ];
-		_messageComparators = [SMMessageComparators new];
+        _messageStorage = [ SMMessageStorage new ];
+        _localFolderRegistry = [ SMLocalFolderRegistry new ];
+        _attachmentStorage = [ SMAttachmentStorage new ];
+        _messageListController = [[ SMMessageListController alloc ] initWithModel:self ];
+        _searchResultsListController = [[SMSearchResultsListController alloc] init];
+        _mailboxController = [[ SMMailboxController alloc ] initWithModel:self ];
+        _messageComparators = [SMMessageComparators new];
         _addressBookController = [SMAddressBookController new];
-	}
-	
-	SM_LOG_DEBUG(@"model initialized");
-		  
-	return self;
+    }
+    
+    SM_LOG_DEBUG(@"model initialized");
+          
+    return self;
 }
 
 - (MCOIndexSet*)imapServerCapabilities {
-	MCOIndexSet *capabilities = _imapServerCapabilities;
+    MCOIndexSet *capabilities = _imapServerCapabilities;
 
-	SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
-	
-	return capabilities;
+    SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
+    
+    return capabilities;
 }
 
 - (void)initAccountSession {
@@ -107,28 +107,28 @@
 }
 
 - (void)getIMAPServerCapabilities {
-	NSAssert(_capabilitiesOp == nil, @"_capabilitiesOp is not nil");
-		
-	_capabilitiesOp = [_imapSession capabilityOperation];
-	
-	void (^opBlock)(NSError*, MCOIndexSet*) = nil;
-	
-	opBlock = ^(NSError * error, MCOIndexSet * capabilities) {
-		if(error) {
-			SM_LOG_ERROR(@"error getting IMAP capabilities: %@", error);
+    NSAssert(_capabilitiesOp == nil, @"_capabilitiesOp is not nil");
+        
+    _capabilitiesOp = [_imapSession capabilityOperation];
+    
+    void (^opBlock)(NSError*, MCOIndexSet*) = nil;
+    
+    opBlock = ^(NSError * error, MCOIndexSet * capabilities) {
+        if(error) {
+            SM_LOG_ERROR(@"error getting IMAP capabilities: %@", error);
 
-			[_capabilitiesOp start:opBlock];
-		} else {
-			SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
-			
+            [_capabilitiesOp start:opBlock];
+        } else {
+            SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
+            
             SM_LOG_INFO(@"IMAP server folder concurrent access is %@, maximum %u connections allowed", _imapSession.allowsFolderConcurrentAccessEnabled? @"ENABLED" : @"DISABLED", _imapSession.maximumConnections);
             
-			_imapServerCapabilities = capabilities;
-			_capabilitiesOp = nil;
-		}
-	};
+            _imapServerCapabilities = capabilities;
+            _capabilitiesOp = nil;
+        }
+    };
 
-	[_capabilitiesOp start:opBlock];
+    [_capabilitiesOp start:opBlock];
 }
 
 @end

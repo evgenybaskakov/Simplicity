@@ -11,14 +11,14 @@
 @implementation SMMessageThreadCollection
 
 - (id)init {
-	self = [ super init ];
-	
-	if(self) {
-		_messageThreads = [ NSMutableDictionary new ];
-		_messageThreadsByDate = [ NSMutableOrderedSet new ];
-	}
-	
-	return self;
+    self = [ super init ];
+    
+    if(self) {
+        _messageThreads = [ NSMutableDictionary new ];
+        _messageThreadsByDate = [ NSMutableOrderedSet new ];
+    }
+    
+    return self;
 }
 
 @end

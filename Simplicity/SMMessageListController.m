@@ -27,129 +27,129 @@
 @end
 
 @implementation SMMessageListController {
-	__weak SMSimplicityContainer *_model;
-	SMLocalFolder *_currentFolder;
-	MCOIMAPFolderInfoOperation *_folderInfoOp;
+    __weak SMSimplicityContainer *_model;
+    SMLocalFolder *_currentFolder;
+    MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
 - (id)initWithModel:(SMSimplicityContainer*)model {
-	self = [ super init ];
-	
-	if(self) {
-		_model = model;
+    self = [ super init ];
+    
+    if(self) {
+        _model = model;
 
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
-	}
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+    }
 
-	return self;
+    return self;
 }
 
 - (SMLocalFolder*)currentLocalFolder {
-	return _currentFolder;
+    return _currentFolder;
 }
 
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-	SM_LOG_DEBUG(@"new folder '%@'", folderName);
+    SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
-	if(folderName != nil) {
-		SMLocalFolder *folder = [[_model localFolderRegistry] getLocalFolder:folderName];
-		
-		if(folder == nil)
-			folder = [[_model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName syncWithRemoteFolder:syncWithRemoteFolder];
-		
-		NSAssert(folder != nil, @"folder registry returned nil folder");
+    if(folderName != nil) {
+        SMLocalFolder *folder = [[_model localFolderRegistry] getLocalFolder:folderName];
+        
+        if(folder == nil)
+            folder = [[_model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName syncWithRemoteFolder:syncWithRemoteFolder];
+        
+        NSAssert(folder != nil, @"folder registry returned nil folder");
 
-		_currentFolder = folder;
-	} else {
-		_currentFolder = nil;
-	}
+        _currentFolder = folder;
+    } else {
+        _currentFolder = nil;
+    }
 
-	if([_currentFolder syncedWithRemoteFolder])
-		[_currentFolder stopMessagesLoading:NO];
-	
-	[_folderInfoOp cancel];
-	_folderInfoOp = nil;
-	
-	[NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
+    if([_currentFolder syncedWithRemoteFolder])
+        [_currentFolder stopMessagesLoading:NO];
+    
+    [_folderInfoOp cancel];
+    _folderInfoOp = nil;
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 }
 
 - (void)changeFolder:(NSString*)folder {
-	if([_currentFolder.localName isEqualToString:folder])
-		return;
+    if([_currentFolder.localName isEqualToString:folder])
+        return;
 
-	[self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
-	[self startMessagesUpdate];
-	
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
-	
-	Boolean preserveSelection = NO;
-	[[appController messageListViewController] reloadMessageList:preserveSelection];
+    [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
+    [self startMessagesUpdate];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    Boolean preserveSelection = NO;
+    [[appController messageListViewController] reloadMessageList:preserveSelection];
 }
 
 - (void)clearCurrentFolderSelection {
-	if(_currentFolder == nil)
-		return;
-	
-	[self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
-	
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
-	
-	Boolean preserveSelection = NO;
-	[[appController messageListViewController] reloadMessageList:preserveSelection];
+    if(_currentFolder == nil)
+        return;
+    
+    [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    Boolean preserveSelection = NO;
+    [[appController messageListViewController] reloadMessageList:preserveSelection];
 }
 
 - (void)startMessagesUpdate {
-	SM_LOG_DEBUG(@"updating message list");
+    SM_LOG_DEBUG(@"updating message list");
 
-	[_currentFolder startLocalFolderSync];
+    [_currentFolder startLocalFolderSync];
 }
 
 - (void)cancelMessageListUpdate {
-	[_currentFolder stopMessagesLoading:NO];
+    [_currentFolder stopMessagesLoading:NO];
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
-	[self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
-	
-	[_currentFolder loadSelectedMessages:searchResults];
+    [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
+    
+    [_currentFolder loadSelectedMessages:searchResults];
 
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
-	
-	Boolean preserveSelection = NO;
-	[[appController messageListViewController] reloadMessageList:preserveSelection];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    Boolean preserveSelection = NO;
+    [[appController messageListViewController] reloadMessageList:preserveSelection];
 }
 
 - (void)updateMessageList {
-	//TODO:
-	//if(updateResult == SMMesssageStorageUpdateResultNone) {
-		// no updates, so no need to reload the message list
-	//	return;
-	//}
-	
-	// TODO: special case for flags changed in some cells only
-	
-	SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
-	
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
+    //TODO:
+    //if(updateResult == SMMesssageStorageUpdateResultNone) {
+        // no updates, so no need to reload the message list
+    //  return;
+    //}
+    
+    // TODO: special case for flags changed in some cells only
+    
+    SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-	Boolean preserveSelection = YES;
-	[[appController messageListViewController] reloadMessageList:preserveSelection];
+    Boolean preserveSelection = YES;
+    [[appController messageListViewController] reloadMessageList:preserveSelection];
 }
 
 - (void)updateMessageThreadView {
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
-	
-	[[appController messageThreadViewController] updateMessageThread];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    [[appController messageThreadViewController] updateMessageThread];
 }
 
 - (void)cancelScheduledMessageListUpdate {
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
 }
 
 - (NSUInteger)messageListUpdateIntervalSec {
@@ -165,42 +165,42 @@
 }
 
 - (void)scheduleMessageListUpdate:(Boolean)now {
-	[self cancelScheduledMessageListUpdate];
-	
-	NSTimeInterval delay_sec = now? 0 : [self messageListUpdateIntervalSec];
-	
-	SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
+    [self cancelScheduledMessageListUpdate];
+    
+    NSTimeInterval delay_sec = now? 0 : [self messageListUpdateIntervalSec];
+    
+    SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
 
-	[self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
+    [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-	SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
+    SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
 
-	[_currentFolder fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId];
+    [_currentFolder fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId];
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-	NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
 
-	if([_currentFolder.localName isEqualToString:localFolder]) {
-		[self updateMessageList];
-		[self updateMessageThreadView];
-	}
+    if([_currentFolder.localName isEqualToString:localFolder]) {
+        [self updateMessageList];
+        [self updateMessageThreadView];
+    }
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
-	NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
 
-	if([_currentFolder.localName isEqualToString:localFolder]) {
-		SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-		SMAppController *appController = [appDelegate appController];
-		
-		NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
-		Boolean hasUpdates = [hasUpdatesNumber boolValue];
+    if([_currentFolder.localName isEqualToString:localFolder]) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppController *appController = [appDelegate appController];
+        
+        NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
+        Boolean hasUpdates = [hasUpdatesNumber boolValue];
 
-		[[appController messageListViewController] messageHeadersSyncFinished:hasUpdates];
-	}
+        [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates];
+    }
 }
 
 @end

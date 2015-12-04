@@ -10,20 +10,20 @@
 #import "SMLabeledTokenFieldBoxView.h"
 
 @implementation SMLabeledTokenFieldBoxView {
-	SMAddressFieldViewController *__weak _controller;
+    SMAddressFieldViewController *__weak _controller;
 }
 
 - (void)setViewController:(SMAddressFieldViewController*)controller {
-	_controller = controller;
+    _controller = controller;
 }
 
 - (NSSize)intrinsicContentSize {
-	return [_controller intrinsicContentViewSize];
+    return [_controller intrinsicContentViewSize];
 }
 
 - (void)invalidateIntrinsicContentSize {
-	[super invalidateIntrinsicContentSize];
-	[_controller invalidateIntrinsicContentViewSize];
+    [super invalidateIntrinsicContentSize];
+    [_controller invalidateIntrinsicContentViewSize];
 }
 
 @end

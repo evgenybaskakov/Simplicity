@@ -16,13 +16,13 @@
 
 -(NSMenu*)menuForEvent:(NSEvent*)theEvent
 {
-	NSPoint mousePoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-	NSInteger row = [self rowAtPoint:mousePoint];
+    NSPoint mousePoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    NSInteger row = [self rowAtPoint:mousePoint];
 
-	SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	SMAppController *appController = [appDelegate appController];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-	return [[appController mailboxViewController] menuForRow:row];
+    return [[appController mailboxViewController] menuForRow:row];
 }
 
 @end

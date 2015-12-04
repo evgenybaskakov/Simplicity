@@ -33,44 +33,44 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
 @implementation SMMessageComparators
 
 - (id)init {
-	self = [super init];
-	if(self) {
-		_messagesComparator = ^NSComparisonResult(id a, id b) {
+    self = [super init];
+    if(self) {
+        _messagesComparator = ^NSComparisonResult(id a, id b) {
             return compareMessagesByUID(a, b);
-		};
-		
-		_messagesComparatorByImapMessage = ^NSComparisonResult(id a, id b) {
-			uint32_t uid1 = 0, uid2 = 0;
-			
-			if([a isKindOfClass:[MCOIMAPMessage class]]) {
-				uid1 = [(MCOIMAPMessage*)a uid];
-				uid2 = [(SMMessage*)b uid];
-			} else {
-				uid1 = [(SMMessage*)a uid];
-				uid2 = [(MCOIMAPMessage*)b uid];
-			}
-			
+        };
+        
+        _messagesComparatorByImapMessage = ^NSComparisonResult(id a, id b) {
+            uint32_t uid1 = 0, uid2 = 0;
+            
+            if([a isKindOfClass:[MCOIMAPMessage class]]) {
+                uid1 = [(MCOIMAPMessage*)a uid];
+                uid2 = [(SMMessage*)b uid];
+            } else {
+                uid1 = [(SMMessage*)a uid];
+                uid2 = [(MCOIMAPMessage*)b uid];
+            }
+            
             return compareUIDs(uid1, uid2);
-		};
-		
-		_messagesComparatorByUID = ^NSComparisonResult(id a, id b) {
-			uint32_t uid1 = 0, uid2 = 0;
-			
-			if([a isKindOfClass:[NSNumber class]]) {
-				uid1 = [(NSNumber*)a unsignedIntValue];
-				uid2 = [(SMMessage*)b uid];
-			} else {
-				uid1 = [(SMMessage*)a uid];
-				uid2 = [(NSNumber*)b unsignedIntValue];
-			}
-			
+        };
+        
+        _messagesComparatorByUID = ^NSComparisonResult(id a, id b) {
+            uint32_t uid1 = 0, uid2 = 0;
+            
+            if([a isKindOfClass:[NSNumber class]]) {
+                uid1 = [(NSNumber*)a unsignedIntValue];
+                uid2 = [(SMMessage*)b uid];
+            } else {
+                uid1 = [(SMMessage*)a uid];
+                uid2 = [(NSNumber*)b unsignedIntValue];
+            }
+            
             return compareUIDs(uid1, uid2);
-		};
-		
-		_messagesComparatorByDate = ^NSComparisonResult(id a, id b) {
-			NSDate *date1 = [(SMMessage*)a date];
-			NSDate *date2 = [(SMMessage*)b date];
-			
+        };
+        
+        _messagesComparatorByDate = ^NSComparisonResult(id a, id b) {
+            NSDate *date1 = [(SMMessage*)a date];
+            NSDate *date2 = [(SMMessage*)b date];
+            
             NSComparisonResult dateComparisonResult = [date2 compare:date1];
 
             if(dateComparisonResult == NSOrderedSame) {
@@ -78,24 +78,24 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
             }
             
             return dateComparisonResult;
-		};
-		
-		_messageThreadsComparatorByDate = ^NSComparisonResult(id a, id b) {
-			if([a messagesCount] == 0) {
+        };
+        
+        _messageThreadsComparatorByDate = ^NSComparisonResult(id a, id b) {
+            if([a messagesCount] == 0) {
                 if([b messagesCount] == 0) {
                     return compareThreadsByThreadId(a, b);
                 }
 
-				return NSOrderedAscending;
-			} else if([b messagesCount] == 0) {
-				return NSOrderedDescending;
-			}
+                return NSOrderedAscending;
+            } else if([b messagesCount] == 0) {
+                return NSOrderedDescending;
+            }
 
-			SMMessage *message1 = [a messagesSortedByDate].firstObject;
-			SMMessage *message2 = [b messagesSortedByDate].firstObject;
-			
-			NSDate *date1 = [message1 date];
-			NSDate *date2 = [message2 date];
+            SMMessage *message1 = [a messagesSortedByDate].firstObject;
+            SMMessage *message2 = [b messagesSortedByDate].firstObject;
+            
+            NSDate *date1 = [message1 date];
+            NSDate *date2 = [message2 date];
 
             NSComparisonResult dateComparisonResult = [date2 compare:date1];
             
@@ -104,10 +104,10 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
             }
             
             return dateComparisonResult;
-		};
-	}
+        };
+    }
 
-	return self;
+    return self;
 }
 
 @end

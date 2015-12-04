@@ -29,9 +29,9 @@
 - (SMMessage*)getMessage:(uint32_t)uid;
 
 typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
-	SMThreadUpdateResultNone,
-	SMThreadUpdateResultFlagsChanged,
-	SMThreadUpdateResultStructureChanged
+    SMThreadUpdateResultNone,
+    SMThreadUpdateResultFlagsChanged,
+    SMThreadUpdateResultStructureChanged
 };
 
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session;

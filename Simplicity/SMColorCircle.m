@@ -12,15 +12,15 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-	
-	NSRect bounds = self.bounds;
+    
+    NSRect bounds = self.bounds;
 
-	CGFloat circleRadius = (bounds.size.height - 2) / 2.5;
-	NSRect circleRect = NSMakeRect(NSMidX(bounds) - circleRadius, NSMidY(bounds) - circleRadius, circleRadius * 2, circleRadius * 2);
-	NSBezierPath *circlePath = [NSBezierPath bezierPathWithOvalInRect:circleRect];
-	NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[_color highlightWithLevel:0.45] endingColor:_color];
-	
-	[gradient drawInBezierPath:circlePath angle:-90.00];
+    CGFloat circleRadius = (bounds.size.height - 2) / 2.5;
+    NSRect circleRect = NSMakeRect(NSMidX(bounds) - circleRadius, NSMidY(bounds) - circleRadius, circleRadius * 2, circleRadius * 2);
+    NSBezierPath *circlePath = [NSBezierPath bezierPathWithOvalInRect:circleRect];
+    NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:[_color highlightWithLevel:0.45] endingColor:_color];
+    
+    [gradient drawInBezierPath:circlePath angle:-90.00];
 }
 
 @end

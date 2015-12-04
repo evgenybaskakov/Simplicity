@@ -10,7 +10,7 @@
 
 @class SMMessageThread;
 @class SMFolder;
-											  
+                                              
 @interface SMFolderColorController : NSObject
 
 - (void)setFolderColor:(NSString*)folderName color:(NSColor*)color;

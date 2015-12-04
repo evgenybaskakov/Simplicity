@@ -18,21 +18,21 @@
 @implementation SMAppDelegate
 
 - (id)init {
-	self = [ super init ];
+    self = [ super init ];
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-		_model = [[SMSimplicityContainer alloc] initWithPreferencesController:_preferencesController];
+        _model = [[SMSimplicityContainer alloc] initWithPreferencesController:_preferencesController];
         _imageRegistry = [[SMImageRegistry alloc] init];
-	}
-	
-	SM_LOG_DEBUG(@"app delegate initialized");
-	
-	return self;
+    }
+    
+    SM_LOG_DEBUG(@"app delegate initialized");
+    
+    return self;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-	_window.titleVisibility = NSWindowTitleHidden;
+    _window.titleVisibility = NSWindowTitleHidden;
 
     if([_preferencesController accountsCount] == 0) {
         [_appController showNewAccountWindow];
@@ -46,18 +46,18 @@
 }
 
 + (NSURL*)appDataDir {
-	NSURL* appSupportDir = nil;
-	NSArray* appSupportDirs = [[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
-	
-	if([appSupportDirs count] > 0) {
-		appSupportDir = (NSURL*)[appSupportDirs objectAtIndex:0];
-	} else {
-		SM_LOG_DEBUG(@"cannot get path to app dir");
-		
-		appSupportDir = [NSURL fileURLWithPath:@"~/Library/Application Support/" isDirectory:YES];
-	}
-	
-	return [appSupportDir URLByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
+    NSURL* appSupportDir = nil;
+    NSArray* appSupportDirs = [[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
+    
+    if([appSupportDirs count] > 0) {
+        appSupportDir = (NSURL*)[appSupportDirs objectAtIndex:0];
+    } else {
+        SM_LOG_DEBUG(@"cannot get path to app dir");
+        
+        appSupportDir = [NSURL fileURLWithPath:@"~/Library/Application Support/" isDirectory:YES];
+    }
+    
+    return [appSupportDir URLByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
 }
 
 @end

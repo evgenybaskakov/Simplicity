@@ -72,6 +72,10 @@
     }
 }
 
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle {
+    // Do nothing. We don't want to change any text color, whatever.
+}
+
 + (NSUInteger)heightForPreviewLines:(NSUInteger)linesCount {
     const NSUInteger baseHeight = 47;
     return baseHeight + linesCount * 16;

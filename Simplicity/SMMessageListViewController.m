@@ -29,6 +29,7 @@
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
+#import "SMMessageListRowView.h"
 
 @implementation SMMessageListViewController {
 	SMMessageThread *_selectedMessageThread;
@@ -794,6 +795,12 @@
             }
         }
     }
+}
+
+#pragma mark Cell selection
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
+    return [[SMMessageListRowView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 }
 
 @end

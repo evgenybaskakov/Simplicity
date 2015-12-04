@@ -22,6 +22,7 @@
 #import "SMMailboxMainFolderView.h"
 #import "SMMailboxLabelView.h"
 #import "SMFolderColorController.h"
+#import "SMMailboxRowView.h"
 
 @implementation SMMailboxViewController {
 	NSInteger _rowWithMenu;
@@ -543,6 +544,12 @@ typedef enum {
 	SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 	
 	[[[appDelegate model] mailboxController] renameFolder:_labelToRename newFolderName:newLabelName];
+}
+
+#pragma mark Cell selection
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
+    return [[SMMailboxRowView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 }
 
 @end

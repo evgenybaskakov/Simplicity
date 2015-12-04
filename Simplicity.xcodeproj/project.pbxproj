@@ -135,6 +135,7 @@
 		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		803B10E21C1025DC0057E785 /* SMMailboxMainFolderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */; };
 		803B10EC1C1025F80057E785 /* SMMailboxLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10EB1C1025F80057E785 /* SMMailboxLabelView.m */; };
+		803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10EE1C1123390057E785 /* SMMailboxRowView.m */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
@@ -481,6 +482,8 @@
 		803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxMainFolderView.m; sourceTree = "<group>"; };
 		803B10EA1C1025F80057E785 /* SMMailboxLabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxLabelView.h; sourceTree = "<group>"; };
 		803B10EB1C1025F80057E785 /* SMMailboxLabelView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxLabelView.m; sourceTree = "<group>"; };
+		803B10ED1C1123390057E785 /* SMMailboxRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxRowView.h; sourceTree = "<group>"; };
+		803B10EE1C1123390057E785 /* SMMailboxRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxRowView.m; sourceTree = "<group>"; };
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
@@ -879,6 +882,8 @@
 				803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */,
 				803B10EA1C1025F80057E785 /* SMMailboxLabelView.h */,
 				803B10EB1C1025F80057E785 /* SMMailboxLabelView.m */,
+				803B10ED1C1123390057E785 /* SMMailboxRowView.h */,
+				803B10EE1C1123390057E785 /* SMMailboxRowView.m */,
 				005F9A391AAD46500022EDEF /* SMMailboxTableView.h */,
 				005F9A3A1AAD46500022EDEF /* SMMailboxTableView.m */,
 				005F0D371A86BC980093E96D /* SMMessageBookmarksView.h */,
@@ -1309,6 +1314,7 @@
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */,
+				803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
 				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,

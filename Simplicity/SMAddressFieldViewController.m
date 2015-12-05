@@ -16,6 +16,10 @@
 #import "SMAddress.h"
 #import "SMAddressFieldViewController.h"
 
+static NSPasteboard *_lastPasteboardUsed;
+static SMAddressFieldViewController *_lastAddressFieldUsed;
+static NSArray *_lastAddressesUsed;
+
 @implementation SMAddressFieldViewController {
     Boolean _tokenFieldFrameValid;
     SMAddress *_addressWithMenu;
@@ -222,6 +226,18 @@
         [stringObjects addObject:[(SMAddress*)address stringRepresentationDetailed]];
     }
     [pboard writeObjects:stringObjects];
+
+    if(pboard != [NSPasteboard generalPasteboard]) {
+        _lastPasteboardUsed = pboard;
+        _lastAddressFieldUsed = self;
+        _lastAddressesUsed = objects;
+    }
+    else {
+        _lastPasteboardUsed = nil;
+        _lastAddressFieldUsed = nil;
+        _lastAddressesUsed = nil;
+    }
+    
     return YES;
 }
 
@@ -231,7 +247,22 @@
     for(NSString *address in stringObjects) {
         [objects addObject:[[SMAddress alloc] initWithStringRepresentation:address]];
     }
+    
+    if(pboard == _lastPasteboardUsed && _lastAddressFieldUsed != nil && _lastAddressFieldUsed != self && _lastAddressesUsed != nil) {
+        [_lastAddressFieldUsed removeAddresses:_lastAddressesUsed];
+    }
+    
+    _lastPasteboardUsed = nil;
+    _lastAddressFieldUsed = nil;
+    _lastAddressesUsed = nil;
+    
     return objects;
+}
+
+- (void)removeAddresses:(NSArray*)addresses {
+    NSMutableArray *objects = [NSMutableArray arrayWithArray:_tokenField.objectValue];
+    [objects removeObjectsInArray:addresses];
+    [_tokenField setObjectValue:objects];
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {

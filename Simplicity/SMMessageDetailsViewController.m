@@ -59,9 +59,15 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         view.translatesAutoresizingMaskIntoConstraints = NO;
         [self setView:view];
         [self createSubviews];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setReplyButtonImage) name:@"DefaultReplyActionChanged" object:nil];
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (NSUInteger)messageDetaisHeaderHeight {
@@ -269,6 +275,11 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [view addConstraint:_bottomConstraint];
 }
 
+- (void)setReplyButtonImage {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
+}
+
 - (void)showAttachmentButton {
     if(_attachmentButtonShown)
         return;
@@ -429,10 +440,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         _replyButton.translatesAutoresizingMaskIntoConstraints = NO;
         _replyButton.bezelStyle = NSShadowlessSquareBezelStyle;
         _replyButton.target = self;
-        _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
         [_replyButton.cell setImageScaling:NSImageScaleProportionallyDown];
         _replyButton.bordered = NO;
         _replyButton.action = @selector(composeReplyOrReplyAll:);
+        [self setReplyButtonImage];
 
         _messageActionsButton = [[NSButton alloc] init];
         _messageActionsButton.translatesAutoresizingMaskIntoConstraints = NO;

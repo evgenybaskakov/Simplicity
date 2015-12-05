@@ -152,7 +152,7 @@
             break;
     }
     
-    // TODO: configure the 'reply button'
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DefaultReplyActionChanged" object:nil userInfo:nil];
 }
 
 @end

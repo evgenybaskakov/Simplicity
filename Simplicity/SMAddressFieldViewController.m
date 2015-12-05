@@ -132,7 +132,7 @@
 }
 
 - (NSMenu *)tokenField:(NSTokenField *)tokenField menuForRepresentedObject:(id)representedObject {
-    SM_LOG_INFO(@"representeObject: %@", representedObject);
+    SM_LOG_DEBUG(@"representeObject: %@", representedObject);
 
     NSMenu *menu = [[NSMenu alloc] init];
     
@@ -162,8 +162,6 @@
 }
 
 - (NSArray *)tokenField:(NSTokenField *)tokenField shouldAddObjects:(NSArray *)tokens atIndex:(NSUInteger)index {
-    SM_LOG_INFO(@"???");
-
     NSMutableArray *resultingObjects = [NSMutableArray array];
     
     for(id token in tokens) {
@@ -217,6 +215,25 @@
     }
 }
 
+- (BOOL)tokenField:(NSTokenField *)tokenField writeRepresentedObjects:(NSArray *)objects toPasteboard:(NSPasteboard *)pboard {
+    NSMutableArray *stringObjects = [NSMutableArray array];
+    for(id address in objects) {
+        NSAssert([address isKindOfClass:[SMAddress class]], @"bad address type");
+        [stringObjects addObject:[(SMAddress*)address stringRepresentationDetailed]];
+    }
+    [pboard writeObjects:stringObjects];
+    return YES;
+}
+
+- (NSArray *)tokenField:(NSTokenField *)tokenField readFromPasteboard:(NSPasteboard *)pboard {
+    NSArray *stringObjects = [pboard readObjectsForClasses:@[[NSString class]] options:nil];
+    NSMutableArray *objects = [NSMutableArray array];
+    for(NSString *address in stringObjects) {
+        [objects addObject:[[SMAddress alloc] initWithStringRepresentation:address]];
+    }
+    return objects;
+}
+
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LabeledTokenFieldEndedEditing" object:self userInfo:nil];
     return YES;
@@ -232,8 +249,6 @@
 }
 
 - (void)editAddressAction:(NSMenuItem*)menuItem {
-    SM_LOG_INFO(@"??");
-
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");
     
     // First, remember which addresses we are not going to change.

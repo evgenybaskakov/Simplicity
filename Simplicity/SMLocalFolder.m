@@ -327,7 +327,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     SMMessageStorage *storage = [[appDelegate model] messageStorage];
     
-    SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase];
+    SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
     (void)updateResult;
 
@@ -665,11 +665,25 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate model] messageStorage] removeLocalFolder:_localName];
 }
 
+- (void)adjustUnseenCount:(BOOL)messageUnseen {
+    if(messageUnseen) {
+        _unseenMessagesCount++;
+    }
+    else if(_unseenMessagesCount > 0) {
+        _unseenMessagesCount--;
+    }
+}
+
 #pragma mark Messages manipulation
 
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
     if(message.unseen == unseen)
         return;
+    
+    // adjust the folder stats
+    if(unseen != message.unseen) {
+        [self adjustUnseenCount:unseen];
+    }
     
     // set the local message flags
     message.unseen = unseen;
@@ -677,6 +691,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // update the local database
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+
+    // Notify listeners (mailbox, etc).
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
     
     // enqueue the remote folder operation
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen];
@@ -714,7 +731,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
     // Remove the deleted message threads from the message storage.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName remoteFolder:_remoteFolderName updateDatabase:YES];
+    [[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName remoteFolder:_remoteFolderName updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
+
+    // Notify observers that message flags have possibly changed.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
     
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
@@ -797,7 +817,13 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     Boolean needUpdateMessageList = NO;
     
     if(useThreadId) {
-        needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName remoteFolder:_remoteFolderName];
+        needUpdateMessageList = [[[appDelegate model] messageStorage] deleteMessageFromStorage:uid threadId:threadId localFolder:_localName remoteFolder:_remoteFolderName unseenMessagesCount:&_unseenMessagesCount];
+
+        // Notify observers that message flags have possibly changed.
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+    }
+    else {
+        // TODO: Should we adjust folder stats (unseen count)?
     }
     
     // Now, we have to cancel message bodies loading for the deleted messages.

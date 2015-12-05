@@ -50,12 +50,13 @@
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessageFlagsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessagesUpdated" object:nil];
 }
 
-- (void)messageHeadersSyncFinished:(NSNotification *)notification {
-//    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
-
+- (void)updateFolder:(NSNotification *)notification {
+    // NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
     // TODO: refresh only the folder in question for efficiency
 
     [self updateFolderListView];

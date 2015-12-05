@@ -224,8 +224,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_labels addObjectsFromArray:message.labels];
 }
 
-- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session {
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
     SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
@@ -236,10 +236,22 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         SMMessage *message = [_messageCollection.messages objectAtIndex:messageIndex];
         
         if([message uid] == [imapMessage uid]) {
+            BOOL wasUnseen = message.unseen;
+            
             // TODO: can date be changed?
             Boolean hasUpdates = [message updateImapMessage:imapMessage];
             
             [message setUpdated:YES];
+            
+            BOOL nowUnseen = message.unseen;
+            if(wasUnseen != nowUnseen) {
+                if(nowUnseen) {
+                    (*unseenCount)++;
+                }
+                else if(*unseenCount > 0) {
+                    (*unseenCount)--;
+                }
+            }
             
             if(hasUpdates) {
                 [self updateThreadFlagsFromMessage:message];
@@ -264,6 +276,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_messageCollection.messagesByDate insertObject:message atIndex:messageIndexByDate];
 
     [self updateThreadFlagsFromMessage:message];
+    
+    if(message.unseen) {
+        (*unseenCount)++;
+    }
     
     return SMThreadUpdateResultStructureChanged;
 }

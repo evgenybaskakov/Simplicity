@@ -106,16 +106,20 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 
-- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder updateDatabase:(Boolean)updateDatabase {
+- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection, @"bad folder collection");
 
-    [self deleteMessageThreads:messageThreads fromCollection:collection localFolder:localFolder updateDatabase:updateDatabase];
+    [self deleteMessageThreads:messageThreads fromCollection:collection localFolder:localFolder updateDatabase:updateDatabase unseenMessagesCount:unseenMessagesCount];
 }
 
-- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection localFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+- (void)deleteMessageThreads:(NSArray *)messageThreads fromCollection:(SMMessageThreadCollection*)collection localFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     for(SMMessageThread *thread in messageThreads) {
         for(SMMessage *m in thread.messagesSortedByDate) {
+            if(m.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
+                (*unseenMessagesCount)--;
+            }
+
             [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
         }
 
@@ -133,7 +137,7 @@
     }
 }
 
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder {
+- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
     
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
@@ -144,19 +148,26 @@
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
-        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder remoteFolder:remoteFolder updateDatabase:YES];
+        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder remoteFolder:remoteFolder updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
         return true;
     }
     else {
+        SMMessage *message = [messageThread getMessage:uid];
+        if(message != nil) {
+            if(message.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
+                (*unseenMessagesCount)--;
+            }
+        }
+        
         SMMessage *firstMessage = [messageThread.messagesSortedByDate objectAtIndex:0];
-        if(firstMessage.uid == uid) {
+        if(firstMessage == message) {
             NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
             
             [messageThread removeMessageFromMessageThread:uid];
             
             NSAssert(oldIndex != NSNotFound, @"message thread not found");
             [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
-                
+            
             return true;
         }
         else {
@@ -176,7 +187,7 @@
     [self cancelUpdate:localFolder];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection, @"bad folder collection");
     
@@ -211,7 +222,7 @@
             firstMessageDate = [firstMessage date];
         }
 
-        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session];
+        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
         
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {
@@ -308,7 +319,7 @@
 
     // Note that we don't explicitly delete this thread from the DB, because the preceding
     // message thread update automatically removes vanished message threads.
-    [self deleteMessageThreads:vanishedThreads fromCollection:collection localFolder:localFolder updateDatabase:NO];
+    [self deleteMessageThreads:vanishedThreads fromCollection:collection localFolder:localFolder updateDatabase:NO unseenMessagesCount:nil];
 
     if(removeVanishedMessages) {
         if(updateDatabase) {

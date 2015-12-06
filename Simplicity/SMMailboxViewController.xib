@@ -89,7 +89,7 @@
                                                         </constraints>
                                                         <animations/>
                                                     </customView>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O">
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O" customClass="SMInactiveButton">
                                                         <rect key="frame" x="171" y="4" width="26" height="13"/>
                                                         <animations/>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="O1d-Gi-pe2">
@@ -138,7 +138,7 @@
                                                             <outlet property="delegate" destination="-2" id="Lvm-JS-BdI"/>
                                                         </connections>
                                                     </textField>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uKW-ta-vpc">
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uKW-ta-vpc" customClass="SMInactiveButton">
                                                         <rect key="frame" x="171" y="2" width="26" height="13"/>
                                                         <animations/>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="gdd-Eo-rXc">

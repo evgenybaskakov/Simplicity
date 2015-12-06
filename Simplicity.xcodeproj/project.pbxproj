@@ -145,6 +145,7 @@
 		8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */; };
 		8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */; };
 		804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 804711C01B7B153B00399942 /* SMMessageListTableView.m */; };
+		8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBCB1C13D0800083954D /* SMInactiveButton.m */; };
 		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
@@ -498,6 +499,8 @@
 		8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorWebView.m; sourceTree = "<group>"; };
 		804711BF1B7B153B00399942 /* SMMessageListTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListTableView.h; sourceTree = "<group>"; };
 		804711C01B7B153B00399942 /* SMMessageListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListTableView.m; sourceTree = "<group>"; };
+		8048FBCA1C13D0800083954D /* SMInactiveButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInactiveButton.h; sourceTree = "<group>"; };
+		8048FBCB1C13D0800083954D /* SMInactiveButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInactiveButton.m; sourceTree = "<group>"; };
 		804F33411BAFDDBA007E600C /* SMFolderDesc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderDesc.h; sourceTree = "<group>"; };
 		804F33421BAFDDBA007E600C /* SMFolderDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderDesc.m; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
@@ -875,6 +878,8 @@
 				0040B0F8196A5331004E55CC /* SMFolderCellView.m */,
 				0099CE821A62332400AEA789 /* SMImageRegistry.h */,
 				0099CE831A62332400AEA789 /* SMImageRegistry.m */,
+				8048FBCA1C13D0800083954D /* SMInactiveButton.h */,
+				8048FBCB1C13D0800083954D /* SMInactiveButton.m */,
 				004A642A1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.h */,
 				004A642B1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m */,
 				803B10E01C1025DC0057E785 /* SMMailboxMainFolderView.h */,
@@ -1305,6 +1310,7 @@
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,
 				0097426E195686F900620145 /* SMMailboxViewController.m in Sources */,
 				80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */,
+				8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */,
 				0002A0A517D1B1E000EA4AFF /* SMAppDelegate.m in Sources */,
 				00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */,
 				806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */,

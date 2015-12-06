@@ -10,4 +10,7 @@
 
 @interface SMNotificationsController : NSObject
 
++ (void)notifyNewMessage:(NSString*)from;
++ (void)notifyNewMessages:(NSUInteger)count;
+
 @end

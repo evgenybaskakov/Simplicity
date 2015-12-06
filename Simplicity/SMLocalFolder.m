@@ -22,15 +22,19 @@
 #import "SMMessage.h"
 #import "SMMailbox.h"
 #import "SMDatabase.h"
+#import "SMNotificationsController.h"
+#import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 
+// TODO: move to advanced settings
 static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
 static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
 static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
 static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
+static const NSUInteger MAX_NEW_MESSAGE_NOTIFICATIONS = 5;
 
 static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMessagesRequestKind)(
     MCOIMAPMessagesRequestKindUid |
@@ -331,6 +335,21 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     
     (void)updateResult;
 
+    if(imapMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
+        for(NSUInteger i = 0; i < imapMessages.count; i++) {
+            MCOMessageHeader *imapHeader = [imapMessages[i] header];
+            MCOAddress *fromAddress = imapHeader? [imapHeader from] : nil;
+            
+            if(fromAddress != nil) {
+                SMAddress *from = [[SMAddress alloc] initWithMCOAddress:fromAddress];
+                [SMNotificationsController notifyNewMessage:from.stringRepresentationShort];
+            }
+        }
+    }
+    else {
+        [SMNotificationsController notifyNewMessages:imapMessages.count];
+    }
+    
     // TODO: send result
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }

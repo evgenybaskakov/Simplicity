@@ -146,6 +146,7 @@
 		8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */; };
 		804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 804711C01B7B153B00399942 /* SMMessageListTableView.m */; };
 		8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBCB1C13D0800083954D /* SMInactiveButton.m */; };
+		8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBD51C140B510083954D /* SMNotificationsController.m */; };
 		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
@@ -501,6 +502,8 @@
 		804711C01B7B153B00399942 /* SMMessageListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListTableView.m; sourceTree = "<group>"; };
 		8048FBCA1C13D0800083954D /* SMInactiveButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInactiveButton.h; sourceTree = "<group>"; };
 		8048FBCB1C13D0800083954D /* SMInactiveButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInactiveButton.m; sourceTree = "<group>"; };
+		8048FBD41C140B510083954D /* SMNotificationsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNotificationsController.h; sourceTree = "<group>"; };
+		8048FBD51C140B510083954D /* SMNotificationsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNotificationsController.m; sourceTree = "<group>"; };
 		804F33411BAFDDBA007E600C /* SMFolderDesc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderDesc.h; sourceTree = "<group>"; };
 		804F33421BAFDDBA007E600C /* SMFolderDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderDesc.m; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
@@ -822,6 +825,8 @@
 				00A25BB917E10D1400D0FCB1 /* SMMessageListController.m */,
 				00E9107B17D2F6F50028C679 /* SMMessageListViewController.h */,
 				00E9107C17D2F6F50028C679 /* SMMessageListViewController.m */,
+				8048FBD41C140B510083954D /* SMNotificationsController.h */,
+				8048FBD51C140B510083954D /* SMNotificationsController.m */,
 				00CB00E91A9E886700339E6D /* SMMessageThreadCell.h */,
 				00CB00EA1A9E886700339E6D /* SMMessageThreadCell.m */,
 				00FC3C7619AADD67002DAF9C /* SMMessageThreadCellViewController.h */,
@@ -1292,6 +1297,7 @@
 				80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */,
 				008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */,
 				0002A09E17D1B1E000EA4AFF /* main.m in Sources */,
+				8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */,
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,

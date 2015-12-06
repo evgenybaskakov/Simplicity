@@ -19,6 +19,7 @@
 @interface SMGeneralPreferencesViewController ()
 
 @property (weak) IBOutlet NSButton *showContactImagesInMessageListCheckBox;
+@property (weak) IBOutlet NSButton *showNotificationsCheckBox;
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
 @property (weak) IBOutlet NSPathControl *downloadsFolderPopup;
@@ -61,6 +62,10 @@
 
     // Load current properties
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    //
+    
+    _showNotificationsCheckBox.state = ([[appDelegate preferencesController] shouldShowNotifications]? NSOnState : NSOffState);
 
     //
     
@@ -112,6 +117,11 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (IBAction)showNotificationsAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].shouldShowNotifications = (_showNotificationsCheckBox.state == NSOnState);
 }
 
 - (IBAction)messageBodyLinesPreviewListAction:(id)sender {

@@ -42,8 +42,10 @@
 #define kDownloadsFolder                @"DownloadsFolder"
 #define kLocalStorageSizeMb             @"LocalStorageSizeMb"
 #define kDefaultReplyAction             @"DefaultReplyAction"
+#define kShouldShowNotifications        @"ShouldShowNotifications"
 
 @implementation SMPreferencesController {
+    BOOL _shouldShowNotificationsCached;
     BOOL _shouldShowContactImagesCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
@@ -607,6 +609,35 @@
     [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowContactImages];
 
     _shouldShowContactImagesCached = flag;
+}
+
+#pragma mark Should show notifications
+
+- (BOOL)shouldShowNotifications {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowNotifications] == nil) {
+            _shouldShowNotificationsCached = YES;
+            
+            SM_LOG_INFO(@"Using default kShouldShowNotifications: %@", _shouldShowNotificationsCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldShowNotificationsCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowNotifications]);
+            
+            SM_LOG_INFO(@"Loaded kShouldShowNotifications: %@", _shouldShowNotificationsCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldShowNotificationsCached;
+}
+
+- (void)setShouldShowNotifications:(BOOL)shouldShowNotifications {
+    [[NSUserDefaults standardUserDefaults] setBool:shouldShowNotifications forKey:kShouldShowNotifications];
+    
+    _shouldShowNotificationsCached = shouldShowNotifications;
 }
 
 #pragma mark Message list preview lines

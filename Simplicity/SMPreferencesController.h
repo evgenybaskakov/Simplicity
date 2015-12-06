@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
 @interface SMPreferencesController : NSObject
 
 @property (nonatomic) BOOL shouldShowContactImages;
+@property (nonatomic) BOOL shouldShowNotifications;
 @property (nonatomic) NSUInteger messageListPreviewLineCount;
 @property (nonatomic) NSUInteger messageCheckPeriodSec;
 @property (nonatomic) NSString *downloadsFolder;

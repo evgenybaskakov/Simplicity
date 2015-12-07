@@ -272,7 +272,7 @@
     return updateResult;
 }
 
-- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock {
     SM_LOG_DEBUG(@"localFolder '%@'", localFolder);
     
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
@@ -285,11 +285,12 @@
 
     *unseenMessagesCount = 0;
     
+    NSMutableArray *newUnseenMessages = [NSMutableArray array];
     for(NSNumber *threadId in collection.messageThreads) {
         SMMessageThread *messageThread = [collection.messageThreads objectForKey:threadId];
         NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
 
-        SMThreadUpdateResult threadUpdateResult = [messageThread endUpdate:removeVanishedMessages vanishedMessages:vanishedMessages];
+        SMThreadUpdateResult threadUpdateResult = [messageThread endUpdate:removeVanishedMessages vanishedMessages:vanishedMessages addNewUnseenMessages:newUnseenMessages];
         
         if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
             NSAssert(oldIndex != NSNotFound, @"message thread not found");
@@ -319,6 +320,8 @@
 
     // Note that we don't explicitly delete this thread from the DB, because the preceding
     // message thread update automatically removes vanished message threads.
+    // Also note that the unseen message count is not needed to be updated, because
+    // we've already got it right.
     [self deleteMessageThreads:vanishedThreads fromCollection:collection localFolder:localFolder updateDatabase:NO unseenMessagesCount:nil];
 
     if(removeVanishedMessages) {
@@ -333,6 +336,10 @@
     }
     
     NSAssert(collection.messageThreads.count == collection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", collection.messageThreads.count, collection.messageThreadsByDate.count);
+    
+    if(processNewUnseenMessagesBlock != nil) {
+        processNewUnseenMessagesBlock(newUnseenMessages);
+    }
     
     return updateResult;
 }

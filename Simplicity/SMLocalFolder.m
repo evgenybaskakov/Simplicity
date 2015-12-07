@@ -334,21 +334,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     SMMessageStorageUpdateResult updateResult = [storage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
     (void)updateResult;
-
-    if(imapMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
-        for(NSUInteger i = 0; i < imapMessages.count; i++) {
-            MCOMessageHeader *imapHeader = [imapMessages[i] header];
-            MCOAddress *fromAddress = imapHeader? [imapHeader from] : nil;
-            
-            if(fromAddress != nil) {
-                SMAddress *from = [[SMAddress alloc] initWithMCOAddress:fromAddress];
-                [SMNotificationsController notifyNewMessage:from.stringRepresentationShort];
-            }
-        }
-    }
-    else {
-        [SMNotificationsController notifyNewMessages:imapMessages.count];
-    }
     
     // TODO: send result
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
@@ -448,8 +433,28 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 - (void)finishHeadersSync:(Boolean)updateDatabase {
     [self cancelScheduledUpdateTimeout];
 
+    // When the update ends, push a system notification if these conditions are met:
+    // 1. It's an update from the server;
+    // 2. The folder is the INBOX (TODO: make configurable);
+    // 3. The message is new;
+    // 4. The message is unseen.
+    // TODO: map the local folders to their SMFolder counterparts
+    // TODO: get rid of the hardcoded inbox name (see issue #44)
+    BOOL shouldUseNotifications = (!_loadingFromDB && [_remoteFolderName isEqualToString:@"INBOX"]);
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
+    SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
+        if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
+            for(SMMessage *m in newUnseenMessages) {
+                SMAddress *from = [[SMAddress alloc] initWithMCOAddress:m.fromAddress];
+                [SMNotificationsController notifyNewMessage:from.stringRepresentationShort];
+            }
+        }
+        else {
+            [SMNotificationsController notifyNewMessages:newUnseenMessages.count];
+        }
+    } : nil];
+
     Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
     
     [self finishMessageHeadersFetching];
@@ -580,7 +585,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     }
     
     if(finishFetch) {
-        [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount];
+        [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
         
         [self finishMessageHeadersFetching];
         

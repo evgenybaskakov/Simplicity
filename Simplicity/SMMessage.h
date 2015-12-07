@@ -10,6 +10,12 @@
 
 #import <MailCore/MailCore.h>
 
+typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
+    SMMessageUpdateStatus_Unknown = 0,
+    SMMessageUpdateStatus_Persisted,
+    SMMessageUpdateStatus_New,
+};
+
 @interface SMMessage : NSObject <MCOHTMLRendererDelegate>
 
 @property (readonly) MCOMessageHeader *header;
@@ -35,7 +41,7 @@
 
 @property (readonly) NSData *data;
 
-@property BOOL updated;
+@property SMMessageUpdateStatus updateStatus;
 
 + (NSString*)parseAddress:(MCOAddress*)address;
 

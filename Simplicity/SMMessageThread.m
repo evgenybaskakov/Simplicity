@@ -241,7 +241,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             // TODO: can date be changed?
             Boolean hasUpdates = [message updateImapMessage:imapMessage];
             
-            [message setUpdated:YES];
+            message.updateStatus = SMMessageUpdateStatus_Persisted;
             
             BOOL nowUnseen = message.unseen;
             if(wasUnseen != nowUnseen) {
@@ -266,7 +266,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     // update the messages list
     SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage remoteFolder:remoteFolderName];
 
-    [message setUpdated:YES];
+    message.updateStatus = SMMessageUpdateStatus_New;
     
     [_messageCollection.messages insertObject:message atIndex:messageIndex];
 
@@ -284,7 +284,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return SMThreadUpdateResultStructureChanged;
 }
 
-- (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages {
+- (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
     NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
     
@@ -299,7 +299,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         for(NSUInteger i = 0, count = [_messageCollection count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messages objectAtIndex:i];
             
-            if(![message updated]) {
+            if(message.updateStatus == SMMessageUpdateStatus_Unknown) {
                 SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
 
                 [notUpdatedMessageIndices addIndex:i];
@@ -318,8 +318,9 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         for(NSUInteger i = 0, count = [_messageCollection.messagesByDate count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messagesByDate objectAtIndex:i];
             
-            if(![message updated])
+            if(message.updateStatus == SMMessageUpdateStatus_Unknown) {
                 [notUpdatedMessageIndices addIndex:i];
+            }
         }
         
         [_messageCollection.messagesByDate removeObjectsAtIndexes:notUpdatedMessageIndices];
@@ -342,10 +343,14 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         if(message.unseen) {
             _unseenMessagesCount++;
+            
+            if(message.updateStatus == SMMessageUpdateStatus_New) {
+                [addNewUnseenMessages addObject:message];
+            }
         }
 
         // clear messages update marks for future updates
-        [message setUpdated:NO];
+        message.updateStatus = SMMessageUpdateStatus_Unknown;
 
         SM_LOG_DEBUG(@"Thread %llu, message labels %@", _threadId, message.labels);
         [newLabels addObjectsFromArray:message.labels];
@@ -372,13 +377,13 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (void)cancelUpdate {
     for(SMMessage *message in [_messageCollection messages]) {
-        [message setUpdated:NO];
+        message.updateStatus = SMMessageUpdateStatus_Unknown;
     }
 }
 
 - (void)markAsUpdated {
     for(SMMessage *message in [_messageCollection messages]) {
-        [message setUpdated:YES];
+        message.updateStatus = SMMessageUpdateStatus_Persisted;
     }
 }
 

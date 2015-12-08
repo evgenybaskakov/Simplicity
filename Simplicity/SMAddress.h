@@ -17,6 +17,7 @@
 @property (readonly) NSString *email;
 
 + (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses;
++ (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses;
 
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email;
 - (id)initWithStringRepresentation:(NSString*)string;

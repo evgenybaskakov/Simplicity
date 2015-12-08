@@ -54,9 +54,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *_innerView;
     Boolean _fullAddressPanelShown;
     NSString *_lastSubject;
-    NSString *_lastTo;
-    NSString *_lastCc;
-    NSString *_lastBcc;
+    NSArray<SMAddress*> *_lastTo;
+    NSArray<SMAddress*> *_lastCc;
+    NSArray<SMAddress*> *_lastBcc;
     Boolean _doNotSaveDraftOnClose;
 }
 
@@ -65,9 +65,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     if(self) {
         _lastSubject = @"";
-        _lastTo = @"";
-        _lastCc = @"";
-        _lastBcc = @"";
+        _lastTo = @[];
+        _lastCc = @[];
+        _lastBcc = @[];
 
         NSView *view = [[SMFlippedView alloc] initWithFrame:frame backgroundColor:[NSColor colorWithCalibratedRed:0.90
                                                                                                             green:0.90
@@ -288,9 +288,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
     
     _lastSubject = _subjectBoxViewController.textField.stringValue;
-    _lastTo = _toBoxViewController.tokenField.stringValue;
-    _lastCc = _ccBoxViewController.tokenField.stringValue;
-    _lastBcc = _bccBoxViewController.tokenField.stringValue;
+    _lastTo = _toBoxViewController.tokenField.objectValue;
+    _lastCc = _ccBoxViewController.tokenField.objectValue;
+    _lastBcc = _bccBoxViewController.tokenField.objectValue;
     
     Boolean sendEnabled = (to != nil && to.count != 0);
     [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
@@ -303,7 +303,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 - (void)sendMessage {
     NSString *messageText = [_messageTextEditor getMessageText];
     
-    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.stringValue to:_toBoxViewController.tokenField.stringValue cc:_ccBoxViewController.tokenField.stringValue bcc:_bccBoxViewController.tokenField.stringValue];
+    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue];
 
     if(!_embedded) {
         [[[self view] window] close];
@@ -341,11 +341,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 - (Boolean)hasUnsavedContents {
     NSString *subject = _subjectBoxViewController.textField.stringValue;
-    NSString *to = _toBoxViewController.tokenField.stringValue;
-    NSString *cc = _ccBoxViewController.tokenField.stringValue;
-    NSString *bcc = _bccBoxViewController.tokenField.stringValue;
+    NSArray *to = _toBoxViewController.tokenField.objectValue;
+    NSArray *cc = _ccBoxViewController.tokenField.objectValue;
+    NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
 
-    return _messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToString:to] || ![_lastCc isEqualToString:cc] || ![_lastBcc isEqualToString:bcc];
+    return _messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToArray:to] || ![_lastCc isEqualToArray:cc] || ![_lastBcc isEqualToArray:bcc];
 }
 
 - (void)saveMessage {
@@ -357,9 +357,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
 
     NSString *subject = _subjectBoxViewController.textField.stringValue;
-    NSString *to = _toBoxViewController.tokenField.stringValue;
-    NSString *cc = _ccBoxViewController.tokenField.stringValue;
-    NSString *bcc = _bccBoxViewController.tokenField.stringValue;
+    NSArray *to = _toBoxViewController.tokenField.objectValue;
+    NSArray *cc = _ccBoxViewController.tokenField.objectValue;
+    NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
     
     _lastSubject = subject;
     _lastTo = to;

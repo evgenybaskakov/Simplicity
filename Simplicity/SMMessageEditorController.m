@@ -18,6 +18,7 @@
 #import "SMSimplicityContainer.h"
 #import "SMMessageBuilder.h"
 #import "SMMailbox.h"
+#import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
 #import "SMOutboxController.h"
@@ -63,11 +64,11 @@
 
 #pragma mark Actions
 
-- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
+- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[MCOAddress addressesWithNonEncodedRFC822String:to] cc:[MCOAddress addressesWithNonEncodedRFC822String:cc] bcc:[MCOAddress addressesWithNonEncodedRFC822String:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
@@ -86,7 +87,7 @@
     }
 }
 
-- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc {
+- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     if(_saveDraftOp) {
@@ -104,7 +105,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[MCOAddress addressesWithNonEncodedRFC822String:to] cc:[MCOAddress addressesWithNonEncodedRFC822String:cc] bcc:[MCOAddress addressesWithNonEncodedRFC822String:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

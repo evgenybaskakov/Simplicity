@@ -27,6 +27,16 @@
     return addressList;
 }
 
++ (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses {
+    NSMutableArray *addressList = [NSMutableArray array];
+    
+    for(SMAddress *address in mcoAddresses) {
+        [addressList addObject:[address mcoAddress]];
+    }
+    
+    return addressList;
+}
+
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email {
     self = [super init];
     

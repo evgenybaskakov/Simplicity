@@ -19,8 +19,8 @@
 - (id)initWithDraftUID:(uint32_t)draftMessageUid;
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)removeAttachmentItems:(NSArray*)attachmentItems;
-- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc;
-- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSString*)to cc:(NSString*)cc bcc:(NSString*)bcc;
+- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc;
+- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc;
 - (void)deleteSavedDraft;
 
 @end

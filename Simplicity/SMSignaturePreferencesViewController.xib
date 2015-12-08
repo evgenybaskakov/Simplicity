@@ -3,19 +3,99 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.WebKitIBPlugin" version="9060"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMSignaturePreferencesViewController">
             <connections>
+                <outlet property="accountList" destination="RQY-wt-5QP" id="tmM-xd-21b"/>
+                <outlet property="signatureEditor" destination="e3G-hQ-LvG" id="WJz-te-T74"/>
+                <outlet property="useOneSignatureCheckBox" destination="cdR-Cy-EEL" id="NkR-Cf-ZIV"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="569" height="180"/>
+            <rect key="frame" x="0.0" y="0.0" width="569" height="292"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RQY-wt-5QP">
+                    <rect key="frame" x="277" y="226" width="275" height="26"/>
+                    <animations/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="2cE-Wr-9sB" id="Sgs-qc-32u">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="kEM-RX-4Ym">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="2cE-Wr-9sB"/>
+                                <menuItem title="Item 2" id="js0-iU-KuA"/>
+                                <menuItem title="Item 3" id="kiW-6h-FIc"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="accountListAction:" target="-2" id="44P-DE-BsH"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="apU-A6-PmH">
+                    <rect key="frame" x="18" y="232" width="255" height="17"/>
+                    <animations/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Signature for account:" id="B9Z-Ne-T8Y">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <webView fixedFrame="YES" maintainsBackForwardList="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e3G-hQ-LvG">
+                    <rect key="frame" x="20" y="20" width="529" height="189"/>
+                    <animations/>
+                    <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImageLooping="NO">
+                        <nil key="identifier"/>
+                    </webPreferences>
+                </webView>
+                <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="s5d-SH-BkC">
+                    <rect key="frame" x="19" y="17" width="531" height="5"/>
+                    <animations/>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <font key="titleFont" metaFont="system"/>
+                </box>
+                <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="bSl-4Y-yBC">
+                    <rect key="frame" x="19" y="207" width="531" height="5"/>
+                    <animations/>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <font key="titleFont" metaFont="system"/>
+                </box>
+                <box horizontalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="EN0-cR-2f0">
+                    <rect key="frame" x="17" y="19" width="5" height="191"/>
+                    <animations/>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <font key="titleFont" metaFont="system"/>
+                </box>
+                <box horizontalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="8yG-ZE-kkh">
+                    <rect key="frame" x="547" y="19" width="5" height="191"/>
+                    <animations/>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <font key="titleFont" metaFont="system"/>
+                </box>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cdR-Cy-EEL">
+                    <rect key="frame" x="277" y="256" width="274" height="18"/>
+                    <animations/>
+                    <buttonCell key="cell" type="check" title="Use one signature for all accounts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hrm-9X-OWN">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="useOneSignatureAction:" target="-2" id="yFD-bd-m5m"/>
+                    </connections>
+                </button>
+            </subviews>
             <animations/>
+            <point key="canvasLocation" x="381.5" y="398"/>
         </customView>
     </objects>
 </document>

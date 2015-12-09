@@ -21,11 +21,13 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
 
 @property (nonatomic) BOOL shouldShowContactImages;
 @property (nonatomic) BOOL shouldShowNotifications;
+@property (nonatomic) BOOL shouldUseSingleSignature;
 @property (nonatomic) NSUInteger messageListPreviewLineCount;
 @property (nonatomic) NSUInteger messageCheckPeriodSec;
 @property (nonatomic) NSString *downloadsFolder;
 @property (nonatomic) NSUInteger localStorageSizeMb;
 @property (nonatomic) SMDefaultReplyAction defaultReplyAction;
+@property (nonatomic) NSString *singleSignature;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

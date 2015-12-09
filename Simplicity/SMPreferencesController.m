@@ -43,14 +43,18 @@
 #define kLocalStorageSizeMb             @"LocalStorageSizeMb"
 #define kDefaultReplyAction             @"DefaultReplyAction"
 #define kShouldShowNotifications        @"ShouldShowNotifications"
+#define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
+#define kSingleSignature                @"SingleSignature"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
     BOOL _shouldShowContactImagesCached;
+    BOOL _shouldUseSingleSignatureCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
     NSString *_downloadsFolderCached;
     NSUInteger _localStorageSizeMbCached;
+    NSString *_singleSignatureCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -803,6 +807,54 @@
 
 - (void)setDefaultReplyAction:(SMDefaultReplyAction)value {
     [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kDefaultReplyAction];
+}
+
+#pragma mark Signatures
+
+- (BOOL)shouldUseSingleSignature {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseSingleSignature] == nil) {
+            _shouldUseSingleSignatureCached = YES;
+            
+            SM_LOG_INFO(@"Using default kShouldUseSingleSignature: %@", _shouldUseSingleSignatureCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldUseSingleSignatureCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseSingleSignature]);
+            
+            SM_LOG_INFO(@"Loaded kShouldUseSingleSignature: %@", _shouldUseSingleSignatureCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldUseSingleSignatureCached;
+}
+
+- (void)setShouldUseSingleSignature:(BOOL)shouldUseSingleSignature {
+    [[NSUserDefaults standardUserDefaults] setBool:shouldUseSingleSignature forKey:kShouldUseSingleSignature];
+    
+    _shouldUseSingleSignatureCached = shouldUseSingleSignature;
+}
+
+
+- (NSString*)singleSignature {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        _singleSignatureCached = (NSString*)[[NSUserDefaults standardUserDefaults] objectForKey:kSingleSignature];
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _singleSignatureCached;
+}
+
+- (void)setSingleSignature:(NSString*)signatureHtml {
+    [[NSUserDefaults standardUserDefaults] setObject:signatureHtml forKey:kSingleSignature];
+    
+    _singleSignatureCached = signatureHtml;
 }
 
 @end

@@ -7,6 +7,9 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMPreferencesController.h"
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
@@ -48,22 +51,26 @@
 
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind {
     _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : @"TODO: signature for this account";
+    NSString *signatureText = signature? [NSString stringWithFormat:@"<br/>%@", signature] : @"";
     
     NSString *bodyHtml = nil;
     
     if(htmlContents == nil) {
         NSAssert(kind == kEmptyEditorContentsKind, @"invalid editor contents kind %u", kind);
 
-        bodyHtml = [NSString stringWithFormat:@"%@%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
+        bodyHtml = [NSString stringWithFormat:@"%@%@%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
     }
     else {
         NSAssert(htmlContents != nil, @"htmlContents is nil");
 
         if(kind == kFoldedReplyEditorContentsKind) {
-            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
+            bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedReplyEditorContentsKind) {
-            bodyHtml = [NSString stringWithFormat:@"%@Compose the reply here...<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
+            bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedDraftEditorContentsKind) {
             // TODO: may need to adjust the HTML body id (set "SimplicityEditor" stuff, etc...)

@@ -264,6 +264,16 @@
     [self reloadMessageList:[preserveSelection boolValue]];
 }
 
+/*
+ 
+ NSScrollView* scrollView = [self.tableView enclosingScrollView];
+ CGRect visibleRect = scrollView.contentView.visibleRect;
+ NSRange range = [self.tableView rowsInRect:visibleRect];
+ 
+ levelForRow?
+ itemForRow?
+ 
+ */
 - (void)reloadMessageList:(Boolean)preserveSelection {
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which

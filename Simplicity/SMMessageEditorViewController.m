@@ -345,7 +345,27 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
 
-    return _messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments || ![_lastSubject isEqualToString:subject] || ![_lastTo isEqualToArray:to] || ![_lastCc isEqualToArray:cc] || ![_lastBcc isEqualToArray:bcc];
+    if(_messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
+        return YES;
+    }
+    
+    if((_lastSubject != nil || subject != nil) && ![_lastSubject isEqualToString:subject]) {
+        return YES;
+    }
+
+    if((_lastTo != nil || to != nil) && ![_lastTo isEqualToArray:to]) {
+        return YES;
+    }
+
+    if((_lastCc != nil || cc != nil) && ![_lastCc isEqualToArray:cc]) {
+        return YES;
+    }
+
+    if((_lastBcc != nil || bcc != nil) && ![_lastBcc isEqualToArray:bcc]) {
+        return YES;
+    }
+
+    return NO;
 }
 
 - (void)saveMessage {

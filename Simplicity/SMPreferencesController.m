@@ -20,7 +20,19 @@
 #define kServerTypeIMAP                 @"IMAP"
 #define kServerTypeSMTP                 @"SMTP"
 
+// General properties
 #define kAccountsCount                  @"AccountsCount"
+#define kShouldShowContactImages        @"ShouldShowContactImages"
+#define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
+#define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
+#define kDownloadsFolder                @"DownloadsFolder"
+#define kLocalStorageSizeMb             @"LocalStorageSizeMb"
+#define kDefaultReplyAction             @"DefaultReplyAction"
+#define kShouldShowNotifications        @"ShouldShowNotifications"
+#define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
+#define kSingleSignature                @"SingleSignature"
+
+// Per-account properties
 #define kAccountName                    @"AccountName"
 #define kFullUserName                   @"FullUserName"
 #define kUserEmail                      @"UserEmail"
@@ -36,15 +48,6 @@
 #define kSmtpConnectionType             @"SmtpConnectionType"
 #define kSmtpAuthType                   @"SmtpAuthType"
 #define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
-#define kShouldShowContactImages        @"ShouldShowContactImages"
-#define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
-#define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
-#define kDownloadsFolder                @"DownloadsFolder"
-#define kLocalStorageSizeMb             @"LocalStorageSizeMb"
-#define kDefaultReplyAction             @"DefaultReplyAction"
-#define kShouldShowNotifications        @"ShouldShowNotifications"
-#define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
-#define kSingleSignature                @"SingleSignature"
 #define kAccountSignature               @"AccountSignature"
 
 @implementation SMPreferencesController {
@@ -258,6 +261,7 @@
     [self removeProperty:kSmtpConnectionType idx:idx];
     [self removeProperty:kSmtpAuthType idx:idx];
     [self removeProperty:kSmtpNeedCheckCertificate idx:idx];
+    [self removeProperty:kAccountSignature idx:idx];
     
     [[NSUserDefaults standardUserDefaults] setInteger:(accountCount - 1) forKey:kAccountsCount];
     [[NSUserDefaults standardUserDefaults] synchronize];

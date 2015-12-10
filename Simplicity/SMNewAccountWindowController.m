@@ -407,8 +407,9 @@ static const NSUInteger LAST_STEP = 2;
         
         [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider ];
         
-        if([[appDelegate appController] preferencesWindowShown]) {
-            [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+        [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+
+        if(![[appDelegate appController] preferencesWindowShown]) {
             [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
         }
     }

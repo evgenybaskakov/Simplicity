@@ -60,19 +60,12 @@
     [self saveSignature:(_useOneSignatureCheckBox.state == NSOnState? NO : YES)];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    BOOL useSingleSignature = (_useOneSignatureCheckBox.state == NSOnState);
 
-    if(_useOneSignatureCheckBox.state == NSOnState) {
-        [[appDelegate preferencesController] setShouldUseSingleSignature:YES];
+    [[appDelegate preferencesController] setShouldUseSingleSignature:useSingleSignature];
 
-        [self initSignatureList:YES];
-        [self initSignatureEditor:YES];
-    }
-    else {
-        [[appDelegate preferencesController] setShouldUseSingleSignature:NO];
-
-        [self initSignatureList:NO];
-        [self initSignatureEditor:NO];
-    }
+    [self initSignatureList:useSingleSignature];
+    [self initSignatureEditor:useSingleSignature];
 }
 
 - (IBAction)accountListAction:(id)sender {
@@ -128,6 +121,24 @@
     else {
         [[appDelegate preferencesController] setAccountSignature:_selectedAccount signature:signature];
     }
+}
+
+- (void)reloadAccountSignatures {
+    NSString *selectedAccountName = _signatureList.titleOfSelectedItem;
+    BOOL useSingleSignature = (_useOneSignatureCheckBox.state == NSOnState? YES : NO);
+    
+    [self initSignatureList:useSingleSignature];
+    
+    _selectedAccount = [[_signatureList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
+    if(_selectedAccount == NSNotFound) {
+        SM_LOG_INFO(@"Account %@ disappeared, using default signature list position", selectedAccountName);
+        
+        _selectedAccount = 0;
+    }
+
+    [_signatureList selectItemAtIndex:_selectedAccount];
+    
+    [self initSignatureEditor:useSingleSignature];
 }
 
 @end

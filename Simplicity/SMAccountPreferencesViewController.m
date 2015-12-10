@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
+#import "SMPreferencesWindowController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -321,6 +322,9 @@
     if(selectedAccount > 0) {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
     }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

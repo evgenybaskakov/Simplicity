@@ -10,4 +10,6 @@
 
 @interface SMSignaturePreferencesViewController : NSViewController
 
+- (void)reloadAccountSignatures;
+
 @end

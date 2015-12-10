@@ -45,6 +45,7 @@
 #define kShouldShowNotifications        @"ShouldShowNotifications"
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
+#define kAccountSignature               @"AccountSignature"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
@@ -523,6 +524,17 @@
 - (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
     NSNumber *number = (NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate idx:idx];
     return number? [number unsignedIntegerValue] : 0;
+}
+
+#pragma mark Signature
+
+- (void)setAccountSignature:(NSUInteger)idx signature:(NSString*)signature {
+    [self setProperty:kAccountSignature idx:idx obj:signature];
+}
+
+- (NSString*)accountSignature:(NSUInteger)idx {
+    NSString *str = (NSString*)[self loadProperty:kAccountSignature idx:idx];
+    return str? str : @"";
 }
 
 #pragma mark Password management

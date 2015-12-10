@@ -71,6 +71,9 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
 - (NSString*)databaseFilePath:(NSUInteger)idx;
 - (NSString*)cacheDirPath:(NSUInteger)idx;
 
+- (void)setAccountSignature:(NSUInteger)idx signature:(NSString*)signature;
+- (NSString*)accountSignature:(NSUInteger)idx;
+
 - (NSString*)imapServer:(NSUInteger)idx;
 - (unsigned int)imapPort:(NSUInteger)idx;
 - (NSString*)imapUserName:(NSUInteger)idx;

@@ -22,7 +22,9 @@
 
 @end
 
-@implementation SMSignaturePreferencesViewController
+@implementation SMSignaturePreferencesViewController {
+    NSUInteger _selectedAccount;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -31,17 +33,21 @@
 
     [_signatureEditor setEditable:YES];
     [_signatureEditor setEditingDelegate:self];
-    
+
+    _selectedAccount = 0; // TODO: use current account; reset this if account is deleted
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] shouldUseSingleSignature]) {
         _useOneSignatureCheckBox.state = NSOnState;
         
-        [self initSignature:YES];
+        [self initSignatureList:YES];
+        [self initSignatureEditor:YES];
     }
     else {
         _useOneSignatureCheckBox.state = NSOffState;
 
-        [self initSignature:NO];
+        [self initSignatureList:NO];
+        [self initSignatureEditor:NO];
     }
 }
 
@@ -58,58 +64,70 @@
     if(_useOneSignatureCheckBox.state == NSOnState) {
         [[appDelegate preferencesController] setShouldUseSingleSignature:YES];
 
-        [self initSignature:YES];
+        [self initSignatureList:YES];
+        [self initSignatureEditor:YES];
     }
     else {
         [[appDelegate preferencesController] setShouldUseSingleSignature:NO];
 
-        [self initSignature:NO];
-
-        SM_LOG_WARNING(@"TODO");
+        [self initSignatureList:NO];
+        [self initSignatureEditor:NO];
     }
 }
 
 - (IBAction)accountListAction:(id)sender {
-    [self saveSignature:(_useOneSignatureCheckBox.state == NSOnState? YES : NO)];
+    BOOL useSingleSignature = (_useOneSignatureCheckBox.state == NSOnState? YES : NO);
+    
+    [self saveSignature:useSingleSignature];
 
-    SM_LOG_WARNING(@"TODO");
+    _selectedAccount = [_signatureList indexOfSelectedItem];
+
+    [self initSignatureEditor:useSingleSignature];
 }
 
-- (void)initSignature:(BOOL)useSingleSignature {
+- (void)initSignatureList:(BOOL)useSingleSignature {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     [_signatureList removeAllItems];
     
     if(useSingleSignature) {
         [_signatureList setEnabled:NO];
+    }
+    else {
+        [_signatureList setEnabled:YES];
+        
+        for(NSUInteger i = 0, n = [[appDelegate preferencesController] accountsCount]; i < n; i++) {
+            [_signatureList addItemWithTitle:[[appDelegate preferencesController] accountName:i]];
+        }
+        
+        [_signatureList selectItemAtIndex:_selectedAccount];
+    }
+}
 
+- (void)initSignatureEditor:(BOOL)useSingleSignature {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(useSingleSignature) {
         NSString *signature = [[appDelegate preferencesController] singleSignature];
         [_signatureEditor.mainFrame loadHTMLString:(signature? signature : @"") baseURL:nil];
     }
     else {
-        [_signatureList setEnabled:YES];
-
-        [_signatureEditor.mainFrame loadHTMLString:@"" baseURL:nil];
-
-        // TODO: add account names
-        //        [_signatureList addItemWithTitle:@""];
-
-        SM_LOG_WARNING(@"TODO");
+        NSString *signature = [[appDelegate preferencesController] accountSignature:_selectedAccount];
+        [_signatureEditor.mainFrame loadHTMLString:signature baseURL:nil];
     }
 }
 
 - (void)saveSignature:(BOOL)useSingleSignature {
+    NSString *signature = [(DOMHTMLElement *)[[_signatureEditor.mainFrame DOMDocument] documentElement] innerHTML];
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
     if(useSingleSignature) {
-        NSString *signature = [(DOMHTMLElement *)[[_signatureEditor.mainFrame DOMDocument] documentElement] innerHTML];
         [[appDelegate preferencesController] setSingleSignature:signature];
     }
     else {
-        SM_LOG_WARNING(@"TODO");
+        [[appDelegate preferencesController] setAccountSignature:_selectedAccount signature:signature];
     }
-    
-    // TODO: save account specific signatures
 }
 
 @end

@@ -10,6 +10,7 @@
 
 @class SMRoundedImageView;
 @class SMMessageBookmarksView;
+@class SMMessageThread;
 
 @interface SMMessageListCellView : NSTableCellView
 
@@ -29,7 +30,7 @@
 @property IBOutlet NSButton *messagesCountButton;
 @property IBOutlet NSImageView *attachmentImage;
 
-@property uint64_t messageThreadId;
+@property SMMessageThread *messageThread;
 
 - (void)initFields;
 

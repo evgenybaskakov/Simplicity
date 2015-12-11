@@ -137,8 +137,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
-    Boolean preserveSelection = YES;
-    [[appController messageListViewController] reloadMessageList:preserveSelection];
+    [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
 }
 
 - (void)updateMessageThreadView {
@@ -199,7 +198,7 @@
         NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
         Boolean hasUpdates = [hasUpdatesNumber boolValue];
 
-        [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates];
+        [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];
     }
 }
 

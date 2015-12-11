@@ -39,7 +39,8 @@
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
-    NSMutableArray *_visibleRows;
+    NSMutableArray<SMMessageThread*> *_visibleRows;
+    NSRect _visibleRect;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -184,7 +185,7 @@
     
     [view initFields];
     
-    view.messageThreadId = messageThread.threadId;
+    view.messageThread = messageThread;
     
     [view.fromTextField setStringValue:[SMMessage parseAddress:firstMessage.fromAddress]];
     [view.subjectTextField setStringValue:[firstMessage subject]];
@@ -268,19 +269,49 @@
     [self reloadMessageList:[preserveSelection boolValue]];
 }
 
-- (void)saveVisibleMessageThreads {
-    NSScrollView* scrollView = [_messageListTableView enclosingScrollView];
-    CGRect visibleRect = scrollView.contentView.visibleRect;
-    NSRange range = [_messageListTableView rowsInRect:visibleRect];
+- (void)saveScrollPosition {
+    _visibleRect = _messageListTableView.enclosingScrollView.contentView.visibleRect;
     
     [_visibleRows removeAllObjects];
 
+    NSRange range = [_messageListTableView rowsInRect:_visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
         SMMessageListCellView *rowView = [_messageListTableView viewAtColumn:0 row:row makeIfNecessary:NO];
         
         if(rowView != nil) {
-            [_visibleRows addObject:[NSNumber numberWithUnsignedLongLong:rowView.messageThreadId]];
+            [_visibleRows addObject:rowView.messageThread];
         }
+    }
+}
+
+- (void)restoreScrollPosition {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageStorage *messageStorage = [[appDelegate model] messageStorage];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
+    for(NSUInteger i = 0; i < _visibleRows.count; i++) {
+        SMMessageThread *messageThread = _visibleRows[i];
+        NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
+        
+        if(threadIndex != NSNotFound) {
+            
+            // TODO
+            
+            break;
+        }
+    }
+}
+
+- (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition {
+    if(updateScrollPosition) {
+        [self saveScrollPosition];
+        [self reloadMessageList:preserveSelection];
+        [self restoreScrollPosition];
+    }
+    else {
+        [self reloadMessageList:preserveSelection];
     }
 }
 
@@ -373,13 +404,12 @@
     }
 }
 
-- (void)messageHeadersSyncFinished:(Boolean)hasUpdates {
+- (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {
     [self stopProgressIndicators];
 
     if(hasUpdates) {
-        const Boolean preserveSelection = YES;
-        [self reloadMessageList:preserveSelection];
-        
+        [self reloadMessageList:YES updateScrollPosition:updateScrollPosition];
+
         SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
         [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     }

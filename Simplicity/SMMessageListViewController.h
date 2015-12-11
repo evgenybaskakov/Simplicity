@@ -22,7 +22,8 @@
 - (IBAction)loadMoreMessages:(id)sender;
 
 - (void)reloadMessageList:(Boolean)preserveSelection;
-- (void)messageHeadersSyncFinished:(Boolean)hasUpdates;
+- (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
+- (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;
 
 - (void)stopProgressIndicators;
 

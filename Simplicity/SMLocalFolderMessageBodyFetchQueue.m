@@ -184,7 +184,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     }
                 }
                 else {
-                    SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (error code %ld); trying again...", uid, remoteFolderName, error.code);
+                    SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@); trying again...", uid, remoteFolderName, error);
 
                     [currentOpDesc startOp];
                 }

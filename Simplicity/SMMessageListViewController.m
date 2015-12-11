@@ -39,6 +39,7 @@
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
+    NSMutableArray *_visibleRows;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -48,6 +49,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
+        _visibleRows = [NSMutableArray array];
     }
 
     return self;
@@ -175,12 +177,14 @@
     NSAssert([messageThread messagesCount], @"no messages in the thread");
     SMMessage *firstMessage = [messageThread messagesSortedByDate][0];
     
+    SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [SMMessage parseAddress:firstMessage.fromAddress], firstMessage.subject, messageThread.unseen);
+
     SMMessageListCellView *view = [tableView makeViewWithIdentifier:@"MessageCell" owner:self];
     NSAssert(view != nil, @"view is nil");
-
+    
     [view initFields];
-
-    SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [SMMessage parseAddress:firstMessage.fromAddress], [firstMessage subject], messageThread.unseen);
+    
+    view.messageThreadId = messageThread.threadId;
     
     [view.fromTextField setStringValue:[SMMessage parseAddress:firstMessage.fromAddress]];
     [view.subjectTextField setStringValue:[firstMessage subject]];
@@ -264,16 +268,22 @@
     [self reloadMessageList:[preserveSelection boolValue]];
 }
 
-/*
- 
- NSScrollView* scrollView = [self.tableView enclosingScrollView];
- CGRect visibleRect = scrollView.contentView.visibleRect;
- NSRange range = [self.tableView rowsInRect:visibleRect];
- 
- levelForRow?
- itemForRow?
- 
- */
+- (void)saveVisibleMessageThreads {
+    NSScrollView* scrollView = [_messageListTableView enclosingScrollView];
+    CGRect visibleRect = scrollView.contentView.visibleRect;
+    NSRange range = [_messageListTableView rowsInRect:visibleRect];
+    
+    [_visibleRows removeAllObjects];
+
+    for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
+        SMMessageListCellView *rowView = [_messageListTableView viewAtColumn:0 row:row makeIfNecessary:NO];
+        
+        if(rowView != nil) {
+            [_visibleRows addObject:[NSNumber numberWithUnsignedLongLong:rowView.messageThreadId]];
+        }
+    }
+}
+
 - (void)reloadMessageList:(Boolean)preserveSelection {
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which

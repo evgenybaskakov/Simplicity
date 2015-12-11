@@ -27,8 +27,9 @@
 @property (weak) IBOutlet SMMessageBookmarksView *bookmarksView;
 
 @property IBOutlet NSButton *messagesCountButton;
-
 @property IBOutlet NSImageView *attachmentImage;
+
+@property uint64_t messageThreadId;
 
 - (void)initFields;
 

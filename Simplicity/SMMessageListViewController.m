@@ -41,6 +41,8 @@
     NSArray *_selectedMessageThreadsForContextMenu;
     NSMutableArray<SMMessageThread*> *_visibleRows;
     NSRect _visibleRect;
+    CGFloat _visibleRowOffset;
+    CGFloat _visibleRowHeight;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -270,16 +272,27 @@
 }
 
 - (void)saveScrollPosition {
-    _visibleRect = _messageListTableView.enclosingScrollView.contentView.visibleRect;
+    _visibleRect = _messageListTableView.visibleRect;
     
     [_visibleRows removeAllObjects];
 
+    if(_visibleRect.origin.y <= 0) {
+        return;
+    }
+    
     NSRange range = [_messageListTableView rowsInRect:_visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
         SMMessageListCellView *rowView = [_messageListTableView viewAtColumn:0 row:row makeIfNecessary:NO];
         
         if(rowView != nil) {
             [_visibleRows addObject:rowView.messageThread];
+         
+            if(i == 0) {
+                _visibleRowHeight = rowView.frame.size.height + _messageListTableView.intercellSpacing.height;
+                _visibleRowOffset = fmodf(_visibleRect.origin.y, _visibleRowHeight);
+
+//                SM_LOG_INFO(@"_visibleRowHeight: %f, intercellSpacing: %f", _visibleRowHeight, _messageListTableView.intercellSpacing.height);
+            }
         }
     }
 }
@@ -295,9 +308,24 @@
         SMMessageThread *messageThread = _visibleRows[i];
         NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
         
+        if(i == 0) {
+            SM_LOG_INFO(@"first thread index: %lu", threadIndex);
+            if(threadIndex != 0) {
+                SM_LOG_INFO(@"break me");
+            }
+        }
+
         if(threadIndex != NSNotFound) {
+            CGFloat offset = threadIndex * _visibleRowHeight + _visibleRowOffset;
+            if(offset > i * _visibleRowHeight) {
+                offset -= i * _visibleRowHeight;
+            }
+            else {
+                offset = 0;
+            }
             
-            // TODO
+            NSPoint scrollPosition = NSMakePoint(0, offset);
+            [_messageListTableView scrollPoint:scrollPosition];
             
             break;
         }

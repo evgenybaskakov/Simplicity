@@ -39,10 +39,11 @@
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
-    NSMutableArray<SMMessageThread*> *_visibleRows;
+    NSMutableArray<SMMessageThread*> *_visibleMessageThreads;
     NSRect _visibleRect;
     CGFloat _visibleRowOffset;
     CGFloat _visibleRowHeight;
+    NSMutableDictionary *_threadsAtRows;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -52,7 +53,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
-        _visibleRows = [NSMutableArray array];
+        _visibleMessageThreads = [NSMutableArray array];
+        _threadsAtRows = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -187,8 +189,6 @@
     
     [view initFields];
     
-    view.messageThread = messageThread;
-    
     [view.fromTextField setStringValue:[SMMessage parseAddress:firstMessage.fromAddress]];
     [view.subjectTextField setStringValue:[firstMessage subject]];
     [view.dateTextField setStringValue:[firstMessage localizedDate]];
@@ -247,6 +247,8 @@
     if(contactImage != nil) {
         view.contactImage.image = contactImage;
     }
+
+    [_threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];
     
     return view;
 }
@@ -274,25 +276,28 @@
 - (void)saveScrollPosition {
     _visibleRect = _messageListTableView.visibleRect;
     
-    [_visibleRows removeAllObjects];
+    [_visibleMessageThreads removeAllObjects];
 
     if(_visibleRect.origin.y <= 0) {
         return;
     }
-    
+
     NSRange range = [_messageListTableView rowsInRect:_visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
-        SMMessageListCellView *rowView = [_messageListTableView viewAtColumn:0 row:row makeIfNecessary:NO];
+        SMMessageThread *messageThread = [_threadsAtRows objectForKey:[NSNumber numberWithUnsignedInteger:row]];
         
-        if(rowView != nil) {
-            [_visibleRows addObject:rowView.messageThread];
+        if(messageThread != nil) {
+            [_visibleMessageThreads addObject:messageThread];
          
             if(i == 0) {
-                _visibleRowHeight = rowView.frame.size.height + _messageListTableView.intercellSpacing.height;
+                CGFloat rowHeight = [self tableView:_messageListTableView heightOfRow:row];
+                
+                _visibleRowHeight = rowHeight + _messageListTableView.intercellSpacing.height;
                 _visibleRowOffset = fmodf(_visibleRect.origin.y, _visibleRowHeight);
-
-//                SM_LOG_INFO(@"_visibleRowHeight: %f, intercellSpacing: %f", _visibleRowHeight, _messageListTableView.intercellSpacing.height);
             }
+        }
+        else {
+            SM_LOG_WARNING(@"Unexpectedly, no thread at row %lu", row);
         }
     }
 }
@@ -304,17 +309,10 @@
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    for(NSUInteger i = 0; i < _visibleRows.count; i++) {
-        SMMessageThread *messageThread = _visibleRows[i];
+    for(NSUInteger i = 0; i < _visibleMessageThreads.count; i++) {
+        SMMessageThread *messageThread = _visibleMessageThreads[i];
         NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
         
-        if(i == 0) {
-            SM_LOG_INFO(@"first thread index: %lu", threadIndex);
-            if(threadIndex != 0) {
-                SM_LOG_INFO(@"break me");
-            }
-        }
-
         if(threadIndex != NSNotFound) {
             CGFloat offset = threadIndex * _visibleRowHeight + _visibleRowOffset;
             if(offset > i * _visibleRowHeight) {

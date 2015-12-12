@@ -30,8 +30,6 @@
 @property IBOutlet NSButton *messagesCountButton;
 @property IBOutlet NSImageView *attachmentImage;
 
-@property SMMessageThread *messageThread;
-
 - (void)initFields;
 
 - (void)showContactImage;

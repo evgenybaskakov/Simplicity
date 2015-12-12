@@ -40,6 +40,7 @@
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
     NSMutableArray<SMMessageThread*> *_visibleMessageThreads;
+    NSMutableIndexSet *_visibleSelectedMessageThreadIndexes;
     NSRect _visibleRect;
     CGFloat _visibleRowOffset;
     CGFloat _visibleRowHeight;
@@ -54,6 +55,7 @@
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
         _visibleMessageThreads = [NSMutableArray array];
+        _visibleSelectedMessageThreadIndexes = [NSMutableIndexSet indexSet];
         _threadsAtRows = [NSMutableDictionary dictionary];
     }
 
@@ -277,10 +279,13 @@
     _visibleRect = _messageListTableView.visibleRect;
     
     [_visibleMessageThreads removeAllObjects];
+    [_visibleSelectedMessageThreadIndexes removeAllIndexes];
 
     if(_visibleRect.origin.y <= 0) {
         return;
     }
+    
+    NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
 
     NSRange range = [_messageListTableView rowsInRect:_visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
@@ -288,6 +293,10 @@
         
         if(messageThread != nil) {
             [_visibleMessageThreads addObject:messageThread];
+            
+            if([selectedRows containsIndex:row]) {
+                [_visibleSelectedMessageThreadIndexes addIndex:i];
+            }
          
             if(i == 0) {
                 CGFloat rowHeight = [self tableView:_messageListTableView heightOfRow:row];
@@ -303,31 +312,47 @@
 }
 
 - (void)restoreScrollPosition {
+    // First try to jump to one of previously visible selected rows.
+    for(NSUInteger i = _visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
+        if([self restoreScrollPositionAtRowIndex:i]) {
+            return;
+        }
+    }
+
+    // If all selected rows vanished, try to jump to an old visible row.
+    for(NSUInteger i = 0; i < _visibleMessageThreads.count; i++) {
+        if([self restoreScrollPositionAtRowIndex:i]) {
+            return;
+        }
+    }
+}
+
+- (BOOL)restoreScrollPositionAtRowIndex:(NSUInteger)idx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageStorage *messageStorage = [[appDelegate model] messageStorage];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    for(NSUInteger i = 0; i < _visibleMessageThreads.count; i++) {
-        SMMessageThread *messageThread = _visibleMessageThreads[i];
-        NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
-        
-        if(threadIndex != NSNotFound) {
-            CGFloat offset = threadIndex * _visibleRowHeight + _visibleRowOffset;
-            if(offset > i * _visibleRowHeight) {
-                offset -= i * _visibleRowHeight;
-            }
-            else {
-                offset = 0;
-            }
-            
-            NSPoint scrollPosition = NSMakePoint(0, offset);
-            [_messageListTableView scrollPoint:scrollPosition];
-            
-            break;
+    SMMessageThread *messageThread = _visibleMessageThreads[idx];
+    NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
+    
+    if(threadIndex != NSNotFound) {
+        CGFloat offset = threadIndex * _visibleRowHeight + _visibleRowOffset;
+        if(offset > idx * _visibleRowHeight) {
+            offset -= idx * _visibleRowHeight;
         }
+        else {
+            offset = 0;
+        }
+        
+        NSPoint scrollPosition = NSMakePoint(0, offset);
+        [_messageListTableView scrollPoint:scrollPosition];
+        
+        return YES;
     }
+    
+    return NO;
 }
 
 - (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition {

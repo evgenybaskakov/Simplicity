@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
 @property (nonatomic) NSUInteger localStorageSizeMb;
 @property (nonatomic) SMDefaultReplyAction defaultReplyAction;
 @property (nonatomic) NSString *singleSignature;
+@property (nonatomic) NSUInteger logLevel;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

@@ -31,6 +31,7 @@
 #define kShouldShowNotifications        @"ShouldShowNotifications"
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
+#define kLogLevel                       @"LogLevel"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -871,6 +872,35 @@
     [[NSUserDefaults standardUserDefaults] setObject:signatureHtml forKey:kSingleSignature];
     
     _singleSignatureCached = signatureHtml;
+}
+
+#pragma mark Log level
+
+- (NSUInteger)logLevel {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
+            SMLogLevel = SM_LOG_LEVEL_INFO;
+            
+            SM_LOG_INFO(@"Using default SMLogLevel: %lu", SMLogLevel);
+        }
+        else {
+            SMLogLevel = [[NSUserDefaults standardUserDefaults] integerForKey:kLogLevel];
+            
+            SM_LOG_INFO(@"Loaded SMLogLevel: %lu", SMLogLevel);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return SMLogLevel;
+}
+
+- (void)setLogLevel:(NSUInteger)logLevel {
+    [[NSUserDefaults standardUserDefaults] setInteger:logLevel forKey:kLogLevel];
+    
+    SMLogLevel = logLevel;
 }
 
 @end

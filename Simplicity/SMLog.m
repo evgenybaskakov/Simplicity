@@ -8,9 +8,9 @@
 
 #import "SMLog.h"
 
-const int SMLogLevel = SM_LOG_LEVEL_INFO;
+NSUInteger SMLogLevel = SM_LOG_LEVEL_INFO;
 
-static const char *logLevelName(int level) {
+static const char *logLevelName(NSUInteger level) {
     switch(level) {
         case SM_LOG_LEVEL_FATAL:   return "FF";
         case SM_LOG_LEVEL_ERROR:   return "EE";
@@ -27,7 +27,7 @@ static const char *getFileName(const char *path) {
     return sep? sep+1 : path;
 }
 
-void SMLog(int level, const char *file, int line, const char *func, NSString *format, ...) {
+void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) {
     va_list args;
     va_start(args, format);
 

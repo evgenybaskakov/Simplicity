@@ -28,6 +28,6 @@
 #define SM_LOG_DEBUG(...)   SM_LOG(SM_LOG_LEVEL_DEBUG, __VA_ARGS__)
 #define SM_LOG_NOISE(...)   SM_LOG(SM_LOG_LEVEL_NOISE, __VA_ARGS__)
 
-extern const int SMLogLevel;
+extern NSUInteger SMLogLevel;
 
-void SMLog(int level, const char *file, int line, const char *func, NSString *format, ...) NS_FORMAT_FUNCTION(5,6);
+void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) NS_FORMAT_FUNCTION(5,6);

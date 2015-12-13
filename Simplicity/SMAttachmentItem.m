@@ -58,7 +58,13 @@
 }
 
 - (NSString*)fileName {
-    return _mcoAttachment.filename;
+    NSString *mcoFilename = _mcoAttachment.filename;
+    
+    if(mcoFilename != nil) {
+        return mcoFilename;
+    }
+    
+    return @"Untitled";
 }
 
 - (NSString*)localFilePath {

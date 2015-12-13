@@ -85,7 +85,7 @@
     SMAppController *appController = [appDelegate appController];
     
     Boolean preserveSelection = NO;
-    [[appController messageListViewController] reloadMessageList:preserveSelection];
+    [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
 }
 
 - (void)clearCurrentFolderSelection {

@@ -64,7 +64,8 @@
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
-    ScrollPosition *_scrollPosition;
+    NSMutableDictionary<NSString*, ScrollPosition*> *_folderScrollPositions;
+    ScrollPosition *_currentFolderScrollPosition;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -74,7 +75,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
-        _scrollPosition = [[ScrollPosition alloc] init];
+        _folderScrollPositions = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -268,7 +269,7 @@
         view.contactImage.image = contactImage;
     }
 
-    [_scrollPosition.threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];
+    [_currentFolderScrollPosition.threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];
     
     return view;
 }
@@ -300,12 +301,12 @@
 }
 
 - (void)saveScrollPosition {
-    [_scrollPosition.visibleMessageThreads removeAllObjects];
-    [_scrollPosition.visibleSelectedMessageThreadIndexes removeAllIndexes];
+    [_currentFolderScrollPosition.visibleMessageThreads removeAllObjects];
+    [_currentFolderScrollPosition.visibleSelectedMessageThreadIndexes removeAllIndexes];
 
     NSRect visibleRect = _messageListTableView.visibleRect;
     
-    if(visibleRect.origin.y <= 0) {
+    if(visibleRect.origin.y < 0) {
         return;
     }
     
@@ -313,18 +314,18 @@
 
     NSRange range = [_messageListTableView rowsInRect:visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
-        SMMessageThread *messageThread = [_scrollPosition.threadsAtRows objectForKey:[NSNumber numberWithUnsignedInteger:row]];
+        SMMessageThread *messageThread = [_currentFolderScrollPosition.threadsAtRows objectForKey:[NSNumber numberWithUnsignedInteger:row]];
         
         if(messageThread != nil) {
-            [_scrollPosition.visibleMessageThreads addObject:messageThread];
+            [_currentFolderScrollPosition.visibleMessageThreads addObject:messageThread];
             
             if([selectedRows containsIndex:row]) {
-                [_scrollPosition.visibleSelectedMessageThreadIndexes addIndex:i];
+                [_currentFolderScrollPosition.visibleSelectedMessageThreadIndexes addIndex:i];
             }
          
             if(i == 0) {
                 CGFloat rowHeight = [self fullRowHeight];
-                _scrollPosition.visibleRowOffset = fmodf(visibleRect.origin.y, rowHeight);
+                _currentFolderScrollPosition.visibleRowOffset = fmodf(visibleRect.origin.y, rowHeight);
             }
         }
         else {
@@ -335,14 +336,14 @@
 
 - (void)restoreScrollPosition {
     // First try to jump to one of previously visible selected rows.
-    for(NSUInteger i = _scrollPosition.visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_scrollPosition.visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
+    for(NSUInteger i = _currentFolderScrollPosition.visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_currentFolderScrollPosition.visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
         if([self restoreScrollPositionAtRowIndex:i]) {
             return;
         }
     }
 
     // If all selected rows vanished, try to jump to an old visible row.
-    for(NSUInteger i = 0; i < _scrollPosition.visibleMessageThreads.count; i++) {
+    for(NSUInteger i = 0; i < _currentFolderScrollPosition.visibleMessageThreads.count; i++) {
         if([self restoreScrollPositionAtRowIndex:i]) {
             return;
         }
@@ -356,12 +357,12 @@
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    SMMessageThread *messageThread = _scrollPosition.visibleMessageThreads[idx];
+    SMMessageThread *messageThread = _currentFolderScrollPosition.visibleMessageThreads[idx];
     NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
     
     if(threadIndex != NSNotFound) {
         CGFloat rowHeight = [self fullRowHeight];
-        CGFloat offset = threadIndex * rowHeight + _scrollPosition.visibleRowOffset;
+        CGFloat offset = threadIndex * rowHeight + _currentFolderScrollPosition.visibleRowOffset;
         if(offset > idx * rowHeight) {
             offset -= idx * rowHeight;
         }
@@ -390,6 +391,11 @@
 }
 
 - (void)reloadMessageList:(Boolean)preserveSelection {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which
     // in turn would impact the user experience
@@ -412,16 +418,20 @@
     // Reset the accumulated message thread positions collected from previous scrolling.
     // After reload data is done, they will be re-collected again.
     // Doing this prevents memory leak.
-    [_scrollPosition.threadsAtRows removeAllObjects];
+    [_currentFolderScrollPosition.threadsAtRows removeAllObjects];
 
+    // Load the current folder scroll information.
+    _currentFolderScrollPosition = [_folderScrollPositions objectForKey:currentFolder.localName];
+    
+    if(_currentFolderScrollPosition == nil) {
+        _currentFolderScrollPosition = [[ScrollPosition alloc] init];
+        [_folderScrollPositions setObject:_currentFolderScrollPosition forKey:currentFolder.localName];
+    }
+    
     // after all is done, fix the currently selected
     // message cell, if needed
     if(preserveSelection) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMMessageStorage *messageStorage = [[appDelegate model] messageStorage];
-        SMMessageListController *messageListController = [[appDelegate model] messageListController];
-        SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-        NSAssert(currentFolder != nil, @"no current folder");
         
         if(_selectedMessageThread != nil) {
             NSAssert(_multipleSelectedMessageThreads.count == 0, @"multiple messages selection not empty");

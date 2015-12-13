@@ -17,6 +17,11 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
     SMDefaultReplyAction_Reply,
 };
 
+typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
+    SMPreferableMessageFormat_HTML,
+    SMPreferableMessageFormat_RawText,
+};
+
 @interface SMPreferencesController : NSObject
 
 @property (nonatomic) BOOL shouldShowContactImages;
@@ -27,6 +32,7 @@ typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
 @property (nonatomic) NSString *downloadsFolder;
 @property (nonatomic) NSUInteger localStorageSizeMb;
 @property (nonatomic) SMDefaultReplyAction defaultReplyAction;
+@property (nonatomic) SMPreferableMessageFormat preferableMessageFormat;
 @property (nonatomic) NSString *singleSignature;
 @property (nonatomic) NSUInteger logLevel;
 

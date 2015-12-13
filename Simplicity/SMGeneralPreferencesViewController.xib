@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMGeneralPreferencesViewController">
@@ -11,6 +11,7 @@
                 <outlet property="downloadsFolderPopup" destination="Hq7-uA-hHG" id="Q2r-tc-qEk"/>
                 <outlet property="messageBodyLinesPreviewList" destination="Po6-Eh-BT8" id="FAE-7R-2J8"/>
                 <outlet property="messageCheckPeriodList" destination="7Dw-A5-Heu" id="o4F-Ej-Td3"/>
+                <outlet property="preferableMessageFormatList" destination="I0E-zl-2Tf" id="xcP-7b-fWh"/>
                 <outlet property="showContactImagesInMessageListCheckBox" destination="7NE-4Z-ser" id="mep-cQ-3c3"/>
                 <outlet property="showNotificationsCheckBox" destination="aoh-Bh-9aV" id="AgK-ez-dHA"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -19,12 +20,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="569" height="174"/>
+            <rect key="frame" x="0.0" y="0.0" width="569" height="205"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7NE-4Z-ser">
-                    <rect key="frame" x="285" y="137" width="236" height="20"/>
-                    <animations/>
+                    <rect key="frame" x="285" y="168" width="236" height="20"/>
                     <buttonCell key="cell" type="check" title="Show contact images in the message list" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="QYp-XT-pu5">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
@@ -34,8 +34,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoh-Bh-9aV">
-                    <rect key="frame" x="285" y="115" width="266" height="20"/>
-                    <animations/>
+                    <rect key="frame" x="285" y="146" width="266" height="20"/>
                     <buttonCell key="cell" type="check" title="Show notifications" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="9iW-cn-OCk">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="smallSystem"/>
@@ -44,17 +43,8 @@
                         <action selector="showNotificationsAction:" target="-2" id="fWI-B6-PiI"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vb1-DB-paf">
-                    <rect key="frame" x="281" y="38" width="184" height="28"/>
-                    <animations/>
-                    <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Syk-y8-cvR">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
-                    </buttonCell>
-                </button>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Dw-A5-Heu">
-                    <rect key="frame" x="283" y="65" width="180" height="22"/>
-                    <animations/>
+                    <rect key="frame" x="283" y="96" width="180" height="22"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="hjl-p1-m90" id="o2I-kJ-rtC">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
@@ -71,8 +61,7 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GYX-UV-rG3">
-                    <rect key="frame" x="106" y="70" width="174" height="14"/>
-                    <animations/>
+                    <rect key="frame" x="106" y="101" width="174" height="14"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message check period:" id="kuX-H6-HZB">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -80,8 +69,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xs1-1Q-W4w">
-                    <rect key="frame" x="106" y="94" width="174" height="14"/>
-                    <animations/>
+                    <rect key="frame" x="106" y="125" width="174" height="14"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message body preview:" id="lQp-6o-ijZ">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -89,8 +77,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Po6-Eh-BT8">
-                    <rect key="frame" x="283" y="89" width="180" height="22"/>
-                    <animations/>
+                    <rect key="frame" x="283" y="120" width="180" height="22"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="w5X-E8-eFW" id="CSj-sl-zPU">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
@@ -106,31 +93,8 @@
                         <action selector="messageBodyLinesPreviewListAction:" target="-2" id="3ZL-DS-0PX"/>
                     </connections>
                 </popUpButton>
-                <pathControl verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hq7-uA-hHG" userLabel="Download folder Path Control">
-                    <rect key="frame" x="283" y="42" width="174" height="22"/>
-                    <animations/>
-                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" pathStyle="popUp" id="Npc-5e-MJ5">
-                        <font key="font" metaFont="smallSystem"/>
-                        <url key="url" string="Downloads">
-                            <url key="baseURL" string="file:///"/>
-                        </url>
-                    </pathCell>
-                    <connections>
-                        <action selector="downloadsFolderPopupAction:" target="-2" id="Q26-Yl-ZoS"/>
-                    </connections>
-                </pathControl>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkN-oH-ctl">
-                    <rect key="frame" x="106" y="46" width="174" height="14"/>
-                    <animations/>
-                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Downloads folder:" id="J96-p9-LaT">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lxq-60-uoq">
-                    <rect key="frame" x="106" y="22" width="174" height="14"/>
-                    <animations/>
+                    <rect key="frame" x="106" y="75" width="174" height="14"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Default reply action:" id="Spk-Q8-mRf">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -138,8 +102,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aLX-C6-Ql6">
-                    <rect key="frame" x="283" y="17" width="180" height="22"/>
-                    <animations/>
+                    <rect key="frame" x="283" y="70" width="180" height="22"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AlW-0R-fjU" id="gjJ-aB-H02">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
@@ -155,9 +118,60 @@
                         <action selector="defaultReplyAction:" target="-2" id="6rb-3x-Ja3"/>
                     </connections>
                 </popUpButton>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vb1-DB-paf">
+                    <rect key="frame" x="281" y="14" width="184" height="28"/>
+                    <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Syk-y8-cvR">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                </button>
+                <pathControl verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hq7-uA-hHG" userLabel="Download folder Path Control">
+                    <rect key="frame" x="283" y="18" width="174" height="22"/>
+                    <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" pathStyle="popUp" id="Npc-5e-MJ5">
+                        <font key="font" metaFont="smallSystem"/>
+                        <url key="url" string="Downloads">
+                            <url key="baseURL" string="file:///"/>
+                        </url>
+                    </pathCell>
+                    <connections>
+                        <action selector="downloadsFolderPopupAction:" target="-2" id="Q26-Yl-ZoS"/>
+                    </connections>
+                </pathControl>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkN-oH-ctl">
+                    <rect key="frame" x="106" y="22" width="174" height="14"/>
+                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Downloads folder:" id="J96-p9-LaT">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I0E-zl-2Tf">
+                    <rect key="frame" x="283" y="44" width="180" height="22"/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Pms-DP-MxT" id="3Ng-6V-6ur">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="65g-rv-4ey">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="Pms-DP-MxT"/>
+                                <menuItem title="Item 2" id="Gn6-T8-yNJ"/>
+                                <menuItem title="Item 3" id="gFw-zo-bnm"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="preferableMessageFormatAction:" target="-2" id="WRu-rS-njA"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KMZ-Cm-SFd">
+                    <rect key="frame" x="106" y="50" width="174" height="14"/>
+                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Preferable message format:" id="CZ8-ql-oMH">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
-            <animations/>
-            <point key="canvasLocation" x="396.5" y="265"/>
+            <point key="canvasLocation" x="396.5" y="280.5"/>
         </customView>
     </objects>
 </document>

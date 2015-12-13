@@ -32,6 +32,7 @@
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
 #define kLogLevel                       @"LogLevel"
+#define kPreferableMessageFormat        @"PreferableMessageFormat"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -901,6 +902,32 @@
     [[NSUserDefaults standardUserDefaults] setInteger:logLevel forKey:kLogLevel];
     
     SMLogLevel = logLevel;
+}
+
+#pragma mark Preferable message format
+
+- (SMPreferableMessageFormat)preferableMessageFormat {
+    SMPreferableMessageFormat result = SMPreferableMessageFormat_HTML;
+    
+    if([[NSUserDefaults standardUserDefaults] objectForKey:kPreferableMessageFormat] == nil) {
+        SM_LOG_INFO(@"Value for %@ not found, using defaults", kPreferableMessageFormat);
+    }
+    else {
+        NSUInteger value = [[NSUserDefaults standardUserDefaults] integerForKey:kPreferableMessageFormat];
+        
+        if(value != SMPreferableMessageFormat_HTML && value != SMPreferableMessageFormat_RawText) {
+            SM_LOG_INFO(@"Value %lu for %@ is invalid, using defaults", value, kPreferableMessageFormat);
+        }
+        else {
+            result = value;
+        }
+    }
+    
+    return result;
+}
+
+- (void)setPreferableMessageFormat:(SMPreferableMessageFormat)value {
+    [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kPreferableMessageFormat];
 }
 
 @end

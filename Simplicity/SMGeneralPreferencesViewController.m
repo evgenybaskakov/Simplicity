@@ -24,6 +24,7 @@
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
 @property (weak) IBOutlet NSPathControl *downloadsFolderPopup;
 @property (weak) IBOutlet NSPopUpButton *defaultReplyActionList;
+@property (weak) IBOutlet NSPopUpButton *preferableMessageFormatList;
 
 @end
 
@@ -31,11 +32,13 @@
     NSArray *_messageListPreviewLinesNames, *_messageListPreviewLinesValues;
     NSArray *_messageCheckPeriodNames, *_messageCheckPeriodValues;
     NSArray *_defaultReplyActionNames;
+    NSArray *_preferableMessageFormatNames;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do view setup here.
+    
+    //
     
     _messageListPreviewLinesNames = @[@"No preview", @"One line", @"Two lines", @"Three lines", @"Four lines"];
     _messageListPreviewLinesValues = @[@0, @1, @2, @3, @4];
@@ -46,6 +49,8 @@
         [_messageBodyLinesPreviewList addItemWithTitle:name];
     }
 
+    //
+    
     _messageCheckPeriodNames = @[@"Auto", @"1 minute", @"2 minutes", @"5 minutes", @"10 minutes", @"20 minutes", @"30 minutes", @"1 hour"];
     _messageCheckPeriodValues = @[@0, @60, @120, @300, @600, @1200, @1800, @3600];
 
@@ -59,7 +64,14 @@
     
     [_defaultReplyActionList removeAllItems];
     [_defaultReplyActionList addItemsWithTitles:_defaultReplyActionNames];
-
+    
+    //
+    
+    _preferableMessageFormatNames = @[@"HTML", @"Raw text"];
+    
+    [_preferableMessageFormatList removeAllItems];
+    [_preferableMessageFormatList addItemsWithTitles:_preferableMessageFormatNames];
+    
     // Load current properties
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
@@ -109,6 +121,19 @@
         case SMDefaultReplyAction_ReplyAll:
         default:
             [_defaultReplyActionList selectItemAtIndex:0];
+            break;
+    }
+
+    //
+    
+    switch([[appDelegate preferencesController] preferableMessageFormat]) {
+        case SMPreferableMessageFormat_HTML:
+            [_preferableMessageFormatList selectItemAtIndex:0];
+            break;
+            
+        case SMPreferableMessageFormat_RawText:
+        default:
+            [_preferableMessageFormatList selectItemAtIndex:1];
             break;
     }
 }
@@ -163,6 +188,19 @@
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DefaultReplyActionChanged" object:nil userInfo:nil];
+}
+
+- (IBAction)preferableMessageFormatAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    switch([_preferableMessageFormatList indexOfSelectedItem]) {
+        case 0:
+            [[appDelegate preferencesController] setPreferableMessageFormat:SMPreferableMessageFormat_HTML];
+            break;
+            
+        case 1:
+            [[appDelegate preferencesController] setPreferableMessageFormat:SMPreferableMessageFormat_RawText];
+            break;
+    }
 }
 
 @end

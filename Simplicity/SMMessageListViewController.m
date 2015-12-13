@@ -31,6 +31,31 @@
 #import "SMMessageStorage.h"
 #import "SMMessageListRowView.h"
 
+@interface ScrollPosition : NSObject
+
+@property NSMutableArray<SMMessageThread*> *visibleMessageThreads;
+@property NSMutableIndexSet *visibleSelectedMessageThreadIndexes;
+@property CGFloat visibleRowOffset;
+@property NSMutableDictionary *threadsAtRows;
+
+@end
+
+@implementation ScrollPosition
+
+- (id)init {
+    self = [super init];
+    
+    if(self) {
+        _visibleMessageThreads = [NSMutableArray array];
+        _visibleSelectedMessageThreadIndexes = [NSMutableIndexSet indexSet];
+        _threadsAtRows = [NSMutableDictionary dictionary];
+    }
+    
+    return self;
+}
+
+@end
+
 @implementation SMMessageListViewController {
     SMMessageThread *_selectedMessageThread;
     SMMessageThread *_draggedMessageThread;
@@ -39,12 +64,7 @@
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
     NSArray *_selectedMessageThreadsForContextMenu;
-    NSMutableArray<SMMessageThread*> *_visibleMessageThreads;
-    NSMutableIndexSet *_visibleSelectedMessageThreadIndexes;
-    NSRect _visibleRect;
-    CGFloat _visibleRowOffset;
-    CGFloat _visibleRowHeight;
-    NSMutableDictionary *_threadsAtRows;
+    ScrollPosition *_scrollPosition;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -54,9 +74,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
-        _visibleMessageThreads = [NSMutableArray array];
-        _visibleSelectedMessageThreadIndexes = [NSMutableIndexSet indexSet];
-        _threadsAtRows = [NSMutableDictionary dictionary];
+        _scrollPosition = [[ScrollPosition alloc] init];
     }
 
     return self;
@@ -250,7 +268,7 @@
         view.contactImage.image = contactImage;
     }
 
-    [_threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];
+    [_scrollPosition.threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];
     
     return view;
 }
@@ -275,34 +293,38 @@
     [self reloadMessageList:[preserveSelection boolValue]];
 }
 
-- (void)saveScrollPosition {
-    _visibleRect = _messageListTableView.visibleRect;
+- (CGFloat)fullRowHeight {
+    CGFloat rowHeight = [self tableView:_messageListTableView heightOfRow:0];
     
-    [_visibleMessageThreads removeAllObjects];
-    [_visibleSelectedMessageThreadIndexes removeAllIndexes];
+    return rowHeight + _messageListTableView.intercellSpacing.height;
+}
 
-    if(_visibleRect.origin.y <= 0) {
+- (void)saveScrollPosition {
+    [_scrollPosition.visibleMessageThreads removeAllObjects];
+    [_scrollPosition.visibleSelectedMessageThreadIndexes removeAllIndexes];
+
+    NSRect visibleRect = _messageListTableView.visibleRect;
+    
+    if(visibleRect.origin.y <= 0) {
         return;
     }
     
     NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
 
-    NSRange range = [_messageListTableView rowsInRect:_visibleRect];
+    NSRange range = [_messageListTableView rowsInRect:visibleRect];
     for(NSUInteger row = range.location, i = 0; i < range.length; i++, row++) {
-        SMMessageThread *messageThread = [_threadsAtRows objectForKey:[NSNumber numberWithUnsignedInteger:row]];
+        SMMessageThread *messageThread = [_scrollPosition.threadsAtRows objectForKey:[NSNumber numberWithUnsignedInteger:row]];
         
         if(messageThread != nil) {
-            [_visibleMessageThreads addObject:messageThread];
+            [_scrollPosition.visibleMessageThreads addObject:messageThread];
             
             if([selectedRows containsIndex:row]) {
-                [_visibleSelectedMessageThreadIndexes addIndex:i];
+                [_scrollPosition.visibleSelectedMessageThreadIndexes addIndex:i];
             }
          
             if(i == 0) {
-                CGFloat rowHeight = [self tableView:_messageListTableView heightOfRow:row];
-                
-                _visibleRowHeight = rowHeight + _messageListTableView.intercellSpacing.height;
-                _visibleRowOffset = fmodf(_visibleRect.origin.y, _visibleRowHeight);
+                CGFloat rowHeight = [self fullRowHeight];
+                _scrollPosition.visibleRowOffset = fmodf(visibleRect.origin.y, rowHeight);
             }
         }
         else {
@@ -313,14 +335,14 @@
 
 - (void)restoreScrollPosition {
     // First try to jump to one of previously visible selected rows.
-    for(NSUInteger i = _visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
+    for(NSUInteger i = _scrollPosition.visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_scrollPosition.visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
         if([self restoreScrollPositionAtRowIndex:i]) {
             return;
         }
     }
 
     // If all selected rows vanished, try to jump to an old visible row.
-    for(NSUInteger i = 0; i < _visibleMessageThreads.count; i++) {
+    for(NSUInteger i = 0; i < _scrollPosition.visibleMessageThreads.count; i++) {
         if([self restoreScrollPositionAtRowIndex:i]) {
             return;
         }
@@ -334,13 +356,14 @@
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    SMMessageThread *messageThread = _visibleMessageThreads[idx];
+    SMMessageThread *messageThread = _scrollPosition.visibleMessageThreads[idx];
     NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
     
     if(threadIndex != NSNotFound) {
-        CGFloat offset = threadIndex * _visibleRowHeight + _visibleRowOffset;
-        if(offset > idx * _visibleRowHeight) {
-            offset -= idx * _visibleRowHeight;
+        CGFloat rowHeight = [self fullRowHeight];
+        CGFloat offset = threadIndex * rowHeight + _scrollPosition.visibleRowOffset;
+        if(offset > idx * rowHeight) {
+            offset -= idx * rowHeight;
         }
         else {
             offset = 0;

@@ -409,6 +409,11 @@
     // now actually rebuild the message list table
     [_messageListTableView reloadData];
 
+    // Reset the accumulated message thread positions collected from previous scrolling.
+    // After reload data is done, they will be re-collected again.
+    // Doing this prevents memory leak.
+    [_scrollPosition.threadsAtRows removeAllObjects];
+
     // after all is done, fix the currently selected
     // message cell, if needed
     if(preserveSelection) {
@@ -449,8 +454,6 @@
     [_multipleSelectedMessageThreads removeAllObjects];
 
     _selectedMessageThread = nil;
-    
-    [_scrollPosition.threadsAtRows removeAllObjects];
 }
 
 - (IBAction)updateMessagesNow:(id)sender {

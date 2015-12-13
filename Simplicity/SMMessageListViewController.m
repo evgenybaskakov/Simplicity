@@ -449,6 +449,8 @@
     [_multipleSelectedMessageThreads removeAllObjects];
 
     _selectedMessageThread = nil;
+    
+    [_scrollPosition.threadsAtRows removeAllObjects];
 }
 
 - (IBAction)updateMessagesNow:(id)sender {

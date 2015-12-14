@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMLabelPreferencesViewController : NSViewController
+@interface SMLabelPreferencesViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
 @end

@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMAccountPreferencesViewController.h"
 #import "SMGeneralPreferencesViewController.h"
+#import "SMLabelPreferencesViewController.h"
 #import "SMSignaturePreferencesViewController.h"
 #import "SMAdvancedPreferencesViewController.h"
 #import "SMPreferencesWindowController.h"
@@ -21,6 +22,7 @@
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
     SMSignaturePreferencesViewController *_signaturePreferencesViewController;
+    SMLabelPreferencesViewController *_labelPreferencesViewController;
     SMAdvancedPreferencesViewController *_advancedPreferencesViewController;
 }
 
@@ -30,10 +32,11 @@
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
     _signaturePreferencesViewController = [[SMSignaturePreferencesViewController alloc] initWithNibName:@"SMSignaturePreferencesViewController" bundle:nil];
+    _labelPreferencesViewController = [[SMLabelPreferencesViewController alloc] initWithNibName:@"SMLabelPreferencesViewController" bundle:nil];
     _advancedPreferencesViewController = [[SMAdvancedPreferencesViewController alloc] initWithNibName:@"SMAdvancedPreferencesViewController" bundle:nil];
 
-    _tabNames = @[@"Accounts", @"General", @"Signature", @"Advanced"];
-    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _signaturePreferencesViewController, _advancedPreferencesViewController];
+    _tabNames = @[@"Accounts", @"General", @"Signature", @"Labels", @"Advanced"];
+    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _signaturePreferencesViewController, _labelPreferencesViewController, _advancedPreferencesViewController];
     
     [self toolbarToggleAccountAction:self];
 }
@@ -87,8 +90,12 @@
     [self selectTab:2];
 }
 
-- (IBAction)toolbarToggleAdvancedAction:(id)sender {
+- (IBAction)toolbarToggleLabelsAction:(id)sender {
     [self selectTab:3];
+}
+
+- (IBAction)toolbarToggleAdvancedAction:(id)sender {
+    [self selectTab:4];
 }
 
 - (void)reloadAccounts {

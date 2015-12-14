@@ -51,6 +51,7 @@
 #define kSmtpAuthType                   @"SmtpAuthType"
 #define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
 #define kAccountSignature               @"AccountSignature"
+#define kAccountLabels                  @"AccountLabels"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
@@ -369,6 +370,11 @@
     [self setProperty:kUserEmail idx:idx obj:userEmail];
 }
 
+- (void)setLabels:(NSUInteger)idx labels:(NSArray<SMFolderLabel*>*)labels {
+    //TODO: serialize the array of labels!!!
+    [self setProperty:kAccountLabels idx:idx obj:labels];
+}
+
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
     [self setProperty:kImapServer idx:idx obj:server];
 }
@@ -432,6 +438,12 @@
 - (NSString*)userEmail:(NSUInteger)idx {
     NSString *str = (NSString*)[self loadProperty:kUserEmail idx:idx];
     return str? str : @"";
+}
+
+- (NSArray<SMFolderLabel*>*)labels:(NSUInteger)idx {
+    // TODO: deserialize the array of labels
+    NSArray *l = (NSArray*)[self loadProperty:kAccountLabels idx:idx];
+    return l? l : @[];
 }
 
 - (NSURL*)accountDirURL:(NSUInteger)idx {

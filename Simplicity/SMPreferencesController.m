@@ -371,8 +371,8 @@
 }
 
 - (void)setLabels:(NSUInteger)idx labels:(NSArray<SMFolderLabel*>*)labels {
-    //TODO: serialize the array of labels!!!
-    [self setProperty:kAccountLabels idx:idx obj:labels];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:labels];
+    [self setProperty:kAccountLabels idx:idx obj:data];
 }
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
@@ -441,9 +441,8 @@
 }
 
 - (NSArray<SMFolderLabel*>*)labels:(NSUInteger)idx {
-    // TODO: deserialize the array of labels
-    NSArray *l = (NSArray*)[self loadProperty:kAccountLabels idx:idx];
-    return l? l : @[];
+    NSData *data = (NSData*)[self loadProperty:kAccountLabels idx:idx];
+    return data? [NSKeyedUnarchiver unarchiveObjectWithData:data] : @[];
 }
 
 - (NSURL*)accountDirURL:(NSUInteger)idx {

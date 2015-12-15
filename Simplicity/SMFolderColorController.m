@@ -10,19 +10,15 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMFolder.h"
+#import "SMFolderLabel.h"
 #import "SMMessageThread.h"
+#import "SMPreferencesController.h"
 #import "SMFolderColorController.h"
 
-@implementation SMFolderColorController {
-    NSMutableDictionary *_folderColors;
-}
+@implementation SMFolderColorController
 
 - (id)init {
     self = [super init];
-    
-    if(self) {
-        _folderColors = [[NSMutableDictionary alloc] init];
-    }
     
     return self;
 }
@@ -35,16 +31,49 @@ static NSColor *randomColor() {
     return color;
 }
 
-- (NSColor*)colorForFolder:(NSString*)folderName {
-    NSColor *color = [_folderColors objectForKey:folderName];
-
-    if(color == nil) {
-        color = randomColor();
-
-        [self setFolderColor:folderName color:color];
+- (SMFolderLabel*)getOrUpdateLabel:(NSString*)folderName withColor:(NSColor*)color {
+    NSUInteger accountIdx = 0; // TODO: current account
+    
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
+    SMFolderLabel *label = [labels objectForKey:folderName];
+    
+    if(label == nil) {
+        label = [[SMFolderLabel alloc] initWithName:folderName color:(color != nil? color : randomColor()) visible:YES];
+    }
+    else if(color != nil) {
+        label.color = color;
+    }
+    else {
+        return label;
     }
     
-    return color;
+    NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:labels];
+    [updatedLabels setObject:label forKey:folderName];
+    
+    [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
+    
+    return label;
+}
+
+- (void)deleteFolderColor:(NSString*)folderName {
+    NSUInteger accountIdx = 0; // TODO: current account
+    
+    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
+    
+    NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:labels];
+    [updatedLabels removeObjectForKey:folderName];
+    
+    [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
+}
+
+- (NSColor*)colorForFolder:(NSString*)folderName {
+    return [self getOrUpdateLabel:folderName withColor:nil].color;
+}
+
+- (void)setFolderColor:(NSString*)folderName color:(NSColor*)color {
+    [self getOrUpdateLabel:folderName withColor:color];
 }
 
 - (NSArray*)colorsForMessageThread:(SMMessageThread*)messageThread folder:(SMFolder*)folder labels:(NSMutableArray*)labels {
@@ -78,10 +107,6 @@ static NSColor *randomColor() {
     }
     
     return bookmarkColors;
-}
-
-- (void)setFolderColor:(NSString*)folderName color:(NSColor*)color {
-    [_folderColors setObject:color forKey:folderName];
 }
 
 @end

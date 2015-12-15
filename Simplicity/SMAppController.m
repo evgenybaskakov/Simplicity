@@ -50,7 +50,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSMutableArray *_messageEditorWindowControllers;
     NSMutableArray *_messageWindowControllers;
     Boolean _operationQueueShown;
-    Boolean _inboxNotInitializedYet;
+    Boolean _inboxInitialized;
     BOOL _preferencesWindowShown;
 }
 
@@ -247,16 +247,18 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)updateMailboxFolderList {
+    SM_LOG_INFO(@"Updating folder list...");
+    
     [ _mailboxViewController updateFolderListView ];
 
-    if(!_inboxNotInitializedYet) {
+    if(!_inboxInitialized) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
         // TODO: detect the inbox another way (see issue #44)
         [[[appDelegate model] messageListController] changeFolder:@"INBOX"];
         [[[appDelegate appController] mailboxViewController] changeFolder:@"INBOX"];
         
-        _inboxNotInitializedYet = YES;
+        _inboxInitialized = YES;
     }
 }
 

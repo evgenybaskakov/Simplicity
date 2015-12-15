@@ -71,8 +71,9 @@
     MCOIMAPSession *session = [ _model imapSession ];
     NSAssert(session != nil, @"session is nil");
 
-    if(_fetchFoldersOp == nil)
+    if(_fetchFoldersOp == nil) {
         _fetchFoldersOp = [session fetchAllFoldersOperation];
+    }
     
     [_fetchFoldersOp start:^(NSError * error, NSArray *folders) {
         _fetchFoldersOp = nil;

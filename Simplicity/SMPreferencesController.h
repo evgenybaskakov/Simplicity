@@ -56,7 +56,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (void)setAccountName:(NSUInteger)idx name:(NSString*)name;
 - (void)setFullUserName:(NSUInteger)idx userName:(NSString*)fullUserName;
 - (void)setUserEmail:(NSUInteger)idx email:(NSString*)userEmail;
-- (void)setLabels:(NSUInteger)idx labels:(NSArray<SMFolderLabel*>*)labels;
+- (void)setLabels:(NSUInteger)idx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels;
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server;
 - (void)setImapPort:(NSUInteger)idx port:(unsigned int)port;
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (NSString*)accountImagePath:(NSUInteger)idx;
 - (NSString*)databaseFilePath:(NSUInteger)idx;
 - (NSString*)cacheDirPath:(NSUInteger)idx;
-- (NSArray<SMFolderLabel*>*)labels:(NSUInteger)idx;
+- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSUInteger)idx;
 
 - (void)setAccountSignature:(NSUInteger)idx signature:(NSString*)signature;
 - (NSString*)accountSignature:(NSUInteger)idx;

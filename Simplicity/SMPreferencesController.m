@@ -62,6 +62,7 @@
     NSString *_downloadsFolderCached;
     NSUInteger _localStorageSizeMbCached;
     NSString *_singleSignatureCached;
+    NSDictionary<NSString*, SMFolderLabel*> *_labelsCached;
 }
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
@@ -370,9 +371,11 @@
     [self setProperty:kUserEmail idx:idx obj:userEmail];
 }
 
-- (void)setLabels:(NSUInteger)idx labels:(NSArray<SMFolderLabel*>*)labels {
+- (void)setLabels:(NSUInteger)idx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels {
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:labels];
     [self setProperty:kAccountLabels idx:idx obj:data];
+    
+    _labelsCached = labels;
 }
 
 - (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
@@ -440,9 +443,13 @@
     return str? str : @"";
 }
 
-- (NSArray<SMFolderLabel*>*)labels:(NSUInteger)idx {
+- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSUInteger)idx {
+    if(_labelsCached != nil) {
+        return _labelsCached;
+    }
+    
     NSData *data = (NSData*)[self loadProperty:kAccountLabels idx:idx];
-    return data? [NSKeyedUnarchiver unarchiveObjectWithData:data] : @[];
+    return data? [NSKeyedUnarchiver unarchiveObjectWithData:data] : [NSDictionary dictionary];
 }
 
 - (NSURL*)accountDirURL:(NSUInteger)idx {

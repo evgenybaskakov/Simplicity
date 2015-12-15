@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMailboxViewController">
@@ -25,7 +25,6 @@
                             <tableView horizontalHuggingPriority="251" verticalHuggingPriority="251" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="20" rowSizeStyle="automatic" viewBased="YES" id="idQ-VD-a7f" customClass="SMMailboxTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="200" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -49,7 +48,6 @@
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="YU0-Jd-HHA">
                                                         <rect key="frame" x="0.0" y="0.0" width="196" height="17"/>
-                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Folder Group" id="Yvf-ZX-wUb">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -63,7 +61,6 @@
                                                     <constraint firstItem="YU0-Jd-HHA" firstAttribute="top" secondItem="fEJ-aY-qab" secondAttribute="top" id="lgo-MS-Ut1"/>
                                                     <constraint firstAttribute="bottom" secondItem="YU0-Jd-HHA" secondAttribute="bottom" id="vwz-wj-TDB"/>
                                                 </constraints>
-                                                <animations/>
                                                 <connections>
                                                     <outlet property="textField" destination="YU0-Jd-HHA" id="BQL-no-pQE"/>
                                                 </connections>
@@ -74,7 +71,6 @@
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkI-fd-8gU">
                                                         <rect key="frame" x="18" y="2" width="71" height="16"/>
-                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Main Folder" usesSingleLineMode="YES" id="c2r-0z-Hqw">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -87,11 +83,9 @@
                                                             <constraint firstAttribute="height" constant="16" id="GDF-Z6-vbw"/>
                                                             <constraint firstAttribute="width" constant="16" id="oeD-m4-wlw"/>
                                                         </constraints>
-                                                        <animations/>
                                                     </customView>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Brj-Ke-Y0O" customClass="SMInactiveButton">
                                                         <rect key="frame" x="171" y="4" width="26" height="13"/>
-                                                        <animations/>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="O1d-Gi-pe2">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemBold" size="10"/>
@@ -107,7 +101,6 @@
                                                     <constraint firstItem="DV1-dm-EPF" firstAttribute="leading" secondItem="iXx-Gf-r8K" secondAttribute="leading" constant="2" id="Z1w-28-LM9"/>
                                                     <constraint firstAttribute="trailing" secondItem="Brj-Ke-Y0O" secondAttribute="trailing" id="cHW-J3-D4E"/>
                                                 </constraints>
-                                                <animations/>
                                                 <connections>
                                                     <outlet property="imageView" destination="DV1-dm-EPF" id="bAT-xm-qOk"/>
                                                     <outlet property="textField" destination="TkI-fd-8gU" id="obq-uG-fWs"/>
@@ -124,11 +117,9 @@
                                                             <constraint firstAttribute="width" constant="15" id="3V2-Wu-xCq"/>
                                                             <constraint firstAttribute="height" constant="15" id="hAn-vb-ntw"/>
                                                         </constraints>
-                                                        <animations/>
                                                     </customView>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="200" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9fg-dU-pW6">
                                                         <rect key="frame" x="14" y="0.0" width="87" height="16"/>
-                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Regular Folder" usesSingleLineMode="YES" id="KYg-7e-QCg">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -140,7 +131,6 @@
                                                     </textField>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uKW-ta-vpc" customClass="SMInactiveButton">
                                                         <rect key="frame" x="171" y="2" width="26" height="13"/>
-                                                        <animations/>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" controlSize="mini" inset="2" id="gdd-Eo-rXc">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="systemBold" size="10"/>
@@ -156,7 +146,6 @@
                                                     <constraint firstItem="uKW-ta-vpc" firstAttribute="centerY" secondItem="ad8-Va-2mb" secondAttribute="centerY" id="kip-Ge-POu"/>
                                                     <constraint firstAttribute="centerY" secondItem="bpM-hd-kan" secondAttribute="centerY" constant="1.5" id="r9i-JJ-7Hi"/>
                                                 </constraints>
-                                                <animations/>
                                                 <connections>
                                                     <outlet property="imageView" destination="bpM-hd-kan" id="xrQ-6k-0tt"/>
                                                     <outlet property="textField" destination="9fg-dU-pW6" id="Ry0-kn-E4M"/>
@@ -172,22 +161,18 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <animations/>
                         <nil key="backgroundColor"/>
                     </clipView>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="200" id="q9c-N0-Dqk"/>
                     </constraints>
-                    <animations/>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="dIO-OG-3HT">
                         <rect key="frame" x="1" y="119" width="223" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="OTl-FG-Clb">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                 </scrollView>
             </subviews>
@@ -197,7 +182,6 @@
                 <constraint firstAttribute="trailing" secondItem="zKI-Dq-3Sh" secondAttribute="trailing" id="XjF-lK-cOs"/>
                 <constraint firstItem="zKI-Dq-3Sh" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="wZO-pf-rkI"/>
             </constraints>
-            <animations/>
         </customView>
         <menu id="TZ7-Yw-fEl">
             <items>

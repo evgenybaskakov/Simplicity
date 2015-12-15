@@ -498,7 +498,6 @@ typedef enum {
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
     
     SM_LOG_ERROR(@"TODO: NOT IMPLEMENTED");
-//    [[[appDelegate appController] folderColorController] deleteFolderColor:folder.fullName];
 }
 
 - (void)makeLabelFavorite {

@@ -43,7 +43,12 @@
 
     [self stopFolderListUpdate];
 
-    [self performSelector:@selector(updateFolders) withObject:nil afterDelay:now? 0 : FOLDER_LIST_UPDATE_INTERVAL_SEC];
+    if(now) {
+        [self updateFolders];
+    }
+    else {
+        [self performSelector:@selector(updateFolders) withObject:nil afterDelay:FOLDER_LIST_UPDATE_INTERVAL_SEC];
+    }
 }
 
 - (void)stopFolderListUpdate {
@@ -82,28 +87,28 @@
         // regardless of any connectivity or server errors
         [self scheduleFolderListUpdate:NO];
         
-        if (error != nil && [error code] != MCOErrorNone) {
+        if(error == nil || error.code == MCOErrorNone) {
+            SMMailbox *mailbox = [ _model mailbox ];
+            NSAssert(mailbox != nil, @"mailbox is nil");
+
+            NSMutableArray *vanishedFolders = [NSMutableArray array];
+            if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+                for(SMFolderDesc *vanishedFolder in vanishedFolders) {
+                    [[[appDelegate model] database] removeDBFolder:vanishedFolder.folderName];
+                }
+                
+                [self addFoldersToDatabase];
+
+                [self ensureMainLocalFoldersCreated];
+            }
+        }
+        else {
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
-            return;
         }
         
-        SMMailbox *mailbox = [ _model mailbox ];
-        NSAssert(mailbox != nil, @"mailbox is nil");
-
-        NSMutableArray *vanishedFolders = [NSMutableArray array];
-        if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-            for(SMFolderDesc *vanishedFolder in vanishedFolders) {
-                [[[appDelegate model] database] removeDBFolder:vanishedFolder.folderName];
-            }
-            
-            [self addFoldersToDatabase];
-
-            [self ensureMainLocalFoldersCreated];
-            
-            [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FolderListUpdated" object:nil userInfo:nil];
     }];
 }
 

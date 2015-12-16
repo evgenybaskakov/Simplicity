@@ -232,6 +232,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     //
     
     _outboxController = [[SMOutboxController alloc] init];
+    
+    //
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList) name:@"FolderListUpdated" object:nil];
 }
 
 - (void)initOpExecutor {

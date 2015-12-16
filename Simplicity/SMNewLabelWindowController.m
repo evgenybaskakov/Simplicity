@@ -39,6 +39,10 @@
         
         SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
         [folderColorController setFolderColor:fullFolderName color:_labelColorWell.color];
+        
+        [mailboxController scheduleFolderListUpdate:YES];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"NewLabelCreated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:fullFolderName, @"LabelName", nil]];
     }
 
     [self closeNewLabelWindow];

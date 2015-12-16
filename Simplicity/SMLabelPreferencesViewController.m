@@ -121,10 +121,18 @@
     [self hideColorPanel];
     [self saveLabels];
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [appController showNewLabelSheet:nil];
+    NSString *nestingLabel = nil;
+    if(_labelTable.selectedRow >= 0) {
+        SMMailbox *mailbox = [[appDelegate model] mailbox];
+        SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
+        
+        nestingLabel = folder.fullName;
+    }
+    
+    [appController showNewLabelSheet:nestingLabel];
 }
 
 - (IBAction)removeLabelAction:(id)sender {

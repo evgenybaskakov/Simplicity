@@ -251,7 +251,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)updateMailboxFolderList {
-    SM_LOG_INFO(@"Updating folder list...");
+    SM_LOG_DEBUG(@"Updating folder list...");
     
     [ _mailboxViewController updateFolderListView ];
 

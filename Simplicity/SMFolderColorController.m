@@ -17,18 +17,18 @@
 
 @implementation SMFolderColorController
 
-- (id)init {
-    self = [super init];
-    
-    return self;
-}
-
-static NSColor *randomColor() {
++ (NSColor*)randomLabelColor {
     CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
     CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
     CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
     NSColor *color = [NSColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
     return color;
+}
+
+- (id)init {
+    self = [super init];
+    
+    return self;
 }
 
 - (SMFolderLabel*)getOrUpdateLabel:(NSString*)folderName withColor:(NSColor*)color {
@@ -39,7 +39,7 @@ static NSColor *randomColor() {
     SMFolderLabel *label = [labels objectForKey:folderName];
     
     if(label == nil) {
-        label = [[SMFolderLabel alloc] initWithName:folderName color:(color != nil? color : randomColor()) visible:YES];
+        label = [[SMFolderLabel alloc] initWithName:folderName color:(color != nil? color : [SMFolderColorController randomLabelColor]) visible:YES];
     }
     else if(color != nil) {
         label.color = color;

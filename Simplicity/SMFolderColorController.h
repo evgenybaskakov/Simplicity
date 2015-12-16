@@ -13,6 +13,8 @@
                                               
 @interface SMFolderColorController : NSObject
 
++ (NSColor*)randomLabelColor;
+
 - (void)setFolderColor:(NSString*)folderName color:(NSColor*)color;
 - (void)deleteFolderColor:(NSString*)folderName;
 - (NSColor*)colorForFolder:(NSString*)folderName;

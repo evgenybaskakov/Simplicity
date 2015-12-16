@@ -20,7 +20,7 @@
     NSString *_nestingLabel;
 }
 
-- (void)windowDidLoad {
+- (void)windowDidBecomeMain:(NSNotification *)notification {
     [self updateExistingLabelsList];
     [self updateSuggestedNestingLabel];
 }
@@ -87,9 +87,22 @@
         [_nestingLabelNameButton selectItemWithTitle:_suggestedNestingLabel];
         [_nestingLabelNameButton setEnabled:YES];
         [_labelNestedCheckbox setState:NSOnState];
-    } else {
+
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        NSColor *nestingColor = [[[appDelegate appController] folderColorController] colorForFolder:_suggestedNestingLabel];
+        
+        if(nestingColor != nil) {
+            _labelColorWell.color = nestingColor;
+        }
+        else {
+            _labelColorWell.color = [SMFolderColorController randomLabelColor];
+        }
+    }
+    else {
         [_nestingLabelNameButton setEnabled:NO];
         [_labelNestedCheckbox setState:NSOffState];
+
+        _labelColorWell.color = [SMFolderColorController randomLabelColor];
     }
 }
 

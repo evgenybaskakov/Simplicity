@@ -13,6 +13,7 @@
 #import "SMFolder.h"
 #import "SMFolderColorController.h"
 #import "SMMailboxController.h"
+#import "SMPreferencesController.h"
 #import "SMLabelPreferencesViewController.h"
 
 @interface SMLabelPreferencesViewController ()
@@ -35,16 +36,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // Do view setup here.
-
     _selectedAccount = 0; // TODO: use current account; reset this if account is deleted
-
+    
+    [self initAccountList];
+    
     _reloadProgressIndicator.hidden = YES;
 
     _colorWells = [NSMutableDictionary dictionary];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newLabelCreated) name:@"NewLabelCreated" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(labelsUpdated) name:@"FolderListUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLabels) name:@"FolderListUpdated" object:nil];
 }
 
 - (void)viewDidAppear {
@@ -74,7 +75,7 @@
     [self showProgress];
 }
 
-- (void)labelsUpdated {
+- (void)updateLabels {
     [self hideProgress];
 
     [_colorWells removeAllObjects];
@@ -110,11 +111,44 @@
     _hasPendingChanges = TRUE;
 }
 
+- (void)reloadAccountLabels {
+    NSString *selectedAccountName = _accountList.titleOfSelectedItem;
+    
+    [self initAccountList];
+    
+    _selectedAccount = [[_accountList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
+    if(_selectedAccount == NSNotFound) {
+        SM_LOG_INFO(@"Account %@ disappeared, using default signature list position", selectedAccountName);
+        
+        _selectedAccount = 0;
+    }
+    
+    [_accountList selectItemAtIndex:_selectedAccount];
+    
+    [self updateLabels];
+}
+
+- (void)initAccountList {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    [_accountList removeAllItems];
+    
+    for(NSUInteger i = 0, n = [[appDelegate preferencesController] accountsCount]; i < n; i++) {
+        [_accountList addItemWithTitle:[[appDelegate preferencesController] accountName:i]];
+    }
+    
+    [_accountList selectItemAtIndex:_selectedAccount];
+}
+
+#pragma mark IB actions
+
 - (IBAction)accountListAction:(id)sender {
     [self hideColorPanel];
     [self saveLabels];
 
-    SM_LOG_INFO(@"TODO");
+    _selectedAccount = [_accountList indexOfSelectedItem];
+    
+    [self updateLabels];
 }
 
 - (IBAction)addLabelAction:(id)sender {
@@ -161,7 +195,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate model] mailbox]; // TODO: use selected account index here
     
     return mailbox.folders.count;
 }
@@ -169,7 +203,7 @@
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate model] mailbox]; // TODO: use selected account index here
     SMFolder *folder = mailbox.folders[row];
 
     if([tableColumn.identifier isEqualToString:@"Color"]) {
@@ -180,6 +214,7 @@
             [_colorWells setObject:colorWell forKey:[NSNumber numberWithInteger:row]];
         }
         
+        // TODO: use selected account index here too
         colorWell.color = [[appController folderColorController] colorForFolder:folder.fullName];
 
         return colorWell;

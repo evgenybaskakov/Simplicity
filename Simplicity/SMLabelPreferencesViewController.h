@@ -10,4 +10,6 @@
 
 @interface SMLabelPreferencesViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
+- (void)reloadAccountLabels;
+
 @end

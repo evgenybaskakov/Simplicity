@@ -17,7 +17,7 @@
 @interface SMSignaturePreferencesViewController ()
 
 @property (weak) IBOutlet NSButton *useOneSignatureCheckBox;
-@property (weak) IBOutlet NSPopUpButton *signatureList;
+@property (weak) IBOutlet NSPopUpButton *accountList;
 @property (weak) IBOutlet WebView *signatureEditor;
 
 @end
@@ -40,13 +40,13 @@
     if([[appDelegate preferencesController] shouldUseSingleSignature]) {
         _useOneSignatureCheckBox.state = NSOnState;
         
-        [self initSignatureList:YES];
+        [self initAccountList:YES];
         [self initSignatureEditor:YES];
     }
     else {
         _useOneSignatureCheckBox.state = NSOffState;
 
-        [self initSignatureList:NO];
+        [self initAccountList:NO];
         [self initSignatureEditor:NO];
     }
 }
@@ -64,7 +64,7 @@
 
     [[appDelegate preferencesController] setShouldUseSingleSignature:useSingleSignature];
 
-    [self initSignatureList:useSingleSignature];
+    [self initAccountList:useSingleSignature];
     [self initSignatureEditor:useSingleSignature];
 }
 
@@ -73,27 +73,27 @@
     
     [self saveSignature:useSingleSignature];
 
-    _selectedAccount = [_signatureList indexOfSelectedItem];
+    _selectedAccount = [_accountList indexOfSelectedItem];
 
     [self initSignatureEditor:useSingleSignature];
 }
 
-- (void)initSignatureList:(BOOL)useSingleSignature {
+- (void)initAccountList:(BOOL)useSingleSignature {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    [_signatureList removeAllItems];
+    [_accountList removeAllItems];
     
     if(useSingleSignature) {
-        [_signatureList setEnabled:NO];
+        [_accountList setEnabled:NO];
     }
     else {
-        [_signatureList setEnabled:YES];
+        [_accountList setEnabled:YES];
         
         for(NSUInteger i = 0, n = [[appDelegate preferencesController] accountsCount]; i < n; i++) {
-            [_signatureList addItemWithTitle:[[appDelegate preferencesController] accountName:i]];
+            [_accountList addItemWithTitle:[[appDelegate preferencesController] accountName:i]];
         }
         
-        [_signatureList selectItemAtIndex:_selectedAccount];
+        [_accountList selectItemAtIndex:_selectedAccount];
     }
 }
 
@@ -124,19 +124,19 @@
 }
 
 - (void)reloadAccountSignatures {
-    NSString *selectedAccountName = _signatureList.titleOfSelectedItem;
+    NSString *selectedAccountName = _accountList.titleOfSelectedItem;
     BOOL useSingleSignature = (_useOneSignatureCheckBox.state == NSOnState? YES : NO);
     
-    [self initSignatureList:useSingleSignature];
+    [self initAccountList:useSingleSignature];
     
-    _selectedAccount = [[_signatureList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
+    _selectedAccount = [[_accountList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
     if(_selectedAccount == NSNotFound) {
         SM_LOG_INFO(@"Account %@ disappeared, using default signature list position", selectedAccountName);
         
         _selectedAccount = 0;
     }
 
-    [_signatureList selectItemAtIndex:_selectedAccount];
+    [_accountList selectItemAtIndex:_selectedAccount];
     
     [self initSignatureEditor:useSingleSignature];
 }

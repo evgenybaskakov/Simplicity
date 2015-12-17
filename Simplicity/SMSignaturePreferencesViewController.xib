@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
         <plugIn identifier="com.apple.WebKitIBPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMSignaturePreferencesViewController">
             <connections>
+                <outlet property="accountList" destination="RQY-wt-5QP" id="mno-bS-vFp"/>
                 <outlet property="signatureEditor" destination="e3G-hQ-LvG" id="WJz-te-T74"/>
-                <outlet property="signatureList" destination="RQY-wt-5QP" id="ZhZ-yQ-bdN"/>
                 <outlet property="useOneSignatureCheckBox" destination="cdR-Cy-EEL" id="NkR-Cf-ZIV"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>

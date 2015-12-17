@@ -101,6 +101,7 @@
 - (void)reloadAccounts {
     [_accountPreferencesViewController reloadAccounts];
     [_signaturePreferencesViewController reloadAccountSignatures];
+    [_labelPreferencesViewController reloadAccountLabels];
 }
 
 - (void)showAccount:(NSString*)accountName {

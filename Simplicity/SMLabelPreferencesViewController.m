@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMFolderLabel.h"
 #import "SMFolderColorController.h"
 #import "SMMailboxController.h"
 #import "SMPreferencesController.h"
@@ -31,6 +32,7 @@
     NSUInteger _selectedAccount;
     BOOL _hasPendingChanges;
     NSMutableDictionary<NSNumber*, NSColorWell*> *_colorWells;
+    NSMutableDictionary<NSNumber*, NSButton*> *_visibleButtons;
 }
 
 - (void)viewDidLoad {
@@ -43,6 +45,7 @@
     _reloadProgressIndicator.hidden = YES;
 
     _colorWells = [NSMutableDictionary dictionary];
+    _visibleButtons = [NSMutableDictionary dictionary];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newLabelCreated) name:@"NewLabelCreated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLabels) name:@"FolderListUpdated" object:nil];
@@ -79,6 +82,7 @@
     [self hideProgress];
 
     [_colorWells removeAllObjects];
+    [_visibleButtons removeAllObjects];
     [_labelTable reloadData];
 }
 
@@ -87,6 +91,7 @@
         return;
     }
 
+    // Save label colors.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
     SMMailbox *mailbox = [[appDelegate model] mailbox];
@@ -99,6 +104,22 @@
             [folderColorController setFolderColor:folder.fullName color:colorWell.color];
         }
     }
+
+    // Save label visibility states.
+    NSUInteger accountIdx = _selectedAccount;
+    NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
+        NSButton *checkbox = [_visibleButtons objectForKey:[NSNumber numberWithInteger:i]];
+        
+        if(checkbox != nil) {
+            SMFolder *folder = mailbox.folders[i];
+            SMFolderLabel *label = [updatedLabels objectForKey:folder.fullName];
+
+            label.visible = (checkbox.state == NSOnState? YES : NO);
+        }
+    }
+    
+    [[appDelegate preferencesController] setLabels:_selectedAccount labels:updatedLabels];
 
     _hasPendingChanges = FALSE;
 }
@@ -188,7 +209,7 @@
 }
 
 - (IBAction)labelVisibleCheckAction:(id)sender {
-    SM_LOG_INFO(@"TODO");
+    _hasPendingChanges = YES;
 }
 
 #pragma mark Table implementation
@@ -205,13 +226,15 @@
     SMAppController *appController = [appDelegate appController];
     SMMailbox *mailbox = [[appDelegate model] mailbox]; // TODO: use selected account index here
     SMFolder *folder = mailbox.folders[row];
-
+    
+    NSNumber *rowNumber = [NSNumber numberWithInteger:row];
+    
     if([tableColumn.identifier isEqualToString:@"Color"]) {
-        NSColorWell *colorWell = [_colorWells objectForKey:[NSNumber numberWithInteger:row]];
+        NSColorWell *colorWell = [_colorWells objectForKey:rowNumber];
         if(colorWell == nil) {
             colorWell = [[NSColorWell alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 
-            [_colorWells setObject:colorWell forKey:[NSNumber numberWithInteger:row]];
+            [_colorWells setObject:colorWell forKey:rowNumber];
         }
         
         // TODO: use selected account index here too
@@ -226,7 +249,16 @@
         return view;
     }
     else if([tableColumn.identifier isEqualToString:@"Visible"]) {
-        return [tableView makeViewWithIdentifier:@"VisibleCheckBox" owner:self];
+        NSButton *checkbox = [_visibleButtons objectForKey:rowNumber];
+        if(checkbox == nil) {
+            checkbox = [tableView makeViewWithIdentifier:@"VisibleCheckBox" owner:self];
+            [_visibleButtons setObject:checkbox forKey:rowNumber];
+        }
+        
+        SMFolderLabel *label = [[[appDelegate preferencesController] labels:_selectedAccount] objectForKey:folder.fullName];
+        checkbox.state = (label != nil? (label.visible? NSOnState : NSOffState) : NSOnState);
+        
+        return checkbox;
     }
     else {
         return nil;

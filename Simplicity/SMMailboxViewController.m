@@ -22,6 +22,8 @@
 #import "SMMailboxMainFolderView.h"
 #import "SMMailboxLabelView.h"
 #import "SMFolderColorController.h"
+#import "SMPreferencesController.h"
+#import "SMFolderLabel.h"
 #import "SMMailboxRowView.h"
 
 @implementation SMMailboxViewController {
@@ -30,6 +32,7 @@
     Boolean _favoriteFolderSelected;
     NSBox *_hightlightBox;
     Boolean _doHightlightRow;
+    NSMutableArray *_visibleFolders;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -37,6 +40,7 @@
     
     if(self) {
         _rowWithMenu = -1;
+        _visibleFolders = [NSMutableArray array];
     }
     
     return self;
@@ -67,12 +71,29 @@
 
     if(_currentFolderName != nil) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        [_visibleFolders removeAllObjects];
+        
+        // TODO: use the active account number here
+        NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:0];
+        SMMailbox *mailbox = [[appDelegate model] mailbox];
+        
+        for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
+            SMFolder *folder = mailbox.folders[i];
+            SMFolderLabel *label = [labels objectForKey:folder.fullName];
+            
+            if((label != nil && label.visible) || label == nil) {
+                [_visibleFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
+            }
+        }
+
         SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:_currentFolderName];
-
+        
         [self doChangeFolder:currentFolder];
-
-        if(currentFolder != nil)
+        
+        if(currentFolder != nil) {
             selectedRow = [self getFolderRow:currentFolder];
+        }
     }
     
     [ _folderListView reloadData ];
@@ -149,7 +170,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [[appDelegate model] mailbox];
     
-    return 1 + mailbox.mainFolders.count + 1 + mailbox.favoriteFolders.count + 1 + mailbox.folders.count;
+    return 1 + mailbox.mainFolders.count + 1 + mailbox.favoriteFolders.count + 1 + _visibleFolders.count;
 }
 
 - (SMFolder*)selectedFolder:(NSInteger)row {
@@ -165,17 +186,24 @@
     const NSInteger allFoldersGroupOffset = [self allFoldersGroupOffset];
     
     if(row > mainFoldersGroupOffset && row < favoriteFoldersGroupOffset) {
-        if(favoriteFolderSelected != nil)
+        if(favoriteFolderSelected != nil) {
             *favoriteFolderSelected = NO;
+        }
+        
         return mailbox.mainFolders[row - mainFoldersGroupOffset - 1];
     } else if(row > favoriteFoldersGroupOffset && row < allFoldersGroupOffset) {
-        if(favoriteFolderSelected != nil)
+        if(favoriteFolderSelected != nil) {
             *favoriteFolderSelected = YES;
+        }
+        
         return mailbox.favoriteFolders[row - favoriteFoldersGroupOffset - 1];
     } else if(row > allFoldersGroupOffset) {
-        if(favoriteFolderSelected != nil)
+        if(favoriteFolderSelected != nil) {
             *favoriteFolderSelected = NO;
-        return mailbox.folders[row - allFoldersGroupOffset - 1];
+        }
+        
+        NSUInteger idx = [_visibleFolders[row - allFoldersGroupOffset - 1] unsignedIntegerValue];
+        return mailbox.folders[idx];
     } else {
         return nil;
     }
@@ -200,9 +228,12 @@
                 return i + mainFoldersGroupOffset + 1;
         }
 
-        for(NSUInteger i = 0; i < mailbox.folders.count; i++) {
-            if(mailbox.folders[i] == folder)
+        for(NSUInteger i = 0; i < _visibleFolders.count; i++) {
+            NSUInteger idx = [_visibleFolders[i] unsignedIntegerValue];
+            
+            if(mailbox.folders[idx] == folder) {
                 return i + allFoldersGroupOffset + 1;
+            }
         }
     }
     

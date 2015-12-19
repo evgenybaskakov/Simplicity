@@ -55,6 +55,8 @@
 
 - (void)viewDidAppear {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectLabelColorAction:) name:NSColorPanelColorDidChangeNotification object:[NSColorPanel sharedColorPanel]];
+    
+    [self updateLabels];
 }
 
 - (void)viewDidDisappear {

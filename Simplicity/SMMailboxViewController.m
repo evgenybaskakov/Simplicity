@@ -543,7 +543,6 @@ typedef enum {
 }
 
 - (void)makeLabelFavorite {
-/*
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
@@ -551,15 +550,16 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    [[[appDelegate model] mailbox] addFavoriteFolderWithName:folder.fullName];
-    [[[appDelegate appController] mailboxViewController] updateFolderListView];
-*/
+    NSUInteger accountIdx = 0; // TODO: current account
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    SMFolderLabel *label = [labels objectForKey:folder.fullName];
+    label.favorite = YES;
+    [[appDelegate preferencesController] setLabels:0 labels:labels];
     
-    SM_LOG_WARNING(@"TODO");
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
 
 - (void)removeLabelFromFavorites {
-/*
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
@@ -567,11 +567,13 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    [[[appDelegate model] mailbox] removeFavoriteFolderWithName:folder.fullName];
+    NSUInteger accountIdx = 0; // TODO: current account
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    SMFolderLabel *label = [labels objectForKey:folder.fullName];
+    label.favorite = NO;
+    [[appDelegate preferencesController] setLabels:0 labels:labels];
+
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
-*/
-    
-    SM_LOG_WARNING(@"TODO");
 }
 
 #pragma mark Editing cells (renaming labels)

@@ -305,6 +305,21 @@ typedef enum {
     }
 }
 
+- (NSIndexSet *)tableView:(NSTableView*)tableView selectionIndexesForProposedSelection:(NSIndexSet*)proposedSelectionIndexes {
+    NSMutableIndexSet *newSelection = [[NSMutableIndexSet alloc] initWithIndexSet:proposedSelectionIndexes];
+
+    // Scan the proposed selection and exclude folder section headers.
+    for(NSUInteger row = proposedSelectionIndexes.firstIndex; row != NSNotFound; row = [proposedSelectionIndexes indexGreaterThanIndex:row]) {
+        FolderListItemKind kind = [self getRowKind:row];
+        
+        if(kind == kMainFoldersGroupHeader || kind == kFavoriteFoldersGroupHeader || kind == kAllFoldersGroupHeader) {
+            [newSelection removeIndex:row];
+        }
+    }
+    
+    return newSelection.count > 0? newSelection : tableView.selectedRowIndexes;
+}
+
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     NSInteger totalRowCount = [self totalFolderRowsCount];
     NSAssert(row >= 0 && row < totalRowCount, @"row %ld is beyond folders array size %lu", row, totalRowCount);

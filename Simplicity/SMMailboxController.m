@@ -190,8 +190,6 @@
     SMMailbox *mailbox = [ _model mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
-    [mailbox removeFavoriteFolderWithName:oldFolderName];
-    
     MCOIMAPSession *session = [ _model imapSession ];
     NSAssert(session != nil, @"session is nil");
     

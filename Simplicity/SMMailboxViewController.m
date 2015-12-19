@@ -32,6 +32,7 @@
     Boolean _favoriteFolderSelected;
     NSBox *_hightlightBox;
     Boolean _doHightlightRow;
+    NSMutableArray *_favoriteFolders;
     NSMutableArray *_visibleFolders;
 }
 
@@ -40,6 +41,7 @@
     
     if(self) {
         _rowWithMenu = -1;
+        _favoriteFolders = [NSMutableArray array];
         _visibleFolders = [NSMutableArray array];
     }
     
@@ -72,6 +74,7 @@
     if(_currentFolderName != nil) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+        [_favoriteFolders removeAllObjects];
         [_visibleFolders removeAllObjects];
         
         // TODO: use the active account number here
@@ -84,6 +87,10 @@
             
             if((label != nil && label.visible) || label == nil) {
                 [_visibleFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
+            }
+            
+            if((label != nil && label.favorite) || label == nil) {
+                [_favoriteFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
             }
         }
 
@@ -163,14 +170,14 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [[appDelegate model] mailbox];
     
-    return 1 + mailbox.mainFolders.count + 1 + mailbox.favoriteFolders.count;
+    return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count;
 }
 
 - (NSInteger)totalFolderRowsCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [[appDelegate model] mailbox];
     
-    return 1 + mailbox.mainFolders.count + 1 + mailbox.favoriteFolders.count + 1 + _visibleFolders.count;
+    return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count + 1 + _visibleFolders.count;
 }
 
 - (SMFolder*)selectedFolder:(NSInteger)row {
@@ -196,7 +203,8 @@
             *favoriteFolderSelected = YES;
         }
         
-        return mailbox.favoriteFolders[row - favoriteFoldersGroupOffset - 1];
+        NSUInteger idx = [_favoriteFolders[row - favoriteFoldersGroupOffset - 1] unsignedIntegerValue];
+        return mailbox.folders[idx];
     } else if(row > allFoldersGroupOffset) {
         if(favoriteFolderSelected != nil) {
             *favoriteFolderSelected = NO;
@@ -218,9 +226,12 @@
     const NSInteger allFoldersGroupOffset = [self allFoldersGroupOffset];
     
     if(_favoriteFolderSelected) {
-        for(NSUInteger i = 0; i < mailbox.favoriteFolders.count; i++) {
-            if(mailbox.favoriteFolders[i] == folder)
+        for(NSUInteger i = 0; i < _favoriteFolders.count; i++) {
+            NSUInteger idx = [_favoriteFolders[i] unsignedIntegerValue];
+
+            if(_favoriteFolders[idx] == folder) {
                 return i + favoriteFoldersGroupOffset + 1;
+            }
         }
     } else {
         for(NSUInteger i = 0; i < mailbox.mainFolders.count; i++) {
@@ -532,6 +543,7 @@ typedef enum {
 }
 
 - (void)makeLabelFavorite {
+/*
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
@@ -541,9 +553,13 @@ typedef enum {
 
     [[[appDelegate model] mailbox] addFavoriteFolderWithName:folder.fullName];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
+*/
+    
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (void)removeLabelFromFavorites {
+/*
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
 
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
@@ -553,6 +569,9 @@ typedef enum {
 
     [[[appDelegate model] mailbox] removeFavoriteFolderWithName:folder.fullName];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
+*/
+    
+    SM_LOG_WARNING(@"TODO");
 }
 
 #pragma mark Editing cells (renaming labels)

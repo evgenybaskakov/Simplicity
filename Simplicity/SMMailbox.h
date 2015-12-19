@@ -23,7 +23,6 @@
 @property (readonly) SMFolder *trashFolder;
 
 @property (readonly) NSArray *mainFolders;
-@property (readonly) NSOrderedSet *favoriteFolders;
 @property (readonly) NSArray *folders;
 
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;
@@ -32,8 +31,5 @@
 - (SMFolder*)getFolderByKind:(SMFolderKind)kind;
 - (SMFolder*)getFolderByName:(NSString*)folderName;
 - (NSString*)constructFolderName:(NSString*)folderName parent:(NSString*)parentFolderName;
-
-- (void)addFavoriteFolderWithName:(NSString*)name;
-- (void)removeFavoriteFolderWithName:(NSString*)name;
 
 @end

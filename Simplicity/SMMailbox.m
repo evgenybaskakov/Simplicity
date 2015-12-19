@@ -19,7 +19,6 @@
 
 @implementation SMMailbox {
     NSMutableArray *_mainFolders;
-    NSMutableOrderedSet *_favoriteFolders;
     NSMutableArray *_folders;
     NSMutableArray *_sortedFlatFolders;
 }
@@ -30,7 +29,6 @@
     if(self) {
         [self cleanFolders];
 
-        _favoriteFolders = [[NSMutableOrderedSet alloc] init];
         _sortedFlatFolders = [NSMutableArray array];
     }
 
@@ -136,7 +134,6 @@
     }
 
     [self updateMainFolders];
-    [self updateFavoriteFolders];
 
     SM_LOG_DEBUG(@"number of folders %lu", _folders.count);
     
@@ -233,65 +230,6 @@
     }
     
     return nil;
-}
-
-- (void)sortFavorites {
-    [_favoriteFolders sortUsingComparator:^NSComparisonResult(SMFolder *f1, SMFolder *f2) {
-        return [f1.fullName compare:f2.fullName];
-    }];
-}
-
-- (void)updateFavoriteFolders {
-    static Boolean firstTime = YES;
-    if(firstTime) {
-        // TODO: remove
-        [self addFavoriteFolderWithName:@"Work/CVC/DVBS"];
-        [self addFavoriteFolderWithName:@"Private/Misc"];
-        [self addFavoriteFolderWithName:@"Work/Charter"];
-        firstTime = NO;
-    }
-
-    for(SMFolder *folder in _folders) {
-        if(folder.favorite) {
-            [_favoriteFolders addObject:folder];
-        } else {
-            [_favoriteFolders removeObject:folder];
-        }
-    }
-
-    [self sortFavorites];
-}
-
-- (void)addFavoriteFolderWithName:(NSString*)name {
-    for(NSUInteger i = 0; i < _folders.count; i++) {
-        SMFolder *folder = _folders[i];
-
-        if(!folder.favorite && [folder.fullName compare:name] == NSOrderedSame) {
-            folder.favorite = YES;
-
-            [_favoriteFolders addObject:folder];
-
-            [self sortFavorites];
-
-            break;
-        }
-    }
-}
-
-- (void)removeFavoriteFolderWithName:(NSString*)name {
-    for(NSUInteger i = 0; i < _folders.count; i++) {
-        SMFolder *folder = _folders[i];
-
-        if([folder.fullName compare:name] == NSOrderedSame) {
-            if(folder.favorite) {
-                folder.favorite = NO;
-                
-                [_favoriteFolders removeObject:folder];
-            }
-
-            break;
-        }
-    }
 }
 
 - (SMFolder*)getFolderByKind:(SMFolderKind)kind {

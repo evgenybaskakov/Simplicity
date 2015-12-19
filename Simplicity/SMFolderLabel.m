@@ -10,12 +10,13 @@
 
 @implementation SMFolderLabel
 
-- (id)initWithName:(NSString*)name color:(NSColor*)color visible:(BOOL)visible {
+- (id)initWithName:(NSString*)name color:(NSColor*)color favorite:(BOOL)favorite visible:(BOOL)visible {
     self = [super init];
     
     if(self) {
         _name = name;
         _color = color;
+        _favorite = favorite;
         _visible = visible;
     }
     
@@ -28,6 +29,7 @@
     if(self) {
         _name = [coder decodeObjectForKey:@"_name"];
         _color = [coder decodeObjectForKey:@"_color"];
+        _favorite = [coder decodeBoolForKey:@"_favorite"];
         _visible = [coder decodeBoolForKey:@"_visible"];
     }
     
@@ -37,6 +39,7 @@
 - (void)encodeWithCoder:(NSCoder *)coder {
     [coder encodeObject:_name forKey:@"_name"];
     [coder encodeObject:_color forKey:@"_color"];
+    [coder encodeBool:_favorite forKey:@"_favorite"];
     [coder encodeBool:_visible forKey:@"_visible"];
 }
 

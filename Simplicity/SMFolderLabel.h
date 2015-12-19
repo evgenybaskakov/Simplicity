@@ -12,8 +12,9 @@
 
 @property NSString *name;
 @property NSColor *color;
+@property BOOL favorite;
 @property BOOL visible;
 
-- (id)initWithName:(NSString*)name color:(NSColor*)color visible:(BOOL)visible;
+- (id)initWithName:(NSString*)name color:(NSColor*)color favorite:(BOOL)favorite visible:(BOOL)visible;
 
 @end

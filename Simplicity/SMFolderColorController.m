@@ -39,7 +39,7 @@
     SMFolderLabel *label = [labels objectForKey:folderName];
     
     if(label == nil) {
-        label = [[SMFolderLabel alloc] initWithName:folderName color:(color != nil? color : [SMFolderColorController randomLabelColor]) visible:YES];
+        label = [[SMFolderLabel alloc] initWithName:folderName color:(color != nil? color : [SMFolderColorController randomLabelColor]) favorite:NO visible:YES];
     }
     else if(color != nil) {
         label.color = color;

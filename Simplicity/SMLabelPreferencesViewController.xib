@@ -79,7 +79,7 @@
                                             </colorWell>
                                         </prototypeCellViews>
                                     </tableColumn>
-                                    <tableColumn identifier="Label" editable="NO" width="442" minWidth="40" maxWidth="1000" id="7Yn-R3-aSl">
+                                    <tableColumn identifier="Label" editable="NO" width="390" minWidth="40" maxWidth="1000" id="7Yn-R3-aSl">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Label">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -92,7 +92,7 @@
                                         </textFieldCell>
                                         <prototypeCellViews>
                                             <tableCellView identifier="LabelTableCell" id="NJi-Gt-Ic7">
-                                                <rect key="frame" x="39" y="1" width="442" height="17"/>
+                                                <rect key="frame" x="39" y="1" width="390" height="17"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GHJ-NH-fx4">
@@ -110,8 +110,8 @@
                                             </tableCellView>
                                         </prototypeCellViews>
                                     </tableColumn>
-                                    <tableColumn identifier="Visible" editable="NO" width="42" minWidth="10" maxWidth="3.4028234663852886e+38" id="d3Q-hr-g0q">
-                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Visible">
+                                    <tableColumn identifier="Favorite" editable="NO" width="49" minWidth="10" maxWidth="3.4028234663852886e+38" id="d3Q-hr-g0q" userLabel="Favorite">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Favorite">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -121,15 +121,39 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <prototypeCellViews>
-                                            <button identifier="VisibleCheckBox" id="07e-BP-a6c">
-                                                <rect key="frame" x="484" y="1" width="42" height="18"/>
+                                            <button identifier="FavoriteCheckBox" id="07e-BP-a6c">
+                                                <rect key="frame" x="432" y="1" width="49" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="only" state="on" inset="2" id="7hy-Xy-StI">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                                 <connections>
-                                                    <action selector="labelVisibleCheckAction:" target="-2" id="jVG-7j-Zke"/>
+                                                    <action selector="labelFavoriteCheckAction:" target="-2" id="nXr-sB-u5Y"/>
+                                                </connections>
+                                            </button>
+                                        </prototypeCellViews>
+                                    </tableColumn>
+                                    <tableColumn identifier="Visible" editable="NO" width="42" minWidth="10" maxWidth="3.4028234663852886e+38" id="zgL-34-33I">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Visible">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </tableHeaderCell>
+                                        <buttonCell key="dataCell" type="check" bezelStyle="regularSquare" imagePosition="only" alignment="left" inset="2" id="IoT-in-cAB">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <prototypeCellViews>
+                                            <button identifier="VisibleCheckBox" id="8dE-Yu-EWn">
+                                                <rect key="frame" x="484" y="1" width="42" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="only" state="on" inset="2" id="vv3-f7-n0M">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="labelVisibleCheckAction:" target="-2" id="zye-eQ-MnG"/>
                                                 </connections>
                                             </button>
                                         </prototypeCellViews>

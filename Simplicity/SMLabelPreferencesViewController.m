@@ -32,6 +32,7 @@
     NSUInteger _selectedAccount;
     BOOL _hasPendingChanges;
     NSMutableDictionary<NSNumber*, NSColorWell*> *_colorWells;
+    NSMutableDictionary<NSNumber*, NSButton*> *_favoriteButtons;
     NSMutableDictionary<NSNumber*, NSButton*> *_visibleButtons;
 }
 
@@ -45,6 +46,7 @@
     _reloadProgressIndicator.hidden = YES;
 
     _colorWells = [NSMutableDictionary dictionary];
+    _favoriteButtons = [NSMutableDictionary dictionary];
     _visibleButtons = [NSMutableDictionary dictionary];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newLabelCreated) name:@"NewLabelCreated" object:nil];
@@ -82,6 +84,7 @@
     [self hideProgress];
 
     [_colorWells removeAllObjects];
+    [_favoriteButtons removeAllObjects];
     [_visibleButtons removeAllObjects];
     [_labelTable reloadData];
 }
@@ -105,17 +108,23 @@
         }
     }
 
-    // Save label visibility states.
+    // Save label favorite and visibility states.
     NSUInteger accountIdx = _selectedAccount;
     NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
-        NSButton *checkbox = [_visibleButtons objectForKey:[NSNumber numberWithInteger:i]];
-        
-        if(checkbox != nil) {
-            SMFolder *folder = mailbox.folders[i];
-            SMFolderLabel *label = [updatedLabels objectForKey:folder.fullName];
+        SMFolder *folder = mailbox.folders[i];
+        SMFolderLabel *label = [updatedLabels objectForKey:folder.fullName];
 
-            label.visible = (checkbox.state == NSOnState? YES : NO);
+        NSButton *visibleCheckbox = [_visibleButtons objectForKey:[NSNumber numberWithInteger:i]];
+        
+        if(visibleCheckbox != nil) {
+            label.visible = (visibleCheckbox.state == NSOnState? YES : NO);
+        }
+
+        NSButton *favoriteCheckbox = [_favoriteButtons objectForKey:[NSNumber numberWithInteger:i]];
+        
+        if(favoriteCheckbox != nil) {
+            label.favorite = (favoriteCheckbox.state == NSOnState? YES : NO);
         }
     }
     
@@ -212,6 +221,10 @@
     _hasPendingChanges = YES;
 }
 
+- (IBAction)labelFavoriteCheckAction:(id)sender {
+    _hasPendingChanges = YES;
+}
+
 #pragma mark Table implementation
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -247,6 +260,18 @@
         view.textField.stringValue = folder.fullName;
         
         return view;
+    }
+    else if([tableColumn.identifier isEqualToString:@"Favorite"]) {
+        NSButton *checkbox = [_favoriteButtons objectForKey:rowNumber];
+        if(checkbox == nil) {
+            checkbox = [tableView makeViewWithIdentifier:@"FavoriteCheckBox" owner:self];
+            [_favoriteButtons setObject:checkbox forKey:rowNumber];
+        }
+        
+        SMFolderLabel *label = [[[appDelegate preferencesController] labels:_selectedAccount] objectForKey:folder.fullName];
+        checkbox.state = (label != nil? (label.favorite? NSOnState : NSOffState) : NSOnState);
+        
+        return checkbox;
     }
     else if([tableColumn.identifier isEqualToString:@"Visible"]) {
         NSButton *checkbox = [_visibleButtons objectForKey:rowNumber];

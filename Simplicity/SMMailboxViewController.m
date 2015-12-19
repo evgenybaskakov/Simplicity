@@ -228,7 +228,7 @@
         for(NSUInteger i = 0; i < _favoriteFolders.count; i++) {
             NSUInteger idx = [_favoriteFolders[i] unsignedIntegerValue];
 
-            if(_favoriteFolders[idx] == folder) {
+            if(mailbox.folders[idx] == folder) {
                 return i + favoriteFoldersGroupOffset + 1;
             }
         }

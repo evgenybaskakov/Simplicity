@@ -487,8 +487,8 @@ typedef enum {
         case kFavoriteFoldersGroupItem: {
             menu = [[NSMenu alloc] init];
             
-            [menu insertItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@"" atIndex:0];
-            [menu insertItemWithTitle:@"Remove label from favorites" action:@selector(removeLabelFromFavorites) keyEquivalent:@"" atIndex:1];
+            [menu addItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@""];
+            [menu addItemWithTitle:@"Remove label from favorites" action:@selector(removeLabelFromFavorites) keyEquivalent:@""];
             
             [menu setDelegate:self];
 
@@ -498,9 +498,10 @@ typedef enum {
         case kAllFoldersGroupItem: {
             menu = [[NSMenu alloc] init];
 
-            [menu insertItemWithTitle:@"New label" action:@selector(newLabel) keyEquivalent:@"" atIndex:0];
-            [menu insertItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@"" atIndex:1];
-            [menu insertItemWithTitle:@"Make label favorite" action:@selector(makeLabelFavorite) keyEquivalent:@"" atIndex:2];
+            [menu addItemWithTitle:@"New label" action:@selector(newLabel) keyEquivalent:@""];
+            [menu addItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@""];
+            [menu addItemWithTitle:@"Hide label" action:@selector(hideLabel) keyEquivalent:@""];
+            [menu addItemWithTitle:@"Make label favorite" action:@selector(makeLabelFavorite) keyEquivalent:@""];
             
             [menu setDelegate:self];
 
@@ -539,6 +540,23 @@ typedef enum {
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
     
     SM_LOG_ERROR(@"TODO: NOT IMPLEMENTED");
+}
+
+- (void)hideLabel {
+    NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
+    
+    SMFolder *folder = [self selectedFolder:_rowWithMenu];
+    NSAssert(folder != nil, @"bad selected folder");
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    
+    NSUInteger accountIdx = appDelegate.currentAccount;
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    SMFolderLabel *label = [labels objectForKey:folder.fullName];
+    label.visible = NO;
+    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
+    
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
 
 - (void)makeLabelFavorite {

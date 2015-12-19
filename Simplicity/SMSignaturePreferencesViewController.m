@@ -29,14 +29,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // Do view setup here.
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     [_signatureEditor setEditable:YES];
     [_signatureEditor setEditingDelegate:self];
 
-    _selectedAccount = 0; // TODO: use current account; reset this if account is deleted
+    _selectedAccount = appDelegate.currentAccount;
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] shouldUseSingleSignature]) {
         _useOneSignatureCheckBox.state = NSOnState;
         

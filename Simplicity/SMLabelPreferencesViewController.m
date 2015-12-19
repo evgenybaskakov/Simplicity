@@ -39,7 +39,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _selectedAccount = 0; // TODO: use current account; reset this if account is deleted
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    _selectedAccount = appDelegate.currentAccount;
     
     [self initAccountList];
     

@@ -53,7 +53,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
-    NSString *accountCacheDirPath = [preferencesController cacheDirPath:0]; // TODO: use the current account
+    NSString *accountCacheDirPath = [preferencesController cacheDirPath:appDelegate.currentAccount];
     NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
     
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];

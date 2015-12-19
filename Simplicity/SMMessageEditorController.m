@@ -68,7 +68,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount] mailbox:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
@@ -105,7 +105,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:0] mailbox:[[appDelegate preferencesController] smtpUserName:0]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount] mailbox:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

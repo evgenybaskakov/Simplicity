@@ -44,7 +44,7 @@
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 
-- (void)initAccountSession;
+- (void)initAccountSession:(NSUInteger)accountIdx;
 - (void)getIMAPServerCapabilities;
 
 @end

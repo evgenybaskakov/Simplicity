@@ -77,8 +77,7 @@
         [_favoriteFolders removeAllObjects];
         [_visibleFolders removeAllObjects];
         
-        // TODO: use the active account number here
-        NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:0];
+        NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccount];
         SMMailbox *mailbox = [[appDelegate model] mailbox];
         
         for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
@@ -550,11 +549,11 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSUInteger accountIdx = 0; // TODO: current account
+    NSUInteger accountIdx = appDelegate.currentAccount;
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = YES;
-    [[appDelegate preferencesController] setLabels:0 labels:labels];
+    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
     
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
@@ -567,11 +566,11 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSUInteger accountIdx = 0; // TODO: current account
+    NSUInteger accountIdx = appDelegate.currentAccount;
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = NO;
-    [[appDelegate preferencesController] setLabels:0 labels:labels];
+    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
 
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }

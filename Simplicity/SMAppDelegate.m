@@ -24,6 +24,7 @@
         _preferencesController = [[SMPreferencesController alloc] init];
         _model = [[SMSimplicityContainer alloc] initWithPreferencesController:_preferencesController];
         _imageRegistry = [[SMImageRegistry alloc] init];
+        _currentAccount = 0; // TODO: restore from properties
     }
     
     SM_LOG_DEBUG(@"app delegate initialized");
@@ -38,10 +39,10 @@
         [_appController showNewAccountWindow];
     }
     else {
-        [_model initAccountSession];
+        [_model initAccountSession:_currentAccount];
         [_model getIMAPServerCapabilities];
         
-        [[self appController] initOpExecutor];
+        [_appController initOpExecutor];
     }
 }
 

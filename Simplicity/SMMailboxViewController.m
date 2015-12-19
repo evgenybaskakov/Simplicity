@@ -553,6 +553,21 @@ typedef enum {
 
 - (void)deleteLabel {
     NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
+
+    SMFolder *folder = [self selectedFolder:_rowWithMenu];
+    NSAssert(folder != nil, @"bad selected folder");
+
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:[NSString stringWithFormat:@"Are you sure you want to delete label %@?", folder.fullName]];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    if([alert runModal] != NSAlertFirstButtonReturn) {
+        SM_LOG_DEBUG(@"Label deletion cancelled");
+        return;
+    }
     
     SM_LOG_ERROR(@"TODO: NOT IMPLEMENTED");
 }

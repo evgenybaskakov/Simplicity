@@ -207,7 +207,25 @@
     [self hideColorPanel];
     [self saveLabels];
 
-    SM_LOG_INFO(@"TODO");
+    if(_labelTable.selectedRow >= 0) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMMailbox *mailbox = [[appDelegate model] mailbox];
+        SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
+
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert setMessageText:[NSString stringWithFormat:@"Are you sure you want to delete label %@?", folder.fullName]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        if([alert runModal] != NSAlertFirstButtonReturn) {
+            SM_LOG_DEBUG(@"Label deletion cancelled");
+            return;
+        }
+
+        SM_LOG_WARNING(@"TODO: IMPLEMENT ME");
+    }
 }
 
 - (IBAction)reloadLabelsAction:(id)sender {

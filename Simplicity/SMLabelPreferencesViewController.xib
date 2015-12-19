@@ -54,7 +54,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="18" rowSizeStyle="automatic" headerView="sIs-5F-Kbh" viewBased="YES" id="yke-US-b1F">
-                                <rect key="frame" x="0.0" y="0.0" width="528" height="243"/>
+                                <rect key="frame" x="0.0" y="0.0" width="527" height="243"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -79,7 +79,7 @@
                                             </colorWell>
                                         </prototypeCellViews>
                                     </tableColumn>
-                                    <tableColumn identifier="Label" editable="NO" width="390" minWidth="40" maxWidth="1000" id="7Yn-R3-aSl">
+                                    <tableColumn identifier="Label" editable="NO" width="389" minWidth="40" maxWidth="1000" id="7Yn-R3-aSl">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Label">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -92,7 +92,7 @@
                                         </textFieldCell>
                                         <prototypeCellViews>
                                             <tableCellView identifier="LabelTableCell" id="NJi-Gt-Ic7">
-                                                <rect key="frame" x="39" y="1" width="390" height="17"/>
+                                                <rect key="frame" x="39" y="1" width="389" height="17"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GHJ-NH-fx4">
@@ -122,7 +122,7 @@
                                         </buttonCell>
                                         <prototypeCellViews>
                                             <button identifier="FavoriteCheckBox" id="07e-BP-a6c">
-                                                <rect key="frame" x="432" y="1" width="49" height="18"/>
+                                                <rect key="frame" x="431" y="1" width="49" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="only" state="on" inset="2" id="7hy-Xy-StI">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -146,7 +146,7 @@
                                         </buttonCell>
                                         <prototypeCellViews>
                                             <button identifier="VisibleCheckBox" id="8dE-Yu-EWn">
-                                                <rect key="frame" x="484" y="1" width="42" height="18"/>
+                                                <rect key="frame" x="483" y="1" width="42" height="18"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="only" state="on" inset="2" id="vv3-f7-n0M">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -176,7 +176,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <tableHeaderView key="headerView" id="sIs-5F-Kbh">
-                        <rect key="frame" x="0.0" y="0.0" width="528" height="23"/>
+                        <rect key="frame" x="0.0" y="0.0" width="527" height="23"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </tableHeaderView>
                 </scrollView>

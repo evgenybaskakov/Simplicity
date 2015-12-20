@@ -14,6 +14,7 @@
 
 @property (readonly) SMFolder *rootFolder;
 @property (readonly) SMFolder *inboxFolder;
+@property (readonly) SMFolder *outboxFolder;
 @property (readonly) SMFolder *sentFolder;
 @property (readonly) SMFolder *draftsFolder;
 @property (readonly) SMFolder *importantFolder;

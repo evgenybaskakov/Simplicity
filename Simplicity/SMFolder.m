@@ -25,7 +25,6 @@
         _delimiter = delimiter;
         _flags = flags;
         _kind = SMFolderKindRegular;
-        _favorite = NO;
     }
     
     return self;

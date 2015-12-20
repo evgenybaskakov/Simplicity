@@ -682,7 +682,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     }
 }
 
-- (void)clear {
+- (void)clearMessages {
     [self stopMessagesLoading:YES];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

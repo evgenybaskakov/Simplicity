@@ -182,7 +182,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     
-    [localFolder clear];
+    [localFolder clearMessages];
 
     Boolean preserveSelection = NO;
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];

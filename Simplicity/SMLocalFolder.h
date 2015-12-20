@@ -46,7 +46,7 @@
 
 // stops message headers and bodies loading; also stops sync, if any
 // then removes the local folder contents (does not affect the remote folder, if any)
-- (void)clear;
+- (void)clearMessages;
 
 // sets/clears the unseen flag
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;

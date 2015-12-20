@@ -12,6 +12,8 @@
 
 @interface SMOutboxController : NSObject
 
++ (NSString*)outboxFolderName;
+
 - (void)sendMessage:(SMMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 
 @end

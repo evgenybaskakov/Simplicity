@@ -15,7 +15,7 @@
     NSMutableArray *_subfolders;
 }
 
-- (id)initWithName:(NSString*)shortName fullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
+- (id)initWithShortName:(NSString*)shortName fullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     self = [ super init ];
     
     if(self) {
@@ -35,7 +35,7 @@
 }
 
 - (SMFolder*)addSubfolder:(NSString*)shortName fullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
-    SMFolder *folder = [[SMFolder alloc] initWithName:shortName fullName:fullName delimiter:delimiter flags:flags];
+    SMFolder *folder = [[SMFolder alloc] initWithShortName:shortName fullName:fullName delimiter:delimiter flags:flags];
     
     [_subfolders addObject:folder];
     

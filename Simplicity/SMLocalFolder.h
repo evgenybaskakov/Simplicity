@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <MailCore/MailCore.h>
+
 @class SMMessage;
 
 @interface SMLocalFolder : NSObject

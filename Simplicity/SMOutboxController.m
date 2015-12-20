@@ -19,6 +19,10 @@
 
 @implementation SMOutboxController
 
++ (NSString*)outboxFolderName {
+    return @"Outbox";
+}
+
 - (void)sendMessage:(SMMessageBuilder*)messageBuilder postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
     SM_LOG_DEBUG(@"Sending message");
     

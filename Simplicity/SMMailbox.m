@@ -15,6 +15,7 @@
 #import "SMFolderDesc.h"
 #import "SMAppDelegate.h"
 #import "SMSimplicityContainer.h"
+#import "SMOutboxController.h"
 #import "SMMailbox.h"
 
 @implementation SMMailbox {
@@ -36,7 +37,7 @@
 }
 
 - (void)cleanFolders {
-    _rootFolder = [[SMFolder alloc] initWithName:@"ROOT" fullName:@"ROOT" delimiter:'/' flags:MCOIMAPFolderFlagNone];
+    _rootFolder = [[SMFolder alloc] initWithShortName:@"ROOT" fullName:@"ROOT" delimiter:'/' flags:MCOIMAPFolderFlagNone];
     _mainFolders = [NSMutableArray array];
     _folders = [NSMutableArray array];
 }
@@ -205,7 +206,9 @@
     _trashFolder = [self filterOutFolder:MCOIMAPFolderFlagTrash orName:nil as:@"Trash" setKind:SMFolderKindTrash];
     _allMailFolder = [self filterOutFolder:MCOIMAPFolderFlagAllMail orName:nil as:@"All Mail" setKind:SMFolderKindAllMail];
 
-    _outboxFolder = [[SMFolder alloc] initWithName:@"Outbox" fullName:@"Outbox" delimiter:'/' flags:MCOIMAPFolderFlagNone];
+    NSString *outboxFolderName = [SMOutboxController outboxFolderName];
+    
+    _outboxFolder = [[SMFolder alloc] initWithShortName:outboxFolderName fullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
     _outboxFolder.kind = SMFolderKindOutbox;
 
     [_mainFolders addObject:_inboxFolder];

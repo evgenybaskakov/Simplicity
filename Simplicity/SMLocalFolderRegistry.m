@@ -12,6 +12,7 @@
 #import "SMMessageStorage.h"
 #import "SMMessageListController.h"
 #import "SMLocalFolder.h"
+#import "SMOutboxLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 
 @interface FolderEntry : NSObject
@@ -86,6 +87,23 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
 
 - (NSUInteger)getFolderEntryIndex:(FolderEntry*)folderEntry {
     return [_accessTimeSortedFolders indexOfObject:folderEntry inSortedRange:NSMakeRange(0, _accessTimeSortedFolders.count) options:NSBinarySearchingInsertionIndex usingComparator:_accessTimeFolderComparator];
+}
+
+- (SMLocalFolder*)createOutboxLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+    FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
+    
+    NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
+    
+    SMLocalFolder *folder = [[SMOutboxLocalFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName syncWithRemoteFolder:syncWithRemoteFolder];
+    
+    folderEntry = [[FolderEntry alloc] initWithFolder:folder];
+    
+    [_folders setValue:folderEntry forKey:localFolderName];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] messageStorage] ensureLocalFolderExists:localFolderName];
+    
+    return folderEntry.folder;
 }
 
 - (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {

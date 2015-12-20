@@ -119,7 +119,13 @@
     
     for(SMFolder *folder in mailbox.mainFolders) {
         if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
-            [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName syncWithRemoteFolder:YES];
+            if(folder.kind == SMFolderKindOutbox) {
+                // TODO: workaround for possible "Outbox" folder name collision
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil syncWithRemoteFolder:NO];
+            }
+            else {
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName syncWithRemoteFolder:YES];
+            }
         }
     }
 }

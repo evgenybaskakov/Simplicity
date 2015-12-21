@@ -413,4 +413,31 @@
     return [collection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
 }
 
+// TODO: update database
+// TODO: update unseenMessagesCount
+- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder {
+    SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
+    NSAssert(collection != nil, @"No message thread collection for folder %@", localFolder);
+    
+    NSUInteger oldIndex = NSUIntegerMax;
+
+    NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];
+    SMMessageThread *messageThread = [collection.messageThreads objectForKey:threadIdNum];
+    
+    if(messageThread == nil) {
+        messageThread = [[SMMessageThread alloc] initWithThreadId:message.threadId];
+        [[collection messageThreads] setObject:messageThread forKey:threadIdNum];
+    }
+    else {
+        oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
+        NSAssert(oldIndex != NSNotFound, @"message thread not found");
+    }
+
+    const SMThreadUpdateResult threadUpdateResult = [messageThread addMessage:message];
+
+    if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
+        [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+    }
+}
+
 @end

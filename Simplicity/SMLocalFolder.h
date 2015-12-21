@@ -50,6 +50,11 @@
 // then removes the local folder contents (does not affect the remote folder, if any)
 - (void)clearMessages;
 
+// Adds a new message to the folder.
+// Ensures that the folder consistency and sorting order are not changed.
+// Can only happen if there's no updating at the current moment.
+- (void)addMessage:(SMMessage*)message;
+
 // sets/clears the unseen flag
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
 

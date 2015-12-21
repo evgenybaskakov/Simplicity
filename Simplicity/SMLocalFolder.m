@@ -689,6 +689,14 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate model] messageStorage] removeLocalFolder:_localName];
 }
 
+- (void)addMessage:(SMMessage*)message {
+//    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+//    [[[appDelegate model] messageStorage] add:_localName];
+
+    SM_FATAL(@"TODO");
+
+}
+
 - (void)adjustUnseenCount:(BOOL)messageUnseen {
     if(messageUnseen) {
         _unseenMessagesCount++;

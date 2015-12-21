@@ -81,6 +81,13 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return _threadFlags & ThreadFlagsHasAttachment;
 }
 
+- (SMThreadUpdateResult)addMessage:(SMMessage*)message {
+
+    SM_FATAL(@"TODO");
+
+    return SMThreadUpdateResultStructureChanged;
+}
+
 - (SMMessage*)getMessage:(uint32_t)uid {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];

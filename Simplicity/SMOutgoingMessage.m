@@ -25,6 +25,14 @@
     return self;
 }
 
+- (uint32_t)uid {
+    return 0; // TODO: generate a uid!!!
+}
+
+- (uint64_t)threadId {
+    return 0; // TODO: generate a thread id (use random numbers, that's fine)!
+}
+
 - (MCOMessageHeader*)parsedHeader {
     return [_messageBuilder.mcoMessageBuilder header];
 }
@@ -53,10 +61,6 @@
     }
     
     return _bodyPreview;
-}
-
-- (uint32_t)uid {
-    return 0; // TODO: generate a uid!!!
 }
 
 - (void)reclaimData {

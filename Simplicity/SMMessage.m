@@ -40,6 +40,10 @@
     return self;
 }
 
+- (uint64_t)threadId {
+    return _imapMessage.gmailThreadID;
+}
+
 - (MCOIMAPMessage*)getImapMessage {
     return _imapMessage;
 }

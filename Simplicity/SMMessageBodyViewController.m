@@ -62,6 +62,7 @@
         
         view.translatesAutoresizingMaskIntoConstraints = NO;
 
+        [view setUIDelegate:self];
         [view setFrameLoadDelegate:self];
         [view setPolicyDelegate:self];
         [view setResourceLoadDelegate:self];
@@ -181,7 +182,6 @@
     SM_LOG_INFO(@"");
 }
 
-
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(_htmlText == nil)
         return;
@@ -212,6 +212,20 @@
 
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:_uid], @"UID", nil]];
     }
+}
+
+- (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems {
+    NSMutableArray *updatedMenuItems = [NSMutableArray arrayWithArray:defaultMenuItems];
+
+    for(NSUInteger i = defaultMenuItems.count; i > 0; i--) {
+        NSMenuItem *item = updatedMenuItems[i-1];
+        
+        if([item.title isEqualToString:@"Reload"]) {
+            [updatedMenuItems removeObjectAtIndex:i-1];
+        }
+    }
+    
+    return updatedMenuItems;
 }
 
 #pragma mark Finding contents

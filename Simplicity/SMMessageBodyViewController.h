@@ -10,10 +10,11 @@
 #import <WebKit/WebPolicyDelegate.h>
 #import <WebKit/WebFrameLoadDelegate.h>
 #import <WebKit/WebResourceLoadDelegate.h>
+#import <WebKit/WebUIDelegate.h>
 
 @class WebView;
 
-@interface SMMessageBodyViewController : NSViewController<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate>
+@interface SMMessageBodyViewController : NSViewController<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebUIDelegate>
 
 @property (readonly) NSUInteger contentHeight;
 @property (readonly) NSUInteger stringOccurrencesCount;

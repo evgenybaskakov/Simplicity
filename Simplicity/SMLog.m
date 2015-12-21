@@ -27,6 +27,10 @@ static const char *getFileName(const char *path) {
     return sep? sep+1 : path;
 }
 
+void SMFatal(const char *file, int line, const char *func) {
+    SM_LOG_FATAL(@"FATAL ERROR IN %s, line %d, function %s", getFileName(file), line, func);
+}
+
 void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) {
     va_list args;
     va_start(args, format);

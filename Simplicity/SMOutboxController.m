@@ -14,7 +14,9 @@
 #import "SMOpDeleteMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMMessage.h"
 #import "SMMessageBuilder.h"
+#import "SMOutgoingMessage.h"
 #import "SMOutboxController.h"
 
 @implementation SMOutboxController
@@ -33,6 +35,11 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+
+//    [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+
+//    [self updateMessages:[NSArray arrayWithObject:message] remoteFolder:entry.folderName updateDatabase:NO];
+
 }
 
 @end

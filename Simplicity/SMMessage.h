@@ -16,9 +16,15 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
     SMMessageUpdateStatus_New,
 };
 
-@interface SMMessage : NSObject <MCOHTMLRendererDelegate>
+@interface SMMessage : NSObject <MCOHTMLRendererDelegate> {
+    @protected MCOMessageParser *_msgParser;
+    @protected NSString *_bodyPreview;
+    @protected NSAttributedString *_htmlMessageBody;
+    @protected NSString *_htmlBodyRendering;
+    @protected NSData *_data;
+}
 
-@property (readonly) MCOMessageHeader *header;
+@property (readonly) MCOMessageHeader *parsedHeader; // TODO: remove
 @property (readonly) MCOIMAPMessage *imapMessage;
 @property (readonly) MCOAddress *fromAddress;
 @property (readonly) NSArray *toAddressList;
@@ -35,14 +41,14 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) NSArray *labels;
 @property (readonly) Boolean reclaimed;
 @property (readonly) NSString *bodyPreview;
+@property (readonly) NSData *data;
 
 @property Boolean unseen;
 @property Boolean flagged;
 
-@property (readonly) NSData *data;
-
 @property SMMessageUpdateStatus updateStatus;
 
++ (NSUInteger)maxBodyPreviewLength;
 + (NSString*)parseAddress:(MCOAddress*)address;
 
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName;

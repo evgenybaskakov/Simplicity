@@ -138,12 +138,12 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSString *toListString = @"to";
     NSUInteger toCount = 0;
     
-    for(MCOAddress *a in [_currentMessage.header to]) {
+    for(MCOAddress *a in [_currentMessage.parsedHeader to]) {
         toListString = [NSString stringWithFormat:(toCount? @"%@, %@" : @"%@ %@"), toListString, [SMMessage parseAddress:a]];
         toCount++;
     }
     
-    for(MCOAddress *a in [_currentMessage.header cc]) {
+    for(MCOAddress *a in [_currentMessage.parsedHeader cc]) {
         toListString = [NSString stringWithFormat:(toCount? @"%@, %@" : @"%@ %@"), toListString, [SMMessage parseAddress:a]];
         toCount++;
     }

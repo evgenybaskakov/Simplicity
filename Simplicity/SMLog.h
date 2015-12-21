@@ -21,6 +21,11 @@
     }                                                                \
 } while(0)
 
+#define SM_FATAL(...) do {                                           \
+    SM_LOG_FATAL(__VA_ARGS__);                                       \
+    SMFatal(__FILE__, __LINE__, __FUNCTION__);                       \
+} while(0)
+
 #define SM_LOG_FATAL(...)   SM_LOG(SM_LOG_LEVEL_FATAL, __VA_ARGS__)
 #define SM_LOG_ERROR(...)   SM_LOG(SM_LOG_LEVEL_ERROR, __VA_ARGS__)
 #define SM_LOG_WARNING(...) SM_LOG(SM_LOG_LEVEL_WARNING, __VA_ARGS__)
@@ -30,4 +35,5 @@
 
 extern NSUInteger SMLogLevel;
 
+void SMFatal(const char *file, int line, const char *func);
 void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) NS_FORMAT_FUNCTION(5,6);

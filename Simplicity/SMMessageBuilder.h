@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class MCOAddress;
 @class MCOMessageBuilder;
 
 @interface SMMessageBuilder : NSObject<NSCoding>

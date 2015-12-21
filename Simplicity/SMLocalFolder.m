@@ -563,7 +563,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)loadSelectedMessagesInternal {
     if(_remoteFolderName == nil) {
-        SM_LOG_WARNING(@"remote folder is not set");
+        SM_LOG_WARNING(@"remote folder for %@ is not set", _localName);
         return;
     }
     
@@ -790,8 +790,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         const MCORange range = ranges[i];
 
         if(MCORangeLeftBound(range) >= UINT32_MAX || MCORangeRightBound(range) >= UINT32_MAX) {
-            SM_LOG_FATAL(@"UID range is out of bounds: left %llu, right %llu", MCORangeLeftBound(range), MCORangeRightBound(range));
-            abort();
+            SM_FATAL(@"UID range is out of bounds: left %llu, right %llu", MCORangeLeftBound(range), MCORangeRightBound(range));
         }
         
         const uint32_t firstUid = (uint32_t)MCORangeLeftBound(range);

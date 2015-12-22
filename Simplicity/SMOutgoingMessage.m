@@ -26,11 +26,12 @@
 }
 
 - (uint32_t)uid {
-    return 0; // TODO: generate a uid!!!
+    return rand(); // TODO: generate a uid!!!
 }
 
 - (uint64_t)threadId {
-    return 0; // TODO: generate a thread id (use random numbers, that's fine)!
+    const uint64_t num = (((uint64_t)rand()) << 32) | rand();
+    return num;
 }
 
 - (MCOMessageHeader*)parsedHeader {

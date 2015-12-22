@@ -82,8 +82,20 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (SMThreadUpdateResult)addMessage:(SMMessage*)message {
+    message.updateStatus = SMMessageUpdateStatus_Unknown;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
+    SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
-    SM_FATAL(@"TODO");
+    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparator];
+
+    [_messageCollection.messages insertObject:message atIndex:messageIndex];
+    
+    NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByDate];
+    
+    [_messageCollection.messagesByDate insertObject:message atIndex:messageIndexByDate];
+    
+    [self updateThreadFlagsFromMessage:message];
 
     return SMThreadUpdateResultStructureChanged;
 }

@@ -690,11 +690,10 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 }
 
 - (void)addMessage:(SMMessage*)message {
-//    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-//    [[[appDelegate model] messageStorage] add:_localName];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName];
 
-    SM_FATAL(@"TODO");
-
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }
 
 - (void)adjustUnseenCount:(BOOL)messageUnseen {

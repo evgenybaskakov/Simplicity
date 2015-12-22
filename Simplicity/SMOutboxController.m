@@ -14,6 +14,8 @@
 #import "SMOpDeleteMessages.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
+#import "SMLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMMessage.h"
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
@@ -36,10 +38,11 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
 
-//    [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
 
-//    [self updateMessages:[NSArray arrayWithObject:message] remoteFolder:entry.folderName updateDatabase:NO];
-
+    SMMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+    [outboxFolder addMessage:outgoingMessage];
 }
 
 @end

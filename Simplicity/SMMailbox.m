@@ -205,12 +205,15 @@
     _spamFolder = [self filterOutFolder:MCOIMAPFolderFlagSpam orName:nil as:@"Spam" setKind:SMFolderKindSpam];
     _trashFolder = [self filterOutFolder:MCOIMAPFolderFlagTrash orName:nil as:@"Trash" setKind:SMFolderKindTrash];
     _allMailFolder = [self filterOutFolder:MCOIMAPFolderFlagAllMail orName:nil as:@"All Mail" setKind:SMFolderKindAllMail];
-
+    
     NSString *outboxFolderName = [SMOutboxController outboxFolderName];
     
-    _outboxFolder = [[SMFolder alloc] initWithShortName:outboxFolderName fullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
-    _outboxFolder.kind = SMFolderKindOutbox;
-
+    _outboxFolder = [self filterOutFolder:MCOIMAPFolderFlagNone orName:outboxFolderName as:outboxFolderName setKind:SMFolderKindOutbox];
+    if(_outboxFolder == nil) {
+        _outboxFolder = [[SMFolder alloc] initWithShortName:outboxFolderName fullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
+        _outboxFolder.kind = SMFolderKindOutbox;
+    }
+    
     [_mainFolders addObject:_inboxFolder];
     [_mainFolders addObject:_importantFolder];
     [_mainFolders addObject:_outboxFolder];

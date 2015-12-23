@@ -11,17 +11,18 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageBuilder.h"
+#import "SMOutgoingMessage.h"
 #import "SMOpSendMessage.h"
 
 @implementation SMOpSendMessage {
-    SMMessageBuilder *_messageBuilder;
+    SMOutgoingMessage *_outgoingMessage;
 }
 
-- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder {
+- (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage {
     self = [super initWithKind:kSMTPOpKind];
     
     if(self) {
-        _messageBuilder = messageBuilder;
+        _outgoingMessage = outgoingMessage;
     }
     
     return self;
@@ -31,7 +32,11 @@
     self = [super initWithCoder:coder];
 
     if (self) {
-        _messageBuilder = [coder decodeObjectForKey:@"_messageBuilder"];
+        SMMessageBuilder *messageBuilder = [coder decodeObjectForKey:@"_messageBuilder"];
+        
+        _outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+        
+        // TODO: sync up the outbox folder
     }
     
     return self;
@@ -40,12 +45,15 @@
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
     
-    [coder encodeObject:_messageBuilder forKey:@"_messageBuilder"];
+    [coder encodeObject:_outgoingMessage.messageBuilder forKey:@"_messageBuilder"];
 }
 
 - (void)start {
+    NSData *messageData = _outgoingMessage.messageBuilder.mcoMessageBuilder.data;
+    NSAssert(messageData, @"no message data");
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:_messageBuilder.mcoMessageBuilder.data];
+    MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:messageData];
     
     self.currentOp = op;
     

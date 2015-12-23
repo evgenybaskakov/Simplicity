@@ -10,9 +10,7 @@
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
 
-@implementation SMOutgoingMessage {
-    SMMessageBuilder *_messageBuilder;
-}
+@implementation SMOutgoingMessage
 
 - (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder {
     self = [super init];

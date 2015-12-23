@@ -14,6 +14,8 @@
 
 @interface SMOutgoingMessage : SMMessage
 
+@property (readonly) SMMessageBuilder *messageBuilder;
+
 - (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder;
 
 @end

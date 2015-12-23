@@ -118,9 +118,9 @@
         return nil;
     }
     
-    NSAssert(_msgParser, @"no html parser");
+    _htmlBodyRendering = _messageBuilder.mcoMessageBuilder.htmlBodyRendering;
     
-    _htmlBodyRendering = [ _msgParser htmlBodyRendering ];
+    NSAssert(_htmlBodyRendering, @"no html parser");
     
     SM_LOG_DEBUG(@"html body '%@'", _htmlBodyRendering);
     

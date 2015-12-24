@@ -21,6 +21,7 @@
 #import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
+#import "SMOutgoingMessage.h"
 #import "SMOutboxController.h"
 #import "SMAttachmentItem.h"
 #import "SMLocalFolder.h"
@@ -72,10 +73,21 @@
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    [[appController outboxController] sendMessage:messageBuilder postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+    
+    [[appController outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
-- (void)messageSentByServer:(NSDictionary*)info {
+- (void)removeMessageFromOutbox:(SMOutgoingMessage*)message {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+
+    [[appController outboxController] removeMessage:message];
+}
+
+- (void)messageSentByServer:(SMOutgoingMessage*)message {
+    [self removeMessageFromOutbox:message];
+    
     [self deleteSavedDraft];
 
     if(_saveDraftOp) {
@@ -128,7 +140,7 @@
 #pragma mark Message after-saving actions
 
 - (void)messageSavedToDrafts:(NSDictionary *)info {
-    MCOMessageBuilder *message = [info objectForKey:@"Message"];
+    MCOMessageBuilder *message = [info objectForKey:@"Message"]; // TODO: use SMMessage, not builder
     uint32_t uid = [[info objectForKey:@"UID"] unsignedIntValue];
     
     SM_LOG_DEBUG(@"uid %u", uid);

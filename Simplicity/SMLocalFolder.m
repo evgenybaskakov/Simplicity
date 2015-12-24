@@ -691,8 +691,15 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)addMessage:(SMMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName];
+    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:NO];
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+}
+
+- (void)removeMessage:(SMMessage*)message {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] messageStorage] removeMessage:message fromLocalFolder:_localName updateDatabase:NO];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
 }
 

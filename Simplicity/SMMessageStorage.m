@@ -415,7 +415,9 @@
 
 // TODO: update database
 // TODO: update unseenMessagesCount
-- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder {
+- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+    NSAssert(!updateDatabase, @"TODO: implement updateDatabase");
+    
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection != nil, @"No message thread collection for folder %@", localFolder);
     
@@ -437,6 +439,41 @@
 
     if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
         [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+    }
+}
+
+// TODO: update database
+// TODO: update unseenMessagesCount
+- (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+    NSAssert(!updateDatabase, @"TODO: implement updateDatabase");
+
+    SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
+    NSAssert(collection != nil, @"No message thread collection for folder %@", localFolder);
+    
+    NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];
+    SMMessageThread *messageThread = [collection.messageThreads objectForKey:threadIdNum];
+    
+    if(messageThread != nil) {
+        NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
+        if(oldIndex == NSNotFound) {
+            SM_LOG_ERROR(@"message thead %llu not found in local folder '%@'", message.threadId, localFolder);
+        }
+
+        const SMThreadUpdateResult threadUpdateResult = [messageThread removeMessage:message];
+        
+        if(messageThread.messagesCount > 0) {
+            SM_LOG_DEBUG(@"thread %llu still not empty", message.threadId);
+
+            if(oldIndex != NSNotFound && threadUpdateResult == SMThreadUpdateResultStructureChanged) {
+                [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+            }
+        }
+        else {
+            [self deleteMessageThreads:@[messageThread] fromCollection:collection localFolder:localFolder updateDatabase:updateDatabase unseenMessagesCount:nil];
+        }
+    }
+    else {
+        SM_LOG_ERROR(@"thread %llu not found when attempted to remove message uid %u", message.threadId, message.uid);
     }
 }
 

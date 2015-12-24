@@ -52,8 +52,13 @@
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.
-// Can only happen if there's no updating at the current moment.
+// Can only happen if there's no update ongoing at the current moment.
 - (void)addMessage:(SMMessage*)message;
+
+// Removes the given message from the folder.
+// Ensures that the folder consistency and sorting order are not changed.
+// Can only happen if there's no update ongoing at the current moment.
+- (void)removeMessage:(SMMessage*)message;
 
 // sets/clears the unseen flag
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;

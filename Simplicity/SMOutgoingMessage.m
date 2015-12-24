@@ -10,7 +10,10 @@
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
 
-@implementation SMOutgoingMessage
+@implementation SMOutgoingMessage {
+    uint32_t _uid;
+    uint64_t _threadId;
+}
 
 - (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder {
     self = [super init];
@@ -18,18 +21,19 @@
     if(self) {
         _messageBuilder = messageBuilder;
         _data = _messageBuilder.mcoMessageBuilder.data;
+        _uid = rand(); // TODO: generate a uid nicely!!!
+        _threadId = (((uint64_t)rand()) << 32) | rand();
     }
     
     return self;
 }
 
 - (uint32_t)uid {
-    return rand(); // TODO: generate a uid!!!
+    return _uid;
 }
 
 - (uint64_t)threadId {
-    const uint64_t num = (((uint64_t)rand()) << 32) | rand();
-    return num;
+    return _threadId;
 }
 
 - (MCOMessageHeader*)parsedHeader {

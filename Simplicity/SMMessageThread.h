@@ -35,6 +35,8 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 };
 
 - (SMThreadUpdateResult)addMessage:(SMMessage*)message;
+- (SMThreadUpdateResult)removeMessage:(SMMessage*)message;
+
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount;
 - (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray*)addNewUnseenMessages;
 - (void)markAsUpdated;

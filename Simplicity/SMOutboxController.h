@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class SMMessageBuilder;
+@class SMOutgoingMessage;
 
 @interface SMOutboxController : NSObject
 
 + (NSString*)outboxFolderName;
 
-- (void)sendMessage:(SMMessageBuilder*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
+- (void)sendMessage:(SMOutgoingMessage*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
+- (void)removeMessage:(SMOutgoingMessage*)message;
 
 @end

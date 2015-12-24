@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
     SMMesssageStorageUpdateResultStructureChanged
 };
 
-- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder;
+- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
+- (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
 
 - (void)startUpdate:(NSString*)localFolder;
 - (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;

@@ -17,7 +17,6 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessage.h"
-#import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
 #import "SMOutboxController.h"
 
@@ -27,10 +26,8 @@
     return @"Outbox";
 }
 
-- (void)sendMessage:(SMMessageBuilder*)messageBuilder postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+- (void)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
     SM_LOG_DEBUG(@"Sending message");
-    
-    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
@@ -44,6 +41,14 @@
     op.postActionSelector = selector;
 
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+}
+
+- (void)removeMessage:(SMOutgoingMessage*)message {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+    
+    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
+    [outboxFolder removeMessage:message];
 }
 
 @end

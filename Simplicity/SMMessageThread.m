@@ -100,6 +100,17 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return SMThreadUpdateResultStructureChanged;
 }
 
+- (SMThreadUpdateResult)removeMessage:(SMMessage*)message {
+    BOOL firstMessage = (_messageCollection.messagesByDate.firstObject == message);
+    
+    [_messageCollection.messages removeObject:message];
+    [_messageCollection.messagesByDate removeObject:message];
+
+    // TODO: update message thread flags if not first message
+    
+    return firstMessage? SMThreadUpdateResultStructureChanged : SMThreadUpdateResultFlagsChanged;
+}
+
 - (SMMessage*)getMessage:(uint32_t)uid {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];

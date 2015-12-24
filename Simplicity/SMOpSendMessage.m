@@ -64,7 +64,7 @@
             SM_LOG_DEBUG(@"message sent successfully");
         
             if(self.postActionTarget) {
-                [self.postActionTarget performSelector:self.postActionSelector withObject:nil afterDelay:0];
+                [self.postActionTarget performSelector:self.postActionSelector withObject:_outgoingMessage afterDelay:0];
             }
             
             [self complete];

@@ -14,6 +14,8 @@
 
 @interface SMOpSendMessage : SMOperation
 
+@property (readonly) SMOutgoingMessage *outgoingMessage;
+
 - (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage;
 
 @end

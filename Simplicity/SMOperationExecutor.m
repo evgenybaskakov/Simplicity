@@ -163,11 +163,19 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
     [self performSelector:@selector(saveOpQueues) withObject:nil afterDelay:OP_QUEUES_SAVE_DELAY_SEC];
 }
 
-- (void)saveOpQueues {
+- (void)saveSMTPQueue {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
     [[[appDelegate model] database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
+}
+
+- (void)saveIMAPQueue {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
+}
+
+- (void)saveOpQueues {
+    [self saveSMTPQueue];
+    [self saveIMAPQueue];
 }
 
 @end

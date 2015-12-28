@@ -241,13 +241,22 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 - (void)initOpExecutor {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+    [[[appDelegate model] mailboxController] initFolders];
+
     [[[appDelegate model] database] loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
         [[[appDelegate model] database] loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
             _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
             
-            [[[appDelegate model] mailboxController] initFolders];
+            [[[appDelegate appController] outboxController] loadSMTPQueue:smtpQueue postSendActionTarget:self postSendActionSelector:@selector(removeMessageFromOutbox:)];
         }];
     }];
+}
+
+- (void)removeMessageFromOutbox:(SMOutgoingMessage*)message {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    [[appController outboxController] removeMessage:message];
 }
 
 - (void)updateMailboxFolderList {

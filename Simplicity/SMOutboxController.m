@@ -17,6 +17,8 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessage.h"
+#import "SMOperationQueue.h"
+#import "SMOpSendMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMOutboxController.h"
 
@@ -24,6 +26,36 @@
 
 + (NSString*)outboxFolderName {
     return @"Outbox";
+}
+
+- (id)init {
+    self = [super init];
+    
+    if(self) {
+        
+    }
+    
+    return self;
+}
+
+- (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+    for(NSUInteger i = 0, n = queue.count; i < n; i++) {
+        SMOperation *op = [queue getOpAtIndex:i];
+        
+        if([op isKindOfClass:[SMOpSendMessage class]]) {
+            SMOpSendMessage *opSendMessage = (SMOpSendMessage*)op;
+
+            opSendMessage.postActionTarget = target;
+            opSendMessage.postActionSelector = selector;
+
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];            
+            SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
+            NSAssert(outboxFolder != nil, @"outboxFolder is nil");
+            
+            [outboxFolder addMessage:opSendMessage.outgoingMessage];
+        }
+    }
 }
 
 - (void)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
@@ -41,9 +73,12 @@
     op.postActionSelector = selector;
 
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
 
 - (void)removeMessage:(SMOutgoingMessage*)message {
+    SM_LOG_DEBUG(@"Removing message");
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
     

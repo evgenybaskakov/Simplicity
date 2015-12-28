@@ -21,5 +21,7 @@
 - (void)cancelOperation:(SMOperation*)op;
 - (NSUInteger)operationsCount;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
+- (void)saveSMTPQueue;
+- (void)saveIMAPQueue;
 
 @end

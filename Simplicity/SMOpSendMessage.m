@@ -48,6 +48,10 @@
     [coder encodeObject:_outgoingMessage.messageBuilder forKey:@"_messageBuilder"];
 }
 
+- (SMOutgoingMessage*)outgoingMessage {
+    return _outgoingMessage;
+}
+
 - (void)start {
     NSData *messageData = _outgoingMessage.messageBuilder.mcoMessageBuilder.data;
     NSAssert(messageData, @"no message data");

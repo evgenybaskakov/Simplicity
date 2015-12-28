@@ -63,6 +63,18 @@ static NSArray *_lastAddressesUsed;
     [[self view] setNeedsUpdateConstraints:YES];
 }
 
+- (void)controlTextDidChange:(NSNotification *)obj {
+    if (obj.object == _tokenField) {
+        SM_LOG_DEBUG(@"obj.object: %@", obj);
+
+        NSArray *objects = _tokenField.objectValue;
+        
+        if(objects.count == 0) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"AddressFieldContentsChanged" object:self userInfo:nil];
+        }
+    }
+}
+
 - (void)controlTextDidBeginEditing:(NSNotification *)obj {
     if (obj.object == _tokenField) {
         SM_LOG_DEBUG(@"obj.object: %@", obj);
@@ -181,6 +193,8 @@ static NSArray *_lastAddressesUsed;
         [resultingObjects addObject:address];
     }
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AddressFieldContentsChanged" object:self userInfo:nil];
+
     return resultingObjects;
 }
 
@@ -266,9 +280,11 @@ static NSArray *_lastAddressesUsed;
 }
 
 - (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LabeledTokenFieldEndedEditing" object:self userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AddressFieldContentsChanged" object:self userInfo:nil];
     return YES;
 }
+
+#pragma mark Menu actions
 
 - (void)copyAddressAction:(NSMenuItem*)menuItem {
     NSAssert(_addressWithMenu != nil, @"_addressWithMenu is nil");

@@ -186,7 +186,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 else {
                     SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@); trying again...", uid, remoteFolderName, error);
 
-                    [currentOpDesc startOp];
+                    [currentOpDesc performSelector:@selector(startOp) withObject:nil afterDelay:3]; // TODO!!!!
                 }
             }];
         };

@@ -83,6 +83,7 @@
     SMAppController *appController = [appDelegate appController];
 
     [[appController outboxController] removeMessage:message];
+    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {

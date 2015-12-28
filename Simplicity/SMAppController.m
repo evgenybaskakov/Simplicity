@@ -257,6 +257,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     SMAppController *appController = [appDelegate appController];
     
     [[appController outboxController] removeMessage:message];
+    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
 
 - (void)updateMailboxFolderList {

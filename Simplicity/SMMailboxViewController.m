@@ -423,7 +423,7 @@ typedef enum {
 - (void)displayUnseenCount:(NSButton*)button folderName:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     NSUInteger unseenCount;
-    if(folder.kind == SMFolderKindDrafts) {
+    if(folder.kind == SMFolderKindDrafts || folder.kind == SMFolderKindOutbox) {
         unseenCount = [[[appDelegate model] mailboxController] totalMessagesCount:folder.fullName];
     }
     else {

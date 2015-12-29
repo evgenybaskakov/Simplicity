@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
             <connections>
+                <outlet property="_closeButton" destination="R8P-os-OL7" id="aZ4-M3-A4T"/>
                 <outlet property="preferencesToolbar" destination="O7F-Mj-9fD" id="VdQ-Fa-ODM"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="YeT-jX-ifs"/>
             </connections>
@@ -21,6 +22,21 @@
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R8P-os-OL7">
+                        <rect key="frame" x="38" y="13" width="81" height="32"/>
+                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="0Rc-oG-m3O">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeAction:" target="-2" id="zWg-yG-kdZ"/>
+                        </connections>
+                    </button>
+                </subviews>
             </view>
             <toolbar key="toolbar" implicitIdentifier="211F3F04-4718-4ED0-8156-66AA90DA28E2" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="O7F-Mj-9fD">
                 <allowedToolbarItems>

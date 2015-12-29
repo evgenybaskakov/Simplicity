@@ -24,6 +24,7 @@
     SMSignaturePreferencesViewController *_signaturePreferencesViewController;
     SMLabelPreferencesViewController *_labelPreferencesViewController;
     SMAdvancedPreferencesViewController *_advancedPreferencesViewController;
+    __weak IBOutlet NSButton *_closeButton;
 }
 
 - (void)windowDidLoad {
@@ -45,9 +46,11 @@
     NSView *view = [self window].contentView;
     
     for(NSView *subview in view.subviews) {
-        [subview removeFromSuperview];
+        if(subview != _closeButton) {
+            [subview removeFromSuperview];
+        }
     }
-    
+   
     NSViewController *tabViewController = _tabViewControllers[idx];
     
     CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
@@ -96,6 +99,11 @@
 
 - (IBAction)toolbarToggleAdvancedAction:(id)sender {
     [self selectTab:4];
+}
+
+- (IBAction)closeAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] hidePreferencesWindow];
 }
 
 - (void)reloadAccounts {

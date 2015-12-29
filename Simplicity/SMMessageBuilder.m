@@ -89,17 +89,8 @@
     if(self) {
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
-    }
-    
-    return self;
-}
-
-- (id)initWithMCOMessageBuilder:(MCOMessageBuilder*)mcoMessageBuilder attachments:(NSArray*)attachments {
-    self = [super init];
-    
-    if(self) {
-        _mcoMessageBuilder = mcoMessageBuilder;
-        _attachments = attachments;
+        _creationDate = _mcoMessageBuilder.header.date;
+        NSAssert(_creationDate != nil, @"_creationDate is nil");
     }
     
     return self;
@@ -116,9 +107,11 @@
         NSArray *cc = [coder decodeObjectForKey:@"cc"];
         NSArray *bcc = [coder decodeObjectForKey:@"bcc"];
         NSArray *attachmentItems = [coder decodeObjectForKey:@"attachmentItems"];
+        NSDate *creationDate = [coder decodeObjectForKey:@"creationDate"];
     
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
+        _creationDate = creationDate;
     }
     
     return self;
@@ -132,6 +125,7 @@
     [coder encodeObject:[[_mcoMessageBuilder header] cc] forKey:@"cc"];
     [coder encodeObject:[[_mcoMessageBuilder header] bcc] forKey:@"bcc"];
     [coder encodeObject:_attachments forKey:@"attachmentItems"];
+    [coder encodeObject:_creationDate forKey:@"creationDate"];
 }
 
 @end

@@ -394,7 +394,10 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
+    if(currentFolder == nil) {
+        SM_LOG_WARNING(@"no current folder");
+        return;
+    }
     
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which
@@ -886,13 +889,16 @@
     SMLocalFolder *localFolder = messageListController.currentLocalFolder;
     
     if(localFolder == nil) {
-        SM_LOG_DEBUG(@"no local folder");
+        SM_LOG_INFO(@"no local folder");
         return;
     }
     
     SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
 
-    NSAssert(messageThread != nil, @"messageThread is nil");
+    if(messageThread == nil) {
+        SM_LOG_INFO(@"messageThread is nil");
+        return;
+    }
 
     for(SMMessage *m in messageThread.messagesSortedByDate) {
         NSAssert(m != nil, @"messageToOpen is nil");

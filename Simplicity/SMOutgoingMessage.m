@@ -36,6 +36,11 @@
     return _threadId;
 }
 
+- (NSDate*)date {
+    NSAssert(_messageBuilder.creationDate != nil, @"_messageBuilder.creationDate is nil");
+    return _messageBuilder.creationDate;
+}
+
 - (MCOMessageHeader*)parsedHeader {
     return [_messageBuilder.mcoMessageBuilder header];
 }

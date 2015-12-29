@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
+#import "SMAttachmentItem.h"
 
 @implementation SMOutgoingMessage {
     uint32_t _uid;
@@ -23,6 +24,14 @@
         _data = _messageBuilder.mcoMessageBuilder.data;
         _uid = rand(); // TODO: generate a uid nicely!!!
         _threadId = (((uint64_t)rand()) << 32) | rand();
+
+        NSMutableArray *mcoAttachments = [NSMutableArray array];
+        for(SMAttachmentItem *item in messageBuilder.attachments) {
+            [mcoAttachments addObject:item.mcoAttachment];
+        }
+        
+        _attachments = mcoAttachments;
+        _hasAttachments = _attachments.count > 0;
     }
     
     return self;

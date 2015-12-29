@@ -15,6 +15,7 @@
 @property (nonatomic, readonly) NSString *localFilePath;
 @property (nonatomic, readonly) NSString *fileName;
 @property (nonatomic, readonly) NSData *fileData;
+@property (nonatomic, readonly) MCOAttachment *mcoAttachment;
 
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment;
 - (id)initWithLocalFilePath:(NSString*)localFilePath;

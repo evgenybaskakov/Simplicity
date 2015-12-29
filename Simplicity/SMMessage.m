@@ -15,9 +15,7 @@
 #import "SMAttachmentStorage.h"
 #import "SMMessage.h"
 
-@implementation SMMessage {
-    Boolean _hasAttachments;
-}
+@implementation SMMessage
 
 + (NSUInteger)maxBodyPreviewLength {
     return 512;

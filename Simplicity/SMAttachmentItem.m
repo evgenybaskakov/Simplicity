@@ -12,7 +12,6 @@
 #import "SMAttachmentItem.h"
 
 @implementation SMAttachmentItem {
-    MCOAttachment *_mcoAttachment;
     NSString *_localFilePath;
 }
 

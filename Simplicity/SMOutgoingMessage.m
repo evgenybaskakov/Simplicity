@@ -66,7 +66,7 @@
     NSString *plainText = [_messageBuilder.mcoMessageBuilder plainTextBodyRendering];
     
     if(plainText == nil) {
-        return @"";
+        return nil;
     }
     
     NSUInteger maxLen = [SMMessage maxBodyPreviewLength];

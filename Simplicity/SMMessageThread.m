@@ -45,6 +45,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     ThreadFlagsUnseen         = 1 << 0,
     ThreadFlagsFlagged        = 1 << 1,
     ThreadFlagsHasAttachment  = 1 << 2,
+    ThreadFlagsHasPreview     = 1 << 3,
 };
 
 @implementation SMMessageThread {
@@ -52,6 +53,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     ThreadFlags _threadFlags;
     MessageCollection *_messageCollection;
     NSMutableOrderedSet *_labels;
+    NSString *_cachedBodyPreview;
 }
 
 - (id)initWithThreadId:(uint64_t)threadId {
@@ -79,6 +81,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (Boolean)hasAttachments {
     return _threadFlags & ThreadFlagsHasAttachment;
+}
+
+- (Boolean)hasPreview {
+    return _threadFlags & ThreadFlagsHasPreview;
 }
 
 - (SMThreadUpdateResult)addMessage:(SMMessage*)message {
@@ -190,6 +196,28 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
                 attributesChanged = YES;
             }
         }
+        
+        if(message == self.messagesSortedByDate.firstObject) {
+            NSString *bodyPreview = message.bodyPreview;
+            
+            if(bodyPreview != nil && ![self hasPreview]) {
+                _threadFlags |= ThreadFlagsHasPreview;
+                _cachedBodyPreview = bodyPreview;
+
+                attributesChanged = YES;
+            }
+            else if(bodyPreview == nil && [self hasPreview]) {
+                _threadFlags &= ~ThreadFlagsHasPreview;
+                _cachedBodyPreview = nil;
+                
+                attributesChanged = YES;
+            }
+            else if(bodyPreview != nil && bodyPreview != _cachedBodyPreview) {
+                _cachedBodyPreview = bodyPreview;
+                
+                attributesChanged = YES;
+            }
+        }
     } else {
         SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
     }
@@ -242,14 +270,17 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (void)updateThreadFlagsFromMessage:(SMMessage*)message {
-    if(message.unseen)
+    if(message.unseen) {
         _threadFlags |= ThreadFlagsUnseen;
+    }
 
-    if(message.flagged)
+    if(message.flagged) {
         _threadFlags |= ThreadFlagsFlagged;
+    }
     
-    if(message.hasAttachments)
+    if(message.hasAttachments) {
         _threadFlags |= ThreadFlagsHasAttachment;
+    }
 
     [_labels addObjectsFromArray:message.labels];
 }

@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMFolder.h"
+
 @class SMLocalFolder;
 
 @interface SMLocalFolderRegistry : NSObject
 
-- (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 - (SMLocalFolder*)getLocalFolder:(NSString*)folderName;
 - (void)removeLocalFolder:(NSString*)folderName;
 - (void)keepFoldersMemoryLimit;

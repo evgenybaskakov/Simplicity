@@ -66,10 +66,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     SMLocalFolderMessageBodyFetchQueue *_messageBodyFetchQueue;
 }
 
-- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [ super init ];
     
     if(self) {
+        _kind = kind;
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
@@ -763,7 +764,26 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 #pragma mark Messages movement to other remote folders
 
-- (void)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
+- (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
+    
+    if(destFolder == nil) {
+        SM_LOG_INFO(@"Destination folder %@ not found", destRemoteFolderName);
+        return FALSE;
+    }
+
+    if(_kind == SMFolderKindOutbox) {
+        if(destFolder.kind != SMFolderKindTrash) {
+            SM_LOG_INFO(@"Destination folder %@ (kind %ld) is not Trash", destRemoteFolderName, destFolder.kind);
+            return FALSE;
+        }
+
+        SM_LOG_INFO(@"TODO: implement removal from Outbox");
+        return FALSE;
+    }
+
     // Stop current message loading process, except bodies (because bodies can belong to
     // messages from other folders - TODO: is that logical?).
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
@@ -773,8 +793,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [self cancelScheduledMessageListUpdate];
 
     // Remove the deleted message threads from the message storage.
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName remoteFolder:_remoteFolderName updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
+    [[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
 
     // Notify observers that message flags have possibly changed.
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
@@ -826,6 +845,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
 
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    
+    return TRUE;
 }
 
 - (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {

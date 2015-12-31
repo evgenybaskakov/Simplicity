@@ -152,7 +152,6 @@
 		8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBD51C140B510083954D /* SMNotificationsController.m */; };
 		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
-		8051AFF21C268E2E005E6F7E /* SMOutboxLocalFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8051AFF11C268E2E005E6F7E /* SMOutboxLocalFolder.m */; };
 		8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */; };
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
 		80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */; };
@@ -518,8 +517,6 @@
 		804F33421BAFDDBA007E600C /* SMFolderDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderDesc.m; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
-		8051AFF01C268E2E005E6F7E /* SMOutboxLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOutboxLocalFolder.h; sourceTree = "<group>"; };
-		8051AFF11C268E2E005E6F7E /* SMOutboxLocalFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOutboxLocalFolder.m; sourceTree = "<group>"; };
 		8051AFFE1C27C53B005E6F7E /* SMOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOutgoingMessage.h; sourceTree = "<group>"; };
 		8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOutgoingMessage.m; sourceTree = "<group>"; };
 		80533AB21B4114B700A0A67F /* Editing-Text-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Text-icon.png"; sourceTree = "<group>"; };
@@ -778,8 +775,6 @@
 				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
 				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
 				806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */,
-				8051AFF01C268E2E005E6F7E /* SMOutboxLocalFolder.h */,
-				8051AFF11C268E2E005E6F7E /* SMOutboxLocalFolder.m */,
 				8051AFFE1C27C53B005E6F7E /* SMOutgoingMessage.h */,
 				8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */,
 				803A83181BE59059006520DD /* SMPreferencesController.h */,
@@ -1315,7 +1310,6 @@
 				80E3F2341BE724BE0024AB6B /* SMConnectionCheck.m in Sources */,
 				80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */,
 				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
-				8051AFF21C268E2E005E6F7E /* SMOutboxLocalFolder.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */,

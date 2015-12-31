@@ -10,10 +10,13 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMFolder.h"
+
 @class SMMessage;
 
 @interface SMLocalFolder : NSObject
 
+@property (readonly) SMFolderKind kind;
 @property (readonly) NSString *localName;
 @property (readonly) NSString *remoteFolderName;
 @property (readonly) NSUInteger unseenMessagesCount;
@@ -22,7 +25,7 @@
 @property (readonly) NSUInteger maxMessagesPerThisFolder;
 @property (readonly) Boolean syncedWithRemoteFolder;
 
-- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;
@@ -74,7 +77,7 @@
 
 // starts asynchronous process of moving the messages from the selected message threads
 // to the chosen folder
-- (void)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)remoteFolderName;
+- (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)remoteFolderName;
 
 // frees the occupied memory until the requested amount is reclaimed
 // or there is nothing to reclaim within this folder

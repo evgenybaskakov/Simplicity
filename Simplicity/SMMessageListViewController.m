@@ -569,38 +569,41 @@
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
 
-    [currentFolder moveMessageThreads:messageThreadsToMove toRemoteFolder:remoteFolderName];
+    if([currentFolder moveMessageThreads:messageThreadsToMove toRemoteFolder:remoteFolderName]) {
+        NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
 
-    NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
-
-    if(selectedRows.count > 0) {
-        // Move the selection down after the message thread is deleted from the list.
-        NSUInteger nextRow = selectedRows.firstIndex;
-        _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
-        
-        // If there's no down, move the selection up.
-        if(_selectedMessageThread == nil && nextRow > 0) {
-            nextRow--;
+        if(selectedRows.count > 0) {
+            // Move the selection down after the message thread is deleted from the list.
+            NSUInteger nextRow = selectedRows.firstIndex;
             _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
+            
+            // If there's no down, move the selection up.
+            if(_selectedMessageThread == nil && nextRow > 0) {
+                nextRow--;
+                _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
+            }
+
+            if(_selectedMessageThread != nil) {
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:nextRow];
+                [_messageListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+            }
+        }
+        else {
+            _selectedMessageThread = nil;
         }
 
-        if(_selectedMessageThread != nil) {
-            NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:nextRow];
-            [_messageListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
-        }
+        [self changeSelectedMessageThread];
+
+        _draggedMessageThread = nil;
+        _mouseSelectionInProcess = NO;
+        _immediateSelection = NO;
+        _reloadDeferred = NO;
+
+        [self reloadMessageList:(_selectedMessageThread != nil? YES : NO)];
     }
     else {
-        _selectedMessageThread = nil;
+        SM_LOG_DEBUG(@"Could not move message threads from %@ to %@", currentFolder.localName, remoteFolderName);
     }
-
-    [self changeSelectedMessageThread];
-
-    _draggedMessageThread = nil;
-    _mouseSelectionInProcess = NO;
-    _immediateSelection = NO;
-    _reloadDeferred = NO;
-
-    [self reloadMessageList:(_selectedMessageThread != nil? YES : NO)];
 }
 
 #pragma mark Messages drag and drop support

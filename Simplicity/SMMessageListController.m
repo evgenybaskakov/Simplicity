@@ -14,6 +14,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMSimplicityContainer.h"
 #import "SMPreferencesController.h"
+#import "SMMailbox.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
@@ -53,20 +54,25 @@
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
     if(folderName != nil) {
-        SMLocalFolder *folder = [[_model localFolderRegistry] getLocalFolder:folderName];
+        SMLocalFolder *localFolder = [[_model localFolderRegistry] getLocalFolder:folderName];
         
-        if(folder == nil)
-            folder = [[_model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName syncWithRemoteFolder:syncWithRemoteFolder];
-        
-        NSAssert(folder != nil, @"folder registry returned nil folder");
+        if(localFolder == nil) {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-        _currentFolder = folder;
+            SMFolder *folder = [[[appDelegate model] mailbox] getFolderByName:folderName];
+            SMFolderKind kind = (folder != nil? folder.kind : SMFolderKindRegular);
+
+            localFolder = [[_model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+        }
+        
+        _currentFolder = localFolder;
     } else {
         _currentFolder = nil;
     }
 
-    if([_currentFolder syncedWithRemoteFolder])
+    if([_currentFolder syncedWithRemoteFolder]) {
         [_currentFolder stopMessagesLoading:NO];
+    }
     
     [_folderInfoOp cancel];
     _folderInfoOp = nil;

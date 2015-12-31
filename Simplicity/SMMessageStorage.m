@@ -106,7 +106,7 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 
-- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection, @"bad folder collection");
 
@@ -148,7 +148,7 @@
     NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
-        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder remoteFolder:remoteFolder updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
+        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
         return true;
     }
     else {

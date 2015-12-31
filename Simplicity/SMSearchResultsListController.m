@@ -69,7 +69,7 @@
         NSAssert(searchResultsLocalFolder != nil, @"folder name couldn't be generated");
         NSAssert([_searchResults objectForKey:searchResultsLocalFolder] == nil, @"duplicated generated folder name");
         
-        if([[[appDelegate model] localFolderRegistry] createLocalFolder:searchResultsLocalFolder remoteFolder:remoteFolderName syncWithRemoteFolder:NO] == nil) {
+        if([[[appDelegate model] localFolderRegistry] createLocalFolder:searchResultsLocalFolder remoteFolder:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
             NSAssert(false, @"could not create local folder for search results");
         }
         

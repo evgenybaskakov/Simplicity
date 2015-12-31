@@ -100,7 +100,6 @@
                 }
                 
                 [self addFoldersToDatabase];
-
                 [self ensureMainLocalFoldersCreated];
             }
         }
@@ -121,10 +120,10 @@
         if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
             if(folder.kind == SMFolderKindOutbox) {
                 // TODO: workaround for possible "Outbox" folder name collision
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil syncWithRemoteFolder:NO];
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind syncWithRemoteFolder:NO];
             }
             else {
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName syncWithRemoteFolder:YES];
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind syncWithRemoteFolder:YES];
             }
         }
     }

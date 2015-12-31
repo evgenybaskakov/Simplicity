@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
-#import <MailCore/MailCore.h>
-
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageStorage.h"

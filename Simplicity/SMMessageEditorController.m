@@ -78,16 +78,13 @@
     [[appController outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
-- (void)removeMessageFromOutbox:(SMOutgoingMessage*)message {
+- (void)finishMessageSending:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-
-    [[appController outboxController] removeMessage:message];
-    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
+    [[[appDelegate appController] outboxController] finishMessageSending:message];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
-    [self removeMessageFromOutbox:message];
+    [self finishMessageSending:message];
     
     [self deleteSavedDraft];
 

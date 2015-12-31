@@ -13,6 +13,9 @@
 
 @interface SMOperationExecutor : NSObject
 
+@property (readonly) SMOperationQueue *smtpQueue;
+@property (readonly) SMOperationQueue *imapQueue;
+
 - (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue;
 - (void)enqueueOperation:(SMOperation*)op;
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;

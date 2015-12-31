@@ -7,6 +7,9 @@
 //
 
 #import "SMLog.h"
+#import "SMMessage.h"
+#import "SMOutgoingMessage.h"
+#import "SMOpSendMessage.h"
 #import "SMOperationQueue.h"
 
 @implementation SMOperationQueue {
@@ -74,6 +77,24 @@
 
 - (NSUInteger)count {
     return _queue.count;
+}
+
+- (void)cancelSendOpWithMessage:(SMOutgoingMessage*)message {
+    for(NSUInteger i = 0; i < _queue.count; i++) {
+        SMOperation *op = _queue[i];
+        
+        if([op isKindOfClass:[SMOpSendMessage class]]) {
+            SMOpSendMessage *sendOp = (SMOpSendMessage*)op;
+            
+            if(sendOp.outgoingMessage == message) {
+                if(![sendOp cancelOp]) {
+                    [_queue removeObjectAtIndex:i];
+                }
+         
+                break;
+            }
+        }
+    }
 }
 
 @end

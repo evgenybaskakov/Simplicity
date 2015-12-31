@@ -76,7 +76,7 @@
     [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
 
-- (void)removeMessage:(SMOutgoingMessage*)message {
+- (void)finishMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Removing message");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -84,6 +84,21 @@
     
     SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
     [outboxFolder removeMessage:message];
+
+    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
+}
+
+- (void)cancelMessageSending:(SMOutgoingMessage*)message {
+    SM_LOG_DEBUG(@"Cancel message sending");
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+
+    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
+    [outboxFolder removeMessage:message];
+
+    [[[[appDelegate appController] operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
+    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
 
 @end

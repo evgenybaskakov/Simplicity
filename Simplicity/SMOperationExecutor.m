@@ -17,10 +17,7 @@
 
 static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 
-@implementation SMOperationExecutor {
-    SMOperationQueue *_smtpQueue;
-    SMOperationQueue *_imapQueue;
-}
+@implementation SMOperationExecutor
 
 - (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue {
     self = [super init];

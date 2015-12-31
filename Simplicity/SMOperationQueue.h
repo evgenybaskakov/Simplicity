@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class SMOperation;
+@class SMOutgoingMessage;
 
 @interface SMOperationQueue : NSObject<NSCoding>
 
@@ -20,5 +21,6 @@
 - (void)removeOp:(SMOperation*)op;
 - (SMOperation*)getFirstOp;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
+- (void)cancelSendOpWithMessage:(SMOutgoingMessage*)message;
 
 @end

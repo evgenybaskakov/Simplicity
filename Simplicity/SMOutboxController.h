@@ -17,6 +17,7 @@
 
 - (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 - (void)sendMessage:(SMOutgoingMessage*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
-- (void)removeMessage:(SMOutgoingMessage*)message;
+- (void)finishMessageSending:(SMOutgoingMessage*)message;
+- (void)cancelMessageSending:(SMOutgoingMessage*)message;
 
 @end

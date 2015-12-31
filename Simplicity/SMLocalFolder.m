@@ -18,8 +18,10 @@
 #import "SMMessageThreadDescriptor.h"
 #import "SMMessageThreadDescriptorEntry.h"
 #import "SMMessage.h"
+#import "SMOutgoingMessage.h"
 #import "SMMailbox.h"
 #import "SMDatabase.h"
+#import "SMOutboxController.h"
 #import "SMNotificationsController.h"
 #import "SMAddress.h"
 #import "SMFolder.h"
@@ -777,9 +779,23 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             SM_LOG_INFO(@"Destination folder %@ (kind %ld) is not Trash", destRemoteFolderName, destFolder.kind);
             return FALSE;
         }
+        
+        // There are the following steps that must be done:
+        // 1) Remove the messages from the storage for the outbox folder;
+        // 2) Cancel message sending from the SMTP queue;
+        // 3) Put the deleted messages to the local Trash folder.
 
+        for(SMMessageThread *messageThread in messageThreads) {
+            for(SMMessage *message in messageThread.messagesSortedByDate) {
+                NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
+                [[[appDelegate appController] outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
+            }
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+        
         SM_LOG_INFO(@"TODO: implement removal from Outbox");
-        return FALSE;
+        return TRUE;
     }
 
     // Stop current message loading process, except bodies (because bodies can belong to
@@ -793,9 +809,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // Remove the deleted message threads from the message storage.
     [[[appDelegate model] messageStorage] deleteMessageThreads:messageThreads fromLocalFolder:_localName updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
 
-    // Notify observers that message flags have possibly changed.
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
-    
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
     for(SMMessageThread *thread in messageThreads) {
@@ -843,6 +856,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
 
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    
+    // Notify observers that message flags have possibly changed.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
     
     return TRUE;
 }

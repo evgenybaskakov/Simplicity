@@ -87,10 +87,7 @@
             SMOpSendMessage *sendOp = (SMOpSendMessage*)op;
             
             if(sendOp.outgoingMessage == message) {
-                if(![sendOp cancelOp]) {
-                    [_queue removeObjectAtIndex:i];
-                }
-         
+                [sendOp cancelOpForced:YES];
                 break;
             }
         }

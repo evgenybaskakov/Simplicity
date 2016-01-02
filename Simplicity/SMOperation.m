@@ -12,7 +12,9 @@
 #import "SMOperationExecutor.h"
 #import "SMOperation.h"
 
-@implementation SMOperation
+@implementation SMOperation {
+    BOOL _cancelled;
+}
 
 - (id)initWithKind:(SMOpKind)opKind {
     self = [super init];
@@ -49,11 +51,19 @@
 }
 
 - (Boolean)cancelOp {
-    if(_currentOp) {
-        // we can't cancel operation in progress
-        // there's no way to rollback changes already made,
-        // and there's no way to ensure that nothing has started yet
-        return false;
+    return [self cancelOpForced:NO];
+}
+
+- (Boolean)cancelOpForced:(BOOL)force {
+    _cancelled = YES;
+    
+    if(!force) {
+        if(_currentOp) {
+            // we can't cancel operation in progress
+            // there's no way to rollback changes already made,
+            // and there's no way to ensure that nothing has started yet
+            return false;
+        }
     }
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -63,8 +73,13 @@
 }
 
 - (void)fail {
+    if(_cancelled) {
+        SM_LOG_INFO(@"Op (kind %u) is cancelled, won't be restarted", _opKind);
+        return;
+    }
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] failedOperation:self];
+    [[[appDelegate appController] operationExecutor] restartOperation:self];
 }
 
 - (void)complete {

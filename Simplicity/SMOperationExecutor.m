@@ -99,14 +99,14 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
     [self scheduleOpQueuesSave];
 }
 
-- (void)failedOperation:(SMOperation*)op {
+- (void)restartOperation:(SMOperation*)op {
     SM_LOG_DEBUG(@"op %@", op);
     
     SMOperationQueue *queue = [self getQueue:op.opKind];
     NSAssert([queue getFirstOp] == op, @"first op is not the restarted op");
 
     // TODO: should monitor the connection status, not just re-trying...
-
+    
     [op performSelector:@selector(start) withObject:nil afterDelay:5];
 }
 

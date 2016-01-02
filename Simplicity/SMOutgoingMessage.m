@@ -118,7 +118,7 @@
 }
 
 - (void)fetchInlineAttachments {
-    SM_FATAL(@"Cannot fetch inline attachements for outgoig message");
+    SM_LOG_INFO(@"No inline attachements for outgoig message");
 }
 
 - (NSString*)htmlBodyRendering {

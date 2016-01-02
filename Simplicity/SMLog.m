@@ -29,6 +29,8 @@ static const char *getFileName(const char *path) {
 
 void SMFatal(const char *file, int line, const char *func) {
     SM_LOG_FATAL(@"FATAL ERROR IN %s, line %d, function %s", getFileName(file), line, func);
+
+    abort();
 }
 
 void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) {

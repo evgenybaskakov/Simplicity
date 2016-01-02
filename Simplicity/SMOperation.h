@@ -30,6 +30,7 @@ typedef enum {
 - (void)start;
 - (void)fail;
 - (Boolean)cancelOp;
+- (Boolean)cancelOpForced:(BOOL)force;
 - (void)complete;
 - (void)enqueue;
 - (void)replaceWith:(SMOperation*)op;

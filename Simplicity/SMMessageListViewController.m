@@ -214,18 +214,27 @@
     [view.subjectTextField setStringValue:[firstMessage subject]];
     [view.dateTextField setStringValue:[firstMessage localizedDate]];
 
-    if(messageThread.unseen) {
-        [view.unseenButton setState:NSOnState];
-    } else {
-        [view.unseenButton setState:NSOffState];
+    if(currentLocalFolder.kind == SMFolderKindOutbox) {
+        view.unseenButton.hidden = YES;
+        view.starButton.hidden = YES;
     }
+    else {
+        view.unseenButton.hidden = NO;
+        view.starButton.hidden = NO;
+        
+        if(messageThread.unseen) {
+            [view.unseenButton setState:NSOnState];
+        } else {
+            [view.unseenButton setState:NSOffState];
+        }
 
-    if(messageThread.flagged) {
-        [view.starButton setState:NSOnState];
-    } else {
-        [view.starButton setState:NSOffState];
+        if(messageThread.flagged) {
+            [view.starButton setState:NSOnState];
+        } else {
+            [view.starButton setState:NSOffState];
+        }
     }
-
+    
     // the buttons within the table cells must know which row they're in
     // so their action will use this tag to reflect the button action to the
     // target message thread
@@ -783,25 +792,30 @@
     NSMenu *menu = [[NSMenu alloc] init];
     menu.autoenablesItems = NO;
 
-    NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
-    [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-
-    item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
-    [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-    
-    item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
-    [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-    
-    [menu addItem:[NSMenuItem separatorItem]];
-    [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
-    [menu addItem:[NSMenuItem separatorItem]];
-    [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsSeen:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Add Star" action:@selector(menuActionAddStar:) keyEquivalent:@""] setTarget:self];
-    [[menu addItemWithTitle:@"Remove Star" action:@selector(menuActionRemoveStar:) keyEquivalent:@""] setTarget:self];
+    if(currentLocalFolder.kind == SMFolderKindOutbox) {
+        [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
+    }
+    else {
+        NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
+        [item setTarget:self];
+        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+        
+        item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
+        [item setTarget:self];
+        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+        
+        item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
+        [item setTarget:self];
+        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+        
+        [menu addItem:[NSMenuItem separatorItem]];
+        [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
+        [menu addItem:[NSMenuItem separatorItem]];
+        [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsSeen:) keyEquivalent:@""] setTarget:self];
+        [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
+        [[menu addItemWithTitle:@"Add Star" action:@selector(menuActionAddStar:) keyEquivalent:@""] setTarget:self];
+        [[menu addItemWithTitle:@"Remove Star" action:@selector(menuActionRemoveStar:) keyEquivalent:@""] setTarget:self];
+    }
     
     return menu;
 }

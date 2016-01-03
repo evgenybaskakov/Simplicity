@@ -139,7 +139,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
 
             const uint64_t folderMemoryBeforeKb = [folderEntry.folder getTotalMemoryKb];
 
-            NSAssert(totalMemoryReclaimedKb < totalMemoryToReclaimKb, @"totalMemoryReclaimedKb %llu, totalMemoryToReclaimKb %llu", totalMemoryReclaimedKb, totalMemoryToReclaimKb);
+            NSAssert(totalMemoryReclaimedKb <= totalMemoryToReclaimKb, @"totalMemoryReclaimedKb %llu, totalMemoryToReclaimKb %llu", totalMemoryReclaimedKb, totalMemoryToReclaimKb);
 
             [folderEntry.folder reclaimMemory:(totalMemoryToReclaimKb - totalMemoryReclaimedKb)];
 

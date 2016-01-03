@@ -789,9 +789,17 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             for(SMMessage *message in messageThread.messagesSortedByDate) {
                 NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
                 [[[appDelegate appController] outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
+
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
+                
+                SMLocalFolder *trashFolder = [localFolderRegistry getLocalFolder:@"[Gmail]/Trash"]; // TODO!!!
+                NSAssert(trashFolder, @"trashFolder is nil");
+                
+                [trashFolder addMessage:message];
             }
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
         
         SM_LOG_INFO(@"TODO: implement removal from Outbox");

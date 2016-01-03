@@ -117,7 +117,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return firstMessage? SMThreadUpdateResultStructureChanged : SMThreadUpdateResultFlagsChanged;
 }
 
-- (SMMessage*)getMessage:(uint32_t)uid {
+- (SMMessage*)getMessageByUID:(uint32_t)uid {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
@@ -136,7 +136,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (Boolean)updateThreadAttributesFromMessageUID:(uint32_t)uid {
-    SMMessage *message = [self getMessage:uid];
+    SMMessage *message = [self getMessageByUID:uid];
     
     Boolean attributesChanged = NO;
     
@@ -226,7 +226,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments uid:(uint32_t)uid {
-    SMMessage *message = [self getMessage:uid];
+    SMMessage *message = [self getMessageByUID:uid];
         
     if(message != nil) {
         NSAssert(message.uid == uid, @"bad message found");
@@ -241,16 +241,9 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (Boolean)messageHasData:(uint32_t)uid {
     Boolean hasData = NO;
-    
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
+    SMMessage *message = [self getMessageByUID:uid];
 
-    NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:uid];
-    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:[comparators messagesComparatorByUID]];
-    
-    if(messageIndex != NSNotFound) {
-        SMMessage *message = [_messageCollection.messages objectAtIndex:messageIndex];
-        
+    if(message != nil) {
         NSAssert(message.uid == uid, @"bad message found");
         
         SM_LOG_DEBUG(@"set message data for uid %u", uid);

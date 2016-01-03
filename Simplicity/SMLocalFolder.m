@@ -396,7 +396,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     }
 
     for(SMMessageThreadDescriptorEntry *entry in threadDesc.entries) {
-        if([messageThread getMessage:entry.uid] == nil) {
+        if([messageThread getMessageByUID:entry.uid] == nil) {
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
             [[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {

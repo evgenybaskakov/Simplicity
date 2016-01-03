@@ -792,25 +792,24 @@
     NSMenu *menu = [[NSMenu alloc] init];
     menu.autoenablesItems = NO;
 
-    if(currentLocalFolder.kind == SMFolderKindOutbox) {
-        [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
-    }
-    else {
-        NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
-        [item setTarget:self];
-        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-        
-        item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
-        [item setTarget:self];
-        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-        
-        item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
-        [item setTarget:self];
-        [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
-        
+    NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    
+    item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    
+    item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
+    [item setTarget:self];
+    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    
+    [menu addItem:[NSMenuItem separatorItem]];
+    [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
+
+    if(currentLocalFolder.kind != SMFolderKindOutbox) {
         [menu addItem:[NSMenuItem separatorItem]];
-        [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
-        [menu addItem:[NSMenuItem separatorItem]];
+        
         [[menu addItemWithTitle:@"Mark as Read" action:@selector(menuActionMarkAsSeen:) keyEquivalent:@""] setTarget:self];
         [[menu addItemWithTitle:@"Mark as Unread" action:@selector(menuActionMarkAsUnseen:) keyEquivalent:@""] setTarget:self];
         [[menu addItemWithTitle:@"Add Star" action:@selector(menuActionAddStar:) keyEquivalent:@""] setTarget:self];

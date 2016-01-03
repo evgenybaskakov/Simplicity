@@ -112,7 +112,6 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         
         if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
             _starButton.enabled = NO;
-            _replyButton.enabled = NO;
         }
     }
 
@@ -579,16 +578,15 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
     [theMenu setAutoenablesItems:NO];
 
-    if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
-        [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
-    }
-    else {
-        [[theMenu addItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@""] setTarget:self];
-        [[theMenu addItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@""] setTarget:self];
-        [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
+    [theMenu addItem:[NSMenuItem separatorItem]];
+    [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
+
+    if(![_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
         [theMenu addItem:[NSMenuItem separatorItem]];
-        [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
-        [theMenu addItem:[NSMenuItem separatorItem]];
+        
         [[theMenu addItemWithTitle:(_currentMessage.unseen? @"Mark as Read" : @"Mark as Unread") action:@selector(changeMessageUnreadFlag:) keyEquivalent:@""] setTarget:self];
     }
     

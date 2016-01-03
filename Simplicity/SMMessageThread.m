@@ -93,7 +93,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
-    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparator];
+    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
 
     [_messageCollection.messages insertObject:message atIndex:messageIndex];
     
@@ -291,7 +291,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
     SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
     
-    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:[comparators messagesComparatorByImapMessage]];
+    NSUInteger messageIndex = [_messageCollection.messages indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByImapMessage];
     
     if(messageIndex < [_messageCollection count]) {
         SMMessage *message = [_messageCollection.messages objectAtIndex:messageIndex];
@@ -332,7 +332,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_messageCollection.messages insertObject:message atIndex:messageIndex];
 
     // update the date sorted messages list
-    NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:[comparators messagesComparatorByDate]];
+    NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByDate];
     
     [_messageCollection.messagesByDate insertObject:message atIndex:messageIndexByDate];
 

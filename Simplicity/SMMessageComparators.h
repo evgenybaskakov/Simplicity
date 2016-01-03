@@ -10,7 +10,6 @@
 
 @interface SMMessageComparators : NSObject
 
-@property (readonly) NSComparator messagesComparator;
 @property (readonly) NSComparator messagesComparatorByImapMessage;
 @property (readonly) NSComparator messagesComparatorByUID;
 @property (readonly) NSComparator messagesComparatorByDate;

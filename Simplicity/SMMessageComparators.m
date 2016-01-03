@@ -35,10 +35,6 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
 - (id)init {
     self = [super init];
     if(self) {
-        _messagesComparator = ^NSComparisonResult(id a, id b) {
-            return compareMessagesByUID(a, b);
-        };
-        
         _messagesComparatorByImapMessage = ^NSComparisonResult(id a, id b) {
             uint32_t uid1 = 0, uid2 = 0;
             
@@ -59,7 +55,8 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
             if([a isKindOfClass:[NSNumber class]]) {
                 uid1 = [(NSNumber*)a unsignedIntValue];
                 uid2 = [(SMMessage*)b uid];
-            } else {
+            }
+            else {
                 uid1 = [(SMMessage*)a uid];
                 uid2 = [(NSNumber*)b unsignedIntValue];
             }

@@ -145,14 +145,14 @@
     
     SMMessageThread *messageThread = [self messageThreadById:threadId localFolder:localFolder];
     NSAssert(messageThread != nil, @"message thread not found for message uid %u, threadId %llu", uid, threadId);
-    NSAssert([messageThread getMessage:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
+    NSAssert([messageThread getMessageByUID:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
         [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] fromLocalFolder:localFolder updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
         return true;
     }
     else {
-        SMMessage *message = [messageThread getMessage:uid];
+        SMMessage *message = [messageThread getMessageByUID:uid];
         if(message != nil) {
             if(message.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
                 (*unseenMessagesCount)--;

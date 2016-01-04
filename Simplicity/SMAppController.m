@@ -264,10 +264,12 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     if(!_inboxInitialized) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
 
-        // TODO: detect the inbox another way (see issue #44)
-        [[[appDelegate model] messageListController] changeFolder:@"INBOX"];
-        [[[appDelegate appController] mailboxViewController] changeFolder:@"INBOX"];
+        NSAssert(inboxFolder != nil, @"inboxFolder is nil");
+
+        [[[appDelegate model] messageListController] changeFolder:inboxFolder.fullName];
+        [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
         
         _inboxInitialized = YES;
     }

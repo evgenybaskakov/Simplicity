@@ -439,11 +439,13 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     // 2. The folder is the INBOX (TODO: make configurable);
     // 3. The message is new;
     // 4. The message is unseen.
-    // TODO: map the local folders to their SMFolder counterparts
-    // TODO: get rid of the hardcoded inbox name (see issue #44)
-    BOOL shouldUseNotifications = (!_loadingFromDB && [_remoteFolderName isEqualToString:@"INBOX"]);
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
+
+    NSAssert(inboxFolder != nil, @"inboxFolder is nil");
+    
+    BOOL shouldUseNotifications = (!_loadingFromDB && [_remoteFolderName isEqualToString:inboxFolder.fullName]);
+    
     SMMessageStorageUpdateResult updateResult = [[[appDelegate model] messageStorage] endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
         if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
             for(SMMessage *m in newUnseenMessages) {

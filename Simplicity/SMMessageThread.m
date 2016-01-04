@@ -10,6 +10,7 @@
 
 #import "SMLog.h"
 #import "SMMessage.h"
+#import "SMOutgoingMessage.h"
 #import "SMAppDelegate.h"
 #import "SMMessageComparators.h"
 #import "SMMessageStorage.h"
@@ -338,6 +339,11 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return SMThreadUpdateResultStructureChanged;
 }
 
+- (BOOL)messageOutdated:(SMMessage*)message {
+    // Never consider "outgoing" messages as outdated, because they're always local.
+    return ![message isKindOfClass:[SMOutgoingMessage class]] && message.updateStatus == SMMessageUpdateStatus_Unknown;
+}
+
 - (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
     NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
@@ -353,7 +359,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         for(NSUInteger i = 0, count = [_messageCollection count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messagesByUID objectAtIndex:i];
             
-            if(message.updateStatus == SMMessageUpdateStatus_Unknown) {
+            if([self messageOutdated:message]) {
                 SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
 
                 [notUpdatedMessageIndices addIndex:i];
@@ -372,15 +378,16 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         for(NSUInteger i = 0, count = [_messageCollection.messagesByDate count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messagesByDate objectAtIndex:i];
             
-            if(message.updateStatus == SMMessageUpdateStatus_Unknown) {
+            if([self messageOutdated:message]) {
                 [notUpdatedMessageIndices addIndex:i];
             }
         }
         
         [_messageCollection.messagesByDate removeObjectsAtIndexes:notUpdatedMessageIndices];
 
-        if(_messageCollection.count == 0)
+        if(_messageCollection.count == 0) {
             SM_LOG_DEBUG(@"thread %llu - all messages vanished", _threadId);
+        }
     }
     
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");

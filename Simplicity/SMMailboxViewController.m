@@ -456,11 +456,9 @@ typedef enum {
     // permit drop only at folders, not between them
 
     if(op == NSTableViewDropOn) {
-        SMFolder *folder = [self selectedFolder:row];
+        SMFolder *targetFolder = [self selectedFolder:row];
 
-        // TODO: set the current mailbox folder at the app startup
-
-        if(folder != nil && ![folder.fullName isEqualToString:_currentFolderName])
+        if(targetFolder != nil && ![targetFolder.fullName isEqualToString:_currentFolderName])
             return NSDragOperationMove;
     }
     
@@ -474,9 +472,27 @@ typedef enum {
 {
     SMFolder *targetFolder = [self selectedFolder:row];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:targetFolder.fullName];
+    if(targetFolder == nil) {
+        SM_LOG_INFO(@"No target folder");
+        return NO;
+    }
+    
+    if(targetFolder.kind == SMFolderKindOutbox) {
+        SM_LOG_INFO(@"Cannot move messages to the Outbox folder");
+        return NO;
+    }
 
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:_currentFolderName];
+
+    if(currentFolder.kind == SMFolderKindOutbox && targetFolder.kind != SMFolderKindTrash) {
+        SM_LOG_INFO(@"Cannot move messages from the Outbox folder to anything but Trash");
+        return NO;
+    }
+
+    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:targetFolder.fullName];
+    
+    SM_LOG_INFO(@"Moving messages from %@ to %@", _currentFolderName, targetFolder.fullName);
     return YES;
 }
 

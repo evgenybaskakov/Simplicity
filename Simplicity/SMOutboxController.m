@@ -49,11 +49,11 @@
             opSendMessage.postActionSelector = selector;
 
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];            
-            SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
-            NSAssert(outboxFolder != nil, @"outboxFolder is nil");
-            
-            [outboxFolder addMessage:opSendMessage.outgoingMessage];
+            SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
+            SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+
+            NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
+            [outboxLocalFolder addMessage:opSendMessage.outgoingMessage];
         }
     }
 }
@@ -62,10 +62,11 @@
     SM_LOG_DEBUG(@"Sending message");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
-    
-    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
-    [outboxFolder addMessage:outgoingMessage];
+    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+
+    NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
+    [outboxLocalFolder addMessage:outgoingMessage];
 
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage];
 
@@ -80,10 +81,11 @@
     SM_LOG_DEBUG(@"Removing message");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
-    
-    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
-    [outboxFolder removeMessage:message];
+    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+
+    NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
+    [outboxLocalFolder removeMessage:message];
 
     [[[appDelegate appController] operationExecutor] saveSMTPQueue];
 }
@@ -92,10 +94,11 @@
     SM_LOG_DEBUG(@"Cancel message sending");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
-
-    SMLocalFolder *outboxFolder = [localFolderRegistry getLocalFolder:@"Outbox"]; // TODO!!!
-    [outboxFolder removeMessage:message];
+    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    
+    NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
+    [outboxLocalFolder removeMessage:message];
 
     [[[[appDelegate appController] operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
     [[[appDelegate appController] operationExecutor] saveSMTPQueue];

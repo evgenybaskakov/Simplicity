@@ -28,8 +28,6 @@
 
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;
 - (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;
-
-- (SMFolder*)getFolderByKind:(SMFolderKind)kind;
 - (SMFolder*)getFolderByName:(NSString*)folderName;
 - (NSString*)constructFolderName:(NSString*)folderName parent:(NSString*)parentFolderName;
 

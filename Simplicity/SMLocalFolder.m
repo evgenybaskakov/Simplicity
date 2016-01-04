@@ -791,12 +791,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
                 [[[appDelegate appController] outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                SMLocalFolderRegistry *localFolderRegistry = [[appDelegate model] localFolderRegistry];
-                
-                SMLocalFolder *trashFolder = [localFolderRegistry getLocalFolder:@"[Gmail]/Trash"]; // TODO!!!
-                NSAssert(trashFolder, @"trashFolder is nil");
-                
-                [trashFolder addMessage:message];
+                SMFolder *trashFolder = [[[appDelegate model] mailbox] trashFolder];
+                SMLocalFolder *trashLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:trashFolder.fullName];
+
+                NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
+                [trashLocalFolder addMessage:message];
             }
         }
 
@@ -949,17 +948,20 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         
         for(NSUInteger j = messages.count; j > 0; j--) {
             SMMessage *message = messages[j-1];
-            NSData *data = message.data;
             
-            if(data != nil) {
-                reclaimedMessagesCount++;
-                reclaimedMemory += data.length;
-
-                [message reclaimData];
+            if(![message isKindOfClass:[SMOutgoingMessage class]]) {
+                NSData *data = message.data;
                 
-                if(reclaimedMemory / 1024 >= memoryToReclaimKb) {
-                    stop = YES;
-                    break;
+                if(data != nil) {
+                    reclaimedMessagesCount++;
+                    reclaimedMemory += data.length;
+
+                    [message reclaimData];
+                    
+                    if(reclaimedMemory / 1024 >= memoryToReclaimKb) {
+                        stop = YES;
+                        break;
+                    }
                 }
             }
         }

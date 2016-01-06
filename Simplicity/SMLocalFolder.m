@@ -514,6 +514,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             [self rescheduleUpdateTimeout];
             [self updateMessageHeaders:messages updateDatabase:NO];
             [self syncFetchMessageHeaders];
+        } outgoingMessagesBlock:^(NSArray *outgoingMessages) {
+            SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
+
+            for(SMOutgoingMessage *message in outgoingMessages) {
+                [self addMessage:message updateDatabase:NO];
+            }
         }];
     }
     else {
@@ -692,13 +698,17 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate model] messageStorage] removeLocalFolder:_localName];
 }
 
-- (void)addMessage:(SMMessage*)message {
+- (void)addMessage:(SMMessage*)message updateDatabase:(BOOL)updateUpdate {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:NO];
+    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:updateUpdate];
     
     _totalMessagesCount++;
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+}
+
+- (void)addMessage:(SMMessage*)message {
+    [self addMessage:message updateDatabase:(_kind != SMFolderKindOutbox)];
 }
 
 - (void)removeMessage:(SMMessage*)message {
@@ -783,8 +793,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         }
         
         // There are the following steps that must be done:
-        // 1) Remove the messages from the storage for the outbox folder;
-        // 2) Cancel message sending from the SMTP queue;
+        // 1) Cancel message sending from the SMTP queue;
+        // 2) Remove the messages from the storage for the outbox folder;
         // 3) Put the deleted messages to the local Trash folder.
 
         for(SMMessageThread *messageThread in messageThreads) {
@@ -798,6 +808,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
                 NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
                 [trashLocalFolder addMessage:message];
+
+                [self removeMessage:message];
             }
         }
 

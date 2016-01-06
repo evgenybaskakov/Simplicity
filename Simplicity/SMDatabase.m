@@ -11,6 +11,8 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
+#import "SMOutgoingMessage.h"
+#import "SMMessageBuilder.h"
 #import "SMMessageThreadDescriptor.h"
 #import "SMMessageThreadDescriptorEntry.h"
 #import "SMCompression.h"
@@ -1286,7 +1288,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock {
+- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock outgoingMessagesBlock:(void (^)(NSArray*))getOutgoingMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -1294,6 +1296,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         NSMutableArray *messages = [NSMutableArray arrayWithCapacity:count];
+        NSMutableArray *outgoingMessages = [NSMutableArray array];
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1334,15 +1337,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
                         NSData *uncompressedData = [SMCompression gzipInflate:data];
                         
-                        MCOIMAPMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
-                        if(message == nil) {
-                            SM_LOG_ERROR(@"could not decode IMAP message");
+                        id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+                        
+                        if(messageObject == nil) {
+                            SM_LOG_ERROR(@"could not decode message");
                             
                             dbQueryFailed = YES;
                             break;
                         }
                         
-                        [messages addObject:message];
+                        if([messageObject isKindOfClass:[SMMessageBuilder class]]) {
+                            SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:(SMMessageBuilder*)messageObject];
+
+                            // TODO: restore UID?
+                            [outgoingMessages addObject:outgoingMessage];
+                        }
+                        else {
+                            [messages addObject:messageObject];
+                        }
                     }
                 }
                 else {
@@ -1374,6 +1386,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             getMessagesBlock(messages);
+            
+            if(outgoingMessages.count > 0) {
+                getOutgoingMessagesBlock(outgoingMessages);
+            }
         });
         
         OSAtomicAdd32(-1, &_serialQueueLength);
@@ -1597,6 +1613,17 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return compressedMessage;
 }
 
+- (NSData*)encodeMessageBuilder:(SMMessageBuilder*)messageBuilder {
+    NSData *encodedMessageBuilder = [NSKeyedArchiver archivedDataWithRootObject:messageBuilder];
+    NSAssert(encodedMessageBuilder != nil, @"could not encode outgoing message builder");
+    
+    NSData *compressedMessageBuilder = [SMCompression gzipDeflate:encodedMessageBuilder];
+    
+    SM_LOG_DEBUG(@"message builder data len %lu, compressed len %lu (%lu%% from original)", encodedMessageBuilder.length, compressedMessageBuilder.length, compressedMessageBuilder.length/(compressedMessageBuilder.length/100));
+    
+    return compressedMessageBuilder;
+}
+
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
@@ -1604,98 +1631,115 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
-        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
-        
-        if(database != nil) {
-            do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
-                if(folderId == nil) {
-                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-                    
-                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
-                    break;
-                }
-                
-                NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?)", folderId];
-                const char *folderInsertStmt = [folderInsertSql UTF8String];
-                
-                sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, folderInsertStmt, -1, &statement, NULL);
-                if(sqlPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
-                    
-                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                    break;
-                }
-                
-                BOOL dbQueryFailed = NO;
-                int dbQueryError = SQLITE_OK;
-                
-                do {
-                    int bindResult;
-                    if((bindResult = sqlite3_bind_int(statement, 1, imapMessage.uid)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", imapMessage.uid, bindResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = bindResult;
-                        break;
-                    }
-
-                    NSTimeInterval messageDateSeconds = [[[imapMessage header] date] timeIntervalSince1970];
-                    uint64_t timestamp = (uint64_t)messageDateSeconds;
-
-                    if((bindResult = sqlite3_bind_int64(statement, 2, timestamp)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TIMESTAMP), error %d", imapMessage.uid, bindResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = bindResult;
-                        break;
-                    }
-
-                    NSData *encodedMessage = [self encodeImapMessage:imapMessage];
-                    
-                    if((bindResult = sqlite3_bind_blob(statement, 3, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGE), error %d", imapMessage.uid, bindResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = bindResult;
-                        break;
-                    }
-                    
-                    const int sqlStepResult = sqlite3_step(statement);
-                    
-                    if(sqlStepResult != SQLITE_DONE) {
-                        if(sqlStepResult == SQLITE_CONSTRAINT) {
-                            SM_LOG_WARNING(@"Message with UID %u already in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
-                        }
-                        else {
-                            SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", imapMessage.uid, folderName, folderId, sqlStepResult);
-
-                            dbQueryFailed = YES;
-                            dbQueryError = sqlStepResult;
-                            break;
-                        }
-                    }
-                } while(FALSE);
-                
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
-
-                if(dbQueryFailed) {
-                    SM_LOG_ERROR(@"SQL query has failed");
-                    
-                    [self triggerDBFailureWithSQLiteError:dbQueryError];
-                    break;
-                }
-                
-                SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
-            } while(FALSE);
-            
-            [self closeDatabase:database];
-        }
+        NSData *encodedMessage = [self encodeImapMessage:imapMessage];
+        [self storeEncodedMessage:encodedMessage uid:imapMessage.uid date:[[imapMessage header] date] folderName:folderName];
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
+}
+
+- (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        NSData *encodedMessageBuilder = [self encodeMessageBuilder:outgoingMessage.messageBuilder];
+        [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid date:outgoingMessage.date folderName:folderName];
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderName:(NSString*)folderName {
+    sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+    
+    if(database != nil) {
+        do {
+            NSNumber *folderId = [_folderIds objectForKey:folderName];
+            if(folderId == nil) {
+                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                
+                [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                break;
+            }
+            
+            NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?)", folderId];
+            const char *folderInsertStmt = [folderInsertSql UTF8String];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, folderInsertStmt, -1, &statement, NULL);
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                
+                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                break;
+            }
+            
+            BOOL dbQueryFailed = NO;
+            int dbQueryError = SQLITE_OK;
+            
+            do {
+                int bindResult;
+                if((bindResult = sqlite3_bind_int(statement, 1, uid)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                NSTimeInterval messageDateSeconds = [date timeIntervalSince1970];
+                uint64_t timestamp = (uint64_t)messageDateSeconds;
+                
+                if((bindResult = sqlite3_bind_int64(statement, 2, timestamp)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TIMESTAMP), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                if((bindResult = sqlite3_bind_blob(statement, 3, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGE), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                const int sqlStepResult = sqlite3_step(statement);
+                
+                if(sqlStepResult != SQLITE_DONE) {
+                    if(sqlStepResult == SQLITE_CONSTRAINT) {
+                        SM_LOG_WARNING(@"Message with UID %u already in folder \"%@\" (id %@)", uid, folderName, folderId);
+                    }
+                    else {
+                        SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", uid, folderName, folderId, sqlStepResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = sqlStepResult;
+                        break;
+                    }
+                }
+            } while(FALSE);
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+            
+            if(dbQueryFailed) {
+                SM_LOG_ERROR(@"SQL query has failed");
+                
+                [self triggerDBFailureWithSQLiteError:dbQueryError];
+                break;
+            }
+            
+            SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder \"%@\" (id %@)", uid, folderName, folderId);
+        } while(FALSE);
+        
+        [self closeDatabase:database];
+    }
 }
 
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {

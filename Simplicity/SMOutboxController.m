@@ -94,11 +94,6 @@
     SM_LOG_DEBUG(@"Cancel message sending");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
-    
-    NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
-    [outboxLocalFolder removeMessage:message];
 
     [[[[appDelegate appController] operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
     [[[appDelegate appController] operationExecutor] saveSMTPQueue];

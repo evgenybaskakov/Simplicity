@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMDatabase.h"
 #import "SMMessage.h"
+#import "SMOutgoingMessage.h"
 #import "SMMessageComparators.h"
 #import "SMMessageStorage.h"
 #import "SMMessageThread.h"
@@ -413,13 +414,10 @@
     return [collection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
 }
 
-// TODO: update database
 // TODO: update unseenMessagesCount
-- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
-    NSAssert(!updateDatabase, @"TODO: implement updateDatabase");
-    
-    SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
-    NSAssert(collection != nil, @"No message thread collection for folder %@", localFolder);
+- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)folderName updateDatabase:(Boolean)updateDatabase {
+    SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:folderName];
+    NSAssert(collection != nil, @"No message thread collection for folder %@", folderName);
     
     NSUInteger oldIndex = NSUIntegerMax;
 
@@ -431,14 +429,25 @@
         [[collection messageThreads] setObject:messageThread forKey:threadIdNum];
     }
     else {
-        oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:localFolder];
+        oldIndex = [self getMessageThreadIndexByDate:messageThread localFolder:folderName];
         NSAssert(oldIndex != NSNotFound, @"message thread not found");
     }
 
     const SMThreadUpdateResult threadUpdateResult = [messageThread addMessage:message];
 
     if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
-        [self insertMessageThreadByDate:messageThread localFolder:localFolder oldIndex:oldIndex];
+        [self insertMessageThreadByDate:messageThread localFolder:folderName oldIndex:oldIndex];
+    }
+
+    if(updateDatabase) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        if([message isKindOfClass:[SMOutgoingMessage class]]) {
+            [[[appDelegate model] database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:folderName];
+        }
+        else {
+            [[[appDelegate model] database] putMessageToDBFolder:message.imapMessage folder:folderName];
+        }
     }
 }
 

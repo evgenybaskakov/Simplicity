@@ -16,6 +16,6 @@
 
 @property (readonly) SMMessageBuilder *messageBuilder;
 
-- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder;
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder uid:(uint32_t)uid;
 
 @end

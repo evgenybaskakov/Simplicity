@@ -16,13 +16,13 @@
     uint64_t _threadId;
 }
 
-- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder {
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder uid:(uint32_t)uid {
     self = [super init];
     
     if(self) {
         _messageBuilder = messageBuilder;
         _data = _messageBuilder.mcoMessageBuilder.data;
-        _uid = rand(); // TODO: generate a uid nicely!!!
+        _uid = uid;
         _threadId = (((uint64_t)rand()) << 32) | rand();
 
         NSMutableArray *mcoAttachments = [NSMutableArray array];

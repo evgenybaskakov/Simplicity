@@ -32,11 +32,10 @@
     self = [super initWithCoder:coder];
 
     if (self) {
+        uint32_t uid = (uint32_t)[coder decodeInt32ForKey:@"_uid"];
         SMMessageBuilder *messageBuilder = [coder decodeObjectForKey:@"_messageBuilder"];
         
-        _outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
-        
-        // TODO: sync up the outbox folder
+        _outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder uid:uid];
     }
     
     return self;
@@ -45,6 +44,7 @@
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
     
+    [coder encodeInt32:(int32_t)_outgoingMessage.uid forKey:@"_uid"];
     [coder encodeObject:_outgoingMessage.messageBuilder forKey:@"_messageBuilder"];
 }
 

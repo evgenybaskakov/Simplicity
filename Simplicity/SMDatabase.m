@@ -1310,7 +1310,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
+                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE,UID FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
                 const char *folderSelectStmt = [folderSelectSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
@@ -1347,7 +1347,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         }
                         
                         if([messageObject isKindOfClass:[SMMessageBuilder class]]) {
-                            SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:(SMMessageBuilder*)messageObject];
+                            const uint32_t uid = sqlite3_column_int(statement, 1);
+                            SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:(SMMessageBuilder*)messageObject uid:uid];
 
                             // TODO: restore UID?
                             [outgoingMessages addObject:outgoingMessage];

@@ -153,6 +153,8 @@
         
         [[NSUserDefaults standardUserDefaults] synchronize];
 #endif
+        
+        [self initLogLevel];
     }
     
     return self;
@@ -894,6 +896,10 @@
 }
 
 #pragma mark Log level
+
+- (void)initLogLevel {
+    [self logLevel];
+}
 
 - (NSUInteger)logLevel {
     static BOOL skipUserDefaults = NO;

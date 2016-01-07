@@ -158,7 +158,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     const int openDatabaseResult = sqlite3_open(filename.UTF8String, &database);
     if(openDatabaseResult == SQLITE_OK) {
-        SM_LOG_DEBUG(@"Database %@ open successfully", filename);
+        SM_LOG_NOISE(@"Database %@ open successfully", filename);
         return database;
     }
     else {
@@ -1288,7 +1288,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count block:(void (^)(NSArray*))getMessagesBlock outgoingMessagesBlock:(void (^)(NSArray*))getOutgoingMessagesBlock {
+- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count outgoingMessagesBlock:(void (^)(NSArray*))getOutgoingMessagesBlock getMessagesBlock:(void (^)(NSArray*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -1310,7 +1310,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE,UID FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
+                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
                 const char *folderSelectStmt = [folderSelectSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
@@ -1347,14 +1347,16 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         }
                         
                         if([messageObject isKindOfClass:[SMMessageBuilder class]]) {
-                            const uint32_t uid = sqlite3_column_int(statement, 1);
-                            SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:(SMMessageBuilder*)messageObject uid:uid];
+                            SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:(SMMessageBuilder*)messageObject];
 
-                            // TODO: restore UID?
                             [outgoingMessages addObject:outgoingMessage];
+
+                            SM_LOG_DEBUG(@"Outgoing message (uid %u, threadId %llu) loaded from folder %@", outgoingMessage.uid, outgoingMessage.threadId, folderName);
                         }
                         else {
                             [messages addObject:messageObject];
+
+                            SM_LOG_DEBUG(@"IMAP message (uid %u, threadId %llu) loaded from folder %@", ((MCOIMAPMessage*)messageObject).uid, ((MCOIMAPMessage*)messageObject).gmailThreadID, folderName);
                         }
                     }
                 }
@@ -1386,11 +1388,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            getOutgoingMessagesBlock(outgoingMessages);
             getMessagesBlock(messages);
-            
-            if(outgoingMessages.count > 0) {
-                getOutgoingMessagesBlock(outgoingMessages);
-            }
         });
         
         OSAtomicAdd32(-1, &_serialQueueLength);

@@ -90,6 +90,9 @@
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
         _creationDate = _mcoMessageBuilder.header.date;
+        _threadId = (((uint64_t)rand()) << 32) | rand();
+        _uid = rand(); // TODO: generate a uid nicely!!!
+        
         NSAssert(_creationDate != nil, @"_creationDate is nil");
     }
     
@@ -108,10 +111,14 @@
         NSArray *bcc = [coder decodeObjectForKey:@"bcc"];
         NSArray *attachmentItems = [coder decodeObjectForKey:@"attachmentItems"];
         NSDate *creationDate = [coder decodeObjectForKey:@"creationDate"];
+        uint64_t threadId = [coder decodeInt64ForKey:@"threadId"];
+        uint32_t uid = [coder decodeInt32ForKey:@"uid"];
     
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
         _creationDate = creationDate;
+        _threadId = threadId;
+        _uid = uid;
     }
     
     return self;
@@ -126,6 +133,8 @@
     [coder encodeObject:[[_mcoMessageBuilder header] bcc] forKey:@"bcc"];
     [coder encodeObject:_attachments forKey:@"attachmentItems"];
     [coder encodeObject:_creationDate forKey:@"creationDate"];
+    [coder encodeInt64:_threadId forKey:@"threadId"];
+    [coder encodeInt32:_uid forKey:@"uid"];
 }
 
 @end

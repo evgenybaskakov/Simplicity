@@ -508,18 +508,20 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch block:^(NSArray *messages) {
+        [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch outgoingMessagesBlock:^(NSArray *outgoingMessages) {
+            SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
+            
+            for(SMOutgoingMessage *message in outgoingMessages) {
+                [self addMessage:message updateDatabase:NO];
+                
+                _messageHeadersFetched++;
+            }
+        } getMessagesBlock:^(NSArray *messages) {
             SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
 
             [self rescheduleUpdateTimeout];
             [self updateMessageHeaders:messages updateDatabase:NO];
             [self syncFetchMessageHeaders];
-        } outgoingMessagesBlock:^(NSArray *outgoingMessages) {
-            SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
-
-            for(SMOutgoingMessage *message in outgoingMessages) {
-                [self addMessage:message updateDatabase:NO];
-            }
         }];
     }
     else {
@@ -700,11 +702,11 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)addMessage:(SMMessage*)message updateDatabase:(BOOL)updateUpdate {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:updateUpdate];
-    
-    _totalMessagesCount++;
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+    if([[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:updateUpdate]) {
+        _totalMessagesCount++;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+    }
 }
 
 - (void)addMessage:(SMMessage*)message {
@@ -815,7 +817,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
         
-        SM_LOG_INFO(@"TODO: implement removal from Outbox");
         return TRUE;
     }
 

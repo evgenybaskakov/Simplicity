@@ -94,8 +94,15 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
 
-    NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
+    NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
+    NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
 
+    SMMessage *existingMessage = messageIndex < _messageCollection.messagesByUID.count? [_messageCollection.messagesByUID objectAtIndex:messageIndex] : nil;
+    if(existingMessage != nil && existingMessage.uid == message.uid && existingMessage.threadId == message.threadId) {
+        SM_LOG_INFO(@"Message storage already contains message uid %u, threadId %llu", message.uid, message.threadId);
+        return SMThreadUpdateResultNone;
+    }
+    
     [_messageCollection.messagesByUID insertObject:message atIndex:messageIndex];
     
     NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByDate];

@@ -73,8 +73,7 @@
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    const uint32_t uid = rand(); // TODO: generate a uid nicely!!!
-    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder uid:uid];
+    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
     
     [[appController outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }

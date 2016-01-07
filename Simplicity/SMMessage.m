@@ -31,8 +31,8 @@
         _remoteFolder = remoteFolderName;
         _labels = m.gmailLabels;
 
-        SM_LOG_DEBUG(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
-        SM_LOG_DEBUG(@"uid %u, object %@, date %@", m.uid, m, m.header.date);
+        SM_LOG_NOISE(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
+        SM_LOG_NOISE(@"uid %u, object %@, date %@", m.uid, m, m.header.date);
     }
 
     return self;

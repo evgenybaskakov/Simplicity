@@ -415,7 +415,7 @@
 }
 
 // TODO: update unseenMessagesCount
-- (void)addMessage:(SMMessage*)message toLocalFolder:(NSString*)folderName updateDatabase:(Boolean)updateDatabase {
+- (BOOL)addMessage:(SMMessage*)message toLocalFolder:(NSString*)folderName updateDatabase:(Boolean)updateDatabase {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:folderName];
     NSAssert(collection != nil, @"No message thread collection for folder %@", folderName);
     
@@ -434,7 +434,12 @@
     }
 
     const SMThreadUpdateResult threadUpdateResult = [messageThread addMessage:message];
-
+    
+    if(threadUpdateResult == SMThreadUpdateResultNone) {
+        SM_LOG_INFO(@"Message uid %u, threadId %llu already exists in folder %@", message.uid, message.threadId, folderName);
+        return FALSE;
+    }
+    
     if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
         [self insertMessageThreadByDate:messageThread localFolder:folderName oldIndex:oldIndex];
     }
@@ -449,6 +454,8 @@
             [[[appDelegate model] database] putMessageToDBFolder:message.imapMessage folder:folderName];
         }
     }
+    
+    return TRUE;
 }
 
 // TODO: update database

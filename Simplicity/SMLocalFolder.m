@@ -179,8 +179,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)increaseLocalFolderCapacity {
     if(![self folderUpdateIsInProgress]) {
-        if(_messageHeadersFetched + INCREASE_MESSAGES_PER_FOLDER < _totalMessagesCount)
+        if(_messageHeadersFetched + INCREASE_MESSAGES_PER_FOLDER < _totalMessagesCount) {
             _maxMessagesPerThisFolder += INCREASE_MESSAGES_PER_FOLDER;
+        }
     }
 }
 
@@ -508,16 +509,16 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch outgoingMessagesBlock:^(NSArray *outgoingMessages) {
+        [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
             SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
             
             for(SMOutgoingMessage *message in outgoingMessages) {
-                [self addMessage:message updateDatabase:NO];
+                [self addMessage:message externalMessage:NO updateDatabase:NO];
                 
                 _messageHeadersFetched++;
             }
-        } getMessagesBlock:^(NSArray *messages) {
-            SM_LOG_DEBUG(@"messages loaded: %lu", messages.count);
+
+            SM_LOG_INFO(@"messages loaded: %lu", messages.count);
 
             [self rescheduleUpdateTimeout];
             [self updateMessageHeaders:messages updateDatabase:NO];
@@ -700,17 +701,19 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     [[[appDelegate model] messageStorage] removeLocalFolder:_localName];
 }
 
-- (void)addMessage:(SMMessage*)message updateDatabase:(BOOL)updateUpdate {
+- (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[[appDelegate model] messageStorage] addMessage:message toLocalFolder:_localName updateDatabase:updateUpdate]) {
-        _totalMessagesCount++;
+        if(externalMessage) {
+            _totalMessagesCount++;
+        }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
     }
 }
 
 - (void)addMessage:(SMMessage*)message {
-    [self addMessage:message updateDatabase:(_kind != SMFolderKindOutbox)];
+    [self addMessage:message externalMessage:YES updateDatabase:(_kind != SMFolderKindOutbox)];
 }
 
 - (void)removeMessage:(SMMessage*)message {

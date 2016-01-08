@@ -1022,95 +1022,101 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        const int generatedFolderId = [self generateFolderId];
-        NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
-        
-        [_folderIds setObject:folderId forKey:folderName];
-        [_folderNames setObject:folderName forKey:folderId];
-        
-        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
-        
-        if(database != nil) {
-            do {
-                //
-                // Step 1: Add the folder into the DB.
-                //
-                NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS) VALUES (%@, \"%@\", %ld, %ld)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
-                const char *insertStmt = [insertSql UTF8String];
-                
-                sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
-                if(sqlPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
-                    
-                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                    break;
-                }
-                
-                BOOL dbQueryFailed = NO;
-                int dbQueryError = SQLITE_OK;
-                
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId != nil) {
+            SM_LOG_DEBUG(@"Folder %@ already exists (id %@)", folderName, folderId);
+        }
+        else {
+            const int generatedFolderId = [self generateFolderId];
+            NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
+            
+            [_folderIds setObject:folderId forKey:folderName];
+            [_folderNames setObject:folderName forKey:folderId];
+            
+            sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+            
+            if(database != nil) {
                 do {
-                    const int sqlResult = sqlite3_step(statement);
-
-                    if(sqlResult == SQLITE_DONE) {
-                        SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
-                    }
-                    else if(sqlResult == SQLITE_CONSTRAINT) {
-                        SM_LOG_WARNING(@"Folder %@ already exists", folderName);
-                    }
-                    else {
-                        SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
+                    //
+                    // Step 1: Add the folder into the DB.
+                    //
+                    NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS) VALUES (%@, \"%@\", %ld, %ld)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
+                    const char *insertStmt = [insertSql UTF8String];
                     
-                        dbQueryError = sqlResult;
-                        dbQueryFailed = YES;
+                    sqlite3_stmt *statement = NULL;
+                    const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
+                    if(sqlPrepareResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not prepare folders insert statement, error %d", sqlPrepareResult);
+                        
+                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                         break;
                     }
+                    
+                    BOOL dbQueryFailed = NO;
+                    int dbQueryError = SQLITE_OK;
+                    
+                    do {
+                        const int sqlResult = sqlite3_step(statement);
+
+                        if(sqlResult == SQLITE_DONE) {
+                            SM_LOG_DEBUG(@"Folder %@ successfully inserted", folderName);
+                        }
+                        else if(sqlResult == SQLITE_CONSTRAINT) {
+                            SM_LOG_WARNING(@"Folder %@ already exists", folderName);
+                        }
+                        else {
+                            SM_LOG_ERROR(@"Failed to insert folder %@, error %d", folderName, sqlResult);
+                        
+                            dbQueryError = sqlResult;
+                            dbQueryFailed = YES;
+                            break;
+                        }
+                    } while(FALSE);
+                    
+                    const int sqlFinalizeResult = sqlite3_finalize(statement);
+                    SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+
+                    if(dbQueryFailed) {
+                        SM_LOG_ERROR(@"database query failed");
+                        
+                        [self triggerDBFailureWithSQLiteError:dbQueryError];
+                        break;
+                    }
+                    
+                    //
+                    // Step 2: Create a unique folder table containing message UIDs.
+                    //
+                    NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGE BLOB)", folderId];
+                    const char *createMessageTableStmt = [createMessageTableSql UTF8String];
+                    
+                    char *errMsg = NULL;
+                    const int sqlMessageTableResult = sqlite3_exec(database, createMessageTableStmt, NULL, NULL, &errMsg);
+                    if(sqlMessageTableResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"Failed to create table for folder id %@: %s, error %d", folderId, errMsg, sqlMessageTableResult);
+
+                        [self triggerDBFailureWithSQLiteError:sqlMessageTableResult];
+                        break;
+                    }
+                    
+                    //
+                    // Step 2: Create a unique folder table containing message bodies.
+                    //
+                    NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGEBODY BLOB)", folderId];
+                    const char *createStmt = [createBodiesTableSql UTF8String];
+                    
+                    const int sqlBodiesTableResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
+                    if(sqlBodiesTableResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES%@: error %d", folderId, sqlBodiesTableResult);
+
+                        [self triggerDBFailureWithSQLiteError:sqlBodiesTableResult];
+                        break;
+                    }
+
+                    [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
                 } while(FALSE);
                 
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
-
-                if(dbQueryFailed) {
-                    SM_LOG_ERROR(@"database query failed");
-                    
-                    [self triggerDBFailureWithSQLiteError:dbQueryError];
-                    break;
-                }
-                
-                //
-                // Step 2: Create a unique folder table containing message UIDs.
-                //
-                NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGE BLOB)", folderId];
-                const char *createMessageTableStmt = [createMessageTableSql UTF8String];
-                
-                char *errMsg = NULL;
-                const int sqlMessageTableResult = sqlite3_exec(database, createMessageTableStmt, NULL, NULL, &errMsg);
-                if(sqlMessageTableResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"Failed to create table for folder id %@: %s, error %d", folderId, errMsg, sqlMessageTableResult);
-
-                    [self triggerDBFailureWithSQLiteError:sqlMessageTableResult];
-                    break;
-                }
-                
-                //
-                // Step 2: Create a unique folder table containing message bodies.
-                //
-                NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGEBODY BLOB)", folderId];
-                const char *createStmt = [createBodiesTableSql UTF8String];
-                
-                const int sqlBodiesTableResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
-                if(sqlBodiesTableResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"Failed to create table MESSAGEBODIES%@: error %d", folderId, sqlBodiesTableResult);
-
-                    [self triggerDBFailureWithSQLiteError:sqlBodiesTableResult];
-                    break;
-                }
-
-                [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
-            } while(FALSE);
-            
-            [self closeDatabase:database];
+                [self closeDatabase:database];
+            }
         }
         
         OSAtomicAdd32(-1, &_serialQueueLength);
@@ -1288,7 +1294,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count outgoingMessagesBlock:(void (^)(NSArray*))getOutgoingMessagesBlock getMessagesBlock:(void (^)(NSArray*))getMessagesBlock {
+- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(NSArray*, NSArray*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -1388,8 +1394,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            getOutgoingMessagesBlock(outgoingMessages);
-            getMessagesBlock(messages);
+            getMessagesBlock(outgoingMessages, messages);
         });
         
         OSAtomicAdd32(-1, &_serialQueueLength);

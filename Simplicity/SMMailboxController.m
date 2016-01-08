@@ -150,10 +150,12 @@
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     for(SMFolder *folder in mailbox.mainFolders) {
+        NSAssert(folder != nil, @"folder in mailbox.mainFolders is nil");
         [[[appDelegate model] database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 
     for(SMFolder *folder in mailbox.folders) {
+        NSAssert(folder != nil, @"folder in mailbox.folders is nil");
         [[[appDelegate model] database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 }

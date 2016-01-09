@@ -53,10 +53,11 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 
 + (NSUInteger)maxBodyPreviewLength;
 + (NSString*)parseAddress:(MCOAddress*)address;
++ (NSString*)imapMessageBodyPreview:(MCOMessageParser*)parser;
 
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName;
 
-- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments;
+- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview;
 
 - (BOOL)hasData;
 - (void)fetchInlineAttachments;

@@ -233,7 +233,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return attributesChanged;
 }
 
-- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments uid:(uint32_t)uid {
+- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview uid:(uint32_t)uid {
     SMMessage *message = [self getMessageByUID:uid];
         
     if(message != nil) {
@@ -241,7 +241,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         SM_LOG_DEBUG(@"set message data for uid %u", uid);
         
-        [message setData:data parser:parser attachments:attachments];
+        [message setData:data parser:parser attachments:attachments bodyPreview:bodyPreview];
     } else {
         SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
     }

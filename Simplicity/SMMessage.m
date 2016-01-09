@@ -21,6 +21,22 @@
     return 512;
 }
 
++ (NSString*)imapMessageBodyPreview:(MCOMessageParser*)parser {
+    NSString *plainText = [parser plainTextBodyRendering];
+    
+    if(plainText == nil) {
+        return @"";
+    }
+    
+    NSUInteger maxLen = [SMMessage maxBodyPreviewLength];
+    if(plainText.length <= maxLen) {
+        return plainText;
+    }
+    else {
+        return [plainText substringToIndex:maxLen];
+    }
+}
+
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName {
     NSAssert(m, @"imap message is nil");
     
@@ -192,26 +208,9 @@ static NSString *unquote(NSString *s) {
     if(_bodyPreview != nil) {
         return _bodyPreview;
     }
-    
-    if(_msgParser == nil) {
-        return @"";
-    }
-    
-    NSString *plainText = [_msgParser plainTextBodyRendering];
-    
-    if(plainText == nil) {
-        return @"";
-    }
-    
-    NSUInteger maxLen = [SMMessage maxBodyPreviewLength];
-    if(plainText.length <= maxLen) {
-        _bodyPreview = plainText;
-    }
     else {
-        _bodyPreview = [plainText substringToIndex:maxLen];
+        return @"";
     }
-    
-    return _bodyPreview;
 }
 
 - (uint32_t)uid {
@@ -221,16 +220,17 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setData:nil parser:nil attachments:nil];
+    [self setData:nil parser:nil attachments:nil bodyPreview:nil];
 }
 
-- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
+- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview {
     if(data != nil) {
         if(_data == nil) {
             _data = data;
             _msgParser = parser;
             _attachments = attachments;
             _hasAttachments = attachments.count > 0;
+            _bodyPreview = bodyPreview;
             
             NSAssert(_msgParser, @"no message parser");
         }

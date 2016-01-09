@@ -363,12 +363,12 @@
     [messageThread markAsUpdated];
 }
 
-- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments uid:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {
+- (void)setMessageData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview uid:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {
     SMMessageThreadCollection *collection = [self messageThreadCollectionForFolder:localFolder];
     NSAssert(collection, @"bad folder collection");
     
     SMMessageThread *thread = [collection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
-    [thread setMessageData:data parser:parser attachments:attachments uid:uid];
+    [thread setMessageData:data parser:parser attachments:attachments bodyPreview:messageBodyPreview uid:uid];
 }
 
 - (BOOL)messageHasData:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {

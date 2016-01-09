@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
+#import "SMMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMMessageBuilder.h"
 #import "SMMessageThreadDescriptor.h"
@@ -1490,7 +1491,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {
     // Depending on the user requested urgency, we either select the
     // serial (FIFO) queue, or the concurrent one. In case of concurrent,
     // it won't have to wait while other non-urgent requests are processed.
@@ -1508,7 +1509,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_ERROR(@"no id for folder \"%@\" found in DB", folderName);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil, nil);
             });
             
             return;
@@ -1519,7 +1520,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil, nil);
             });
             
             return;
@@ -1529,7 +1530,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil, nil);
             });
 
             return;
@@ -1538,6 +1539,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
         
         NSData *messageBody = nil;
+        NSString *messageBodyPreview = nil;
         MCOMessageParser *parser = nil;
         NSArray *attachments = nil;
         
@@ -1582,11 +1584,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             if(messageBody != nil) {
                 parser = [MCOMessageParser messageParserWithData:messageBody];
                 attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread, not in the main thread
+                messageBodyPreview = [SMMessage imapMessageBodyPreview:parser];
             }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            getMessageBodyBlock(messageBody, parser, attachments);
+            getMessageBodyBlock(messageBody, parser, attachments, messageBodyPreview);
         });
     };
     

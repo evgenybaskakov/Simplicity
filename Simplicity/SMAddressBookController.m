@@ -37,6 +37,17 @@
 }
 
 - (void)searchAddressBookProperty:(NSString*)property value:(NSString*)value results:(NSMutableArray*)resultArrays {
+    SMAddressMenuRepresentation addressRepresentationMode = SMAddressRepresentation_FirstNameFirst;
+    if([property isEqualTo:kABFirstNameProperty]) {
+        addressRepresentationMode = SMAddressRepresentation_FirstNameFirst;
+    }
+    else if([property isEqualTo:kABLastNameProperty]) {
+        addressRepresentationMode = SMAddressRepresentation_LastNameFirst;
+    }
+    else {
+        addressRepresentationMode = SMAddressRepresentation_EmailOnly;
+    }
+    
     NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
     
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
@@ -51,7 +62,7 @@
         
         for(NSUInteger j = 0; j < emails.count; j++) {
             NSString *email = [emails valueAtIndex:j];
-            SMAddress *addressElement = [[SMAddress alloc] initWithFirstName:firstName lastName:lastName email:email];
+            SMAddress *addressElement = [[SMAddress alloc] initWithFirstName:firstName lastName:lastName email:email representationMode:addressRepresentationMode];
             
             [results addObject:[addressElement stringRepresentationForMenu]];
         }

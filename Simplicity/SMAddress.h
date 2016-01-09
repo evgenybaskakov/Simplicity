@@ -8,6 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger, SMAddressMenuRepresentation) {
+    SMAddressRepresentation_FirstNameFirst,
+    SMAddressRepresentation_LastNameFirst,
+    SMAddressRepresentation_EmailOnly,
+};
+
 @class MCOAddress;
 
 @interface SMAddress : NSObject
@@ -19,7 +25,7 @@
 + (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses;
 + (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses;
 
-- (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email;
+- (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode;
 - (id)initWithStringRepresentation:(NSString*)string;
 - (id)initWithMCOAddress:(MCOAddress*)mcoAddress;
 

@@ -14,7 +14,9 @@
 
 #define EMAIL_DELIMITER @" — "
 
-@implementation SMAddress
+@implementation SMAddress {
+    SMAddressMenuRepresentation _representationMode;
+}
 
 + (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses {
     NSMutableArray *addressList = [NSMutableArray array];
@@ -37,13 +39,14 @@
     return addressList;
 }
 
-- (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email {
+- (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode {
     self = [super init];
     
     if(self) {
         _firstName = firstName;
         _lastName = lastName;
         _email = email;
+        _representationMode = representationMode;
     }
     
     return self;
@@ -78,6 +81,8 @@
 }
 
 - (void)initInternalWithString:(NSString*)string {
+    _representationMode = SMAddressRepresentation_FirstNameFirst;
+
     string = [SMStringUtils trimString:string];
     
     if([string hasSuffix:@">"]) {
@@ -124,15 +129,26 @@
 - (NSString*)stringRepresentationForMenu {
     NSString *resultingString;
     
-    if(_firstName != nil && _lastName != nil) {
-        resultingString = [NSString stringWithFormat:@"%@ %@%@%@", _firstName, _lastName, EMAIL_DELIMITER, _email];
-    }
-    else if(_firstName != nil || _lastName != nil) {
-        resultingString = [NSString stringWithFormat:@"%@%@%@", _firstName != nil? _firstName : _lastName, EMAIL_DELIMITER, _email];
-    }
-    else {
+    if(_representationMode == SMAddressRepresentation_EmailOnly) {
         NSAssert(_email != nil, @"no email address");
         resultingString = _email;
+    }
+    else {
+        if(_firstName != nil && _lastName != nil) {
+            if(_representationMode == SMAddressRepresentation_FirstNameFirst) {
+                resultingString = [NSString stringWithFormat:@"%@ %@%@%@", _firstName, _lastName, EMAIL_DELIMITER, _email];
+            }
+            else {
+                resultingString = [NSString stringWithFormat:@"%@ %@%@%@", _lastName, _firstName, EMAIL_DELIMITER, _email];
+            }
+        }
+        else if(_firstName != nil || _lastName != nil) {
+            resultingString = [NSString stringWithFormat:@"%@%@%@", _firstName != nil? _firstName : _lastName, EMAIL_DELIMITER, _email];
+        }
+        else {
+            NSAssert(_email != nil, @"no email address");
+            resultingString = _email;
+        }
     }
     
     return resultingString;

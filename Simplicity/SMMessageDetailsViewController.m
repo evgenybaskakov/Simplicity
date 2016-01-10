@@ -479,6 +479,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [view addSubview:_messageActionsButton];
     [view addConstraints:_uncollapsedHeaderConstraints];
 
+    [_messageBodyPreviewField setHidden:YES];
+
     _fullHeaderShown = YES;
 }
 
@@ -497,6 +499,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [_messageActionsButton removeFromSuperview];
 
     [view addConstraint:_collapsedHeaderConstraint];
+    
+    [_messageBodyPreviewField setHidden:NO];
     
     _fullHeaderShown = NO;
 }

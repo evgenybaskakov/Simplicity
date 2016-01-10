@@ -159,6 +159,7 @@
 		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
+		805C61D41C42FBBC001365AC /* SMOpDeleteFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */; };
 		80628B551BE87A3400016803 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 80628B541BE87A3400016803 /* SSKeychain.m */; };
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
 		806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */ = {isa = PBXBuildFile; fileRef = 806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */; };
@@ -525,6 +526,8 @@
 		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
+		805C61D21C42FBBC001365AC /* SMOpDeleteFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpDeleteFolder.h; sourceTree = "<group>"; };
+		805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpDeleteFolder.m; sourceTree = "<group>"; };
 		80628B531BE87A3400016803 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		80628B541BE87A3400016803 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorViewController.h; sourceTree = "<group>"; };
@@ -759,6 +762,8 @@
 				80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */,
 				8081A7891B27F65B0081727C /* SMOpAppendMessage.h */,
 				8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */,
+				805C61D21C42FBBC001365AC /* SMOpDeleteFolder.h */,
+				805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */,
 				80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */,
 				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
 				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
@@ -1361,6 +1366,7 @@
 				8071EE031BDBFF8800175A7B /* SMFolderUIDDictionary.m in Sources */,
 				0002A0B817D224C600EA4AFF /* SMMessageListCellView.m in Sources */,
 				8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */,
+				805C61D41C42FBBC001365AC /* SMOpDeleteFolder.m in Sources */,
 				00AD52EF1AA81C7900627433 /* SMNewLabelWindowController.m in Sources */,
 				00CB00EB1A9E886700339E6D /* SMMessageThreadCell.m in Sources */,
 				00E9107E17D2F6F50028C679 /* SMMessageListViewController.m in Sources */,

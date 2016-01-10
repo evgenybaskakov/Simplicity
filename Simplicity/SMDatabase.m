@@ -1165,6 +1165,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     [self triggerDBFailureWithSQLiteError:sqlResult];
                     break;
                 }
+                
+                // TODO: Remove messages belonging to this folder (see issue #11)
+                
             } while(FALSE);
             
             [self closeDatabase:database];

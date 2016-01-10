@@ -17,6 +17,8 @@
 #import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMFolderDesc.h"
+#import "SMOpDeleteFolder.h"
+#import "SMOperationExecutor.h"
 #import "SMMailboxController.h"
 
 #define FOLDER_LIST_UPDATE_INTERVAL_SEC 5
@@ -215,6 +217,25 @@
             [[[appDelegate model] mailboxController] scheduleFolderListUpdate:YES];
         }
     }];
+}
+
+- (void)deleteFolder:(NSString*)folderName {
+    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName];
+        
+    SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
+    
+    // 1. Delete the remote folder
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    
+    // 2. Delete the serialized folder from the database
+    [[[appDelegate model] database] removeDBFolder:folderName];
+    
+    // 3. Remove folder from the mailbox
+    // TODO
+    
+    // 4. Remove the associated label from the preferences
+    // TODO
 }
 
 - (NSUInteger)totalMessagesCount:(NSString*)folderName {

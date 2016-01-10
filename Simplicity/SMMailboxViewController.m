@@ -585,7 +585,13 @@ typedef enum {
         return;
     }
     
-    SM_LOG_ERROR(@"TODO: NOT IMPLEMENTED");
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+
+    [[[appDelegate model] mailboxController] deleteFolder:folder.fullName];
+    
+    if([[[[appDelegate appController] mailboxViewController] currentFolderName] isEqualToString:folder.fullName]) {
+        [[[appDelegate appController] mailboxViewController] changeFolder:@"INBOX"];//TODO
+    }
 }
 
 - (void)hideLabel {

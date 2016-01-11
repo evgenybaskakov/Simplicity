@@ -19,9 +19,9 @@
 #import "SMMailbox.h"
 
 @implementation SMMailbox {
-    NSMutableArray *_mainFolders;
-    NSMutableArray *_folders;
-    NSMutableArray *_sortedFlatFolders;
+    NSMutableArray<SMFolder*> *_mainFolders;
+    NSMutableArray<SMFolder*> *_folders;
+    NSMutableArray<SMFolderDesc*> *_sortedFlatFolders;
 }
 
 - (id)init {
@@ -269,6 +269,30 @@
         return [parentFolderName stringByAppendingFormat:@"%c%@", parentFolder.delimiter, folderName];
     } else {
         return folderName;
+    }
+}
+
+- (void)removeFolder:(NSString*)folderName {
+    for(NSUInteger i = 0; i < _mainFolders.count; i++) {
+        NSAssert(![_mainFolders[i].fullName isEqualToString:folderName], @"cannot remove main folder %@", folderName);
+    }
+
+    for(NSUInteger i = 0; i < _folders.count; i++) {
+        SMFolder *folder = _folders[i];
+
+        if([folder.fullName isEqualToString:folderName]) {
+            [_folders removeObjectAtIndex:i];
+            break;
+        }
+    }
+    
+    for(NSUInteger i = 0; i < _sortedFlatFolders.count; i++) {
+        SMFolderDesc *folderDesc = _sortedFlatFolders[i];
+        
+        if([folderDesc.folderName isEqualToString:folderName]) {
+            [_sortedFlatFolders removeObjectAtIndex:i];
+            break;
+        }
     }
 }
 

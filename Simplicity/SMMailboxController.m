@@ -19,6 +19,7 @@
 #import "SMFolderDesc.h"
 #import "SMOpDeleteFolder.h"
 #import "SMOperationExecutor.h"
+#import "SMMailboxViewController.h"
 #import "SMMailboxController.h"
 
 #define FOLDER_LIST_UPDATE_INTERVAL_SEC 5
@@ -228,11 +229,12 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationExecutor] enqueueOperation:op];
     
-    // 2. Delete the serialized folder from the database
-    [[[appDelegate model] database] removeDBFolder:folderName];
+    // 2. Remove folder from the mailbox
+    [[[appDelegate model] mailbox] removeFolder:folderName];
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
     
-    // 3. Remove folder from the mailbox
-    // TODO
+    // 3. Delete the serialized folder from the database
+    [[[appDelegate model] database] removeDBFolder:folderName];
     
     // 4. Remove the associated label from the preferences
     // TODO

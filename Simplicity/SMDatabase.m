@@ -1135,40 +1135,72 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
-        
-        if(database != nil) {
-            do {
-                NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
-                const char *removeStmt = [removeSql UTF8String];
-                
-                sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
-                if(sqlPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
-                    
-                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                    break;
-                }
-                
-                const int sqlResult = sqlite3_step(statement);
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId == nil) {
+            SM_LOG_ERROR(@"Folder %@ does not exist", folderName);
+        }
+        else {
+            [_folderIds removeObjectForKey:folderId];
+            [_folderNames removeObjectForKey:folderId];
+            
+            sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+            
+            if(database != nil) {
+                do {
+                    {
+                        NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM FOLDERS WHERE NAME = \"%@\"", folderName];
+                        const char *removeStmt = [removeSql UTF8String];
+                        
+                        sqlite3_stmt *statement = NULL;
+                        const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+                        if(sqlPrepareResult != SQLITE_OK) {
+                            SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
+                            
+                            [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                            break;
+                        }
+                        
+                        const int sqlResult = sqlite3_step(statement);
 
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
-                
-                if(sqlResult == SQLITE_DONE) {
-                    SM_LOG_INFO(@"Folder %@ successfully removed", folderName);
-                }
-                else {
-                    SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
+                        const int sqlFinalizeResult = sqlite3_finalize(statement);
+                        SM_LOG_NOISE(@"finalize folders remove statement result %d", sqlFinalizeResult);
+                        
+                        if(sqlResult == SQLITE_DONE) {
+                            SM_LOG_INFO(@"Folder %@ successfully removed", folderName);
+                        }
+                        else {
+                            SM_LOG_ERROR(@"Failed to remove folder %@, error %d", folderName, sqlResult);
+                            
+                            [self triggerDBFailureWithSQLiteError:sqlResult];
+                            break;
+                        }
+                    }
                     
-                    [self triggerDBFailureWithSQLiteError:sqlResult];
-                    break;
-                }
-                
-                // TODO: Remove messages belonging to this folder (see issue #11)
-                
-            } while(FALSE);
+                    {
+                        NSString *dropStmt = [NSString stringWithFormat:@"DROP TABLE FOLDER%@", folderId];
+                        const int dropStmtResult = sqlite3_exec(database, dropStmt.UTF8String, NULL, NULL, NULL);
+                        if(dropStmtResult == SQLITE_OK) {
+                            SM_LOG_DEBUG(@"Folder %@ (id %@) table drop successful", folderName, folderId);
+                        }
+                        else {
+                            SM_LOG_ERROR(@"Folder %@ (id %@) table drop failed (error %d)", folderName, folderId, dropStmtResult);
+                            break;
+                        }
+                    }
+                    
+                    {
+                        NSString *dropStmt = [NSString stringWithFormat:@"DROP TABLE MESSAGEBODIES%@", folderId];
+                        const int dropStmtResult = sqlite3_exec(database, dropStmt.UTF8String, NULL, NULL, NULL);
+                        if(dropStmtResult == SQLITE_OK) {
+                            SM_LOG_DEBUG(@"Message bodies for folder %@ (id %@) table drop successful", folderName, folderId);
+                        }
+                        else {
+                            SM_LOG_ERROR(@"Message bodies for folder %@ (id %@) table drop failed (error %d)", folderName, folderId, dropStmtResult);
+                            break;
+                        }
+                    }
+                } while(FALSE);
+            }
             
             [self closeDatabase:database];
         }
@@ -1848,7 +1880,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         if(database != nil) {
             do {
                 //
-                // Step 1: Remove message UID from the folder table.
+                // Step 1: Remove message header with the given UID from the folder table.
                 //
                 NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
                 if(uidSet == nil) {

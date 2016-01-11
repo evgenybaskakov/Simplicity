@@ -209,8 +209,7 @@
 
     if(_labelTable.selectedRow >= 0) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMMailbox *mailbox = [[appDelegate model] mailbox];
-        SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
+        SMFolder *folder = [[appDelegate model] mailbox].folders[_labelTable.selectedRow];
 
         NSAlert *alert = [[NSAlert alloc] init];
         
@@ -224,7 +223,9 @@
             return;
         }
 
-        SM_LOG_WARNING(@"TODO: IMPLEMENT ME");
+        [[[appDelegate model] mailboxController] deleteFolder:folder.fullName];
+
+        [_labelTable reloadData];
     }
 }
 

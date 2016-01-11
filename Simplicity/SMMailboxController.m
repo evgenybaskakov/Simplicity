@@ -19,6 +19,7 @@
 #import "SMFolderDesc.h"
 #import "SMOpDeleteFolder.h"
 #import "SMOperationExecutor.h"
+#import "SMPreferencesController.h"
 #import "SMMailboxViewController.h"
 #import "SMMailboxController.h"
 
@@ -98,9 +99,15 @@
             if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+                NSUInteger accountIdx = appDelegate.currentAccount;
+                NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+
                 for(SMFolderDesc *vanishedFolder in vanishedFolders) {
                     [[[appDelegate model] database] removeDBFolder:vanishedFolder.folderName];
+                    [updatedLabels removeObjectForKey:vanishedFolder.folderName];
                 }
+                
+                [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
                 
                 [self addFoldersToDatabase];
                 [self ensureMainLocalFoldersCreated];
@@ -236,8 +243,11 @@
     // 3. Delete the serialized folder from the database
     [[[appDelegate model] database] removeDBFolder:folderName];
     
-    // 4. Remove the associated label from the preferences
-    // TODO
+    // 4. Remove associated labels
+    NSUInteger accountIdx = appDelegate.currentAccount;
+    NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    [updatedLabels removeObjectForKey:folderName];
+    [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
 }
 
 - (NSUInteger)totalMessagesCount:(NSString*)folderName {

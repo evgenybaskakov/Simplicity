@@ -37,7 +37,7 @@
 }
 
 - (void)cleanFolders {
-    _rootFolder = [[SMFolder alloc] initWithShortName:@"ROOT" fullName:@"ROOT" delimiter:'/' flags:MCOIMAPFolderFlagNone];
+    _rootFolder = [[SMFolder alloc] initWithFullName:@"ROOT" delimiter:'/' flags:MCOIMAPFolderFlagNone];
     _mainFolders = [NSMutableArray array];
     _folders = [NSMutableArray array];
 }
@@ -131,7 +131,9 @@
     [self cleanFolders];
 
     for(SMFolderDesc *fd in _sortedFlatFolders) {
-        [self addFolderToMailbox:fd.folderName delimiter:fd.delimiter flags:fd.flags];
+        SMFolder *folder = [[SMFolder alloc] initWithFullName:fd.folderName delimiter:fd.delimiter flags:fd.flags];
+        
+        [_folders addObject:folder];
     }
 
     [self updateMainFolders];
@@ -143,55 +145,6 @@
 
 - (void)dfs:(SMFolder *)folder {
     [_folders addObject:folder];
-    
-    for(SMFolder *subfolder in folder.subfolders) {
-        [self dfs:subfolder];
-    }
-}
-
-- (void)addFolderToMailbox:(NSString*)folderFullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
-    SMFolder *curFolder = _rootFolder;
-    
-    NSArray *tokens = [folderFullName componentsSeparatedByString:[NSString stringWithFormat:@"%c", delimiter]];
-    NSMutableString *currentFullName = [NSMutableString new];
-    
-    for(NSUInteger i = 0; i < [tokens count]; i++) {
-        NSString *token = tokens[i];
-
-        if(i > 0)
-            [currentFullName appendFormat:@"%c", delimiter];
-        
-        [currentFullName appendString:token];
-        
-        Boolean found = NO;
-        
-        for(SMFolder *f in [curFolder subfolders]) {
-            if([token compare:[f shortName]] == NSOrderedSame) {
-                curFolder = f;
-                found = YES;
-                break;
-            }
-        }
-
-        if(!found) {
-            for(; i < [tokens count]; i++)
-                curFolder = [curFolder addSubfolder:token fullName:currentFullName delimiter:delimiter flags:flags];
-            
-            break;
-        }
-    }
-    
-    // build flat structure
-
-    // TODO: currently the flat structure is rebuilt on each folder addition
-    //       instead, it should be constructed iteratively
-    [_folders removeAllObjects];
-    
-    NSAssert(_rootFolder.subfolders.count > 0, @"root folder is empty");
-
-    for(SMFolder *subfolder in _rootFolder.subfolders) {
-        [self dfs:subfolder];
-    }
 }
 
 - (void)updateMainFolders {
@@ -210,7 +163,7 @@
     
     _outboxFolder = [self filterOutFolder:MCOIMAPFolderFlagNone orName:outboxFolderName as:outboxFolderName setKind:SMFolderKindOutbox];
     if(_outboxFolder == nil) {
-        _outboxFolder = [[SMFolder alloc] initWithShortName:outboxFolderName fullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
+        _outboxFolder = [[SMFolder alloc] initWithFullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
         _outboxFolder.kind = SMFolderKindOutbox;
     }
     

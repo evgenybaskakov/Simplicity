@@ -121,7 +121,7 @@
     if(folder == nil || [folder.fullName isEqualToString:_currentFolderName])
         return;
     
-    SM_LOG_DEBUG(@"selected row %lu, folder short name '%@', full name '%@'", selectedRow, folder.shortName, folder.fullName);
+    SM_LOG_DEBUG(@"selected row %lu, folder full name '%@'", selectedRow, folder.fullName);
 
     [self doChangeFolder:folder];
 }

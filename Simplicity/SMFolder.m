@@ -9,18 +9,14 @@
 #import "SMFolder.h"
 
 @implementation SMFolder {
-    NSString *_shortName;
     NSString *_fullName;
     NSString *_displayName;
-    NSMutableArray *_subfolders;
 }
 
-- (id)initWithShortName:(NSString*)shortName fullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
+- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     self = [ super init ];
     
     if(self) {
-        _subfolders = [NSMutableArray new];
-        _shortName = shortName;
         _fullName = fullName;
         _delimiter = delimiter;
         _flags = flags;
@@ -28,18 +24,6 @@
     }
     
     return self;
-}
-
-- (NSArray*)subfolders {
-    return _subfolders;
-}
-
-- (SMFolder*)addSubfolder:(NSString*)shortName fullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
-    SMFolder *folder = [[SMFolder alloc] initWithShortName:shortName fullName:fullName delimiter:delimiter flags:flags];
-    
-    [_subfolders addObject:folder];
-    
-    return folder;
 }
 
 - (void)setDisplayName:(NSString *)displayName {

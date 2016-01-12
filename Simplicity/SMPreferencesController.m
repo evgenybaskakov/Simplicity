@@ -910,12 +910,12 @@
         if([[NSUserDefaults standardUserDefaults] objectForKey:kMailTransportLogLevel] == nil) {
             MCLogEnabled = 0;
             
-            SM_LOG_INFO(@"Using default SMLogLevel: %lu", SMLogLevel);
+            SM_LOG_INFO(@"Using default MCLogEnabled: %d", MCLogEnabled);
         }
         else {
             MCLogEnabled = (int)[[NSUserDefaults standardUserDefaults] integerForKey:kMailTransportLogLevel];
             
-            SM_LOG_INFO(@"Loaded SMLogLevel: %lu", SMLogLevel);
+            SM_LOG_INFO(@"Loaded MCLogEnabled: %d", MCLogEnabled);
         }
         
         skipUserDefaults = YES;

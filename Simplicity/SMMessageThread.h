@@ -11,6 +11,8 @@
 
 @class MCOIMAPMessage;
 @class MCOIMAPSession;
+
+@class SMMessageStorage;
 @class SMMessage;
 
 @interface SMMessageThread : NSObject
@@ -23,7 +25,7 @@
 @property (readonly) Boolean hasAttachments;
 @property (readonly) NSOrderedSet *labels;
 
-- (id)initWithThreadId:(uint64_t)threadId;
+- (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage;
 
 - (NSArray*)messagesSortedByDate;
 - (SMMessage*)getMessageByUID:(uint32_t)uid;

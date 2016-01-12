@@ -13,7 +13,6 @@
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
-#import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMAttachmentStorage.h"
 #import "SMMessageListController.h"
@@ -37,9 +36,7 @@
 //      MCLogEnabled = 1;
 
         _preferencesController = preferencesController;
-        
         _mailbox = [ SMMailbox new ];
-        _messageStorage = [ SMMessageStorage new ];
         _localFolderRegistry = [ SMLocalFolderRegistry new ];
         _attachmentStorage = [ SMAttachmentStorage new ];
         _messageListController = [[ SMMessageListController alloc ] initWithModel:self ];

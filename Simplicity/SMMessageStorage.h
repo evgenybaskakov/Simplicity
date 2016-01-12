@@ -11,23 +11,17 @@
 #import <MailCore/MailCore.h>
 
 @class SMMessage;
-@class SMMessageComparators;
 @class SMMessageThread;
 
 @interface SMMessageStorage : NSObject
-
-@property (readonly) SMMessageComparators *comparators;
-
-- (void)ensureLocalFolderExists:(NSString*)localFolder;
-- (void)removeLocalFolder:(NSString*)localFolder;
-
-- (NSUInteger)messageThreadsCountInLocalFolder:(NSString*)localFolder;
 
 typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
     SMMesssageStorageUpdateResultNone,
     SMMesssageStorageUpdateResultFlagsChanged,
     SMMesssageStorageUpdateResultStructureChanged
 };
+
+@property (readonly) NSUInteger messageThreadsCount;
 
 - (BOOL)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
 - (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
@@ -36,7 +30,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 - (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
 - (void)markMessageThreadAsUpdated:(uint64_t)threadId localFolder:(NSString*)localFolder;
 - (SMMessageStorageUpdateResult)endUpdate:(NSString*)localFolder removeFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock;
-- (void)cancelUpdate:(NSString*)localFolder;
+- (void)cancelUpdate;
 
 // TODO: use folder name along with UID!!! See https://github.com/evgenybaskakov/Simplicity/issues/20.
 // TODO: return SMMessageThread*

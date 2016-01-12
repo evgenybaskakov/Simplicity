@@ -92,7 +92,7 @@
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    NSInteger messageThreadsCount = [[[appDelegate model] messageStorage] messageThreadsCountInLocalFolder:[currentFolder localName]];
+    NSInteger messageThreadsCount = [currentFolder.messageStorage messageThreadsCount];
 
     SM_LOG_DEBUG(@"self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
     
@@ -129,7 +129,7 @@
             SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
             NSAssert(currentFolder != nil, @"bad corrent folder");
             
-            _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:selectedRow localFolder:[currentFolder localName]];
+            _selectedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:selectedRow localFolder:[currentFolder localName]];
             
             if(_selectedMessageThread != nil) {
                 if(_immediateSelection) {
@@ -155,7 +155,6 @@
         }
     } else {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMMessageStorage *storage = [[appDelegate model] messageStorage];
         SMMessageListController *messageListController = [[appDelegate model] messageListController];
         SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"bad corrent folder");
@@ -165,7 +164,7 @@
 
         NSUInteger selectedRow = [selectedRows firstIndex];
         while(selectedRow != NSNotFound) {
-            SMMessageThread *messageThread = [storage messageThreadAtIndexByDate:selectedRow localFolder:[currentFolder localName]];
+            SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:selectedRow localFolder:[currentFolder localName]];
             if(messageThread != nil) {
                 [_multipleSelectedMessageThreads addObject:messageThread];
                 
@@ -193,7 +192,7 @@
     SMAppController *appController = [appDelegate appController];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
-    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+    SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
 
     if(messageThread == nil) {
         SM_LOG_DEBUG(@"row %ld, message thread is nil", row);
@@ -362,13 +361,12 @@
 
 - (BOOL)restoreScrollPositionAtRowIndex:(NSUInteger)idx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageStorage *messageStorage = [[appDelegate model] messageStorage];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
     SMMessageThread *messageThread = _currentFolderScrollPosition.visibleMessageThreads[idx];
-    NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
+    NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
     
     if(threadIndex != NSNotFound) {
         CGFloat rowHeight = [self fullRowHeight];
@@ -444,7 +442,7 @@
     // after all is done, fix the currently selected
     // message cell, if needed
     if(preserveSelection) {
-        SMMessageStorage *messageStorage = [[appDelegate model] messageStorage];
+        SMMessageStorage *messageStorage = currentFolder.messageStorage;
         
         if(_selectedMessageThread != nil) {
             NSAssert(_multipleSelectedMessageThreads.count == 0, @"multiple messages selection not empty");
@@ -526,13 +524,13 @@
     
     if(currentFolder != nil) {
         uint64_t threadId = [[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue];
-        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:currentFolder.localName];
+        SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadById:threadId localFolder:currentFolder.localName];
         
         uint32_t uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
         
         if(messageThread != nil) {
             if([messageThread updateThreadAttributesFromMessageUID:uid]) {
-                NSUInteger threadIndex = [[[appDelegate model] messageStorage] getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
+                NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];
                 
                 if(threadIndex != NSNotFound) {
                     [_messageListTableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
@@ -584,12 +582,12 @@
         if(selectedRows.count > 0) {
             // Move the selection down after the message thread is deleted from the list.
             NSUInteger nextRow = selectedRows.firstIndex;
-            _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
+            _selectedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
             
             // If there's no down, move the selection up.
             if(_selectedMessageThread == nil && nextRow > 0) {
                 nextRow--;
-                _selectedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
+                _selectedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:nextRow localFolder:[currentFolder localName]];
             }
 
             if(_selectedMessageThread != nil) {
@@ -633,7 +631,7 @@
             SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
             NSAssert(currentFolder != nil, @"no current folder");
 
-            _draggedMessageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:rowIndexes.firstIndex localFolder:[currentFolder localName]];
+            _draggedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:rowIndexes.firstIndex localFolder:[currentFolder localName]];
         }
         
         return YES;
@@ -669,7 +667,7 @@
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
-    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+    SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
     
     NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
     NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
@@ -720,7 +718,7 @@
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
-    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+    SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
     
     NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
     NSAssert(messageThread.messagesCount > 0, @"row %ld, no messages in thread %llu", row, messageThread.threadId);
@@ -766,7 +764,7 @@
 
         [self reloadMessageList:YES];
         
-        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
         
         if(messageThread == nil) {
             // TODO: fix this logic
@@ -778,7 +776,7 @@
     else {
         NSUInteger selectedRow = [selectedRows firstIndex];
         while(selectedRow != NSNotFound) {
-            SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:selectedRow localFolder:[currentLocalFolder localName]];
+            SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow localFolder:[currentLocalFolder localName]];
             NSAssert(messageThread != nil, @"message thread at selected row %lu not found", selectedRow);
             
             [messageThreads addObject:[NSNumber numberWithUnsignedLong:messageThread.threadId]];
@@ -851,7 +849,7 @@
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId localFolder:[currentLocalFolder localName]];
 
         if(messageThread != nil) {
             [self addStarToMessageThread:messageThread];
@@ -869,7 +867,7 @@
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId localFolder:[currentLocalFolder localName]];
         
         if(messageThread != nil) {
             [self removeStarFromMessageThread:messageThread];
@@ -887,7 +885,7 @@
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadById:threadId localFolder:[currentLocalFolder localName]];
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId localFolder:[currentLocalFolder localName]];
         
         if(messageThread != nil) {
             for(SMMessage *message in messageThread.messagesSortedByDate) {
@@ -913,7 +911,7 @@
         return;
     }
     
-    SMMessageThread *messageThread = [[[appDelegate model] messageStorage] messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
+    SMMessageThread *messageThread = [localFolder.messageStorage messageThreadAtIndexByDate:_messageListTableView.clickedRow localFolder:localFolder.localName];
 
     if(messageThread == nil) {
         SM_LOG_INFO(@"messageThread is nil");

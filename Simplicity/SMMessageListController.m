@@ -17,7 +17,6 @@
 #import "SMMailbox.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
-#import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 #import "SMAppDelegate.h"

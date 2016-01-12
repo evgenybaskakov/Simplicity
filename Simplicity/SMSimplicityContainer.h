@@ -13,14 +13,13 @@
 @class SMPreferencesController;
 @class SMDatabase;
 @class SMMailbox;
-@class SMMessageStorage;
 @class SMLocalFolderRegistry;
 @class SMAttachmentStorage;
 @class SMMessageListController;
 @class SMSearchResultsListController;
 @class SMMailboxController;
-@class SMMessageComparators;
 @class SMAddressBookController;
+@class SMMessageComparators;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
@@ -31,7 +30,6 @@
 @property MCOSMTPSession *smtpSession;
 
 @property (readonly) SMDatabase *database;
-@property (readonly) SMMessageStorage *messageStorage;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) MCOIndexSet *imapServerCapabilities;

@@ -12,11 +12,13 @@
 
 #import "SMFolder.h"
 
+@class SMMessageStorage;
 @class SMMessage;
 
 @interface SMLocalFolder : NSObject
 
 @property (readonly) SMFolderKind kind;
+@property (readonly) SMMessageStorage *messageStorage;
 @property (readonly) NSString *localName;
 @property (readonly) NSString *remoteFolderName;
 @property (readonly) NSUInteger unseenMessagesCount;

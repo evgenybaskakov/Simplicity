@@ -76,7 +76,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     
-    if([[[appDelegate model] messageStorage] messageHasData:uid localFolder:_localFolder.localName threadId:threadId]) {
+    if([_localFolder.messageStorage messageHasData:uid localFolder:_localFolder.localName threadId:threadId]) {
         SM_LOG_DEBUG(@"message body for uid %u already loaded", uid);
         return;
     }
@@ -216,8 +216,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 }
 
 - (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId data:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    [[[appDelegate model] messageStorage] setMessageData:data parser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid localFolder:_localFolder.localName threadId:threadId];
+    [_localFolder.messageStorage setMessageData:data parser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid localFolder:_localFolder.localName threadId:threadId];
     
     [_localFolder increaseLocalFolderFootprint:data.length];
     

@@ -9,7 +9,6 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMSimplicityContainer.h"
-#import "SMMessageStorage.h"
 #import "SMMessageListController.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
@@ -79,9 +78,6 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
     
     [self updateFolderEntryAccessTime:folderEntry];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] ensureLocalFolderExists:localFolderName];
-    
     return folderEntry.folder;
 }
 
@@ -103,9 +99,6 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
     [_folders setValue:folderEntry forKey:localFolderName];
 
     [_accessTimeSortedFolders insertObject:folderEntry atIndex:[self getFolderEntryIndex:folderEntry]];
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageStorage] ensureLocalFolderExists:localFolderName];
     
     return folderEntry.folder;
 }

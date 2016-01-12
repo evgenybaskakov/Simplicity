@@ -51,19 +51,21 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 @implementation SMMessageThread {
     uint64_t _threadId;
+    SMMessageStorage __weak *_messageStorage;
     ThreadFlags _threadFlags;
     MessageCollection *_messageCollection;
     NSMutableOrderedSet *_labels;
     NSString *_cachedBodyPreview;
 }
 
-- (id)initWithThreadId:(uint64_t)threadId {
+- (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage {
     self = [super init];
     if(self) {
         _threadId = threadId;
         _threadFlags = ThreadFlagsNone;
-        _messageCollection = [MessageCollection new];
-        _labels = [ NSMutableOrderedSet new ];
+        _messageStorage = messageStorage;
+        _messageCollection = [[MessageCollection alloc] init];
+        _labels = [[NSMutableOrderedSet alloc] init];
     }
     return self;
 }
@@ -91,8 +93,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 - (SMThreadUpdateResult)addMessage:(SMMessage*)message {
     message.updateStatus = SMMessageUpdateStatus_Unknown;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
+    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    SMMessageComparators *comparators = [appDelegate.model messageComparators];
 
     NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
     NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
@@ -127,7 +129,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (SMMessage*)getMessageByUID:(uint32_t)uid {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
+    SMMessageComparators *comparators = [appDelegate.model messageComparators];
 
     NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:uid];
     NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:comparators.messagesComparatorByUID];
@@ -288,7 +290,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [[[appDelegate model] messageStorage] comparators];
+    SMMessageComparators *comparators = [appDelegate.model messageComparators];
 
     SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
     
@@ -399,8 +401,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
 
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
-    [[[appDelegate model] messageStorage] deleteMessagesFromStorageByUIDs:vanishedMessageUIDs];
+    [_messageStorage deleteMessagesFromStorageByUIDs:vanishedMessageUIDs];
     
     const ThreadFlags oldThreadFlags = _threadFlags;
     _threadFlags = ThreadFlagsNone;

@@ -18,6 +18,7 @@
 
 @property (weak) IBOutlet NSPopUpButton *localStorageSizeList;
 @property (weak) IBOutlet NSPopUpButton *logLevelList;
+@property (weak) IBOutlet NSButton *useMailTransportLogging;
 
 @end
 
@@ -73,6 +74,15 @@
     }
     
     [_logLevelList selectItemAtIndex:logLevelItem];
+    
+    // Mail transport log level
+    
+    if([appDelegate preferencesController].mailTransportLogLevel == 0) {
+        _useMailTransportLogging.state = NSOffState;
+    }
+    else {
+        _useMailTransportLogging.state = NSOnState;
+    }
 }
 
 - (IBAction)localStorageSizeAction:(id)sender {
@@ -93,6 +103,11 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].logLevel = [_logLevelValues[item] unsignedIntegerValue];
+}
+
+- (IBAction)useMailTransportLoggingAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].mailTransportLogLevel = (_useMailTransportLogging.state == NSOffState? 0 : 1);
 }
 
 @end

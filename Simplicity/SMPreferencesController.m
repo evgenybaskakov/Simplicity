@@ -32,6 +32,7 @@
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
 #define kLogLevel                       @"LogLevel"
+#define kMailTransportLogLevel          @"MailTransportLogLevel"
 #define kPreferableMessageFormat        @"PreferableMessageFormat"
 
 // Per-account properties
@@ -899,6 +900,34 @@
 
 - (void)initLogLevel {
     [self logLevel];
+    [self mailTransportLogLevel];
+}
+
+- (NSUInteger)mailTransportLogLevel {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMailTransportLogLevel] == nil) {
+            MCLogEnabled = 0;
+            
+            SM_LOG_INFO(@"Using default SMLogLevel: %lu", SMLogLevel);
+        }
+        else {
+            MCLogEnabled = (int)[[NSUserDefaults standardUserDefaults] integerForKey:kMailTransportLogLevel];
+            
+            SM_LOG_INFO(@"Loaded SMLogLevel: %lu", SMLogLevel);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return MCLogEnabled;
+}
+
+- (void)setMailTransportLogLevel:(NSUInteger)logLevel {
+    [[NSUserDefaults standardUserDefaults] setInteger:logLevel forKey:kMailTransportLogLevel];
+    
+    MCLogEnabled = (int)logLevel;
 }
 
 - (NSUInteger)logLevel {

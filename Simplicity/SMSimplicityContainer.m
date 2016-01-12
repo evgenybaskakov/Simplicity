@@ -33,8 +33,6 @@
     self = [ super init ];
     
     if(self) {
-//      MCLogEnabled = 1;
-
         _preferencesController = preferencesController;
         _mailbox = [ SMMailbox new ];
         _localFolderRegistry = [ SMLocalFolderRegistry new ];

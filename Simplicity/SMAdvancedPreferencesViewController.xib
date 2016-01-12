@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="localStorageSizeList" destination="Xch-Yy-v0y" id="EaQ-zH-fqN"/>
                 <outlet property="logLevelList" destination="IpU-rH-9jx" id="ehC-tf-MUH"/>
+                <outlet property="useMailTransportLogging" destination="f9Y-XZ-X9g" id="bZR-hc-led"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -68,6 +69,16 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f9Y-XZ-X9g">
+                    <rect key="frame" x="305" y="89" width="246" height="18"/>
+                    <buttonCell key="cell" type="check" title="Use mail transport logging" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="rXM-Lz-Ps8">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="useMailTransportLoggingAction:" target="-2" id="2uM-fH-BE8"/>
+                    </connections>
+                </button>
             </subviews>
         </customView>
         <arrayController id="UNU-KY-ttd">

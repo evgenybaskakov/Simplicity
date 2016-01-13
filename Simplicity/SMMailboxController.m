@@ -201,6 +201,8 @@
 }
 
 - (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName {
+    SM_LOG_INFO(@"Renaming folder %@ to %@", oldFolderName, newFolderName);
+
     if([oldFolderName isEqualToString:newFolderName])
         return;
 

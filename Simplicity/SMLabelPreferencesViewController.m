@@ -225,8 +225,27 @@
 
         [[[appDelegate model] mailboxController] deleteFolder:folder.fullName];
 
-        [_labelTable reloadData];
+        [self reloadAccountLabels];
     }
+}
+
+- (IBAction)editLabelAction:(id)sender {
+    NSAssert([sender isKindOfClass:[NSTextField class]], @"bad sender %@", sender);
+
+    NSTextField *editedLabelField = (NSTextField*)sender;
+    NSInteger labelIndex = editedLabelField.tag;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(labelIndex < 0 || labelIndex >= [[appDelegate model] mailbox].folders.count) {
+        SM_LOG_ERROR(@"Bad edited label index %ld", labelIndex);
+        return;
+    }
+    
+    SMFolder *folder = [[appDelegate model] mailbox].folders[labelIndex];
+
+    [[[appDelegate model] mailboxController] renameFolder:folder.fullName newFolderName:editedLabelField.stringValue];
+
+    [self reloadLabelsAction:self];
 }
 
 - (IBAction)reloadLabelsAction:(id)sender {
@@ -281,6 +300,7 @@
     else if([tableColumn.identifier isEqualToString:@"Label"]) {
         NSTableCellView *view = [tableView makeViewWithIdentifier:@"LabelTableCell" owner:self];
         view.textField.stringValue = folder.fullName;
+        view.textField.tag = row;
         
         return view;
     }

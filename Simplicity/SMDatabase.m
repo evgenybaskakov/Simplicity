@@ -1526,7 +1526,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(NSData*, MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {
+- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {
     // Depending on the user requested urgency, we either select the
     // serial (FIFO) queue, or the concurrent one. In case of concurrent,
     // it won't have to wait while other non-urgent requests are processed.
@@ -1544,7 +1544,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_ERROR(@"no id for folder \"%@\" found in DB", folderName);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil);
             });
             
             return;
@@ -1555,7 +1555,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil);
             });
             
             return;
@@ -1565,7 +1565,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                getMessageBodyBlock(nil, nil, nil, nil);
+                getMessageBodyBlock(nil, nil, nil);
             });
 
             return;
@@ -1624,7 +1624,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            getMessageBodyBlock(messageBody, parser, attachments, messageBodyPreview);
+            getMessageBodyBlock(parser, attachments, messageBodyPreview);
         });
     };
     

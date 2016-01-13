@@ -952,11 +952,9 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             SMMessage *message = messages[j-1];
             
             if(![message isKindOfClass:[SMOutgoingMessage class]]) {
-                NSData *data = message.data;
-                
-                if(data != nil) {
+                if([message hasData] && message.messageSize > 0) {
                     reclaimedMessagesCount++;
-                    reclaimedMemory += data.length;
+                    reclaimedMemory += message.messageSize;
 
                     [message reclaimData];
                     
@@ -984,10 +982,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:i localFolder:_localName];
 
         for(SMMessage *message in [thread messagesSortedByDate]) {
-            NSData *data = message.data;
-            
-            if(data != nil) {
-                _totalMemory += data.length;
+            if([message hasData]) {
+                _totalMemory += message.messageSize;
             }
         }
     }

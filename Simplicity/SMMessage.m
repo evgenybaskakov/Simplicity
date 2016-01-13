@@ -220,13 +220,12 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setData:nil parser:nil attachments:nil bodyPreview:nil];
+    [self setParser:nil attachments:nil bodyPreview:nil];
 }
 
-- (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview {
-    if(data != nil) {
-        if(_data == nil) {
-            _data = data;
+- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview {
+    if(parser != nil) {
+        if(_msgParser == nil) {
             _msgParser = parser;
             _attachments = attachments;
             _hasAttachments = attachments.count > 0;
@@ -237,7 +236,6 @@ static NSString *unquote(NSString *s) {
         
         _reclaimed = NO;
     } else {
-        _data = nil;
         _msgParser = nil;
         _attachments = nil;
         _htmlBodyRendering = nil;
@@ -250,12 +248,16 @@ static NSString *unquote(NSString *s) {
     }
 }
 
-- (NSData*)data {
-    return _data;
+- (NSUInteger)messageSize {
+    if(_msgParser != nil) {
+        return _msgParser.data.length * 2;
+    }
+    
+    return 0;
 }
 
 - (BOOL)hasData {
-    return _data != nil;
+    return _msgParser != nil;
 }
 
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
@@ -329,9 +331,6 @@ static NSString *unquote(NSString *s) {
 }
 
 - (void)fetchInlineAttachments {
-    // TODO: "_data" may be nil, if fetchMessageBody happens to call from another _localFolder,
-    //       other from the local folder where the message header fetch was initiated
-    NSAssert(_data, @"bad _data (reclaimed: %u)", _reclaimed);
     NSAssert(_msgParser, @"bad _msgParser");
     
     SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
@@ -401,7 +400,7 @@ static NSString *unquote(NSString *s) {
         return _htmlBodyRendering;
     }
     
-    if(!_data) {
+    if(!_msgParser) {
         // TODO: Request urgently for the data
         // TODO: Request future update
         SM_LOG_DEBUG(@"no data for message uid %u", self.uid);

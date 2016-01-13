@@ -21,7 +21,6 @@
     
     if(self) {
         _messageBuilder = messageBuilder;
-        _data = _messageBuilder.mcoMessageBuilder.data;
         _uid = _messageBuilder.uid;
         _threadId = _messageBuilder.threadId;
 
@@ -88,12 +87,12 @@
     SM_FATAL(@"Cannot set external data for outgoing message");
 }
 
-- (NSData*)data {
-    return _data;
+- (NSUInteger)messageSize {
+    return 0;
 }
 
 - (BOOL)hasData {
-    return _data != nil;
+    return YES;
 }
 
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
@@ -125,13 +124,6 @@
     if(_htmlBodyRendering) {
         SM_LOG_DEBUG(@"html body for message uid %u already generated", self.uid);
         return _htmlBodyRendering;
-    }
-    
-    if(!_data) {
-        // TODO: Request urgently for the data
-        // TODO: Request future update
-        SM_LOG_DEBUG(@"no data for message uid %u", self.uid);
-        return nil;
     }
     
     _htmlBodyRendering = _messageBuilder.mcoMessageBuilder.htmlBodyRendering;

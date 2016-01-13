@@ -81,14 +81,14 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         return;
     }
     
-    if(!tryLoadFromDatabase || ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(NSData *data, MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
-        if(data == nil) {
+    if(!tryLoadFromDatabase || ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+        if(parser == nil) {
             SM_LOG_DEBUG(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
             
             [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
         }
         else {
-            [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:attachments messageBodyPreview:messageBodyPreview];
+            [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments messageBodyPreview:messageBodyPreview];
         }
     }]) {
         if(urgent) {
@@ -155,7 +155,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                     NSString *messageBodyPreview = [SMMessage imapMessageBodyPreview:parser];
                     
-                    [self loadMessageBody:uid threadId:threadId data:data parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPreview];
+                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPreview];
                     
                     if(!urgent) {
                         NSAssert(_nonUrgentfetchMessageBodyOpQueue.count > 0, @"no ops in the queue");
@@ -215,14 +215,16 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     }
 }
 
-- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId data:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview {
-    [_localFolder.messageStorage setMessageData:data parser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid localFolder:_localFolder.localName threadId:threadId];
+- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview {
+    SMMessage *message = [_localFolder.messageStorage setMessageParser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid localFolder:_localFolder.localName threadId:threadId];
     
-    [_localFolder increaseLocalFolderFootprint:data.length];
-    
-    NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"UID", @"ThreadId", nil]];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
+    if(message != nil) {
+        [_localFolder increaseLocalFolderFootprint:message.messageSize];
+        
+        NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"UID", @"ThreadId", nil]];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
+    }
 }
 
 - (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder {

@@ -17,6 +17,7 @@
 #import "SMMailbox.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
+#import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 #import "SMAppDelegate.h"
@@ -185,11 +186,16 @@
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    NSNumber *resultValue = [[notification userInfo] objectForKey:@"UpdateResult"];
+    SMMessageStorageUpdateResult updateResult = [resultValue unsignedIntegerValue];
+    
+    if(updateResult != SMMesssageStorageUpdateResultNone) {
+        NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
 
-    if([_currentFolder.localName isEqualToString:localFolder]) {
-        [self updateMessageList];
-        [self updateMessageThreadView];
+        if([_currentFolder.localName isEqualToString:localFolder]) {
+            [self updateMessageList];
+            [self updateMessageThreadView];
+        }
     }
 }
 

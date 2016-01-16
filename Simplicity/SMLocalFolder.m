@@ -573,14 +573,17 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
         SM_LOG_WARNING(@"remote folder for %@ is not set", _localName);
         return;
     }
-    
+
+    if(_selectedMessageUIDsToLoad == nil) {
+        SM_LOG_WARNING(@"no message uids to load in folder %@", _localName);
+        return;
+    }
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     
     NSAssert(session, @"session lost");
 
-    NSAssert(_selectedMessageUIDsToLoad != nil, @"bad message uids to load array");
-    
     BOOL finishFetch = YES;
     
     if(_totalMessagesCount == _messageHeadersFetched) {

@@ -315,7 +315,11 @@
 
     NSRect visibleRect = _messageListTableView.visibleRect;
     
-    if(visibleRect.origin.y < 0) {
+    if(visibleRect.origin.y <= 0) {
+        return;
+    }
+    
+    if(_currentFolderScrollPosition.threadsAtRows.count == 0) {
         return;
     }
     

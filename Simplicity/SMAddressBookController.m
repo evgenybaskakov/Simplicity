@@ -29,6 +29,8 @@
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix {
     NSMutableArray *results = [NSMutableArray array];
     
+    [results addObject:prefix];
+    
     [self searchAddressBookProperty:kABFirstNameProperty value:prefix results:results];
     [self searchAddressBookProperty:kABLastNameProperty value:prefix results:results];
     [self searchAddressBookProperty:kABEmailProperty value:prefix results:results];

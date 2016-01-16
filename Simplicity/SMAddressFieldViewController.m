@@ -201,7 +201,10 @@ static NSArray *_lastAddressesUsed;
 - (NSArray *)tokenField:(NSTokenField *)tokenField completionsForSubstring:(NSString *)substring indexOfToken:(NSInteger)tokenIndex indexOfSelectedItem:(NSInteger *)selectedIndex {
     SM_LOG_DEBUG(@"substring: '%@', tokenIndex: %ld", substring, tokenIndex);
     
-    return [_suggestionProvider suggestionsForPrefix:substring];
+    *selectedIndex = 0;
+    
+    NSArray *suggestions = [_suggestionProvider suggestionsForPrefix:substring];
+    return suggestions.count > 1? suggestions : nil;
 }
 
 - (id)tokenField:(NSTokenField *)tokenField representedObjectForEditingString:(NSString *)editingString {

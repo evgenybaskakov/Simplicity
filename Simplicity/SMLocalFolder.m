@@ -30,42 +30,7 @@
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 
-// TODO: move to advanced settings
-static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
-static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
-static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
-static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
-static const NSUInteger MAX_NEW_MESSAGE_NOTIFICATIONS = 5;
-
-static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMessagesRequestKind)(
-    MCOIMAPMessagesRequestKindUid |
-    MCOIMAPMessagesRequestKindFlags |
-    MCOIMAPMessagesRequestKindHeaders |
-    MCOIMAPMessagesRequestKindStructure |
-    MCOIMAPMessagesRequestKindInternalDate |
-    MCOIMAPMessagesRequestKindFullHeaders |
-    MCOIMAPMessagesRequestKindHeaderSubject |
-    MCOIMAPMessagesRequestKindGmailLabels |
-    MCOIMAPMessagesRequestKindGmailMessageID |
-    MCOIMAPMessagesRequestKindGmailThreadID |
-    MCOIMAPMessagesRequestKindExtraHeaders |
-    MCOIMAPMessagesRequestKindSize
-);
-
-@implementation SMLocalFolder {
-    MCOIMAPFolderInfoOperation *_folderInfoOp;
-    MCOIMAPFetchMessagesOperation *_fetchMessageHeadersOp;
-    NSMutableDictionary *_searchMessageThreadsOps;
-    NSMutableDictionary *_fetchMessageThreadsHeadersOps;
-    NSMutableDictionary *_fetchedMessageHeaders;
-    MCOIndexSet *_selectedMessageUIDsToLoad;
-    uint64_t _totalMemory;
-    BOOL _loadingFromDB;
-    BOOL _dbSyncInProgress;
-    NSUInteger _dbMessageThreadsLoadsCount;
-    NSUInteger _dbMessageThreadHeadersLoadsCount;
-    SMLocalFolderMessageBodyFetchQueue *_messageBodyFetchQueue;
-}
+@implementation SMLocalFolder
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [ super init ];
@@ -133,10 +98,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] localFolderRegistry] keepFoldersMemoryLimit];
 
-    if(!_syncedWithRemoteFolder) {
-        [self loadSelectedMessagesInternal];
-        return;
-    }
+    NSAssert(_syncedWithRemoteFolder, @"local folder %@ is not synced with remote folder", _localName);
     
     _messageHeadersFetched = 0;
     
@@ -551,104 +513,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
             }
         }];
     }
-}
-
-- (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] localFolderRegistry] keepFoldersMemoryLimit];
-
-    _messageHeadersFetched = 0;
-
-    [_messageStorage startUpdate:_localName];
-    
-    _selectedMessageUIDsToLoad = messageUIDs;
-
-    _totalMessagesCount = _selectedMessageUIDsToLoad.count;
-    
-    [self loadSelectedMessagesInternal];
-}
-
-- (void)loadSelectedMessagesInternal {
-    if(_remoteFolderName == nil) {
-        SM_LOG_WARNING(@"remote folder for %@ is not set", _localName);
-        return;
-    }
-
-    if(_selectedMessageUIDsToLoad == nil) {
-        SM_LOG_WARNING(@"no message uids to load in folder %@", _localName);
-        return;
-    }
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
-    
-    NSAssert(session, @"session lost");
-
-    BOOL finishFetch = YES;
-    
-    if(_totalMessagesCount == _messageHeadersFetched) {
-        SM_LOG_DEBUG(@"all %lu message headers fetched, stopping", _totalMessagesCount);
-    } else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
-        SM_LOG_DEBUG(@"fetched %lu message headers, stopping", _messageHeadersFetched);
-    } else if(_selectedMessageUIDsToLoad.count > 0) {
-        finishFetch = NO;
-    }
-    
-    if(finishFetch) {
-        [_messageStorage endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
-        
-        [self finishMessageHeadersFetching];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObject:_localName forKey:@"LocalFolderName"]];
-
-        return;
-    }
-    
-    MCOIndexSet *const messageUIDsToLoadNow = [MCOIndexSet indexSet];
-    MCORange *const ranges = [_selectedMessageUIDsToLoad allRanges];
-    
-    for(unsigned int i = [_selectedMessageUIDsToLoad rangesCount]; i > 0; i--) {
-        const MCORange currentRange = ranges[i-1];
-        const NSUInteger len = MCORangeRightBound(currentRange) - MCORangeLeftBound(currentRange) + 1;
-        const NSUInteger maxCountToLoad = MESSAGE_HEADERS_TO_FETCH_AT_ONCE - messageUIDsToLoadNow.count;
-        
-        if(len < maxCountToLoad) {
-            [messageUIDsToLoadNow addRange:currentRange];
-        } else {
-            // note: "- 1" is because zero length means one element range
-            const MCORange range = MCORangeMake(MCORangeRightBound(currentRange) - maxCountToLoad + 1, maxCountToLoad - 1);
-            
-            [messageUIDsToLoadNow addRange:range];
-            
-            break;
-        }
-    }
-    
-    SM_LOG_DEBUG(@"loading %u of %u search results...", messageUIDsToLoadNow.count, _selectedMessageUIDsToLoad.count);
-    
-    NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
-    
-    _fetchMessageHeadersOp = [session fetchMessagesOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind uids:messageUIDsToLoadNow];
-    
-    _fetchMessageHeadersOp.urgent = YES;
-
-    [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
-        _fetchMessageHeadersOp = nil;
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
-
-            [_selectedMessageUIDsToLoad removeIndexSet:messageUIDsToLoadNow];
-            
-            _messageHeadersFetched += [messages count];
-            
-            [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
-            
-            [self loadSelectedMessagesInternal];
-        } else {
-            SM_LOG_ERROR(@"Error downloading search results: %@", error);
-        }
-    }];
 }
 
 - (Boolean)messageHeadersAreBeingLoaded {

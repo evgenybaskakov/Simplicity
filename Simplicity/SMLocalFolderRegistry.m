@@ -13,6 +13,7 @@
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
+#import "SMSearchFolder.h"
 
 @interface FolderEntry : NSObject
 @property (readonly) SMLocalFolder *folder;
@@ -90,7 +91,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
-    SMLocalFolder *localFolder = [[SMLocalFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+    SMLocalFolder *localFolder = (kind == SMFolderKindSearch)? [[SMSearchFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName] : [[SMLocalFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
 
     folderEntry = [[FolderEntry alloc] initWithFolder:localFolder];
 

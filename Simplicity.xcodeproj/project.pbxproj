@@ -199,6 +199,7 @@
 		80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */; };
 		80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */; };
 		80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */; };
+		80D1AAE91C4B7D170076DDFA /* SMSearchFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
@@ -592,6 +593,8 @@
 		80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMGeneralPreferencesViewController.xib; sourceTree = "<group>"; };
 		80CEFA301BF30C4E002A7F96 /* SMAccountImageSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountImageSelection.h; sourceTree = "<group>"; };
 		80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountImageSelection.m; sourceTree = "<group>"; };
+		80D1AAE71C4B7D170076DDFA /* SMSearchFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchFolder.h; sourceTree = "<group>"; };
+		80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchFolder.m; sourceTree = "<group>"; };
 		80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "full_recycle_bin-128.png"; sourceTree = "<group>"; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
@@ -731,7 +734,6 @@
 				8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */,
 				802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */,
 				802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */,
-				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
 				0082F5FC1A0FFAAC0050578A /* SMLocalFolder.h */,
 				0082F5FD1A0FFAAC0050578A /* SMLocalFolder.m */,
 				8071EDF71BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.h */,
@@ -786,6 +788,8 @@
 				803A83191BE59059006520DD /* SMPreferencesController.m */,
 				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
+				80D1AAE71C4B7D170076DDFA /* SMSearchFolder.h */,
+				80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
 				00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */,
 				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
@@ -868,6 +872,7 @@
 				0082F5F61A0DD39B0050578A /* SMSearchResultsListController.h */,
 				0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */,
 				003858FE1A4D024500D4FD70 /* SMSearchResultsListViewController.h */,
+				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1378,6 +1383,7 @@
 				004A64291AC7A40B0079A0C1 /* SMAddressFieldViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
 				80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */,
+				80D1AAE91C4B7D170076DDFA /* SMSearchFolder.m in Sources */,
 				00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */,
 				803A29B11C02DC8800FF8D7C /* SMAddress.m in Sources */,
 				80E657571B1D681A00A0AA81 /* SMOpMoveMessages.m in Sources */,

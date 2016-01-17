@@ -12,10 +12,55 @@
 
 #import "SMFolder.h"
 
+// TODO: move to advanced settings
+static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
+static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
+static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
+static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
+static const NSUInteger MAX_NEW_MESSAGE_NOTIFICATIONS = 5;
+
+static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMessagesRequestKind)(
+    MCOIMAPMessagesRequestKindUid |
+    MCOIMAPMessagesRequestKindFlags |
+    MCOIMAPMessagesRequestKindHeaders |
+    MCOIMAPMessagesRequestKindStructure |
+    MCOIMAPMessagesRequestKindInternalDate |
+    MCOIMAPMessagesRequestKindFullHeaders |
+    MCOIMAPMessagesRequestKindHeaderSubject |
+    MCOIMAPMessagesRequestKindGmailLabels |
+    MCOIMAPMessagesRequestKindGmailMessageID |
+    MCOIMAPMessagesRequestKindGmailThreadID |
+    MCOIMAPMessagesRequestKindExtraHeaders |
+    MCOIMAPMessagesRequestKindSize
+);
+
+@class SMLocalFolderMessageBodyFetchQueue;
 @class SMMessageStorage;
 @class SMMessage;
 
-@interface SMLocalFolder : NSObject
+@interface SMLocalFolder : NSObject {
+    @protected SMFolderKind _kind;
+    @protected NSString *_localName;
+    @protected NSString *_remoteFolderName;
+    @protected NSUInteger _unseenMessagesCount;
+    @protected NSUInteger _totalMessagesCount;
+    @protected NSUInteger _messageHeadersFetched;
+    @protected NSUInteger _maxMessagesPerThisFolder;
+    @protected Boolean _syncedWithRemoteFolder;
+    @protected SMMessageStorage *_messageStorage;
+    @protected MCOIMAPFolderInfoOperation *_folderInfoOp;
+    @protected MCOIMAPFetchMessagesOperation *_fetchMessageHeadersOp;
+    @protected NSMutableDictionary *_searchMessageThreadsOps;
+    @protected NSMutableDictionary *_fetchMessageThreadsHeadersOps;
+    @protected NSMutableDictionary *_fetchedMessageHeaders;
+    @protected MCOIndexSet *_selectedMessageUIDsToLoad;
+    @protected uint64_t _totalMemory;
+    @protected BOOL _loadingFromDB;
+    @protected BOOL _dbSyncInProgress;
+    @protected NSUInteger _dbMessageThreadsLoadsCount;
+    @protected NSUInteger _dbMessageThreadHeadersLoadsCount;
+    @protected SMLocalFolderMessageBodyFetchQueue *_messageBodyFetchQueue;
+}
 
 @property (readonly) SMFolderKind kind;
 @property (readonly) SMMessageStorage *messageStorage;
@@ -38,9 +83,6 @@
 // these two methods are used to sync the content of this folder
 // with the remote folder with the same name
 - (void)startLocalFolderSync;
-
-// loads the messages specified by their UIDs from the remote folder
-- (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs;
 
 // urgently fetches the body of the message specified by its UID
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
@@ -88,5 +130,10 @@
 // returns the memory amount occupied by messages within this folder
 // that can be reclaimed upon request
 - (uint64_t)getTotalMemoryKb;
+
+#pragma mark Protected methods
+
+- (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase;
+- (void)finishMessageHeadersFetching;
 
 @end

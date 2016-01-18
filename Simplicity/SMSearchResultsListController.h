@@ -12,7 +12,8 @@
 
 @interface SMSearchResultsListController : NSObject
 
-// TODO: introduce search pattern descriptor and search results descriptors
+@property (readonly) MCOIndexSet *subjectSearchResults;
+@property (readonly) MCOIndexSet *contactSearchResults;
 
 - (void)startNewSearch:(NSString*)searchPattern exitingLocalFolder:(NSString*)existingLocalFolder;
 

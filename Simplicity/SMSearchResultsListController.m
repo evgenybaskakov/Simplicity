@@ -100,13 +100,16 @@ const char *const mcoOpKinds[] = {
     return self;
 }
 
-- (void)clearPreviousSearchOps {
+- (void)clearPreviousSearch {
     for(SearchOpInfo *opInfo in _searchOps) {
         [opInfo.op cancel];
     }
     
     [_searchOps removeAllObjects];
     _completedOps = 0;
+
+    _subjectSearchResults = [MCOIndexSet indexSet];
+    _contactSearchResults = [MCOIndexSet indexSet];
 }
 
 - (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
@@ -166,7 +169,7 @@ const char *const mcoOpKinds[] = {
 
     [[[appDelegate appController] searchResultsListViewController] reloadData];
     
-    [self clearPreviousSearchOps];
+    [self clearPreviousSearch];
     
     MCOIMAPSearchKind kinds[] = {
         MCOIMAPSearchKindFrom,
@@ -192,6 +195,8 @@ const char *const mcoOpKinds[] = {
             
             SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], opInfo.uids.count, remoteFolderName);
             
+            [self updatePopulatedSearchResults:opInfo.uids kind:kind];
+            
             _completedOps++;
             
             if(_completedOps == _searchOps.count) {
@@ -212,6 +217,24 @@ const char *const mcoOpKinds[] = {
         }];
 
         [_searchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
+    }
+}
+
+- (void)updatePopulatedSearchResults:(MCOIndexSet*)uids kind:(MCOIMAPSearchKind)kind {
+    switch(kind) {
+        case MCOIMAPSearchKindFrom:
+        case MCOIMAPSearchKindTo:
+        case MCOIMAPSearchKindCc:
+            [_contactSearchResults addIndexSet:uids];
+            break;
+            
+        case MCOIMAPSearchKindSubject:
+            [_subjectSearchResults addIndexSet:uids];
+            break;
+            
+        default:
+            NSAssert(nil, @"Unexpected kind %ld", (long)kind);
+            break;
     }
 }
 
@@ -271,7 +294,7 @@ const char *const mcoOpKinds[] = {
     NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 
     // stop search op itself, if any
-    [self clearPreviousSearchOps];
+    [self clearPreviousSearch];
 
     // stop message list loading, if anys
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

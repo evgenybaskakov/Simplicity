@@ -19,11 +19,72 @@
 #import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
 
+const char *const mcoOpKinds[] = {
+    "MCOIMAPSearchKindAll",
+    "MCOIMAPSearchKindNone",
+    "MCOIMAPSearchKindFrom",
+    "MCOIMAPSearchKindTo",
+    "MCOIMAPSearchKindCc",
+    "MCOIMAPSearchKindBcc",
+    "MCOIMAPSearchKindRecipient",
+    "MCOIMAPSearchKindSubject",
+    "MCOIMAPSearchKindContent",
+    "MCOIMAPSearchKindBody",
+    "MCOIMAPSearchKindUids",
+    "MCOIMAPSearchKindHeader",
+    "MCOIMAPSearchKindRead",
+    "MCOIMAPSearchKindUnread",
+    "MCOIMAPSearchKindFlagged",
+    "MCOIMAPSearchKindUnflagged",
+    "MCOIMAPSearchKindAnswered",
+    "MCOIMAPSearchKindUnanswered",
+    "MCOIMAPSearchKindDraft",
+    "MCOIMAPSearchKindUndraft",
+    "MCOIMAPSearchKindDeleted",
+    "MCOIMAPSearchKindSpam",
+    "MCOIMAPSearchKindBeforeDate",
+    "MCOIMAPSearchKindOnDate",
+    "MCOIMAPSearchKindSinceDate",
+    "MCOIMAPSearchKindBeforeReceivedDate",
+    "MCOIMAPSearchKindOnReceivedDate",
+    "MCOIMAPSearchKindSinceReceivedDate",
+    "MCOIMAPSearchKindSizeLarger",
+    "MCOIMAPSearchKindSizeSmaller",
+    "MCOIMAPSearchGmailThreadID",
+    "MCOIMAPSearchGmailMessageID",
+    "MCOIMAPSearchGmailRaw",
+    "MCOIMAPSearchKindOr",
+    "MCOIMAPSearchKindAnd",
+    "MCOIMAPSearchKindNot",
+};
+
+@interface SearchOpInfo : NSObject
+@property (readonly) MCOIMAPSearchKind kind; // TODO: create our own type
+@property (readonly) MCOIMAPSearchOperation *op;
+@property MCOIndexSet *uids;
+@end
+
+@implementation SearchOpInfo
+
+- (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(MCOIMAPSearchKind)kind {
+    self = [super init];
+    
+    if(self) {
+        _op = op;
+        _kind = kind;
+    }
+    
+    return self;
+}
+
+@end
+
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
-    MCOIMAPSearchOperation *_currentSearchOp;
+    NSMutableArray<SearchOpInfo*> *_searchOps;
+    NSUInteger _completedOps;
 }
 
 - (id)init {
@@ -32,9 +93,20 @@
     if(self != nil) {
         _searchResults = [[NSMutableDictionary alloc] init];
         _searchResultsFolderNames = [[NSMutableArray alloc] init];
+        _searchOps = [NSMutableArray array];
+        _completedOps = 0;
     }
     
     return self;
+}
+
+- (void)clearPreviousSearchOps {
+    for(SearchOpInfo *opInfo in _searchOps) {
+        [opInfo.op cancel];
+    }
+    
+    [_searchOps removeAllObjects];
+    _completedOps = 0;
 }
 
 - (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
@@ -94,50 +166,55 @@
 
     [[[appDelegate appController] searchResultsListViewController] reloadData];
     
-    [_currentSearchOp cancel];
-
-//  _currentSearchOp = [session searchOperationWithFolder:remoteFolderName kind:MCOIMAPSearchKindContent searchString:searchString];
-    MCOIMAPSearchExpression *expression = [MCOIMAPSearchExpression searchGmailRaw:searchString];
-    _currentSearchOp = [session searchExpressionOperationWithFolder:remoteFolderName expression:expression];
-
-    _currentSearchOp.urgent = YES;
+    [self clearPreviousSearchOps];
     
-    [_currentSearchOp start:^(NSError *error, MCOIndexSet *searchResults) {
-        if(error == nil) {
-            if(searchResults.count > 0) {
-                SM_LOG_DEBUG(@"%u messages found in remote folder %@, loading to local folder %@", [searchResults count], remoteFolderName, searchResultsLocalFolder);
+    MCOIMAPSearchKind kinds[] = {
+        MCOIMAPSearchKindFrom,
+        MCOIMAPSearchKindTo,
+        MCOIMAPSearchKindCc,
+        MCOIMAPSearchKindSubject};
+    
+    for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
+        MCOIMAPSearchKind kind = kinds[i];
+        MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:kind searchString:searchString];
+        op.urgent = YES;
+        
+        [_searchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
+        
+        void (^processSearchResults)(NSError*, MCOIndexSet*) = ^(NSError *error, MCOIndexSet *uids){
+            SearchOpInfo *opInfo = _searchOps[i];
+            
+            if(error == nil) {
+                opInfo.uids = uids;
+            } else {
+                SM_LOG_ERROR(@"search in remote folder %@ failed, error %@", remoteFolderName, error);
+                
+                opInfo.uids = [MCOIndexSet indexSet];
+            }
+            
+            SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], opInfo.uids.count, remoteFolderName);
+            
+            _completedOps++;
+            
+            if(_completedOps == _searchOps.count) {
+                MCOIndexSet *searchResults = [MCOIndexSet indexSet];
+                for(SearchOpInfo *opInfo in _searchOps) {
+                    [searchResults addIndexSet:opInfo.uids];
+                }
+                
+                SM_LOG_INFO(@"%u messages found in remote folder %@, loading to local folder %@", searchResults.count, remoteFolderName, searchResultsLocalFolder);
                 
                 searchDescriptor.messagesLoadingStarted = YES;
                 
                 [[[appDelegate model] messageListController] loadSearchResults:searchResults remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
                 
                 [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
-            } else {
-                SM_LOG_DEBUG(@"nothing found");
-                
-                [[[appDelegate model] searchResultsListController] searchHasFailed:searchResultsLocalFolder];
+                [[[appDelegate appController] searchResultsListViewController] reloadData];
             }
-        } else {
-            SM_LOG_DEBUG(@"search in remote folder %@ failed, error %@", remoteFolderName, error);
-            
-            [[[appDelegate model] searchResultsListController] searchHasFailed:searchResultsLocalFolder];
-        }
-        
-        [[[appDelegate appController] searchResultsListViewController] reloadData];
-    }];
-    
-    /*
-     NSArray *rangesOfString = [self rangesOfStringInDocument:searchString];
-     if ([rangesOfString count]) {
-        if ([documentTextView respondsToSelector:@selector(setSelectedRanges:)]) {
-     // NSTextView can handle multiple selections in 10.4 and later.
-     [documentTextView setSelectedRanges: rangesOfString];
-        } else {
-     // If we can't do multiple selection, just select the first range.
-     [documentTextView setSelectedRange: [[rangesOfString objectAtIndex:0] rangeValue]];
-        }
-     }
-     */
+        };
+
+        [op start:processSearchResults];
+    }
 }
 
 - (NSInteger)getSearchIndex:(NSString*)searchResultsLocalFolder {
@@ -196,8 +273,7 @@
     NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
 
     // stop search op itself, if any
-    [_currentSearchOp cancel];
-    _currentSearchOp = nil;
+    [self clearPreviousSearchOps];
 
     // stop message list loading, if anys
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

@@ -179,9 +179,7 @@ const char *const mcoOpKinds[] = {
         MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:kind searchString:searchString];
         op.urgent = YES;
         
-        [_searchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
-        
-        void (^processSearchResults)(NSError*, MCOIndexSet*) = ^(NSError *error, MCOIndexSet *uids){
+        [op start:^(NSError *error, MCOIndexSet *uids) {
             SearchOpInfo *opInfo = _searchOps[i];
             
             if(error == nil) {
@@ -211,9 +209,9 @@ const char *const mcoOpKinds[] = {
                 [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
                 [[[appDelegate appController] searchResultsListViewController] reloadData];
             }
-        };
+        }];
 
-        [op start:processSearchResults];
+        [_searchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
     }
 }
 

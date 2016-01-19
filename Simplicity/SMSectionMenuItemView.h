@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMSectionMenuRowView : NSTableCellView
+@interface SMSectionMenuItemView : NSTableCellView
 
 @end

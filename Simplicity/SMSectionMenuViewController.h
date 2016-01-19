@@ -8,6 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMSectionMenuViewController : NSViewController
+@interface SMSectionMenuViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
+
+- (void)addSection:(NSString*)sectionName;
+- (void)addItem:(NSString*)itemName target:(id)target action:(SEL)action;
 
 @end

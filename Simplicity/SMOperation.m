@@ -54,7 +54,8 @@
     return [self cancelOpForced:NO];
 }
 
-- (Boolean)cancelOpForced:(BOOL)force {
+- (Boolean
+   )cancelOpForced:(BOOL)force {
     _cancelled = YES;
     
     if(!force) {

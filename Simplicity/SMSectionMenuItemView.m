@@ -6,9 +6,9 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
-#import "SMSectionMenuRowView.h"
+#import "SMSectionMenuItemView.h"
 
-@implementation SMSectionMenuRowView
+@implementation SMSectionMenuItemView
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];

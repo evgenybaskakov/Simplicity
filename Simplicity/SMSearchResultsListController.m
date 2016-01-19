@@ -18,6 +18,7 @@
 #import "SMMessageListViewController.h"
 #import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
+#import "SMSectionMenuViewController.h"
 
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
@@ -213,6 +214,24 @@ const char *const mcoOpKinds[] = {
                 
                 [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
                 [[[appDelegate appController] searchResultsListViewController] reloadData];
+
+                if(_subjectSearchResults.count > 0) {
+                    [[[appDelegate appController] searchMenuViewController] addSection:@"Subjects"];
+
+                    NSIndexSet *uids = [_subjectSearchResults nsIndexSet];
+                    for(NSUInteger i = 0; i < uids.count; i++) {
+                        [[[appDelegate appController] searchMenuViewController] addItem:[NSString stringWithFormat:@"%lu", i] target:nil action:nil];
+                    }
+                }
+                
+                if(_contactSearchResults.count > 0) {
+                    [[[appDelegate appController] searchMenuViewController] addSection:@"Contacts"];
+                    
+                    NSIndexSet *uids = [_contactSearchResults nsIndexSet];
+                    for(NSUInteger i = 0; i < uids.count; i++) {
+                        [[[appDelegate appController] searchMenuViewController] addItem:[NSString stringWithFormat:@"%lu", i] target:nil action:nil];
+                    }
+                }
             }
         }];
 

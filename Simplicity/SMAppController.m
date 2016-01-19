@@ -32,6 +32,7 @@
 #import "SMNewAccountWindowController.h"
 #import "SMMessageWindowController.h"
 #import "SMPreferencesWindowController.h"
+#import "SMSectionMenuViewController.h"
 
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
@@ -147,6 +148,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [mailboxAndSearchResultsView addSubview:searchResultsListView];
     
     [mailboxAndSearchResultsView adjustSubviews];
+    
+    //
+    
+    _searchMenuViewController = [[SMSectionMenuViewController alloc] initWithNibName:@"SMSectionMenuViewController" bundle:nil];
     
     //
     
@@ -379,6 +384,17 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil];
     
     [self showSearchResultsView];
+    
+    //
+    
+    NSPopover *popover = [[NSPopover alloc] init];
+    [popover setBehavior:NSPopoverBehaviorTransient];
+    [popover setAnimates:YES];
+
+    popover.contentViewController = _searchMenuViewController;
+
+//    [popover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+    [popover showRelativeToRect:_searchField.frame ofView:_searchField preferredEdge:NSMinYEdge];
 }
 
 - (Boolean)isSearchResultsViewHidden {

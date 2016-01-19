@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+@class SMSectionMenuViewController;
 @class SMNewAccountWindowController;
 @class SMPreferencesWindowController;
 @class SMMailboxViewController;
@@ -37,6 +38,7 @@
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 
+@property SMSectionMenuViewController *searchMenuViewController;
 @property SMMailboxViewController *mailboxViewController;
 @property SMSearchResultsListViewController *searchResultsListViewController;
 @property SMMessageListViewController *messageListViewController;

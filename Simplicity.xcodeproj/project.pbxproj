@@ -188,6 +188,10 @@
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
+		80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */; };
+		80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */; };
+		80BD0A2E1C4E018B00F43EA2 /* SMSectionMenuRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A2D1C4E018B00F43EA2 /* SMSectionMenuRowView.m */; };
+		80BD0A381C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A371C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m */; };
 		80BFC3B51BEDC49900467243 /* SMMailServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */; };
 		80BFC3BF1BEDC67800467243 /* SMMailServiceProviderGmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3BE1BEDC67800467243 /* SMMailServiceProviderGmail.m */; };
 		80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C11BEDCA5C00467243 /* SMMailServiceProviderYandex.m */; };
@@ -572,6 +576,13 @@
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
+		80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuViewController.h; sourceTree = "<group>"; };
+		80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSectionMenuViewController.m; sourceTree = "<group>"; };
+		80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSectionMenuViewController.xib; sourceTree = "<group>"; };
+		80BD0A2C1C4E018B00F43EA2 /* SMSectionMenuRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuRowView.h; sourceTree = "<group>"; };
+		80BD0A2D1C4E018B00F43EA2 /* SMSectionMenuRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSectionMenuRowView.m; sourceTree = "<group>"; };
+		80BD0A361C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuSeparatorView.h; sourceTree = "<group>"; };
+		80BD0A371C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSectionMenuSeparatorView.m; sourceTree = "<group>"; };
 		80BFC3B31BEDC49900467243 /* SMMailServiceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProvider.h; sourceTree = "<group>"; };
 		80BFC3B41BEDC49900467243 /* SMMailServiceProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProvider.m; sourceTree = "<group>"; };
 		80BFC3BD1BEDC67800467243 /* SMMailServiceProviderGmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderGmail.h; sourceTree = "<group>"; };
@@ -873,6 +884,8 @@
 				0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */,
 				003858FE1A4D024500D4FD70 /* SMSearchResultsListViewController.h */,
 				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
+				80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */,
+				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -934,6 +947,10 @@
 				80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */,
 				00414ED61A16454F00068742 /* SMSearchResultsListCellView.h */,
 				00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */,
+				80BD0A2C1C4E018B00F43EA2 /* SMSectionMenuRowView.h */,
+				80BD0A2D1C4E018B00F43EA2 /* SMSectionMenuRowView.m */,
+				80BD0A361C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.h */,
+				80BD0A371C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m */,
 				0034EBBF19EA3A3200CDF656 /* SMTokenField.h */,
 				0034EBC019EA3A3200CDF656 /* SMTokenField.m */,
 			);
@@ -962,6 +979,7 @@
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
 				00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */,
 				003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */,
+				80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */,
 			);
 			name = Forms;
 			sourceTree = "<group>";
@@ -1237,6 +1255,7 @@
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
 				80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */,
 				8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */,
+				80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
 				801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */,
 				803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */,
@@ -1329,6 +1348,7 @@
 				8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */,
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
+				80BD0A381C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
 				802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */,
 				803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */,
@@ -1432,6 +1452,8 @@
 				803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */,
 				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,
 				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,
+				80BD0A2E1C4E018B00F43EA2 /* SMSectionMenuRowView.m in Sources */,
+				80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */,
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
 			);

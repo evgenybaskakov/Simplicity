@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListViewController">
@@ -23,7 +23,6 @@
             <subviews>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Crp-Ot-AgV" userLabel="Update now">
                     <rect key="frame" x="0.0" y="269" width="235" height="23"/>
-                    <animations/>
                     <buttonCell key="cell" type="smallSquare" title="Update now" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yf8-M1-N6m">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -41,7 +40,6 @@
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="63" rowSizeStyle="automatic" viewBased="YES" id="4" customClass="SMMessageListTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="235" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
@@ -69,7 +67,6 @@
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="22" id="Ev7-eg-biG"/>
                                                         </constraints>
-                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="From" usesSingleLineMode="YES" id="161">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -81,7 +78,6 @@
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="18" id="JjZ-Gf-iYl"/>
                                                         </constraints>
-                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Subject" usesSingleLineMode="YES" id="165">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -90,7 +86,6 @@
                                                     </textField>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="BTp-sC-DoL">
                                                         <rect key="frame" x="182" y="42" width="33" height="22"/>
-                                                        <animations/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" alignment="right" title="Date" usesSingleLineMode="YES" id="6AZ-7v-HGf">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" red="0.30655570652173914" green="0.30655570652173914" blue="0.30655570652173914" alpha="1" colorSpace="calibratedRGB"/>
@@ -99,7 +94,6 @@
                                                     </textField>
                                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
                                                         <rect key="frame" x="0.0" y="41" width="18" height="18"/>
-                                                        <animations/>
                                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="star-gray-icon" imagePosition="only" alignment="center" alternateImage="star-yellow-icon" state="on" imageScaling="proportionallyDown" inset="2" id="foW-9l-eeJ">
                                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system" size="10"/>
@@ -114,7 +108,6 @@
                                                             <constraint firstAttribute="width" constant="11" id="DAJ-2M-z4Z"/>
                                                             <constraint firstAttribute="height" constant="11" id="ryl-2u-xHg"/>
                                                         </constraints>
-                                                        <animations/>
                                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="circle-blue" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="mlh-y3-B3R">
                                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system" size="10"/>
@@ -129,7 +122,6 @@
                                                             <constraint firstAttribute="width" constant="18" id="1ah-1k-1Su"/>
                                                             <constraint firstAttribute="height" constant="18" id="3XB-gh-oZB"/>
                                                         </constraints>
-                                                        <animations/>
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="attachment-icon" id="5zw-26-NG2"/>
                                                     </imageView>
                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
@@ -137,14 +129,12 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="13" id="Eyo-KN-2gG"/>
                                                         </constraints>
-                                                        <animations/>
                                                     </customView>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DsX-8X-jlE" userLabel="Messages Count" customClass="SMInactiveButton">
                                                         <rect key="frame" x="215" y="19" width="17" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="17" id="exA-kj-ZN9"/>
                                                         </constraints>
-                                                        <animations/>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="svx-39-R2d">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystemBold"/>
@@ -152,12 +142,10 @@
                                                     </button>
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO" customClass="SMRoundedImageView">
                                                         <rect key="frame" x="22" y="23" width="35" height="35"/>
-                                                        <animations/>
                                                         <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUserGuest" id="Whf-mb-hsn"/>
                                                     </imageView>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ls9-M5-80W" userLabel="Message Preview Label">
                                                         <rect key="frame" x="19" y="3" width="197" height="16"/>
-                                                        <animations/>
                                                         <textFieldCell key="cell" truncatesLastVisibleLine="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Multi-line message body preview" id="Fmr-as-gbm">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -189,7 +177,6 @@
                                                     <constraint firstItem="160" firstAttribute="leading" secondItem="164" secondAttribute="leading" id="u2l-Yi-9m7"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="top" secondItem="32" secondAttribute="top" constant="3" id="yef-dg-cQ3"/>
                                                 </constraints>
-                                                <animations/>
                                                 <connections>
                                                     <outlet property="attachmentImage" destination="oxo-5I-gnK" id="RMn-B1-0Lh"/>
                                                     <outlet property="bookmarksView" destination="hsQ-26-pkV" id="1b3-pb-Tox"/>
@@ -214,27 +201,22 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <animations/>
                         <nil key="backgroundColor"/>
                     </clipView>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="215" id="6xP-Fg-SBt"/>
                     </constraints>
-                    <animations/>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="5">
                         <rect key="frame" x="-100" y="-100" width="223" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="7">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                 </scrollView>
                 <button toolTip="Load more messages in the current folder or search" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L8V-cN-uTh">
                     <rect key="frame" x="0.0" y="-1" width="235" height="23"/>
-                    <animations/>
                     <buttonCell key="cell" type="smallSquare" title="Load more" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="24f-Jb-6df">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -245,11 +227,9 @@
                 </button>
                 <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="8Od-aj-dKF">
                     <rect key="frame" x="219" y="2" width="16" height="16"/>
-                    <animations/>
                 </progressIndicator>
                 <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="9e7-R3-3CM">
                     <rect key="frame" x="219" y="272" width="16" height="16"/>
-                    <animations/>
                 </progressIndicator>
             </subviews>
             <constraints>
@@ -268,7 +248,6 @@
                 <constraint firstAttribute="trailing" secondItem="9e7-R3-3CM" secondAttribute="trailing" id="mqp-SH-tP9"/>
                 <constraint firstItem="3" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="xMY-F2-sSP"/>
             </constraints>
-            <animations/>
             <point key="canvasLocation" x="405.5" y="173.5"/>
         </customView>
     </objects>

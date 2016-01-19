@@ -76,6 +76,13 @@
         SMSectionMenuSeparatorView *separatorView = [tableView makeViewWithIdentifier:@"SectionMenuSeparator" owner:self];
         
         separatorView.textField.stringValue = item.label;
+        
+        if(row == 0) {
+            separatorView.separatorLine.hidden = YES;
+        }
+        else {
+            separatorView.separatorLine.hidden = NO;
+        }
     
         return separatorView;
     }
@@ -86,6 +93,26 @@
         
         return itemView;
     }
+}
+
+- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
+    if(row < 0) {
+        return 0;
+    }
+    
+    ItemInfo *item = _items[row];
+
+    return !item.separator;
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row {
+    if(row < 0) {
+        return 0;
+    }
+    
+    ItemInfo *item = _items[row];
+    
+    return item.separator? 22 : 14;
 }
 
 @end

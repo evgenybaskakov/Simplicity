@@ -388,8 +388,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     //
     
     NSPopover *popover = [[NSPopover alloc] init];
-    [popover setBehavior:NSPopoverBehaviorTransient];
-    [popover setAnimates:YES];
+    [popover setBehavior:NSPopoverBehaviorSemitransient];
+    [popover setAnimates:NO];
 
     popover.contentViewController = _searchMenuViewController;
 

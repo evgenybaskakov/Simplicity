@@ -129,4 +129,8 @@
     [_itemsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
 }
 
+- (IBAction)cellAction:(id)sender {
+    NSLog(@"click action");
+}
+
 @end

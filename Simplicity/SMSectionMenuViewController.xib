@@ -85,6 +85,7 @@
                                     </tableColumn>
                                 </tableColumns>
                                 <connections>
+                                    <action selector="cellAction:" target="-2" id="GxW-EW-TH0"/>
                                     <outlet property="dataSource" destination="-2" id="Mk9-rw-fXI"/>
                                     <outlet property="delegate" destination="-2" id="APq-NY-7HC"/>
                                 </connections>

@@ -80,8 +80,8 @@
         
         separatorBox.drawTop = YES;
         separatorBox.drawBottom = YES;
-        separatorBox.fillColor = [NSColor colorWithWhite:0.85 alpha:1.0];
-        separatorBox.boxColor = [NSColor colorWithWhite:0.85 alpha:1.0];
+        separatorBox.fillColor = [NSColor colorWithWhite:0.9 alpha:1.0];
+        separatorBox.boxColor = [NSColor colorWithWhite:0.9 alpha:1.0];
         
         separatorView.textField.stringValue = item.label;
         
@@ -97,7 +97,9 @@
     else {
         SMSectionMenuItemView *itemView = [tableView makeViewWithIdentifier:@"SectionMenuItem" owner:self];
         
+        itemView.parentMenuViewController = self;
         itemView.textField.stringValue = item.label;
+        itemView.textField.tag = row;
         
         return itemView;
     }
@@ -121,6 +123,10 @@
     ItemInfo *item = _items[row];
     
     return item.separator? 22 : 14;
+}
+
+- (void)selectItem:(NSUInteger)itemIndex {
+    [_itemsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
 }
 
 @end

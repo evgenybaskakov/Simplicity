@@ -12,6 +12,7 @@
 
 - (void)addSection:(NSString*)sectionName;
 - (void)addItem:(NSString*)itemName target:(id)target action:(SEL)action;
-- (void)selectItem:(NSUInteger)itemIndex;
+- (void)selectItem:(NSInteger)itemIndex;
+- (void)unselectItem:(NSInteger)itemIndex;
 
 @end

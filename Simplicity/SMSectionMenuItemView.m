@@ -42,6 +42,7 @@
 }
 
 - (void)mouseExited:(NSEvent *)theEvent {
+    [_parentMenuViewController unselectItem:self.textField.tag];
 }
 
 @end

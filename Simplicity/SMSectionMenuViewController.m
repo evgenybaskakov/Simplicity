@@ -44,6 +44,7 @@
 
 @implementation SMSectionMenuViewController {
     NSMutableArray *_items;
+    NSInteger _selectedItemIndex;
 }
 
 - (void)viewDidLoad {
@@ -125,12 +126,20 @@
     return item.separator? 22 : 14;
 }
 
-- (void)selectItem:(NSUInteger)itemIndex {
+- (void)selectItem:(NSInteger)itemIndex {
     [_itemsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
+    
+    _selectedItemIndex = itemIndex;
+}
+
+- (void)unselectItem:(NSInteger)itemIndex {
+    _selectedItemIndex = -1;
 }
 
 - (IBAction)cellAction:(id)sender {
-    NSLog(@"click action");
+    if(_selectedItemIndex != -1) {
+        NSLog(@"click action: row %ld", _selectedItemIndex);
+    }
 }
 
 @end

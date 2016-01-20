@@ -10,6 +10,6 @@
 
 @interface SMSectionMenuSeparatorView : NSTableCellView
 
-@property IBOutlet NSBox *separatorLine;
+@property IBOutlet NSView *separatorLine;
 
 @end

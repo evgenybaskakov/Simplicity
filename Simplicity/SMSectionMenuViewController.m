@@ -6,6 +6,7 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMBoxView.h"
 #import "SMSectionMenuSeparatorView.h"
 #import "SMSectionMenuItemView.h"
 #import "SMSectionMenuViewController.h"
@@ -74,6 +75,13 @@
     
     if(item.separator) {
         SMSectionMenuSeparatorView *separatorView = [tableView makeViewWithIdentifier:@"SectionMenuSeparator" owner:self];
+        
+        SMBoxView *separatorBox = (SMBoxView*)separatorView.separatorLine;
+        
+        separatorBox.drawTop = YES;
+        separatorBox.drawBottom = YES;
+        separatorBox.fillColor = [NSColor colorWithWhite:0.85 alpha:1.0];
+        separatorBox.boxColor = [NSColor colorWithWhite:0.85 alpha:1.0];
         
         separatorView.textField.stringValue = item.label;
         

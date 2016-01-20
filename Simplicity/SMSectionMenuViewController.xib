@@ -47,6 +47,9 @@
                                                 <rect key="frame" x="1" y="1" width="357" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
+                                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CH2-dn-jJH" userLabel="Separator Line" customClass="SMBoxView">
+                                                        <rect key="frame" x="0.0" y="18" width="357" height="2"/>
+                                                    </customView>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vn5-LH-yLL" userLabel="Section Label">
                                                         <rect key="frame" x="6" y="2" width="350" height="14"/>
                                                         <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Table View Cell" id="rbh-hr-ehQ">
@@ -55,15 +58,9 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Ob2-Je-dXn">
-                                                        <rect key="frame" x="1" y="16" width="355" height="5"/>
-                                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <font key="titleFont" metaFont="system"/>
-                                                    </box>
                                                 </subviews>
                                                 <connections>
-                                                    <outlet property="separatorLine" destination="Ob2-Je-dXn" id="0Dg-xn-sfx"/>
+                                                    <outlet property="separatorLine" destination="CH2-dn-jJH" id="urI-5M-j3r"/>
                                                     <outlet property="textField" destination="vn5-LH-yLL" id="tMT-DX-KGX"/>
                                                 </connections>
                                             </tableCellView>

@@ -87,6 +87,7 @@ const char *const mcoOpKinds[] = {
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_searchOps;
     NSUInteger _completedOps;
+    Boolean _shouldClearSearchResults;
 }
 
 - (id)init {
@@ -118,6 +119,7 @@ const char *const mcoOpKinds[] = {
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
     _searchString = searchString;
+    _shouldClearSearchResults = YES;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -327,22 +329,32 @@ const char *const mcoOpKinds[] = {
 - (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
+    if(_shouldClearSearchResults) {
+        [[[appDelegate appController] searchMenuViewController] clearAllItems];
+        
+        _shouldClearSearchResults = NO;
+    }
+    
     if(_subjectSearchResults.count > 0) {
-        [[[appDelegate appController] searchMenuViewController] addSection:@"Subjects"];
+        NSString *section = @"Subjects";
+        
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
      
         for(MCOIMAPMessage *imapMessage in imapMessages) {
             if([_subjectSearchResults containsIndex:imapMessage.uid]) {
                 NSString *subject = imapMessage.header.subject;
                 
                 if(subject != nil) {
-                    [[[appDelegate appController] searchMenuViewController] addItem:imapMessage.header.subject target:nil action:nil];
+                    [[[appDelegate appController] searchMenuViewController] addItem:imapMessage.header.subject section:section target:nil action:nil];
                 }
             }
         }
     }
 
     if(_contactSearchResults.count > 0) {
-        [[[appDelegate appController] searchMenuViewController] addSection:@"Contacts"];
+        NSString *section = @"Contacts";
+
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         NSMutableOrderedSet *contacts = [NSMutableOrderedSet orderedSet];
         
@@ -357,9 +369,11 @@ const char *const mcoOpKinds[] = {
         }
 
         for(NSString *contact in contacts) {
-            [[[appDelegate appController] searchMenuViewController] addItem:contact target:nil action:nil];
+            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:nil action:nil];
         }
     }
+
+    [[[appDelegate appController] searchMenuViewController] reloadItems];
 }
 
 @end

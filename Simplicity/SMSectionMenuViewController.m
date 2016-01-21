@@ -43,28 +43,57 @@
 @end
 
 @implementation SMSectionMenuViewController {
-    NSMutableArray *_items;
+    NSMutableArray<NSString*> *_sections;
+    NSMutableArray<NSMutableArray<ItemInfo*>*> *_sectionItems;
+    NSMutableArray<ItemInfo*> *_itemsFlat;
     NSInteger _selectedItemIndex;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _items = [NSMutableArray array];
+    _sections = [NSMutableArray array];
+    _sectionItems = [NSMutableArray array];
+    _itemsFlat = [NSMutableArray array];
 }
 
 - (void)addSection:(NSString*)sectionName {
-    [_items addObject:[[ItemInfo alloc] initWithLabel:sectionName separator:YES target:nil action:nil]];
-    [_itemsTable reloadData];
+    if([_sections containsObject:sectionName]) {
+        return;
+    }
+    
+    [_sections addObject:sectionName];
+    [_sectionItems addObject:[NSMutableArray array]];
+    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName separator:YES target:nil action:nil]];
 }
 
-- (void)addItem:(NSString*)itemName target:(id)target action:(SEL)action {
-    [_items addObject:[[ItemInfo alloc] initWithLabel:itemName separator:NO target:target action:action]];
+- (void)addItem:(NSString*)itemName section:(NSString*)sectionName target:(id)target action:(SEL)action {
+    NSUInteger idx = [_sections indexOfObject:sectionName];
+    NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
+    
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName separator:NO target:target action:action]];
+}
+
+- (void)clearAllItems {
+    [_sections removeAllObjects];
+    [_sectionItems removeAllObjects];
+    [_itemsFlat removeAllObjects];
+}
+
+- (void)reloadItems {
+    [_itemsFlat removeAllObjects];
+
+    for(NSMutableArray<ItemInfo*> *section in _sectionItems) {
+        for(ItemInfo *item in section) {
+            [_itemsFlat addObject:item];
+        }
+    }
+    
     [_itemsTable reloadData];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return _items.count;
+    return _itemsFlat.count;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
@@ -72,7 +101,7 @@
         return 0;
     }
     
-    ItemInfo *item = _items[row];
+    ItemInfo *item = _itemsFlat[row];
     
     if(item.separator) {
         SMSectionMenuSeparatorView *separatorView = [tableView makeViewWithIdentifier:@"SectionMenuSeparator" owner:self];
@@ -111,7 +140,7 @@
         return 0;
     }
     
-    ItemInfo *item = _items[row];
+    ItemInfo *item = _itemsFlat[row];
 
     return !item.separator;
 }
@@ -121,7 +150,7 @@
         return 0;
     }
     
-    ItemInfo *item = _items[row];
+    ItemInfo *item = _itemsFlat[row];
     
     return item.separator? 22 : 14;
 }

@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9U-No-mF3">
+                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9U-No-mF3">
                     <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
                     <clipView key="contentView" ambiguous="YES" id="GpT-i3-BSa">
                         <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
@@ -26,7 +26,7 @@
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="22" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="f18-2i-22p">
                                 <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <size key="intercellSpacing" width="3" height="2"/>
+                                <size key="intercellSpacing" width="3" height="0.0"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
@@ -44,7 +44,7 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="SectionMenuSeparator" id="cWK-Jw-5zq" userLabel="Section Separator View" customClass="SMSectionMenuSeparatorView">
-                                                <rect key="frame" x="1" y="1" width="357" height="22"/>
+                                                <rect key="frame" x="1" y="0.0" width="357" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CH2-dn-jJH" userLabel="Separator Line" customClass="SMBoxView">
@@ -65,11 +65,11 @@
                                                 </connections>
                                             </tableCellView>
                                             <tableCellView identifier="SectionMenuItem" id="Dmz-Oo-NiZ" userLabel="Item Row View" customClass="SMSectionMenuItemView">
-                                                <rect key="frame" x="1" y="25" width="357" height="14"/>
+                                                <rect key="frame" x="1" y="22" width="357" height="17"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABn-bN-8yZ" userLabel="Item Label">
-                                                        <rect key="frame" x="13" y="0.0" width="343" height="14"/>
+                                                        <rect key="frame" x="13" y="2" width="343" height="14"/>
                                                         <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Label" id="apU-DF-4nP">
                                                             <font key="font" metaFont="smallSystem"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>

@@ -152,7 +152,7 @@
     
     ItemInfo *item = _itemsFlat[row];
     
-    return item.separator? 22 : 14;
+    return item.separator? 22 : 17;
 }
 
 - (void)selectItem:(NSInteger)itemIndex {
@@ -162,7 +162,11 @@
 }
 
 - (void)unselectItem:(NSInteger)itemIndex {
-    _selectedItemIndex = -1;
+    if(itemIndex == _selectedItemIndex) {
+        [_itemsTable selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO];
+
+        _selectedItemIndex = -1;
+    }
 }
 
 - (IBAction)cellAction:(id)sender {

@@ -15,6 +15,7 @@
 #import "SMOpDeleteMessages.h"
 #import "SMOpSetMessageFlags.h"
 #import "SMMessageListController.h"
+#import "SMSearchResultsListController.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadDescriptor.h"
 #import "SMMessageThreadDescriptorEntry.h"
@@ -147,6 +148,13 @@
             SM_LOG_ERROR(@"Error downloading search results: %@", error);
         }
     }];
+}
+
+- (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
+    [super updateMessages:imapMessages remoteFolder:remoteFolderName updateDatabase:updateDatabase];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] searchResultsListController] updateSearchImapMessages:imapMessages];
 }
 
 @end

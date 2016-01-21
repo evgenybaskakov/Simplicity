@@ -28,4 +28,6 @@
 
 - (Boolean)searchStopped:(NSInteger)index;
 
+- (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages;
+
 @end

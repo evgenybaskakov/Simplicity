@@ -82,6 +82,7 @@ const char *const mcoOpKinds[] = {
 
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
+    NSString *_searchString;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_searchOps;
@@ -115,6 +116,8 @@ const char *const mcoOpKinds[] = {
 
 - (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
+    
+    _searchString = searchString;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -214,24 +217,6 @@ const char *const mcoOpKinds[] = {
                 
                 [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
                 [[[appDelegate appController] searchResultsListViewController] reloadData];
-
-                if(_subjectSearchResults.count > 0) {
-                    [[[appDelegate appController] searchMenuViewController] addSection:@"Subjects"];
-
-                    NSIndexSet *uids = [_subjectSearchResults nsIndexSet];
-                    for(NSUInteger i = 0; i < uids.count; i++) {
-                        [[[appDelegate appController] searchMenuViewController] addItem:[NSString stringWithFormat:@"%lu", i] target:nil action:nil];
-                    }
-                }
-                
-                if(_contactSearchResults.count > 0) {
-                    [[[appDelegate appController] searchMenuViewController] addSection:@"Contacts"];
-                    
-                    NSIndexSet *uids = [_contactSearchResults nsIndexSet];
-                    for(NSUInteger i = 0; i < uids.count; i++) {
-                        [[[appDelegate appController] searchMenuViewController] addItem:[NSString stringWithFormat:@"%lu", i] target:nil action:nil];
-                    }
-                }
             }
         }];
 
@@ -337,6 +322,44 @@ const char *const mcoOpKinds[] = {
     SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
     
     return searchDescriptor.searchStopped;
+}
+
+- (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(_subjectSearchResults.count > 0) {
+        [[[appDelegate appController] searchMenuViewController] addSection:@"Subjects"];
+     
+        for(MCOIMAPMessage *imapMessage in imapMessages) {
+            if([_subjectSearchResults containsIndex:imapMessage.uid]) {
+                NSString *subject = imapMessage.header.subject;
+                
+                if(subject != nil) {
+                    [[[appDelegate appController] searchMenuViewController] addItem:imapMessage.header.subject target:nil action:nil];
+                }
+            }
+        }
+    }
+
+    if(_contactSearchResults.count > 0) {
+        [[[appDelegate appController] searchMenuViewController] addSection:@"Contacts"];
+        
+        NSMutableOrderedSet *contacts = [NSMutableOrderedSet orderedSet];
+        
+        for(MCOIMAPMessage *imapMessage in imapMessages) {
+            for(MCOAddress *address in imapMessage.header.to) {
+                NSString *rfc822Address = address.nonEncodedRFC822String;
+                
+                if([[rfc822Address lowercaseString] containsString:[_searchString lowercaseString]]) {
+                    [contacts addObject:rfc822Address];
+                }
+            }
+        }
+
+        for(NSString *contact in contacts) {
+            [[[appDelegate appController] searchMenuViewController] addItem:contact target:nil action:nil];
+        }
+    }
 }
 
 @end

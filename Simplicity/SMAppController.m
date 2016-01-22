@@ -291,7 +291,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [toolbarItem setToolTip:@"Search for messages"];
         
         _searchField = [[NSSearchField alloc] initWithFrame:[_searchField frame]];
-        [_searchField.cell setSendsWholeSearchString:YES];
+        [_searchField.cell setSendsWholeSearchString:NO];
 
         [toolbarItem setView:_searchField];
         [toolbarItem setMinSize:NSMakeSize(30, NSHeight([_searchField frame]))];
@@ -387,14 +387,21 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
+    NSRange range = [[_searchField currentEditor] selectedRange];
+    
     NSPopover *popover = [[NSPopover alloc] init];
     [popover setBehavior:NSPopoverBehaviorSemitransient];
     [popover setAnimates:NO];
 
     popover.contentViewController = _searchMenuViewController;
-
+    
 //    [popover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
     [popover showRelativeToRect:_searchField.frame ofView:_searchField preferredEdge:NSMinYEdge];
+    
+    // Restore the search field cursor.
+    // Also bring the focus back to the search field from the popover.
+    [_searchField becomeFirstResponder];
+    [[_searchField currentEditor] setSelectedRange:range];
 }
 
 - (Boolean)isSearchResultsViewHidden {

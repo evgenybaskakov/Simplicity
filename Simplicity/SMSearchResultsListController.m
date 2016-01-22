@@ -339,14 +339,24 @@ const char *const mcoOpKinds[] = {
         NSString *section = @"Subjects";
         
         [[[appDelegate appController] searchMenuViewController] addSection:section];
-     
+
+        NSMutableOrderedSet *subjects = [NSMutableOrderedSet orderedSet];
+
         for(MCOIMAPMessage *imapMessage in imapMessages) {
             if([_subjectSearchResults containsIndex:imapMessage.uid]) {
                 NSString *subject = imapMessage.header.subject;
                 
-                if(subject != nil) {
-                    [[[appDelegate appController] searchMenuViewController] addItem:imapMessage.header.subject section:section target:nil action:nil];
-                }
+                [subjects addObject:subject];
+            }
+        }
+
+        NSArray *sortedSubjects = [subjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2];
+        }];
+        
+        for(NSString *subject in sortedSubjects) {
+            if(subject != nil) {
+                [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:nil action:nil];
             }
         }
     }
@@ -368,7 +378,11 @@ const char *const mcoOpKinds[] = {
             }
         }
 
-        for(NSString *contact in contacts) {
+        NSArray *sortedContacts = [contacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2];
+        }];
+        
+        for(NSString *contact in sortedContacts) {
             [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:nil action:nil];
         }
     }

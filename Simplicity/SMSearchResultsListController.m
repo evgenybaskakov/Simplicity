@@ -85,8 +85,9 @@ const char *const mcoOpKinds[] = {
     NSString *_searchString;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
-    NSMutableArray<SearchOpInfo*> *_searchOps;
-    NSUInteger _completedOps;
+    NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
+    SearchOpInfo *_contentSearchOp;
+    NSUInteger _completedSuggestionOps;
     Boolean _shouldClearSearchResults;
 }
 
@@ -96,20 +97,24 @@ const char *const mcoOpKinds[] = {
     if(self != nil) {
         _searchResults = [[NSMutableDictionary alloc] init];
         _searchResultsFolderNames = [[NSMutableArray alloc] init];
-        _searchOps = [NSMutableArray array];
-        _completedOps = 0;
+        _suggestionSearchOps = [NSMutableArray array];
+        _completedSuggestionOps = 0;
     }
     
     return self;
 }
 
 - (void)clearPreviousSearch {
-    for(SearchOpInfo *opInfo in _searchOps) {
+    for(SearchOpInfo *opInfo in _suggestionSearchOps) {
         [opInfo.op cancel];
     }
     
-    [_searchOps removeAllObjects];
-    _completedOps = 0;
+    [_contentSearchOp.op cancel];
+    
+    [_suggestionSearchOps removeAllObjects];
+    _contentSearchOp = nil;
+    
+    _completedSuggestionOps = 0;
 
     _subjectSearchResults = [MCOIndexSet indexSet];
     _contactSearchResults = [MCOIndexSet indexSet];
@@ -177,6 +182,24 @@ const char *const mcoOpKinds[] = {
     
     [self clearPreviousSearch];
     
+    // Load contents search results to the search local folder.
+
+    MCOIMAPSearchKind contentSearchKind = MCOIMAPSearchKindContent;
+    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:contentSearchKind searchString:searchString];
+    op.urgent = YES;
+    
+    [op start:^(NSError *error, MCOIndexSet *uids) {
+        SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
+        
+        searchDescriptor.messagesLoadingStarted = YES;
+        
+        [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+    }];
+    
+    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:contentSearchKind];
+    
+    // Load search results to the suggestions menu.
+    
     MCOIMAPSearchKind kinds[] = {
         MCOIMAPSearchKindFrom,
         MCOIMAPSearchKindTo,
@@ -189,7 +212,7 @@ const char *const mcoOpKinds[] = {
         op.urgent = YES;
         
         [op start:^(NSError *error, MCOIndexSet *uids) {
-            SearchOpInfo *opInfo = _searchOps[i];
+            SearchOpInfo *opInfo = _suggestionSearchOps[i];
             
             if(error == nil) {
                 opInfo.uids = uids;
@@ -203,26 +226,22 @@ const char *const mcoOpKinds[] = {
             
             [self updatePopulatedSearchResults:opInfo.uids kind:kind];
             
-            _completedOps++;
+            _completedSuggestionOps++;
             
-            if(_completedOps == _searchOps.count) {
+            if(_completedSuggestionOps == _suggestionSearchOps.count) {
                 MCOIndexSet *searchResults = [MCOIndexSet indexSet];
-                for(SearchOpInfo *opInfo in _searchOps) {
+                for(SearchOpInfo *opInfo in _suggestionSearchOps) {
                     [searchResults addIndexSet:opInfo.uids];
                 }
                 
                 SM_LOG_INFO(@"%u messages found in remote folder %@, loading to local folder %@", searchResults.count, remoteFolderName, searchResultsLocalFolder);
-                
-                searchDescriptor.messagesLoadingStarted = YES;
-                
-                [[[appDelegate model] messageListController] loadSearchResults:searchResults remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
                 
                 [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
                 [[[appDelegate appController] searchResultsListViewController] reloadData];
             }
         }];
 
-        [_searchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
+        [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
     }
 }
 

@@ -447,9 +447,11 @@ const char *const mcoOpKinds[] = {
             [addresses addObject:imapMessage.header.from];
             
             for(MCOAddress *address in addresses) {
-                NSString *displayContactAddress = [self displayAddress:address.nonEncodedRFC822String];
+                NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
-                if([[displayContactAddress lowercaseString] containsString:[_searchString lowercaseString]]) {
+                if([[nonEncodedRFC822String lowercaseString] containsString:[_searchString lowercaseString]]) {
+                    NSString *displayContactAddress = [self displayAddress:nonEncodedRFC822String];
+                
                     SM_LOG_DEBUG(@"%@ -> %@", address.nonEncodedRFC822String, displayContactAddress);
                     
                     [_suggestionResultsContacts addObject:displayContactAddress];

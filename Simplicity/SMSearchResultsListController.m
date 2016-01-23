@@ -452,7 +452,7 @@ const char *const mcoOpKinds[] = {
                 if([[nonEncodedRFC822String lowercaseString] containsString:[_searchString lowercaseString]]) {
                     NSString *displayContactAddress = [self displayAddress:nonEncodedRFC822String];
                 
-                    SM_LOG_DEBUG(@"%@ -> %@", address.nonEncodedRFC822String, displayContactAddress);
+                    SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
                     
                     [_suggestionResultsContacts addObject:displayContactAddress];
                 }

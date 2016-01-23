@@ -387,6 +387,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
+    // Remove previous search results from the suggestions menu.
+    [_searchMenuViewController clearAllItems];
+    
     NSRange range = [[_searchField currentEditor] selectedRange];
     
     NSPopover *popover = [[NSPopover alloc] init];

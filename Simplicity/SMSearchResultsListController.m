@@ -61,8 +61,7 @@ const char *const mcoOpKinds[] = {
 
 @interface SearchOpInfo : NSObject
 @property (readonly) MCOIMAPSearchKind kind; // TODO: create our own type
-@property (readonly) MCOIMAPSearchOperation *op;
-@property MCOIndexSet *uids;
+@property MCOIMAPBaseOperation *op;
 @end
 
 @implementation SearchOpInfo
@@ -86,9 +85,8 @@ const char *const mcoOpKinds[] = {
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
+    NSUInteger _completedSuggestionSearchOps;
     SearchOpInfo *_contentSearchOp;
-    NSUInteger _completedSuggestionOps;
-    Boolean _shouldClearSearchResults;
 }
 
 - (id)init {
@@ -98,7 +96,6 @@ const char *const mcoOpKinds[] = {
         _searchResults = [[NSMutableDictionary alloc] init];
         _searchResultsFolderNames = [[NSMutableArray alloc] init];
         _suggestionSearchOps = [NSMutableArray array];
-        _completedSuggestionOps = 0;
     }
     
     return self;
@@ -114,8 +111,6 @@ const char *const mcoOpKinds[] = {
     [_suggestionSearchOps removeAllObjects];
     _contentSearchOp = nil;
     
-    _completedSuggestionOps = 0;
-
     _subjectSearchResults = [MCOIndexSet indexSet];
     _contactSearchResults = [MCOIndexSet indexSet];
 }
@@ -124,7 +119,6 @@ const char *const mcoOpKinds[] = {
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
     _searchString = searchString;
-    _shouldClearSearchResults = YES;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -182,22 +176,6 @@ const char *const mcoOpKinds[] = {
     
     [self clearPreviousSearch];
     
-    // Load contents search results to the search local folder.
-
-    MCOIMAPSearchKind contentSearchKind = MCOIMAPSearchKindContent;
-    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:contentSearchKind searchString:searchString];
-    op.urgent = YES;
-    
-    [op start:^(NSError *error, MCOIndexSet *uids) {
-        SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
-        
-        searchDescriptor.messagesLoadingStarted = YES;
-        
-        [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
-    }];
-    
-    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:contentSearchKind];
-    
     // Load search results to the suggestions menu.
     
     MCOIMAPSearchKind kinds[] = {
@@ -209,43 +187,79 @@ const char *const mcoOpKinds[] = {
     for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
         MCOIMAPSearchKind kind = kinds[i];
         MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:kind searchString:searchString];
+
         op.urgent = YES;
         
         [op start:^(NSError *error, MCOIndexSet *uids) {
             SearchOpInfo *opInfo = _suggestionSearchOps[i];
-            
-            if(error == nil) {
-                opInfo.uids = uids;
-            } else {
-                SM_LOG_ERROR(@"search in remote folder %@ failed, error %@", remoteFolderName, error);
+        
+            if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
+                SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
                 
-                opInfo.uids = [MCOIndexSet indexSet];
-            }
-            
-            SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], opInfo.uids.count, remoteFolderName);
-            
-            [self updatePopulatedSearchResults:opInfo.uids kind:kind];
-            
-            _completedSuggestionOps++;
-            
-            if(_completedSuggestionOps == _suggestionSearchOps.count) {
-                MCOIndexSet *searchResults = [MCOIndexSet indexSet];
-                for(SearchOpInfo *opInfo in _suggestionSearchOps) {
-                    [searchResults addIndexSet:opInfo.uids];
+                if(uids.count > 0) {
+                    [self updateSuggestionSearchResults:uids kind:kind];
+
+                    MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
+
+                    op.urgent = YES;
+
+                    [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
+                        if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
+                            [self updateSearchImapMessages:imapMessages];
+
+                            if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
+                                [self finishSuggestionSearch];
+                            }
+                        }
+                        else {
+                            SM_LOG_INFO(@"previous search aborted");
+                        }
+                    }];
+
+                    opInfo.op = op;
                 }
-                
-                SM_LOG_INFO(@"%u messages found in remote folder %@, loading to local folder %@", searchResults.count, remoteFolderName, searchResultsLocalFolder);
-                
-                [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
-                [[[appDelegate appController] searchResultsListViewController] reloadData];
+                else if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
+                    [self finishSuggestionSearch];
+                }
+            }
+            else {
+                SM_LOG_INFO(@"previous search aborted");
             }
         }];
 
         [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
     }
+
+    _completedSuggestionSearchOps = 0;
+    
+    // Load contents search results to the search local folder.
+    
+    if(_contentSearchOp != nil) {
+        [_contentSearchOp.op cancel];
+    }
+    
+    MCOIMAPSearchKind contentSearchKind = MCOIMAPSearchKindContent;
+    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:contentSearchKind searchString:searchString];
+    
+    op.urgent = NO;
+    
+    [op start:^(NSError *error, MCOIndexSet *uids) {
+        SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
+        
+        searchDescriptor.messagesLoadingStarted = YES;
+        
+        [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+        
+        [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
+        [[[appDelegate appController] searchResultsListViewController] reloadData];
+
+        _contentSearchOp = nil;
+    }];
+    
+    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:contentSearchKind];
 }
 
-- (void)updatePopulatedSearchResults:(MCOIndexSet*)uids kind:(MCOIMAPSearchKind)kind {
+- (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(MCOIMAPSearchKind)kind {
     switch(kind) {
         case MCOIMAPSearchKindFrom:
         case MCOIMAPSearchKindTo:
@@ -347,31 +361,25 @@ const char *const mcoOpKinds[] = {
 
 - (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
-    if(_shouldClearSearchResults) {
-        [[[appDelegate appController] searchMenuViewController] clearAllItems];
-        
-        _shouldClearSearchResults = NO;
-    }
-    
-    if(_subjectSearchResults.count > 0) {
-        NSString *section = @"Subjects";
-        
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
+    NSMutableOrderedSet *subjects = [NSMutableOrderedSet orderedSet];
 
-        NSMutableOrderedSet *subjects = [NSMutableOrderedSet orderedSet];
-
-        for(MCOIMAPMessage *imapMessage in imapMessages) {
-            if([_subjectSearchResults containsIndex:imapMessage.uid]) {
-                NSString *subject = imapMessage.header.subject;
-                
-                [subjects addObject:subject];
-            }
+    for(MCOIMAPMessage *imapMessage in imapMessages) {
+        if([_subjectSearchResults containsIndex:imapMessage.uid]) {
+            NSString *subject = imapMessage.header.subject;
+            
+            [subjects addObject:subject];
         }
+    }
 
+    if(subjects.count > 0) {
         NSArray *sortedSubjects = [subjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
             return [str1 compare:str2];
         }];
+        
+        NSString *section = @"Subjects";
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         for(NSString *subject in sortedSubjects) {
             if(subject != nil) {
@@ -380,15 +388,14 @@ const char *const mcoOpKinds[] = {
         }
     }
 
-    if(_contactSearchResults.count > 0) {
-        NSString *section = @"Contacts";
-
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        
-        NSMutableOrderedSet *contacts = [NSMutableOrderedSet orderedSet];
-        
-        for(MCOIMAPMessage *imapMessage in imapMessages) {
-            for(MCOAddress *address in imapMessage.header.to) {
+    NSMutableOrderedSet *contacts = [NSMutableOrderedSet orderedSet];
+    
+    for(MCOIMAPMessage *imapMessage in imapMessages) {
+        if([_contactSearchResults containsIndex:imapMessage.uid]) {
+            NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
+            [addresses addObjectsFromArray:imapMessage.header.cc];
+            
+            for(MCOAddress *address in addresses) {
                 NSString *rfc822Address = address.nonEncodedRFC822String;
                 
                 if([[rfc822Address lowercaseString] containsString:[_searchString lowercaseString]]) {
@@ -396,10 +403,15 @@ const char *const mcoOpKinds[] = {
                 }
             }
         }
+    }
 
+    if(contacts.count > 0) {
         NSArray *sortedContacts = [contacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
             return [str1 compare:str2];
         }];
+        
+        NSString *section = @"Contacts";
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         for(NSString *contact in sortedContacts) {
             [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:nil action:nil];
@@ -407,6 +419,15 @@ const char *const mcoOpKinds[] = {
     }
 
     [[[appDelegate appController] searchMenuViewController] reloadItems];
+}
+
+- (void)finishSuggestionSearch {
+    if(_subjectSearchResults.count == 0 && _contactSearchResults.count == 0) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+        [[[appDelegate appController] searchMenuViewController] clearAllItems];
+        [[[appDelegate appController] searchMenuViewController] reloadItems];
+    }
 }
 
 @end

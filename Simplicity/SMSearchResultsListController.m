@@ -417,7 +417,9 @@ const char *const mcoOpKinds[] = {
         if([_subjectSearchResults containsIndex:imapMessage.uid]) {
             NSString *subject = imapMessage.header.subject;
             
-            [_suggestionResultsSubjects addObject:subject];
+            if(subject != nil) {
+                [_suggestionResultsSubjects addObject:subject];
+            }
         }
     }
 
@@ -430,9 +432,7 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         for(NSString *subject in sortedSubjects) {
-            if(subject != nil) {
-                [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:nil action:nil];
-            }
+            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:nil action:nil];
         }
     }
 

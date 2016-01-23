@@ -204,7 +204,7 @@ const char *const mcoOpKinds[] = {
                 SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
                 
                 if(uids.count > 0) {
-                    [self updateSuggestionSearchResults:uids kind:kind];
+                    [self updateSuggestionSearchResults:uids kind:opInfo.kind];
 
                     MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
 
@@ -376,6 +376,26 @@ const char *const mcoOpKinds[] = {
     return searchDescriptor.searchStopped;
 }
 
+- (NSString*)displayAddress:(NSString*)address {
+    NSArray *parts = [address componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'\""]];
+
+    if(parts.count == 1) {
+        return [parts firstObject];
+    }
+    else if(parts.count == 2) {
+        return [parts[0] stringByAppendingString:parts[1]];
+    }
+    else {
+        NSString *result = @"";
+        
+        for(NSString *part in parts) {
+            result = [result stringByAppendingString:part];
+        }
+
+        return result;
+    }
+}
+
 - (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
@@ -424,12 +444,15 @@ const char *const mcoOpKinds[] = {
         if([_contactSearchResults containsIndex:imapMessage.uid]) {
             NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
             [addresses addObjectsFromArray:imapMessage.header.cc];
+            [addresses addObject:imapMessage.header.from];
             
             for(MCOAddress *address in addresses) {
-                NSString *rfc822Address = address.nonEncodedRFC822String;
+                NSString *displayContactAddress = [self displayAddress:address.nonEncodedRFC822String];
                 
-                if([[rfc822Address lowercaseString] containsString:[_searchString lowercaseString]]) {
-                    [_suggestionResultsContacts addObject:rfc822Address];
+                if([[displayContactAddress lowercaseString] containsString:[_searchString lowercaseString]]) {
+                    SM_LOG_DEBUG(@"%@ -> %@", address.nonEncodedRFC822String, displayContactAddress);
+                    
+                    [_suggestionResultsContacts addObject:displayContactAddress];
                 }
             }
         }

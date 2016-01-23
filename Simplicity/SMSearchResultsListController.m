@@ -87,6 +87,8 @@ const char *const mcoOpKinds[] = {
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
     NSUInteger _completedSuggestionSearchOps;
     SearchOpInfo *_contentSearchOp;
+    NSMutableOrderedSet *_suggestionResultsSubjects;
+    NSMutableOrderedSet *_suggestionResultsContacts;
 }
 
 - (id)init {
@@ -96,6 +98,8 @@ const char *const mcoOpKinds[] = {
         _searchResults = [[NSMutableDictionary alloc] init];
         _searchResultsFolderNames = [[NSMutableArray alloc] init];
         _suggestionSearchOps = [NSMutableArray array];
+        _suggestionResultsSubjects = [NSMutableOrderedSet orderedSet];
+        _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
     }
     
     return self;
@@ -113,6 +117,9 @@ const char *const mcoOpKinds[] = {
     
     _subjectSearchResults = [MCOIndexSet indexSet];
     _contactSearchResults = [MCOIndexSet indexSet];
+
+    _suggestionResultsSubjects = [NSMutableOrderedSet orderedSet];
+    _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
 
 - (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
@@ -373,18 +380,29 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
-    NSMutableOrderedSet *subjects = [NSMutableOrderedSet orderedSet];
+    //
+    // Contents.
+    //
 
+    NSString *section = @"Contents";
+    
+    [[[appDelegate appController] searchMenuViewController] addSection:section];
+    [[[appDelegate appController] searchMenuViewController] addItem:_searchString section:section target:nil action:nil];
+
+    //
+    // Subjects.
+    //
+    
     for(MCOIMAPMessage *imapMessage in imapMessages) {
         if([_subjectSearchResults containsIndex:imapMessage.uid]) {
             NSString *subject = imapMessage.header.subject;
             
-            [subjects addObject:subject];
+            [_suggestionResultsSubjects addObject:subject];
         }
     }
 
-    if(subjects.count > 0) {
-        NSArray *sortedSubjects = [subjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+    if(_suggestionResultsSubjects.count > 0) {
+        NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
             return [str1 compare:str2];
         }];
         
@@ -398,8 +416,10 @@ const char *const mcoOpKinds[] = {
         }
     }
 
-    NSMutableOrderedSet *contacts = [NSMutableOrderedSet orderedSet];
-    
+    //
+    // Contacts.
+    //
+
     for(MCOIMAPMessage *imapMessage in imapMessages) {
         if([_contactSearchResults containsIndex:imapMessage.uid]) {
             NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
@@ -409,14 +429,14 @@ const char *const mcoOpKinds[] = {
                 NSString *rfc822Address = address.nonEncodedRFC822String;
                 
                 if([[rfc822Address lowercaseString] containsString:[_searchString lowercaseString]]) {
-                    [contacts addObject:rfc822Address];
+                    [_suggestionResultsContacts addObject:rfc822Address];
                 }
             }
         }
     }
 
-    if(contacts.count > 0) {
-        NSArray *sortedContacts = [contacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+    if(_suggestionResultsContacts.count > 0) {
+        NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
             return [str1 compare:str2];
         }];
         

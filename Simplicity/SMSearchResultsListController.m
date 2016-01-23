@@ -206,10 +206,7 @@ const char *const mcoOpKinds[] = {
                     [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
                         if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
                             [self updateSearchImapMessages:imapMessages];
-
-                            if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
-                                [self finishSuggestionSearch];
-                            }
+                            [self checkSuggestionSearchCompletion];
                         }
                         else {
                             SM_LOG_INFO(@"previous search aborted");
@@ -218,8 +215,8 @@ const char *const mcoOpKinds[] = {
 
                     opInfo.op = op;
                 }
-                else if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
-                    [self finishSuggestionSearch];
+                else {
+                    [self checkSuggestionSearchCompletion];
                 }
             }
             else {
@@ -244,19 +241,32 @@ const char *const mcoOpKinds[] = {
     op.urgent = NO;
     
     [op start:^(NSError *error, MCOIndexSet *uids) {
-        SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
-        
-        searchDescriptor.messagesLoadingStarted = YES;
-        
-        [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
-        
-        [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
-        [[[appDelegate appController] searchResultsListViewController] reloadData];
+        if(_contentSearchOp.op == op) {
+            SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
+            
+            searchDescriptor.messagesLoadingStarted = YES;
+            
+            [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+            
+            [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
+            [[[appDelegate appController] searchResultsListViewController] reloadData];
 
-        _contentSearchOp = nil;
+            _contentSearchOp = nil;
+        }
+        else {
+            SM_LOG_INFO(@"previous content search aborted");
+        }
     }];
     
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:contentSearchKind];
+}
+
+- (void)checkSuggestionSearchCompletion {
+    NSAssert(_completedSuggestionSearchOps < _suggestionSearchOps.count, @"_completedSuggestionSearchOps %lu, _suggestionSearchOps.count %lu", _completedSuggestionSearchOps, _suggestionSearchOps.count);
+    
+    if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
+        [self finishSuggestionSearch];
+    }
 }
 
 - (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(MCOIMAPSearchKind)kind {

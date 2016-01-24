@@ -53,6 +53,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     Boolean _operationQueueShown;
     Boolean _inboxInitialized;
     BOOL _preferencesWindowShown;
+    NSWindow *_searchMenuWindow;
 }
 
 - (void)awakeFromNib {
@@ -385,23 +386,23 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [self showSearchResultsView];
     
-    //
-    
     // Remove previous search results from the suggestions menu.
     [_searchMenuViewController clearAllItems];
     
     NSRange range = [[_searchField currentEditor] selectedRange];
     
-    NSWindow *menuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
-    menuWindow.styleMask = NSBorderlessWindowMask;
-
+    if(_searchMenuWindow == nil) {
+        _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
+        _searchMenuWindow.styleMask = NSTexturedBackgroundWindowMask;
+        _searchMenuWindow.delegate = self;
+    }
+    
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
     
-    [mainWindow addChildWindow:menuWindow ordered:NSWindowAbove];
-    [menuWindow makeKeyWindow];
+    [_searchMenuWindow makeKeyAndOrderFront:self];
     
     NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
-    [menuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (menuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuWindow.frame.size.height - 3, menuWindow.frame.size.width, menuWindow.frame.size.height) display:YES];
+    [_searchMenuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchMenuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - _searchMenuWindow.frame.size.height - 3, _searchMenuWindow.frame.size.width, _searchMenuWindow.frame.size.height) display:YES];
     
     // Restore the search field cursor.
     // Also bring the focus back to the search field from the popover.

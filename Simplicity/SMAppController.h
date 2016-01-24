@@ -26,7 +26,7 @@
 @class SMOperationExecutor;
 @class SMMessageThread;
 
-@interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate>
+@interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate, NSWindowDelegate>
 
 @property (weak, nonatomic) IBOutlet NSView *view;
 

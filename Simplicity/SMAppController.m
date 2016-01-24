@@ -392,14 +392,16 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     NSRange range = [[_searchField currentEditor] selectedRange];
     
-    NSPopover *popover = [[NSPopover alloc] init];
-    [popover setBehavior:NSPopoverBehaviorSemitransient];
-    [popover setAnimates:NO];
+    NSWindow *menuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
+    menuWindow.styleMask = NSBorderlessWindowMask;
 
-    popover.contentViewController = _searchMenuViewController;
+    NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
     
-//    [popover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-    [popover showRelativeToRect:_searchField.frame ofView:_searchField preferredEdge:NSMinYEdge];
+    [mainWindow addChildWindow:menuWindow ordered:NSWindowAbove];
+    [menuWindow makeKeyWindow];
+    
+    NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
+    [menuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (menuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuWindow.frame.size.height - 3, menuWindow.frame.size.width, menuWindow.frame.size.height) display:YES];
     
     // Restore the search field cursor.
     // Also bring the focus back to the search field from the popover.

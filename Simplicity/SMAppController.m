@@ -393,8 +393,14 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     if(_searchMenuWindow == nil) {
         _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
-        _searchMenuWindow.styleMask = NSTexturedBackgroundWindowMask;
+        _searchMenuWindow.styleMask = NSBorderlessWindowMask;
         _searchMenuWindow.delegate = self;
+        _searchMenuWindow.opaque = NO;
+        _searchMenuWindow.backingType = NSBackingStoreBuffered;
+        _searchMenuWindow.backgroundColor = [NSColor clearColor];
+        _searchMenuWindow.contentView.wantsLayer = YES;
+        _searchMenuWindow.contentView.layer.masksToBounds = YES;
+        _searchMenuWindow.contentView.layer.cornerRadius = 5;
     }
     
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
@@ -408,6 +414,14 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     // Also bring the focus back to the search field from the popover.
     [_searchField becomeFirstResponder];
     [[_searchField currentEditor] setSelectedRange:range];
+}
+
+- (void)windowDidResignMain:(NSNotification *)notification {
+    NSLog(@"%s: %@", __FUNCTION__, notification);
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+    NSLog(@"%s: %@", __FUNCTION__, notification);
 }
 
 - (Boolean)isSearchResultsViewHidden {

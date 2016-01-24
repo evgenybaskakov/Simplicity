@@ -38,8 +38,6 @@
 
 @interface SMSectionMenuViewController ()
 
-@property (weak) IBOutlet NSTableView *itemsTable;
-
 @end
 
 @implementation SMSectionMenuViewController {

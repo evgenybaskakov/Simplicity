@@ -10,6 +10,8 @@
 
 @interface SMSectionMenuViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
+@property (weak) IBOutlet NSTableView *itemsTable;
+
 - (void)addSection:(NSString*)sectionName;
 - (void)addItem:(NSString*)itemName section:(NSString*)sectionName target:(id)target action:(SEL)action;
 - (void)clearAllItems;

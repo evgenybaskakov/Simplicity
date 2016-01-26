@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
@@ -26,11 +26,10 @@
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="22" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="f18-2i-22p">
                                 <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <size key="intercellSpacing" width="3" height="0.0"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                    <tableColumn width="357" minWidth="40" maxWidth="1000" id="2c6-6R-KFc">
+                                    <tableColumn width="360" minWidth="40" maxWidth="1000" id="2c6-6R-KFc">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -44,11 +43,11 @@
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
                                             <tableCellView identifier="SectionMenuSeparator" id="cWK-Jw-5zq" userLabel="Section Separator View" customClass="SMSectionMenuSeparatorView">
-                                                <rect key="frame" x="1" y="0.0" width="357" height="22"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="360" height="22"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CH2-dn-jJH" userLabel="Separator Line" customClass="SMBoxView">
-                                                        <rect key="frame" x="0.0" y="18" width="357" height="2"/>
+                                                        <rect key="frame" x="0.0" y="18" width="360" height="2"/>
                                                     </customView>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vn5-LH-yLL" userLabel="Section Label">
                                                         <rect key="frame" x="6" y="2" width="350" height="14"/>
@@ -65,7 +64,7 @@
                                                 </connections>
                                             </tableCellView>
                                             <tableCellView identifier="SectionMenuItem" id="Dmz-Oo-NiZ" userLabel="Item Row View" customClass="SMSectionMenuItemView">
-                                                <rect key="frame" x="1" y="22" width="357" height="17"/>
+                                                <rect key="frame" x="0.0" y="22" width="360" height="17"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABn-bN-8yZ" userLabel="Item Label">

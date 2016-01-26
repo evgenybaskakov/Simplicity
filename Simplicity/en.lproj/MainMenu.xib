@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -634,7 +634,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="Simplicity" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371">
+        <window title="Simplicity" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371" customClass="SMWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="810" height="410"/>
@@ -643,7 +643,6 @@
             <view key="contentView" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="810" height="410"/>
                 <autoresizingMask key="autoresizingMask"/>
-                <animations/>
             </view>
             <toolbar key="toolbar" implicitIdentifier="058529D3-368B-4916-B8D8-92AEADE5A22F" autosavesConfiguration="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="Set-cj-RY4">
                 <allowedToolbarItems/>
@@ -652,6 +651,9 @@
                     <outlet property="delegate" destination="544" id="aO2-W2-6pj"/>
                 </connections>
             </toolbar>
+            <connections>
+                <outlet property="delegate" destination="494" id="fza-e2-WWs"/>
+            </connections>
             <point key="canvasLocation" x="250" y="362"/>
         </window>
         <customObject id="494" customClass="SMAppDelegate">
@@ -675,7 +677,6 @@
             <subviews>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w9B-OG-la5">
                     <rect key="frame" x="264" y="37" width="96" height="22"/>
-                    <animations/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" id="9v6-Rb-Gt2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -684,7 +685,6 @@
                 </searchField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q0Q-AH-U6l">
                     <rect key="frame" x="220" y="39" width="36" height="20"/>
-                    <animations/>
                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSTrashFull" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="HdO-M8-PfM">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -695,7 +695,6 @@
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PxP-a3-Jxq">
                     <rect key="frame" x="176" y="39" width="36" height="20"/>
-                    <animations/>
                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="new-message" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="0kP-o2-ebZ">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -705,7 +704,6 @@
                     </connections>
                 </button>
             </subviews>
-            <animations/>
             <point key="canvasLocation" x="180" y="0.0"/>
         </customView>
     </objects>

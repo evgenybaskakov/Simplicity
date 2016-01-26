@@ -81,4 +81,8 @@
 - (void)showNewAccountWindow;
 - (void)closeNewAccountWindow;
 
+@property (readonly, nonatomic) NSWindow *searchMenuWindow;
+
+- (void)closeSearchMenu;
+
 @end

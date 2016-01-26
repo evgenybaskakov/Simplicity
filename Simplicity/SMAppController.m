@@ -53,7 +53,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     Boolean _operationQueueShown;
     Boolean _inboxInitialized;
     BOOL _preferencesWindowShown;
-    NSWindow *_searchMenuWindow;
+    BOOL _searchMenuWindowShown;
 }
 
 - (void)awakeFromNib {
@@ -372,12 +372,14 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void) searchUsingToolbarSearchField:(id) sender {
+- (void)searchUsingToolbarSearchField:(id) sender {
     // This message is sent when the user strikes return in the search field in the toolbar
     NSString *searchString = [(NSTextField *)[_activeSearchItem view] stringValue];
 
     if(searchString.length == 0)
         return;
+    
+    _searchMenuWindowShown = NO;
     
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
@@ -394,6 +396,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     if(_searchMenuWindow == nil) {
         _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
         _searchMenuWindow.styleMask = NSBorderlessWindowMask;
+        _searchMenuWindow.level = NSFloatingWindowLevel;
         _searchMenuWindow.delegate = self;
         _searchMenuWindow.opaque = NO;
         _searchMenuWindow.backingType = NSBackingStoreBuffered;
@@ -412,16 +415,26 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     // Restore the search field cursor.
     // Also bring the focus back to the search field from the popover.
-    [_searchField becomeFirstResponder];
+    [mainWindow makeFirstResponder:_searchField];
     [[_searchField currentEditor] setSelectedRange:range];
+    
+    _searchMenuWindowShown = YES;
+}
+
+- (void)closeSearchMenu {
+    if(_searchMenuWindowShown) {
+        [_searchMenuWindow orderOut:self];
+
+        _searchMenuWindowShown = NO;
+    }
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
-    NSLog(@"%s: %@", __FUNCTION__, notification);
+    [self closeSearchMenu];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
-    NSLog(@"%s: %@", __FUNCTION__, notification);
+    [self closeSearchMenu];
 }
 
 - (Boolean)isSearchResultsViewHidden {

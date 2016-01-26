@@ -46,6 +46,26 @@
     }
 }
 
+- (void)windowDidResignMain:(NSNotification *)notification {
+    [_appController closeSearchMenu];
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+    [_appController closeSearchMenu];
+}
+
+- (void)windowWillStartLiveResize:(NSNotification *)notification {
+    [_appController closeSearchMenu];
+}
+
+- (void)windowWillBeginSheet:(NSNotification *)notification {
+    [_appController closeSearchMenu];
+}
+
+- (void)windowWillMove:(NSNotification *)notification {
+    [_appController closeSearchMenu];
+}
+
 + (NSURL*)appDataDir {
     NSURL* appSupportDir = nil;
     NSArray* appSupportDirs = [[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];

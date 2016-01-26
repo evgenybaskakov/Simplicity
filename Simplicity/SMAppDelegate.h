@@ -14,7 +14,7 @@
 @class SMPreferencesController;
 @class SMImageRegistry;
 
-@interface SMAppDelegate : NSObject <NSApplicationDelegate>
+@interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
 + (NSURL*)appDataDir;
 

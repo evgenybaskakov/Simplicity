@@ -6,6 +6,7 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMBoxView.h"
 #import "SMSectionMenuSeparatorView.h"
 #import "SMSectionMenuItemView.h"
@@ -95,8 +96,9 @@
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
-    if(row < 0) {
-        return 0;
+    if(row < 0 || row >= _itemsFlat.count) {
+        SM_LOG_WARNING(@"row %ld is out of bounds (item count %lu)", row, _itemsFlat.count);
+        return nil;
     }
     
     ItemInfo *item = _itemsFlat[row];
@@ -134,8 +136,9 @@
 }
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
-    if(row < 0) {
-        return 0;
+    if(row < 0 || row >= _itemsFlat.count) {
+        SM_LOG_WARNING(@"row %ld is out of bounds (item count %lu)", row, _itemsFlat.count);
+        return FALSE;
     }
     
     ItemInfo *item = _itemsFlat[row];

@@ -412,8 +412,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [_searchMenuWindow makeKeyAndOrderFront:self];
     
-    NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
-    [_searchMenuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchMenuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - _searchMenuWindow.frame.size.height - 3, _searchMenuWindow.frame.size.width, _searchMenuWindow.frame.size.height) display:YES];
+    [self adjustSearchMenuFrame];
     
     // Restore the search field cursor.
     // Also bring the focus back to the search field from the popover.
@@ -429,6 +428,16 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
         _searchMenuWindowShown = NO;
     }
+}
+
+- (void)adjustSearchMenuFrame {
+    CGFloat menuHeight = _searchMenuViewController.totalHeight;
+    menuHeight = MIN(menuHeight, 400);
+    
+    NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
+
+    NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
+    [_searchMenuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchMenuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchMenuWindow.frame.size.width, menuHeight) display:YES];
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {

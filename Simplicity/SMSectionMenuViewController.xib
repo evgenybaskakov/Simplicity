@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMSectionMenuViewController">
             <connections>
                 <outlet property="itemsTable" destination="f18-2i-22p" id="Wgu-5D-Rdr"/>
+                <outlet property="scrollView" destination="a9U-No-mF3" id="yAh-SZ-pvH"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -17,9 +18,9 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9U-No-mF3">
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9U-No-mF3">
                     <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
-                    <clipView key="contentView" ambiguous="YES" id="GpT-i3-BSa">
+                    <clipView key="contentView" id="GpT-i3-BSa">
                         <rect key="frame" x="0.0" y="0.0" width="360" height="236"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -102,6 +103,12 @@
                     </scroller>
                 </scrollView>
             </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="a9U-No-mF3" secondAttribute="trailing" id="IB3-TO-gUS"/>
+                <constraint firstItem="a9U-No-mF3" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="SeE-9K-Sqz"/>
+                <constraint firstItem="a9U-No-mF3" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="fCi-0p-pHg"/>
+                <constraint firstAttribute="bottom" secondItem="a9U-No-mF3" secondAttribute="bottom" id="uNo-ca-DgL"/>
+            </constraints>
             <point key="canvasLocation" x="375" y="324"/>
         </customView>
     </objects>

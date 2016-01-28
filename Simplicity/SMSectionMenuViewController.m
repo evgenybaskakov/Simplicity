@@ -37,10 +37,6 @@
 
 @end
 
-@interface SMSectionMenuViewController ()
-
-@end
-
 @implementation SMSectionMenuViewController {
     NSMutableArray<NSString*> *_sections;
     NSMutableArray<NSMutableArray<ItemInfo*>*> *_sectionItems;
@@ -180,6 +176,20 @@
             [item.target performSelector:item.action withObject:self afterDelay:0];
         }
     }
+}
+
+- (NSUInteger)totalHeight {
+    NSInteger viewHeight = 0;
+    
+    for(NSUInteger i = 0, n = [_itemsTable numberOfRows]; i < n; i++) {
+        viewHeight += [self tableView:_itemsTable heightOfRow:i];
+        
+        if(i+1 < n) {
+            viewHeight += _itemsTable.intercellSpacing.height;
+        }
+    }
+    
+    return viewHeight + 3;
 }
 
 @end

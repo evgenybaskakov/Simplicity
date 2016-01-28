@@ -84,5 +84,6 @@
 @property (readonly, nonatomic) NSWindow *searchMenuWindow;
 
 - (void)closeSearchMenu;
+- (void)adjustSearchMenuFrame;
 
 @end

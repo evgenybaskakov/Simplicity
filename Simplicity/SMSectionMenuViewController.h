@@ -12,6 +12,8 @@
 
 @property (weak) IBOutlet NSTableView *itemsTable;
 
+@property (readonly) NSUInteger totalHeight;
+
 - (void)addSection:(NSString*)sectionName;
 - (void)addItem:(NSString*)itemName section:(NSString*)sectionName target:(id)target action:(SEL)action;
 - (void)clearAllItems;

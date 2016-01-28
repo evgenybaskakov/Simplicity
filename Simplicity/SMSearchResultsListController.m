@@ -475,6 +475,7 @@ const char *const mcoOpKinds[] = {
     }
 
     [[[appDelegate appController] searchMenuViewController] reloadItems];
+    [[appDelegate appController] adjustSearchMenuFrame];
 }
 
 - (void)finishSuggestionSearch {

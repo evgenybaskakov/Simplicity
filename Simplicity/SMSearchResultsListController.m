@@ -480,10 +480,10 @@ const char *const mcoOpKinds[] = {
 
 - (void)finishSuggestionSearch {
     if(_subjectSearchResults.count == 0 && _contactSearchResults.count == 0) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [_suggestionResultsSubjects removeAllObjects];
+        [_suggestionResultsContacts removeAllObjects];
 
-        [[[appDelegate appController] searchMenuViewController] clearAllItems];
-        [[[appDelegate appController] searchMenuViewController] reloadItems];
+        [self updateSearchImapMessages:@[]];
     }
 }
 

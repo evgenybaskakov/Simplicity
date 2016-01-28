@@ -167,14 +167,15 @@
 }
 
 - (IBAction)cellAction:(id)sender {
-    if(_selectedItemIndex != -1) {
-        NSLog(@"click action: row %ld", _selectedItemIndex);
-        
+    if(_selectedItemIndex >= 0 && _selectedItemIndex < _itemsFlat.count) {
         ItemInfo *item = _itemsFlat[_selectedItemIndex];
         
         if(item.target != nil) {
             [item.target performSelector:item.action withObject:self afterDelay:0];
         }
+    }
+    else {
+        SM_LOG_ERROR(@"click action is beyond table bounds (row %ld item count %lu)", _selectedItemIndex, _itemsFlat.count);
     }
 }
 

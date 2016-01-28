@@ -408,7 +408,7 @@ const char *const mcoOpKinds[] = {
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addItem:_searchString section:section target:nil action:nil];
+    [[[appDelegate appController] searchMenuViewController] addItem:_searchString section:section target:self action:@selector(searchForContentsAction:)];
 
     //
     // Subjects.
@@ -484,6 +484,13 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] clearAllItems];
         [[[appDelegate appController] searchMenuViewController] reloadItems];
     }
+}
+
+#pragma mark Actions
+
+- (void)searchForContentsAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] closeSearchMenu];
 }
 
 @end

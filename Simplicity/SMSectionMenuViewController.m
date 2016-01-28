@@ -173,6 +173,12 @@
 - (IBAction)cellAction:(id)sender {
     if(_selectedItemIndex != -1) {
         NSLog(@"click action: row %ld", _selectedItemIndex);
+        
+        ItemInfo *item = _itemsFlat[_selectedItemIndex];
+        
+        if(item.target != nil) {
+            [item.target performSelector:item.action withObject:self afterDelay:0];
+        }
     }
 }
 

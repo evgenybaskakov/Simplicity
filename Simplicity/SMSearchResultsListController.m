@@ -182,6 +182,7 @@ const char *const mcoOpKinds[] = {
     [[[appDelegate appController] searchResultsListViewController] reloadData];
     
     [self clearPreviousSearch];
+    [self updateSearchImapMessages:@[]];
     
     // Load search results to the suggestions menu.
     

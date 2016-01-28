@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMStringUtils.h"
 #import "SMDatabase.h"
 #import "SMMessageEditorWindowController.h"
 #import "SMNewLabelWindowController.h"
@@ -152,10 +153,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    _searchMenuViewController = [[SMSectionMenuViewController alloc] initWithNibName:@"SMSectionMenuViewController" bundle:nil];
-    
-    //
-    
     [_instrumentPanelViewController.workView addSubview:mailboxAndSearchResultsView];
 
     [_instrumentPanelViewController.workView addConstraint:
@@ -242,6 +239,23 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     //
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList) name:@"FolderListUpdated" object:nil];
+    
+    //
+    
+    _searchMenuViewController = [[SMSectionMenuViewController alloc] initWithNibName:@"SMSectionMenuViewController" bundle:nil];
+    
+    //
+    
+    _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
+    _searchMenuWindow.styleMask = NSBorderlessWindowMask;
+    _searchMenuWindow.level = NSFloatingWindowLevel;
+    _searchMenuWindow.delegate = self;
+    _searchMenuWindow.opaque = NO;
+    _searchMenuWindow.backingType = NSBackingStoreBuffered;
+    _searchMenuWindow.backgroundColor = [NSColor clearColor];
+    _searchMenuWindow.contentView.wantsLayer = YES;
+    _searchMenuWindow.contentView.layer.masksToBounds = YES;
+    _searchMenuWindow.contentView.layer.cornerRadius = 5;
 }
 
 - (void)initOpExecutor {
@@ -376,10 +390,15 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     // This message is sent when the user strikes return in the search field in the toolbar
     NSString *searchString = [(NSTextField *)[_activeSearchItem view] stringValue];
 
-    if(searchString.length == 0)
+    if([[SMStringUtils trimString:searchString] length] == 0) {
+        [self closeSearchMenu];
         return;
+    }
     
     _searchMenuWindowShown = NO;
+    
+    // Remove previous search results from the suggestions menu.
+    [_searchMenuViewController clearAllItems];
     
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
@@ -388,24 +407,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [self showSearchResultsView];
     
-    // Remove previous search results from the suggestions menu.
-    [_searchMenuViewController clearAllItems];
-    
     NSRange range = [[_searchField currentEditor] selectedRange];
-    
-    if(_searchMenuWindow == nil) {
-        _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
-        _searchMenuWindow.styleMask = NSBorderlessWindowMask;
-        _searchMenuWindow.level = NSFloatingWindowLevel;
-        _searchMenuWindow.delegate = self;
-        _searchMenuWindow.opaque = NO;
-        _searchMenuWindow.backingType = NSBackingStoreBuffered;
-        _searchMenuWindow.backgroundColor = [NSColor clearColor];
-        _searchMenuWindow.contentView.wantsLayer = YES;
-        _searchMenuWindow.contentView.layer.masksToBounds = YES;
-        _searchMenuWindow.contentView.layer.cornerRadius = 5;
-    }
-    
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
     
     [_searchMenuWindow makeKeyAndOrderFront:self];

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMStringUtils.h"
 #import "SMSearchDescriptor.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
@@ -65,7 +66,6 @@ const char *const mcoOpKinds[] = {
 @end
 
 @implementation SearchOpInfo
-
 - (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(MCOIMAPSearchKind)kind {
     self = [super init];
     
@@ -76,12 +76,39 @@ const char *const mcoOpKinds[] = {
     
     return self;
 }
+@end
 
+typedef NS_ENUM(NSUInteger, SearchTokenKind) {
+    SearchTokenKind_To,
+    SearchTokenKind_From,
+    SearchTokenKind_Cc,
+    SearchTokenKind_Subject,
+    SearchTokenKind_Contents,
+};
+
+@interface SearchToken : NSObject
+@property (readonly) SearchTokenKind kind;
+@property (readonly) NSString *string;
+@end
+
+@implementation SearchToken
+- (id)initWithKind:(SearchTokenKind)kind string:(NSString*)string {
+    self = [super init];
+    
+    if(self) {
+        SM_LOG_INFO(@"kind %u, string %@", (unsigned int)kind, string);
+                    
+        _kind = kind;
+        _string = string;
+    }
+    
+    return self;
+}
 @end
 
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
-    NSString *_searchString;
+    NSArray<SearchToken*> *_searchTokens;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
@@ -122,10 +149,125 @@ const char *const mcoOpKinds[] = {
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
 
-- (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
-    SM_LOG_DEBUG(@"searching for string '%@'", searchString);
+- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString {
+    NSMutableArray<SearchToken*> *tokens = [NSMutableArray array];
     
-    _searchString = searchString;
+    NSArray<NSString*> *expressions = @[
+        @"to:",
+        @"from:",
+        @"cc:",
+        @"subject:",
+        @"contains:"
+    ];
+    
+    SearchTokenKind exprKinds[] = {
+        SearchTokenKind_To,
+        SearchTokenKind_From,
+        SearchTokenKind_Cc,
+        SearchTokenKind_Subject,
+        SearchTokenKind_Contents
+    };
+    
+    NSUInteger i = 0, maxExprOffset = 0;
+    for(NSString *expr in expressions) {
+        NSRange searchRange = NSMakeRange(0, searchString.length);
+        
+        while(searchRange.location < searchString.length) {
+            NSRange r = [searchString rangeOfString:expr options:NSCaseInsensitiveSearch range:searchRange];
+            
+            if(r.location == NSNotFound) {
+                break;
+            }
+            
+            if(r.location == 0 || !isalnum([searchString characterAtIndex:r.location-1])) {
+                r.location += expr.length;
+                
+                if(r.location < searchString.length) {
+                    while(r.location < searchString.length && isspace([searchString characterAtIndex:r.location])) {
+                        r.location++;
+                    }
+
+                    if(r.location < searchString.length) {
+                        NSValue *rangeValue = nil;
+                        
+                        if([searchString characterAtIndex:r.location] == '(') {
+                            NSRange rr = [searchString rangeOfString:@")" options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
+
+                            if(rr.location != NSNotFound) {
+                                if(r.location + 1 < rr.location) {
+                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location + 1, rr.location - r.location - 1)];
+                                    r.location = rr.location + 1;
+                                }
+                            }
+                            else {
+                                if(r.location + 1 < searchString.length) {
+                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location + 1, searchString.length - r.location - 1)];
+                                    r.location = searchString.length;
+                                }
+                            }
+                        }
+                        else {
+                            NSRange rr = [searchString rangeOfString:@" " options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
+
+                            if(rr.location != NSNotFound) {
+                                if(r.location < rr.location) {
+                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location, rr.location - r.location)];
+                                    r.location = rr.location + 1;
+                                }
+                            }
+                            else {
+                                if(r.location < searchString.length) {
+                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location, searchString.length - r.location)];
+                                    r.location = searchString.length;
+                                }
+                            }
+                        }
+                        
+                        if(rangeValue != nil) {
+                            NSRange range = [rangeValue rangeValue];
+                            maxExprOffset = MAX(maxExprOffset, r.location);
+                            
+                            [tokens addObject:[[SearchToken alloc] initWithKind:exprKinds[i] string:[searchString substringWithRange:range]]];
+                        }
+                        else {
+                            r.location++;
+                        }
+                    }
+                }
+                
+                NSAssert(searchRange.location < r.location, @"expr location %lu not increasing", r.location);
+                searchRange.location = r.location;
+            }
+            else {
+                searchRange.location++;
+            }
+
+            if(r.location >= searchString.length) {
+                break;
+            }
+            
+            searchRange.length = searchString.length - searchRange.location;
+        }
+        
+        if(i + 1 == expressions.count) {
+            if(maxExprOffset < searchString.length) {
+                NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
+                [tokens addObject:[[SearchToken alloc] initWithKind:SearchTokenKind_Contents string:[searchString substringWithRange:range]]];
+            }
+        }
+        
+        i++;
+    }
+    
+    return tokens;
+}
+
+- (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
+    searchString = [SMStringUtils trimString:searchString];
+    SM_LOG_DEBUG(@"searching for string '%@'", searchString);
+
+    _searchTokens = [self parseSearchString:searchString];
+    NSAssert(_searchTokens.count != 0, @"no search tokens");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -401,6 +543,8 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
+    NSAssert(_searchTokens.count > 0, @"no search tokens");
+    
     //
     // Contents.
     //
@@ -408,7 +552,7 @@ const char *const mcoOpKinds[] = {
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addItem:_searchString section:section target:self action:@selector(searchForContentsAction:)];
+    [[[appDelegate appController] searchMenuViewController] addItem:_searchTokens.lastObject.string section:section target:self action:@selector(searchForContentsAction:)];
 
     //
     // Subjects.
@@ -450,7 +594,7 @@ const char *const mcoOpKinds[] = {
             for(MCOAddress *address in addresses) {
                 NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
-                if([[nonEncodedRFC822String lowercaseString] containsString:[_searchString lowercaseString]]) {
+                if([[nonEncodedRFC822String lowercaseString] containsString:[_searchTokens.lastObject.string lowercaseString]]) {
                     NSString *displayContactAddress = [self displayAddress:nonEncodedRFC822String];
                 
                     SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);

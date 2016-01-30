@@ -431,8 +431,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)adjustSearchMenuFrame {
-    NSAssert(_searchMenuViewController.itemsTable.numberOfRows > 0, @"no rows in the search menu");
-    
     CGFloat menuHeight = _searchMenuViewController.totalHeight;
     menuHeight = MIN(menuHeight, 400);
     

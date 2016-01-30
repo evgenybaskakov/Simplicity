@@ -37,6 +37,10 @@
 
 @end
 
+@interface SMSectionMenuViewController ()
+@property (weak) IBOutlet NSTableView *itemsTable;
+@end
+
 @implementation SMSectionMenuViewController {
     NSMutableArray<NSString*> *_sections;
     NSMutableArray<NSMutableArray<ItemInfo*>*> *_sectionItems;
@@ -180,6 +184,8 @@
 }
 
 - (NSUInteger)totalHeight {
+    NSAssert(_itemsTable.numberOfRows > 0, @"no rows in the search menu");
+    
     NSInteger viewHeight = 0;
     
     for(NSUInteger i = 0, n = [_itemsTable numberOfRows]; i < n; i++) {
@@ -191,6 +197,17 @@
     }
     
     return viewHeight + 3;
+}
+
+- (NSString*)selectedItem {
+    NSInteger selectedRow = _itemsTable.selectedRow;
+    
+    if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
+        return _itemsFlat[selectedRow].label;
+    }
+    else {
+        return nil;
+    }
 }
 
 @end

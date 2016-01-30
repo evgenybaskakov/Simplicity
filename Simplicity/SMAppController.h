@@ -86,4 +86,6 @@
 - (void)closeSearchMenu;
 - (void)adjustSearchMenuFrame;
 
+- (void)searchUsingToolbarSearchField:(id)sender;
+
 @end

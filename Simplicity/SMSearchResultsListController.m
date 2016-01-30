@@ -108,6 +108,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
 
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
+    NSString *_originalSearchString;
     NSArray<SearchToken*> *_searchTokens;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
@@ -268,6 +269,8 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
 
     _searchTokens = [self parseSearchString:searchString];
     NSAssert(_searchTokens.count != 0, @"no search tokens");
+
+    _originalSearchString = searchString;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -614,7 +617,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         for(NSString *contact in sortedContacts) {
-            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:nil action:nil];
+            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
         }
     }
 
@@ -636,6 +639,18 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
 - (void)searchForContentsAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] closeSearchMenu];
+}
+
+- (void)searchForContactAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
+    
+    SM_LOG_INFO(@"%@", searchItem);
+    
+    NSString *newSearchString = [NSString stringWithFormat:@"from:(%@) %@", searchItem, _originalSearchString];
+    [[[appDelegate appController] searchField] setStringValue:newSearchString];
+
+    [[appDelegate appController] searchUsingToolbarSearchField:self];
 }
 
 @end

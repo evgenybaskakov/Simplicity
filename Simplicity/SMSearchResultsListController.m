@@ -580,7 +580,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         for(NSString *subject in sortedSubjects) {
-            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:nil action:nil];
+            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
         }
     }
 
@@ -650,6 +650,18 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     NSString *newSearchString = [NSString stringWithFormat:@"from:(%@) %@", searchItem, _originalSearchString];
     [[[appDelegate appController] searchField] setStringValue:newSearchString];
 
+    [[appDelegate appController] searchUsingToolbarSearchField:self];
+}
+
+- (void)searchForSubjectAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
+    
+    SM_LOG_INFO(@"%@", searchItem);
+    
+    NSString *newSearchString = [NSString stringWithFormat:@"subject:(%@) %@", searchItem, _originalSearchString];
+    [[[appDelegate appController] searchField] setStringValue:newSearchString];
+    
     [[appDelegate appController] searchUsingToolbarSearchField:self];
 }
 

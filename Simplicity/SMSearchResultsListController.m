@@ -609,12 +609,10 @@ const char *const mcoOpKinds[] = {
     // Contents.
     //
 
-    if(_mainSearchPart != nil) {
-        NSString *section = @"Contents";
-        
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContentsAction:)];
-    }
+    NSString *section = @"Contents";
+    
+    [[[appDelegate appController] searchMenuViewController] addSection:section];
+    [[[appDelegate appController] searchMenuViewController] addItem:(_mainSearchPart != nil? _mainSearchPart : @"??? TODO") section:section target:self action:@selector(searchForContentsAction:)];
     
     //
     // Subjects.
@@ -656,7 +654,7 @@ const char *const mcoOpKinds[] = {
             for(MCOAddress *address in addresses) {
                 NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
-                if([[nonEncodedRFC822String lowercaseString] containsString:[_searchTokens.lastObject.string lowercaseString]]) {
+                if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
                     NSString *displayContactAddress = [self displayAddress:nonEncodedRFC822String];
                 
                     SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);

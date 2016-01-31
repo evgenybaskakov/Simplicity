@@ -21,6 +21,14 @@
 #import "SMSearchResultsListController.h"
 #import "SMSectionMenuViewController.h"
 
+typedef NS_ENUM(NSUInteger, SearchExpressionKind) {
+    SearchExpressionKind_To,
+    SearchExpressionKind_From,
+    SearchExpressionKind_Cc,
+    SearchExpressionKind_Subject,
+    SearchExpressionKind_Contents,
+};
+
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
     "MCOIMAPSearchKindNone",
@@ -61,12 +69,12 @@ const char *const mcoOpKinds[] = {
 };
 
 @interface SearchOpInfo : NSObject
-@property (readonly) MCOIMAPSearchKind kind; // TODO: create our own type
+@property (readonly) SearchExpressionKind kind;
 @property MCOIMAPBaseOperation *op;
 @end
 
 @implementation SearchOpInfo
-- (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(MCOIMAPSearchKind)kind {
+- (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(SearchExpressionKind)kind {
     self = [super init];
     
     if(self) {
@@ -78,21 +86,13 @@ const char *const mcoOpKinds[] = {
 }
 @end
 
-typedef NS_ENUM(NSUInteger, SearchTokenKind) {
-    SearchTokenKind_To,
-    SearchTokenKind_From,
-    SearchTokenKind_Cc,
-    SearchTokenKind_Subject,
-    SearchTokenKind_Contents,
-};
-
 @interface SearchToken : NSObject
-@property (readonly) SearchTokenKind kind;
+@property (readonly) SearchExpressionKind kind;
 @property (readonly) NSString *string;
 @end
 
 @implementation SearchToken
-- (id)initWithKind:(SearchTokenKind)kind string:(NSString*)string {
+- (id)initWithKind:(SearchExpressionKind)kind string:(NSString*)string {
     self = [super init];
     
     if(self) {
@@ -110,6 +110,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     NSUInteger _searchId;
     NSString *_originalSearchString;
     NSArray<SearchToken*> *_searchTokens;
+    SearchToken *_mainSearchToken;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
@@ -150,7 +151,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
 
-- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString {
+- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString mainToken:(SearchToken**)mainToken {
     NSMutableArray<SearchToken*> *tokens = [NSMutableArray array];
     
     NSArray<NSString*> *expressions = @[
@@ -161,12 +162,12 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
         @"contains:"
     ];
     
-    SearchTokenKind exprKinds[] = {
-        SearchTokenKind_To,
-        SearchTokenKind_From,
-        SearchTokenKind_Cc,
-        SearchTokenKind_Subject,
-        SearchTokenKind_Contents
+    SearchExpressionKind exprKinds[] = {
+        SearchExpressionKind_To,
+        SearchExpressionKind_From,
+        SearchExpressionKind_Cc,
+        SearchExpressionKind_Subject,
+        SearchExpressionKind_Contents
     };
     
     NSUInteger i = 0, maxExprOffset = 0;
@@ -250,16 +251,17 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
             searchRange.length = searchString.length - searchRange.location;
         }
         
-        if(i + 1 == expressions.count) {
-            if(maxExprOffset < searchString.length) {
-                NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
-                [tokens addObject:[[SearchToken alloc] initWithKind:SearchTokenKind_Contents string:[searchString substringWithRange:range]]];
-            }
-        }
-        
         i++;
     }
     
+    if(maxExprOffset < searchString.length) {
+        NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
+        *mainToken = [[SearchToken alloc] initWithKind:SearchExpressionKind_Contents string:[searchString substringWithRange:range]];
+    }
+    else {
+        *mainToken = nil;
+    }
+
     return tokens;
 }
 
@@ -267,9 +269,11 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
 
-    _searchTokens = [self parseSearchString:searchString];
-    NSAssert(_searchTokens.count != 0, @"no search tokens");
-
+    SearchToken *mainToken;
+    _searchTokens = [self parseSearchString:searchString mainToken:&mainToken];
+    NSAssert(_searchTokens.count != 0 || mainToken != nil, @"no search tokens");
+    
+    _mainSearchToken = mainToken;
     _originalSearchString = searchString;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -331,55 +335,63 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     
     // Load search results to the suggestions menu.
     
-    MCOIMAPSearchKind kinds[] = {
-        MCOIMAPSearchKindFrom,
-        MCOIMAPSearchKindTo,
-        MCOIMAPSearchKindCc,
-        MCOIMAPSearchKindSubject};
-    
-    for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
-        MCOIMAPSearchKind kind = kinds[i];
-        MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:kind searchString:searchString];
-
-        op.urgent = YES;
+    if(_mainSearchToken != nil) {
+        SearchExpressionKind kinds[] = {
+            SearchExpressionKind_To,
+            SearchExpressionKind_From,
+            SearchExpressionKind_Cc,
+            SearchExpressionKind_Subject
+        };
         
-        [op start:^(NSError *error, MCOIndexSet *uids) {
-            SearchOpInfo *opInfo = _suggestionSearchOps[i];
-        
-            if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
-                
-                if(uids.count > 0) {
-                    [self updateSuggestionSearchResults:uids kind:opInfo.kind];
+        for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
+            SearchExpressionKind kind = kinds[i];
 
-                    MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
+            MCOIMAPSearchExpression *searchExpression = [self buildSearchExpression:_searchTokens mainToken:_mainSearchToken searchKind:kind];
+            MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
 
-                    op.urgent = YES;
+            op.urgent = YES;
+            
+            [op start:^(NSError *error, MCOIndexSet *uids) {
+                SearchOpInfo *opInfo = _suggestionSearchOps[i];
+            
+                if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
+                    SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
+                    
+                    if(uids.count > 0) {
+                        [self updateSuggestionSearchResults:uids kind:opInfo.kind];
 
-                    [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
-                        if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                            [self updateSearchImapMessages:imapMessages];
-                            [self checkSuggestionSearchCompletion];
-                        }
-                        else {
-                            SM_LOG_INFO(@"previous search aborted");
-                        }
-                    }];
+                        MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
 
-                    opInfo.op = op;
+                        op.urgent = YES;
+
+                        [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
+                            if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
+                                [self updateSearchImapMessages:imapMessages];
+                                [self checkSuggestionSearchCompletion];
+                            }
+                            else {
+                                SM_LOG_INFO(@"previous search aborted");
+                            }
+                        }];
+
+                        opInfo.op = op;
+                    }
+                    else {
+                        [self checkSuggestionSearchCompletion];
+                    }
                 }
                 else {
-                    [self checkSuggestionSearchCompletion];
+                    SM_LOG_INFO(@"previous search aborted");
                 }
-            }
-            else {
-                SM_LOG_INFO(@"previous search aborted");
-            }
-        }];
+            }];
 
-        [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
+            [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
+        }
     }
-
+    else {
+        // TODO
+    }
+    
     _completedSuggestionSearchOps = 0;
     
     // Load contents search results to the search local folder.
@@ -388,8 +400,7 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
         [_contentSearchOp.op cancel];
     }
     
-    MCOIMAPSearchKind contentSearchKind = MCOIMAPSearchKindContent;
-    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:contentSearchKind searchString:searchString];
+    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:MCOIMAPSearchKindContent searchString:searchString];
     
     op.urgent = NO;
     
@@ -411,7 +422,53 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
         }
     }];
     
-    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:contentSearchKind];
+    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
+}
+
+- (MCOIMAPSearchExpression*)mapTokenToSearchExpression:(SearchToken*)token {
+    switch(token.kind) {
+        case SearchExpressionKind_From:
+            return [MCOIMAPSearchExpression searchFrom:token.string];
+        case SearchExpressionKind_To:
+            return [MCOIMAPSearchExpression searchTo:token.string];
+        case SearchExpressionKind_Cc:
+            return [MCOIMAPSearchExpression searchCc:token.string];
+        case SearchExpressionKind_Subject:
+            return [MCOIMAPSearchExpression searchSubject:token.string];
+        case SearchExpressionKind_Contents:
+            return [MCOIMAPSearchExpression searchContent:token.string];
+        default:
+            NSAssert(nil, @"Search kind %lu not supported", token.kind);
+            return nil;
+    }
+}
+
+- (MCOIMAPSearchExpression*)buildSearchExpression:(NSArray<SearchToken*>*)tokens mainToken:(SearchToken*)mainToken searchKind:(SearchExpressionKind)searchKind {
+    MCOIMAPSearchExpression *expression = nil;
+    
+    for(NSUInteger i = 0; i < tokens.count; i++) {
+        MCOIMAPSearchExpression *subExpression = [self mapTokenToSearchExpression:tokens[i]];
+        
+        if(expression == nil) {
+            expression = subExpression;
+        }
+        else {
+            expression = [MCOIMAPSearchExpression searchAnd:expression other:subExpression];
+        }
+    }
+    
+    if(mainToken != nil) {
+        MCOIMAPSearchExpression *subExpression = [self mapTokenToSearchExpression:mainToken];
+        
+        if(expression == nil) {
+            expression = subExpression;
+        }
+        else {
+            expression = [MCOIMAPSearchExpression searchAnd:expression other:subExpression];
+        }
+    }
+    
+    return expression;
 }
 
 - (void)checkSuggestionSearchCompletion {
@@ -422,15 +479,15 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     }
 }
 
-- (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(MCOIMAPSearchKind)kind {
+- (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(SearchExpressionKind)kind {
     switch(kind) {
-        case MCOIMAPSearchKindFrom:
-        case MCOIMAPSearchKindTo:
-        case MCOIMAPSearchKindCc:
+        case SearchExpressionKind_From:
+        case SearchExpressionKind_To:
+        case SearchExpressionKind_Cc:
             [_contactSearchResults addIndexSet:uids];
             break;
             
-        case MCOIMAPSearchKindSubject:
+        case SearchExpressionKind_Subject:
             [_subjectSearchResults addIndexSet:uids];
             break;
             
@@ -546,17 +603,19 @@ typedef NS_ENUM(NSUInteger, SearchTokenKind) {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
-    NSAssert(_searchTokens.count > 0, @"no search tokens");
+    NSAssert(_searchTokens.count > 0 || _mainSearchToken != nil, @"no search tokens");
     
     //
     // Contents.
     //
 
-    NSString *section = @"Contents";
+    if(_mainSearchToken != nil) {
+        NSString *section = @"Contents";
+        
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
+        [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchToken.string section:section target:self action:@selector(searchForContentsAction:)];
+    }
     
-    [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addItem:_searchTokens.lastObject.string section:section target:self action:@selector(searchForContentsAction:)];
-
     //
     // Subjects.
     //

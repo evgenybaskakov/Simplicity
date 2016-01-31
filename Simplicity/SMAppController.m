@@ -250,12 +250,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchMenuWindow.styleMask = NSBorderlessWindowMask;
     _searchMenuWindow.level = NSFloatingWindowLevel;
     _searchMenuWindow.delegate = self;
-    _searchMenuWindow.opaque = NO;
-    _searchMenuWindow.backingType = NSBackingStoreBuffered;
     _searchMenuWindow.backgroundColor = [NSColor clearColor];
-    _searchMenuWindow.contentView.wantsLayer = YES;
-    _searchMenuWindow.contentView.layer.masksToBounds = YES;
-    _searchMenuWindow.contentView.layer.cornerRadius = 5;
 }
 
 - (void)initOpExecutor {

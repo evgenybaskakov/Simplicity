@@ -54,6 +54,26 @@
     _sections = [NSMutableArray array];
     _sectionItems = [NSMutableArray array];
     _itemsFlat = [NSMutableArray array];
+    
+    _itemsTable.backgroundColor = [NSColor clearColor];
+    
+    NSVisualEffectView *view = (NSVisualEffectView*)self.view;
+    
+    view.state = NSVisualEffectStateActive;
+    view.material = NSVisualEffectMaterialLight;
+    view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    
+    CGFloat cornerRadius = 5;
+    
+    NSRect bounds = self.view.bounds;
+    view.maskImage =
+    [NSImage imageWithSize:bounds.size flipped:YES drawingHandler:^BOOL(NSRect dstRect) {
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:bounds xRadius:cornerRadius yRadius:cornerRadius];
+        [path fill];
+        return YES;
+    }];
+    
+    view.maskImage.capInsets = NSEdgeInsetsMake(cornerRadius, cornerRadius, cornerRadius, cornerRadius);
 }
 
 - (void)addSection:(NSString*)sectionName {
@@ -106,12 +126,12 @@
     if(item.separator) {
         SMSectionMenuSeparatorView *separatorView = [tableView makeViewWithIdentifier:@"SectionMenuSeparator" owner:self];
         
-        SMBoxView *separatorBox = (SMBoxView*)separatorView.separatorLine;
+        SMBoxView *separatorBox = separatorView.separatorLine;
         
         separatorBox.drawTop = YES;
         separatorBox.drawBottom = YES;
-        separatorBox.fillColor = [NSColor colorWithWhite:0.9 alpha:1.0];
-        separatorBox.boxColor = [NSColor colorWithWhite:0.9 alpha:1.0];
+        separatorBox.fillColor = [NSColor colorWithWhite:0.75 alpha:1.0];
+        separatorBox.boxColor = [NSColor colorWithWhite:0.75 alpha:1.0];
         
         separatorView.textField.stringValue = item.label;
         

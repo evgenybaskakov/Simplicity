@@ -8,8 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMBoxView;
+
 @interface SMSectionMenuSeparatorView : NSTableCellView
 
-@property IBOutlet NSView *separatorLine;
+@property IBOutlet SMBoxView *separatorLine;
 
 @end

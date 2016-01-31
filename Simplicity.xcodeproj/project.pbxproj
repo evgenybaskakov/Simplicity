@@ -206,6 +206,9 @@
 		80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */; };
 		80D1AAE91C4B7D170076DDFA /* SMSearchFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */; };
 		80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */; };
+		80D547D31C5EA2D000E903C7 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D547D01C5EA2D000E903C7 /* Quartz.framework */; };
+		80D547D41C5EA2D000E903C7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D547D11C5EA2D000E903C7 /* QuartzCore.framework */; };
+		80D547D51C5EA2D000E903C7 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80D547D21C5EA2D000E903C7 /* QuickLook.framework */; };
 		80D8ECC71B1EC3F5002C70DA /* SMOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */; };
 		80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */; };
 		80E3F2341BE724BE0024AB6B /* SMConnectionCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E3F2331BE724BE0024AB6B /* SMConnectionCheck.m */; };
@@ -610,6 +613,9 @@
 		80D1AAE71C4B7D170076DDFA /* SMSearchFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchFolder.h; sourceTree = "<group>"; };
 		80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchFolder.m; sourceTree = "<group>"; };
 		80D443741B5F51C000D0FC26 /* full_recycle_bin-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "full_recycle_bin-128.png"; sourceTree = "<group>"; };
+		80D547D01C5EA2D000E903C7 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		80D547D11C5EA2D000E903C7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		80D547D21C5EA2D000E903C7 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueue.h; sourceTree = "<group>"; };
 		80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueue.m; sourceTree = "<group>"; };
 		80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationExecutor.h; sourceTree = "<group>"; };
@@ -639,6 +645,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80D547D31C5EA2D000E903C7 /* Quartz.framework in Frameworks */,
+				80D547D41C5EA2D000E903C7 /* QuartzCore.framework in Frameworks */,
+				80D547D51C5EA2D000E903C7 /* QuickLook.framework in Frameworks */,
 				803A29A81C01839E00FF8D7C /* AddressBook.framework in Frameworks */,
 				80E6574E1B182B2B00A0AA81 /* libMailCore.a in Frameworks */,
 				006A5DD517F5EC50004D6D78 /* libsqlite3.dylib in Frameworks */,
@@ -675,6 +684,9 @@
 		0002A09017D1B1E000EA4AFF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80D547D01C5EA2D000E903C7 /* Quartz.framework */,
+				80D547D11C5EA2D000E903C7 /* QuartzCore.framework */,
+				80D547D21C5EA2D000E903C7 /* QuickLook.framework */,
 				803A29A71C01839E00FF8D7C /* AddressBook.framework */,
 				80E657331B182AF700A0AA81 /* mailcore2.xcodeproj */,
 				0067092E1A99989900C0C9CC /* CFNetwork.framework */,

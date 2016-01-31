@@ -425,7 +425,7 @@ const char *const mcoOpKinds[] = {
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
 }
 
-- (MCOIMAPSearchExpression*)mapSearchPartToExpression:(NSString*)string kind:(SearchExpressionKind)kind {
+- (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {
     switch(kind) {
         case SearchExpressionKind_From:
             return [MCOIMAPSearchExpression searchFrom:string];
@@ -443,11 +443,29 @@ const char *const mcoOpKinds[] = {
     }
 }
 
+- (NSString*)mapSearchPartToStringExpression:(NSString*)string kind:(SearchExpressionKind)kind {
+    switch(kind) {
+        case SearchExpressionKind_From:
+            return [NSString stringWithFormat:@"from:(%@)", string];
+        case SearchExpressionKind_To:
+            return [NSString stringWithFormat:@"to:(%@)", string];
+        case SearchExpressionKind_Cc:
+            return [NSString stringWithFormat:@"cc:(%@)", string];
+        case SearchExpressionKind_Subject:
+            return [NSString stringWithFormat:@"subject:(%@)", string];
+        case SearchExpressionKind_Contents:
+            return [NSString stringWithFormat:@"contains:(%@)", string];
+        default:
+            NSAssert(nil, @"Search kind %lu not supported", kind);
+            return nil;
+    }
+}
+
 - (MCOIMAPSearchExpression*)buildSearchExpression:(NSArray<SearchToken*>*)tokens mainSearchPart:(NSString*)mainSearchPart searchKind:(SearchExpressionKind)searchKind {
     MCOIMAPSearchExpression *expression = nil;
     
     for(NSUInteger i = 0; i < tokens.count; i++) {
-        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToExpression:tokens[i].string kind:tokens[i].kind];
+        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToMCOExpression:tokens[i].string kind:tokens[i].kind];
         
         if(expression == nil) {
             expression = subExpression;
@@ -458,7 +476,7 @@ const char *const mcoOpKinds[] = {
     }
     
     if(mainSearchPart != nil) {
-        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToExpression:mainSearchPart kind:searchKind];
+        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToMCOExpression:mainSearchPart kind:searchKind];
         
         if(expression == nil) {
             expression = subExpression;
@@ -691,6 +709,40 @@ const char *const mcoOpKinds[] = {
     }
 }
 
+- (NSString*)buildSearchString:(NSArray<SearchToken*>*)tokens {
+    NSString *string = @"";
+    
+    for(NSUInteger i = 0; i < tokens.count; i++) {
+        SearchToken *token = tokens[i];
+        string = [string stringByAppendingString:[self mapSearchPartToStringExpression:token.string kind:token.kind]];
+        
+        if(i + 1 < tokens.count) {
+            string = [string stringByAppendingString:@" "];
+        }
+    }
+    
+    return string;
+}
+
+- (void)submitNewSearchRequest:(SearchExpressionKind)kind {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
+    NSAssert(searchItem != nil && searchItem.length > 0, @"empty searchItem");
+    
+    NSString *newSearchString = @"";
+    
+    if(_searchTokens.count > 0) {
+        newSearchString = [self buildSearchString:_searchTokens];
+        newSearchString = [newSearchString stringByAppendingString:@" "];
+    }
+    
+    newSearchString = [newSearchString stringByAppendingString:[self mapSearchPartToStringExpression:searchItem kind:kind]];
+    newSearchString = [newSearchString stringByAppendingString:@" "];
+    
+    [[[appDelegate appController] searchField] setStringValue:newSearchString];
+    [[appDelegate appController] searchUsingToolbarSearchField:self];
+}
+
 #pragma mark Actions
 
 - (void)searchForContentsAction:(id)sender {
@@ -699,27 +751,11 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)searchForContactAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
-    
-    SM_LOG_INFO(@"%@", searchItem);
-    
-    NSString *newSearchString = [NSString stringWithFormat:@"from:(%@) %@", searchItem, _originalSearchString];
-    [[[appDelegate appController] searchField] setStringValue:newSearchString];
-
-    [[appDelegate appController] searchUsingToolbarSearchField:self];
+    [self submitNewSearchRequest:SearchExpressionKind_From];
 }
 
 - (void)searchForSubjectAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
-    
-    SM_LOG_INFO(@"%@", searchItem);
-    
-    NSString *newSearchString = [NSString stringWithFormat:@"subject:(%@) %@", searchItem, _originalSearchString];
-    [[[appDelegate appController] searchField] setStringValue:newSearchString];
-    
-    [[appDelegate appController] searchUsingToolbarSearchField:self];
+    [self submitNewSearchRequest:SearchExpressionKind_Subject];
 }
 
 @end

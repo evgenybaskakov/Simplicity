@@ -110,7 +110,7 @@ const char *const mcoOpKinds[] = {
     NSUInteger _searchId;
     NSString *_originalSearchString;
     NSArray<SearchToken*> *_searchTokens;
-    SearchToken *_mainSearchToken;
+    NSString *_mainSearchPart;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
@@ -151,7 +151,7 @@ const char *const mcoOpKinds[] = {
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
 
-- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString mainToken:(SearchToken**)mainToken {
+- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString mainSearchPart:(NSString**)mainSearchPart {
     NSMutableArray<SearchToken*> *tokens = [NSMutableArray array];
     
     NSArray<NSString*> *expressions = @[
@@ -256,10 +256,10 @@ const char *const mcoOpKinds[] = {
     
     if(maxExprOffset < searchString.length) {
         NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
-        *mainToken = [[SearchToken alloc] initWithKind:SearchExpressionKind_Contents string:[searchString substringWithRange:range]];
+        *mainSearchPart = [searchString substringWithRange:range];
     }
     else {
-        *mainToken = nil;
+        *mainSearchPart = nil;
     }
 
     return tokens;
@@ -269,11 +269,11 @@ const char *const mcoOpKinds[] = {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
 
-    SearchToken *mainToken;
-    _searchTokens = [self parseSearchString:searchString mainToken:&mainToken];
-    NSAssert(_searchTokens.count != 0 || mainToken != nil, @"no search tokens");
+    NSString *mainSearchPart;
+    _searchTokens = [self parseSearchString:searchString mainSearchPart:&mainSearchPart];
+    NSAssert(_searchTokens.count != 0 || mainSearchPart != nil, @"no search tokens");
     
-    _mainSearchToken = mainToken;
+    _mainSearchPart = mainSearchPart;
     _originalSearchString = searchString;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -335,7 +335,7 @@ const char *const mcoOpKinds[] = {
     
     // Load search results to the suggestions menu.
     
-    if(_mainSearchToken != nil) {
+    if(_mainSearchPart != nil) {
         SearchExpressionKind kinds[] = {
             SearchExpressionKind_To,
             SearchExpressionKind_From,
@@ -346,7 +346,7 @@ const char *const mcoOpKinds[] = {
         for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
             SearchExpressionKind kind = kinds[i];
 
-            MCOIMAPSearchExpression *searchExpression = [self buildSearchExpression:_searchTokens mainToken:_mainSearchToken searchKind:kind];
+            MCOIMAPSearchExpression *searchExpression = [self buildSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
             MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
 
             op.urgent = YES;
@@ -425,29 +425,29 @@ const char *const mcoOpKinds[] = {
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
 }
 
-- (MCOIMAPSearchExpression*)mapTokenToSearchExpression:(SearchToken*)token {
-    switch(token.kind) {
+- (MCOIMAPSearchExpression*)mapSearchPartToExpression:(NSString*)string kind:(SearchExpressionKind)kind {
+    switch(kind) {
         case SearchExpressionKind_From:
-            return [MCOIMAPSearchExpression searchFrom:token.string];
+            return [MCOIMAPSearchExpression searchFrom:string];
         case SearchExpressionKind_To:
-            return [MCOIMAPSearchExpression searchTo:token.string];
+            return [MCOIMAPSearchExpression searchTo:string];
         case SearchExpressionKind_Cc:
-            return [MCOIMAPSearchExpression searchCc:token.string];
+            return [MCOIMAPSearchExpression searchCc:string];
         case SearchExpressionKind_Subject:
-            return [MCOIMAPSearchExpression searchSubject:token.string];
+            return [MCOIMAPSearchExpression searchSubject:string];
         case SearchExpressionKind_Contents:
-            return [MCOIMAPSearchExpression searchContent:token.string];
+            return [MCOIMAPSearchExpression searchContent:string];
         default:
-            NSAssert(nil, @"Search kind %lu not supported", token.kind);
+            NSAssert(nil, @"Search kind %lu not supported", kind);
             return nil;
     }
 }
 
-- (MCOIMAPSearchExpression*)buildSearchExpression:(NSArray<SearchToken*>*)tokens mainToken:(SearchToken*)mainToken searchKind:(SearchExpressionKind)searchKind {
+- (MCOIMAPSearchExpression*)buildSearchExpression:(NSArray<SearchToken*>*)tokens mainSearchPart:(NSString*)mainSearchPart searchKind:(SearchExpressionKind)searchKind {
     MCOIMAPSearchExpression *expression = nil;
     
     for(NSUInteger i = 0; i < tokens.count; i++) {
-        MCOIMAPSearchExpression *subExpression = [self mapTokenToSearchExpression:tokens[i]];
+        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToExpression:tokens[i].string kind:tokens[i].kind];
         
         if(expression == nil) {
             expression = subExpression;
@@ -457,8 +457,8 @@ const char *const mcoOpKinds[] = {
         }
     }
     
-    if(mainToken != nil) {
-        MCOIMAPSearchExpression *subExpression = [self mapTokenToSearchExpression:mainToken];
+    if(mainSearchPart != nil) {
+        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToExpression:mainSearchPart kind:searchKind];
         
         if(expression == nil) {
             expression = subExpression;
@@ -603,17 +603,17 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
-    NSAssert(_searchTokens.count > 0 || _mainSearchToken != nil, @"no search tokens");
+    NSAssert(_searchTokens.count > 0 || _mainSearchPart != nil, @"no search tokens");
     
     //
     // Contents.
     //
 
-    if(_mainSearchToken != nil) {
+    if(_mainSearchPart != nil) {
         NSString *section = @"Contents";
         
         [[[appDelegate appController] searchMenuViewController] addSection:section];
-        [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchToken.string section:section target:self action:@selector(searchForContentsAction:)];
+        [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContentsAction:)];
     }
     
     //

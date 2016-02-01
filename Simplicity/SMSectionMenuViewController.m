@@ -45,7 +45,6 @@
     NSMutableArray<NSString*> *_sections;
     NSMutableArray<NSMutableArray<ItemInfo*>*> *_sectionItems;
     NSMutableArray<ItemInfo*> *_itemsFlat;
-    NSInteger _selectedItemIndex;
 }
 
 - (void)viewDidLoad {
@@ -178,28 +177,26 @@
 
 - (void)selectItem:(NSInteger)itemIndex {
     [_itemsTable selectRowIndexes:[NSIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
-    
-    _selectedItemIndex = itemIndex;
 }
 
 - (void)unselectItem:(NSInteger)itemIndex {
-    if(itemIndex == _selectedItemIndex) {
+    if(itemIndex == _itemsTable.selectedRow) {
         [_itemsTable selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO];
-
-        _selectedItemIndex = -1;
     }
 }
 
 - (IBAction)cellAction:(id)sender {
-    if(_selectedItemIndex >= 0 && _selectedItemIndex < _itemsFlat.count) {
-        ItemInfo *item = _itemsFlat[_selectedItemIndex];
+    NSInteger selectedRow = _itemsTable.selectedRow;
+    
+    if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
+        ItemInfo *item = _itemsFlat[selectedRow];
         
         if(item.target != nil) {
             [item.target performSelector:item.action withObject:self afterDelay:0];
         }
     }
     else {
-        SM_LOG_ERROR(@"click action is beyond table bounds (row %ld item count %lu)", _selectedItemIndex, _itemsFlat.count);
+        SM_LOG_ERROR(@"click action is beyond table bounds (row %ld item count %lu)", selectedRow, _itemsFlat.count);
     }
 }
 

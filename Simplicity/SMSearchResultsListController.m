@@ -388,9 +388,6 @@ const char *const mcoOpKinds[] = {
             [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
         }
     }
-    else {
-        // TODO
-    }
     
     _completedSuggestionSearchOps = 0;
     

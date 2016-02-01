@@ -15,7 +15,7 @@
 @property (readonly) MCOIndexSet *subjectSearchResults;
 @property (readonly) MCOIndexSet *contactSearchResults;
 
-- (void)startNewSearch:(NSString*)searchPattern exitingLocalFolder:(NSString*)existingLocalFolder;
+- (BOOL)startNewSearch:(NSString*)searchPattern exitingLocalFolder:(NSString*)existingLocalFolder;
 
 - (NSInteger)getSearchIndex:(NSString*)searchResultsLocalFolder;
 - (NSUInteger)searchResultsCount;

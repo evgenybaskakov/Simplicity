@@ -392,29 +392,19 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     _searchMenuWindowShown = NO;
     
-    // Remove previous search results from the suggestions menu.
-    [_searchMenuViewController clearAllItems];
-    
-    SM_LOG_DEBUG(@"searching for string '%@'", searchString);
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil];
+    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
+        [_searchMenuWindow makeKeyAndOrderFront:self];
+        
+        [self adjustSearchMenuFrame];
+        
+        _searchMenuWindowShown = YES;
+    }
+    else {
+        [_searchMenuWindow orderOut:self];
+    }
     
     [self showSearchResultsView];
-    
-    NSRange range = [[_searchField currentEditor] selectedRange];
-    NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
-    
-    [_searchMenuWindow makeKeyAndOrderFront:self];
-    
-    [self adjustSearchMenuFrame];
-    
-    // Restore the search field cursor.
-    // Also bring the focus back to the search field from the popover.
-    [mainWindow makeFirstResponder:_searchField];
-    [[_searchField currentEditor] setSelectedRange:range];
-    
-    _searchMenuWindowShown = YES;
 }
 
 - (void)closeSearchMenu {

@@ -265,7 +265,7 @@ const char *const mcoOpKinds[] = {
     return tokens;
 }
 
-- (void)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
+- (BOOL)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
 
@@ -423,6 +423,13 @@ const char *const mcoOpKinds[] = {
     }];
     
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
+    
+    if(_mainSearchPart != nil) {
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
 }
 
 - (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {

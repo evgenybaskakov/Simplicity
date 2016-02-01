@@ -21,20 +21,16 @@
 
 #pragma mark Tracking area
 
-- (void)ensureTrackingArea {
-    if(_trackingArea == nil) {
-        _trackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
-    }
-}
-
 - (void)updateTrackingAreas {
     [super updateTrackingAreas];
     
-    [self ensureTrackingArea];
-    
-    if(![[self trackingAreas] containsObject:_trackingArea]) {
-        [self addTrackingArea:_trackingArea];
+    if(_trackingArea != nil) {
+        [self removeTrackingArea:_trackingArea];
     }
+    
+    _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+    
+    [self addTrackingArea:_trackingArea];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent {

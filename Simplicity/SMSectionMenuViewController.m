@@ -150,6 +150,8 @@
         itemView.textField.stringValue = item.label;
         itemView.textField.tag = row;
         
+        [itemView updateTrackingAreas];
+        
         return itemView;
     }
 }

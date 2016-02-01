@@ -747,6 +747,8 @@ const char *const mcoOpKinds[] = {
     newSearchString = [newSearchString stringByAppendingString:@" "];
     
     [[[appDelegate appController] searchField] setStringValue:newSearchString];
+    [[[[appDelegate appController] searchField] currentEditor] moveToEndOfLine:nil];
+    
     [[appDelegate appController] searchUsingToolbarSearchField:self];
 }
 

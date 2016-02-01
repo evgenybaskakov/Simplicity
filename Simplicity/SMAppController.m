@@ -302,10 +302,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         
         _searchField = [[NSSearchField alloc] initWithFrame:[_searchField frame]];
         [_searchField.cell setSendsWholeSearchString:NO];
-
+        [_searchField.cell setScrollable:YES];
+        
         [toolbarItem setView:_searchField];
         [toolbarItem setMinSize:NSMakeSize(30, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(400,NSHeight([_searchField frame]))];
+        [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
     } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
         toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
         

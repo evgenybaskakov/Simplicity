@@ -253,7 +253,11 @@ const char *const mcoOpKinds[] = {
         
         i++;
     }
-    
+
+    while(maxExprOffset < searchString.length && isspace([searchString characterAtIndex:maxExprOffset])) {
+        maxExprOffset++;
+    }
+
     if(maxExprOffset < searchString.length) {
         NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
         *mainSearchPart = [searchString substringWithRange:range];
@@ -429,14 +433,20 @@ const char *const mcoOpKinds[] = {
     }
 }
 
+- (NSString*)extractEmailFromAddressString:(NSString*)string {
+    MCOAddress *mcoAddress = [MCOAddress addressWithNonEncodedRFC822String:string];
+    NSString *mailbox = mcoAddress.mailbox;
+    return mailbox != nil? mailbox : string;
+}
+
 - (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {
     switch(kind) {
         case SearchExpressionKind_From:
-            return [MCOIMAPSearchExpression searchFrom:string];
+            return [MCOIMAPSearchExpression searchFrom:[self extractEmailFromAddressString:string]];
         case SearchExpressionKind_To:
-            return [MCOIMAPSearchExpression searchTo:string];
+            return [MCOIMAPSearchExpression searchTo:[self extractEmailFromAddressString:string]];
         case SearchExpressionKind_Cc:
-            return [MCOIMAPSearchExpression searchCc:string];
+            return [MCOIMAPSearchExpression searchCc:[self extractEmailFromAddressString:string]];
         case SearchExpressionKind_Subject:
             return [MCOIMAPSearchExpression searchSubject:string];
         case SearchExpressionKind_Contents:
@@ -731,7 +741,11 @@ const char *const mcoOpKinds[] = {
 - (void)submitNewSearchRequest:(SearchExpressionKind)kind {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
-    NSAssert(searchItem != nil && searchItem.length > 0, @"empty searchItem");
+    
+    if(searchItem == nil || searchItem.length == 0) {
+        SM_LOG_ERROR(@"Empty search menu item (request kind %lu)", kind);
+        return;
+    }
     
     NSString *newSearchString = @"";
     

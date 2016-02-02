@@ -21,19 +21,14 @@
     return 512;
 }
 
-+ (NSString*)imapMessageBodyPreview:(MCOMessageParser*)parser {
++ (NSString*)imapMessagePlainTextBody:(MCOMessageParser*)parser {
     NSString *plainText = [parser plainTextBodyRendering];
     
     if(plainText == nil) {
         return @"";
     }
-    
-    NSUInteger maxLen = [SMMessage maxBodyPreviewLength];
-    if(plainText.length <= maxLen) {
-        return plainText;
-    }
     else {
-        return [plainText substringToIndex:maxLen];
+        return plainText;
     }
 }
 

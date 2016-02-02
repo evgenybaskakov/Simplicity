@@ -146,16 +146,16 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     
                     NSAssert(data != nil, @"data != nil");
                     
-                    if(_localFolder.syncedWithRemoteFolder) {
-                        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                        [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data folderName:remoteFolderName];
-                    }
-                    
                     // TODO: do it asynchronously!
                     MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
-                    NSString *messageBodyPreview = [SMMessage imapMessageBodyPreview:parser];
+                    NSString *messageBodyPlainText = [SMMessage imapMessagePlainTextBody:parser];
                     
-                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPreview];
+                    if(_localFolder.syncedWithRemoteFolder) {
+                        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                        [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
+                    }
+                    
+                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPlainText];
                     
                     if(!urgent) {
                         NSAssert(_nonUrgentfetchMessageBodyOpQueue.count > 0, @"no ops in the queue");

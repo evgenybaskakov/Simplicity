@@ -1705,6 +1705,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return compressedMessageBuilder;
 }
 
+- (NSString*)getMessageContacts:(MCOIMAPMessage*)imapMessage {
+    NSString *contacts = @"";
+
+    for(MCOAddress *address in imapMessage.header.to) {
+        contacts = [contacts stringByAppendingString:address.nonEncodedRFC822String];
+        contacts = [contacts stringByAppendingString:@", "];
+    }
+
+    for(MCOAddress *address in imapMessage.header.cc) {
+        contacts = [contacts stringByAppendingString:address.nonEncodedRFC822String];
+        contacts = [contacts stringByAppendingString:@", "];
+    }
+
+    contacts = [contacts stringByAppendingString:imapMessage.header.from.nonEncodedRFC822String];
+    
+    return contacts;
+}
+
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
@@ -1712,8 +1730,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
-        NSData *encodedMessage = [self encodeImapMessage:imapMessage];
-        [self storeEncodedMessage:encodedMessage uid:imapMessage.uid date:[[imapMessage header] date] folderName:folderName];
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId != nil) {
+            NSData *encodedMessage = [self encodeImapMessage:imapMessage];
+            [self storeEncodedMessage:encodedMessage uid:imapMessage.uid date:imapMessage.header.date folderId:folderId];
+            
+            NSString *contacts = [self getMessageContacts:imapMessage];
+            [self storeMessageTextInfo:imapMessage.uid contacts:contacts subject:imapMessage.header.subject folderId:folderId];
+        }
+        else {
+            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+            
+            [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+        }
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
@@ -1726,26 +1755,96 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        NSData *encodedMessageBuilder = [self encodeMessageBuilder:outgoingMessage.messageBuilder];
-        [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid date:outgoingMessage.date folderName:folderName];
+        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        if(folderId != nil) {
+            NSData *encodedMessageBuilder = [self encodeMessageBuilder:outgoingMessage.messageBuilder];
+            [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid date:outgoingMessage.date folderId:folderId];
+            
+            // TODO: contacts/subject/body for search?
+        }
+        else {
+            SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+            
+            [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+        }
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
 }
 
-- (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderName:(NSString*)folderName {
+- (void)storeMessageTextInfo:(uint32_t)uid contacts:(NSString*)contacts subject:(NSString*)subject folderId:(NSNumber*)folderId {
     sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
     
     if(database != nil) {
         do {
-            NSNumber *folderId = [_folderIds objectForKey:folderName];
-            if(folderId == nil) {
-                SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"CONTACTS\", \"SUBJECT\") VALUES (%u, ?, ?)", folderId, uid];
+            
+            sqlite3_stmt *statement = NULL;
+            const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+            
+            if(sqlPrepareResult != SQLITE_OK) {
+                SM_LOG_ERROR(@"could not prepare insert text statement, error %d", sqlPrepareResult);
                 
-                [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                 break;
             }
             
+            BOOL dbQueryFailed = NO;
+            int dbQueryError = SQLITE_OK;
+            
+            do {
+                int bindResult;
+                
+                if((bindResult = sqlite3_bind_text(statement, 1, contacts.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (CONTACTS), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                if((bindResult = sqlite3_bind_text(statement, 2, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (SUBJECT), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                const int sqlInsertResult = sqlite3_step(statement);
+                if(sqlInsertResult == SQLITE_DONE) {
+                    SM_LOG_DEBUG(@"Message text with UID %u successfully inserted", uid);
+                } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
+                    SM_LOG_INFO(@"Message text with UID %u already exists", uid);
+                } else {
+                    SM_LOG_ERROR(@"Failed to insert message text with UID %u, error %d", uid, sqlInsertResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = sqlInsertResult;
+                    break;
+                }
+            } while(FALSE);
+            
+            const int sqlFinalizeResult = sqlite3_finalize(statement);
+            SM_LOG_NOISE(@"finalize messages insert statement result %d", sqlFinalizeResult);
+            
+            if(dbQueryFailed) {
+                SM_LOG_ERROR(@"SQL query has failed");
+                
+                [self triggerDBFailureWithSQLiteError:dbQueryError];
+                break;
+            }
+        } while(FALSE);
+        
+        [self closeDatabase:database];
+    }
+}
+
+- (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderId:(NSNumber*)folderId {
+    sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+    
+    if(database != nil) {
+        do {
             NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?)", folderId];
             const char *folderInsertStmt = [folderInsertSql UTF8String];
             
@@ -1794,10 +1893,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 
                 if(sqlStepResult != SQLITE_DONE) {
                     if(sqlStepResult == SQLITE_CONSTRAINT) {
-                        SM_LOG_WARNING(@"Message with UID %u already in folder \"%@\" (id %@)", uid, folderName, folderId);
+                        SM_LOG_WARNING(@"Message with UID %u already in folder id %@", uid, folderId);
                     }
                     else {
-                        SM_LOG_ERROR(@"Failed to insert message with UID %u in folder \"%@\" (id %@), error %d", uid, folderName, folderId, sqlStepResult);
+                        SM_LOG_ERROR(@"Failed to insert message with UID %u in folder id %@, error %d", uid, folderId, sqlStepResult);
                         
                         dbQueryFailed = YES;
                         dbQueryError = sqlStepResult;
@@ -1816,7 +1915,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 break;
             }
             
-            SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder \"%@\" (id %@)", uid, folderName, folderId);
+            SM_LOG_DEBUG(@"Message with UID %u successfully inserted to folder id %@", uid, folderId);
         } while(FALSE);
         
         [self closeDatabase:database];
@@ -2124,16 +2223,16 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             } while(FALSE);
 
             //
-            // Step 2: Save the message text used later for search.
+            // Step 2: Save the message text body
             //
             do {
-                NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"CONTACTS\", \"SUBJECT\", \"MESSAGEBODY\") VALUES (%u, ?, ?, ?)", folderId, uid];
+                NSString *updateSql = [NSString stringWithFormat:@"UPDATE MESSAGETEXT%@ SET MESSAGEBODY = ? WHERE docid = %u", folderId, uid];
                 
                 sqlite3_stmt *statement = NULL;
-                const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, updateSql.UTF8String, -1, &statement, NULL);
                 
                 if(sqlPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare insert text statement, error %d", sqlPrepareResult);
+                    SM_LOG_ERROR(@"could not prepare update text statement, error %d", sqlPrepareResult);
                     
                     [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                     break;
@@ -2144,25 +2243,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 do {
                     int bindResult;
 
-                    NSString *contacts = @"TODO: contacts"; // TODO
-                    if((bindResult = sqlite3_bind_text(statement, 1, contacts.UTF8String, -1, NULL)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (CONTACTS), error %d", uid, bindResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = bindResult;
-                        break;
-                    }
-
-                    NSString *subject = @"TODO: subject"; // TODO
-                    if((bindResult = sqlite3_bind_text(statement, 2, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
-                        SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (SUBJECT), error %d", uid, bindResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = bindResult;
-                        break;
-                    }
-                    
-                    if((bindResult = sqlite3_bind_text(statement, 3, plainTextBody.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    if((bindResult = sqlite3_bind_text(statement, 1, plainTextBody.UTF8String, -1, NULL)) != SQLITE_OK) {
                         SM_LOG_ERROR(@"message UID %u, could not bind argument 4 (MESSAGEBODY), error %d", uid, bindResult);
                         
                         dbQueryFailed = YES;
@@ -2170,16 +2251,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         break;
                     }
                     
-                    const int sqlInsertResult = sqlite3_step(statement);
-                    if(sqlInsertResult == SQLITE_DONE) {
-                        SM_LOG_DEBUG(@"Message text with UID %u successfully inserted", uid);
-                    } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
-                        SM_LOG_INFO(@"Message text with UID %u already exists", uid);
+                    const int sqlUpdateResult = sqlite3_step(statement);
+                    if(sqlUpdateResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"Message text with UID %u successfully updated", uid);
                     } else {
-                        SM_LOG_ERROR(@"Failed to insert message text with UID %u, error %d", uid, sqlInsertResult);
+                        SM_LOG_ERROR(@"Failed to updated message text body with UID %u, error %d", uid, sqlUpdateResult);
                         
                         dbQueryFailed = YES;
-                        dbQueryError = sqlInsertResult;
+                        dbQueryError = sqlUpdateResult;
                         break;
                     }
                 } while(FALSE);
@@ -2194,7 +2273,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
             } while(FALSE);
-            
+
             //
             // Finalize the database.
             //

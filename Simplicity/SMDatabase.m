@@ -1785,7 +1785,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     if(database != nil) {
         do {
-            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\") VALUES (%u, ?, ?, ?, ?)", folderId, uid];
+            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\") VALUES (?, ?, ?, ?, ?)", folderId];
             
             sqlite3_stmt *statement = NULL;
             const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
@@ -1803,7 +1803,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             do {
                 int bindResult;
                 
-                if((bindResult = sqlite3_bind_text(statement, 1, from.UTF8String, -1, NULL)) != SQLITE_OK) {
+                if((bindResult = sqlite3_bind_int(statement, 1, uid)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (UID), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                if((bindResult = sqlite3_bind_text(statement, 2, from.UTF8String, -1, NULL)) != SQLITE_OK) {
                     SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (FROM), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
@@ -1811,24 +1819,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                if((bindResult = sqlite3_bind_text(statement, 2, to.UTF8String, -1, NULL)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TO), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_text(statement, 3, to.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (TO), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;
                     break;
                 }
                 
-                if((bindResult = sqlite3_bind_text(statement, 3, cc.UTF8String, -1, NULL)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (CC), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_text(statement, 4, cc.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 4 (CC), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;
                     break;
                 }
                 
-                if((bindResult = sqlite3_bind_text(statement, 4, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 4 (SUBJECT), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_text(statement, 5, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 5 (SUBJECT), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;
@@ -1883,25 +1891,25 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *selectSql = [NSString stringWithFormat:@"SELECT * FROM MESSAGETEXT%@ WHERE '", folderId];
+                NSString *selectSql = [NSString stringWithFormat:@"SELECT * FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
                 if(from && from.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" FROM:\"%@\"", from]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
                 }
 
                 if(to && to.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" TO:\"%@\"", to]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"TO:%@ ", to]];
                 }
                 
                 if(cc && cc.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" CC:\"%@\"", cc]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"CC:%@ ", cc]];
                 }
                 
                 if(subject && subject.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" SUBJECT:\"%@\"", subject]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
                 }
                 
                 if(content && content.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" MESSAGEBODY:\"%@\"", content]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY:%@ ", content]];
                 }
 
                 selectSql = [selectSql stringByAppendingString:@"'"];
@@ -1928,16 +1936,16 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         NSString *from = (fromText != NULL? [NSString stringWithUTF8String:fromText] : nil);
 
                         const char *toText = (const char *)sqlite3_column_text(selectStatement, 2);
-                        NSString *to = (fromText != NULL? [NSString stringWithUTF8String:toText] : nil);
+                        NSString *to = (toText != NULL? [NSString stringWithUTF8String:toText] : nil);
                         
                         const char *ccText = (const char *)sqlite3_column_text(selectStatement, 3);
-                        NSString *cc = (fromText != NULL? [NSString stringWithUTF8String:ccText] : nil);
+                        NSString *cc = (ccText != NULL? [NSString stringWithUTF8String:ccText] : nil);
                         
                         const char *subjectText = (const char *)sqlite3_column_text(selectStatement, 4);
-                        NSString *subject = (fromText != NULL? [NSString stringWithUTF8String:subjectText] : nil);
+                        NSString *subject = (subjectText != NULL? [NSString stringWithUTF8String:subjectText] : nil);
                         
                         const char *bodyText = (const char *)sqlite3_column_text(selectStatement, 5);
-                        NSString *body = (fromText != NULL? [NSString stringWithUTF8String:bodyText] : nil);
+                        NSString *body = (bodyText != NULL? [NSString stringWithUTF8String:bodyText] : nil);
 
                         SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:from toList:to ccList:cc subject:subject plainBodyText:body];
 

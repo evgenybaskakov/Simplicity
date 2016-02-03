@@ -9,8 +9,10 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMDatabase.h"
 #import "SMStringUtils.h"
 #import "SMSearchDescriptor.h"
+#import "SMTextMessage.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
@@ -420,6 +422,13 @@ const char *const mcoOpKinds[] = {
         }
         else {
             SM_LOG_INFO(@"previous content search aborted");
+        }
+    }];
+    
+    // TODO:
+    [[[appDelegate model] database] findMessages:remoteFolderName from:nil to:nil cc:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+        for(SMTextMessage *m in textMessages) {
+            SM_LOG_INFO(@"subject: %@", m.subject);
         }
     }];
     

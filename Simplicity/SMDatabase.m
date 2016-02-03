@@ -19,6 +19,7 @@
 #import "SMCompression.h"
 #import "SMThreadSafeOperationQueue.h"
 #import "SMOperationQueue.h"
+#import "SMTextMessage.h"
 #import "SMDatabase.h"
 
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30; // TODO: too small for large databases!!!
@@ -1861,6 +1862,117 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         [self closeDatabase:database];
     }
+}
+
+- (void)findMessages:(NSString*)folderName from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        NSMutableArray<SMTextMessage*> *textMessages = [NSMutableArray array];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+        
+        if(database != nil) {
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    break;
+                }
+                
+                NSString *selectSql = [NSString stringWithFormat:@"SELECT * FROM MESSAGETEXT%@ WHERE '", folderId];
+                if(from && from.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" FROM:\"%@\"", from]];
+                }
+
+                if(to && to.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" TO:\"%@\"", to]];
+                }
+                
+                if(cc && cc.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" CC:\"%@\"", cc]];
+                }
+                
+                if(subject && subject.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" SUBJECT:\"%@\"", subject]];
+                }
+                
+                if(content && content.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@" MESSAGEBODY:\"%@\"", content]];
+                }
+
+                selectSql = [selectSql stringByAppendingString:@"'"];
+
+                sqlite3_stmt *selectStatement = NULL;
+                const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, selectSql.UTF8String, -1, &selectStatement, NULL);
+                
+                if(sqlSelectPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare select statement, error %d", sqlSelectPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlSelectPrepareResult];
+                    break;
+                }
+                
+                BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
+                
+                while(true) {
+                    const int sqlLoadResult = sqlite3_step(selectStatement);
+                    if(sqlLoadResult == SQLITE_ROW) {
+                        uint32_t uid = sqlite3_column_int(selectStatement, 0);
+
+                        const char *fromText = (const char *)sqlite3_column_text(selectStatement, 1);
+                        NSString *from = (fromText != NULL? [NSString stringWithUTF8String:fromText] : nil);
+
+                        const char *toText = (const char *)sqlite3_column_text(selectStatement, 2);
+                        NSString *to = (fromText != NULL? [NSString stringWithUTF8String:toText] : nil);
+                        
+                        const char *ccText = (const char *)sqlite3_column_text(selectStatement, 3);
+                        NSString *cc = (fromText != NULL? [NSString stringWithUTF8String:ccText] : nil);
+                        
+                        const char *subjectText = (const char *)sqlite3_column_text(selectStatement, 4);
+                        NSString *subject = (fromText != NULL? [NSString stringWithUTF8String:subjectText] : nil);
+                        
+                        const char *bodyText = (const char *)sqlite3_column_text(selectStatement, 5);
+                        NSString *body = (fromText != NULL? [NSString stringWithUTF8String:bodyText] : nil);
+
+                        SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:from toList:to ccList:cc subject:subject plainBodyText:body];
+
+                        [textMessages addObject:textMessage];
+                    }
+                    else if(sqlLoadResult == SQLITE_DONE) {
+                        break;
+                    }
+                    else {
+                        SM_LOG_ERROR(@"failed to load text messages, folder %@, error %d", folderId, sqlLoadResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = sqlLoadResult;
+                        break;
+                    }
+                } while(FALSE);
+                
+                const int sqlFinalizeResult = sqlite3_finalize(selectStatement);
+                SM_LOG_NOISE(@"finalize messages select statement result %d", sqlFinalizeResult);
+                
+                if(dbQueryFailed) {
+                    SM_LOG_ERROR(@"SQL query has failed");
+                    break;
+                }
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getTextMessagesBlock(textMessages);
+        });
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
 }
 
 - (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderId:(NSNumber*)folderId {

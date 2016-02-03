@@ -1123,7 +1123,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // Step 3: Create another unique folder table containing plain message text: bodies, subjects, contacts.
                     //
                     {
-                        NSString *createTextTableSql = [NSString stringWithFormat:@"CREATE VIRTUAL TABLE IF NOT EXISTS MESSAGETEXT%@ USING FTS4 (CONTACTS, SUBJECT, MESSAGEBODY)", folderId];
+                        NSString *createTextTableSql = [NSString stringWithFormat:@"CREATE VIRTUAL TABLE IF NOT EXISTS MESSAGETEXT%@ USING FTS4 (FROM, TO, CC, SUBJECT, MESSAGEBODY)", folderId];
                         const char *createStmt = [createTextTableSql UTF8String];
                         
                         const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, NULL);
@@ -1705,22 +1705,28 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return compressedMessageBuilder;
 }
 
-- (NSString*)getMessageContacts:(MCOIMAPMessage*)imapMessage {
-    NSString *contacts = @"";
+- (void)getMessageContacts:(MCOIMAPMessage*)imapMessage from:(NSString**)from to:(NSString**)to cc:(NSString**)cc {
+    *to = @"";
+    NSArray<MCOAddress*> *toAddresses = imapMessage.header.to;
+    for(NSUInteger i = 0, n = toAddresses.count; i < n; i++) {
+        *to = [*to stringByAppendingString:toAddresses[i].nonEncodedRFC822String];
 
-    for(MCOAddress *address in imapMessage.header.to) {
-        contacts = [contacts stringByAppendingString:address.nonEncodedRFC822String];
-        contacts = [contacts stringByAppendingString:@", "];
+        if(i + 1 < n) {
+            *to = [*to stringByAppendingString:@", "];
+        }
     }
 
-    for(MCOAddress *address in imapMessage.header.cc) {
-        contacts = [contacts stringByAppendingString:address.nonEncodedRFC822String];
-        contacts = [contacts stringByAppendingString:@", "];
+    *cc = @"";
+    NSArray<MCOAddress*> *ccAddresses = imapMessage.header.cc;
+    for(NSUInteger i = 0, n = ccAddresses.count; i < n; i++) {
+        *cc = [*cc stringByAppendingString:ccAddresses[i].nonEncodedRFC822String];
+        
+        if(i + 1 < n) {
+            *cc = [*cc stringByAppendingString:@", "];
+        }
     }
 
-    contacts = [contacts stringByAppendingString:imapMessage.header.from.nonEncodedRFC822String];
-    
-    return contacts;
+    *from = imapMessage.header.from.nonEncodedRFC822String;
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
@@ -1735,8 +1741,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             NSData *encodedMessage = [self encodeImapMessage:imapMessage];
             [self storeEncodedMessage:encodedMessage uid:imapMessage.uid date:imapMessage.header.date folderId:folderId];
             
-            NSString *contacts = [self getMessageContacts:imapMessage];
-            [self storeMessageTextInfo:imapMessage.uid contacts:contacts subject:imapMessage.header.subject folderId:folderId];
+            NSString *from, *to, *cc;
+            [self getMessageContacts:imapMessage from:&from to:&to cc:&cc];
+            [self storeMessageTextInfo:imapMessage.uid from:from to:to cc:cc subject:imapMessage.header.subject folderId:folderId];
         }
         else {
             SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
@@ -1772,12 +1779,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)storeMessageTextInfo:(uint32_t)uid contacts:(NSString*)contacts subject:(NSString*)subject folderId:(NSNumber*)folderId {
+- (void)storeMessageTextInfo:(uint32_t)uid from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject folderId:(NSNumber*)folderId {
     sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
     
     if(database != nil) {
         do {
-            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"CONTACTS\", \"SUBJECT\") VALUES (%u, ?, ?)", folderId, uid];
+            NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO MESSAGETEXT%@ (\"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\") VALUES (%u, ?, ?, ?, ?)", folderId, uid];
             
             sqlite3_stmt *statement = NULL;
             const int sqlPrepareResult = sqlite3_prepare_v2(database, insertSql.UTF8String, -1, &statement, NULL);
@@ -1795,16 +1802,32 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             do {
                 int bindResult;
                 
-                if((bindResult = sqlite3_bind_text(statement, 1, contacts.UTF8String, -1, NULL)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (CONTACTS), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_text(statement, 1, from.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (FROM), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;
                     break;
                 }
                 
-                if((bindResult = sqlite3_bind_text(statement, 2, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (SUBJECT), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_text(statement, 2, to.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TO), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                if((bindResult = sqlite3_bind_text(statement, 3, cc.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (CC), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+                
+                if((bindResult = sqlite3_bind_text(statement, 4, subject.UTF8String, -1, NULL)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 4 (SUBJECT), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;

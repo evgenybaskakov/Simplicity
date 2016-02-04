@@ -24,6 +24,7 @@ typedef NS_ENUM(NSUInteger, SMAddressMenuRepresentation) {
 
 + (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses;
 + (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses;
++ (NSString*)displayAddress:(NSString*)address;
 
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode;
 - (id)initWithStringRepresentation:(NSString*)string;

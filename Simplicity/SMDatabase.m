@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMFolderDesc.h"
+#import "SMAddress.h"
 #import "SMMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMMessageBuilder.h"
@@ -1708,26 +1709,27 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (void)getMessageContacts:(MCOIMAPMessage*)imapMessage from:(NSString**)from to:(NSString**)to cc:(NSString**)cc {
     *to = @"";
+
     NSArray<MCOAddress*> *toAddresses = imapMessage.header.to;
     for(NSUInteger i = 0, n = toAddresses.count; i < n; i++) {
-        *to = [*to stringByAppendingString:toAddresses[i].nonEncodedRFC822String];
+        *to = [*to stringByAppendingString:[SMAddress displayAddress:toAddresses[i].nonEncodedRFC822String]];
 
         if(i + 1 < n) {
-            *to = [*to stringByAppendingString:@", "];
+            *to = [*to stringByAppendingString:@"|"];
         }
     }
 
     *cc = @"";
     NSArray<MCOAddress*> *ccAddresses = imapMessage.header.cc;
     for(NSUInteger i = 0, n = ccAddresses.count; i < n; i++) {
-        *cc = [*cc stringByAppendingString:ccAddresses[i].nonEncodedRFC822String];
+        *cc = [*cc stringByAppendingString:[SMAddress displayAddress:ccAddresses[i].nonEncodedRFC822String]];
         
         if(i + 1 < n) {
-            *cc = [*cc stringByAppendingString:@", "];
+            *cc = [*cc stringByAppendingString:@"|"];
         }
     }
 
-    *from = imapMessage.header.from.nonEncodedRFC822String;
+    *from = [SMAddress displayAddress:imapMessage.header.from.nonEncodedRFC822String];
 }
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {

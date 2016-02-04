@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMDatabase.h"
 #import "SMStringUtils.h"
+#import "SMAddress.h"
 #import "SMSearchDescriptor.h"
 #import "SMTextMessage.h"
 #import "SMMailbox.h"
@@ -620,26 +621,6 @@ const char *const mcoOpKinds[] = {
     return searchDescriptor.searchStopped;
 }
 
-- (NSString*)displayAddress:(NSString*)address {
-    NSArray *parts = [address componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'\""]];
-
-    if(parts.count == 1) {
-        return [parts firstObject];
-    }
-    else if(parts.count == 2) {
-        return [parts[0] stringByAppendingString:parts[1]];
-    }
-    else {
-        NSString *result = @"";
-        
-        for(NSString *part in parts) {
-            result = [result stringByAppendingString:part];
-        }
-
-        return result;
-    }
-}
-
 - (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
@@ -696,7 +677,7 @@ const char *const mcoOpKinds[] = {
                 NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
                 if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
-                    NSString *displayContactAddress = [self displayAddress:nonEncodedRFC822String];
+                    NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
                 
                     SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
                     

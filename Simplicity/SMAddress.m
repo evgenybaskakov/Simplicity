@@ -39,6 +39,26 @@
     return addressList;
 }
 
++ (NSString*)displayAddress:(NSString*)address {
+    NSArray *parts = [address componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'\""]];
+    
+    if(parts.count == 1) {
+        return [parts firstObject];
+    }
+    else if(parts.count == 2) {
+        return [parts[0] stringByAppendingString:parts[1]];
+    }
+    else {
+        NSString *result = @"";
+        
+        for(NSString *part in parts) {
+            result = [result stringByAppendingString:part];
+        }
+        
+        return result;
+    }
+}
+
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode {
     self = [super init];
     

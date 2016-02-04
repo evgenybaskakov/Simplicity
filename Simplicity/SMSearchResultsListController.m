@@ -450,20 +450,22 @@ const char *const mcoOpKinds[] = {
             if(m.ccList != nil) {
                 [_suggestionResultsContacts addObjectsFromArray:m.ccList];
             }
-
-            [self updateSearchImapMessages:@[]];
         }
+        
+        SM_LOG_INFO(@"Total %lu messages with matching contacts found", textMessages.count);
+        
+        [self updateSearchImapMessages:@[]];
     }];
 
-/*
     [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
         for(SMTextMessage *m in textMessages) {
             [_suggestionResultsSubjects addObject:m.subject];
-            
-            [self updateSearchImapMessages:@[]];
         }
+        
+        SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
+        
+        [self updateSearchImapMessages:@[]];
     }];
-*/
 
 /*
     [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:searchString block:^(NSArray<SMTextMessage*> *textMessages){

@@ -1891,7 +1891,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *selectSql = [NSString stringWithFormat:@"SELECT * FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
+                NSString *selectSql = [NSString stringWithFormat:@"SELECT \"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\" FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
+                
                 if(from && from.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
                 }
@@ -1907,11 +1908,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 if(subject && subject.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
                 }
-                
-                if(content && content.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY:%@ ", content]];
-                }
 
+                // Don't return the message body, it's useless outside of the search table.
+                
                 selectSql = [selectSql stringByAppendingString:@"'"];
 
                 sqlite3_stmt *selectStatement = NULL;
@@ -1943,11 +1942,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         
                         const char *subjectText = (const char *)sqlite3_column_text(selectStatement, 4);
                         NSString *subject = (subjectText != NULL? [NSString stringWithUTF8String:subjectText] : nil);
-                        
-                        const char *bodyText = (const char *)sqlite3_column_text(selectStatement, 5);
-                        NSString *body = (bodyText != NULL? [NSString stringWithUTF8String:bodyText] : nil);
 
-                        SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:from toList:to ccList:cc subject:subject plainBodyText:body];
+                        SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:from toList:to ccList:cc subject:subject];
 
                         [textMessages addObject:textMessage];
                     }

@@ -15,8 +15,7 @@
 @property (readonly) NSString *toList;
 @property (readonly) NSString *ccList;
 @property (readonly) NSString *subject;
-@property (readonly) NSString *plainBodyText;
 
-- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSString*)toList ccList:(NSString*)ccList subject:(NSString*)subject plainBodyText:(NSString*)plainBodyText;
+- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSString*)toList ccList:(NSString*)ccList subject:(NSString*)subject;
 
 @end

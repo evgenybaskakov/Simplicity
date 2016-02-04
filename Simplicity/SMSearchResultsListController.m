@@ -429,7 +429,9 @@ const char *const mcoOpKinds[] = {
     // TODO:
     [[[appDelegate model] database] findMessages:remoteFolderName from:nil to:nil cc:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
         for(SMTextMessage *m in textMessages) {
-            SM_LOG_INFO(@"subject: %@", m.subject);
+            [_suggestionResultsSubjects addObject:m.subject];
+            
+            [self updateSearchImapMessages:@[]];
         }
     }];
     

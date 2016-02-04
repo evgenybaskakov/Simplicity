@@ -10,7 +10,7 @@
 
 @implementation SMTextMessage
 
-- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSString*)toList ccList:(NSString*)ccList subject:(NSString*)subject {
+- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSArray<NSString*>*)toList ccList:(NSArray<NSString*>*)ccList subject:(NSString*)subject {
     self = [super init];
     
     if(self) {

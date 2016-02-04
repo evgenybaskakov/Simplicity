@@ -1874,7 +1874,15 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
 }
 
+- (void)findMessages:(NSString*)folderName contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
+    [self findMessagesInternal:folderName contact:contact from:nil to:nil cc:nil subject:subject content:content block:getTextMessagesBlock];
+}
+
 - (void)findMessages:(NSString*)folderName from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
+    [self findMessagesInternal:folderName contact:nil from:from to:to cc:cc subject:subject content:content block:getTextMessagesBlock];
+}
+
+- (void)findMessagesInternal:(NSString*)folderName contact:(NSString*)contact from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
@@ -1895,26 +1903,33 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 
                 NSString *selectSql = [NSString stringWithFormat:@"SELECT \"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\" FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
                 
-                if(from && from.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
+                if(contact && contact.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ OR TO:%@ OR CC:%@ ", contact, contact, contact]];
                 }
-
-                if(to && to.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"TO:%@ ", to]];
-                }
-                
-                if(cc && cc.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"CC:%@ ", cc]];
+                else {
+                    if(from && from.length > 0) {
+                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
+                    }
+                    
+                    if(to && to.length > 0) {
+                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"TO:%@ ", to]];
+                    }
+                    
+                    if(cc && cc.length > 0) {
+                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"CC:%@ ", cc]];
+                    }
                 }
                 
                 if(subject && subject.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
                 }
-
-                // Don't return the message body, it's useless outside of the search table.
+                
+                if(content && content.length > 0) {
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY:%@ ", content]];
+                }
                 
                 selectSql = [selectSql stringByAppendingString:@"'"];
-
+                
                 sqlite3_stmt *selectStatement = NULL;
                 const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, selectSql.UTF8String, -1, &selectStatement, NULL);
                 
@@ -1932,21 +1947,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     const int sqlLoadResult = sqlite3_step(selectStatement);
                     if(sqlLoadResult == SQLITE_ROW) {
                         uint32_t uid = sqlite3_column_int(selectStatement, 0);
-
-                        const char *fromText = (const char *)sqlite3_column_text(selectStatement, 1);
-                        NSString *from = (fromText != NULL? [NSString stringWithUTF8String:fromText] : nil);
-
-                        const char *toText = (const char *)sqlite3_column_text(selectStatement, 2);
-                        NSString *to = (toText != NULL? [NSString stringWithUTF8String:toText] : nil);
                         
+                        const char *fromText = (const char *)sqlite3_column_text(selectStatement, 1);
+                        NSString *fromString = (fromText != NULL? [NSString stringWithUTF8String:fromText] : nil);
+                        NSArray<NSString*> *fromList = [self filterAddressList:fromString contactToFilter:(contact != nil? contact : from)];
+                        
+                        const char *toText = (const char *)sqlite3_column_text(selectStatement, 2);
+                        NSString *toString = (toText != NULL? [NSString stringWithUTF8String:toText] : nil);
+                        NSArray<NSString*> *toList = [self filterAddressList:toString contactToFilter:(contact != nil? contact : to)];
+
                         const char *ccText = (const char *)sqlite3_column_text(selectStatement, 3);
-                        NSString *cc = (ccText != NULL? [NSString stringWithUTF8String:ccText] : nil);
+                        NSString *ccString = (ccText != NULL? [NSString stringWithUTF8String:ccText] : nil);
+                        NSArray<NSString*> *ccList = [self filterAddressList:ccString contactToFilter:(contact != nil? contact : cc)];
                         
                         const char *subjectText = (const char *)sqlite3_column_text(selectStatement, 4);
                         NSString *subject = (subjectText != NULL? [NSString stringWithUTF8String:subjectText] : nil);
-
-                        SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:from toList:to ccList:cc subject:subject];
-
+                        
+                        SMTextMessage *textMessage = [[SMTextMessage alloc] initWithUID:uid from:(fromList.count > 0? fromList.firstObject : nil) toList:toList ccList:ccList subject:subject];
+                        
                         [textMessages addObject:textMessage];
                     }
                     else if(sqlLoadResult == SQLITE_DONE) {
@@ -1979,6 +1997,27 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
+}
+
+- (NSArray<NSString*>*)filterAddressList:(NSString*)addressListString contactToFilter:(NSString*)contactToFilter {
+    if(addressListString == nil || contactToFilter == nil) {
+        return nil;
+    }
+    
+    contactToFilter = contactToFilter.lowercaseString;
+    
+    NSArray<NSString*> *addressList = [addressListString componentsSeparatedByString:@"|"];
+    NSMutableArray<NSString*> *filteredAddressList = [NSMutableArray array];
+    
+    for(NSString *address in addressList) {
+        NSString *addressLowercase = address.lowercaseString;
+        
+        if([addressLowercase containsString:contactToFilter]) {
+            [filteredAddressList addObject:address];
+        }
+    }
+    
+    return filteredAddressList;
 }
 
 - (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderId:(NSNumber*)folderId {

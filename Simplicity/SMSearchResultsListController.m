@@ -340,7 +340,9 @@ const char *const mcoOpKinds[] = {
     [self clearPreviousSearch];
     [self updateSearchImapMessages:@[]];
     
+    //
     // Load search results to the suggestions menu.
+    //
     
     if(_mainSearchPart != nil) {
         SearchExpressionKind kinds[] = {
@@ -398,7 +400,9 @@ const char *const mcoOpKinds[] = {
     
     _completedSuggestionSearchOps = 0;
     
+    //
     // Load contents search results to the search local folder.
+    //
     
     if(_contentSearchOp != nil) {
         [_contentSearchOp.op cancel];
@@ -426,16 +430,54 @@ const char *const mcoOpKinds[] = {
         }
     }];
     
-    // TODO:
-    [[[appDelegate model] database] findMessages:remoteFolderName from:nil to:nil cc:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
+
+    //
+    // Trigger parallel DB search.
+    //
+    
+    // TODO: add search criteria using _searchTokens to each of these DB searches
+    [[[appDelegate model] database] findMessages:remoteFolderName contact:searchString subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+        for(SMTextMessage *m in textMessages) {
+            if(m.from != nil) {
+                [_suggestionResultsContacts addObject:m.from];
+            }
+
+            if(m.toList != nil) {
+                [_suggestionResultsContacts addObjectsFromArray:m.toList];
+            }
+            
+            if(m.ccList != nil) {
+                [_suggestionResultsContacts addObjectsFromArray:m.ccList];
+            }
+
+            [self updateSearchImapMessages:@[]];
+        }
+    }];
+
+/*
+    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
         for(SMTextMessage *m in textMessages) {
             [_suggestionResultsSubjects addObject:m.subject];
             
             [self updateSearchImapMessages:@[]];
         }
     }];
-    
-    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
+*/
+
+/*
+    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:searchString block:^(NSArray<SMTextMessage*> *textMessages){
+        for(SMTextMessage *m in textMessages) {
+            [_suggestionResultsSubjects addObject:m.subject];
+            
+            [self updateSearchImapMessages:@[]];
+        }
+    }];
+*/
+
+    //
+    // Finish. Report if the caller should maintain the menu open or it should closed.
+    //
     
     if(_mainSearchPart != nil) {
         return TRUE;

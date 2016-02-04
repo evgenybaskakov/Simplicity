@@ -12,10 +12,10 @@
 
 @property (readonly) uint32_t uid;
 @property (readonly) NSString *from;
-@property (readonly) NSString *toList;
-@property (readonly) NSString *ccList;
+@property (readonly) NSArray<NSString*> *toList;
+@property (readonly) NSArray<NSString*> *ccList;
 @property (readonly) NSString *subject;
 
-- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSString*)toList ccList:(NSString*)ccList subject:(NSString*)subject;
+- (id)initWithUID:(uint32_t)uid from:(NSString*)from toList:(NSArray<NSString*>*)toList ccList:(NSArray<NSString*>*)ccList subject:(NSString*)subject;
 
 @end

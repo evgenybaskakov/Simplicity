@@ -89,6 +89,7 @@
 - (void)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName;
 - (void)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock;
+- (void)findMessages:(NSString*)folderName contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock;
 - (void)findMessages:(NSString*)folderName from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock;
 
 @end

@@ -1667,20 +1667,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessageBodyBlock(parser, attachments, messageBodyPreview);
         });
     };
-    
-    if(urgent) {
-        [_urgentTaskQueue pushBackOperation:op];
-        
-        // now run an "generic" urgent op handler just in case if the serial queue is empty
-        // just to ensure that the urgent task will be executed as soon as possible
-        // in any case
-        dispatch_async(_serialQueue, ^{
-            [self runUrgentTasks];
-        });
-    }
-    else {
-        dispatch_async(_serialQueue, op);
-    }
+
+    [self dispatchOp:op urgent:urgent];
     
     return TRUE;
 }
@@ -1883,12 +1871,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)findMessagesInternal:(NSString*)folderName contact:(NSString*)contact from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
-    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
-    
-    dispatch_async(_serialQueue, ^{
-        [self runUrgentTasks];
-        
+    void (^op)() = ^{
         NSMutableArray<SMTextMessage*> *textMessages = [NSMutableArray array];
         
         sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
@@ -1994,9 +1977,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         dispatch_async(dispatch_get_main_queue(), ^{
             getTextMessagesBlock(textMessages);
         });
-        
-        OSAtomicAdd32(-1, &_serialQueueLength);
-    });
+    };
+
+    [self dispatchOp:op urgent:YES];
 }
 
 - (NSArray<NSString*>*)filterAddressList:(NSString*)addressListString contactToFilter:(NSString*)contactToFilter {
@@ -2866,6 +2849,22 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         op();
         
         SM_LOG_DEBUG(@"urgent operation has finished");
+    }
+}
+
+- (void)dispatchOp:(void (^)())op urgent:(BOOL)urgent {
+    if(urgent) {
+        [_urgentTaskQueue pushBackOperation:op];
+        
+        // now run an "generic" urgent op handler just in case if the serial queue is empty
+        // just to ensure that the urgent task will be executed as soon as possible
+        // in any case
+        dispatch_async(_serialQueue, ^{
+            [self runUrgentTasks];
+        });
+    }
+    else {
+        dispatch_async(_serialQueue, op);
     }
 }
 

@@ -21,6 +21,7 @@
 #import "SMThreadSafeOperationQueue.h"
 #import "SMOperationQueue.h"
 #import "SMTextMessage.h"
+#import "SMSearchToken.h"
 #import "SMDatabase.h"
 
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30; // TODO: too small for large databases!!!
@@ -1878,34 +1879,58 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 
                 NSString *selectSql = [NSString stringWithFormat:@"SELECT \"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\" FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
                 
+                // Encode the primary search criteria.
                 if(contact && contact.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ OR TO:%@ OR CC:%@ ", contact, contact, contact]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"(FROM:%@ OR TO:%@ OR CC:%@) ", contact, contact, contact]];
                 }
-                
-/*                 {
-                    if(from && from.length > 0) {
-                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
-                    }
-                    
-                    if(to && to.length > 0) {
-                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"TO:%@ ", to]];
-                    }
-                    
-                    if(cc && cc.length > 0) {
-                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"CC:%@ ", cc]];
-                    }
-                }
-*/
-                
-                if(subject && subject.length > 0) {
+                else if(subject && subject.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
                 }
-                
-                if(content && content.length > 0) {
+                else if(content && content.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY:%@ ", content]];
+                }
+                else {
+                    SM_FATAL(@"no contact, subject or content specified as main search criteria");
+                }
+                
+                // Encode the secondary search criteria.
+                if(tokens != nil) {
+                    for(SMSearchToken *token in tokens) {
+                        NSString *requestStr = nil;
+                        
+                        switch(token.kind) {
+                            case SearchExpressionKind_To:
+                                requestStr = @"TO:%@";
+                                break;
+                                
+                            case SearchExpressionKind_From:
+                                requestStr = @"FROM:%@";
+                                break;
+                                
+                            case SearchExpressionKind_Cc:
+                                requestStr = @"CC:%@";
+                                break;
+                                
+                            case SearchExpressionKind_Subject:
+                                requestStr = @"SUBJECT:%@";
+                                break;
+                                
+                            case SearchExpressionKind_Contents:
+                                requestStr = @"MESSAGEBODY:%@";
+                                break;
+                                
+                            default:
+                                SM_FATAL(@"unknown token kind %lu", token.kind);
+                                break;
+                        }
+
+                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"%@:%@ ", requestStr, token.string]];
+                    }
                 }
                 
                 selectSql = [selectSql stringByAppendingString:@"'"];
+                
+                SM_LOG_INFO(@"Request: %@", selectSql);
                 
                 sqlite3_stmt *selectStatement = NULL;
                 const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, selectSql.UTF8String, -1, &selectStatement, NULL);

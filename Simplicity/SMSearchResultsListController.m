@@ -409,43 +409,44 @@ const char *const mcoOpKinds[] = {
     // Trigger parallel DB search.
     //
     
-    // TODO: add search criteria using _searchTokens to each of these DB searches
-    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
-        for(SMTextMessage *m in textMessages) {
-            if(m.from != nil) {
-                [_suggestionResultsContacts addObject:m.from];
-            }
+    if(_mainSearchPart != nil && _mainSearchPart.length > 0) {
+        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+            for(SMTextMessage *m in textMessages) {
+                if(m.from != nil) {
+                    [_suggestionResultsContacts addObject:m.from];
+                }
 
-            if(m.toList != nil) {
-                [_suggestionResultsContacts addObjectsFromArray:m.toList];
+                if(m.toList != nil) {
+                    [_suggestionResultsContacts addObjectsFromArray:m.toList];
+                }
+                
+                if(m.ccList != nil) {
+                    [_suggestionResultsContacts addObjectsFromArray:m.ccList];
+                }
             }
             
-            if(m.ccList != nil) {
-                [_suggestionResultsContacts addObjectsFromArray:m.ccList];
+            SM_LOG_INFO(@"Total %lu messages with matching contacts found", textMessages.count);
+            
+            [self updateSearchImapMessages:@[]];
+        }];
+
+        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+            for(SMTextMessage *m in textMessages) {
+                [_suggestionResultsSubjects addObject:m.subject];
             }
-        }
-        
-        SM_LOG_INFO(@"Total %lu messages with matching contacts found", textMessages.count);
-        
-        [self updateSearchImapMessages:@[]];
-    }];
+            
+            SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
+            
+            [self updateSearchImapMessages:@[]];
+        }];
 
-    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
-        for(SMTextMessage *m in textMessages) {
-            [_suggestionResultsSubjects addObject:m.subject];
-        }
-        
-        SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
-        
-        [self updateSearchImapMessages:@[]];
-    }];
-
-//    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
-//        for(SMTextMessage *m in textMessages) {
-//            SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
-//        }
-//    }];
-
+//        [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
+//            for(SMTextMessage *m in textMessages) {
+//                SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
+//            }
+//        }];
+    }
+    
     //
     // Finish. Report if the caller should maintain the menu open or it should closed.
     //

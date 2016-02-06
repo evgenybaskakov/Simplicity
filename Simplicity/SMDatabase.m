@@ -1862,15 +1862,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
 }
 
-- (void)findMessages:(NSString*)folderName contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
-    [self findMessagesInternal:folderName contact:contact from:nil to:nil cc:nil subject:subject content:content block:getTextMessagesBlock];
-}
-
-- (void)findMessages:(NSString*)folderName from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
-    [self findMessagesInternal:folderName contact:nil from:from to:to cc:cc subject:subject content:content block:getTextMessagesBlock];
-}
-
-- (void)findMessagesInternal:(NSString*)folderName contact:(NSString*)contact from:(NSString*)from to:(NSString*)to cc:(NSString*)cc subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
+- (void)findMessages:(NSString*)folderName tokens:(NSArray<SMSearchToken*>*)tokens contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock {
     void (^op)() = ^{
         NSMutableArray<SMTextMessage*> *textMessages = [NSMutableArray array];
         
@@ -1889,7 +1881,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 if(contact && contact.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ OR TO:%@ OR CC:%@ ", contact, contact, contact]];
                 }
-                else {
+                
+/*                 {
                     if(from && from.length > 0) {
                         selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"FROM:%@ ", from]];
                     }
@@ -1902,6 +1895,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"CC:%@ ", cc]];
                     }
                 }
+*/
                 
                 if(subject && subject.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
@@ -1929,6 +1923,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 while(true) {
                     const int sqlLoadResult = sqlite3_step(selectStatement);
                     if(sqlLoadResult == SQLITE_ROW) {
+                        NSString *from = nil, *to = nil, *cc = nil; // TODO
+                        
                         uint32_t uid = sqlite3_column_int(selectStatement, 0);
                         
                         const char *fromText = (const char *)sqlite3_column_text(selectStatement, 1);

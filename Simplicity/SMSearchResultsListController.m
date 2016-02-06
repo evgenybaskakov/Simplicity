@@ -12,6 +12,7 @@
 #import "SMDatabase.h"
 #import "SMStringUtils.h"
 #import "SMAddress.h"
+#import "SMSearchToken.h"
 #import "SMSearchDescriptor.h"
 #import "SMTextMessage.h"
 #import "SMMailbox.h"
@@ -23,14 +24,6 @@
 #import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
 #import "SMSectionMenuViewController.h"
-
-typedef NS_ENUM(NSUInteger, SearchExpressionKind) {
-    SearchExpressionKind_To,
-    SearchExpressionKind_From,
-    SearchExpressionKind_Cc,
-    SearchExpressionKind_Subject,
-    SearchExpressionKind_Contents,
-};
 
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
@@ -89,30 +82,10 @@ const char *const mcoOpKinds[] = {
 }
 @end
 
-@interface SearchToken : NSObject
-@property (readonly) SearchExpressionKind kind;
-@property (readonly) NSString *string;
-@end
-
-@implementation SearchToken
-- (id)initWithKind:(SearchExpressionKind)kind string:(NSString*)string {
-    self = [super init];
-    
-    if(self) {
-        SM_LOG_INFO(@"kind %u, string %@", (unsigned int)kind, string);
-                    
-        _kind = kind;
-        _string = string;
-    }
-    
-    return self;
-}
-@end
-
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
     NSString *_originalSearchString;
-    NSArray<SearchToken*> *_searchTokens;
+    NSArray<SMSearchToken*> *_searchTokens;
     NSString *_mainSearchPart;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
@@ -154,8 +127,8 @@ const char *const mcoOpKinds[] = {
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
 
-- (NSArray<SearchToken*>*)parseSearchString:(NSString*)searchString mainSearchPart:(NSString**)mainSearchPart {
-    NSMutableArray<SearchToken*> *tokens = [NSMutableArray array];
+- (NSArray<SMSearchToken*>*)parseSearchString:(NSString*)searchString mainSearchPart:(NSString**)mainSearchPart {
+    NSMutableArray<SMSearchToken*> *tokens = [NSMutableArray array];
     
     NSArray<NSString*> *expressions = @[
         @"to:",
@@ -232,7 +205,7 @@ const char *const mcoOpKinds[] = {
                             NSRange range = [rangeValue rangeValue];
                             maxExprOffset = MAX(maxExprOffset, r.location);
                             
-                            [tokens addObject:[[SearchToken alloc] initWithKind:exprKinds[i] string:[searchString substringWithRange:range]]];
+                            [tokens addObject:[[SMSearchToken alloc] initWithKind:exprKinds[i] string:[searchString substringWithRange:range]]];
                         }
                         else {
                             r.location++;
@@ -355,7 +328,7 @@ const char *const mcoOpKinds[] = {
         for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
             SearchExpressionKind kind = kinds[i];
 
-            MCOIMAPSearchExpression *searchExpression = [self buildSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
+            MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
             MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
 
             op.urgent = YES;
@@ -437,7 +410,7 @@ const char *const mcoOpKinds[] = {
     //
     
     // TODO: add search criteria using _searchTokens to each of these DB searches
-    [[[appDelegate model] database] findMessages:remoteFolderName contact:searchString subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
         for(SMTextMessage *m in textMessages) {
             if(m.from != nil) {
                 [_suggestionResultsContacts addObject:m.from];
@@ -457,7 +430,7 @@ const char *const mcoOpKinds[] = {
         [self updateSearchImapMessages:@[]];
     }];
 
-    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:searchString content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
         for(SMTextMessage *m in textMessages) {
             [_suggestionResultsSubjects addObject:m.subject];
         }
@@ -467,15 +440,11 @@ const char *const mcoOpKinds[] = {
         [self updateSearchImapMessages:@[]];
     }];
 
-/*
-    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:searchString block:^(NSArray<SMTextMessage*> *textMessages){
-        for(SMTextMessage *m in textMessages) {
-            [_suggestionResultsSubjects addObject:m.subject];
-            
-            [self updateSearchImapMessages:@[]];
-        }
-    }];
-*/
+//    [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
+//        for(SMTextMessage *m in textMessages) {
+//            SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
+//        }
+//    }];
 
     //
     // Finish. Report if the caller should maintain the menu open or it should closed.
@@ -531,7 +500,7 @@ const char *const mcoOpKinds[] = {
     }
 }
 
-- (MCOIMAPSearchExpression*)buildSearchExpression:(NSArray<SearchToken*>*)tokens mainSearchPart:(NSString*)mainSearchPart searchKind:(SearchExpressionKind)searchKind {
+- (MCOIMAPSearchExpression*)buildMCOSearchExpression:(NSArray<SMSearchToken*>*)tokens mainSearchPart:(NSString*)mainSearchPart searchKind:(SearchExpressionKind)searchKind {
     MCOIMAPSearchExpression *expression = nil;
     
     for(NSUInteger i = 0; i < tokens.count; i++) {
@@ -759,11 +728,11 @@ const char *const mcoOpKinds[] = {
     }
 }
 
-- (NSString*)buildSearchString:(NSArray<SearchToken*>*)tokens {
+- (NSString*)buildSearchString:(NSArray<SMSearchToken*>*)tokens {
     NSString *string = @"";
     
     for(NSUInteger i = 0; i < tokens.count; i++) {
-        SearchToken *token = tokens[i];
+        SMSearchToken *token = tokens[i];
         string = [string stringByAppendingString:[self mapSearchPartToStringExpression:token.string kind:token.kind]];
         
         if(i + 1 < tokens.count) {

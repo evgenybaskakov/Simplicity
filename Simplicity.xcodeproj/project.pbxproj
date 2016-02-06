@@ -219,6 +219,7 @@
 		80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */; };
 		80E6575D1B1D763C00A0AA81 /* SMOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575C1B1D763C00A0AA81 /* SMOperation.m */; };
 		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
+		80EC90EA1C65CC9500336312 /* SMSearchToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC90E91C65CC9500336312 /* SMSearchToken.m */; };
 		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
 		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
@@ -636,6 +637,8 @@
 		80E6575C1B1D763C00A0AA81 /* SMOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperation.m; sourceTree = "<group>"; };
 		80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpSendMessage.h; sourceTree = "<group>"; };
 		80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpSendMessage.m; sourceTree = "<group>"; };
+		80EC90E81C65CC9500336312 /* SMSearchToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchToken.h; sourceTree = "<group>"; };
+		80EC90E91C65CC9500336312 /* SMSearchToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchToken.m; sourceTree = "<group>"; };
 		80F7EA701B8009290000992E /* SMMessageWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageWindowController.h; sourceTree = "<group>"; };
 		80F7EA711B8009290000992E /* SMMessageWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageWindowController.m; sourceTree = "<group>"; };
 		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
@@ -819,6 +822,8 @@
 				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
 				80D1AAE71C4B7D170076DDFA /* SMSearchFolder.h */,
 				80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */,
+				80EC90E81C65CC9500336312 /* SMSearchToken.h */,
+				80EC90E91C65CC9500336312 /* SMSearchToken.m */,
 				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
 				00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */,
 				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
@@ -1386,6 +1391,7 @@
 				804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */,
 				802410731C1E880C00493FB4 /* SMLabelPreferencesViewController.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,
+				80EC90EA1C65CC9500336312 /* SMSearchToken.m in Sources */,
 				0097426E195686F900620145 /* SMMailboxViewController.m in Sources */,
 				80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */,
 				8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */,

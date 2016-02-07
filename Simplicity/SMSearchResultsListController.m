@@ -122,7 +122,7 @@ const char *const mcoOpKinds[] = {
     
     _subjectSearchResults = [MCOIndexSet indexSet];
     _contactSearchResults = [MCOIndexSet indexSet];
-
+    
     _suggestionResultsSubjects = [NSMutableOrderedSet orderedSet];
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
 }
@@ -131,12 +131,12 @@ const char *const mcoOpKinds[] = {
     NSMutableArray<SMSearchToken*> *tokens = [NSMutableArray array];
     
     NSArray<NSString*> *expressions = @[
-        @"to:",
-        @"from:",
-        @"cc:",
-        @"subject:",
-        @"contains:"
-    ];
+                                        @"to:",
+                                        @"from:",
+                                        @"cc:",
+                                        @"subject:",
+                                        @"contains:"
+                                        ];
     
     SearchExpressionKind exprKinds[] = {
         SearchExpressionKind_To,
@@ -164,13 +164,13 @@ const char *const mcoOpKinds[] = {
                     while(r.location < searchString.length && isspace([searchString characterAtIndex:r.location])) {
                         r.location++;
                     }
-
+                    
                     if(r.location < searchString.length) {
                         NSValue *rangeValue = nil;
                         
                         if([searchString characterAtIndex:r.location] == '(') {
                             NSRange rr = [searchString rangeOfString:@")" options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
-
+                            
                             if(rr.location != NSNotFound) {
                                 if(r.location + 1 < rr.location) {
                                     rangeValue = [NSValue valueWithRange:NSMakeRange(r.location + 1, rr.location - r.location - 1)];
@@ -186,7 +186,7 @@ const char *const mcoOpKinds[] = {
                         }
                         else {
                             NSRange rr = [searchString rangeOfString:@" " options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
-
+                            
                             if(rr.location != NSNotFound) {
                                 if(r.location < rr.location) {
                                     rangeValue = [NSValue valueWithRange:NSMakeRange(r.location, rr.location - r.location)];
@@ -219,7 +219,7 @@ const char *const mcoOpKinds[] = {
             else {
                 searchRange.location++;
             }
-
+            
             if(r.location >= searchString.length) {
                 break;
             }
@@ -229,11 +229,11 @@ const char *const mcoOpKinds[] = {
         
         i++;
     }
-
+    
     while(maxExprOffset < searchString.length && isspace([searchString characterAtIndex:maxExprOffset])) {
         maxExprOffset++;
     }
-
+    
     if(maxExprOffset < searchString.length) {
         NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
         *mainSearchPart = [searchString substringWithRange:range];
@@ -241,14 +241,14 @@ const char *const mcoOpKinds[] = {
     else {
         *mainSearchPart = nil;
     }
-
+    
     return tokens;
 }
 
 - (BOOL)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
-
+    
     NSString *mainSearchPart;
     _searchTokens = [self parseSearchString:searchString mainSearchPart:&mainSearchPart];
     NSAssert(_searchTokens.count != 0 || mainSearchPart != nil, @"no search tokens");
@@ -267,14 +267,14 @@ const char *const mcoOpKinds[] = {
     
     if(existingLocalFolder == nil) {
         // TODO: handle search in search results differently
-
+        
         NSString *allMailFolder = [[[[appDelegate model] mailbox] allMailFolder] fullName];
         if(allMailFolder != nil) {
             SM_LOG_DEBUG(@"searching in all mail");
             remoteFolderName = allMailFolder;
         } else {
             NSAssert(nil, @"no all mail folder, revise this logic!");
-
+            
             // TODO: will require another logic for non-gmail accounts
             remoteFolderName = [[[[appDelegate model] messageListController] currentLocalFolder] localName];
         }
@@ -290,28 +290,28 @@ const char *const mcoOpKinds[] = {
         }
         
         searchDescriptor = [[SMSearchDescriptor alloc] init:searchString localFolder:searchResultsLocalFolder remoteFolder:remoteFolderName];
-
+        
         [_searchResults setObject:searchDescriptor forKey:searchResultsLocalFolder];
         [_searchResultsFolderNames addObject:searchResultsLocalFolder];
     } else {
         searchResultsLocalFolder = existingLocalFolder;
-
+        
         searchDescriptor = [_searchResults objectForKey:existingLocalFolder];
         NSAssert(searchDescriptor != nil, @"no search descriptor for existing search results");
-    
+        
         NSInteger index = [self getSearchIndex:searchResultsLocalFolder];
         NSAssert(index >= 0, @"no index for existing search results folder");
-
+        
         remoteFolderName = [searchDescriptor remoteFolder];
         NSAssert(searchDescriptor != nil, @"no search descriptor found for exiting local folder");
         
         [searchDescriptor clearState];
     }
-
+    
     [[[appDelegate appController] searchResultsListViewController] reloadData];
     
     [self clearPreviousSearch];
-    [self updateSearchImapMessages:@[]];
+    [self updateSearchMenuContent:@[]];
     
     //
     // Load search results to the suggestions menu.
@@ -327,35 +327,35 @@ const char *const mcoOpKinds[] = {
         
         for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
             SearchExpressionKind kind = kinds[i];
-
+            
             MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
             MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
-
+            
             op.urgent = YES;
             
             [op start:^(NSError *error, MCOIndexSet *uids) {
                 SearchOpInfo *opInfo = _suggestionSearchOps[i];
-            
+                
                 if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
                     SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
                     
                     if(uids.count > 0) {
                         [self updateSuggestionSearchResults:uids kind:opInfo.kind];
-
+                        
                         MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
-
+                        
                         op.urgent = YES;
-
+                        
                         [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
                             if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                                [self updateSearchImapMessages:imapMessages];
+                                [self updateSearchMenuContent:imapMessages];
                                 [self checkSuggestionSearchCompletion];
                             }
                             else {
                                 SM_LOG_INFO(@"previous search aborted");
                             }
                         }];
-
+                        
                         opInfo.op = op;
                     }
                     else {
@@ -366,7 +366,7 @@ const char *const mcoOpKinds[] = {
                     SM_LOG_INFO(@"previous search aborted");
                 }
             }];
-
+            
             [_suggestionSearchOps addObject:[[SearchOpInfo alloc] initWithOp:op kind:kind]];
         }
     }
@@ -395,7 +395,7 @@ const char *const mcoOpKinds[] = {
             
             [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
             [[[appDelegate appController] searchResultsListViewController] reloadData];
-
+            
             _contentSearchOp = nil;
         }
         else {
@@ -404,7 +404,7 @@ const char *const mcoOpKinds[] = {
     }];
     
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
-
+    
     //
     // Trigger parallel DB search.
     //
@@ -415,7 +415,7 @@ const char *const mcoOpKinds[] = {
                 if(m.from != nil) {
                     [_suggestionResultsContacts addObject:m.from];
                 }
-
+                
                 if(m.toList != nil) {
                     [_suggestionResultsContacts addObjectsFromArray:m.toList];
                 }
@@ -427,9 +427,9 @@ const char *const mcoOpKinds[] = {
             
             SM_LOG_INFO(@"Total %lu messages with matching contacts found", textMessages.count);
             
-            [self updateSearchImapMessages:@[]];
+            [self updateSearchMenuContent:@[]];
         }];
-
+        
         [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
             for(SMTextMessage *m in textMessages) {
                 [_suggestionResultsSubjects addObject:m.subject];
@@ -437,14 +437,14 @@ const char *const mcoOpKinds[] = {
             
             SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
             
-            [self updateSearchImapMessages:@[]];
+            [self updateSearchMenuContent:@[]];
         }];
-
-//        [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
-//            for(SMTextMessage *m in textMessages) {
-//                SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
-//            }
-//        }];
+        
+        //        [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
+        //            for(SMTextMessage *m in textMessages) {
+        //                SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
+        //            }
+        //        }];
     }
     
     //
@@ -579,50 +579,50 @@ const char *const mcoOpKinds[] = {
 
 - (void)removeSearch:(NSInteger)index {
     SM_LOG_DEBUG(@"request for index %ld", index);
-
+    
     NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
-
+    
     [_searchResults removeObjectForKey:[_searchResultsFolderNames objectAtIndex:index]];
     [_searchResultsFolderNames removeObjectAtIndex:index];
 }
 
 - (void)reloadSearch:(NSInteger)index {
     SM_LOG_DEBUG(@"request for index %ld", index);
-
+    
     NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
     
     SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
-
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     
     [localFolder clearMessages];
-
+    
     Boolean preserveSelection = NO;
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
-
+    
     [self startNewSearch:searchDescriptor.searchPattern exitingLocalFolder:localFolder.localName];
 }
 
 - (void)stopSearch:(NSInteger)index {
     SM_LOG_DEBUG(@"request for index %ld", index);
-
+    
     NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
-
+    
     // stop search op itself, if any
     [self clearPreviousSearch];
-
+    
     // stop message list loading, if anys
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
-
+    
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     [localFolder stopMessagesLoading:NO];
     
     searchDescriptor.searchStopped = true;
-
+    
     // TODO: stop message bodies loading?
 }
 
@@ -637,7 +637,7 @@ const char *const mcoOpKinds[] = {
     return searchDescriptor.searchStopped;
 }
 
-- (void)updateSearchImapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)updateSearchMenuContent:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
@@ -646,7 +646,7 @@ const char *const mcoOpKinds[] = {
     //
     // Contents.
     //
-
+    
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
@@ -656,66 +656,78 @@ const char *const mcoOpKinds[] = {
     // Subjects.
     //
     
-    for(MCOIMAPMessage *imapMessage in imapMessages) {
-        if([_subjectSearchResults containsIndex:imapMessage.uid]) {
-            NSString *subject = imapMessage.header.subject;
-            
-            if(subject != nil) {
-                [_suggestionResultsSubjects addObject:subject];
-            }
-        }
-    }
-
-    if(_suggestionResultsSubjects.count > 0) {
-        NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-            return [str1 compare:str2];
-        }];
-        
-        NSString *section = @"Subjects";
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        
-        for(NSString *subject in sortedSubjects) {
-            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
-        }
-    }
-
-    //
-    // Contacts.
-    //
-
-    for(MCOIMAPMessage *imapMessage in imapMessages) {
-        if([_contactSearchResults containsIndex:imapMessage.uid]) {
-            NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
-            [addresses addObjectsFromArray:imapMessage.header.cc];
-            [addresses addObject:imapMessage.header.from];
-            
-            for(MCOAddress *address in addresses) {
-                NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
+    {
+        for(MCOIMAPMessage *imapMessage in imapMessages) {
+            if([_subjectSearchResults containsIndex:imapMessage.uid]) {
+                NSString *subject = imapMessage.header.subject;
                 
-                if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
-                    NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
-                
-                    SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
-                    
-                    [_suggestionResultsContacts addObject:displayContactAddress];
+                if(subject != nil) {
+                    [_suggestionResultsSubjects addObject:subject];
                 }
             }
         }
-    }
-
-    if(_suggestionResultsContacts.count > 0) {
-        NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-            return [str1 compare:str2];
-        }];
         
-        NSString *section = @"Contacts";
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        
-        for(NSString *contact in sortedContacts) {
-            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
+        if(_mainSearchPart != nil || _suggestionResultsSubjects.count > 0) {
+            NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+                return [str1 compare:str2];
+            }];
+            
+            NSString *section = @"Subjects";
+            [[[appDelegate appController] searchMenuViewController] addSection:section];
+            
+            if(_mainSearchPart != nil) {
+                [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForSubjectAction:)];
+            }
+            
+            for(NSString *subject in sortedSubjects) {
+                [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
+            }
         }
     }
-
+    
+    //
+    // Contacts.
+    //
+    
+    {
+        for(MCOIMAPMessage *imapMessage in imapMessages) {
+            if([_contactSearchResults containsIndex:imapMessage.uid]) {
+                NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
+                [addresses addObjectsFromArray:imapMessage.header.cc];
+                [addresses addObject:imapMessage.header.from];
+                
+                for(MCOAddress *address in addresses) {
+                    NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
+                    
+                    if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
+                        NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
+                        
+                        SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
+                        
+                        [_suggestionResultsContacts addObject:displayContactAddress];
+                    }
+                }
+            }
+        }
+        
+        if(_mainSearchPart != nil || _suggestionResultsContacts.count > 0) {
+            NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+                return [str1 compare:str2];
+            }];
+            
+            NSString *section = @"Contacts";
+            [[[appDelegate appController] searchMenuViewController] addSection:section];
+            
+            if(_mainSearchPart != nil) {
+                [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContactAction:)];
+            }
+            
+            for(NSString *contact in sortedContacts) {
+                [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
+            }
+        }
+    }
+    
     [[[appDelegate appController] searchMenuViewController] reloadItems];
     [[appDelegate appController] adjustSearchMenuFrame];
 }
@@ -724,8 +736,8 @@ const char *const mcoOpKinds[] = {
     if(_subjectSearchResults.count == 0 && _contactSearchResults.count == 0) {
         [_suggestionResultsSubjects removeAllObjects];
         [_suggestionResultsContacts removeAllObjects];
-
-        [self updateSearchImapMessages:@[]];
+        
+        [self updateSearchMenuContent:@[]];
     }
 }
 

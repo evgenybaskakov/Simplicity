@@ -94,6 +94,7 @@ const char *const mcoOpKinds[] = {
     SearchOpInfo *_contentSearchOp;
     NSMutableOrderedSet *_suggestionResultsSubjects;
     NSMutableOrderedSet *_suggestionResultsContacts;
+    MCOIndexSet *_searchMessagesUIDs;
 }
 
 - (id)init {
@@ -125,6 +126,8 @@ const char *const mcoOpKinds[] = {
     
     _suggestionResultsSubjects = [NSMutableOrderedSet orderedSet];
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
+    
+    _searchMessagesUIDs = nil;
 }
 
 - (NSArray<SMSearchToken*>*)parseSearchString:(NSString*)searchString mainSearchPart:(NSString**)mainSearchPart {
@@ -384,17 +387,12 @@ const char *const mcoOpKinds[] = {
     MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:MCOIMAPSearchKindContent searchString:searchString];
     
     op.urgent = NO;
-    
+  
     [op start:^(NSError *error, MCOIndexSet *uids) {
         if(_contentSearchOp.op == op) {
-            SM_LOG_INFO(@"content search: %u messages found in remote folder %@", uids.count, remoteFolderName);
-            
-            searchDescriptor.messagesLoadingStarted = YES;
-            
-            [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
-            
-            [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
-            [[[appDelegate appController] searchResultsListViewController] reloadData];
+            SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+
+            [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
             
             _contentSearchOp = nil;
         }
@@ -440,11 +438,17 @@ const char *const mcoOpKinds[] = {
             [self updateSearchMenuContent:@[]];
         }];
         
-        //        [[[appDelegate model] database] findMessages:remoteFolderName contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages){
-        //            for(SMTextMessage *m in textMessages) {
-        //                SM_LOG_INFO(@"UID %u, subject '%@'", m.uid, m.subject);
-        //            }
-        //        }];
+        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+            MCOIndexSet *uids = [MCOIndexSet indexSet];
+            
+            for(SMTextMessage *m in textMessages) {
+                [uids addIndex:m.uid];
+            }
+
+            SM_LOG_INFO(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+            
+            [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+        }];
     }
     
     //
@@ -457,6 +461,26 @@ const char *const mcoOpKinds[] = {
     else {
         return FALSE;
     }
+}
+
+- (void)loadSearchResults:(MCOIndexSet*)uids remoteFolderToSearch:(NSString*)remoteFolderName searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
+    if(_searchMessagesUIDs == nil) {
+        _searchMessagesUIDs = uids;
+    }
+    else {
+        [_searchMessagesUIDs addIndexSet:uids];
+    }
+    
+    SMSearchDescriptor *searchDescriptor = [_searchResults objectForKey:searchResultsLocalFolder];
+    NSAssert(searchDescriptor != nil, @"searchDescriptor == nil");
+
+    searchDescriptor.messagesLoadingStarted = YES;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+    
+    [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
+    [[[appDelegate appController] searchResultsListViewController] reloadData];
 }
 
 - (NSString*)extractEmailFromAddressString:(NSString*)string {

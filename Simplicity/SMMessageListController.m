@@ -118,11 +118,16 @@
     [_currentFolder stopMessagesLoading:NO];
 }
 
-- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
+- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder updateResults:(BOOL)updateResults {
     [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     
+    if(!updateResults) {
+        // Starting a new search. So previous must be stopped, if any.
+        [_currentFolder stopMessagesLoading:YES];
+    }
+    
     NSAssert([_currentFolder isKindOfClass:[SMSearchFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
-    [(SMSearchFolder*)_currentFolder loadSelectedMessages:searchResults];
+    [(SMSearchFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateResults];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];

@@ -400,7 +400,7 @@ const char *const mcoOpKinds[] = {
             SM_LOG_INFO(@"previous content search aborted");
         }
     }];
-    
+ 
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
     
     //
@@ -464,11 +464,17 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)uids remoteFolderToSearch:(NSString*)remoteFolderName searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
+    BOOL updateResults;
+    
     if(_searchMessagesUIDs == nil) {
         _searchMessagesUIDs = uids;
+        
+        updateResults = NO;
     }
     else {
         [_searchMessagesUIDs addIndexSet:uids];
+        
+        updateResults = YES;
     }
     
     SMSearchDescriptor *searchDescriptor = [_searchResults objectForKey:searchResultsLocalFolder];
@@ -477,7 +483,7 @@ const char *const mcoOpKinds[] = {
     searchDescriptor.messagesLoadingStarted = YES;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+    [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder updateResults:updateResults];
     
     [[[appDelegate appController] searchResultsListViewController] selectSearchResult:searchResultsLocalFolder];
     [[[appDelegate appController] searchResultsListViewController] reloadData];
@@ -621,7 +627,7 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     
-    [localFolder clearMessages];
+    [localFolder stopMessagesLoading:YES];
     
     Boolean preserveSelection = NO;
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];

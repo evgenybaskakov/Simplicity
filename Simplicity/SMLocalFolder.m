@@ -48,7 +48,6 @@
         _fetchMessageThreadsHeadersOps = [NSMutableDictionary new];
         _searchMessageThreadsOps = [NSMutableDictionary new];
         _syncedWithRemoteFolder = syncWithRemoteFolder;
-        _selectedMessageUIDsToLoad = nil;
         _totalMemory = 0;
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
@@ -551,10 +550,6 @@
     if(stopBodiesLoading) {
         [_messageBodyFetchQueue stopBodiesLoading];
     }
-}
-
-- (void)clearMessages {
-    [self stopMessagesLoading:YES];
 }
 
 - (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {

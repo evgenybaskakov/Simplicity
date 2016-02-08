@@ -53,7 +53,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     @protected NSMutableDictionary *_searchMessageThreadsOps;
     @protected NSMutableDictionary *_fetchMessageThreadsHeadersOps;
     @protected NSMutableDictionary *_fetchedMessageHeaders;
-    @protected MCOIndexSet *_selectedMessageUIDsToLoad;
     @protected uint64_t _totalMemory;
     @protected BOOL _loadingFromDB;
     @protected BOOL _dbSyncInProgress;
@@ -92,10 +91,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 // stops message headers and, optionally, bodies loading
 - (void)stopMessagesLoading:(Boolean)stopBodiesLoading;
-
-// stops message headers and bodies loading; also stops sync, if any
-// then removes the local folder contents (does not affect the remote folder, if any)
-- (void)clearMessages;
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.

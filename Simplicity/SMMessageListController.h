@@ -21,7 +21,7 @@
 - (void)clearCurrentFolderSelection;
 - (SMLocalFolder*)currentLocalFolder;
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
-- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder;
+- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder updateResults:(BOOL)updateResults;
 - (void)scheduleMessageListUpdate:(Boolean)now;
 - (void)cancelScheduledMessageListUpdate;
 - (void)cancelMessageListUpdate;

@@ -34,7 +34,8 @@
 
 @implementation SMSearchFolder {
     MCOIndexSet *_allSelectedMessageUIDsToLoad;
-    MCOIndexSet *_restOfSelectedMessageUIDsToLoad;
+    MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromDB;
+    MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromServer;
 }
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
@@ -62,7 +63,7 @@
     if(updateResults) {
         NSAssert(_allSelectedMessageUIDsToLoad.count > 0, @"no active selected message loading");
         
-        BOOL loadingFinished = (_restOfSelectedMessageUIDsToLoad.count == 0);
+        BOOL loadingFinished = (_restOfSelectedMessageUIDsToLoadFromDB.count == 0 && _restOfSelectedMessageUIDsToLoadFromServer.count == 0);
         if(loadingFinished) {
             NSAssert(nil, @"TODO");
         }
@@ -70,10 +71,11 @@
             MCOIndexSet *newMessageUIDs = messageUIDs;
             [newMessageUIDs removeIndexSet:_allSelectedMessageUIDsToLoad];
             
-            [_restOfSelectedMessageUIDsToLoad addIndexSet:newMessageUIDs];
             [_allSelectedMessageUIDsToLoad addIndexSet:newMessageUIDs];
+            [_restOfSelectedMessageUIDsToLoadFromDB addIndexSet:newMessageUIDs];
+            [_restOfSelectedMessageUIDsToLoadFromServer addIndexSet:newMessageUIDs];
 
-            SM_LOG_INFO(@"updating existing message loading: %u new messages (_allSelectedMessageUIDsToLoad %u, _restOfSelectedMessageUIDsToLoad %u)", newMessageUIDs.count, _allSelectedMessageUIDsToLoad.count, _restOfSelectedMessageUIDsToLoad.count);
+            SM_LOG_INFO(@"updating existing message loading: %u new messages (_allSelectedMessageUIDsToLoad %u, _restOfSelectedMessageUIDsToLoadFromDB %u, _restOfSelectedMessageUIDsToLoadFromServer %u)", newMessageUIDs.count, _allSelectedMessageUIDsToLoad.count, _restOfSelectedMessageUIDsToLoadFromDB.count, _restOfSelectedMessageUIDsToLoadFromServer.count);
             
             _totalMessagesCount += newMessageUIDs.count;
         }
@@ -83,10 +85,16 @@
         
         [_messageStorage startUpdate:_localName];
         
-        _allSelectedMessageUIDsToLoad = messageUIDs;
-        _restOfSelectedMessageUIDsToLoad = messageUIDs;
+        _allSelectedMessageUIDsToLoad = [MCOIndexSet indexSet];
+        [_allSelectedMessageUIDsToLoad addIndexSet:messageUIDs];
         
-        _totalMessagesCount = _restOfSelectedMessageUIDsToLoad.count;
+        _restOfSelectedMessageUIDsToLoadFromDB = [MCOIndexSet indexSet];
+        [_restOfSelectedMessageUIDsToLoadFromDB addIndexSet:messageUIDs];
+        
+        _restOfSelectedMessageUIDsToLoadFromServer = [MCOIndexSet indexSet];
+        [_restOfSelectedMessageUIDsToLoadFromServer addIndexSet:messageUIDs];
+
+        _totalMessagesCount = _allSelectedMessageUIDsToLoad.count;
         
         [self loadSelectedMessagesInternal];
     }
@@ -98,7 +106,7 @@
         return;
     }
     
-    if(_restOfSelectedMessageUIDsToLoad == nil) {
+    if(_allSelectedMessageUIDsToLoad == nil) {
         SM_LOG_WARNING(@"no message uids to load in folder %@", _localName);
         return;
     }
@@ -114,7 +122,7 @@
         SM_LOG_DEBUG(@"all %lu message headers fetched, stopping", _totalMessagesCount);
     } else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
         SM_LOG_DEBUG(@"fetched %lu message headers, stopping", _messageHeadersFetched);
-    } else if(_restOfSelectedMessageUIDsToLoad.count > 0) {
+    } else if(_restOfSelectedMessageUIDsToLoadFromDB.count > 0 || _restOfSelectedMessageUIDsToLoadFromServer.count > 0) {
         finishFetch = NO;
     }
     
@@ -128,10 +136,13 @@
         return;
     }
     
-    MCOIndexSet *const messageUIDsToLoadNow = [MCOIndexSet indexSet];
-    MCORange *const ranges = [_restOfSelectedMessageUIDsToLoad allRanges];
+    BOOL loadFromDB = (_restOfSelectedMessageUIDsToLoadFromDB.count > 0? YES : NO);
+    MCOIndexSet *const restOfMessages = loadFromDB? _restOfSelectedMessageUIDsToLoadFromDB : _restOfSelectedMessageUIDsToLoadFromServer;
     
-    for(unsigned int i = [_restOfSelectedMessageUIDsToLoad rangesCount]; i > 0; i--) {
+    MCOIndexSet *const messageUIDsToLoadNow = [MCOIndexSet indexSet];
+    MCORange *const ranges = [restOfMessages allRanges];
+    
+    for(unsigned int i = [restOfMessages rangesCount]; i > 0; i--) {
         const MCORange currentRange = ranges[i-1];
         const NSUInteger len = MCORangeRightBound(currentRange) - MCORangeLeftBound(currentRange) + 1;
         const NSUInteger maxCountToLoad = MESSAGE_HEADERS_TO_FETCH_AT_ONCE - messageUIDsToLoadNow.count;
@@ -148,31 +159,46 @@
         }
     }
     
-    SM_LOG_DEBUG(@"loading %u of %u search results...", messageUIDsToLoadNow.count, _restOfSelectedMessageUIDsToLoad.count);
-    
-    NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
-    
-    _fetchMessageHeadersOp = [session fetchMessagesOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind uids:messageUIDsToLoadNow];
-    
-    _fetchMessageHeadersOp.urgent = YES;
-    
-    [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
-        _fetchMessageHeadersOp = nil;
+    if(loadFromDB) {
+        SM_LOG_INFO(@"loading %u of %u search results from database", messageUIDsToLoadNow.count, restOfMessages.count);
         
-        if(error == nil) {
-            SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
+        [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
+            [_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
+
+            [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+        }];
+    }
+    else {
+        SM_LOG_INFO(@"loading %u of %u search results from server", messageUIDsToLoadNow.count, restOfMessages.count);
+
+        NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
+        
+        _fetchMessageHeadersOp = [session fetchMessagesOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind uids:messageUIDsToLoadNow];
+        
+        _fetchMessageHeadersOp.urgent = YES;
+        
+        [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
+            _fetchMessageHeadersOp = nil;
             
-            [_restOfSelectedMessageUIDsToLoad removeIndexSet:messageUIDsToLoadNow];
-            
-            _messageHeadersFetched += [messages count];
-            
-            [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
-            
-            [self loadSelectedMessagesInternal];
-        } else {
-            SM_LOG_ERROR(@"Error downloading search results: %@", error);
-        }
-    }];
+            if(error == nil) {
+                [_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
+                
+                [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+            } else {
+                SM_LOG_ERROR(@"Error downloading search results: %@", error);
+            }
+        }];
+    }
+}
+
+- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*> *)messages messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
+    SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
+    
+    _messageHeadersFetched += [messages count];
+    
+    [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
+    
+    [self loadSelectedMessagesInternal];
 }
 
 @end

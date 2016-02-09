@@ -1494,66 +1494,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 NSNumber *folderId = [_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
-
+                    
                     [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
                 
-                BOOL dbQueryFailed = NO;
-                int dbQueryError = SQLITE_OK;
-                
-                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ WHERE UID = %u", folderId, uid];
-                const char *folderSelectStmt = [folderSelectSql UTF8String];
-                
-                sqlite3_stmt *statement = NULL;
-                const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
-                
-                if(sqlSelectPrepareResult == SQLITE_OK) {
-                    const int stepResult = sqlite3_step(statement);
-                    if(stepResult == SQLITE_ROW) {
-                        int dataSize = sqlite3_column_bytes(statement, 0);
-                        NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
-                        NSData *uncompressedData = [SMCompression gzipInflate:data];
-                        
-                        message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
-                        if(message == nil) {
-                            SM_LOG_ERROR(@"could not decode IMAP message");
-
-                            dbQueryFailed = YES;
-                        }
-                    }
-                    else if(stepResult == SQLITE_DONE) {
-                        SM_LOG_DEBUG(@"message with uid %u from folder '%@' (%@) not found", uid, folderName, folderId);
-                    }
-                    else {
-                        SM_LOG_ERROR(@"could not load message with uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
-                        
-                        dbQueryFailed = YES;
-                        dbQueryError = stepResult;
-                    }
-                }
-                else {
-                    SM_LOG_ERROR(@"could not prepare select statement for uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
-
-                    dbQueryFailed = YES;
-                    dbQueryError = sqlSelectPrepareResult;
-                }
-                
-                const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
-                
-                if(dbQueryFailed) {
-                    SM_LOG_ERROR(@"database query failed");
-                    
-                    if(dbQueryError != SQLITE_OK) {
-                        [self triggerDBFailureWithSQLiteError:dbQueryError];
-                    }
-                    else {
-                        [self triggerDBFailure:DBFailure_CriticalDataNotFound];
-                    }
-                    
-                    break;
-                }
+                message = [self loadMessageHeader:uid folderName:folderName folderId:folderId database:database];
             } while(FALSE);
             
             [self closeDatabase:database];
@@ -1565,6 +1511,103 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
+}
+
+- (void)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uids block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        NSMutableArray *messages = [NSMutableArray array];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
+        
+        if(database != nil) {
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    break;
+                }
+                
+                [uids enumerateIndexes:^(uint64_t uidLong) {
+                    [messages addObject:[self loadMessageHeader:(uint32_t)uidLong folderName:folderName folderId:folderId database:database]];
+                }];
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            getMessagesBlock(messages);
+        });
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (MCOIMAPMessage*)loadMessageHeader:(uint32_t)uid folderName:(NSString*)folderName folderId:(NSNumber*)folderId database:(sqlite3*)database {
+    MCOIMAPMessage *message = nil;
+    
+    BOOL dbQueryFailed = NO;
+    int dbQueryError = SQLITE_OK;
+    
+    NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ WHERE UID = %u", folderId, uid];
+    const char *folderSelectStmt = [folderSelectSql UTF8String];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
+    
+    if(sqlSelectPrepareResult == SQLITE_OK) {
+        const int stepResult = sqlite3_step(statement);
+        if(stepResult == SQLITE_ROW) {
+            int dataSize = sqlite3_column_bytes(statement, 0);
+            NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
+            NSData *uncompressedData = [SMCompression gzipInflate:data];
+            
+            message = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+            if(message == nil) {
+                SM_LOG_ERROR(@"could not decode IMAP message");
+                
+                dbQueryFailed = YES;
+            }
+        }
+        else if(stepResult == SQLITE_DONE) {
+            SM_LOG_DEBUG(@"message with uid %u from folder '%@' (%@) not found", uid, folderName, folderId);
+        }
+        else {
+            SM_LOG_ERROR(@"could not load message with uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
+            
+            dbQueryFailed = YES;
+            dbQueryError = stepResult;
+        }
+    }
+    else {
+        SM_LOG_ERROR(@"could not prepare select statement for uid %u from folder %@ (id %@), error %d", uid, folderName, folderId, sqlSelectPrepareResult);
+        
+        dbQueryFailed = YES;
+        dbQueryError = sqlSelectPrepareResult;
+    }
+    
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+    
+    if(dbQueryFailed) {
+        SM_LOG_ERROR(@"database query failed");
+        
+        if(dbQueryError != SQLITE_OK) {
+            [self triggerDBFailureWithSQLiteError:dbQueryError];
+        }
+        else {
+            [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+        }
+    }
+    
+    return message;
 }
 
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {

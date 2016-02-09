@@ -464,6 +464,10 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)uids remoteFolderToSearch:(NSString*)remoteFolderName searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
+    if(uids.count == 0) {
+        return;
+    }
+    
     BOOL updateResults;
     
     if(_searchMessagesUIDs == nil) {

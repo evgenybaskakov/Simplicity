@@ -1535,7 +1535,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 }
                 
                 [uids enumerateIndexes:^(uint64_t uidLong) {
-                    [messages addObject:[self loadMessageHeader:(uint32_t)uidLong folderName:folderName folderId:folderId database:database]];
+                    MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uidLong folderName:folderName folderId:folderId database:database];
+                    
+                    if(message != nil) {
+                        [messages addObject:message];
+                    }
                 }];
             } while(FALSE);
             

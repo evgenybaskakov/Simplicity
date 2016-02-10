@@ -671,96 +671,96 @@ const char *const mcoOpKinds[] = {
     return searchDescriptor.searchStopped;
 }
 
-- (void)updateSearchMenuContent:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)addContentsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
     NSAssert(_searchTokens.count > 0 || _mainSearchPart != nil, @"no search tokens");
-    
-    //
-    // Contents.
-    //
     
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
     [[[appDelegate appController] searchMenuViewController] addItem:(_mainSearchPart != nil? _mainSearchPart : @"??? TODO") section:section target:self action:@selector(searchForContentsAction:)];
-    
-    //
-    // Subjects.
-    //
-    
-    {
-        for(MCOIMAPMessage *imapMessage in imapMessages) {
-            if([_subjectSearchResults containsIndex:imapMessage.uid]) {
-                NSString *subject = imapMessage.header.subject;
+}
+
+- (void)addContactsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    for(MCOIMAPMessage *imapMessage in imapMessages) {
+        if([_contactSearchResults containsIndex:imapMessage.uid]) {
+            NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
+            [addresses addObjectsFromArray:imapMessage.header.cc];
+            [addresses addObject:imapMessage.header.from];
+            
+            for(MCOAddress *address in addresses) {
+                NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
-                if(subject != nil) {
-                    [_suggestionResultsSubjects addObject:subject];
-                }
-            }
-        }
-        
-        if(_mainSearchPart != nil || _suggestionResultsSubjects.count > 0) {
-            NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-                return [str1 compare:str2];
-            }];
-            
-            NSString *section = @"Subjects";
-            [[[appDelegate appController] searchMenuViewController] addSection:section];
-            
-            if(_mainSearchPart != nil) {
-                [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForSubjectAction:)];
-            }
-            
-            for(NSString *subject in sortedSubjects) {
-                [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
-            }
-        }
-    }
-    
-    //
-    // Contacts.
-    //
-    
-    {
-        for(MCOIMAPMessage *imapMessage in imapMessages) {
-            if([_contactSearchResults containsIndex:imapMessage.uid]) {
-                NSMutableArray *addresses = [NSMutableArray arrayWithArray:imapMessage.header.to];
-                [addresses addObjectsFromArray:imapMessage.header.cc];
-                [addresses addObject:imapMessage.header.from];
-                
-                for(MCOAddress *address in addresses) {
-                    NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
+                if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
+                    NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
                     
-                    if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
-                        NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
-                        
-                        SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
-                        
-                        [_suggestionResultsContacts addObject:displayContactAddress];
-                    }
+                    SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
+                    
+                    [_suggestionResultsContacts addObject:displayContactAddress];
                 }
             }
         }
+    }
+    
+    if(_mainSearchPart != nil || _suggestionResultsContacts.count > 0) {
+        NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2];
+        }];
         
-        if(_mainSearchPart != nil || _suggestionResultsContacts.count > 0) {
-            NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-                return [str1 compare:str2];
-            }];
+        NSString *section = @"Contacts";
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
+        
+        if(_mainSearchPart != nil) {
+            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContactAction:)];
+        }
+        
+        for(NSString *contact in sortedContacts) {
+            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
+        }
+    }
+}
+
+- (void)addSubjectsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    for(MCOIMAPMessage *imapMessage in imapMessages) {
+        if([_subjectSearchResults containsIndex:imapMessage.uid]) {
+            NSString *subject = imapMessage.header.subject;
             
-            NSString *section = @"Contacts";
-            [[[appDelegate appController] searchMenuViewController] addSection:section];
-            
-            if(_mainSearchPart != nil) {
-                [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContactAction:)];
-            }
-            
-            for(NSString *contact in sortedContacts) {
-                [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
+            if(subject != nil) {
+                [_suggestionResultsSubjects addObject:subject];
             }
         }
     }
+    
+    if(_mainSearchPart != nil || _suggestionResultsSubjects.count > 0) {
+        NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2];
+        }];
+        
+        NSString *section = @"Subjects";
+        [[[appDelegate appController] searchMenuViewController] addSection:section];
+        
+        if(_mainSearchPart != nil) {
+            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForSubjectAction:)];
+        }
+        
+        for(NSString *subject in sortedSubjects) {
+            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
+        }
+    }
+}
+
+- (void)updateSearchMenuContent:(NSArray<MCOIMAPMessage*>*)imapMessages {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchMenuViewController] clearAllItems];
+    
+    [self addContentsSection:imapMessages];
+    [self addContactsSection:imapMessages];
+    [self addSubjectsSection:imapMessages];
     
     [[[appDelegate appController] searchMenuViewController] reloadItems];
     [[appDelegate appController] adjustSearchMenuFrame];

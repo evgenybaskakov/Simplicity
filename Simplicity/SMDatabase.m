@@ -1924,17 +1924,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *selectSql = [NSString stringWithFormat:@"SELECT \"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\" FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH '", folderId, folderId];
+                NSString *selectSql = [NSString stringWithFormat:@"SELECT \"docid\", \"FROM\", \"TO\", \"CC\", \"SUBJECT\" FROM MESSAGETEXT%@ WHERE MESSAGETEXT%@ MATCH ", folderId, folderId];
                 
+                selectSql = [selectSql stringByAppendingString:@"'"];
+
                 // Encode the primary search criteria.
                 if(contact && contact.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"(FROM:%@ OR TO:%@ OR CC:%@) ", contact, contact, contact]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"(FROM: %@ OR TO: %@ OR CC: %@) ", contact, contact, contact]];
                 }
                 else if(subject && subject.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT:%@ ", subject]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"SUBJECT: %@ ", subject]];
                 }
                 else if(content && content.length > 0) {
-                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY:%@ ", content]];
+                    selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY: %@ ", content]];
                 }
                 else {
                     SM_FATAL(@"no contact, subject or content specified as main search criteria");
@@ -1944,26 +1946,26 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 if(tokens != nil) {
                     for(SMSearchToken *token in tokens) {
                         NSString *requestStr = nil;
-                        
+
                         switch(token.kind) {
                             case SearchExpressionKind_To:
-                                requestStr = @"TO:%@";
+                                requestStr = @"TO";
                                 break;
                                 
                             case SearchExpressionKind_From:
-                                requestStr = @"FROM:%@";
+                                requestStr = @"FROM";
                                 break;
                                 
                             case SearchExpressionKind_Cc:
-                                requestStr = @"CC:%@";
+                                requestStr = @"CC";
                                 break;
                                 
                             case SearchExpressionKind_Subject:
-                                requestStr = @"SUBJECT:%@";
+                                requestStr = @"SUBJECT";
                                 break;
                                 
                             case SearchExpressionKind_Contents:
-                                requestStr = @"MESSAGEBODY:%@";
+                                requestStr = @"MESSAGEBODY";
                                 break;
                                 
                             default:
@@ -1971,7 +1973,23 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                                 break;
                         }
 
-                        selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"%@:%@ ", requestStr, token.string]];
+                        if((token.kind == SearchExpressionKind_To) || (token.kind == SearchExpressionKind_From) || (token.kind == SearchExpressionKind_Cc)) {
+                            NSString *contactName = nil;
+                            NSString *email = [SMAddress extractEmailFromAddressString:token.string name:&contactName];
+                        
+                            if(contactName != nil && email != nil) {
+                                selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"AND (%@: %@ OR %@: %@) ", requestStr, contactName, requestStr, email]];
+                            }
+                            else if(contactName != nil) {
+                                selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"%@: %@ ", requestStr, contactName]];
+                            }
+                            else if(email != nil) {
+                                selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"%@: %@ ", requestStr, email]];
+                            }
+                        }
+                        else {
+                            selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"%@: %@ ", requestStr, token.string]];
+                        }
                     }
                 }
                 
@@ -1983,9 +2001,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, selectSql.UTF8String, -1, &selectStatement, NULL);
                 
                 if(sqlSelectPrepareResult != SQLITE_OK) {
-                    SM_LOG_ERROR(@"could not prepare select statement, error %d", sqlSelectPrepareResult);
-                    
-                    [self triggerDBFailureWithSQLiteError:sqlSelectPrepareResult];
+                    SM_LOG_ERROR(@"could not prepare select statement, error %d (%s)", sqlSelectPrepareResult, sqlite3_errmsg(database));
                     break;
                 }
                 
@@ -2022,7 +2038,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         break;
                     }
                     else {
-                        SM_LOG_ERROR(@"failed to load text messages, folder %@, error %d", folderId, sqlLoadResult);
+                        SM_LOG_ERROR(@"failed to load text messages, folder %@, error %d (%s)", folderId, sqlLoadResult, sqlite3_errmsg(database));
                         
                         dbQueryFailed = YES;
                         dbQueryError = sqlLoadResult;

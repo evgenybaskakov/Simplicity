@@ -160,7 +160,7 @@
     }
     
     if(loadFromDB) {
-        SM_LOG_INFO(@"loading %u of %u search results from database", messageUIDsToLoadNow.count, restOfMessages.count);
+        SM_LOG_DEBUG(@"loading %u of %u search results from database", messageUIDsToLoadNow.count, restOfMessages.count);
         
         [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
             [_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
@@ -169,7 +169,7 @@
         }];
     }
     else {
-        SM_LOG_INFO(@"loading %u of %u search results from server", messageUIDsToLoadNow.count, restOfMessages.count);
+        SM_LOG_DEBUG(@"loading %u of %u search results from server", messageUIDsToLoadNow.count, restOfMessages.count);
 
         NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
         

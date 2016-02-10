@@ -430,7 +430,9 @@ const char *const mcoOpKinds[] = {
         
         [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
             for(SMTextMessage *m in textMessages) {
-                [_suggestionResultsSubjects addObject:m.subject];
+                if(m.subject != nil) {
+                    [_suggestionResultsSubjects addObject:m.subject];
+                }
             }
             
             SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
@@ -493,20 +495,15 @@ const char *const mcoOpKinds[] = {
     [[[appDelegate appController] searchResultsListViewController] reloadData];
 }
 
-- (NSString*)extractEmailFromAddressString:(NSString*)string {
-    MCOAddress *mcoAddress = [MCOAddress addressWithNonEncodedRFC822String:string];
-    NSString *mailbox = mcoAddress.mailbox;
-    return mailbox != nil? mailbox : string;
-}
-
 - (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {
     switch(kind) {
         case SearchExpressionKind_From:
-            return [MCOIMAPSearchExpression searchFrom:[self extractEmailFromAddressString:string]];
+            // TODO: add search by full name
+            return [MCOIMAPSearchExpression searchFrom:[SMAddress extractEmailFromAddressString:string name:nil]];
         case SearchExpressionKind_To:
-            return [MCOIMAPSearchExpression searchTo:[self extractEmailFromAddressString:string]];
+            return [MCOIMAPSearchExpression searchTo:[SMAddress extractEmailFromAddressString:string name:nil]];
         case SearchExpressionKind_Cc:
-            return [MCOIMAPSearchExpression searchCc:[self extractEmailFromAddressString:string]];
+            return [MCOIMAPSearchExpression searchCc:[SMAddress extractEmailFromAddressString:string name:nil]];
         case SearchExpressionKind_Subject:
             return [MCOIMAPSearchExpression searchSubject:string];
         case SearchExpressionKind_Contents:

@@ -59,6 +59,17 @@
     }
 }
 
++ (NSString*)extractEmailFromAddressString:(NSString*)address name:(NSString**)name {
+    MCOAddress *mcoAddress = [MCOAddress addressWithNonEncodedRFC822String:address];
+    NSString *mailbox = mcoAddress.mailbox;
+
+    if(name != nil) {
+        *name = mcoAddress.displayName;
+    }
+    
+    return mailbox != nil? mailbox : address;
+}
+
 - (id)initWithFirstName:(NSString*)firstName lastName:(NSString*)lastName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode {
     self = [super init];
     

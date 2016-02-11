@@ -755,6 +755,7 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchMenuViewController] clearAllItems];
     
+    // TODO: do it asynchronously
     [self addContentsSection:imapMessages];
     [self addContactsSection:imapMessages];
     [self addSubjectsSection:imapMessages];

@@ -637,6 +637,7 @@ static const CGFloat CELL_SPACING = -1;
 
     uint32_t uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
 
+    // TODO: optimize by adding a NSUndexSet with uids
     for(NSInteger i = 0; i < _cells.count; i++) {
         SMMessageThreadCell *cell = _cells[i];
         

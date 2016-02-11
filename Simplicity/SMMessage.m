@@ -326,7 +326,10 @@ static NSString *unquote(NSString *s) {
 }
 
 - (void)fetchInlineAttachments {
-    NSAssert(_msgParser, @"bad _msgParser");
+    if(_msgParser == nil) {
+        SM_LOG_WARNING(@"no msgParser for message uid %u", self.uid);
+        return;
+    }
     
     SM_LOG_DEBUG(@"imap message class %@, message body %@", [_imapMessage class], _imapMessage);
 

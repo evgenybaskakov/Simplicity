@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SMTokenFieldViewController">
+            <connections>
+                <outlet property="scrollView" destination="ICV-Fl-f4g" id="bgq-oA-Vd9"/>
+                <outlet property="view" destination="8m1-xC-ItL" id="ejI-PX-7zf"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <view id="8m1-xC-ItL">
+            <rect key="frame" x="0.0" y="0.0" width="440" height="22"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <box fixedFrame="YES" title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Hj3-qx-zYQ" customClass="SMTokenFieldBox">
+                    <rect key="frame" x="0.0" y="0.0" width="440" height="22"/>
+                    <view key="contentView" ambiguous="YES" id="TDt-eB-H5t">
+                        <rect key="frame" x="1" y="1" width="438" height="20"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="ICV-Fl-f4g">
+                                <rect key="frame" x="20" y="0.0" width="419" height="22"/>
+                                <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="dw6-0d-1iy">
+                                    <rect key="frame" x="0.0" y="0.0" width="419" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wRa-k7-jEY">
+                                            <rect key="frame" x="0.0" y="-72" width="419" height="20"/>
+                                        </view>
+                                    </subviews>
+                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="xfM-my-qbG">
+                                    <rect key="frame" x="-100" y="-100" width="421" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.97222222222222221" horizontal="NO" id="XRb-M0-djX">
+                                    <rect key="frame" x="-100" y="-100" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JQp-s0-5rB">
+                                <rect key="frame" x="3" y="3" width="14" height="14"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="search-icon" id="gYH-d8-jVr"/>
+                            </imageView>
+                        </subviews>
+                    </view>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="391" y="-160"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="search-icon" width="100" height="100"/>
+    </resources>
+</document>

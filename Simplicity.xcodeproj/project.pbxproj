@@ -205,8 +205,9 @@
 		80CE25F71C782E6A00A9837F /* SMTokenEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25EE1C782E6A00A9837F /* SMTokenEditView.m */; };
 		80CE25F81C782E6A00A9837F /* SMTokenFieldBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */; };
 		80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */; };
-		80CE25FA1C782E6A00A9837F /* SMTokenFieldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */; };
 		80CE25FB1C782E6A00A9837F /* SMTokenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F61C782E6A00A9837F /* SMTokenView.m */; };
+		80CE25FF1C782F5700A9837F /* SMTokenFieldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25FD1C782F5700A9837F /* SMTokenFieldViewController.m */; };
+		80CE26001C782F5700A9837F /* SMTokenFieldViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80CE25FE1C782F5700A9837F /* SMTokenFieldViewController.xib */; };
 		80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */; };
 		80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */; };
 		80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */; };
@@ -620,10 +621,11 @@
 		80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldBox.m; sourceTree = "<group>"; };
 		80CE25F11C782E6A00A9837F /* SMTokenFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenFieldView.h; sourceTree = "<group>"; };
 		80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldView.m; sourceTree = "<group>"; };
-		80CE25F31C782E6A00A9837F /* SMTokenFieldViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenFieldViewController.h; sourceTree = "<group>"; };
-		80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldViewController.m; sourceTree = "<group>"; };
 		80CE25F51C782E6A00A9837F /* SMTokenView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenView.h; sourceTree = "<group>"; };
 		80CE25F61C782E6A00A9837F /* SMTokenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenView.m; sourceTree = "<group>"; };
+		80CE25FC1C782F5700A9837F /* SMTokenFieldViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMTokenFieldViewController.h; path = ../SMTokenFieldViewController.h; sourceTree = "<group>"; };
+		80CE25FD1C782F5700A9837F /* SMTokenFieldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMTokenFieldViewController.m; path = ../SMTokenFieldViewController.m; sourceTree = "<group>"; };
+		80CE25FE1C782F5700A9837F /* SMTokenFieldViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SMTokenFieldViewController.xib; path = ../SMTokenFieldViewController.xib; sourceTree = "<group>"; };
 		80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMGeneralPreferencesViewController.h; sourceTree = "<group>"; };
 		80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMGeneralPreferencesViewController.m; sourceTree = "<group>"; };
 		80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMGeneralPreferencesViewController.xib; sourceTree = "<group>"; };
@@ -1161,8 +1163,9 @@
 				80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */,
 				80CE25F11C782E6A00A9837F /* SMTokenFieldView.h */,
 				80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */,
-				80CE25F31C782E6A00A9837F /* SMTokenFieldViewController.h */,
-				80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */,
+				80CE25FC1C782F5700A9837F /* SMTokenFieldViewController.h */,
+				80CE25FD1C782F5700A9837F /* SMTokenFieldViewController.m */,
+				80CE25FE1C782F5700A9837F /* SMTokenFieldViewController.xib */,
 				80CE25F51C782E6A00A9837F /* SMTokenView.h */,
 				80CE25F61C782E6A00A9837F /* SMTokenView.m */,
 			);
@@ -1353,6 +1356,7 @@
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
 				801EDEF81BEA784500A16E85 /* outlook_logo.png in Resources */,
+				80CE26001C782F5700A9837F /* SMTokenFieldViewController.xib in Resources */,
 				00DBA6D81AC25FD500DFE03D /* SMMessageEditorWindowController.xib in Resources */,
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
 				8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */,
@@ -1423,6 +1427,7 @@
 				803B10E21C1025DC0057E785 /* SMMailboxMainFolderView.m in Sources */,
 				0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */,
 				804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */,
+				80CE25FF1C782F5700A9837F /* SMTokenFieldViewController.m in Sources */,
 				802410731C1E880C00493FB4 /* SMLabelPreferencesViewController.m in Sources */,
 				00C75609195921AA006ED86B /* SMFolder.m in Sources */,
 				80EC90EA1C65CC9500336312 /* SMSearchToken.m in Sources */,
@@ -1462,7 +1467,6 @@
 				80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */,
 				00A085A01A7206FC00CC4E1C /* SMAttachmentItem.m in Sources */,
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
-				80CE25FA1C782E6A00A9837F /* SMTokenFieldViewController.m in Sources */,
 				803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMAddressFieldViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,

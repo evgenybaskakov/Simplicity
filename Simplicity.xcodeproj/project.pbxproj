@@ -202,6 +202,11 @@
 		80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
 		80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */; };
+		80CE25F71C782E6A00A9837F /* SMTokenEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25EE1C782E6A00A9837F /* SMTokenEditView.m */; };
+		80CE25F81C782E6A00A9837F /* SMTokenFieldBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */; };
+		80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */; };
+		80CE25FA1C782E6A00A9837F /* SMTokenFieldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */; };
+		80CE25FB1C782E6A00A9837F /* SMTokenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CE25F61C782E6A00A9837F /* SMTokenView.m */; };
 		80CEFA271BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */; };
 		80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */; };
 		80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CEFA311BF30C4E002A7F96 /* SMAccountImageSelection.m */; };
@@ -609,6 +614,16 @@
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMThreadSafeOperationQueue.h; sourceTree = "<group>"; };
 		80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMThreadSafeOperationQueue.m; sourceTree = "<group>"; };
+		80CE25ED1C782E6A00A9837F /* SMTokenEditView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenEditView.h; sourceTree = "<group>"; };
+		80CE25EE1C782E6A00A9837F /* SMTokenEditView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenEditView.m; sourceTree = "<group>"; };
+		80CE25EF1C782E6A00A9837F /* SMTokenFieldBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenFieldBox.h; sourceTree = "<group>"; };
+		80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldBox.m; sourceTree = "<group>"; };
+		80CE25F11C782E6A00A9837F /* SMTokenFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenFieldView.h; sourceTree = "<group>"; };
+		80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldView.m; sourceTree = "<group>"; };
+		80CE25F31C782E6A00A9837F /* SMTokenFieldViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenFieldViewController.h; sourceTree = "<group>"; };
+		80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenFieldViewController.m; sourceTree = "<group>"; };
+		80CE25F51C782E6A00A9837F /* SMTokenView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenView.h; sourceTree = "<group>"; };
+		80CE25F61C782E6A00A9837F /* SMTokenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenView.m; sourceTree = "<group>"; };
 		80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMGeneralPreferencesViewController.h; sourceTree = "<group>"; };
 		80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMGeneralPreferencesViewController.m; sourceTree = "<group>"; };
 		80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMGeneralPreferencesViewController.xib; sourceTree = "<group>"; };
@@ -918,6 +933,7 @@
 		005B086D17D4F62600341051 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				80CE25E51C782E4500A9837F /* TokenField */,
 				800C67951B49A89B00272D60 /* MKColorPickerView.h */,
 				800C67961B49A89B00272D60 /* MKColorPickerView.m */,
 				800C67971B49A89B00272D60 /* MKColorSwatchCell.h */,
@@ -1134,6 +1150,23 @@
 				80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */,
 			);
 			name = TextEditorIcons;
+			sourceTree = "<group>";
+		};
+		80CE25E51C782E4500A9837F /* TokenField */ = {
+			isa = PBXGroup;
+			children = (
+				80CE25ED1C782E6A00A9837F /* SMTokenEditView.h */,
+				80CE25EE1C782E6A00A9837F /* SMTokenEditView.m */,
+				80CE25EF1C782E6A00A9837F /* SMTokenFieldBox.h */,
+				80CE25F01C782E6A00A9837F /* SMTokenFieldBox.m */,
+				80CE25F11C782E6A00A9837F /* SMTokenFieldView.h */,
+				80CE25F21C782E6A00A9837F /* SMTokenFieldView.m */,
+				80CE25F31C782E6A00A9837F /* SMTokenFieldViewController.h */,
+				80CE25F41C782E6A00A9837F /* SMTokenFieldViewController.m */,
+				80CE25F51C782E6A00A9837F /* SMTokenView.h */,
+				80CE25F61C782E6A00A9837F /* SMTokenView.m */,
+			);
+			name = TokenField;
 			sourceTree = "<group>";
 		};
 		80E657341B182AF700A0AA81 /* Products */ = {
@@ -1377,6 +1410,7 @@
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				80BD0A381C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,
+				80CE25F71C782E6A00A9837F /* SMTokenEditView.m in Sources */,
 				802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */,
 				803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */,
 				80BFC3BF1BEDC67800467243 /* SMMailServiceProviderGmail.m in Sources */,
@@ -1428,6 +1462,7 @@
 				80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */,
 				00A085A01A7206FC00CC4E1C /* SMAttachmentItem.m in Sources */,
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
+				80CE25FA1C782E6A00A9837F /* SMTokenFieldViewController.m in Sources */,
 				803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMAddressFieldViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,
@@ -1441,6 +1476,8 @@
 				801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */,
 				804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */,
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
+				80CE25FB1C782E6A00A9837F /* SMTokenView.m in Sources */,
+				80CE25F81C782E6A00A9837F /* SMTokenFieldBox.m in Sources */,
 				80CC6B051BD6058700A8CC6E /* SMThreadSafeOperationQueue.m in Sources */,
 				803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */,
 				8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */,
@@ -1471,6 +1508,7 @@
 				80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */,
+				80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */,
 				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,
 				80628B551BE87A3400016803 /* SSKeychain.m in Sources */,

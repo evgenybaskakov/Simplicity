@@ -46,7 +46,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     SMFindContentsPanelViewController *_findContentsPanelViewController;
-    SMTokenFieldViewController *_searchTokenFieldViewController;
     NSMutableArray *_findContentsPanelConstraints;
     Boolean _findContentsPanelShown;
     NSView *_messageThreadAndFindContentsPanelView;
@@ -256,12 +255,19 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    _searchTokenFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
-    NSAssert(_searchTokenFieldViewController.view != nil, @"_searchTokenFieldViewController is nil");
+    _searchFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
+    NSAssert(_searchFieldViewController.view != nil, @"_searchFieldViewController is nil");
 
-    _searchField = _searchTokenFieldViewController.view;
-    
+    _searchField = _searchFieldViewController.view;
     [_searchToolbarItem setView:_searchField];
+    
+    [_searchFieldViewController addToken:@"Token1" contentsText:@"Blah!!" target:self selector:@selector(tokenAction:)];
+    [_searchFieldViewController addToken:@"Token2" contentsText:@"Foo" target:self selector:@selector(tokenAction:)];
+    [_searchFieldViewController addToken:@"Token3" contentsText:@"Bar" target:self selector:@selector(tokenAction:)];
+    
+    _searchFieldViewController.target = self;
+    _searchFieldViewController.action = @selector(searchUsingToolbarSearchField:);
+    _searchFieldViewController.actionDelay = 0.2;
 }
 
 - (void)initOpExecutor {
@@ -373,9 +379,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSToolbarItem *addedItem = [[notif userInfo] objectForKey: @"item"];
 
     if([[addedItem itemIdentifier] isEqual:SearchDocToolbarItemIdentifier]) {
-        [addedItem setTarget: self];
-        [addedItem setAction: @selector(searchUsingToolbarSearchField:)];
-        
         _searchToolbarItem = addedItem;
     } else if([[addedItem itemIdentifier] isEqual:ComposeMessageToolbarItemIdentifier]) {
     } else if([[addedItem itemIdentifier] isEqual:TrashToolbarItemIdentifier]) {
@@ -383,8 +386,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)searchUsingToolbarSearchField:(id) sender {
+- (void)searchUsingToolbarSearchField:(id)sender {
     // This message is sent when the user strikes return in the search field in the toolbar
+    
+    // TODO:
+    NSAssert(nil, @"TODO: implement _searchFieldViewController.stringValue");
     NSString *searchString = [(NSTextField *)[_searchToolbarItem view] stringValue];
 
     if([[SMStringUtils trimString:searchString] length] == 0) {

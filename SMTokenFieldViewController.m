@@ -39,19 +39,6 @@
     [_tokenFieldView addSubview:_editToken];
     
     [self adjustTokenFrames];
-    
-    [self testSetup];
-}
-
-- (void)testSetup {
-    [self addToken:@"Token1" contentsText:@"Blah!!" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token2" contentsText:@"Foo" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token3" contentsText:@"Bar" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token4" contentsText:@"Everything's weird" target:self selector:@selector(tokenAction:)];
-    
-    _target = self;
-    _action = @selector(testAction:);
-    _actionDelay = 0.2;
 }
 
 - (void)testAction:(id)sender {

@@ -259,12 +259,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchTokenFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
     NSAssert(_searchTokenFieldViewController.view != nil, @"_searchTokenFieldViewController is nil");
 
-    [_searchTokenFieldViewController.view setFrame:_searchField.frame];
     _searchField = _searchTokenFieldViewController.view;
     
     [_searchToolbarItem setView:_searchField];
-//    [toolbarItem setMinSize:NSMakeSize(30, NSHeight([_searchField frame]))];
-//    [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
 }
 
 - (void)initOpExecutor {
@@ -313,12 +310,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [toolbarItem setLabel:@"Search"];
         [toolbarItem setPaletteLabel:@"Search"];
         [toolbarItem setToolTip:@"Search for messages"];
-        
-        _searchField = [[NSSearchField alloc] initWithFrame:[_searchField frame]];
-        
         [toolbarItem setView:_searchField];
-        [toolbarItem setMinSize:NSMakeSize(30, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
+        [toolbarItem setMinSize:NSMakeSize(200, NSHeight([_searchField frame]))];
+        [toolbarItem setMaxSize:NSMakeSize(350, NSHeight([_searchField frame]))];
     } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
         toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
         

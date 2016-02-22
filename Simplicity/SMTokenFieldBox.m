@@ -15,7 +15,7 @@ static const NSUInteger cornerRadius = 4;
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
 
-    [[NSColor whiteColor] set];
+    [[NSColor clearColor] set];
     NSRectFill(dirtyRect);
     
     NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:cornerRadius yRadius:cornerRadius];

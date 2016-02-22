@@ -12,6 +12,8 @@
 #import "SMTokenView.h"
 
 @implementation SMTokenFieldViewController {
+    __weak IBOutlet NSButton *clearButton;
+
     SMTokenFieldView *_tokenFieldView;
     NSMutableArray<SMTokenView*> *_tokens;
     NSMutableIndexSet *_selectedTokens;
@@ -41,8 +43,8 @@
     [self adjustTokenFrames];
 }
 
-- (void)testAction:(id)sender {
-    NSLog(@"token field action triggered");
+- (IBAction)clearButtonAction:(id)sender {
+    NSLog(@"%s: TODO", __FUNCTION__);
 }
 
 - (void)tokenAction:(id)sender {
@@ -55,10 +57,6 @@
     [theMenu addItemWithTitle:@"Delete" action:@selector(blah:) keyEquivalent:@""];
     
     [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:token];
-}
-
-- (void)blah:(id)sender {
-    NSLog(@"Blah!");
 }
 
 - (void)setRepresentedObject:(id)representedObject {

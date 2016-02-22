@@ -14,11 +14,12 @@
 
 @property (readonly) NSString *tokenName;
 @property (readonly) NSString *contentsText;
+@property (readonly) NSObject *representedObject;
 @property (readonly) id target;
 @property (readonly) SEL selector;
 
 @property (nonatomic) BOOL selected;
 
-+ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText target:(id)target selector:(SEL)selector viewController:(SMTokenFieldViewController*)viewController;
++ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector viewController:(SMTokenFieldViewController*)viewController;
 
 @end

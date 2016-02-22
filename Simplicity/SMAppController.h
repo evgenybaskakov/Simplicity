@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+@class SMTokenFieldViewController;
 @class SMSectionMenuViewController;
 @class SMNewAccountWindowController;
 @class SMPreferencesWindowController;
@@ -33,11 +34,12 @@
 @property (nonatomic) IBOutlet NSToolbar *toolbar;
 @property (nonatomic) IBOutlet NSButton *composeMessageButton;
 @property (nonatomic) IBOutlet NSButton *trashButton;
-@property (nonatomic) IBOutlet NSTextField *searchField;
+@property (nonatomic) IBOutlet NSView *searchField;
 
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 
+@property SMTokenFieldViewController *searchFieldViewController;
 @property SMSectionMenuViewController *searchMenuViewController;
 @property SMMailboxViewController *mailboxViewController;
 @property SMSearchResultsListViewController *searchResultsListViewController;

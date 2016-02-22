@@ -34,6 +34,7 @@
 #import "SMMessageWindowController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMSectionMenuViewController.h"
+#import "SMTokenFieldViewController.h"
 
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
@@ -41,7 +42,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 @implementation SMAppController {
     NSButton *button1, *button2;
-    NSToolbarItem *__weak _activeSearchItem;
+    NSToolbarItem *__weak _searchToolbarItem;
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     SMFindContentsPanelViewController *_findContentsPanelViewController;
@@ -251,6 +252,18 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchMenuWindow.level = NSFloatingWindowLevel;
     _searchMenuWindow.delegate = self;
     _searchMenuWindow.backgroundColor = [NSColor clearColor];
+    
+    //
+    
+    _searchFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
+    NSAssert(_searchFieldViewController.view != nil, @"_searchFieldViewController is nil");
+
+    _searchField = _searchFieldViewController.view;
+    [_searchToolbarItem setView:_searchField];
+
+    _searchFieldViewController.target = self;
+    _searchFieldViewController.action = @selector(searchUsingToolbarSearchField:);
+    _searchFieldViewController.actionDelay = 0.2;
 }
 
 - (void)initOpExecutor {
@@ -299,14 +312,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [toolbarItem setLabel:@"Search"];
         [toolbarItem setPaletteLabel:@"Search"];
         [toolbarItem setToolTip:@"Search for messages"];
-        
-        _searchField = [[NSSearchField alloc] initWithFrame:[_searchField frame]];
-        [_searchField.cell setSendsWholeSearchString:NO];
-        [_searchField.cell setScrollable:YES];
-        
         [toolbarItem setView:_searchField];
-        [toolbarItem setMinSize:NSMakeSize(30, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
+        [toolbarItem setMinSize:NSMakeSize(200, NSHeight([_searchField frame]))];
+        [toolbarItem setMaxSize:NSMakeSize(350, NSHeight([_searchField frame]))];
     } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
         toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
         
@@ -367,24 +375,15 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSToolbarItem *addedItem = [[notif userInfo] objectForKey: @"item"];
 
     if([[addedItem itemIdentifier] isEqual:SearchDocToolbarItemIdentifier]) {
-        [addedItem setTarget: self];
-        [addedItem setAction: @selector(searchUsingToolbarSearchField:)];
-        
-        _activeSearchItem = addedItem;
+        _searchToolbarItem = addedItem;
     } else if([[addedItem itemIdentifier] isEqual:ComposeMessageToolbarItemIdentifier]) {
     } else if([[addedItem itemIdentifier] isEqual:TrashToolbarItemIdentifier]) {
 //      TODO
-//
-//      [addedItem setTarget: self];
-//      [addedItem setAction: @selector(:)];
-//
-//      _activeSearchItem = addedItem;
     }
 }
 
-- (void)searchUsingToolbarSearchField:(id) sender {
-    // This message is sent when the user strikes return in the search field in the toolbar
-    NSString *searchString = [(NSTextField *)[_activeSearchItem view] stringValue];
+- (void)searchUsingToolbarSearchField:(id)sender {
+    NSString *searchString = _searchFieldViewController.stringValue;
 
     if([[SMStringUtils trimString:searchString] length] == 0) {
         [self closeSearchMenu];

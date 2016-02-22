@@ -24,6 +24,7 @@
 #import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
 #import "SMSectionMenuViewController.h"
+#import "SMTokenFieldViewController.h"
 
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
@@ -807,8 +808,10 @@ const char *const mcoOpKinds[] = {
     newSearchString = [newSearchString stringByAppendingString:[self mapSearchPartToStringExpression:searchItem kind:kind]];
     newSearchString = [newSearchString stringByAppendingString:@" "];
     
-    [[[appDelegate appController] searchField] setStringValue:newSearchString];
-    [[[[appDelegate appController] searchField] currentEditor] moveToEndOfLine:nil];
+    NSAssert(nil, @"TODO: implement me, please...");
+    
+//TODO    [[[appDelegate appController] searchField] setStringValue:newSearchString];
+//TODO    [[[[appDelegate appController] searchField] currentEditor] moveToEndOfLine:nil];
     
     [[appDelegate appController] searchUsingToolbarSearchField:self];
 }

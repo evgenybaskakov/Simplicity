@@ -39,19 +39,6 @@
     [_tokenFieldView addSubview:_editToken];
     
     [self adjustTokenFrames];
-    
-    [self testSetup];
-}
-
-- (void)testSetup {
-    [self addToken:@"Token1" contentsText:@"Blah!!" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token2" contentsText:@"Foo" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token3" contentsText:@"Bar" target:self selector:@selector(tokenAction:)];
-    [self addToken:@"Token4" contentsText:@"Everything's weird" target:self selector:@selector(tokenAction:)];
-    
-    _target = self;
-    _action = @selector(testAction:);
-    _actionDelay = 0.2;
 }
 
 - (void)testAction:(id)sender {
@@ -80,13 +67,17 @@
     // Update the view, if already loaded.
 }
 
-- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText target:(id)target selector:(SEL)selector {
-    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText target:target selector:selector viewController:self];
+- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
+    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target selector:selector viewController:self];
     
     [_tokens addObject:token];
     [_tokenFieldView addSubview:token];
     
     [self adjustTokenFrames];
+}
+
+- (NSString*)stringValue {
+    return _editToken.string;
 }
 
 - (BOOL)tokenSelectionActive {

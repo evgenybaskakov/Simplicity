@@ -67,13 +67,17 @@
     // Update the view, if already loaded.
 }
 
-- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText target:(id)target selector:(SEL)selector {
-    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText target:target selector:selector viewController:self];
+- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
+    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target selector:selector viewController:self];
     
     [_tokens addObject:token];
     [_tokenFieldView addSubview:token];
     
     [self adjustTokenFrames];
+}
+
+- (NSString*)stringValue {
+    return _editToken.string;
 }
 
 - (BOOL)tokenSelectionActive {

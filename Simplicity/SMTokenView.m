@@ -15,7 +15,7 @@
     NSTextField *_textField2;
 }
 
-+ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText target:(id)target selector:(SEL)selector viewController:(SMTokenFieldViewController*)viewController {
++ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector viewController:(SMTokenFieldViewController*)viewController {
     NSTextField *textField1 = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
     textField1.stringValue = tokenName;
     textField1.selectable = NO;
@@ -43,14 +43,14 @@
     }
     textField2.frame = NSMakeRect(0, 0, requiredWidth2, bounds2.size.height);
 
-    SMTokenView *token = [[SMTokenView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100) viewController:viewController textField1:textField1 textField2:textField2 target:target selector:selector];
+    SMTokenView *token = [[SMTokenView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100) viewController:viewController textField1:textField1 textField2:textField2 representedObject:representedObject target:target selector:selector];
     
     token.selected = NO;
 
     return token;
 }
 
-- (id)initWithFrame:(NSRect)frameRect viewController:(SMTokenFieldViewController*)viewController textField1:(NSTextField*)textField1 textField2:(NSTextField*)textField2 target:(id)target selector:(SEL)selector {
+- (id)initWithFrame:(NSRect)frameRect viewController:(SMTokenFieldViewController*)viewController textField1:(NSTextField*)textField1 textField2:(NSTextField*)textField2 representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
     self = [super initWithFrame:frameRect];
     
     if(self) {
@@ -58,6 +58,7 @@
         _textField1 = textField1;
         _textField2 = textField2;
         
+        _representedObject = representedObject;
         _target = target;
         _selector = selector;
         

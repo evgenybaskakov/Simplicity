@@ -86,7 +86,7 @@ const char *const mcoOpKinds[] = {
 @implementation SMSearchResultsListController {
     NSUInteger _searchId;
     NSString *_originalSearchString;
-    NSArray<SMSearchToken*> *_searchTokens;
+    NSMutableArray<SMSearchToken*> *_searchTokens;
     NSString *_mainSearchPart;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
@@ -131,136 +131,20 @@ const char *const mcoOpKinds[] = {
     _searchMessagesUIDs = nil;
 }
 
-- (NSArray<SMSearchToken*>*)parseSearchString:(NSString*)searchString mainSearchPart:(NSString**)mainSearchPart {
-    NSMutableArray<SMSearchToken*> *tokens = [NSMutableArray array];
-    
-    NSArray<NSString*> *expressions = @[
-                                        @"to:",
-                                        @"from:",
-                                        @"cc:",
-                                        @"subject:",
-                                        @"contains:"
-                                        ];
-    
-    SearchExpressionKind exprKinds[] = {
-        SearchExpressionKind_To,
-        SearchExpressionKind_From,
-        SearchExpressionKind_Cc,
-        SearchExpressionKind_Subject,
-        SearchExpressionKind_Contents
-    };
-    
-    NSUInteger i = 0, maxExprOffset = 0;
-    for(NSString *expr in expressions) {
-        NSRange searchRange = NSMakeRange(0, searchString.length);
-        
-        while(searchRange.location < searchString.length) {
-            NSRange r = [searchString rangeOfString:expr options:NSCaseInsensitiveSearch range:searchRange];
-            
-            if(r.location == NSNotFound) {
-                break;
-            }
-            
-            if(r.location == 0 || !isalnum([searchString characterAtIndex:r.location-1])) {
-                r.location += expr.length;
-                
-                if(r.location < searchString.length) {
-                    while(r.location < searchString.length && isspace([searchString characterAtIndex:r.location])) {
-                        r.location++;
-                    }
-                    
-                    if(r.location < searchString.length) {
-                        NSValue *rangeValue = nil;
-                        
-                        if([searchString characterAtIndex:r.location] == '(') {
-                            NSRange rr = [searchString rangeOfString:@")" options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
-                            
-                            if(rr.location != NSNotFound) {
-                                if(r.location + 1 < rr.location) {
-                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location + 1, rr.location - r.location - 1)];
-                                    r.location = rr.location + 1;
-                                }
-                            }
-                            else {
-                                if(r.location + 1 < searchString.length) {
-                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location + 1, searchString.length - r.location - 1)];
-                                    r.location = searchString.length;
-                                }
-                            }
-                        }
-                        else {
-                            NSRange rr = [searchString rangeOfString:@" " options:NSCaseInsensitiveSearch range:NSMakeRange(r.location, searchString.length - r.location)];
-                            
-                            if(rr.location != NSNotFound) {
-                                if(r.location < rr.location) {
-                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location, rr.location - r.location)];
-                                    r.location = rr.location + 1;
-                                }
-                            }
-                            else {
-                                if(r.location < searchString.length) {
-                                    rangeValue = [NSValue valueWithRange:NSMakeRange(r.location, searchString.length - r.location)];
-                                    r.location = searchString.length;
-                                }
-                            }
-                        }
-                        
-                        if(rangeValue != nil) {
-                            NSRange range = [rangeValue rangeValue];
-                            maxExprOffset = MAX(maxExprOffset, r.location);
-                            
-                            [tokens addObject:[[SMSearchToken alloc] initWithKind:exprKinds[i] string:[searchString substringWithRange:range]]];
-                        }
-                        else {
-                            r.location++;
-                        }
-                    }
-                }
-                
-                NSAssert(searchRange.location < r.location, @"expr location %lu not increasing", r.location);
-                searchRange.location = r.location;
-            }
-            else {
-                searchRange.location++;
-            }
-            
-            if(r.location >= searchString.length) {
-                break;
-            }
-            
-            searchRange.length = searchString.length - searchRange.location;
-        }
-        
-        i++;
-    }
-    
-    while(maxExprOffset < searchString.length && isspace([searchString characterAtIndex:maxExprOffset])) {
-        maxExprOffset++;
-    }
-    
-    if(maxExprOffset < searchString.length) {
-        NSRange range = NSMakeRange(maxExprOffset, searchString.length - maxExprOffset);
-        *mainSearchPart = [searchString substringWithRange:range];
-    }
-    else {
-        *mainSearchPart = nil;
-    }
-    
-    return tokens;
-}
-
 - (BOOL)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
-    NSString *mainSearchPart;
-    _searchTokens = [self parseSearchString:searchString mainSearchPart:&mainSearchPart];
+    NSString *mainSearchPart = searchString;
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    _searchTokens = [[[[appDelegate appController] searchFieldViewController] representedTokenObjects] mutableCopy];
+
     NSAssert(_searchTokens.count != 0 || mainSearchPart != nil, @"no search tokens");
     
     _mainSearchPart = mainSearchPart;
     _originalSearchString = searchString;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     MCOIMAPSession *session = [[appDelegate model] imapSession];
     
     NSAssert(session, @"session is nil");
@@ -798,6 +682,38 @@ const char *const mcoOpKinds[] = {
         return;
     }
     
+    [[[appDelegate appController] searchFieldViewController] deleteAllTokensAndText];
+
+    [_searchTokens addObject:[[SMSearchToken alloc] initWithKind:kind string:searchItem]];
+
+    for(SMSearchToken *token in _searchTokens) {
+        NSString *tokenName = nil;
+        
+        switch(token.kind) {
+            case SearchExpressionKind_From:
+                tokenName = @"From";
+                break;
+            case SearchExpressionKind_To:
+                tokenName = @"To";
+                break;
+            case SearchExpressionKind_Cc:
+                tokenName = @"Cc";
+                break;
+            case SearchExpressionKind_Subject:
+                tokenName = @"Subject";
+                break;
+            case SearchExpressionKind_Contents:
+                tokenName = @"Contains";
+                break;
+            default:
+                NSAssert(nil, @"Search kind %lu not supported", token.kind);
+        }
+
+        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self selector:@selector(tokenSearchMenuAction:)];
+    }
+/*
+    //////////
+    
     NSString *newSearchString = @"";
     
     if(_searchTokens.count > 0) {
@@ -814,9 +730,14 @@ const char *const mcoOpKinds[] = {
 //TODO    [[[[appDelegate appController] searchField] currentEditor] moveToEndOfLine:nil];
     
     [[appDelegate appController] searchUsingToolbarSearchField:self];
+*/
 }
 
 #pragma mark Actions
+
+- (void)tokenSearchMenuAction:(id)sender {
+    NSLog(@"%s: TODO", __FUNCTION__);
+}
 
 - (void)searchForContentsAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

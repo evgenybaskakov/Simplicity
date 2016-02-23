@@ -74,6 +74,16 @@
     [self adjustTokenFrames];
 }
 
+- (NSArray*)representedTokenObjects {
+    NSMutableArray *objs = [NSMutableArray array];
+    
+    for(SMTokenView *token in _tokens) {
+        [objs addObject:token.representedObject];
+    }
+    
+    return objs;
+}
+
 - (NSString*)stringValue {
     return _editToken.string;
 }
@@ -370,25 +380,43 @@
 }
 
 - (void)deleteSelectedTokens {
-    [self deleteSelectedTokensAndText:NO];
+    [self deleteTokensAndText:NO selectedTokensOnly:YES];
 }
 
 - (void)deleteSelectedTokensAndText {
-    [self deleteSelectedTokensAndText:YES];
+    [self deleteTokensAndText:YES selectedTokensOnly:YES];
 }
 
-- (void)deleteSelectedTokensAndText:(BOOL)deleteText {
-    [_selectedTokens enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-        [_tokens[idx] removeFromSuperview];
-    }];
+- (void)deleteAllTokensAndText {
+    [self deleteTokensAndText:YES selectedTokensOnly:NO];
+}
+
+- (void)deleteTokensAndText:(BOOL)deleteText selectedTokensOnly:(BOOL)selectedTokensOnly {
+    if(selectedTokensOnly) {
+        [_selectedTokens enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+            [_tokens[idx] removeFromSuperview];
+        }];
+
+        [_tokens removeObjectsAtIndexes:_selectedTokens];
+
+        if(deleteText) {
+            [_editToken deleteToBeginningOfLine:self];
+        }
+    }
+    else {
+        for(SMTokenView *token in _tokens) {
+            [token removeFromSuperview];
+        }
+
+        [_tokens removeAllObjects];
+
+        if(deleteText) {
+            [_editToken setString:@""];
+        }
+    }
     
-    [_tokens removeObjectsAtIndexes:_selectedTokens];
     [_selectedTokens removeAllIndexes];
     _currentToken = -1;
-    
-    if(deleteText) {
-        [_editToken deleteToBeginningOfLine:self];
-    }
     
     [self adjustTokenFrames];
     

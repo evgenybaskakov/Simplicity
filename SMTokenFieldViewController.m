@@ -107,7 +107,10 @@
 - (void)textDidChange:(NSNotification *)notification {
     //    NSLog(@"%s: %@", __FUNCTION__, notification.userInfo);
     [self deleteSelectedTokens];
-    
+    [self triggerTargetAction];
+}
+
+- (void)triggerTargetAction {
     [NSObject cancelPreviousPerformRequestsWithTarget:_target selector:_action object:self];
     [_target performSelector:_action withObject:self afterDelay:_actionDelay];
 }
@@ -372,6 +375,7 @@
     else {
         if(theEvent.keyCode == codeDelete || theEvent.keyCode == codeForwardDelete) {
             [self deleteSelectedTokensAndText];
+            [self triggerTargetAction];
         }
         else {
             [super keyDown:theEvent];

@@ -711,26 +711,8 @@ const char *const mcoOpKinds[] = {
 
         [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self selector:@selector(tokenSearchMenuAction:)];
     }
-/*
-    //////////
-    
-    NSString *newSearchString = @"";
-    
-    if(_searchTokens.count > 0) {
-        newSearchString = [self buildSearchString:_searchTokens];
-        newSearchString = [newSearchString stringByAppendingString:@" "];
-    }
-    
-    newSearchString = [newSearchString stringByAppendingString:[self mapSearchPartToStringExpression:searchItem kind:kind]];
-    newSearchString = [newSearchString stringByAppendingString:@" "];
-    
-    NSAssert(nil, @"TODO: implement me, please...");
-    
-//TODO    [[[appDelegate appController] searchField] setStringValue:newSearchString];
-//TODO    [[[[appDelegate appController] searchField] currentEditor] moveToEndOfLine:nil];
     
     [[appDelegate appController] searchUsingToolbarSearchField:self];
-*/
 }
 
 #pragma mark Actions

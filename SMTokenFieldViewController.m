@@ -383,6 +383,8 @@
                             [_editToken setSelectedRange:range];
                         }
                     }
+
+                    [_editToken scrollRectToVisible:NSMakeRect(0, 0, 100, 15)];
                 }
             }
         }

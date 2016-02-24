@@ -316,7 +316,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [toolbarItem setToolTip:@"Search for messages"];
         [toolbarItem setView:_searchField];
         [toolbarItem setMinSize:NSMakeSize(200, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(450, NSHeight([_searchField frame]))];
+        [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
     } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
         toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
         

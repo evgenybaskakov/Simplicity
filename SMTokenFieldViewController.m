@@ -6,6 +6,7 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMTokenFieldViewController.h"
 #import "SMTokenFieldView.h"
 #import "SMTokenEditView.h"
@@ -130,6 +131,18 @@
     }
 }
 
+- (void)triggerArrowUp {
+    if(_target && _arrowUpAction) {
+        [_target performSelector:_arrowUpAction withObject:self afterDelay:0];
+    }
+}
+
+- (void)triggerArrowDown {
+    if(_target && _arrowDownAction) {
+        [_target performSelector:_arrowDownAction withObject:self afterDelay:0];
+    }
+}
+
 - (void)editToken:(SMTokenEditView*)sender {
     //    NSLog(@"%s", __FUNCTION__);
 }
@@ -223,7 +236,7 @@
 - (void)keyDown:(NSEvent *)theEvent {
     //    NSLog(@"%s: %@", __FUNCTION__, theEvent);
     
-    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117, codeEscape = 53;
+    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117, codeEscape = 53, codeArrowDown = 125, codeArrowUp = 126;
     
     if(theEvent.keyCode == codeLeft) { // Left
         NSUInteger flags = theEvent.modifierFlags & NSDeviceIndependentModifierFlagsMask;
@@ -391,6 +404,12 @@
     }
     else if(theEvent.keyCode == codeEscape) {
         [self triggerCancel];
+    }
+    else if(theEvent.keyCode == codeArrowUp) {
+        [self triggerArrowUp];
+    }
+    else if(theEvent.keyCode == codeArrowDown) {
+        [self triggerArrowDown];
     }
     else {
         if(theEvent.keyCode == codeDelete || theEvent.keyCode == codeForwardDelete) {

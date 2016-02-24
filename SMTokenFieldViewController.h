@@ -21,6 +21,8 @@
 @property SEL action;
 @property SEL cancelAction;
 @property SEL clearAction;
+@property SEL arrowUpAction;
+@property SEL arrowDownAction;
 @property NSTimeInterval actionDelay;
 
 @property (readonly) NSArray *representedTokenObjects;
@@ -34,6 +36,8 @@
 - (void)deleteSelectedTokensAndText;
 - (void)deleteAllTokensAndText;
 - (void)triggerCancel;
+- (void)triggerArrowUp;
+- (void)triggerArrowDown;
 
 @end
 

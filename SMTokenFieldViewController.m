@@ -44,7 +44,7 @@
 }
 
 - (IBAction)clearButtonAction:(id)sender {
-    NSLog(@"%s: TODO", __FUNCTION__);
+    [self triggerClear];
 }
 
 - (void)tokenAction:(id)sender {
@@ -112,7 +112,22 @@
 
 - (void)triggerTargetAction {
     [NSObject cancelPreviousPerformRequestsWithTarget:_target selector:_action object:self];
-    [_target performSelector:_action withObject:self afterDelay:_actionDelay];
+
+    if(_target && _action) {
+        [_target performSelector:_action withObject:self afterDelay:_actionDelay];
+    }
+}
+
+- (void)triggerCancel {
+    if(_target && _cancelAction) {
+        [_target performSelector:_cancelAction withObject:self afterDelay:0];
+    }
+}
+
+- (void)triggerClear {
+    if(_target && _clearAction) {
+        [_target performSelector:_clearAction withObject:self afterDelay:0];
+    }
 }
 
 - (void)editToken:(SMTokenEditView*)sender {
@@ -208,7 +223,7 @@
 - (void)keyDown:(NSEvent *)theEvent {
     //    NSLog(@"%s: %@", __FUNCTION__, theEvent);
     
-    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117;
+    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117, codeEscape = 53;
     
     if(theEvent.keyCode == codeLeft) { // Left
         NSUInteger flags = theEvent.modifierFlags & NSDeviceIndependentModifierFlagsMask;
@@ -372,6 +387,9 @@
             }
         }
     }
+    else if(theEvent.keyCode == codeEscape) {
+        [self triggerCancel];
+    }
     else {
         if(theEvent.keyCode == codeDelete || theEvent.keyCode == codeForwardDelete) {
             [self deleteSelectedTokensAndText];
@@ -482,6 +500,11 @@
     // Force display in order to redraw the view if it just becomes 
     // the first responder and may need to refresh the graphics state.
     [self.view display];
+}
+
+- (NSArray<NSString *> *)textView:(NSTextView *)textView completions:(NSArray<NSString *> *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(nullable NSInteger *)index {
+    *index = -1;
+    return nil;
 }
 
 @end

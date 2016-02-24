@@ -77,7 +77,7 @@
 - (void)keyDown:(NSEvent *)theEvent {
     BOOL commandKeyPressed = (theEvent.modifierFlags & NSCommandKeyMask) != 0;
 
-    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117;
+    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117, codeEscape = 53;
     
     if(theEvent.keyCode == codeLeft && (self.selectedRange.location == 0 || commandKeyPressed)) {
         BOOL extendSelection = (theEvent.modifierFlags & NSShiftKeyMask) != 0;
@@ -112,6 +112,9 @@
         else {
             [super keyDown:theEvent];
         }
+    }
+    else if(theEvent.keyCode == codeEscape) {
+        [_viewController triggerCancel];
     }
     else {
 //        NSLog(@"theEvent: %@", theEvent);

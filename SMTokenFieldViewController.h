@@ -19,6 +19,8 @@
 
 @property id target;
 @property SEL action;
+@property SEL cancelAction;
+@property SEL clearAction;
 @property NSTimeInterval actionDelay;
 
 @property (readonly) NSArray *representedTokenObjects;
@@ -31,6 +33,7 @@
 - (void)tokenMouseDown:(SMTokenView*)token event:(NSEvent *)theEvent;
 - (void)deleteSelectedTokensAndText;
 - (void)deleteAllTokensAndText;
+- (void)triggerCancel;
 
 @end
 

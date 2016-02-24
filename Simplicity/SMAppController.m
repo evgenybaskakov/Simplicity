@@ -264,6 +264,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchFieldViewController.target = self;
     _searchFieldViewController.action = @selector(searchUsingToolbarSearchField:);
     _searchFieldViewController.actionDelay = 0.2;
+    _searchFieldViewController.cancelAction = @selector(cancelSearchUsingToolbarSearchField:);
+    _searchFieldViewController.clearAction = @selector(clearSearchUsingToolbarSearchField:);
 }
 
 - (void)initOpExecutor {
@@ -314,7 +316,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [toolbarItem setToolTip:@"Search for messages"];
         [toolbarItem setView:_searchField];
         [toolbarItem setMinSize:NSMakeSize(200, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(350, NSHeight([_searchField frame]))];
+        [toolbarItem setMaxSize:NSMakeSize(450, NSHeight([_searchField frame]))];
     } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
         toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
         
@@ -405,6 +407,25 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
     
     [self showSearchResultsView];
+}
+
+- (void)cancelSearchUsingToolbarSearchField:(id)sender {
+    if(_searchMenuWindowShown) {
+        [self closeSearchMenu];
+    }
+    else {
+        [_searchFieldViewController deleteAllTokensAndText];
+        
+        SM_LOG_WARNING(@"TODO: return to the normal folder it's been selected before");
+    }
+}
+
+- (void)clearSearchUsingToolbarSearchField:(id)sender {
+    [self closeSearchMenu];
+    
+    [_searchFieldViewController deleteAllTokensAndText];
+    
+    SM_LOG_WARNING(@"TODO: return to the normal folder it's been selected before");
 }
 
 - (void)closeSearchMenu {

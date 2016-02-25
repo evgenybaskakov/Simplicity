@@ -20,6 +20,7 @@
 @property id target;
 @property SEL action;
 @property SEL cancelAction;
+@property SEL enterAction;
 @property SEL clearAction;
 @property SEL arrowUpAction;
 @property SEL arrowDownAction;
@@ -38,6 +39,7 @@
 - (void)triggerCancel;
 - (void)triggerArrowUp;
 - (void)triggerArrowDown;
+- (void)triggerEnter;
 
 @end
 

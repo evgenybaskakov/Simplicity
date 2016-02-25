@@ -19,6 +19,7 @@
 - (void)reloadItems;
 - (void)selectItem:(NSInteger)itemIndex;
 - (void)unselectItem:(NSInteger)itemIndex;
+- (BOOL)triggerSelectedItemAction;
 - (void)cursorDown;
 - (void)cursorUp;
 

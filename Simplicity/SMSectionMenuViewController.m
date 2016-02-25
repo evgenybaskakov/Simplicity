@@ -187,6 +187,19 @@
     }
 }
 
+- (BOOL)triggerSelectedItemAction {
+    NSInteger selectedRow = _itemsTable.selectedRow;
+    
+    if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
+        [self cellAction:self];
+        
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
+}
+
 - (IBAction)cellAction:(id)sender {
     NSInteger selectedRow = _itemsTable.selectedRow;
     

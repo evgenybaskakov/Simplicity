@@ -266,6 +266,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchFieldViewController.actionDelay = 0.2;
     _searchFieldViewController.cancelAction = @selector(cancelSearchUsingToolbarSearchField:);
     _searchFieldViewController.clearAction = @selector(clearSearchUsingToolbarSearchField:);
+    _searchFieldViewController.enterAction = @selector(enterSearchUsingToolbarSearchField:);
     _searchFieldViewController.arrowUpAction = @selector(searchMenuCursorUp:);
     _searchFieldViewController.arrowDownAction = @selector(searchMenuCursorDown:);
 }
@@ -428,6 +429,16 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [_searchFieldViewController deleteAllTokensAndText];
     
     SM_LOG_WARNING(@"TODO: return to the normal folder it's been selected before");
+}
+
+- (void)enterSearchUsingToolbarSearchField:(id)sender {
+    if(_searchMenuWindowShown && [_searchMenuViewController triggerSelectedItemAction]) {
+        [self closeSearchMenu];
+    }
+    else {
+        [self closeSearchMenu];
+        [self searchUsingToolbarSearchField:self];
+    }
 }
 
 - (void)searchMenuCursorUp:(id)sender {

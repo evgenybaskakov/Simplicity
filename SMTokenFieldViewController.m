@@ -143,6 +143,12 @@
     }
 }
 
+- (void)triggerEnter {
+    if(_target && _enterAction) {
+        [_target performSelector:_enterAction withObject:self afterDelay:0];
+    }
+}
+
 - (void)editToken:(SMTokenEditView*)sender {
     //    NSLog(@"%s", __FUNCTION__);
 }
@@ -234,9 +240,8 @@
 }
 
 - (void)keyDown:(NSEvent *)theEvent {
-    //    NSLog(@"%s: %@", __FUNCTION__, theEvent);
-    
-    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117, codeEscape = 53, codeArrowDown = 125, codeArrowUp = 126;
+    const NSUInteger codeLeft = 123, codeRight = 124, codeDelete = 51, codeForwardDelete = 117;
+    const NSUInteger codeEscape = 53, codeArrowDown = 125, codeArrowUp = 126, codeEnter = 36;
     
     if(theEvent.keyCode == codeLeft) { // Left
         NSUInteger flags = theEvent.modifierFlags & NSDeviceIndependentModifierFlagsMask;
@@ -410,6 +415,9 @@
     }
     else if(theEvent.keyCode == codeArrowDown) {
         [self triggerArrowDown];
+    }
+    else if(theEvent.keyCode == codeEnter) {
+        [self triggerEnter];
     }
     else {
         if(theEvent.keyCode == codeDelete || theEvent.keyCode == codeForwardDelete) {

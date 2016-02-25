@@ -25,6 +25,7 @@
 #import "SMSearchResultsListController.h"
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
+#import "SMTokenView.h"
 
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
@@ -286,7 +287,7 @@ const char *const mcoOpKinds[] = {
         }
     }];
  
-    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Contents];
+    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Content];
     
     //
     // Trigger parallel DB search.
@@ -391,7 +392,7 @@ const char *const mcoOpKinds[] = {
             return [MCOIMAPSearchExpression searchCc:[SMAddress extractEmailFromAddressString:string name:nil]];
         case SearchExpressionKind_Subject:
             return [MCOIMAPSearchExpression searchSubject:string];
-        case SearchExpressionKind_Contents:
+        case SearchExpressionKind_Content:
             return [MCOIMAPSearchExpression searchContent:string];
         default:
             NSAssert(nil, @"Search kind %lu not supported", kind);
@@ -409,7 +410,7 @@ const char *const mcoOpKinds[] = {
             return [NSString stringWithFormat:@"cc:(%@)", string];
         case SearchExpressionKind_Subject:
             return [NSString stringWithFormat:@"subject:(%@)", string];
-        case SearchExpressionKind_Contents:
+        case SearchExpressionKind_Content:
             return [NSString stringWithFormat:@"contains:(%@)", string];
         default:
             NSAssert(nil, @"Search kind %lu not supported", kind);
@@ -702,7 +703,7 @@ const char *const mcoOpKinds[] = {
             case SearchExpressionKind_Subject:
                 tokenName = @"Subject";
                 break;
-            case SearchExpressionKind_Contents:
+            case SearchExpressionKind_Content:
                 tokenName = @"Contains";
                 break;
             default:
@@ -718,7 +719,49 @@ const char *const mcoOpKinds[] = {
 #pragma mark Actions
 
 - (void)tokenSearchMenuAction:(id)sender {
-    NSLog(@"%s: TODO", __FUNCTION__);
+    NSAssert([sender isKindOfClass:[NSView class]], @"unexpected sender (it should be SMTokenView)");
+    SMTokenView *tokenView = (SMTokenView*)sender;
+
+    NSAssert([tokenView.representedObject isKindOfClass:[SMSearchToken class]], @"unexpected tokenView.representedObject (it should be SMSearch)");
+    SMSearchToken *token = (SMSearchToken *)tokenView.representedObject;
+    
+    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+    
+    SearchExpressionKind availableKinds[] = {
+        SearchExpressionKind_To,
+        SearchExpressionKind_From,
+        SearchExpressionKind_Cc,
+        SearchExpressionKind_Subject,
+        SearchExpressionKind_Content
+    };
+    
+    for(int i = 0; i < sizeof(availableKinds)/sizeof(availableKinds[0]); i++) {
+        if(token.kind != availableKinds[i]) {
+            switch(availableKinds[i]) {
+                case SearchExpressionKind_To:
+                    [theMenu addItemWithTitle:@"To" action:@selector(blah:) keyEquivalent:@""];
+                    break;
+                case SearchExpressionKind_From:
+                    [theMenu addItemWithTitle:@"From" action:@selector(blah:) keyEquivalent:@""];
+                    break;
+                case SearchExpressionKind_Cc:
+                    [theMenu addItemWithTitle:@"Cc" action:@selector(blah:) keyEquivalent:@""];
+                    break;
+                case SearchExpressionKind_Subject:
+                    [theMenu addItemWithTitle:@"Subject" action:@selector(blah:) keyEquivalent:@""];
+                    break;
+                case SearchExpressionKind_Content:
+                    [theMenu addItemWithTitle:@"Content" action:@selector(blah:) keyEquivalent:@""];
+                    break;
+            }
+        }
+    }
+
+    [theMenu addItem:[NSMenuItem separatorItem]];
+    [theMenu addItemWithTitle:@"Edit" action:@selector(blah:) keyEquivalent:@""];
+    [theMenu addItemWithTitle:@"Delete" action:@selector(blah:) keyEquivalent:@""];
+    
+    [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
 }
 
 - (void)searchForContentsAction:(id)sender {

@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, SearchExpressionKind) {
     SearchExpressionKind_From,
     SearchExpressionKind_Cc,
     SearchExpressionKind_Subject,
-    SearchExpressionKind_Contents,
+    SearchExpressionKind_Content,
 };
 
 @interface SMSearchToken : NSObject

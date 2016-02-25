@@ -1964,7 +1964,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                                 requestStr = @"SUBJECT";
                                 break;
                                 
-                            case SearchExpressionKind_Contents:
+                            case SearchExpressionKind_Content:
                                 requestStr = @"MESSAGEBODY";
                                 break;
                                 

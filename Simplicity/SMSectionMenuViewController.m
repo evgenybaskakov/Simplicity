@@ -229,4 +229,38 @@
     }
 }
 
+- (void)cursorDown {
+    const int codeArrowDown = 125;
+    
+    NSEvent* keyEvent = [NSEvent keyEventWithType:NSKeyDown
+                                         location:NSMakePoint(0, 0)
+                                    modifierFlags:NSCommandKeyMask
+                                        timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                     windowNumber:[[[NSApplication sharedApplication] mainWindow] windowNumber]
+                                          context:[NSGraphicsContext currentContext]
+                                       characters:@""
+                      charactersIgnoringModifiers:@""
+                                        isARepeat:NO
+                                          keyCode:codeArrowDown];
+    
+    [_itemsTable keyDown:keyEvent];
+}
+
+- (void)cursorUp {
+    const int codeArrowUp = 126;
+    
+    NSEvent* keyEvent = [NSEvent keyEventWithType:NSKeyDown
+                                         location:NSMakePoint(0, 0)
+                                    modifierFlags:NSCommandKeyMask
+                                        timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                     windowNumber:[[[NSApplication sharedApplication] mainWindow] windowNumber]
+                                          context:[NSGraphicsContext currentContext]
+                                       characters:@""
+                      charactersIgnoringModifiers:@""
+                                        isARepeat:NO
+                                          keyCode:codeArrowUp];
+
+    [_itemsTable keyDown:keyEvent];
+}
+
 @end

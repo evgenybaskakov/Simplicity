@@ -431,11 +431,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)searchMenuCursorUp:(id)sender {
-    SM_LOG_WARNING(@"%s: TODO", __FUNCTION__);
+    [_searchMenuViewController cursorUp];
 }
 
 - (void)searchMenuCursorDown:(id)sender {
-    SM_LOG_WARNING(@"%s: TODO", __FUNCTION__);
+    [_searchMenuViewController cursorDown];
 }
 
 - (void)closeSearchMenu {

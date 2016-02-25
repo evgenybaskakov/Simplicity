@@ -388,28 +388,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)searchUsingToolbarSearchField:(id)sender {
-    NSString *searchString = _searchFieldViewController.stringValue;
-
-    if([[SMStringUtils trimString:searchString] length] == 0) {
-        [self closeSearchMenu];
-        return;
-    }
-    
-    _searchMenuWindowShown = NO;
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
-        [_searchMenuWindow makeKeyAndOrderFront:self];
-        
-        [self adjustSearchMenuFrame];
-        
-        _searchMenuWindowShown = YES;
-    }
-    else {
-        [_searchMenuWindow orderOut:self];
-    }
-    
-    [self showSearchResultsView];
+    [self startNewSearch:YES];
 }
 
 - (void)cancelSearchUsingToolbarSearchField:(id)sender {
@@ -437,7 +416,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
     else {
         [self closeSearchMenu];
-        [self searchUsingToolbarSearchField:self];
+        [self startNewSearch:NO];
     }
 }
 
@@ -477,6 +456,33 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (Boolean)isSearchResultsViewHidden {
     return _searchResultsShownConstraints != nil;
+}
+
+- (void)startNewSearch:(BOOL)showSuggestionsMenu {
+    NSString *searchString = _searchFieldViewController.stringValue;
+    
+    if([[SMStringUtils trimString:searchString] length] == 0) {
+        [self closeSearchMenu];
+        return;
+    }
+    
+    _searchMenuWindowShown = NO;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
+        if(showSuggestionsMenu) {
+            [_searchMenuWindow makeKeyAndOrderFront:self];
+            
+            [self adjustSearchMenuFrame];
+            
+            _searchMenuWindowShown = YES;
+        }
+    }
+    else {
+        [_searchMenuWindow orderOut:self];
+    }
+    
+    [self showSearchResultsView];
 }
 
 - (void)showSearchResultsView {

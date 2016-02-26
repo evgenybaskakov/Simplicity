@@ -75,6 +75,49 @@
     [self adjustTokenFrames];
 }
 
+- (void)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
+
+    NSUInteger idx = [_tokens indexOfObject:tokenView];
+    if(idx == NSNotFound) {
+        SM_LOG_WARNING(@"token '%@' not found", tokenView.tokenName);
+        return;
+    }
+    
+    [_tokens[idx] removeFromSuperview];
+
+    SMTokenView *newTokenView = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target selector:selector viewController:self];
+
+    _tokens[idx] = newTokenView;
+    
+    [_tokenFieldView addSubview:newTokenView];
+    
+    if(tokenView.selected) {
+        newTokenView.selected = YES;
+    }
+    
+    [self adjustTokenFrames];
+}
+
+- (void)deleteToken:(SMTokenView*)tokenView {
+    NSUInteger idx = [_tokens indexOfObject:tokenView];
+    if(idx == NSNotFound) {
+        SM_LOG_WARNING(@"token '%@' not found", tokenView.tokenName);
+        return;
+    }
+
+    [_tokens[idx] removeFromSuperview];
+    [_tokens removeObjectAtIndex:idx];
+    [_selectedTokens removeIndex:idx];
+    
+    if(_currentToken == idx) {
+        _currentToken = -1;
+    }
+    
+    [self adjustTokenFrames];
+    
+    // TODO: scroll to the next visible token / text field
+}
+
 - (NSArray*)representedTokenObjects {
     NSMutableArray *objs = [NSMutableArray array];
     

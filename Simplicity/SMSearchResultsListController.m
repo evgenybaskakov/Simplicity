@@ -97,6 +97,7 @@ const char *const mcoOpKinds[] = {
     NSMutableOrderedSet *_suggestionResultsSubjects;
     NSMutableOrderedSet *_suggestionResultsContacts;
     MCOIndexSet *_searchMessagesUIDs;
+    SMTokenView *_tokenViewWithMenu;
 }
 
 - (id)init {
@@ -688,32 +689,38 @@ const char *const mcoOpKinds[] = {
     [_searchTokens addObject:[[SMSearchToken alloc] initWithKind:kind string:searchItem]];
 
     for(SMSearchToken *token in _searchTokens) {
-        NSString *tokenName = nil;
-        
-        switch(token.kind) {
-            case SearchExpressionKind_From:
-                tokenName = @"From";
-                break;
-            case SearchExpressionKind_To:
-                tokenName = @"To";
-                break;
-            case SearchExpressionKind_Cc:
-                tokenName = @"Cc";
-                break;
-            case SearchExpressionKind_Subject:
-                tokenName = @"Subject";
-                break;
-            case SearchExpressionKind_Content:
-                tokenName = @"Contains";
-                break;
-            default:
-                NSAssert(nil, @"Search kind %lu not supported", token.kind);
-        }
+        NSString *tokenName = [self tokenKindToName:token.kind];
 
         [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self selector:@selector(tokenSearchMenuAction:)];
     }
     
-    [[appDelegate appController] searchUsingToolbarSearchField:self];
+    [[appDelegate appController] startNewSearch:YES];
+}
+
+- (NSString*)tokenKindToName:(SearchExpressionKind)kind {
+    NSString *tokenName = nil;
+    
+    switch(kind) {
+        case SearchExpressionKind_From:
+            tokenName = @"From";
+            break;
+        case SearchExpressionKind_To:
+            tokenName = @"To";
+            break;
+        case SearchExpressionKind_Cc:
+            tokenName = @"Cc";
+            break;
+        case SearchExpressionKind_Subject:
+            tokenName = @"Subject";
+            break;
+        case SearchExpressionKind_Content:
+            tokenName = @"Contains";
+            break;
+        default:
+            NSAssert(nil, @"Search kind %lu not supported", kind);
+    }
+    
+    return tokenName;
 }
 
 #pragma mark Actions
@@ -721,6 +728,8 @@ const char *const mcoOpKinds[] = {
 - (void)tokenSearchMenuAction:(id)sender {
     NSAssert([sender isKindOfClass:[NSView class]], @"unexpected sender (it should be SMTokenView)");
     SMTokenView *tokenView = (SMTokenView*)sender;
+    
+    _tokenViewWithMenu = tokenView;
 
     NSAssert([tokenView.representedObject isKindOfClass:[SMSearchToken class]], @"unexpected tokenView.representedObject (it should be SMSearch)");
     SMSearchToken *token = (SMSearchToken *)tokenView.representedObject;
@@ -737,31 +746,71 @@ const char *const mcoOpKinds[] = {
     
     for(int i = 0; i < sizeof(availableKinds)/sizeof(availableKinds[0]); i++) {
         if(token.kind != availableKinds[i]) {
+            NSString *tokenName = [self tokenKindToName:availableKinds[i]];
+
             switch(availableKinds[i]) {
                 case SearchExpressionKind_To:
-                    [theMenu addItemWithTitle:@"To" action:@selector(blah:) keyEquivalent:@""];
+                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToTo:) keyEquivalent:@""] setTarget:self];
                     break;
                 case SearchExpressionKind_From:
-                    [theMenu addItemWithTitle:@"From" action:@selector(blah:) keyEquivalent:@""];
+                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToFrom:) keyEquivalent:@""] setTarget:self];
                     break;
                 case SearchExpressionKind_Cc:
-                    [theMenu addItemWithTitle:@"Cc" action:@selector(blah:) keyEquivalent:@""];
+                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToCc:) keyEquivalent:@""] setTarget:self];
                     break;
                 case SearchExpressionKind_Subject:
-                    [theMenu addItemWithTitle:@"Subject" action:@selector(blah:) keyEquivalent:@""];
+                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToSubject:) keyEquivalent:@""] setTarget:self];
                     break;
                 case SearchExpressionKind_Content:
-                    [theMenu addItemWithTitle:@"Content" action:@selector(blah:) keyEquivalent:@""];
+                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToContent:) keyEquivalent:@""] setTarget:self];
                     break;
             }
         }
     }
 
     [theMenu addItem:[NSMenuItem separatorItem]];
-    [theMenu addItemWithTitle:@"Edit" action:@selector(blah:) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"Delete" action:@selector(blah:) keyEquivalent:@""];
+//    [[theMenu addItemWithTitle:@"Edit" action:@selector(blah:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteTokenFromSearchField:) keyEquivalent:@""] setTarget:self];
     
     [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
+}
+
+- (void)changeTokenKindToTo:(id)sender {
+    [self changeTokenKind:SearchExpressionKind_To];
+}
+
+- (void)changeTokenKindToFrom:(id)sender {
+    [self changeTokenKind:SearchExpressionKind_From];
+}
+
+- (void)changeTokenKindToCc:(id)sender {
+    [self changeTokenKind:SearchExpressionKind_Cc];
+}
+
+- (void)changeTokenKindToSubject:(id)sender {
+    [self changeTokenKind:SearchExpressionKind_Subject];
+}
+
+- (void)changeTokenKindToContent:(id)sender {
+    [self changeTokenKind:SearchExpressionKind_Content];
+}
+
+- (void)changeTokenKind:(SearchExpressionKind)newKind {
+    SMSearchToken *oldToken = (SMSearchToken *)_tokenViewWithMenu.representedObject;
+    SMSearchToken *newToken = [[SMSearchToken alloc] initWithKind:newKind string:oldToken.string];
+    NSString *newTokenName = [self tokenKindToName:newToken.kind];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target selector:_tokenViewWithMenu.selector];
+    
+    [[appDelegate appController] startNewSearch:NO];
+}
+
+- (void)deleteTokenFromSearchField:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
+    
+    [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)searchForContentsAction:(id)sender {

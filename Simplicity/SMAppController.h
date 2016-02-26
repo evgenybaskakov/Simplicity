@@ -88,6 +88,6 @@
 - (void)closeSearchMenu;
 - (void)adjustSearchMenuFrame;
 
-- (void)searchUsingToolbarSearchField:(id)sender;
+- (void)startNewSearch:(BOOL)showSuggestionsMenu;
 
 @end

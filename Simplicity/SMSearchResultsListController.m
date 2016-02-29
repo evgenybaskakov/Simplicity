@@ -769,7 +769,7 @@ const char *const mcoOpKinds[] = {
     }
 
     [theMenu addItem:[NSMenuItem separatorItem]];
-//    [[theMenu addItemWithTitle:@"Edit" action:@selector(blah:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Edit" action:@selector(editTokenInSearchField:) keyEquivalent:@""] setTarget:self];
     [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteTokenFromSearchField:) keyEquivalent:@""] setTarget:self];
     
     [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
@@ -809,6 +809,13 @@ const char *const mcoOpKinds[] = {
 - (void)deleteTokenFromSearchField:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
+    
+    [[appDelegate appController] startNewSearch:NO];
+}
+
+- (void)editTokenInSearchField:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchFieldViewController] editToken:_tokenViewWithMenu];
     
     [[appDelegate appController] startNewSearch:NO];
 }

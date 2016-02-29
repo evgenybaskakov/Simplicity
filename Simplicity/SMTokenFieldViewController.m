@@ -49,18 +49,6 @@
     [self triggerClear];
 }
 
-- (void)tokenAction:(id)sender {
-    NSAssert([sender isKindOfClass:[SMTokenView class]], @"unexpected sender");
-    SMTokenView *token = sender;
-    
-    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
-    
-    [theMenu addItemWithTitle:@"Edit" action:@selector(blah:) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"Delete" action:@selector(blah:) keyEquivalent:@""];
-    
-    [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:token];
-}
-
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
     

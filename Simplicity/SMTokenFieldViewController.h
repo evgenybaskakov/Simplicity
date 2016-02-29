@@ -32,10 +32,12 @@
 - (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector;
 - (void)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector;
 - (void)deleteToken:(SMTokenView*)tokenView;
-- (void)editToken:(SMTokenEditView*)sender;
+- (void)editToken:(SMTokenView*)token;
 - (void)cursorLeftFrom:(SMTokenEditView*)sender jumpToBeginning:(BOOL)jumpToBeginning extendSelection:(BOOL)extendSelection;
+- (void)cursorRightFrom:(SMTokenEditView*)sender jumpToEnd:(BOOL)jumpToEnd extendSelection:(BOOL)extendSelection;
 - (void)clearCursorSelection;
 - (void)tokenMouseDown:(SMTokenView*)token event:(NSEvent *)theEvent;
+- (void)clickWithinTokenEditor:(SMTokenEditView*)tokenEditor;
 - (void)deleteSelectedTokensAndText;
 - (void)deleteAllTokensAndText;
 - (void)triggerCancel;

@@ -261,9 +261,8 @@
 
         if(_tokens.count == tokenCount) {
             [_selectedTokens removeAllIndexes];
-            [_selectedTokens addIndex:idx];
-            _currentToken = idx;
-            token.selected = YES;
+            
+            [self selectToken:idx];
         }
     }
     else {
@@ -306,11 +305,7 @@
             if(jumpToBeginning) {
                 if(!extendSelection) {
                     [self clearCursorSelection];
-                    
-                    _currentToken = 0;
-
-                    [_selectedTokens addIndex:_currentToken];
-                    _tokens[_currentToken].selected = YES;
+                    [self selectToken:0];
                 }
                 else {
                     for(NSInteger i = 0; i < _tokens.count; i++) {
@@ -323,33 +318,24 @@
 
                     NSRange range = _mainTokenEditor.selectedRange;
                     [_mainTokenEditor setSelectedRange:NSMakeRange(0, range.location + range.length)];
+                    [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
                 }
             }
             else if(!extendSelection && _selectedTokens.count > 1) {
                 NSInteger firstToken = _selectedTokens.firstIndex;
                 
                 [self clearCursorSelection];
-                
-                _currentToken = firstToken;
-                
-                [_selectedTokens addIndex:_currentToken];
-                _tokens[_currentToken].selected = YES;
+                [self selectToken:firstToken];
             }
             else {
                 [self clearCursorSelection];
-
-                _currentToken = _tokens.count-1;
-                
-                [_selectedTokens addIndex:_currentToken];
-                _tokens[_currentToken].selected = YES;
+                [self selectToken:_tokens.count-1];
             }
 
             if(!extendSelection) {
                 [_mainTokenEditor setSelectedRange:NSMakeRange(0, 0)];
             }
 
-            [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
-            
             _extendingSelectionFromText = extendSelection;
         }
         else {
@@ -366,10 +352,7 @@
 
             if(jumpToBeginning) {
                 if(!extendSelection) {
-                    _currentToken = 0;
-                    
-                    [_selectedTokens addIndex:_currentToken];
-                    _tokens[_currentToken].selected = YES;
+                    [self selectToken:0];
                 }
                 else {
                     for(NSInteger i = 0; i < tokenIdx; i++) {
@@ -378,17 +361,14 @@
                     }
                     
                     _currentToken = 0;
+
+                    [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
                 }
             }
             else {
-                _currentToken = tokenIdx - 1;
-                
-                [_selectedTokens addIndex:_currentToken];
-                _tokens[_currentToken].selected = YES;
+                [self selectToken:tokenIdx - 1];
             }
             
-            [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
-
             [self finishTokenEditing];
         }
     }
@@ -408,12 +388,7 @@
 
         BOOL itWasLastToken = NO;
         if(tokenIdx + 1 < _tokens.count) {
-            _currentToken = tokenIdx + 1;
-            
-            [_selectedTokens addIndex:_currentToken];
-            _tokens[_currentToken].selected = YES;
-
-            [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
+            [self selectToken:tokenIdx + 1];
         }
         else {
             itWasLastToken = YES;
@@ -443,6 +418,13 @@
 
     _extendingSelectionFromText = YES;
     [_mainTokenEditor setSelectedRange:NSMakeRange(0, _mainTokenEditor.string.length)];
+}
+
+- (void)selectToken:(NSUInteger)idx {
+    _currentToken = idx;
+    _tokens[_currentToken].selected = YES;
+    [_selectedTokens addIndex:_currentToken];
+    [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
 }
 
 - (void)clearCursorSelection {
@@ -496,31 +478,25 @@
 
         if(_currentToken > 0) {
             if(theEvent.modifierFlags & NSCommandKeyMask) {
-                while(_currentToken > 0) {
+                for(NSUInteger i = _currentToken; i > 0; i--) {
                     if(extendSelection) {
-                        _tokens[_currentToken].selected = YES;
-                        [_selectedTokens addIndex:_currentToken];
+                        _tokens[i].selected = YES;
+                        [_selectedTokens addIndex:i];
                     }
                     else {
-                        _tokens[_currentToken].selected = NO;
-                        [_selectedTokens removeIndex:_currentToken];
+                        _tokens[i].selected = NO;
+                        [_selectedTokens removeIndex:i];
                     }
-
-                    _currentToken--;
                 }
-                
-                _tokens[_currentToken].selected = YES;
+
+                [self selectToken:0];
             }
             else if(!extendSelection && (oldSelectionLen > 1 || selectionWasExtendingFromText)) {
-                _currentToken = oldFirstToken;
-                _tokens[_currentToken].selected = YES;
+                [self selectToken:oldFirstToken];
             }
             else {
-                _tokens[--_currentToken].selected = YES;
+                [self selectToken:_currentToken - 1];
             }
-
-            [_selectedTokens addIndex:_currentToken];
-            [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
         }
     }
     else if(theEvent.keyCode == codeRight) { // Right
@@ -588,15 +564,10 @@
             }
             else {
                 if(!extendSelection && oldSelectionLen > 1) {
-                    _currentToken = oldLastToken;
-                    _tokens[_currentToken].selected = YES;
-                    [_selectedTokens addIndex:_currentToken];
-                    [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
+                    [self selectToken:oldLastToken];
                 }
                 else if(_currentToken >= 0 && _currentToken < _tokens.count-1) {
-                    _tokens[++_currentToken].selected = YES;
-                    [_selectedTokens addIndex:_currentToken];
-                    [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
+                    [self selectToken:_currentToken + 1];
                 }
                 else if(_currentToken == _tokens.count-1) {
                     [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];

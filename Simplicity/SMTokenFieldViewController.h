@@ -41,10 +41,10 @@
 - (void)clickWithinTokenEditor:(SMTokenEditView*)tokenEditor;
 - (void)deleteSelectedTokensAndText;
 - (void)deleteAllTokensAndText;
-- (void)triggerCancel;
-- (void)triggerArrowUp;
-- (void)triggerArrowDown;
-- (void)triggerEnter;
+- (void)triggerCancel:(SMTokenEditView*)sender;
+- (void)triggerArrowUp:(SMTokenEditView*)sender;
+- (void)triggerArrowDown:(SMTokenEditView*)sender;
+- (void)triggerEnter:(SMTokenEditView*)sender;
 
 @end
 

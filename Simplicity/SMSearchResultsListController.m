@@ -310,7 +310,7 @@ const char *const mcoOpKinds[] = {
                 }
             }
             
-            SM_LOG_INFO(@"Total %lu messages with matching contacts found", textMessages.count);
+            SM_LOG_DEBUG(@"Total %lu messages with matching contacts found", textMessages.count);
             
             [self updateSearchMenuContent:@[]];
         }];

@@ -46,7 +46,9 @@
 }
 
 - (IBAction)clearButtonAction:(id)sender {
-    [self triggerClear];
+    if(_target && _clearAction) {
+        [_target performSelector:_clearAction withObject:self afterDelay:0];
+    }
 }
 
 - (void)setRepresentedObject:(id)representedObject {
@@ -151,7 +153,15 @@
     [self adjustTokenFrames];
 }
 
-- (void)stopTokenEditing {
+- (void)finishTokenEditing {
+    [self stopTokenEditing:YES];
+}
+
+- (void)cancelTokenEditing {
+    [self stopTokenEditing:NO];
+}
+
+- (void)stopTokenEditing:(BOOL)saveChanges {
     NSAssert(_existingTokenEditor != nil, @"_existingTokenEditor == nil");
     
     SMTokenView *token = _existingTokenEditor.parentToken;
@@ -162,32 +172,42 @@
     
     [_existingTokenEditor removeFromSuperview];
     
-    NSString *newTokenString = _existingTokenEditor.string;
-    
-    if(newTokenString.length != 0) {
-        if(![newTokenString isEqualToString:token.contentsText]) {
-            token = [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:token.representedObject target:token.target action:token.action editedAction:token.editedAction deletedAction:token.deletedAction];
-            
-            [token triggerEditedAction];
+    if(saveChanges) {
+        NSString *newTokenString = _existingTokenEditor.string;
+        
+        if(newTokenString.length != 0) {
+            if(![newTokenString isEqualToString:token.contentsText]) {
+                token = [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:token.representedObject target:token.target action:token.action editedAction:token.editedAction deletedAction:token.deletedAction];
+                
+                [token triggerEditedAction];
+            }
+            else {
+                [_tokenFieldView addSubview:token];
+                token.editorView = nil;
+            }
+
+            // Make sure the token that's been edited is not selected.
+            _tokens[idx].selected = NO;
+            [_selectedTokens removeIndex:idx];
         }
         else {
-            [_tokenFieldView addSubview:token];
-            token.editorView = nil;
+            // This also triggers the delete action.
+            [self deleteToken:token];
+            
+            token = nil;
         }
-
+    }
+    else {
+        [_tokenFieldView addSubview:token];
+        token.editorView = nil;
+    
         // Make sure the token that's been edited is not selected.
         _tokens[idx].selected = NO;
         [_selectedTokens removeIndex:idx];
     }
-    else {
-        // This also triggers the delete action.
-        [self deleteToken:token];
-        
-        token = nil;
-    }
-    
+
     _existingTokenEditor = nil;
-    
+
     [_tokenFieldView.window makeFirstResponder:_tokenFieldView];
 
     // Redraw everything.
@@ -230,40 +250,42 @@
     }
 }
 
-- (void)triggerCancel {
-    if(_target && _cancelAction) {
-        [_target performSelector:_cancelAction withObject:self afterDelay:0];
+- (void)triggerCancel:(SMTokenEditView*)sender {
+    if(_existingTokenEditor != nil && sender == _existingTokenEditor) {
+        [self cancelTokenEditing];
+    }
+    else {
+        if(_target && _cancelAction) {
+            [_target performSelector:_cancelAction withObject:self afterDelay:0];
+        }
     }
 }
 
-- (void)triggerClear {
-    if(_target && _clearAction) {
-        [_target performSelector:_clearAction withObject:self afterDelay:0];
+- (void)triggerEnter:(SMTokenEditView*)sender {
+    if(_existingTokenEditor != nil && sender == _existingTokenEditor) {
+        [self finishTokenEditing];
+    }
+    else {
+        if(_target && _enterAction) {
+            [_target performSelector:_enterAction withObject:self afterDelay:0];
+        }
     }
 }
 
-- (void)triggerArrowUp {
+- (void)triggerArrowUp:(SMTokenEditView*)sender {
     if(_target && _arrowUpAction) {
         [_target performSelector:_arrowUpAction withObject:self afterDelay:0];
     }
 }
 
-- (void)triggerArrowDown {
+- (void)triggerArrowDown:(SMTokenEditView*)sender {
     if(_target && _arrowDownAction) {
         [_target performSelector:_arrowDownAction withObject:self afterDelay:0];
     }
 }
 
-- (void)triggerEnter {
-    if(_target && _enterAction) {
-        [_target performSelector:_enterAction withObject:self afterDelay:0];
-    }
-}
-
 - (void)cursorLeftFrom:(SMTokenEditView*)sender jumpToBeginning:(BOOL)jumpToBeginning extendSelection:(BOOL)extendSelection {
-    //    NSLog(@"%s", __FUNCTION__);
-    
-    NSAssert(sender == _mainTokenEditor || sender == _existingTokenEditor, @"unknown sender");
+    NSAssert(sender == _mainTokenEditor || (_existingTokenEditor != nil && sender == _existingTokenEditor), @"unknown sender");
     
     if(sender == _mainTokenEditor) {
         [_tokenFieldView.window makeFirstResponder:_tokenFieldView];
@@ -355,7 +377,7 @@
             
             [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
 
-            [self stopTokenEditing];
+            [self finishTokenEditing];
         }
     }
 }
@@ -385,7 +407,7 @@
             itWasLastToken = YES;
         }
         
-        [self stopTokenEditing];
+        [self finishTokenEditing];
         
         if(itWasLastToken) {
             [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
@@ -590,16 +612,16 @@
         }
     }
     else if(theEvent.keyCode == codeEscape) {
-        [self triggerCancel];
+        [self triggerCancel:nil];
     }
     else if(theEvent.keyCode == codeArrowUp) {
-        [self triggerArrowUp];
+        [self triggerArrowUp:nil];
     }
     else if(theEvent.keyCode == codeArrowDown) {
-        [self triggerArrowDown];
+        [self triggerArrowDown:nil];
     }
     else if(theEvent.keyCode == codeEnter) {
-        [self triggerEnter];
+        [self triggerEnter:nil];
     }
     else {
         if(theEvent.keyCode == codeDelete || theEvent.keyCode == codeForwardDelete) {
@@ -628,6 +650,13 @@
     if(selectedTokensOnly) {
         [_selectedTokens enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
             [_tokens[idx] removeFromSuperview];
+            
+            if(_tokens[idx].editorView) {
+                _tokens[idx].editorView = nil;
+
+                [_existingTokenEditor removeFromSuperview];
+                _existingTokenEditor = nil;
+            }
         }];
 
         [_tokens removeObjectsAtIndexes:_selectedTokens];
@@ -645,6 +674,11 @@
 
         if(deleteText) {
             [_mainTokenEditor setString:@""];
+        }
+
+        if(_existingTokenEditor) {
+            [_existingTokenEditor removeFromSuperview];
+            _existingTokenEditor = nil;
         }
     }
     
@@ -719,7 +753,7 @@
     [self clearCursorSelection];
     
     if(_existingTokenEditor != nil) {
-        [self stopTokenEditing];
+        [self finishTokenEditing];
     }
     
     _currentToken = [_tokens indexOfObject:token];
@@ -740,7 +774,7 @@
     [self clearCursorSelection];
     
     if(tokenEditor == _mainTokenEditor && _existingTokenEditor != nil) {
-        [self stopTokenEditing];
+        [self finishTokenEditing];
     }
 }
 

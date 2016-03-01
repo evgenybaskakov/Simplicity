@@ -124,19 +124,18 @@
         }
     }
     else if(theEvent.keyCode == codeEscape) {
-        [_viewController triggerCancel];
+        [_viewController triggerCancel:self];
     }
     else if(theEvent.keyCode == codeArrowUp) {
-        [_viewController triggerArrowUp];
+        [_viewController triggerArrowUp:self];
     }
     else if(theEvent.keyCode == codeArrowDown) {
-        [_viewController triggerArrowDown];
+        [_viewController triggerArrowDown:self];
     }
     else if(theEvent.keyCode == codeEnter) {
-        [_viewController triggerEnter];
+        [_viewController triggerEnter:self];
     }
     else {
-//        NSLog(@"theEvent: %@", theEvent);
         [super keyDown:theEvent];
     }
 }

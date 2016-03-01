@@ -322,7 +322,7 @@ const char *const mcoOpKinds[] = {
                 }
             }
             
-            SM_LOG_INFO(@"Total %lu messages with matching subject found", textMessages.count);
+            SM_LOG_DEBUG(@"Total %lu messages with matching subject found", textMessages.count);
             
             [self updateSearchMenuContent:@[]];
         }];
@@ -334,7 +334,7 @@ const char *const mcoOpKinds[] = {
                 [uids addIndex:m.uid];
             }
 
-            SM_LOG_INFO(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+            SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
             
             [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
         }];

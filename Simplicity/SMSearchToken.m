@@ -15,7 +15,7 @@
     self = [super init];
     
     if(self) {
-        SM_LOG_INFO(@"kind %u, string %@", (unsigned int)kind, string);
+        SM_LOG_NOISE(@"kind %u, string %@", (unsigned int)kind, string);
         
         _kind = kind;
         _string = string;

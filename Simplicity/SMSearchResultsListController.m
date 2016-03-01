@@ -691,7 +691,7 @@ const char *const mcoOpKinds[] = {
     for(SMSearchToken *token in _searchTokens) {
         NSString *tokenName = [self tokenKindToName:token.kind];
 
-        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(tokenSearchEditedAction:)];
+        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(editedTokenAction:) deletedAction:@selector(deletedTokenAction:)];
     }
     
     [[appDelegate appController] startNewSearch:YES];
@@ -775,10 +775,6 @@ const char *const mcoOpKinds[] = {
     [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
 }
 
-- (void)tokenSearchEditedAction:(id)sender {
-    SM_LOG_WARNING(@"%s: TODO!!!!!!!!!!", __FUNCTION__);
-}
-
 - (void)changeTokenKindToTo:(id)sender {
     [self changeTokenKind:SearchExpressionKind_To];
 }
@@ -805,14 +801,7 @@ const char *const mcoOpKinds[] = {
     NSString *newTokenName = [self tokenKindToName:newToken.kind];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction];
-    
-    [[appDelegate appController] startNewSearch:NO];
-}
-
-- (void)deleteTokenFromSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
+    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction deletedAction:_tokenViewWithMenu.deletedAction];
     
     [[appDelegate appController] startNewSearch:NO];
 }
@@ -820,7 +809,35 @@ const char *const mcoOpKinds[] = {
 - (void)editTokenInSearchField:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] searchFieldViewController] editToken:_tokenViewWithMenu];
+
+    // Note: no other actions is to trigger here. It'll be triggered by the token itself.
+}
+
+- (void)deleteTokenFromSearchField:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
     
+    // Note: no other actions is to trigger here. It'll be triggered by the token itself.
+}
+
+- (void)editedTokenAction:(id)sender {
+    SMTokenView *tokenView = (SMTokenView *)sender;
+    SMSearchToken *token = (SMSearchToken *)tokenView.representedObject;
+
+    // Propagate the token string the user entered to the search.
+    token.string = tokenView.contentsText;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] startNewSearch:NO];
+}
+
+- (void)deletedTokenAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] startNewSearch:NO];
+}
+
+- (void)tokenSearchEditedAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] startNewSearch:NO];
 }
 

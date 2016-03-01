@@ -15,7 +15,7 @@
     NSTextField *_textField2;
 }
 
-+ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction viewController:(SMTokenFieldViewController*)viewController {
++ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction viewController:(SMTokenFieldViewController*)viewController {
     NSTextField *textField1 = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
     textField1.stringValue = tokenName;
     textField1.selectable = NO;
@@ -43,14 +43,14 @@
     }
     textField2.frame = NSMakeRect(0, 0, requiredWidth2, bounds2.size.height);
 
-    SMTokenView *token = [[SMTokenView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100) viewController:viewController textField1:textField1 textField2:textField2 representedObject:representedObject target:target action:action editedAction:editedAction];
+    SMTokenView *token = [[SMTokenView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100) viewController:viewController textField1:textField1 textField2:textField2 representedObject:representedObject target:target action:action editedAction:editedAction deletedAction:deletedAction];
     
     token.selected = NO;
 
     return token;
 }
 
-- (id)initWithFrame:(NSRect)frameRect viewController:(SMTokenFieldViewController*)viewController textField1:(NSTextField*)textField1 textField2:(NSTextField*)textField2 representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction {
+- (id)initWithFrame:(NSRect)frameRect viewController:(SMTokenFieldViewController*)viewController textField1:(NSTextField*)textField1 textField2:(NSTextField*)textField2 representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction {
     self = [super initWithFrame:frameRect];
     
     if(self) {
@@ -62,6 +62,7 @@
         _target = target;
         _action = action;
         _editedAction = editedAction;
+        _deletedAction = deletedAction;
         
         [self addSubview:_textField1];
         [self addSubview:_textField2];
@@ -159,6 +160,12 @@
 - (void)triggerEditedAction {
     if(_target && _editedAction) {
         [_target performSelector:_editedAction withObject:self afterDelay:0.0];
+    }
+}
+
+- (void)triggerDeletedAction {
+    if(_target && _deletedAction) {
+        [_target performSelector:_deletedAction withObject:self afterDelay:0.0];
     }
 }
 

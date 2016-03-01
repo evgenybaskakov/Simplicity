@@ -55,8 +55,8 @@
     // Update the view, if already loaded.
 }
 
-- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction {
-    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction viewController:self];
+- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action  editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction {
+    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction deletedAction:deletedAction viewController:self];
     
     [_tokens addObject:token];
     [_tokenFieldView addSubview:token];
@@ -64,14 +64,14 @@
     [self adjustTokenFrames];
 }
 
-- (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction {
+- (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction {
 
     NSUInteger idx = [_tokens indexOfObject:tokenView];
     NSAssert(idx != NSNotFound, @"token '%@' not found", tokenView.tokenName);
     
     [_tokens[idx] removeFromSuperview];
 
-    SMTokenView *newTokenView = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction viewController:self];
+    SMTokenView *newTokenView = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction deletedAction:(SEL)deletedAction viewController:self];
 
     _tokens[idx] = newTokenView;
     
@@ -110,7 +110,7 @@
     
     // TODO: scroll to the next visible token / text field
 
-    [self triggerTargetAction];
+    [tokenView triggerDeletedAction];
 }
 
 - (NSArray*)representedTokenObjects {
@@ -163,13 +163,12 @@
     [_existingTokenEditor removeFromSuperview];
     
     NSString *newTokenString = _existingTokenEditor.string;
-    BOOL triggerEdited = NO;
     
     if(newTokenString.length != 0) {
         if(![newTokenString isEqualToString:token.contentsText]) {
-            token = [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:token.representedObject target:token.target action:token.action editedAction:token.editedAction];
+            token = [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:token.representedObject target:token.target action:token.action editedAction:token.editedAction deletedAction:token.deletedAction];
             
-            triggerEdited = YES;
+            [token triggerEditedAction];
         }
         else {
             [_tokenFieldView addSubview:token];
@@ -181,6 +180,7 @@
         [_selectedTokens removeIndex:idx];
     }
     else {
+        // This also triggers the delete action.
         [self deleteToken:token];
         
         token = nil;
@@ -192,10 +192,6 @@
 
     // Redraw everything.
     [self adjustTokenFrames];
-    
-    if(triggerEdited) {
-        [token triggerEditedAction];
-    }
 }
 
 - (BOOL)tokenSelectionActive {

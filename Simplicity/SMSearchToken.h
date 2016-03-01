@@ -18,8 +18,8 @@ typedef NS_ENUM(NSUInteger, SearchExpressionKind) {
 
 @interface SMSearchToken : NSObject
 
-@property (readonly) SearchExpressionKind kind;
-@property (readonly) NSString *string;
+@property SearchExpressionKind kind;
+@property NSString *string;
 
 - (id)initWithKind:(SearchExpressionKind)kind string:(NSString*)string;
 

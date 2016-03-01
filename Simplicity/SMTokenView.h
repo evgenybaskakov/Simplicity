@@ -17,11 +17,14 @@
 @property (readonly) NSString *contentsText;
 @property (readonly) NSObject *representedObject;
 @property (readonly) id target;
-@property (readonly) SEL selector;
+@property (readonly) SEL action;
+@property (readonly) SEL editedAction;
 
 @property (nonatomic) BOOL selected;
 @property (nonatomic) SMTokenEditView *editorView;
 
-+ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector viewController:(SMTokenFieldViewController*)viewController;
++ (SMTokenView*)createToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction viewController:(SMTokenFieldViewController*)viewController;
+
+- (void)triggerEditedAction;
 
 @end

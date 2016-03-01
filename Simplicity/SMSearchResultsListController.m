@@ -691,7 +691,7 @@ const char *const mcoOpKinds[] = {
     for(SMSearchToken *token in _searchTokens) {
         NSString *tokenName = [self tokenKindToName:token.kind];
 
-        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self selector:@selector(tokenSearchMenuAction:)];
+        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(tokenSearchEditedAction:)];
     }
     
     [[appDelegate appController] startNewSearch:YES];
@@ -775,6 +775,10 @@ const char *const mcoOpKinds[] = {
     [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
 }
 
+- (void)tokenSearchEditedAction:(id)sender {
+    SM_LOG_WARNING(@"%s: TODO!!!!!!!!!!", __FUNCTION__);
+}
+
 - (void)changeTokenKindToTo:(id)sender {
     [self changeTokenKind:SearchExpressionKind_To];
 }
@@ -794,14 +798,14 @@ const char *const mcoOpKinds[] = {
 - (void)changeTokenKindToContent:(id)sender {
     [self changeTokenKind:SearchExpressionKind_Content];
 }
-
+    
 - (void)changeTokenKind:(SearchExpressionKind)newKind {
     SMSearchToken *oldToken = (SMSearchToken *)_tokenViewWithMenu.representedObject;
     SMSearchToken *newToken = [[SMSearchToken alloc] initWithKind:newKind string:oldToken.string];
     NSString *newTokenName = [self tokenKindToName:newToken.kind];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target selector:_tokenViewWithMenu.selector];
+    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction];
     
     [[appDelegate appController] startNewSearch:NO];
 }

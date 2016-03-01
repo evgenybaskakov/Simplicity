@@ -55,8 +55,8 @@
     // Update the view, if already loaded.
 }
 
-- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
-    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target selector:selector viewController:self];
+- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction {
+    SMTokenView *token = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction viewController:self];
     
     [_tokens addObject:token];
     [_tokenFieldView addSubview:token];
@@ -64,17 +64,14 @@
     [self adjustTokenFrames];
 }
 
-- (void)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector {
+- (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction {
 
     NSUInteger idx = [_tokens indexOfObject:tokenView];
-    if(idx == NSNotFound) {
-        SM_LOG_WARNING(@"token '%@' not found", tokenView.tokenName);
-        return;
-    }
+    NSAssert(idx != NSNotFound, @"token '%@' not found", tokenView.tokenName);
     
     [_tokens[idx] removeFromSuperview];
 
-    SMTokenView *newTokenView = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target selector:selector viewController:self];
+    SMTokenView *newTokenView = [SMTokenView createToken:tokenName contentsText:contentsText representedObject:representedObject target:target action:action editedAction:editedAction viewController:self];
 
     _tokens[idx] = newTokenView;
     
@@ -85,14 +82,13 @@
     }
     
     [self adjustTokenFrames];
+    
+    return newTokenView;
 }
 
 - (void)deleteToken:(SMTokenView*)tokenView {
     NSUInteger idx = [_tokens indexOfObject:tokenView];
-    if(idx == NSNotFound) {
-        SM_LOG_WARNING(@"token '%@' not found", tokenView.tokenName);
-        return;
-    }
+    NSAssert(idx != NSNotFound, @"token '%@' not found", tokenView.tokenName);
 
     [_tokens[idx] removeFromSuperview];
     [_tokens removeObjectAtIndex:idx];
@@ -101,10 +97,20 @@
     if(_currentToken == idx) {
         _currentToken = -1;
     }
+    else if(_currentToken > idx) {
+        _currentToken--;
+    }
+    
+    for(NSUInteger i = [_selectedTokens indexGreaterThanIndex:idx]; i != NSNotFound; i = [_selectedTokens indexGreaterThanIndex:i]) {
+        [_selectedTokens addIndex:i-1];
+        [_selectedTokens removeIndex:i];
+    }
     
     [self adjustTokenFrames];
     
     // TODO: scroll to the next visible token / text field
+
+    [self triggerTargetAction];
 }
 
 - (NSArray*)representedTokenObjects {
@@ -157,32 +163,39 @@
     [_existingTokenEditor removeFromSuperview];
     
     NSString *newTokenString = _existingTokenEditor.string;
-    if(![newTokenString isEqualToString:token.contentsText]) {
-//        if(newTokenString.length > 0) {
-        [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:/*TODO*/nil target:token.target selector:token.selector];
-        token = nil;
-//        }
-//        else {
-            // TODO
-//        }
+    BOOL triggerEdited = NO;
+    
+    if(newTokenString.length != 0) {
+        if(![newTokenString isEqualToString:token.contentsText]) {
+            token = [self changeToken:token tokenName:token.tokenName contentsText:newTokenString representedObject:token.representedObject target:token.target action:token.action editedAction:token.editedAction];
+            
+            triggerEdited = YES;
+        }
+        else {
+            [_tokenFieldView addSubview:token];
+            token.editorView = nil;
+        }
+
+        // Make sure the token that's been edited is not selected.
+        _tokens[idx].selected = NO;
+        [_selectedTokens removeIndex:idx];
     }
     else {
-        [_tokenFieldView addSubview:token];
-        token.editorView = nil;
+        [self deleteToken:token];
+        
+        token = nil;
     }
     
     _existingTokenEditor = nil;
     
     [_tokenFieldView.window makeFirstResponder:_tokenFieldView];
 
-    // Make the token that's been edited as not selected.
-    _tokens[idx].selected = NO;
-    [_selectedTokens removeIndex:idx];
-
     // Redraw everything.
     [self adjustTokenFrames];
     
-    // TODO: trigger change token content action if any
+    if(triggerEdited) {
+        [token triggerEditedAction];
+    }
 }
 
 - (BOOL)tokenSelectionActive {
@@ -363,6 +376,7 @@
         
         [self clearCursorSelection];
 
+        BOOL itWasLastToken = NO;
         if(tokenIdx + 1 < _tokens.count) {
             _currentToken = tokenIdx + 1;
             
@@ -371,10 +385,13 @@
 
             [_tokenFieldView scrollRectToVisible:_tokens[_currentToken].frame];
         }
+        else {
+            itWasLastToken = YES;
+        }
         
         [self stopTokenEditing];
         
-        if(tokenIdx + 1 == _tokens.count) {
+        if(itWasLastToken) {
             [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
             [_mainTokenEditor setSelectedRange:NSMakeRange(0, 0)];
             

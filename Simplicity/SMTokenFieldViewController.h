@@ -22,6 +22,7 @@
 @property SEL cancelAction;
 @property SEL enterAction;
 @property SEL clearAction;
+@property SEL tokenEditAction;
 @property SEL arrowUpAction;
 @property SEL arrowDownAction;
 @property NSTimeInterval actionDelay;
@@ -29,8 +30,8 @@
 @property (readonly) NSArray *representedTokenObjects;
 @property (readonly) NSString *stringValue;
 
-- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector;
-- (void)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target selector:(SEL)selector;
+- (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction;
+- (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction;
 - (void)deleteToken:(SMTokenView*)tokenView;
 - (void)editToken:(SMTokenView*)token;
 - (void)cursorLeftFrom:(SMTokenEditView*)sender jumpToBeginning:(BOOL)jumpToBeginning extendSelection:(BOOL)extendSelection;

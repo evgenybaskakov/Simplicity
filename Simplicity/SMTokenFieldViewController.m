@@ -252,7 +252,19 @@
 
 - (void)triggerCancel:(SMTokenEditView*)sender {
     if(_existingTokenEditor != nil && sender == _existingTokenEditor) {
+        NSUInteger tokenCount = _tokens.count;
+        SMTokenView *token = _existingTokenEditor.parentToken;
+        NSUInteger idx = [_tokens indexOfObject:token];
+        NSAssert(idx != NSNotFound, @"edited token not found");
+        
         [self cancelTokenEditing];
+
+        if(_tokens.count == tokenCount) {
+            [_selectedTokens removeAllIndexes];
+            [_selectedTokens addIndex:idx];
+            _currentToken = idx;
+            token.selected = YES;
+        }
     }
     else {
         if(_target && _cancelAction) {

@@ -459,9 +459,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)startNewSearch:(BOOL)showSuggestionsMenu {
-    NSString *searchString = _searchFieldViewController.stringValue;
+    NSString *searchString = [SMStringUtils trimString:_searchFieldViewController.stringValue];
     
-    if([[SMStringUtils trimString:searchString] length] == 0) {
+    if(searchString.length == 0 && _searchFieldViewController.tokenCount == 0) {
         [self closeSearchMenu];
         return;
     }
@@ -470,7 +470,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
-        if(showSuggestionsMenu) {
+        if(showSuggestionsMenu && searchString.length != 0) {
             [_searchMenuWindow makeKeyAndOrderFront:self];
             
             [self adjustSearchMenuFrame];

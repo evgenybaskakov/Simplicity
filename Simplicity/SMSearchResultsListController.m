@@ -137,14 +137,18 @@ const char *const mcoOpKinds[] = {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_DEBUG(@"searching for string '%@'", searchString);
     
-    NSString *mainSearchPart = searchString;
-
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     _searchTokens = [[[[appDelegate appController] searchFieldViewController] representedTokenObjects] mutableCopy];
 
-    NSAssert(_searchTokens.count != 0 || mainSearchPart != nil, @"no search tokens");
+    if(searchString.length != 0) {
+        _mainSearchPart = searchString;
+    }
+    else {
+        _mainSearchPart = nil;
+    }
     
-    _mainSearchPart = mainSearchPart;
+    NSAssert(_searchTokens.count != 0 || _mainSearchPart != nil, @"no search tokens");
+    
     _originalSearchString = searchString;
     
     MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -264,13 +268,17 @@ const char *const mcoOpKinds[] = {
     _completedSuggestionSearchOps = 0;
     
     //
-    // Load contents search results to the search local folder.
+    // Load server contents search results to the search local folder.
     //
     
     if(_contentSearchOp != nil) {
         [_contentSearchOp.op cancel];
+        _contentSearchOp = nil;
     }
-    
+/*
+ 
+ TODO!!!
+ 
     MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:MCOIMAPSearchKindContent searchString:searchString];
     
     op.urgent = NO;
@@ -289,12 +297,12 @@ const char *const mcoOpKinds[] = {
     }];
  
     _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Content];
-    
+*/
     //
     // Trigger parallel DB search.
     //
     
-    if(_mainSearchPart != nil && _mainSearchPart.length > 0) {
+    if(_mainSearchPart != nil) {
         [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
             for(SMTextMessage *m in textMessages) {
                 if(m.from != nil) {
@@ -326,22 +334,22 @@ const char *const mcoOpKinds[] = {
             
             [self updateSearchMenuContent:@[]];
         }];
-        
-        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
-            MCOIndexSet *uids = [MCOIndexSet indexSet];
-            
-            for(SMTextMessage *m in textMessages) {
-                [uids addIndex:m.uid];
-            }
-
-            SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
-            
-            [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
-        }];
     }
     
+    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+        MCOIndexSet *uids = [MCOIndexSet indexSet];
+        
+        for(SMTextMessage *m in textMessages) {
+            [uids addIndex:m.uid];
+        }
+
+        SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+        
+        [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+    }];
+    
     //
-    // Finish. Report if the caller should maintain the menu open or it should closed.
+    // Finish. Report if the caller should maintain the menu open or it should be closed.
     //
     
     if(_mainSearchPart != nil) {

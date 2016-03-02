@@ -1938,12 +1938,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 else if(content && content.length > 0) {
                     selectSql = [selectSql stringByAppendingString:[NSString stringWithFormat:@"MESSAGEBODY: %@ ", content]];
                 }
-                else {
-                    SM_FATAL(@"no contact, subject or content specified as main search criteria");
+                else if(tokens == nil || tokens.count == 0) {
+                    SM_FATAL(@"no tokens, contact, subject or content specified as main search criteria");
                 }
                 
                 // Encode the secondary search criteria.
-                if(tokens != nil) {
+                if(tokens != nil && tokens.count != 0) {
                     for(SMSearchToken *token in tokens) {
                         NSString *requestStr = nil;
 

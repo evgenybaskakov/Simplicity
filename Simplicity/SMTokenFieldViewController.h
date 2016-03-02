@@ -28,6 +28,7 @@
 @property NSTimeInterval actionDelay;
 
 @property (readonly) NSArray *representedTokenObjects;
+@property (readonly) NSUInteger tokenCount;
 @property (readonly) NSString *stringValue;
 
 - (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction;

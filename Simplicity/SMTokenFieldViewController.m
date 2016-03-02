@@ -125,6 +125,10 @@
     return objs;
 }
 
+- (NSUInteger)tokenCount {
+    return _tokens.count;
+}
+
 - (NSString*)stringValue {
     return _mainTokenEditor.string;
 }

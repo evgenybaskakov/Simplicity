@@ -13,7 +13,7 @@
 #import "SMTokenView.h"
 
 @implementation SMTokenFieldViewController {
-    __weak IBOutlet NSButton *clearButton;
+    __weak IBOutlet NSButton *_clearButton;
 
     SMTokenFieldView *_tokenFieldView;
     NSMutableArray<SMTokenView*> *_tokens;
@@ -43,6 +43,8 @@
     [_tokenFieldView addSubview:_mainTokenEditor];
     
     [self adjustTokenFrames];
+    
+    _clearButton.hidden = YES;
 }
 
 - (IBAction)clearButtonAction:(id)sender {
@@ -85,6 +87,8 @@
     
     [self adjustTokenFrames];
     
+    _clearButton.hidden = NO;
+    
     return newTokenView;
 }
 
@@ -113,6 +117,10 @@
     // TODO: scroll to the next visible token / text field
 
     [tokenView triggerDeletedAction];
+    
+    if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
+        _clearButton.hidden = YES;
+    }
 }
 
 - (NSArray*)representedTokenObjects {
@@ -238,6 +246,13 @@
     if(notification.object == _mainTokenEditor) {
         [self deleteSelectedTokens];
         [self triggerTargetAction];
+
+        if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
+            _clearButton.hidden = YES;
+        }
+        else {
+            _clearButton.hidden = NO;
+        }
     }
     else {
         // The notified editor is a token being edited.
@@ -675,6 +690,10 @@
     [self adjustTokenFrames];
     
     [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
+
+    if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
+        _clearButton.hidden = YES;
+    }
 }
 
 - (void)adjustTokenFrames {

@@ -93,7 +93,7 @@ const char *const mcoOpKinds[] = {
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
     NSUInteger _completedSuggestionSearchOps;
-    SearchOpInfo *_contentSearchOp;
+    SearchOpInfo *_mainSearchOp;
     NSMutableOrderedSet *_suggestionResultsSubjects;
     NSMutableOrderedSet *_suggestionResultsContacts;
     MCOIndexSet *_searchMessagesUIDs;
@@ -119,10 +119,10 @@ const char *const mcoOpKinds[] = {
         [opInfo.op cancel];
     }
     
-    [_contentSearchOp.op cancel];
+    [_mainSearchOp.op cancel];
     
     [_suggestionSearchOps removeAllObjects];
-    _contentSearchOp = nil;
+    _mainSearchOp = nil;
     
     _subjectSearchResults = [MCOIndexSet indexSet];
     _contactSearchResults = [MCOIndexSet indexSet];
@@ -271,37 +271,34 @@ const char *const mcoOpKinds[] = {
     // Load server contents search results to the search local folder.
     //
     
-    if(_contentSearchOp != nil) {
-        [_contentSearchOp.op cancel];
-        _contentSearchOp = nil;
+    if(_mainSearchOp != nil) {
+        [_mainSearchOp.op cancel];
+        _mainSearchOp = nil;
     }
-/*
- 
- TODO!!!
- 
-    MCOIMAPSearchOperation *op = [session searchOperationWithFolder:remoteFolderName kind:MCOIMAPSearchKindContent searchString:searchString];
-    
-    op.urgent = NO;
+
+    MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:SearchExpressionKind_Any];
+    MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
+    op.urgent = YES;
   
     [op start:^(NSError *error, MCOIndexSet *uids) {
-        if(_contentSearchOp.op == op) {
+        if(_mainSearchOp.op == op) {
             SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
 
             [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
             
-            _contentSearchOp = nil;
+            _mainSearchOp = nil;
         }
         else {
             SM_LOG_INFO(@"previous content search aborted");
         }
     }];
  
-    _contentSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Content];
-*/
+    _mainSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Content];
+
     //
     // Trigger parallel DB search.
     //
-    
+
     if(_mainSearchPart != nil) {
         [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
             for(SMTextMessage *m in textMessages) {
@@ -347,7 +344,7 @@ const char *const mcoOpKinds[] = {
         
         [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
     }];
-    
+
     //
     // Finish. Report if the caller should maintain the menu open or it should be closed.
     //
@@ -403,6 +400,12 @@ const char *const mcoOpKinds[] = {
             return [MCOIMAPSearchExpression searchSubject:string];
         case SearchExpressionKind_Content:
             return [MCOIMAPSearchExpression searchContent:string];
+        case SearchExpressionKind_Any:
+            return [MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_From]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_To]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Cc]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Subject]
+                other:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Content]]]]];
         default:
             NSAssert(nil, @"Search kind %lu not supported", kind);
             return nil;
@@ -772,6 +775,8 @@ const char *const mcoOpKinds[] = {
                 case SearchExpressionKind_Content:
                     [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToContent:) keyEquivalent:@""] setTarget:self];
                     break;
+                default:
+                    SM_FATAL(@"unexpected kind %lu", availableKinds[i]);
             }
         }
     }

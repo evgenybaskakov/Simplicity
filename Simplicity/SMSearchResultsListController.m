@@ -98,6 +98,7 @@ const char *const mcoOpKinds[] = {
     NSMutableOrderedSet *_suggestionResultsContacts;
     MCOIndexSet *_searchMessagesUIDs;
     SMTokenView *_tokenViewWithMenu;
+    NSUInteger _currentSearchId;
 }
 
 - (id)init {
@@ -131,11 +132,13 @@ const char *const mcoOpKinds[] = {
     _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
     
     _searchMessagesUIDs = nil;
+    
+    _currentSearchId++;
 }
 
 - (BOOL)startNewSearch:(NSString*)searchString exitingLocalFolder:(NSString*)existingLocalFolder {
     searchString = [SMStringUtils trimString:searchString];
-    SM_LOG_DEBUG(@"searching for string '%@'", searchString);
+    SM_LOG_INFO(@"searching for string '%@'", searchString);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     _searchTokens = [[[[appDelegate appController] searchFieldViewController] representedTokenObjects] mutableCopy];
@@ -207,6 +210,8 @@ const char *const mcoOpKinds[] = {
     [self clearPreviousSearch];
     [self updateSearchMenuContent:@[]];
     
+    NSUInteger searchId = _currentSearchId;
+    
     //
     // Load search results to the suggestions menu.
     //
@@ -228,10 +233,15 @@ const char *const mcoOpKinds[] = {
             op.urgent = YES;
             
             [op start:^(NSError *error, MCOIndexSet *uids) {
+                if(searchId != _currentSearchId) {
+                    SM_LOG_INFO(@"stale SERVER suggestions search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                    return;
+                }
+
                 SearchOpInfo *opInfo = _suggestionSearchOps[i];
                 
                 if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                    SM_LOG_INFO(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
+                    SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
                     
                     if(uids.count > 0) {
                         [self updateSuggestionSearchResults:uids kind:opInfo.kind];
@@ -241,6 +251,11 @@ const char *const mcoOpKinds[] = {
                         op.urgent = YES;
                         
                         [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
+                            if(searchId != _currentSearchId) {
+                                SM_LOG_INFO(@"stale SERVER suggestions search fetching dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                                return;
+                            }
+                            
                             if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
                                 [self updateSearchMenuContent:imapMessages];
                                 [self checkSuggestionSearchCompletion];
@@ -287,6 +302,11 @@ const char *const mcoOpKinds[] = {
     op.urgent = YES;
   
     [op start:^(NSError *error, MCOIndexSet *uids) {
+        if(searchId != _currentSearchId) {
+            SM_LOG_INFO(@"stale SERVER content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+            return;
+        }
+        
         if(_mainSearchOp.op == op) {
             SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
 
@@ -306,7 +326,12 @@ const char *const mcoOpKinds[] = {
     //
 
     if(_mainSearchPart != nil) {
-        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+            if(searchId != _currentSearchId) {
+                SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                return;
+            }
+            
             for(SMTextMessage *m in textMessages) {
                 if(m.from != nil) {
                     [_suggestionResultsContacts addObject:m.from];
@@ -326,7 +351,12 @@ const char *const mcoOpKinds[] = {
             [self updateSearchMenuContent:@[]];
         }];
         
-        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages){
+        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+            if(searchId != _currentSearchId) {
+                SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                return;
+            }
+            
             for(SMTextMessage *m in textMessages) {
                 if(m.subject != nil) {
                     [_suggestionResultsSubjects addObject:m.subject];
@@ -340,6 +370,11 @@ const char *const mcoOpKinds[] = {
     }
     
     [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+        if(searchId != _currentSearchId) {
+            SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+            return;
+        }
+        
         MCOIndexSet *uids = [MCOIndexSet indexSet];
         
         for(SMTextMessage *m in textMessages) {
@@ -555,6 +590,12 @@ const char *const mcoOpKinds[] = {
     searchDescriptor.searchStopped = true;
     
     // TODO: stop message bodies loading?
+}
+
+- (void)stopLatestSearch {
+    if(_searchResultsFolderNames.count > 0) {
+        [self stopSearch:_searchResultsFolderNames.count - 1];
+    }
 }
 
 - (Boolean)searchStopped:(NSInteger)index {

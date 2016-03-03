@@ -36,6 +36,7 @@
     MCOIndexSet *_allSelectedMessageUIDsToLoad;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromDB;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromServer;
+    NSUInteger _currentSearchId;
 }
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
@@ -161,10 +162,17 @@
         }
     }
     
+    NSUInteger searchId = ++_currentSearchId;
+    
     if(loadFromDB) {
         SM_LOG_DEBUG(@"loading %u of %u search results from database", messageUIDsToLoadNow.count, restOfMessages.count);
         
         [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
+            if(searchId != _currentSearchId) {
+                SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                return;
+            }
+
             [_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
             
             // Reduce the SERVER set of messages to load by the set of messages actually loaded from DB.
@@ -185,6 +193,11 @@
         _fetchMessageHeadersOp.urgent = YES;
         
         [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
+            if(searchId != _currentSearchId) {
+                SM_LOG_INFO(@"stale SERVER search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                return;
+            }
+            
             _fetchMessageHeadersOp = nil;
             
             if(error == nil) {
@@ -211,6 +224,16 @@
     [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
     
     [self loadSelectedMessagesInternal];
+}
+
+- (void)stopMessagesLoading:(Boolean)stopBodiesLoading {
+    _currentSearchId++;
+
+    _allSelectedMessageUIDsToLoad = nil;
+    _restOfSelectedMessageUIDsToLoadFromDB = nil;
+    _restOfSelectedMessageUIDsToLoadFromServer = nil;
+
+    [super stopMessagesLoading:stopBodiesLoading];
 }
 
 @end

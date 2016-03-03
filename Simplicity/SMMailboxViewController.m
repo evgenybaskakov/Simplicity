@@ -16,6 +16,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMSearchResultsListViewController.h"
+#import "SMSearchResultsListController.h"
 #import "SMColorCircle.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
@@ -95,8 +96,6 @@
 
         SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:_currentFolderName];
         
-        [self doChangeFolder:currentFolder];
-        
         if(currentFolder != nil) {
             selectedRow = [self getFolderRow:currentFolder];
         }
@@ -135,7 +134,9 @@
 
 - (void)doChangeFolder:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
+
+    [[[appDelegate model] searchResultsListController] stopLatestSearch];
+        
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
     [[[appDelegate model] messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
     

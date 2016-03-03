@@ -31,6 +31,7 @@
 @implementation SMMessageListController {
     __weak SMSimplicityContainer *_model;
     SMLocalFolder *_currentFolder;
+    SMLocalFolder *_prevNonSearchFolder;
     MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
@@ -54,6 +55,17 @@
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
+    if(_currentFolder != nil && ![_currentFolder isKindOfClass:[SMSearchFolder class]]) {
+        _prevNonSearchFolder = _currentFolder;
+    }
+
+    [_currentFolder stopMessagesLoading:YES];
+    
+    [_folderInfoOp cancel];
+    _folderInfoOp = nil;
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
+
     if(folderName != nil) {
         SMLocalFolder *localFolder = [[_model localFolderRegistry] getLocalFolder:folderName];
         
@@ -70,20 +82,12 @@
     } else {
         _currentFolder = nil;
     }
-
-    if([_currentFolder syncedWithRemoteFolder]) {
-        [_currentFolder stopMessagesLoading:NO];
-    }
-    
-    [_folderInfoOp cancel];
-    _folderInfoOp = nil;
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 }
 
 - (void)changeFolder:(NSString*)folder {
-    if([_currentFolder.localName isEqualToString:folder])
+    if([_currentFolder.localName isEqualToString:folder]) {
         return;
+    }
 
     [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
     [self startMessagesUpdate];
@@ -93,6 +97,14 @@
     
     Boolean preserveSelection = NO;
     [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
+}
+
+- (void)changeToPrevFolder {
+    if(_prevNonSearchFolder != nil) {
+        [self changeFolder:_prevNonSearchFolder.localName];
+
+        _prevNonSearchFolder = nil;
+    }
 }
 
 - (void)clearCurrentFolderSelection {
@@ -119,11 +131,9 @@
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder updateResults:(BOOL)updateResults {
-    [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     
     if(!updateResults) {
-        // Starting a new search. So previous must be stopped, if any.
-        [_currentFolder stopMessagesLoading:YES];
+        [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     }
     
     NSAssert([_currentFolder isKindOfClass:[SMSearchFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);

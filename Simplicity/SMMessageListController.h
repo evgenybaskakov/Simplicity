@@ -18,6 +18,7 @@
 
 - (id)initWithModel:(SMSimplicityContainer*)model;
 - (void)changeFolder:(NSString*)folder;
+- (void)changeToPrevFolder;
 - (void)clearCurrentFolderSelection;
 - (SMLocalFolder*)currentLocalFolder;
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;

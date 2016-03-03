@@ -26,6 +26,8 @@
 - (void)reloadSearch:(NSInteger)index;
 - (void)stopSearch:(NSInteger)index;
 
+- (void)stopLatestSearch;
+
 - (Boolean)searchStopped:(NSInteger)index;
 
 @end

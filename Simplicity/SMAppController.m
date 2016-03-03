@@ -397,8 +397,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
     else {
         [_searchFieldViewController deleteAllTokensAndText];
+
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         
-        SM_LOG_WARNING(@"TODO: return to the normal folder it's been selected before");
+        [[[appDelegate model] searchResultsListController] stopLatestSearch];
+        [[[appDelegate model] messageListController] changeToPrevFolder];
     }
 }
 
@@ -407,7 +410,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [_searchFieldViewController deleteAllTokensAndText];
     
-    SM_LOG_WARNING(@"TODO: return to the normal folder it's been selected before");
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    [[[appDelegate model] searchResultsListController] stopLatestSearch];
+    [[[appDelegate model] messageListController] changeToPrevFolder];
 }
 
 - (void)enterSearchUsingToolbarSearchField:(id)sender {

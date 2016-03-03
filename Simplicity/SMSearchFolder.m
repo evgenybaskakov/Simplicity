@@ -61,29 +61,29 @@
     [[[appDelegate model] localFolderRegistry] keepFoldersMemoryLimit];
     
     if(updateResults) {
-        NSAssert(_allSelectedMessageUIDsToLoad.count > 0, @"no active selected message loading");
-        
         BOOL loadingFinished = (_restOfSelectedMessageUIDsToLoadFromDB.count == 0 && _restOfSelectedMessageUIDsToLoadFromServer.count == 0);
-        if(loadingFinished) {
-            NSAssert(nil, @"TODO");
-        }
-        else {
-            MCOIndexSet *newMessageUIDs = messageUIDs;
-            [newMessageUIDs removeIndexSet:_allSelectedMessageUIDsToLoad];
-            
-            [_allSelectedMessageUIDsToLoad addIndexSet:newMessageUIDs];
-            [_restOfSelectedMessageUIDsToLoadFromDB addIndexSet:newMessageUIDs];
-            [_restOfSelectedMessageUIDsToLoadFromServer addIndexSet:newMessageUIDs];
 
-            SM_LOG_INFO(@"updating existing message loading: %u new messages (_allSelectedMessageUIDsToLoad %u, _restOfSelectedMessageUIDsToLoadFromDB %u, _restOfSelectedMessageUIDsToLoadFromServer %u)", newMessageUIDs.count, _allSelectedMessageUIDsToLoad.count, _restOfSelectedMessageUIDsToLoadFromDB.count, _restOfSelectedMessageUIDsToLoadFromServer.count);
+        MCOIndexSet *newMessageUIDs = messageUIDs;
+        [newMessageUIDs removeIndexSet:_allSelectedMessageUIDsToLoad];
+        
+        [_allSelectedMessageUIDsToLoad addIndexSet:newMessageUIDs];
+        [_restOfSelectedMessageUIDsToLoadFromDB addIndexSet:newMessageUIDs];
+        [_restOfSelectedMessageUIDsToLoadFromServer addIndexSet:newMessageUIDs];
+
+        SM_LOG_INFO(@"updating existing message loading: %u new messages (_allSelectedMessageUIDsToLoad %u, _restOfSelectedMessageUIDsToLoadFromDB %u, _restOfSelectedMessageUIDsToLoadFromServer %u)", newMessageUIDs.count, _allSelectedMessageUIDsToLoad.count, _restOfSelectedMessageUIDsToLoadFromDB.count, _restOfSelectedMessageUIDsToLoadFromServer.count);
+        
+        _totalMessagesCount += newMessageUIDs.count;
+
+        if(loadingFinished) {
+            // Restart fetching the updated rest of messages.
+            // Don't invalidate existing messages.
+            [_messageStorage startUpdate:_localName];
             
-            _totalMessagesCount += newMessageUIDs.count;
+            [self loadSelectedMessagesInternal];
         }
     }
     else {
         _messageHeadersFetched = 0;
-        
-        [_messageStorage startUpdate:_localName];
         
         _allSelectedMessageUIDsToLoad = [MCOIndexSet indexSet];
         [_allSelectedMessageUIDsToLoad addIndexSet:messageUIDs];
@@ -95,6 +95,8 @@
         [_restOfSelectedMessageUIDsToLoadFromServer addIndexSet:messageUIDs];
 
         _totalMessagesCount = _allSelectedMessageUIDsToLoad.count;
+        
+        [_messageStorage startUpdate:_localName];
         
         [self loadSelectedMessagesInternal];
     }
@@ -164,6 +166,11 @@
         
         [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
             [_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
+            
+            // Reduce the SERVER set of messages to load by the set of messages actually loaded from DB.
+            for(MCOIMAPMessage *m in messages) {
+                [_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
+            }
 
             [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
         }];
@@ -182,6 +189,11 @@
             
             if(error == nil) {
                 [_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
+
+                // Reduce the DB set of messages to load by the set of messages actually loaded from SERVER.
+                for(MCOIMAPMessage *m in messages) {
+                    [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
+                }
                 
                 [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
             } else {

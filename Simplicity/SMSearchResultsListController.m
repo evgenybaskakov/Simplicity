@@ -268,6 +268,12 @@ const char *const mcoOpKinds[] = {
     _completedSuggestionSearchOps = 0;
     
     //
+    // Prepare the search folder.
+    //
+    
+    [self loadSearchResults:[MCOIndexSet indexSet] remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:searchResultsLocalFolder];
+
+    //
     // Load server contents search results to the search local folder.
     //
     
@@ -358,10 +364,6 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)uids remoteFolderToSearch:(NSString*)remoteFolderName searchResultsLocalFolder:(NSString*)searchResultsLocalFolder {
-    if(uids.count == 0) {
-        return;
-    }
-    
     BOOL updateResults;
     
     if(_searchMessagesUIDs == nil) {

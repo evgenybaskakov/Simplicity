@@ -1533,14 +1533,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     [self triggerDBFailure:DBFailure_CriticalDataNotFound];
                     break;
                 }
-                
-                [uids enumerateIndexes:^(uint64_t uidLong) {
-                    MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uidLong folderName:folderName folderId:folderId database:database];
-                    
-                    if(message != nil) {
-                        [messages addObject:message];
+
+                if(uids.count > 0) {
+                    // Enumerate messages in UID descending order.
+                    // This way bodies for newer messages will be loaded sooner.
+                    NSIndexSet *uidSet = [uids nsIndexSet];
+                    for(NSUInteger uid = uidSet.lastIndex, count = 0; count < uidSet.count; uid = [uidSet indexLessThanIndex:uid], count++) {
+                        MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uid folderName:folderName folderId:folderId database:database];
+                        
+                        if(message != nil) {
+                            [messages addObject:message];
+                        }
                     }
-                }];
+                }
             } while(FALSE);
             
             [self closeDatabase:database];
@@ -2058,6 +2063,24 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
+/* TODO (do we care?)
+ 
+        // Sort messages by descending UIDs (new messages first).
+        [textMessages sortUsingComparator:^NSComparisonResult(id a, id b) {
+            SMTextMessage *m1 = (SMTextMessage*)a;
+            SMTextMessage *m2 = (SMTextMessage*)b;
+            
+            if(m1.uid > m2.uid) {
+                return NSOrderedAscending;
+            }
+            else if(m1.uid < m2.uid) {
+                return NSOrderedDescending;
+            }
+            else {
+                return NSOrderedSame;
+            }
+        }];
+*/
         dispatch_async(dispatch_get_main_queue(), ^{
             getTextMessagesBlock(textMessages);
         });

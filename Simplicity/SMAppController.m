@@ -387,6 +387,18 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
+- (void)clearSearch {
+    [_searchFieldViewController deleteAllTokensAndText];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    [[[appDelegate model] searchResultsListController] stopLatestSearch];
+    [[[appDelegate model] messageListController] changeToPrevFolder];
+    
+    NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
+    [[_searchField window] makeFirstResponder:messageListView];
+}
+
 - (void)searchUsingToolbarSearchField:(id)sender {
     [self startNewSearch:YES];
 }
@@ -396,24 +408,13 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [self closeSearchMenu];
     }
     else {
-        [_searchFieldViewController deleteAllTokensAndText];
-
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        
-        [[[appDelegate model] searchResultsListController] stopLatestSearch];
-        [[[appDelegate model] messageListController] changeToPrevFolder];
+        [self clearSearch];
     }
 }
 
 - (void)clearSearchUsingToolbarSearchField:(id)sender {
     [self closeSearchMenu];
-    
-    [_searchFieldViewController deleteAllTokensAndText];
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-    [[[appDelegate model] searchResultsListController] stopLatestSearch];
-    [[[appDelegate model] messageListController] changeToPrevFolder];
+    [self clearSearch];
 }
 
 - (void)enterSearchUsingToolbarSearchField:(id)sender {

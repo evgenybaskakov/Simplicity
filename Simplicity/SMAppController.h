@@ -83,10 +83,10 @@
 - (void)showNewAccountWindow;
 - (void)closeNewAccountWindow;
 
-@property (readonly, nonatomic) NSWindow *searchMenuWindow;
+@property (readonly, nonatomic) NSWindow *searchSuggestionsMenu;
 
-- (void)closeSearchMenu;
-- (void)adjustSearchMenuFrame;
+- (void)closeSearchSuggestionsMenu;
+- (void)adjustSearchSuggestionsMenuFrame;
 
 - (void)startNewSearch:(BOOL)showSuggestionsMenu;
 

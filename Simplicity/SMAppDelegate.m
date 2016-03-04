@@ -47,23 +47,23 @@
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
-    [_appController closeSearchMenu];
+    [_appController closeSearchSuggestionsMenu];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
-    [_appController closeSearchMenu];
+    [_appController closeSearchSuggestionsMenu];
 }
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification {
-    [_appController closeSearchMenu];
+    [_appController closeSearchSuggestionsMenu];
 }
 
 - (void)windowWillBeginSheet:(NSNotification *)notification {
-    [_appController closeSearchMenu];
+    [_appController closeSearchSuggestionsMenu];
 }
 
 - (void)windowWillMove:(NSNotification *)notification {
-    [_appController closeSearchMenu];
+    [_appController closeSearchSuggestionsMenu];
 }
 
 + (NSURL*)appDataDir {

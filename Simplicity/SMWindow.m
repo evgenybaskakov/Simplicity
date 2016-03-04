@@ -28,7 +28,7 @@
     
     // See http://stackoverflow.com/questions/9643544/how-to-easily-close-a-nswindow-that-is-not-key?rq=1
     // Apparently everybody use this stupid way of closing a floating panel.
-    [appController closeSearchMenu];
+    [appController closeSearchSuggestionsMenu];
 
     return result;
 }

@@ -684,7 +684,9 @@
     
     [self adjustTokenFrames];
     
-    [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
+    if(_tokenFieldView.window.firstResponder != _mainTokenEditor) {
+        [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
+    }
 
     _clearButton.hidden = (_tokens.count == 0 && _mainTokenEditor.string.length == 0);
 }

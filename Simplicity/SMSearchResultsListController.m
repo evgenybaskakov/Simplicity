@@ -702,7 +702,7 @@ const char *const mcoOpKinds[] = {
     [self addSubjectsSection:imapMessages];
     
     [[[appDelegate appController] searchMenuViewController] reloadItems];
-    [[appDelegate appController] adjustSearchMenuFrame];
+    [[appDelegate appController] adjustSearchSuggestionsMenuFrame];
 }
 
 - (void)finishSuggestionSearch {
@@ -899,7 +899,7 @@ const char *const mcoOpKinds[] = {
 
 - (void)searchForContentsAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] closeSearchMenu];
+    [[appDelegate appController] closeSearchSuggestionsMenu];
 }
 
 - (void)searchForContactAction:(id)sender {

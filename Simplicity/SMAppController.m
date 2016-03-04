@@ -55,7 +55,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     Boolean _operationQueueShown;
     Boolean _inboxInitialized;
     BOOL _preferencesWindowShown;
-    BOOL _searchMenuWindowShown;
+    BOOL _searchSuggestionsMenuShown;
 }
 
 - (void)awakeFromNib {
@@ -247,11 +247,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    _searchMenuWindow = [NSWindow windowWithContentViewController:_searchMenuViewController];
-    _searchMenuWindow.styleMask = NSBorderlessWindowMask;
-    _searchMenuWindow.level = NSFloatingWindowLevel;
-    _searchMenuWindow.delegate = self;
-    _searchMenuWindow.backgroundColor = [NSColor clearColor];
+    _searchSuggestionsMenu = [NSWindow windowWithContentViewController:_searchMenuViewController];
+    _searchSuggestionsMenu.styleMask = NSBorderlessWindowMask;
+    _searchSuggestionsMenu.level = NSFloatingWindowLevel;
+    _searchSuggestionsMenu.delegate = self;
+    _searchSuggestionsMenu.backgroundColor = [NSColor clearColor];
     
     //
     
@@ -404,8 +404,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)cancelSearchUsingToolbarSearchField:(id)sender {
-    if(_searchMenuWindowShown) {
-        [self closeSearchMenu];
+    if(_searchSuggestionsMenuShown) {
+        [self closeSearchSuggestionsMenu];
     }
     else {
         [self clearSearch];
@@ -413,16 +413,16 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)clearSearchUsingToolbarSearchField:(id)sender {
-    [self closeSearchMenu];
+    [self closeSearchSuggestionsMenu];
     [self clearSearch];
 }
 
 - (void)enterSearchUsingToolbarSearchField:(id)sender {
-    if(_searchMenuWindowShown && [_searchMenuViewController triggerSelectedItemAction]) {
-        [self closeSearchMenu];
+    if(_searchSuggestionsMenuShown && [_searchMenuViewController triggerSelectedItemAction]) {
+        [self closeSearchSuggestionsMenu];
     }
     else {
-        [self closeSearchMenu];
+        [self closeSearchSuggestionsMenu];
         [self startNewSearch:NO];
     }
 }
@@ -435,30 +435,34 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [_searchMenuViewController cursorDown];
 }
 
-- (void)closeSearchMenu {
-    if(_searchMenuWindowShown) {
-        [_searchMenuWindow orderOut:self];
-
-        _searchMenuWindowShown = NO;
+- (void)closeSearchMenu:(BOOL)force {
+    if(_searchSuggestionsMenuShown || force) {
+        [_searchSuggestionsMenu orderOut:self];
+        
+        _searchSuggestionsMenuShown = NO;
     }
 }
 
-- (void)adjustSearchMenuFrame {
+- (void)closeSearchSuggestionsMenu {
+    [self closeSearchMenu:NO];
+}
+
+- (void)adjustSearchSuggestionsMenuFrame {
     CGFloat menuHeight = _searchMenuViewController.totalHeight;
     menuHeight = MIN(menuHeight, 400);
     
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
 
     NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
-    [_searchMenuWindow setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchMenuWindow.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchMenuWindow.frame.size.width, menuHeight) display:YES];
+    [_searchSuggestionsMenu setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchSuggestionsMenu.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchSuggestionsMenu.frame.size.width, menuHeight) display:YES];
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
-    [self closeSearchMenu];
+    [self closeSearchSuggestionsMenu];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
-    [self closeSearchMenu];
+    [self closeSearchSuggestionsMenu];
 }
 
 - (Boolean)isSearchResultsViewHidden {
@@ -469,24 +473,24 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSString *searchString = [SMStringUtils trimString:_searchFieldViewController.stringValue];
     
     if(searchString.length == 0 && _searchFieldViewController.tokenCount == 0) {
-        [self closeSearchMenu];
+        [self closeSearchSuggestionsMenu];
         return;
     }
     
-    _searchMenuWindowShown = NO;
+    _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
         if(showSuggestionsMenu && searchString.length != 0) {
-            [_searchMenuWindow makeKeyAndOrderFront:self];
+            [_searchSuggestionsMenu makeKeyAndOrderFront:self];
             
-            [self adjustSearchMenuFrame];
+            [self adjustSearchSuggestionsMenuFrame];
             
-            _searchMenuWindowShown = YES;
+            _searchSuggestionsMenuShown = YES;
         }
     }
     else {
-        [_searchMenuWindow orderOut:self];
+        [self closeSearchMenu:YES];
     }
     
     [self showSearchResultsView];

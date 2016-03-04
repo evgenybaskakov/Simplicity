@@ -66,6 +66,8 @@
     [_tokenFieldView addSubview:token];
     
     [self adjustTokenFrames];
+
+    _clearButton.hidden = NO;
 }
 
 - (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction {
@@ -118,9 +120,7 @@
 
     [tokenView triggerDeletedAction];
     
-    if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
-        _clearButton.hidden = YES;
-    }
+    _clearButton.hidden = (_tokens.count == 0 && _mainTokenEditor.string.length == 0);
 }
 
 - (NSArray*)representedTokenObjects {
@@ -247,12 +247,7 @@
         [self deleteSelectedTokens];
         [self triggerTargetAction];
 
-        if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
-            _clearButton.hidden = YES;
-        }
-        else {
-            _clearButton.hidden = NO;
-        }
+        _clearButton.hidden = (_tokens.count == 0 && _mainTokenEditor.string.length == 0);
     }
     else {
         // The notified editor is a token being edited.
@@ -691,9 +686,7 @@
     
     [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
 
-    if(_tokens.count == 0 && _mainTokenEditor.string.length == 0) {
-        _clearButton.hidden = YES;
-    }
+    _clearButton.hidden = (_tokens.count == 0 && _mainTokenEditor.string.length == 0);
 }
 
 - (void)adjustTokenFrames {

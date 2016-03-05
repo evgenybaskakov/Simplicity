@@ -77,15 +77,15 @@
 
 - (id)initWithFilePath:(NSString*)dbFilePath localStorageSizeMb:(NSUInteger)localStorageSizeMb;
 - (void)setFileSizeLimitMb:(NSUInteger)sizeMb;
-- (void)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock;
+- (SMDatabaseOp*)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock;
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)removeDBFolder:(NSString*)folderName;
-- (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
-- (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(NSArray*, NSArray*))getMessagesBlock;
-- (void)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock;
+- (SMDatabaseOp*)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
+- (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(NSArray*, NSArray*))getMessagesBlock;
+- (SMDatabaseOp*)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock;
 - (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uid block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock;
-- (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock;
+- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
@@ -93,9 +93,9 @@
 - (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data plainTextBody:(NSString*)plainTextBody folderName:(NSString*)folderName;
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread folder:(NSString*)folderName;
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName;
-- (void)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
+- (SMDatabaseOp*)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName;
-- (void)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock;
-- (void)findMessages:(NSString*)folderName tokens:(NSArray<SMSearchToken*>*)tokens contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock;
+- (SMDatabaseOp*)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock;
+- (SMDatabaseOp*)findMessages:(NSString*)folderName tokens:(NSArray<SMSearchToken*>*)tokens contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock;
 
 @end

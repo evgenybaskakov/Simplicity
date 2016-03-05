@@ -81,16 +81,19 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         return;
     }
     
-    if(!tryLoadFromDatabase || ![[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
-        if(parser == nil) {
-            SM_LOG_DEBUG(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
-            
-            [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
-        }
-        else {
-            [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments messageBodyPreview:messageBodyPreview];
-        }
-    }]) {
+    if(tryLoadFromDatabase) {
+        [[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+            if(parser == nil) {
+                SM_LOG_DEBUG(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
+                
+                [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
+            }
+            else {
+                [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments messageBodyPreview:messageBodyPreview];
+            }
+        }];
+    }
+    else {
         if(urgent) {
             SM_LOG_DEBUG(@"Urgently downloading body for message UID %u from folder '%@'; there are %lu requests in the queue", uid, remoteFolderName, _fetchMessageBodyOps.count);
         }

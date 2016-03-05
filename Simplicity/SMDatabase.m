@@ -24,6 +24,8 @@
 #import "SMSearchToken.h"
 #import "SMDatabase.h"
 
+//#define CHECK_DATABASE
+
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30; // TODO: too small for large databases!!!
 static const NSUInteger BODIES_COUNT_RECLAIM_STEP = 50; // TODO: too small for large databases!!!
 static const NSUInteger HEADERS_COUNT_RECLAIM_STEP = BODIES_COUNT_RECLAIM_STEP * HEADERS_BODIES_RECLAIM_RATIO;
@@ -101,7 +103,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _dbFilePath = dbFilePath;
 
         [self setFileSizeLimitMb:localStorageSizeMb];
+#ifdef CHECK_DATABASE
         [self checkDatabase:_dbFilePath];
+#endif
         [self initDatabase:_dbFilePath];
         
         if(_dbInvalid) {

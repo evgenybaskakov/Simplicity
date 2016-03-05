@@ -36,6 +36,7 @@
     MCOIndexSet *_allSelectedMessageUIDsToLoad;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromDB;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromServer;
+    SMDatabaseOp *_loadMessageHeadersForUIDsFromDBFolderOp;
     NSUInteger _currentSearchId;
 }
 
@@ -167,7 +168,12 @@
     if(loadFromDB) {
         SM_LOG_DEBUG(@"loading %u of %u search results from database", messageUIDsToLoadNow.count, restOfMessages.count);
         
-        [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
+        if(_loadMessageHeadersForUIDsFromDBFolderOp != nil) {
+            [_loadMessageHeadersForUIDsFromDBFolderOp cancel];
+            _loadMessageHeadersForUIDsFromDBFolderOp = nil;
+        }
+        
+        _loadMessageHeadersForUIDsFromDBFolderOp = [[[appDelegate model] database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -229,6 +235,11 @@
 - (void)stopMessagesLoading:(Boolean)stopBodiesLoading {
     _currentSearchId++;
 
+    if(_loadMessageHeadersForUIDsFromDBFolderOp != nil) {
+        [_loadMessageHeadersForUIDsFromDBFolderOp cancel];
+        _loadMessageHeadersForUIDsFromDBFolderOp = nil;
+    }
+    
     _allSelectedMessageUIDsToLoad = nil;
     _restOfSelectedMessageUIDsToLoadFromDB = nil;
     _restOfSelectedMessageUIDsToLoadFromServer = nil;

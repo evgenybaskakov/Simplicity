@@ -68,6 +68,11 @@
 @class SMTextMessage;
 @class SMSearchToken;
 
+@interface SMDatabaseOp : NSObject
+@property (readonly) BOOL cancelled;
+- (void)cancel;
+@end
+
 @interface SMDatabase : NSObject
 
 - (id)initWithFilePath:(NSString*)dbFilePath localStorageSizeMb:(NSUInteger)localStorageSizeMb;
@@ -79,7 +84,7 @@
 - (void)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock;
 - (void)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(NSArray*, NSArray*))getMessagesBlock;
 - (void)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock;
-- (void)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uid block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock;
+- (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uid block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock;
 - (BOOL)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName;

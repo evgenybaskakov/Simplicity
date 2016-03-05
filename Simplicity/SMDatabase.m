@@ -60,6 +60,22 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 @end
 
+@implementation SMDatabaseOp {
+    volatile int32_t _cancelCount;
+}
+
+- (void)cancel {
+    OSAtomicIncrement32(&_cancelCount);
+}
+
+- (BOOL)cancelled {
+    // Stupid memory read w/o barrier.
+    // Should be enough for non-critical cancellation.
+    return _cancelCount != 0;
+}
+
+@end
+
 @implementation SMDatabase {
     NSString *_dbFilePath;
     dispatch_queue_t _serialQueue;
@@ -1513,12 +1529,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (void)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uids block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock {
+- (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uids block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock {
+    SMDatabaseOp *op = [[SMDatabaseOp alloc] init];
+    
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
+        
+        if(op.cancelled) {
+            SM_LOG_DEBUG(@"op was cancelled");
+            return;
+        }
         
         NSMutableArray *messages = [NSMutableArray array];
         
@@ -1557,6 +1580,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         OSAtomicAdd32(-1, &_serialQueueLength);
     });
+    
+    return op;
 }
 
 - (MCOIMAPMessage*)loadMessageHeader:(uint32_t)uid folderName:(NSString*)folderName folderId:(NSNumber*)folderId database:(sqlite3*)database {

@@ -75,4 +75,14 @@
     _count = 0;
 }
 
+- (void)enumerateAllObjects:(void (^)(NSObject*))block {
+    for(NSString *folder in [_dict allKeys]) {
+        NSMutableDictionary *folderDict = [_dict objectForKey:folder];
+        
+        for(NSNumber *uid in [folderDict allKeys]) {
+            block([folderDict objectForKey:uid]);
+        }
+    }
+}
+
 @end

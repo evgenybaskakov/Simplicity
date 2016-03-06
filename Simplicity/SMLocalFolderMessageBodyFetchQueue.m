@@ -24,9 +24,12 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 @property (readonly) uint32_t uid;
 @property (readonly) NSString *folderName;
 @property (readonly) NSUInteger attempt;
+@property MCOIMAPFetchContentOperation *imapOp;
+@property SMDatabaseOp *dbOp;
 - (id)initWithUID:(uint32_t)uid folderName:(NSString*)folderName;
 - (void)setOp:(void (^)())op;
 - (void)startOp;
+- (void)cancel;
 @end
 
 @implementation FetchOpDesc {
@@ -49,6 +52,15 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 
     _attempt++;
     _op();
+}
+- (void)cancel {
+    if(_imapOp) {
+        [_imapOp cancel];
+    }
+    
+    if(_dbOp) {
+        [_dbOp cancel];
+    }
 }
 @end
 
@@ -82,7 +94,19 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     }
     
     if(tryLoadFromDatabase) {
-        [[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+        FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
+        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
+        
+        SMDatabaseOp *dbOp = [[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+            FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
+            if(currentOpDesc != opDesc) {
+                // TODO: it happens suspiciously often...
+                SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (completed before or cancelled)", uid, remoteFolderName);
+                return;
+            }
+            
+            [_fetchMessageBodyOps removeObjectforUID:uid folder:remoteFolderName];
+
             if(parser == nil) {
                 SM_LOG_DEBUG(@"Message UID %u (remote folder '%@') was found in the database, but its body count not be loaded; fetching from server now", uid, remoteFolderName);
                 
@@ -92,6 +116,8 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments messageBodyPreview:messageBodyPreview];
             }
         }];
+
+        opDesc.dbOp = dbOp;
     }
     else {
         if(urgent) {
@@ -105,7 +131,8 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         }
         
         FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
-        
+        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
+                
         void (^fullOp)() = ^{
             FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
             if(currentOpDesc == nil) {
@@ -123,6 +150,8 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
             imapOp.urgent = urgent;
 
+            currentOpDesc.imapOp = imapOp;
+            
             _activeIMAPOpCount++;
             
             SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' started, attempt %lu (_activeIMAPOpCount %lu)", uid, remoteFolderName, currentOpDesc.attempt, _activeIMAPOpCount);
@@ -201,8 +230,6 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         
         [opDesc setOp:fullOp];
 
-        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
-
         if(urgent) {
             [opDesc startOp];
         }
@@ -231,11 +258,24 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 }
 
 - (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder {
+    // TODO: cancel if it's a DB op
+
+    FetchOpDesc *opDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolder];
+    if(opDesc) {
+        [opDesc cancel];
+    }
+    
     [_fetchMessageBodyOps removeObjectforUID:uid folder:remoteFolder];
 }
 
 - (void)stopBodiesLoading {
+    [_fetchMessageBodyOps enumerateAllObjects:^(NSObject *obj) {
+        FetchOpDesc *opDesc = (FetchOpDesc*)obj;
+        [opDesc cancel];
+    }];
+    
     [_fetchMessageBodyOps removeAllObjects];
+    
     [_nonUrgentfetchMessageBodyOpQueue removeAllObjects];
 }
 

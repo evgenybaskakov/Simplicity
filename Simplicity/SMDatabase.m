@@ -809,7 +809,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1289,7 +1289,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1350,7 +1350,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1428,7 +1428,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1544,7 +1544,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1588,7 +1588,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -1709,7 +1709,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
         
@@ -2001,7 +2001,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
     void (^op)() = ^{
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
 
@@ -2950,7 +2950,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [self runUrgentTasks];
 
         if(dbOp.cancelled) {
-            SM_LOG_INFO(@"DB op was cancelled");
+            SM_LOG_DEBUG(@"DB op was cancelled");
             return;
         }
 

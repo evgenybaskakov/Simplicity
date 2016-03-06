@@ -16,5 +16,6 @@
 - (void)setObject:(NSObject*)object forUID:(uint32_t)uid folder:(NSString*)folder;
 - (void)removeObjectforUID:(uint32_t)uid folder:(NSString*)folder;
 - (void)removeAllObjects;
+- (void)enumerateAllObjects:(void (^)(NSObject*))block;
 
 @end

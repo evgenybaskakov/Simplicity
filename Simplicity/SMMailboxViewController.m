@@ -34,6 +34,7 @@
     Boolean _doHightlightRow;
     NSMutableArray *_favoriteFolders;
     NSMutableArray *_visibleFolders;
+    NSString *_prevFolderName;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -135,17 +136,30 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     [[[appDelegate model] searchResultsListController] stopLatestSearch];
-        
+    
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
     [[[appDelegate model] messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
     
+    _prevFolderName = _currentFolderName;
     _currentFolderName = folder.fullName;
+    
+    [self updateFolderListView];
+}
+
+- (void)changeToPrevFolder {
+    if(_prevFolderName != nil) {
+        [self changeFolder:_prevFolderName];
+        _prevFolderName = nil;
+    }
 }
 
 - (void)clearSelection {
     [_folderListView deselectAll:self];
 
-    _currentFolderName = nil;
+    if(_currentFolderName != nil) {
+        _prevFolderName = _currentFolderName;
+        _currentFolderName = nil;
+    }
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {

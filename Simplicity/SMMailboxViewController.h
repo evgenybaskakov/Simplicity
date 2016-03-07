@@ -16,6 +16,7 @@
 @property (readonly) NSString *currentFolderName;
 
 - (void)changeFolder:(NSString*)folderName;
+- (void)changeToPrevFolder;
 - (void)updateFolderListView;
 - (void)clearSelection;
 

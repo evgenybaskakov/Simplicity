@@ -384,6 +384,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     if(changeToPrevFolder) {
         [[[appDelegate model] messageListController] changeToPrevFolder];
+        [[[appDelegate appController] mailboxViewController] changeToPrevFolder];
     }
     
     NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
@@ -391,6 +392,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)searchUsingToolbarSearchField:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] mailboxViewController] clearSelection];
+    
     [self startNewSearch:YES];
 }
 

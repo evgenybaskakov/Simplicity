@@ -85,6 +85,10 @@
 }
 
 - (void)changeFolder:(NSString*)folder {
+    [self changeFolder:folder clearSearch:YES];
+}
+
+- (void)changeFolder:(NSString*)folder clearSearch:(BOOL)clearSearch {
     if([_currentFolder.localName isEqualToString:folder]) {
         return;
     }
@@ -92,7 +96,9 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [appController clearSearch:NO];
+    if(clearSearch) {
+        [appController clearSearch];
+    }
     
     [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
     [self startMessagesUpdate];
@@ -103,7 +109,7 @@
 
 - (void)changeToPrevFolder {
     if(_prevNonSearchFolder != nil) {
-        [self changeFolder:_prevNonSearchFolder.localName];
+        [self changeFolder:_prevNonSearchFolder.localName clearSearch:NO];
 
         _prevNonSearchFolder = nil;
     }
@@ -116,7 +122,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [appController clearSearch:NO];
+    [appController clearSearch];
     
     [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
     

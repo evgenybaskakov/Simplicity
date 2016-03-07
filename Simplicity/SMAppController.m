@@ -375,7 +375,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)clearSearch:(BOOL)changeToPrevFolder {
+- (void)clearSearch {
+    [self clearSearch:NO cancelFocus:YES];
+}
+
+- (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus {
     [_searchFieldViewController deleteAllTokensAndText];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -387,8 +391,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [[[appDelegate appController] mailboxViewController] changeToPrevFolder];
     }
     
-    NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
-    [[_searchField window] makeFirstResponder:messageListView];
+    if(cancelFocus) {
+        NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
+        [[_searchField window] makeFirstResponder:messageListView];
+    }
 }
 
 - (void)searchUsingToolbarSearchField:(id)sender {
@@ -403,13 +409,13 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [self closeSearchSuggestionsMenu];
     }
     else {
-        [self clearSearch:YES];
+        [self clearSearch:YES cancelFocus:YES];
     }
 }
 
 - (void)clearSearchUsingToolbarSearchField:(id)sender {
     [self closeSearchSuggestionsMenu];
-    [self clearSearch:YES];
+    [self clearSearch:YES cancelFocus:YES];
 }
 
 - (void)enterSearchUsingToolbarSearchField:(id)sender {
@@ -469,6 +475,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     if(searchString.length == 0 && _searchFieldViewController.tokenCount == 0) {
         [self closeSearchSuggestionsMenu];
+        [self clearSearch:YES cancelFocus:NO];
         return;
     }
     

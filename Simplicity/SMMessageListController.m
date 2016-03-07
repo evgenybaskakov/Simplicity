@@ -89,11 +89,13 @@
         return;
     }
 
-    [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
-    [self startMessagesUpdate];
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
+    
+    [appController clearSearch:NO];
+    
+    [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
+    [self startMessagesUpdate];
     
     Boolean preserveSelection = NO;
     [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
@@ -111,10 +113,12 @@
     if(_currentFolder == nil)
         return;
     
-    [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
+    
+    [appController clearSearch:NO];
+    
+    [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
     
     Boolean preserveSelection = NO;
     [[appController messageListViewController] reloadMessageList:preserveSelection];

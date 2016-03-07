@@ -84,7 +84,7 @@
 
 - (void)closeSearchSuggestionsMenu;
 - (void)adjustSearchSuggestionsMenuFrame;
-
 - (void)startNewSearch:(BOOL)showSuggestionsMenu;
+- (void)clearSearch:(BOOL)changeToPrevFolder;
 
 @end

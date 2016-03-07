@@ -12,7 +12,7 @@
 
 @property (readonly) NSString *searchPattern;
 @property (readonly) NSString *localFolder;
-@property (readonly) NSString *remoteFolder; // TODO: this will be more sophisticated
+//@property (readonly) NSString *remoteFolder; // TODO: this will be more sophisticated
 
 @property Boolean searchFailed;
 @property Boolean searchStopped;

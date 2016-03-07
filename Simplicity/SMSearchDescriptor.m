@@ -16,7 +16,7 @@
     if(self) {
         _searchPattern = searchPattern;
         _localFolder = localFolder;
-        _remoteFolder = remoteFolderName;
+//        _remoteFolder = remoteFolderName;
         _searchFailed = false;
         _searchStopped = false;
         _messagesLoadingStarted = false;

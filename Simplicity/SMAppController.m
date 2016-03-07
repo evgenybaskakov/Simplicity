@@ -480,7 +480,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString exitingLocalFolder:nil]) {
+    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString]) {
         if(showSuggestionsMenu && searchString.length != 0) {
             [_searchSuggestionsMenu makeKeyAndOrderFront:self];
             

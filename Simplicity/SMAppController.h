@@ -14,7 +14,6 @@
 @class SMNewAccountWindowController;
 @class SMPreferencesWindowController;
 @class SMMailboxViewController;
-@class SMSearchResultsListViewController;
 @class SMMessageListViewController;
 @class SMMessageViewController;
 @class SMMessageThreadViewController;
@@ -42,7 +41,6 @@
 @property SMTokenFieldViewController *searchFieldViewController;
 @property SMSectionMenuViewController *searchMenuViewController;
 @property SMMailboxViewController *mailboxViewController;
-@property SMSearchResultsListViewController *searchResultsListViewController;
 @property SMMessageListViewController *messageListViewController;
 @property SMMessageThreadViewController *messageThreadViewController;
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
@@ -53,7 +51,6 @@
 - (void)initOpExecutor;
 
 - (void)updateMailboxFolderList;
-- (void)toggleSearchResultsView;
 
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;

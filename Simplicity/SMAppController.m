@@ -15,7 +15,6 @@
 #import "SMNewLabelWindowController.h"
 #import "SMMailboxViewController.h"
 #import "SMSearchResultsListController.h"
-#import "SMSearchResultsListViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageDetailsViewController.h"
@@ -94,16 +93,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSAssert(mailboxView, @"mailboxView");
 
     //
-    
-    _searchResultsListViewController = [ [ SMSearchResultsListViewController alloc ] initWithNibName:nil bundle:nil ];
-    
-    NSAssert(_searchResultsListViewController, @"_searchResultsListViewController");
-    
-    NSView *searchResultsListView = [ _searchResultsListViewController view ];
-    
-    NSAssert(searchResultsListView, @"searchResultsListView");
-
-    //
 
     _messageListViewController = [ [ SMMessageListViewController alloc ] initWithNibName:@"SMMessageListViewController" bundle:nil ];
     
@@ -148,7 +137,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [mailboxAndSearchResultsView setDividerStyle:NSSplitViewDividerStyleThin];
     
     [mailboxAndSearchResultsView addSubview:mailboxView];
-    [mailboxAndSearchResultsView addSubview:searchResultsListView];
     
     [mailboxAndSearchResultsView adjustSubviews];
     
@@ -225,9 +213,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     
     //
-    
+/*
     [self hideSearchResultsView];
-    
+*/
     //
     
     _messageEditorWindowControllers = [NSMutableArray array];
@@ -491,34 +479,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
     else {
         [self closeSearchMenu:YES];
-    }
-    
-    [self showSearchResultsView];
-}
-
-- (void)showSearchResultsView {
-    if([self isSearchResultsViewHidden]) {
-        [_searchResultsListViewController.view removeConstraints:[_searchResultsListViewController.view constraints]];
-        [_searchResultsListViewController.view addConstraints:_searchResultsShownConstraints];
-        
-        _searchResultsShownConstraints = nil;
-    }
-}
-
-- (void)hideSearchResultsView {
-    if(![self isSearchResultsViewHidden]) {
-        _searchResultsShownConstraints = [_searchResultsListViewController.view constraints];
-        
-        [_searchResultsListViewController.view removeConstraints:_searchResultsShownConstraints];
-        [_searchResultsListViewController.view addConstraint:[NSLayoutConstraint constraintWithItem:_searchResultsListViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1 constant:0]];
-    }
-}
-
-- (void)toggleSearchResultsView {
-    if([self isSearchResultsViewHidden]) {
-        [self showSearchResultsView];
-    } else {
-        [self hideSearchResultsView];
     }
 }
 

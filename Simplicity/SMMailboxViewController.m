@@ -15,7 +15,6 @@
 #import "SMSimplicityContainer.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
-#import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
 #import "SMColorCircle.h"
 #import "SMMailboxController.h"
@@ -141,8 +140,6 @@
     [[[appDelegate model] messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
     
     _currentFolderName = folder.fullName;
-    
-    [[[appDelegate appController] searchResultsListViewController] clearSelection];
 }
 
 - (void)clearSelection {

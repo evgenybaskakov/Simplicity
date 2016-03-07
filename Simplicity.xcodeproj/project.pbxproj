@@ -31,14 +31,10 @@
 		002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 002556F91A5A3BF900C864D0 /* info-icon.png */; };
 		002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 002556FD1A5A5C6600C864D0 /* star-gray-icon.png */; };
 		0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0034EBC019EA3A3200CDF656 /* SMTokenField.m */; };
-		003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */; };
-		003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */; };
 		0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0039B8511A67948500C03C3C /* SMFlippedView.m */; };
 		003DFF191A73681A003C26E2 /* SMAttachmentsPanelViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */; };
 		003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */; };
 		0040B0F9196A5331004E55CC /* SMFolderCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0040B0F8196A5331004E55CC /* SMFolderCellView.m */; };
-		00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */; };
-		00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */; };
 		004741651AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 004741641AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m */; };
 		0047416C1AA42115002566E8 /* collapse-all.png in Resources */ = {isa = PBXBuildFile; fileRef = 0047416A1AA42115002566E8 /* collapse-all.png */; };
 		0047416D1AA42115002566E8 /* uncollapse-all.png in Resources */ = {isa = PBXBuildFile; fileRef = 0047416B1AA42115002566E8 /* uncollapse-all.png */; };
@@ -336,9 +332,6 @@
 		002556FD1A5A5C6600C864D0 /* star-gray-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star-gray-icon.png"; sourceTree = "<group>"; };
 		0034EBBF19EA3A3200CDF656 /* SMTokenField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMTokenField.h; sourceTree = "<group>"; };
 		0034EBC019EA3A3200CDF656 /* SMTokenField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTokenField.m; sourceTree = "<group>"; };
-		003858FE1A4D024500D4FD70 /* SMSearchResultsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchResultsListViewController.h; sourceTree = "<group>"; };
-		003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchResultsListViewController.m; sourceTree = "<group>"; };
-		003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSearchResultsListViewController.xib; sourceTree = "<group>"; };
 		0039B8501A67948500C03C3C /* SMFlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFlippedView.h; sourceTree = "<group>"; };
 		0039B8511A67948500C03C3C /* SMFlippedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFlippedView.m; sourceTree = "<group>"; };
 		003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAttachmentsPanelViewItem.h; sourceTree = "<group>"; };
@@ -346,9 +339,6 @@
 		003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAttachmentsPanelViewItem.xib; sourceTree = "<group>"; };
 		0040B0F7196A5331004E55CC /* SMFolderCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderCellView.h; sourceTree = "<group>"; };
 		0040B0F8196A5331004E55CC /* SMFolderCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderCellView.m; sourceTree = "<group>"; };
-		00414ED61A16454F00068742 /* SMSearchResultsListCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchResultsListCellView.h; sourceTree = "<group>"; };
-		00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchResultsListCellView.m; sourceTree = "<group>"; };
-		00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSearchResultsListCellView.xib; sourceTree = "<group>"; };
 		004741631AA3AAF0002566E8 /* SMMessageThreadInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadInfoViewController.h; sourceTree = "<group>"; };
 		004741641AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadInfoViewController.m; sourceTree = "<group>"; };
 		0047416A1AA42115002566E8 /* collapse-all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "collapse-all.png"; sourceTree = "<group>"; };
@@ -924,8 +914,6 @@
 				008F93691AC4F8E600C21D62 /* SMOutboxController.m */,
 				0082F5F61A0DD39B0050578A /* SMSearchResultsListController.h */,
 				0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */,
-				003858FE1A4D024500D4FD70 /* SMSearchResultsListViewController.h */,
-				003858FF1A4D024500D4FD70 /* SMSearchResultsListViewController.m */,
 				80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */,
 				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
 			);
@@ -988,8 +976,6 @@
 				804711C01B7B153B00399942 /* SMMessageListTableView.m */,
 				80737ED51BFAFF6600E9D58A /* SMRoundedImageView.h */,
 				80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */,
-				00414ED61A16454F00068742 /* SMSearchResultsListCellView.h */,
-				00414ED71A16454F00068742 /* SMSearchResultsListCellView.m */,
 				80BD0A2C1C4E018B00F43EA2 /* SMSectionMenuItemView.h */,
 				80BD0A2D1C4E018B00F43EA2 /* SMSectionMenuItemView.m */,
 				80BD0A361C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.h */,
@@ -1022,8 +1008,6 @@
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
 				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
-				00414EDD1A1649AF00068742 /* SMSearchResultsListCellView.xib */,
-				003859001A4D024500D4FD70 /* SMSearchResultsListViewController.xib */,
 				80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */,
 			);
 			name = Forms;
@@ -1330,7 +1314,6 @@
 				801EDEF61BE9F06500A16E85 /* yandex_logo_en.png in Resources */,
 				00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */,
 				8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */,
-				00414EDE1A1649AF00068742 /* SMSearchResultsListCellView.xib in Resources */,
 				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
 				80A44B191B5A19260049AB88 /* align_center-128.png in Resources */,
 				00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */,
@@ -1365,7 +1348,6 @@
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
 				80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */,
 				803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */,
-				003859021A4D024500D4FD70 /* SMSearchResultsListViewController.xib in Resources */,
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
 				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
@@ -1435,7 +1417,6 @@
 				80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */,
 				8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */,
 				0002A0A517D1B1E000EA4AFF /* SMAppDelegate.m in Sources */,
-				00414ED81A16454F00068742 /* SMSearchResultsListCellView.m in Sources */,
 				806E7C271B9FFD940081FD8E /* SMBox2.m in Sources */,
 				80BFC3C81BEDCACA00467243 /* SMMailServiceProviderOutlook.m in Sources */,
 				007A73621A57A95500A4D694 /* SMMessageFullDetailsViewController.m in Sources */,
@@ -1513,7 +1494,6 @@
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */,
 				80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */,
-				003859011A4D024500D4FD70 /* SMSearchResultsListViewController.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,
 				80628B551BE87A3400016803 /* SSKeychain.m in Sources */,
 				802408EE1B786FC80072FB98 /* SMBoxView.m in Sources */,

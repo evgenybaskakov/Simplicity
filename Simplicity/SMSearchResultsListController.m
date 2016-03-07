@@ -21,7 +21,6 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
-#import "SMSearchResultsListViewController.h"
 #import "SMSearchResultsListController.h"
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
@@ -207,8 +206,6 @@ const char *const mcoOpKinds[] = {
     }
     
     NSString *remoteFolderName = _searchRemoteFolderName;
-    
-    [[[appDelegate appController] searchResultsListViewController] reloadData];
     
     [self clearPreviousSearch];
     [self updateSearchMenuContent:@[]];
@@ -422,9 +419,6 @@ const char *const mcoOpKinds[] = {
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:_searchResultsLocalFolderName updateResults:updateResults];
-    
-    [[[appDelegate appController] searchResultsListViewController] selectSearchResult:_searchResultsLocalFolderName];
-    [[[appDelegate appController] searchResultsListViewController] reloadData];
 }
 
 - (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {

@@ -51,8 +51,8 @@
 
     //
     
-    _messageCheckPeriodNames = @[@"Auto", @"1 minute", @"2 minutes", @"5 minutes", @"10 minutes", @"20 minutes", @"30 minutes", @"1 hour"];
-    _messageCheckPeriodValues = @[@0, @60, @120, @300, @600, @1200, @1800, @3600];
+    _messageCheckPeriodNames = @[@"Auto", @"10 seconds", @"30 seconds", @"1 minute", @"2 minutes", @"5 minutes", @"10 minutes", @"20 minutes"];
+    _messageCheckPeriodValues = @[@0, @10, @30, @60, @120, @300, @600, @1200];
 
     [_messageCheckPeriodList removeAllItems];
     

@@ -89,8 +89,8 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;
 
-// stops message headers and, optionally, bodies loading
-- (void)stopMessagesLoading:(Boolean)stopBodiesLoading;
+// stops message headers and bodies loading
+- (void)stopMessagesLoading;
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.

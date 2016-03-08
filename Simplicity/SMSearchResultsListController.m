@@ -564,7 +564,7 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     
-    [localFolder stopMessagesLoading:YES];
+    [localFolder stopMessagesLoading];
     
     Boolean preserveSelection = NO;
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
@@ -587,7 +587,7 @@ const char *const mcoOpKinds[] = {
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
     SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
-    [localFolder stopMessagesLoading:NO];
+    [localFolder stopMessagesLoading];
     
     searchDescriptor.searchStopped = true;
     

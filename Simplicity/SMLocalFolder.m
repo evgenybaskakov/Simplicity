@@ -30,7 +30,9 @@
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 
-@implementation SMLocalFolder
+@implementation SMLocalFolder {
+    NSMutableArray<SMDatabaseOp*> *_dbOps;
+}
 
 - (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [ super init ];
@@ -53,6 +55,7 @@
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
         _messageBodyFetchQueue = [[SMLocalFolderMessageBodyFetchQueue alloc] initWithLocalFolder:self];
+        _dbOps = [NSMutableArray array];
     }
     
     return self;
@@ -81,7 +84,7 @@
 - (void)updateTimeout {
     SM_LOG_WARNING(@"operation timeout");
     
-    [self stopMessagesLoading:NO];
+    [self stopMessagesLoading];
     [self startLocalFolderSync];
     [self rescheduleUpdateTimeout];
 }
@@ -102,17 +105,17 @@
     _messageHeadersFetched = 0;
     
     [_messageStorage startUpdate:_localName];
-
+    
     if(_loadingFromDB) {
         _dbSyncInProgress = YES;
 
-        [[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
+        [_dbOps addObject:[[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
             SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
             _totalMessagesCount = messagesCount;
             
             [self syncFetchMessageHeaders];
-        }];
+        }]];
     }
     else {
         MCOIMAPSession *session = [[appDelegate model] imapSession];
@@ -212,7 +215,7 @@
             
             [threadIds addObject:threadId];
             
-            [[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMMessageThreadDescriptor *threadDesc) {
+            [_dbOps addObject:[[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMMessageThreadDescriptor *threadDesc) {
                 if(threadDesc != nil) {
                     SM_LOG_DEBUG(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
 
@@ -227,7 +230,7 @@
                     // so stop loading headers now and start bodies fetching
                     [self finishHeadersSync:NO];
                 }
-            }];
+            }]];
             
             _dbMessageThreadsLoadsCount++;
         }
@@ -356,7 +359,7 @@
         if([messageThread getMessageByUID:entry.uid] == nil) {
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
-            [[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
+            [_dbOps addObject:[[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
                 if(message != nil) {
                     SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
                     SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, entry.folderName);
@@ -378,7 +381,7 @@
                     // so stop loading headers now and start bodies fetching
                     [self finishHeadersSync:NO];
                 }
-            }];
+            }]];
             
             _dbMessageThreadHeadersLoadsCount++;
         }
@@ -467,7 +470,7 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
+        [_dbOps addObject:[[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
             SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
             
             for(SMOutgoingMessage *message in outgoingMessages) {
@@ -481,7 +484,7 @@
             [self rescheduleUpdateTimeout];
             [self updateMessageHeaders:messages updateDatabase:NO];
             [self syncFetchMessageHeaders];
-        }];
+        }]];
     }
     else {
         const NSUInteger restOfMessages = _totalMessagesCount - _messageHeadersFetched;
@@ -520,9 +523,9 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)stopMessageHeadersLoading {
+- (void)stopMessagesLoading {
     [self cancelScheduledUpdateTimeout];
-
+    
     [_fetchedMessageHeaders removeAllObjects];
     
     [_folderInfoOp cancel];
@@ -542,16 +545,16 @@
         [op cancel];
     }
     [_fetchMessageThreadsHeadersOps removeAllObjects];
-
+    
     [_messageStorage cancelUpdate];
-}
 
-- (void)stopMessagesLoading:(Boolean)stopBodiesLoading {
-    [self stopMessageHeadersLoading];
-
-    if(stopBodiesLoading) {
-        [_messageBodyFetchQueue stopBodiesLoading];
+    [_messageBodyFetchQueue stopBodiesLoading];
+    
+    for(SMDatabaseOp *dbOp in _dbOps) {
+        [dbOp cancel];
     }
+    
+    [_dbOps removeAllObjects];
 }
 
 - (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {
@@ -674,10 +677,9 @@
         return TRUE;
     }
 
-    // Stop current message loading process, except bodies (because bodies can belong to
-    // messages from other folders - TODO: is that logical?).
+    // Stop current message loading process.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopMessagesLoading:NO];
+    [self stopMessagesLoading];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];
@@ -753,10 +755,9 @@
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
 
-    // Stop current message loading process, except bodies (because bodies can belong to
-    // messages from other folders - TODO: is that logical?).
+    // Stop current message loading process.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopMessagesLoading:NO];
+    [self stopMessagesLoading];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];

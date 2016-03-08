@@ -232,7 +232,7 @@
     [self loadSelectedMessagesInternal];
 }
 
-- (void)stopMessagesLoading:(Boolean)stopBodiesLoading {
+- (void)stopMessagesLoading {
     _currentSearchId++;
 
     if(_loadMessageHeadersForUIDsFromDBFolderOp != nil) {
@@ -244,7 +244,7 @@
     _restOfSelectedMessageUIDsToLoadFromDB = nil;
     _restOfSelectedMessageUIDsToLoadFromServer = nil;
 
-    [super stopMessagesLoading:stopBodiesLoading];
+    [super stopMessagesLoading];
 }
 
 @end

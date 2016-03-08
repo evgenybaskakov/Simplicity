@@ -884,6 +884,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getQueueBlock(opQueue);
         });
         
@@ -1331,6 +1336,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             loadFoldersBlock(folders);
         });
         
@@ -1409,6 +1419,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getMessagesCountBlock(messagesCount);
         });
         
@@ -1525,6 +1540,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getMessagesBlock(outgoingMessages, messages);
         });
         
@@ -1569,6 +1589,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+
             getMessageBlock(message);
         });
         
@@ -1624,6 +1649,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getMessagesBlock(messages);
         });
         
@@ -1718,6 +1748,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_ERROR(@"no id for folder \"%@\" found in DB", folderName);
 
             dispatch_async(dispatch_get_main_queue(), ^{
+                if(dbOp.cancelled) {
+                    SM_LOG_DEBUG(@"DB op was cancelled");
+                    return;
+                }
+                
                 getMessageBodyBlock(nil, nil, nil);
             });
             
@@ -1729,6 +1764,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
 
             dispatch_async(dispatch_get_main_queue(), ^{
+                if(dbOp.cancelled) {
+                    SM_LOG_DEBUG(@"DB op was cancelled");
+                    return;
+                }
+                
                 getMessageBodyBlock(nil, nil, nil);
             });
             
@@ -1739,6 +1779,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             SM_LOG_NOISE(@"no message body for message UID %u in the database", uid);
 
             dispatch_async(dispatch_get_main_queue(), ^{
+                if(dbOp.cancelled) {
+                    SM_LOG_DEBUG(@"DB op was cancelled");
+                    return;
+                }
+                
                 getMessageBodyBlock(nil, nil, nil);
             });
 
@@ -1798,6 +1843,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getMessageBodyBlock(parser, attachments, messageBodyPreview);
         });
     };
@@ -2170,6 +2220,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }];
 */
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getTextMessagesBlock(textMessages);
         });
     };
@@ -3032,6 +3087,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
             getMessageThreadBlock(messageThreadDesc);
         });
         

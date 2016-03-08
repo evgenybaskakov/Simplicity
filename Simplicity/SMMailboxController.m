@@ -65,6 +65,7 @@
 - (void)initFolders {
     SM_LOG_DEBUG(@"initializing folders");
 
+    // TODO: use the resulting dbOp
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] database] loadDBFolders:^(NSArray *folders) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

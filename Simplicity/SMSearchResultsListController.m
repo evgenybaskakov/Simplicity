@@ -100,6 +100,7 @@ const char *const mcoOpKinds[] = {
     NSUInteger _currentSearchId;
     NSString *_searchRemoteFolderName;
     NSString *_searchResultsLocalFolderName;
+    NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
 - (id)init {
@@ -111,6 +112,7 @@ const char *const mcoOpKinds[] = {
         _suggestionSearchOps = [NSMutableArray array];
         _suggestionResultsSubjects = [NSMutableOrderedSet orderedSet];
         _suggestionResultsContacts = [NSMutableOrderedSet orderedSet];
+        _dbOps = [NSMutableArray array];
     }
     
     return self;
@@ -121,6 +123,12 @@ const char *const mcoOpKinds[] = {
         [opInfo.op cancel];
     }
     
+    for(SMDatabaseOp *dbOp in _dbOps) {
+        [dbOp cancel];
+    }
+    
+    [_dbOps removeAllObjects];
+
     [_mainSearchOp.op cancel];
     
     [_suggestionSearchOps removeAllObjects];
@@ -326,7 +334,7 @@ const char *const mcoOpKinds[] = {
     //
 
     if(_mainSearchPart != nil) {
-        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -349,9 +357,9 @@ const char *const mcoOpKinds[] = {
             SM_LOG_DEBUG(@"Total %lu messages with matching contacts found", textMessages.count);
             
             [self updateSearchMenuContent:@[]];
-        }];
+        }]];
         
-        [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -366,10 +374,10 @@ const char *const mcoOpKinds[] = {
             SM_LOG_DEBUG(@"Total %lu messages with matching subject found", textMessages.count);
             
             [self updateSearchMenuContent:@[]];
-        }];
+        }]];
     }
     
-    [[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+    [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
         if(searchId != _currentSearchId) {
             SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
             return;
@@ -384,7 +392,7 @@ const char *const mcoOpKinds[] = {
         SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
         
         [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName];
-    }];
+    }]];
 
     //
     // Finish. Report if the caller should maintain the menu open or it should be closed.

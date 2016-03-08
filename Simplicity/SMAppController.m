@@ -264,7 +264,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     [[[appDelegate model] mailboxController] initFolders];
 
+    // TODO: use the resulting dbOp
     [[[appDelegate model] database] loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
+        // TODO: use the resulting dbOp
         [[[appDelegate model] database] loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
             _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
             

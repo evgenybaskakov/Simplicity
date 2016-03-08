@@ -555,6 +555,8 @@
     }
     
     [_dbOps removeAllObjects];
+
+    _dbSyncInProgress = NO;
 }
 
 - (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {

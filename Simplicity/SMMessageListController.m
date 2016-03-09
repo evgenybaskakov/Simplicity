@@ -213,15 +213,19 @@
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-    NSNumber *resultValue = [[notification userInfo] objectForKey:@"UpdateResult"];
-    SMMessageStorageUpdateResult updateResult = [resultValue unsignedIntegerValue];
-    
-    if(updateResult != SMMesssageStorageUpdateResultNone) {
-        NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
 
-        if([_currentFolder.localName isEqualToString:localFolder]) {
-            [self updateMessageList];
-            [self updateMessageThreadView];
+    if([_currentFolder.localName isEqualToString:localFolder]) {
+        NSNumber *resultValue = [[notification userInfo] objectForKey:@"UpdateResult"];
+        SMMessageStorageUpdateResult updateResult = [resultValue unsignedIntegerValue];
+        
+        if(updateResult != SMMesssageStorageUpdateResultNone) {
+            NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+
+            if([_currentFolder.localName isEqualToString:localFolder]) {
+                [self updateMessageList];
+                [self updateMessageThreadView];
+            }
         }
     }
 }

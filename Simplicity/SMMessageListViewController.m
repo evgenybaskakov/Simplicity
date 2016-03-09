@@ -526,7 +526,7 @@
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     
-    if(currentFolder != nil) {
+    if(currentFolder != nil && [currentFolder.localName isEqualToString:[messageInfo objectForKey:@"LocalFolderName"]]) {
         uint64_t threadId = [[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue];
         SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadById:threadId localFolder:currentFolder.localName];
         

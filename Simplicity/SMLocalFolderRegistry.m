@@ -38,7 +38,7 @@
 
 static NSUInteger FOLDER_MEMORY_GREEN_ZONE_KB = 30 * 1024;
 static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
-//static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 100 * 1024;
+static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 100 * 1024;
 
 @implementation SMLocalFolderRegistry {
     NSMutableDictionary *_folders;
@@ -119,6 +119,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
         foldersMemoryKb += [folderEntry.folder getTotalMemoryKb];
 
     // TODO: use the red zone
+    (void)FOLDER_MEMORY_RED_ZONE_KB;
 
     if(foldersMemoryKb >= FOLDER_MEMORY_YELLOW_ZONE_KB) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -151,7 +152,7 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
                 break;
         }
 
-        SM_LOG_DEBUG(@"total %llu Kb reclaimed (%llu Kb was requested to reclaim, %lu Kb is the green zone, %lu Kb is the yellow zone)", totalMemoryReclaimedKb, totalMemoryToReclaimKb, FOLDER_MEMORY_GREEN_ZONE_KB, FOLDER_MEMORY_YELLOW_ZONE_KB);
+        SM_LOG_INFO(@"total %llu Kb reclaimed (%llu Kb was requested to reclaim, %lu Kb is the green zone, %lu Kb is the yellow zone)", totalMemoryReclaimedKb, totalMemoryToReclaimKb, FOLDER_MEMORY_GREEN_ZONE_KB, FOLDER_MEMORY_YELLOW_ZONE_KB);
     }
 }
 

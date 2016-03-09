@@ -100,8 +100,6 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] localFolderRegistry] keepFoldersMemoryLimit];
 
-    NSAssert(_syncedWithRemoteFolder, @"local folder %@ is not synced with remote folder", _localName);
-    
     _messageHeadersFetched = 0;
     
     [_messageStorage startUpdate:_localName];
@@ -162,7 +160,7 @@
 - (void)finishMessageHeadersFetching {
     [self recalculateTotalMemorySize];
 
-    BOOL shouldStartRemoteSync = _loadingFromDB;
+    BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
     
     _loadingFromDB = NO;
     _dbSyncInProgress = NO;
@@ -173,6 +171,15 @@
         SM_LOG_INFO(@"folder %@ loaded from the local database, starting syncing with server", _localName);
         
         [self startLocalFolderSync];
+    }
+    else if(!_loadingFromDB && _syncedWithRemoteFolder) {
+        SM_LOG_INFO(@"folder %@ not yet loaded from the local database,  syncing with server postponed", _localName);
+    }
+    else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
+        SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);
+    }
+    else {
+        SM_LOG_INFO(@"folder %@ loaded from the local database, but not synced with server", _localName);
     }
 }
 
@@ -565,7 +572,7 @@
             _totalMessagesCount++;
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", [NSNumber numberWithUnsignedInteger:SMMesssageStorageUpdateResultStructureChanged], @"UpdateResult", nil]];
     }
 }
 
@@ -579,7 +586,7 @@
     NSAssert(_totalMessagesCount > 0, @"_totalMessagesCount is 0");
     _totalMessagesCount--;
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", nil]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_localName, @"LocalFolderName", [NSNumber numberWithUnsignedInteger:SMMesssageStorageUpdateResultStructureChanged], @"UpdateResult", nil]];
 }
 
 - (void)adjustUnseenCount:(BOOL)messageUnseen {

@@ -57,16 +57,31 @@
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessageHeadersSyncFinished" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessageFlagsUpdated" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolder:) name:@"MessagesUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageFlagsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessagesUpdated" object:nil];
 }
 
-- (void)updateFolder:(NSNotification *)notification {
-    // NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
-    // TODO: refresh only the folder in question for efficiency
+- (void)updateFolders:(NSNotification *)notification {
+    if(_currentFolderName != nil) {
+        NSInteger selectedRow = -1;
 
-    [self updateFolderListView];
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMFolder *currentFolder = [[[appDelegate model] mailbox] getFolderByName:_currentFolderName];
+        
+        selectedRow = [self getFolderRow:currentFolder];
+
+        [ _folderListView reloadData ];
+        
+        if(selectedRow >= 0) {
+            [ _folderListView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO ];
+        } else {
+            [ _folderListView selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO ];
+        }
+    }
+    else {
+        [ _folderListView reloadData ];
+    }
 }
 
 - (void)updateFolderListView {

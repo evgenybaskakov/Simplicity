@@ -74,7 +74,6 @@
 		00AD52E81AA813FB00627433 /* add-label.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AD52E71AA813FB00627433 /* add-label.png */; };
 		00AD52EF1AA81C7900627433 /* SMNewLabelWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */; };
 		00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */; };
-		00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */ = {isa = PBXBuildFile; fileRef = 00B968D51A79F48F00C37B97 /* background_repeat.png */; };
 		00BAE7F719207540001243F5 /* SMMessageDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */; };
 		00C75609195921AA006ED86B /* SMFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C75608195921AA006ED86B /* SMFolder.m */; };
 		00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */; };
@@ -402,7 +401,6 @@
 		00AD52ED1AA81C7900627433 /* SMNewLabelWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNewLabelWindowController.h; sourceTree = "<group>"; };
 		00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNewLabelWindowController.m; sourceTree = "<group>"; };
 		00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMNewLabelWindowController.xib; sourceTree = "<group>"; };
-		00B968D51A79F48F00C37B97 /* background_repeat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background_repeat.png; sourceTree = "<group>"; };
 		00BAE7F419207540001243F5 /* SMMessageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageDetailsViewController.h; sourceTree = "<group>"; };
 		00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageDetailsViewController.m; sourceTree = "<group>"; };
 		00C75607195921AA006ED86B /* SMFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolder.h; sourceTree = "<group>"; };
@@ -1024,7 +1022,6 @@
 				801EDEEF1BE9EB6700A16E85 /* at_sign.png */,
 				00A681791A7DEDB800DAD2BD /* attachment-document.png */,
 				0099CE851A623B2A00AEA789 /* attachment-icon.png */,
-				00B968D51A79F48F00C37B97 /* background_repeat.png */,
 				009C7B9F1A5BB558002EA2DF /* circle-blue.png */,
 				0047416A1AA42115002566E8 /* collapse-all.png */,
 				002057D61A85D87500D5FE8A /* drafts-white.png */,
@@ -1312,7 +1309,6 @@
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
 				802410741C1E880C00493FB4 /* SMLabelPreferencesViewController.xib in Resources */,
 				801EDEF61BE9F06500A16E85 /* yandex_logo_en.png in Resources */,
-				00B968D61A79F48F00C37B97 /* background_repeat.png in Resources */,
 				8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */,
 				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
 				80A44B191B5A19260049AB88 /* align_center-128.png in Resources */,

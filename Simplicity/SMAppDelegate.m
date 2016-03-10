@@ -32,13 +32,15 @@
     return self;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification {
+- (void)applicationWillFinishLaunching:(NSNotification *)notification {
     _window.titleVisibility = NSWindowTitleHidden;
-
+    
     [[_window windowController] setShouldCascadeWindows:NO];
     [_window setFrameAutosaveName:@"MainWindow"];
-    
-    if([_preferencesController accountsCount] == 0) {
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notification {
+     if([_preferencesController accountsCount] == 0) {
         [_appController showNewAccountWindow];
     }
     else {

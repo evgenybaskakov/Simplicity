@@ -57,17 +57,6 @@
     view.state = NSVisualEffectStateActive;
     view.material = NSVisualEffectMaterialUltraDark;
     view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-    
-    CGFloat cornerRadius = 0;
-    
-    NSRect bounds = self.view.bounds;
-    view.maskImage = [NSImage imageWithSize:bounds.size flipped:YES drawingHandler:^BOOL(NSRect dstRect) {
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:bounds xRadius:cornerRadius yRadius:cornerRadius];
-        [path fill];
-        return YES;
-    }];
-    
-    view.maskImage.capInsets = NSEdgeInsetsMake(cornerRadius, cornerRadius, cornerRadius, cornerRadius);
 
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];

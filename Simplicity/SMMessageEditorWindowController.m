@@ -33,7 +33,15 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+    
+    // Window position setup
+    
+    [self setShouldCascadeWindows:YES];
 
+    NSString *windowName = @"EditorWindow";
+    [self.window setFrameUsingName:windowName];
+    [self.window setFrameAutosaveName:windowName];
+    
     // Delegate setup
 
     [[self window] setDelegate:self];

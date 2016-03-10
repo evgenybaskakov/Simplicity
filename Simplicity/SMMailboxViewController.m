@@ -413,14 +413,14 @@ typedef enum {
             if(row == _rowWithMenu) {
                 if(_doHightlightRow) {
                     if(_hightlightBox == nil) {
-                        _hightlightBox = [[NSBox alloc] initWithFrame:result.frame];
+                        _hightlightBox = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
                         
                         _hightlightBox.translatesAutoresizingMaskIntoConstraints = NO;
                         [_hightlightBox setBoxType:NSBoxCustom];
                         [_hightlightBox setBorderColor:[NSColor lightGrayColor]];
-                        [_hightlightBox setBorderWidth:2];
-                        [_hightlightBox setBorderType:NSLineBorder];
-                        [_hightlightBox setCornerRadius:6];
+                        [_hightlightBox setBorderWidth:1];
+                        [_hightlightBox setBorderType:NSBezelBorder];
+                        [_hightlightBox setCornerRadius:5];
                         [_hightlightBox setTitlePosition:NSNoTitle];
                     }
 
@@ -430,9 +430,9 @@ typedef enum {
                     
                     [result addConstraint:[NSLayoutConstraint constraintWithItem:result attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_hightlightBox attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
                     
-                    [result addConstraint:[NSLayoutConstraint constraintWithItem:result attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_hightlightBox attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+                    [result addConstraint:[NSLayoutConstraint constraintWithItem:result attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_hightlightBox attribute:NSLayoutAttributeTop multiplier:1.0 constant:-1]];
                     
-                    [result addConstraint:[NSLayoutConstraint constraintWithItem:result attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_hightlightBox attribute:NSLayoutAttributeBottom multiplier:1.0 constant:2]];
+                    [result addConstraint:[NSLayoutConstraint constraintWithItem:result attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_hightlightBox attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
                 } else {
                     [_hightlightBox removeFromSuperview];
                 }

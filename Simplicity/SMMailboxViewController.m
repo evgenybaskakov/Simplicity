@@ -462,7 +462,7 @@ typedef enum {
     return result;
 }
 
-- (void)displayUnseenCount:(NSButton*)button folderName:(SMFolder*)folder {
+- (void)displayUnseenCount:(NSTextField*)textField folderName:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     NSUInteger unseenCount;
     if(folder.kind == SMFolderKindDrafts || folder.kind == SMFolderKindOutbox) {
@@ -473,12 +473,12 @@ typedef enum {
     }
     
     if(unseenCount != 0) {
-        button.title = [NSString stringWithFormat:@"%lu", unseenCount];
-        button.hidden = NO;
+        textField.stringValue = [NSString stringWithFormat:@"%lu", unseenCount];
+        textField.hidden = NO;
     }
     else {
-        button.title = @"0";
-        button.hidden = YES;
+        textField.stringValue = @"0";
+        textField.hidden = YES;
     }
 }
 

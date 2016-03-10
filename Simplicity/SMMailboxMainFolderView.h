@@ -10,6 +10,6 @@
 
 @interface SMMailboxMainFolderView : NSTableCellView
 
-@property IBOutlet NSButton *unreadCount;
+@property IBOutlet NSTextField *unreadCount;
 
 @end

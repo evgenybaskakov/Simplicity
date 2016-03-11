@@ -150,7 +150,7 @@
 - (void)updateMainFolders {
     [_mainFolders removeAllObjects];
     
-    _inboxFolder = [self filterOutFolder:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"INBOX" setKind:SMFolderKindInbox];
+    _inboxFolder = [self filterOutFolder:MCOIMAPFolderFlagInbox orName:@"INBOX" as:@"Inbox" setKind:SMFolderKindInbox];
     _importantFolder = [self filterOutFolder:MCOIMAPFolderFlagImportant orName:nil as:@"Important" setKind:SMFolderKindImportant];
     _sentFolder = [self filterOutFolder:MCOIMAPFolderFlagSentMail orName:nil as:@"Sent" setKind:SMFolderKindSent];
     _draftsFolder = [self filterOutFolder:MCOIMAPFolderFlagDrafts orName:nil as:@"Drafts" setKind:SMFolderKindDrafts];

@@ -37,6 +37,8 @@
     
     if(self) {
         _model = model;
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesSyncedInFolder:) name:@"MessageHeadersSyncFinished" object:nil];
     }
     
     return self;
@@ -276,6 +278,19 @@
     }
     else {
         return 0;
+    }
+}
+
+- (void)messagesSyncedInFolder:(NSNotification*)notiifcation {
+    //
+    // Keep the inbox folder alway synced.
+    //
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
+    SMLocalFolder *inboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    
+    if(![[[notiifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
+        [inboxLocalFolder startLocalFolderSync];
     }
 }
 

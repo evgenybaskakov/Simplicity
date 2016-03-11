@@ -621,7 +621,8 @@ typedef enum {
     [[[appDelegate model] mailboxController] deleteFolder:folder.fullName];
     
     if([[[[appDelegate appController] mailboxViewController] currentFolderName] isEqualToString:folder.fullName]) {
-        [[[appDelegate appController] mailboxViewController] changeFolder:@"INBOX"];//TODO
+        SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
+        [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
     }
 }
 

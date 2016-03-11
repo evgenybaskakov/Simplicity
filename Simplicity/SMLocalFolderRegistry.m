@@ -36,9 +36,10 @@
 }
 @end
 
-static NSUInteger FOLDER_MEMORY_GREEN_ZONE_KB = 30 * 1024;
-static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 50 * 1024;
-static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 100 * 1024;
+// TODO: put these to the advanced properties (issue #76)
+static NSUInteger FOLDER_MEMORY_GREEN_ZONE_KB = 100 * 1024;
+static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 200 * 1024;
+static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
 
 @implementation SMLocalFolderRegistry {
     NSMutableDictionary *_folders;

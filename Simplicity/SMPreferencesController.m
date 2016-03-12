@@ -23,6 +23,7 @@
 // General properties
 #define kAccountsCount                  @"AccountsCount"
 #define kShouldShowContactImages        @"ShouldShowContactImages"
+#define kShouldShowEmailAddressesInMailboxes @"ShouldShowEmailAddressesInMailboxes"
 #define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
 #define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
 #define kDownloadsFolder                @"DownloadsFolder"
@@ -57,6 +58,7 @@
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
     BOOL _shouldShowContactImagesCached;
+    BOOL _shouldShowEmailAddressesInMailboxesCached;
     BOOL _shouldUseSingleSignatureCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
@@ -652,6 +654,35 @@
     [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowContactImages];
 
     _shouldShowContactImagesCached = flag;
+}
+
+#pragma mark Should show email addresses in mailboxes
+
+- (BOOL)shouldShowEmailAddressesInMailboxes {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowEmailAddressesInMailboxes] == nil) {
+            _shouldShowEmailAddressesInMailboxesCached = NO;
+            
+            SM_LOG_INFO(@"Using default kShouldShowEmailAddressesInMailboxes: %@", _shouldShowEmailAddressesInMailboxesCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldShowEmailAddressesInMailboxesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowEmailAddressesInMailboxes]);
+            
+            SM_LOG_INFO(@"Loaded kShouldShowEmailAddressesInMailboxes: %@", _shouldShowEmailAddressesInMailboxesCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldShowEmailAddressesInMailboxesCached;
+}
+
+- (void)setShouldShowEmailAddressesInMailboxes:(BOOL)flag {
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowEmailAddressesInMailboxes];
+    
+    _shouldShowEmailAddressesInMailboxesCached = flag;
 }
 
 #pragma mark Should show notifications

@@ -19,6 +19,7 @@
 @property (readonly) NSUInteger accountIdx;
 @property (readonly) NSString *currentFolderName;
 
+- (void)reloadAccountInfo;
 - (void)changeFolder:(NSString*)folderName;
 - (void)changeToPrevFolder;
 - (void)updateFolderListView;

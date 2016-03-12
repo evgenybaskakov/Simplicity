@@ -56,6 +56,8 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
+    [appController.mailboxViewController reloadAccountInfo];
+
     NSView *mailboxView = [appController.mailboxViewController view];
     mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
     

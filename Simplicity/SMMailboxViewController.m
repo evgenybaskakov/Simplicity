@@ -65,16 +65,25 @@
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     
-    NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:_accountIdx];
-    NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-    
-    _accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-    _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
-//TODO    _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:_accountIdx];
+    [self reloadAccountInfo];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessagesUpdated" object:nil];
+}
+
+- (void)reloadAccountInfo {
+    NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:_accountIdx];
+    NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+    
+    _accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+    
+    if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:_accountIdx];
+    }
+    else {
+        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
+    }
 }
 
 - (void)updateFolders:(NSNotification *)notification {

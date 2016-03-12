@@ -14,11 +14,13 @@
 #import "SMPreferencesController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMAccountsViewController.h"
 #import "SMGeneralPreferencesViewController.h"
 
 @interface SMGeneralPreferencesViewController ()
 
 @property (weak) IBOutlet NSButton *showContactImagesInMessageListCheckBox;
+@property (weak) IBOutlet NSButton *showEmailAddressesInMailboxes;
 @property (weak) IBOutlet NSButton *showNotificationsCheckBox;
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
@@ -85,6 +87,10 @@
 
     //
     
+    _showEmailAddressesInMailboxes.state = ([[appDelegate preferencesController] shouldShowEmailAddressesInMailboxes]? NSOnState : NSOffState);
+
+    //
+    
     NSUInteger messageListPreviewLineCount = [[appDelegate preferencesController] messageListPreviewLineCount];
     NSUInteger currentLinesCountItem = [_messageListPreviewLinesValues indexOfObject:[NSNumber numberWithUnsignedInteger:messageListPreviewLineCount]];
     if(currentLinesCountItem == NSNotFound) {
@@ -142,6 +148,12 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (IBAction)showEmailAddressesInMailboxesAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].shouldShowEmailAddressesInMailboxes = (_showEmailAddressesInMailboxes.state == NSOnState);
+    [[[appDelegate appController] accountsViewController] reloadAccounts];
 }
 
 - (IBAction)showNotificationsAction:(id)sender {

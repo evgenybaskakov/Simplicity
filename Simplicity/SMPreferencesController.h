@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @interface SMPreferencesController : NSObject
 
 @property (nonatomic) BOOL shouldShowContactImages;
+@property (nonatomic) BOOL shouldShowEmailAddressesInMailboxes;
 @property (nonatomic) BOOL shouldShowNotifications;
 @property (nonatomic) BOOL shouldUseSingleSignature;
 @property (nonatomic) NSUInteger messageListPreviewLineCount;

@@ -182,8 +182,9 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                     NSString *messageBodyPlainText = [SMMessage imapMessagePlainTextBody:parser];
                     
-                    if(_localFolder.syncedWithRemoteFolder) {
+                    if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
                         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                        
                         [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
                     }
                     

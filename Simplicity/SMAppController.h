@@ -15,7 +15,7 @@
 @class SMPreferencesWindowController;
 @class SMMailboxViewController;
 @class SMMessageListViewController;
-@class SMMessageViewController;
+@class SMAccountsViewController;
 @class SMMessageThreadViewController;
 @class SMInstrumentPanelViewController;
 @class SMFolderColorController;
@@ -40,6 +40,7 @@
 
 @property SMTokenFieldViewController *searchFieldViewController;
 @property SMSectionMenuViewController *searchMenuViewController;
+@property SMAccountsViewController *accountsViewController;
 @property SMMailboxViewController *mailboxViewController;
 @property SMMessageListViewController *messageListViewController;
 @property SMMessageThreadViewController *messageThreadViewController;

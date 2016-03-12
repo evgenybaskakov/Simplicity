@@ -13,6 +13,7 @@
 #import "SMDatabase.h"
 #import "SMMessageEditorWindowController.h"
 #import "SMNewLabelWindowController.h"
+#import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
 #import "SMSearchResultsListController.h"
 #import "SMMessageListController.h"
@@ -95,6 +96,16 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSAssert(mailboxView, @"mailboxView");
 
     //
+    
+    _accountsViewController = [ [ SMAccountsViewController alloc ] initWithNibName:nil bundle:nil ];
+    
+    NSAssert(_accountsViewController, @"_accountsViewController");
+    
+    NSView *accountsView = [ _accountsViewController view ];
+    
+    NSAssert(accountsView, @"accountsView");
+    
+    //
 
     _messageListViewController = [ [ SMMessageListViewController alloc ] initWithNibName:@"SMMessageListViewController" bundle:nil ];
     
@@ -130,27 +141,26 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    NSSplitView *mailboxAndSearchResultsView = [[NSSplitView alloc] init];
-    mailboxAndSearchResultsView.translatesAutoresizingMaskIntoConstraints = NO;
+    // TODO: remove search results view
     
-    [mailboxAndSearchResultsView setDelegate:self];
+    NSSplitView *accountsAndSearchResultsView = [[NSSplitView alloc] init];
+    accountsAndSearchResultsView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [mailboxAndSearchResultsView setVertical:NO];
-    [mailboxAndSearchResultsView setDividerStyle:NSSplitViewDividerStyleThin];
-    
-    [mailboxAndSearchResultsView addSubview:mailboxView];
-    
-    [mailboxAndSearchResultsView adjustSubviews];
+    [accountsAndSearchResultsView setDelegate:self];
+    [accountsAndSearchResultsView setVertical:NO];
+    [accountsAndSearchResultsView setDividerStyle:NSSplitViewDividerStyleThin];
+    [accountsAndSearchResultsView addSubview:accountsView];
+    [accountsAndSearchResultsView adjustSubviews];
     
     //
     
-    [_instrumentPanelViewController.workView addSubview:mailboxAndSearchResultsView];
+    [_instrumentPanelViewController.workView addSubview:accountsAndSearchResultsView];
 
     [_instrumentPanelViewController.workView addConstraint:
      [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
                                   attribute:NSLayoutAttributeLeading
                                   relatedBy:NSLayoutRelationEqual
-                                     toItem:mailboxAndSearchResultsView
+                                     toItem:accountsAndSearchResultsView
                                   attribute:NSLayoutAttributeLeading
                                  multiplier:1
                                    constant:0]];
@@ -159,7 +169,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
      [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
                                   attribute:NSLayoutAttributeTrailing
                                   relatedBy:NSLayoutRelationEqual
-                                     toItem:mailboxAndSearchResultsView
+                                     toItem:accountsAndSearchResultsView
                                   attribute:NSLayoutAttributeTrailing
                                  multiplier:1
                                    constant:0]];
@@ -168,7 +178,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
      [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
                                   attribute:NSLayoutAttributeTop
                                   relatedBy:NSLayoutRelationEqual
-                                     toItem:mailboxAndSearchResultsView
+                                     toItem:accountsAndSearchResultsView
                                   attribute:NSLayoutAttributeTop
                                  multiplier:1
                                    constant:0]];
@@ -177,7 +187,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
      [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
                                   attribute:NSLayoutAttributeBottom
                                   relatedBy:NSLayoutRelationEqual
-                                     toItem:mailboxAndSearchResultsView
+                                     toItem:accountsAndSearchResultsView
                                   attribute:NSLayoutAttributeBottom
                                  multiplier:1
                                    constant:0]];
@@ -204,7 +214,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     // 
 
-    [_view addConstraint:[NSLayoutConstraint constraintWithItem:mailboxView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:_view attribute:NSLayoutAttributeHeight multiplier:0.3 constant:0]];
+    [_view addConstraint:[NSLayoutConstraint constraintWithItem:accountsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:_view attribute:NSLayoutAttributeHeight multiplier:0.3 constant:0]];
 
     [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
     
@@ -259,6 +269,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchFieldViewController.enterAction = @selector(enterSearchUsingToolbarSearchField:);
     _searchFieldViewController.arrowUpAction = @selector(searchMenuCursorUp:);
     _searchFieldViewController.arrowDownAction = @selector(searchMenuCursorDown:);
+    
+    //
+    
+    [_accountsViewController reloadAccounts];
     
     //
     

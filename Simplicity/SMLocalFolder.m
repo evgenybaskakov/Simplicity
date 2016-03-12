@@ -173,7 +173,7 @@
         [self startLocalFolderSync];
     }
     else if(!_loadingFromDB && _syncedWithRemoteFolder) {
-        SM_LOG_INFO(@"folder %@ not yet loaded from the local database,  syncing with server postponed", _localName);
+        SM_LOG_INFO(@"folder %@ not yet loaded from the local database, syncing with server postponed", _localName);
     }
     else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
         SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);

@@ -281,7 +281,7 @@
     }
 }
 
-- (void)messagesSyncedInFolder:(NSNotification*)notiifcation {
+- (void)messagesSyncedInFolder:(NSNotification*)notifcation {
     //
     // Keep the inbox folder alway synced.
     //
@@ -289,7 +289,7 @@
     SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
     SMLocalFolder *inboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
-    if(![[[notiifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
+    if(![[[notifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
         [inboxLocalFolder startLocalFolderSync];
     }
 }

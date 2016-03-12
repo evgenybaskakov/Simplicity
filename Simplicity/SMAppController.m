@@ -22,12 +22,14 @@
 #import "SMInstrumentPanelViewController.h"
 #import "SMFindContentsPanelViewController.h"
 #import "SMOperationQueueWindowController.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMFolderColorController.h"
 #import "SMOutboxController.h"
 #import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
 #import "SMFolder.h"
+#import "SMLocalFolder.h"
 #import "SMMessageThread.h"
 #import "SMNewAccountWindowController.h"
 #import "SMMessageWindowController.h"
@@ -257,6 +259,12 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchFieldViewController.enterAction = @selector(enterSearchUsingToolbarSearchField:);
     _searchFieldViewController.arrowUpAction = @selector(searchMenuCursorUp:);
     _searchFieldViewController.arrowDownAction = @selector(searchMenuCursorDown:);
+    
+    //
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessageFlagsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessagesUpdated" object:nil];
 }
 
 - (void)initOpExecutor {
@@ -729,6 +737,30 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [NSApp endSheet:preferencesSheet];
     
     _preferencesWindowShown = NO;
+}
+
+#pragma mark Folder stats
+
+- (void)updateFolderStats:(NSNotification*)notification {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
+    SMLocalFolder *inboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    
+    if([[[notification userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
+        NSString *messageCountString;
+        
+        if(inboxLocalFolder.unseenMessagesCount > 999) {
+            messageCountString = @"999+";
+        }
+        else if(inboxLocalFolder.unseenMessagesCount > 0) {
+            messageCountString = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
+        }
+        else {
+            messageCountString = @"";
+        }
+        
+        [[[NSApplication sharedApplication] dockTile] setBadgeLabel:messageCountString];
+    }
 }
 
 @end

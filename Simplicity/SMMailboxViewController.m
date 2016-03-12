@@ -44,6 +44,7 @@
         _rowWithMenu = -1;
         _favoriteFolders = [NSMutableArray array];
         _visibleFolders = [NSMutableArray array];
+        _accountIdx = 0; // TODO: get this upon the view controller creation
     }
     
     return self;
@@ -51,7 +52,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    _accountIdx = appDelegate.currentAccount;
+
     NSVisualEffectView *view = (NSVisualEffectView*)self.view;
     
     view.state = NSVisualEffectStateActive;
@@ -60,7 +64,14 @@
 
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
-
+    
+    NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:_accountIdx];
+    NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+    
+    _accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+    _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
+//TODO    _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:_accountIdx];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessagesUpdated" object:nil];
@@ -634,11 +645,10 @@ typedef enum {
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     
-    NSUInteger accountIdx = appDelegate.currentAccount;
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.visible = NO;
-    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
     
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
@@ -651,11 +661,10 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSUInteger accountIdx = appDelegate.currentAccount;
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = YES;
-    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
     
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
@@ -668,11 +677,10 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSUInteger accountIdx = appDelegate.currentAccount;
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = NO;
-    [[appDelegate preferencesController] setLabels:accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
 
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }

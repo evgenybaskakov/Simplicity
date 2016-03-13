@@ -25,19 +25,26 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if(self) {
-        _scrollView = [[NSScrollView alloc] init];
+        NSVisualEffectView *rootView = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+        rootView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        rootView.state = NSVisualEffectStateActive;
+        rootView.material = NSVisualEffectMaterialUltraDark;
+        rootView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+
+        [self setView:rootView];
+
+        _scrollView = [[NSScrollView alloc] initWithFrame:rootView.frame];
+        _scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        _scrollView.backgroundColor = [NSColor clearColor];
+        _scrollView.borderType = NSNoBorder;
+        _scrollView.hasVerticalScroller = YES;
+        _scrollView.hasHorizontalScroller = NO;
         
-        [_scrollView setBorderType:NSNoBorder];
-        [_scrollView setHasVerticalScroller:YES];
-        [_scrollView setHasHorizontalScroller:NO];
-        [_scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        
-        [self setView:_scrollView];
+        [rootView addSubview:_scrollView];
         
         _contentView = [[SMFlippedView alloc] initWithFrame:_scrollView.frame];
         _contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        
-        [_scrollView setDocumentView:_contentView];
+        _scrollView.documentView = _contentView;
         
         _accountButtons = [NSMutableArray new];
     }

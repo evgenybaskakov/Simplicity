@@ -52,12 +52,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    NSVisualEffectView *view = (NSVisualEffectView*)self.view;
-    
-    view.state = NSVisualEffectStateActive;
-    view.material = NSVisualEffectMaterialUltraDark;
-    view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     

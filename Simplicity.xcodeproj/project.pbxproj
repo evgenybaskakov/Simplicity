@@ -222,6 +222,8 @@
 		80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */; };
 		80EC90EA1C65CC9500336312 /* SMSearchToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 80EC90E91C65CC9500336312 /* SMSearchToken.m */; };
 		80ED78F11C93F86700475EE5 /* SMAccountsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80ED78F01C93F86700475EE5 /* SMAccountsViewController.m */; };
+		80ED78FC1C95351D00475EE5 /* SMAccountButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80ED78FA1C95351D00475EE5 /* SMAccountButtonViewController.m */; };
+		80ED78FD1C95351D00475EE5 /* SMAccountButtonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */; };
 		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
 		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
@@ -647,6 +649,9 @@
 		80EC90E91C65CC9500336312 /* SMSearchToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchToken.m; sourceTree = "<group>"; };
 		80ED78EF1C93F86700475EE5 /* SMAccountsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountsViewController.h; sourceTree = "<group>"; };
 		80ED78F01C93F86700475EE5 /* SMAccountsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountsViewController.m; sourceTree = "<group>"; };
+		80ED78F91C95351D00475EE5 /* SMAccountButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountButtonViewController.h; sourceTree = "<group>"; };
+		80ED78FA1C95351D00475EE5 /* SMAccountButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountButtonViewController.m; sourceTree = "<group>"; };
+		80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAccountButtonViewController.xib; sourceTree = "<group>"; };
 		80F7EA701B8009290000992E /* SMMessageWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageWindowController.h; sourceTree = "<group>"; };
 		80F7EA711B8009290000992E /* SMMessageWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageWindowController.m; sourceTree = "<group>"; };
 		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
@@ -851,6 +856,8 @@
 			isa = PBXGroup;
 			children = (
 				80238AF01BE32BCE009E090C /* Preferences */,
+				80ED78F91C95351D00475EE5 /* SMAccountButtonViewController.h */,
+				80ED78FA1C95351D00475EE5 /* SMAccountButtonViewController.m */,
 				80ED78EF1C93F86700475EE5 /* SMAccountsViewController.h */,
 				80ED78F01C93F86700475EE5 /* SMAccountsViewController.m */,
 				004A64271AC7A40B0079A0C1 /* SMAddressFieldViewController.h */,
@@ -996,6 +1003,7 @@
 			children = (
 				80238AEF1BE32BB2009E090C /* Preferences */,
 				0002A0A617D1B1E000EA4AFF /* MainMenu.xib */,
+				80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */,
 				003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
@@ -1357,6 +1365,7 @@
 				801EDEF51BE9F06500A16E85 /* yahoo_logo.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
+				80ED78FD1C95351D00475EE5 /* SMAccountButtonViewController.xib in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,
 				003DFF1A1A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib in Resources */,
 				006709351A99A77600C0C9CC /* SMFindContentsPanelViewController.xib in Resources */,
@@ -1505,6 +1514,7 @@
 				004A642C1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m in Sources */,
 				803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */,
 				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,
+				80ED78FC1C95351D00475EE5 /* SMAccountButtonViewController.m in Sources */,
 				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,
 				80BD0A2E1C4E018B00F43EA2 /* SMSectionMenuItemView.m in Sources */,
 				80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */,

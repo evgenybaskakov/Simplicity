@@ -44,7 +44,6 @@
         _rowWithMenu = -1;
         _favoriteFolders = [NSMutableArray array];
         _visibleFolders = [NSMutableArray array];
-        _accountIdx = 0; // TODO: get this upon the view controller creation
     }
     
     return self;
@@ -52,9 +51,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    _accountIdx = appDelegate.currentAccount;
 
     NSVisualEffectView *view = (NSVisualEffectView*)self.view;
     
@@ -65,25 +61,9 @@
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     
-    [self reloadAccountInfo];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessagesUpdated" object:nil];
-}
-
-- (void)reloadAccountInfo {
-    NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:_accountIdx];
-    NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-    
-    _accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-    
-    if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:_accountIdx];
-    }
-    else {
-        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
-    }
 }
 
 - (void)updateFolders:(NSNotification *)notification {
@@ -651,13 +631,12 @@ typedef enum {
     
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
     NSAssert(folder != nil, @"bad selected folder");
-    
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccount]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.visible = NO;
-    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:appDelegate.currentAccount labels:labels];
     
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
@@ -670,10 +649,10 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccount]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = YES;
-    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:appDelegate.currentAccount labels:labels];
     
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
@@ -686,10 +665,10 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:_accountIdx]];
+    NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccount]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = NO;
-    [[appDelegate preferencesController] setLabels:_accountIdx labels:labels];
+    [[appDelegate preferencesController] setLabels:appDelegate.currentAccount labels:labels];
 
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }

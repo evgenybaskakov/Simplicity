@@ -12,14 +12,10 @@
 
 @interface SMMailboxViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSMenuDelegate>
 
-@property (weak) IBOutlet NSImageView *accountImage;
-@property (weak) IBOutlet NSTextField *accountName;
 @property (weak) IBOutlet NSTableView *folderListView;
 
-@property (readonly) NSUInteger accountIdx;
 @property (readonly) NSString *currentFolderName;
 
-- (void)reloadAccountInfo;
 - (void)changeFolder:(NSString*)folderName;
 - (void)changeToPrevFolder;
 - (void)updateFolderListView;

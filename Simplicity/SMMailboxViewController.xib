@@ -7,8 +7,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMailboxViewController">
             <connections>
-                <outlet property="accountImage" destination="sXS-Yp-KG8" id="ywm-mf-ffn"/>
-                <outlet property="accountName" destination="3a7-tx-n7m" id="6dy-FS-SGD"/>
                 <outlet property="folderListView" destination="idQ-VD-a7f" id="orU-y7-1Zl"/>
                 <outlet property="view" destination="c22-O7-iKe" id="zx8-nl-l2u"/>
             </connections>
@@ -18,22 +16,14 @@
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe" customClass="NSVisualEffectView">
             <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
             <subviews>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sXS-Yp-KG8" userLabel="Account Image">
-                    <rect key="frame" x="3" y="364" width="26" height="26"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="26" id="ooq-8g-iJE"/>
-                        <constraint firstAttribute="width" constant="26" id="uhS-4W-kGS"/>
-                    </constraints>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUserGuest" id="fkS-eW-sEN"/>
-                </imageView>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zKI-Dq-3Sh">
-                    <rect key="frame" x="0.0" y="0.0" width="200" height="364"/>
+                    <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
                     <clipView key="contentView" drawsBackground="NO" id="jWX-ka-Zfh">
-                        <rect key="frame" x="0.0" y="0.0" width="200" height="364"/>
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView horizontalHuggingPriority="251" verticalHuggingPriority="251" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="20" rowSizeStyle="automatic" viewBased="YES" id="idQ-VD-a7f" customClass="SMMailboxTableView">
-                                <rect key="frame" x="0.0" y="0.0" width="200" height="364"/>
+                                <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
@@ -187,25 +177,12 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="3a7-tx-n7m">
-                    <rect key="frame" x="36" y="369" width="159" height="14"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Account Name" usesSingleLineMode="YES" id="MMg-wN-w3P">
-                        <font key="font" metaFont="systemSemibold" size="11"/>
-                        <color key="textColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="zKI-Dq-3Sh" secondAttribute="bottom" id="5aL-we-yNa"/>
-                <constraint firstItem="sXS-Yp-KG8" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="3" id="639-W7-Fnu"/>
-                <constraint firstAttribute="trailing" secondItem="3a7-tx-n7m" secondAttribute="trailing" constant="7" id="6rd-z0-hxe"/>
                 <constraint firstItem="zKI-Dq-3Sh" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="PCb-7w-h1h"/>
-                <constraint firstItem="3a7-tx-n7m" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="10" id="UpZ-ZX-eeb"/>
                 <constraint firstAttribute="trailing" secondItem="zKI-Dq-3Sh" secondAttribute="trailing" id="XjF-lK-cOs"/>
-                <constraint firstItem="3a7-tx-n7m" firstAttribute="leading" secondItem="sXS-Yp-KG8" secondAttribute="trailing" constant="9" id="ibk-P8-cgB"/>
-                <constraint firstItem="zKI-Dq-3Sh" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="29" id="wZO-pf-rkI"/>
-                <constraint firstItem="sXS-Yp-KG8" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="3" id="y3K-sO-tyL"/>
+                <constraint firstItem="zKI-Dq-3Sh" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="wZO-pf-rkI"/>
             </constraints>
         </customView>
         <menu id="TZ7-Yw-fEl">
@@ -223,7 +200,4 @@
             <point key="canvasLocation" x="620" y="139.5"/>
         </menu>
     </objects>
-    <resources>
-        <image name="NSUserGuest" width="32" height="32"/>
-    </resources>
 </document>

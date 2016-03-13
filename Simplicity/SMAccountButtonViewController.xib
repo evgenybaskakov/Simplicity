@@ -15,11 +15,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="201" height="36"/>
+            <rect key="frame" x="0.0" y="0.0" width="201" height="30"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="O5E-Vt-tp8" userLabel="Account Image">
-                    <rect key="frame" x="5" y="5" width="26" height="26"/>
+                    <rect key="frame" x="2" y="2" width="26" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="26" id="GSS-1N-svz"/>
                         <constraint firstAttribute="width" constant="26" id="RJE-4R-s2s"/>
@@ -27,7 +27,7 @@
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUserGuest" id="wtB-uf-8Mj"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="X4p-TU-6bL">
-                    <rect key="frame" x="36" y="10" width="160" height="14"/>
+                    <rect key="frame" x="31" y="6" width="166" height="14"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="EMz-UO-c5d"/>
                     </constraints>
@@ -39,14 +39,14 @@
                 </textField>
             </subviews>
             <constraints>
-                <constraint firstItem="O5E-Vt-tp8" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="5" id="BZl-km-CPn"/>
-                <constraint firstItem="X4p-TU-6bL" firstAttribute="leading" secondItem="O5E-Vt-tp8" secondAttribute="trailing" constant="7" id="FAV-6q-xl5"/>
-                <constraint firstAttribute="bottom" secondItem="O5E-Vt-tp8" secondAttribute="bottom" constant="5" id="UPN-Kt-rCg"/>
-                <constraint firstItem="X4p-TU-6bL" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="12" id="XVk-l3-EPG"/>
-                <constraint firstAttribute="trailing" secondItem="X4p-TU-6bL" secondAttribute="trailing" constant="7" id="aou-Om-ZK4"/>
-                <constraint firstItem="O5E-Vt-tp8" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="vdO-Vu-M8G"/>
+                <constraint firstItem="O5E-Vt-tp8" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="2" id="BZl-km-CPn"/>
+                <constraint firstItem="X4p-TU-6bL" firstAttribute="leading" secondItem="O5E-Vt-tp8" secondAttribute="trailing" constant="5" id="FAV-6q-xl5"/>
+                <constraint firstAttribute="bottom" secondItem="O5E-Vt-tp8" secondAttribute="bottom" constant="2" id="UPN-Kt-rCg"/>
+                <constraint firstItem="X4p-TU-6bL" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="10" id="XVk-l3-EPG"/>
+                <constraint firstAttribute="trailing" secondItem="X4p-TU-6bL" secondAttribute="trailing" constant="6" id="aou-Om-ZK4"/>
+                <constraint firstItem="O5E-Vt-tp8" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="2" id="vdO-Vu-M8G"/>
             </constraints>
-            <point key="canvasLocation" x="218.5" y="202"/>
+            <point key="canvasLocation" x="218.5" y="200"/>
         </customView>
     </objects>
     <resources>

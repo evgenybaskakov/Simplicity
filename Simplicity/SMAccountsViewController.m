@@ -64,6 +64,7 @@
     SMAppController *appController = [appDelegate appController];
 
     [_accountButtons removeAllObjects];
+    [_contentView setSubviews:@[]];
 
     ///
     for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMSimplicityContainer.h"
 #import "SMAddressBookController.h"
 #import "SMTokenField.h"
@@ -305,7 +306,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 }
 
 - (void)replyAction:(NSMenuItem*)menuItem {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", _addressWithMenu, @"ToAddress", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Forward" toAddress:_addressWithMenu];
 }
 
 - (void)newMessageAction:(NSMenuItem*)menuItem {

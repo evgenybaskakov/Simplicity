@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMSimplicityContainer.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
@@ -42,7 +43,7 @@
         
         [mailboxController scheduleFolderListUpdate:YES];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"NewLabelCreated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:fullFolderName, @"LabelName", nil]];
+        [SMNotificationsController localNotifyNewLabelCreated:fullFolderName];
     }
 
     [self closeNewLabelWindow];

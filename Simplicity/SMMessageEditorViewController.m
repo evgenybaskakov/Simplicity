@@ -14,6 +14,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMAddress.h"
 #import "SMSimplicityContainer.h"
 #import "SMSuggestionProvider.h"
@@ -309,7 +310,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [[[self view] window] close];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageSent" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
+    [SMNotificationsController localNotifyMessageSent:self];
 }
 
 - (void)deleteEditedDraft {
@@ -332,7 +333,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     _doNotSaveDraftOnClose = YES;
 
     if(_embedded) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteEditedMessageDraft" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", nil]];
+        [SMNotificationsController localNotifyDeleteEditedMessageDraft:self];
     }
     else {
         [[[self view] window] close];

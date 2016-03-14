@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMFolderUIDDictionary.h"
 #import "SMMessageStorage.h"
 #import "SMDatabase.h"
@@ -252,9 +253,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     if(message != nil) {
         [_localFolder increaseLocalFolderFootprint:message.messageSize];
         
-        NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_localFolder.localName, [NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"LocalFolderName", @"UID", @"ThreadId", nil]];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
+        [SMNotificationsController localNotifyMessageBodyFetched:_localFolder.localName uid:uid threadId:threadId];
     }
 }
 

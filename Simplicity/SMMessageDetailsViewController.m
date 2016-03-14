@@ -10,6 +10,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMNotificationsController.h"
 #import "SMImageRegistry.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsViewController.h"
@@ -533,35 +534,35 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)composeReply:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Reply", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Reply" toAddress:nil];
 }
 
 - (void)composeReplyAll:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"ReplyAll", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"ReplyAll" toAddress:nil];
 }
 
 - (void)composeForward:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", @"Forward", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Forward" toAddress:nil];
 }
 
 - (void)deleteMessage:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"DeleteMessage" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+    [SMNotificationsController localNotifyDeleteMessage:_enclosingThreadCell];
 }
 
 - (void)changeMessageUnreadFlag:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeMessageUnreadFlag" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+    [SMNotificationsController localNotifyChangeMessageUnreadFlag:_enclosingThreadCell];
 }
 
 - (void)changeMessageFlaggedFlag:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ChangeMessageFlaggedFlag" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+    [SMNotificationsController localNotifyChangeMessageFlaggedFlag:_enclosingThreadCell];
 }
 
 - (void)saveAttachments:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SaveAttachments" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+    [SMNotificationsController localNotifySaveAttachments:_enclosingThreadCell];
 }
 
 - (void)saveAttachmentsToDownloads:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SaveAttachmentsToDownloads" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:_enclosingThreadCell, @"ThreadCell", nil]];
+    [SMNotificationsController localNotifySaveAttachmentsToDownloads:_enclosingThreadCell];
 }
 
 - (void)showMessageActions:(id)sender {

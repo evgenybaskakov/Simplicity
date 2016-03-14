@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMImageRegistry.h"
 #import "SMRoundedImageView.h"
 #import "SMMessageBodyViewController.h"
@@ -822,15 +823,15 @@
 }
 
 - (void)menuActionReply:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Reply", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"Reply" toAddress:nil];
 }
 
 - (void)menuActionReplyAll:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"ReplyAll", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"ReplyAll" toAddress:nil];
 }
 
 - (void)menuActionForward:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ComposeMessageReply" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Forward", @"ReplyKind", nil]];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"Forward" toAddress:nil];
 }
 
 - (void)menuActionDelete:(id)sender {

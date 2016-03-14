@@ -10,6 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMOperationExecutor.h"
 #import "SMOpMoveMessages.h"
 #import "SMOpDeleteMessages.h"
@@ -135,7 +136,7 @@
         
         [self finishMessageHeadersFetching];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObject:_localName forKey:@"LocalFolderName"]];
+        [SMNotificationsController localNotifyMessageHeadersSyncFinished:_localName hasUpdates:YES];
         
         return;
     }

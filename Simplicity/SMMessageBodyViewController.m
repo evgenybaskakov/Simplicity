@@ -18,6 +18,7 @@
 #import "SMLog.h"
 #import "SMMessageBodyViewController.h"
 #import "SMAppDelegate.h"
+#import "SMNotificationsController.h"
 #import "SMAttachmentStorage.h"
 
 @interface SMMessageBodyViewController (WebResourceLoadDelegate)
@@ -210,7 +211,7 @@
         // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
         _contentHeight = [[[frame frameView] documentView] frame].size.height;
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:_uid], @"UID", nil]];
+        [SMNotificationsController localNotifyMessageBodyLoaded:_uid];
     }
 }
 

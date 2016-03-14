@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMNotificationsController.h"
 #import "SMSimplicityContainer.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
@@ -120,7 +121,7 @@
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FolderListUpdated" object:nil userInfo:nil];
+        [SMNotificationsController localNotifyFolderListUpdated];
     }];
 }
 

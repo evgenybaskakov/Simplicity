@@ -630,18 +630,18 @@ static const CGFloat CELL_SPACING = -1;
 - (void)messageBodyFetched:(NSNotification *)notification {
     uint32_t uid;
     int64_t threadId;
-    NSUInteger accountIdx;
+    SMAccountDescriptor *account;
     
-    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId accountIdx:&accountIdx];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId account:&account];
     
     [self updateMessageView:uid threadId:threadId];
 }
 
 - (void)messageViewFrameLoaded:(NSNotification *)notification {
     uint32_t uid;
-    NSUInteger accountIdx;
+    SMAccountDescriptor *account;
     
-    [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid accountIdx:&accountIdx];
+    [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid account:&account];
 
     // TODO: optimize by adding a NSUndexSet with uids
     for(NSInteger i = 0; i < _cells.count; i++) {

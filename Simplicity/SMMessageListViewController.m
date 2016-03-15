@@ -524,9 +524,9 @@
     NSString *localFolder;
     uint32_t uid;
     int64_t threadId;
-    NSUInteger accountIdx;
+    SMAccountDescriptor *account;
     
-    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId accountIdx:&accountIdx];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId account:&account];
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];

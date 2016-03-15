@@ -136,7 +136,7 @@
         
         [self finishMessageHeadersFetching];
         
-        [SMNotificationsController localNotifyMessageHeadersSyncFinished:_localName hasUpdates:YES accountIdx:0/*TODO*/];
+        [SMNotificationsController localNotifyMessageHeadersSyncFinished:_localName hasUpdates:YES account:nil/*TODO*/];
         
         return;
     }

@@ -234,9 +234,9 @@
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
     NSString *localFolder;
     BOOL hasUpdates;
-    NSUInteger accountIdx;
+    SMAccountDescriptor *account;
     
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates accountIdx:&accountIdx];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates account:&account];
 
     if([_currentFolder.localName isEqualToString:localFolder]) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

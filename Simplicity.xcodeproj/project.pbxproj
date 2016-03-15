@@ -123,6 +123,7 @@
 		8024107E1C1E9E3B00493FB4 /* SMFolderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8024107D1C1E9E3B00493FB4 /* SMFolderLabel.m */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
+		8039326A1C97D6E700CE38CB /* SMAccountDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 803932691C97D6E700CE38CB /* SMAccountDescriptor.m */; };
 		803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */; };
 		803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */; };
 		803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */; };
@@ -484,6 +485,8 @@
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
+		803932681C97D6E700CE38CB /* SMAccountDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountDescriptor.h; sourceTree = "<group>"; };
+		803932691C97D6E700CE38CB /* SMAccountDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountDescriptor.m; sourceTree = "<group>"; };
 		803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAdvancedPreferencesViewController.h; sourceTree = "<group>"; };
 		803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAdvancedPreferencesViewController.m; sourceTree = "<group>"; };
 		803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAdvancedPreferencesViewController.xib; sourceTree = "<group>"; };
@@ -753,6 +756,8 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				803932681C97D6E700CE38CB /* SMAccountDescriptor.h */,
+				803932691C97D6E700CE38CB /* SMAccountDescriptor.m */,
 				803A29AF1C02DC8800FF8D7C /* SMAddress.h */,
 				803A29B01C02DC8800FF8D7C /* SMAddress.m */,
 				803A29A91C02465C00FF8D7C /* SMAddressBookController.h */,
@@ -1503,6 +1508,7 @@
 				8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */,
 				80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
+				8039326A1C97D6E700CE38CB /* SMAccountDescriptor.m in Sources */,
 				80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */,
 				80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,

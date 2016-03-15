@@ -18,7 +18,7 @@
 + (void)systemNotifyNewMessage:(NSString*)from;
 + (void)systemNotifyNewMessages:(NSUInteger)count;
 
-+ (void)localNotifyFolderListUpdated:(NSUInteger)account;
++ (void)localNotifyFolderListUpdated:(SMAccountDescriptor*)account;
 + (void)localNotifyMessageHeadersSyncFinished:(NSString*)localFolder hasUpdates:(BOOL)hasUpdates account:(SMAccountDescriptor*)account;
 + (void)localNotifyMessageBodyFetched:(NSString*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMAccountDescriptor*)account;
 + (void)localNotifyMessageFlagsUpdates:(NSString*)localFolder account:(SMAccountDescriptor*)account;

@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMNotificationsController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
@@ -231,15 +232,15 @@
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
-    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    NSString *localFolder;
+    BOOL hasUpdates;
+    
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates];
 
     if([_currentFolder.localName isEqualToString:localFolder]) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMAppController *appController = [appDelegate appController];
         
-        NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
-        Boolean hasUpdates = [hasUpdatesNumber boolValue];
-
         [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];
     }
 }

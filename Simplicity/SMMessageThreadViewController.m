@@ -8,6 +8,7 @@
 //
 
 #import "SMLog.h"
+#import "SMNotificationsController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadCell.h"
@@ -627,15 +628,18 @@ static const CGFloat CELL_SPACING = -1;
 #pragma mark Processing incoming notifications
 
 - (void)messageBodyFetched:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
+    uint32_t uid;
+    int64_t threadId;
     
-    [self updateMessageView:[[messageInfo objectForKey:@"UID"] unsignedIntValue] threadId:[[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue]];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId];
+    
+    [self updateMessageView:uid threadId:threadId];
 }
 
 - (void)messageBodyLoaded:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
-
-    uint32_t uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+    uint32_t uid;
+    
+    [SMNotificationsController getMessageBodyLoadedParams:notification uid:&uid];
 
     // TODO: optimize by adding a NSUndexSet with uids
     for(NSInteger i = 0; i < _cells.count; i++) {

@@ -51,9 +51,7 @@
 }
 
 + (void)localNotifyMessageBodyFetched:(NSString*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId {
-    NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:localFolder, [NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"LocalFolderName", @"UID", @"ThreadId", nil]];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:messageInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:localFolder, [NSNumber numberWithUnsignedInteger:uid], [NSNumber numberWithUnsignedLongLong:threadId], nil] forKeys:[NSArray arrayWithObjects:@"LocalFolderName", @"UID", @"ThreadId", nil]]];
 }
 
 + (void)localNotifyMessageBodyLoaded:(uint32_t)uid {
@@ -102,6 +100,61 @@
 
 + (void)localNotifyNewLabelCreated:(NSString*)labelName {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"NewLabelCreated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:labelName, @"LabelName", nil]];
+}
+
+#pragma mark Notification parameter getters
+
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(localFolder) {
+        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+    }
+
+    if(hasUpdates) {
+        NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
+        *hasUpdates = [hasUpdatesNumber boolValue];
+    }
+}
+
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(NSString**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(localFolder) {
+        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+    }
+    
+    if(threadId) {
+        *threadId = [[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue];
+    }
+    
+    if(uid) {
+        *uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+    }
+}
+
++ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(localFolder) {
+        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+    }
+}
+
++ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(localFolder) {
+        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+    }
+}
+
++ (void)getMessageBodyLoadedParams:(NSNotification *)notification uid:(uint32_t *)uid {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(uid) {
+        *uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+    }
 }
 
 @end

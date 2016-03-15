@@ -33,4 +33,10 @@
 + (void)localNotifyMessageSent:(SMMessageEditorViewController*)messageEditorViewController;
 + (void)localNotifyNewLabelCreated:(NSString*)labelName;
 
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates;
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(NSString**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId;
++ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder;
++ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder;
++ (void)getMessageBodyLoadedParams:(NSNotification*)notification uid:(uint32_t*)uid;
+
 @end

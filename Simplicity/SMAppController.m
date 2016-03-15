@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMStringUtils.h"
 #import "SMDatabase.h"
+#import "SMNotificationsController.h"
 #import "SMMessageEditorWindowController.h"
 #import "SMNewLabelWindowController.h"
 #import "SMAccountsViewController.h"
@@ -276,9 +277,33 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessageHeadersSyncFinished" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessageFlagsUpdated" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolderStats:) name:@"MessagesUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
+}
+
+- (void)messageHeadersSyncFinished:(NSNotification*)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil];
+    
+    [self updateFolderStats:localFolder];
+}
+
+- (void)messageFlagsUpdated:(NSNotification*)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder];
+    
+    [self updateFolderStats:localFolder];
+}
+
+- (void)messagesUpdated:(NSNotification*)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder];
+    
+    [self updateFolderStats:localFolder];
 }
 
 - (void)initOpExecutor {
@@ -755,12 +780,12 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 #pragma mark Folder stats
 
-- (void)updateFolderStats:(NSNotification*)notification {
+- (void)updateFolderStats:(NSString*)localFolder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
     SMLocalFolder *inboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
-    if([[[notification userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
+    if([localFolder isEqualToString:inboxLocalFolder.localName]) {
         NSString *messageCountString;
         
         if(inboxLocalFolder.unseenMessagesCount > 999) {

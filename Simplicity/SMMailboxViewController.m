@@ -16,6 +16,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMSearchResultsListController.h"
+#import "SMNotificationsController.h"
 #import "SMColorCircle.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
@@ -55,12 +56,38 @@
     [_folderListView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_folderListView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageHeadersSyncFinished" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessageFlagsUpdated" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFolders:) name:@"MessagesUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
 }
 
-- (void)updateFolders:(NSNotification *)notification {
+- (void)messageHeadersSyncFinished:(NSNotification *)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil];
+    
+    [self updateFolders:localFolder];
+}
+
+- (void)messageFlagsUpdated:(NSNotification *)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder];
+    
+    [self updateFolders:localFolder];
+}
+
+- (void)messagesUpdated:(NSNotification *)notification {
+    NSString *localFolder;
+    
+    [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder];
+    
+    [self updateFolders:localFolder];
+}
+
+- (void)updateFolders:(NSString*)localFolder {
+    (void)localFolder;
+    
     if(_currentFolderName != nil) {
         NSInteger selectedRow = -1;
 

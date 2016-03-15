@@ -521,17 +521,18 @@
 }
 
 - (void)messageBodyFetched:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
+    NSString *localFolder;
+    uint32_t uid;
+    int64_t threadId;
+    
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId];
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [[appDelegate model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     
-    if(currentFolder != nil && [currentFolder.localName isEqualToString:[messageInfo objectForKey:@"LocalFolderName"]]) {
-        uint64_t threadId = [[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue];
+    if(currentFolder != nil && [currentFolder.localName isEqualToString:localFolder]) {
         SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadById:threadId localFolder:currentFolder.localName];
-        
-        uint32_t uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
         
         if(messageThread != nil) {
             if([messageThread updateThreadAttributesFromMessageUID:uid]) {

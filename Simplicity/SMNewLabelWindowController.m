@@ -43,7 +43,7 @@
         
         [mailboxController scheduleFolderListUpdate:YES];
         
-        [SMNotificationsController localNotifyNewLabelCreated:fullFolderName];
+        [SMNotificationsController localNotifyNewLabelCreated:fullFolderName accountIdx:0/*TODO*/];
     }
 
     [self closeNewLabelWindow];

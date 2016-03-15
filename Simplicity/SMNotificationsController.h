@@ -17,12 +17,15 @@
 + (void)systemNotifyNewMessage:(NSString*)from;
 + (void)systemNotifyNewMessages:(NSUInteger)count;
 
-+ (void)localNotifyFolderListUpdated;
-+ (void)localNotifyMessageHeadersSyncFinished:(NSString*)localFolder hasUpdates:(BOOL)hasUpdates;
-+ (void)localNotifyMessageBodyFetched:(NSString*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId;
-+ (void)localNotifyMessageBodyLoaded:(uint32_t)uid;
-+ (void)localNotifyMessageFlagsUpdates:(NSString*)localFolder;
-+ (void)localNotifyMessagesUpdated:(NSString*)localFolder updateResult:(NSUInteger)updateResult;
++ (void)localNotifyFolderListUpdated:(NSUInteger)accountIdx;
++ (void)localNotifyMessageHeadersSyncFinished:(NSString*)localFolder hasUpdates:(BOOL)hasUpdates accountIdx:(NSUInteger)accountIdx;
++ (void)localNotifyMessageBodyFetched:(NSString*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId accountIdx:(NSUInteger)accountIdx;
++ (void)localNotifyMessageFlagsUpdates:(NSString*)localFolder accountIdx:(NSUInteger)accountIdx;
++ (void)localNotifyMessagesUpdated:(NSString*)localFolder updateResult:(NSUInteger)updateResult accountIdx:(NSUInteger)accountIdx;
++ (void)localNotifyMessageSent:(SMMessageEditorViewController*)messageEditorViewController accountIdx:(NSUInteger)accountIdx;
++ (void)localNotifyNewLabelCreated:(NSString*)labelName accountIdx:(NSUInteger)accountIdx;
+
++ (void)localNotifyMessageViewFrameLoaded:(uint32_t)uid;
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController;
 + (void)localNotifyChangeMessageFlaggedFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyChangeMessageUnreadFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
@@ -30,13 +33,11 @@
 + (void)localNotifySaveAttachments:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifySaveAttachmentsToDownloads:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyComposeMessageReply:(SMMessageThreadCellViewController*)messageThreadCellViewController replyKind:(NSString*)replyKind toAddress:(SMAddress*)toAddress;
-+ (void)localNotifyMessageSent:(SMMessageEditorViewController*)messageEditorViewController;
-+ (void)localNotifyNewLabelCreated:(NSString*)labelName;
 
-+ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates;
-+ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(NSString**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId;
-+ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder;
-+ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder;
-+ (void)getMessageBodyLoadedParams:(NSNotification*)notification uid:(uint32_t*)uid;
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates accountIdx:(NSUInteger*)accountIdx;
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(NSString**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId accountIdx:(NSUInteger*)accountIdx;
++ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder accountIdx:(NSUInteger*)accountIdx;
++ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder accountIdx:(NSUInteger*)accountIdx;
++ (void)getMessageViewFrameLoadedParams:(NSNotification*)notification uid:(uint32_t*)uid accountIdx:(NSUInteger*)accountIdx;
 
 @end

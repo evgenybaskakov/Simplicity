@@ -72,7 +72,7 @@ static const CGFloat CELL_SPACING = -1;
         _cells = [NSMutableArray new];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyLoaded:) name:@"MessageBodyLoaded" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageViewFrameLoaded:) name:@"MessageViewFrameLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteEditedMessageDraft:) name:@"DeleteEditedMessageDraft" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSent:) name:@"MessageSent" object:nil];
@@ -630,16 +630,18 @@ static const CGFloat CELL_SPACING = -1;
 - (void)messageBodyFetched:(NSNotification *)notification {
     uint32_t uid;
     int64_t threadId;
+    NSUInteger accountIdx;
     
-    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId accountIdx:&accountIdx];
     
     [self updateMessageView:uid threadId:threadId];
 }
 
-- (void)messageBodyLoaded:(NSNotification *)notification {
+- (void)messageViewFrameLoaded:(NSNotification *)notification {
     uint32_t uid;
+    NSUInteger accountIdx;
     
-    [SMNotificationsController getMessageBodyLoadedParams:notification uid:&uid];
+    [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid accountIdx:&accountIdx];
 
     // TODO: optimize by adding a NSUndexSet with uids
     for(NSInteger i = 0; i < _cells.count; i++) {

@@ -121,7 +121,7 @@
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
         }
         
-        [SMNotificationsController localNotifyFolderListUpdated:0/*TODO*/];
+        [SMNotificationsController localNotifyFolderListUpdated:nil/*TODO*/];
     }];
 }
 

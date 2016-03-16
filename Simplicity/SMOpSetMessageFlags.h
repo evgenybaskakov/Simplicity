@@ -12,6 +12,6 @@
 
 @interface SMOpSetMessageFlags : SMOperation
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName kind:(MCOIMAPStoreFlagsRequestKind)kind flags:(MCOMessageFlag)flags;
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName kind:(MCOIMAPStoreFlagsRequestKind)kind flags:(MCOMessageFlag)flags operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

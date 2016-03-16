@@ -23,8 +23,8 @@
     NSString *_dstRemoteFolderName;
 }
 
-- (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
     
     if(self) {
         _uids = uids;
@@ -80,13 +80,13 @@
                     for(NSNumber *srcUid in uidMapping)
                         [uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
                     
-                    SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName];
+                    SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName operationExecutor:_operationExecutor];
 
                     [op enqueue];
                 }
             }
             
-            SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName];
+            SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName operationExecutor:_operationExecutor];
             
             [self replaceWith:op];
         } else {

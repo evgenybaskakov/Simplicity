@@ -7,6 +7,8 @@
 //
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
+#import "SMSimplicityContainer.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
@@ -28,8 +30,8 @@
     return @"Outbox";
 }
 
-- (id)init {
-    self = [super init];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         
@@ -68,13 +70,13 @@
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder addMessage:outgoingMessage];
 
-    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage];
+    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage operationExecutor:[_account.model operationExecutor]];
 
     op.postActionTarget = target;
     op.postActionSelector = selector;
 
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
-    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
+    [[_account.model operationExecutor] enqueueOperation:op];
+    [[_account.model operationExecutor] saveSMTPQueue];
 }
 
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
@@ -87,16 +89,14 @@
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder removeMessage:message];
 
-    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
+    [[_account.model operationExecutor] saveSMTPQueue];
 }
 
 - (void)cancelMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Cancel message sending");
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    [[[[appDelegate appController] operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
-    [[[appDelegate appController] operationExecutor] saveSMTPQueue];
+    [[[_account.model operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
+    [[_account.model operationExecutor] saveSMTPQueue];
 }
 
 @end

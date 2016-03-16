@@ -67,20 +67,19 @@
 
 - (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
     
     SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount] mailbox:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccount]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
+    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder ];
     
-    [[appController outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[[appDelegate model] outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] outboxController] finishMessageSending:message];
+    [[[appDelegate model] outboxController] finishMessageSending:message];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
@@ -122,12 +121,12 @@
     SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft)];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[[appDelegate model] operationExecutor]];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
     
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[[appDelegate model] operationExecutor] enqueueOperation:op];
     
     _saveDraftMessage = messageBuilder.mcoMessageBuilder;
     _saveDraftOp = op;

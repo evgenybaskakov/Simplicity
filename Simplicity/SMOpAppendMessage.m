@@ -19,8 +19,8 @@
     MCOMessageFlag _flags;
 }
 
-- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
 
     if(self) {
         _messageBuilder = messageBuilder;

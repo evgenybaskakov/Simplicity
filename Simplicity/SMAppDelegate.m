@@ -55,8 +55,7 @@
     else {
         [_model initSession];
         [_model getIMAPServerCapabilities];
-        
-        [_appController initOpExecutor];
+        [_model initOpExecutor];
     }
 }
 

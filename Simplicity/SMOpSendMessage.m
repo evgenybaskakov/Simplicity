@@ -18,8 +18,8 @@
     SMOutgoingMessage *_outgoingMessage;
 }
 
-- (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage {
-    self = [super initWithKind:kSMTPOpKind];
+- (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kSMTPOpKind operationExecutor:operationExecutor];
     
     if(self) {
         _outgoingMessage = outgoingMessage;

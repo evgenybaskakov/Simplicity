@@ -18,8 +18,8 @@
     NSString *_remoteFolderName;
 }
 
-- (id)initWithRemoteFolder:(NSString*)remoteFolderName {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithRemoteFolder:(NSString*)remoteFolderName operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
     
     if(self) {
         _remoteFolderName = remoteFolderName;

@@ -12,6 +12,6 @@
 
 @interface SMOpExpungeFolder : SMOperation
 
-- (id)initWithRemoteFolder:(NSString*)remoteFolderName;
+- (id)initWithRemoteFolder:(NSString*)remoteFolderName operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

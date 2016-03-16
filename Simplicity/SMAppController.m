@@ -26,10 +26,10 @@
 #import "SMOperationQueueWindowController.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMFolderColorController.h"
-#import "SMOutboxController.h"
 #import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
+#import "SMOutboxController.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
 #import "SMMessageThread.h"
@@ -236,10 +236,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    _outboxController = [[SMOutboxController alloc] init];
-    
-    //
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList) name:@"FolderListUpdated" object:nil];
     
     //
@@ -309,25 +305,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [self updateFolderStats:localFolder];
 }
 
-- (void)initOpExecutor {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-    [[[appDelegate model] mailboxController] initFolders];
-
-    // TODO: use the resulting dbOp
-    [[[appDelegate model] database] loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
-        // TODO: use the resulting dbOp
-        [[[appDelegate model] database] loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
-            _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
-            
-            [[[appDelegate appController] outboxController] loadSMTPQueue:smtpQueue postSendActionTarget:self postSendActionSelector:@selector(finishMessageSending:)];
-        }];
-    }];
-}
-
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] outboxController] finishMessageSending:message];
+    [[[appDelegate model] outboxController] finishMessageSending:message];
 }
 
 - (void)updateMailboxFolderList {

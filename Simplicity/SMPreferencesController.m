@@ -219,8 +219,7 @@
         
         [[appDelegate model] initSession];
         [[appDelegate model] getIMAPServerCapabilities];
-        
-        [[appDelegate appController] initOpExecutor];
+        [[appDelegate model] initOpExecutor];
     }
 }
 

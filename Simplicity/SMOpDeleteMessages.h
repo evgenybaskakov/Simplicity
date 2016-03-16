@@ -12,6 +12,6 @@
 
 @interface SMOpDeleteMessages : SMOperation
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName;
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

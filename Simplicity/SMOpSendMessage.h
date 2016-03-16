@@ -16,6 +16,6 @@
 
 @property (readonly) SMOutgoingMessage *outgoingMessage;
 
-- (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage;
+- (id)initWithOutgoingMessage:(SMOutgoingMessage*)outgoingMessage operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

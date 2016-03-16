@@ -7,7 +7,6 @@
 //
 
 #import "SMLog.h"
-#import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
 #import "SMOperation.h"
@@ -16,7 +15,7 @@
     BOOL _cancelled;
 }
 
-- (id)initWithKind:(SMOpKind)opKind {
+- (id)initWithKind:(SMOpKind)opKind operationExecutor:(SMOperationExecutor*)operationExecutor {
     self = [super init];
     
     if(self) {
@@ -54,8 +53,7 @@
     return [self cancelOpForced:NO];
 }
 
-- (Boolean
-   )cancelOpForced:(BOOL)force {
+- (Boolean)cancelOpForced:(BOOL)force {
     _cancelled = YES;
     
     if(!force) {
@@ -67,8 +65,7 @@
         }
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] cancelOperation:self];
+    [_operationExecutor cancelOperation:self];
     
     return true;
 }
@@ -79,23 +76,19 @@
         return;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] restartOperation:self];
+    [_operationExecutor restartOperation:self];
 }
 
 - (void)complete {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] completeOperation:self];
+    [_operationExecutor completeOperation:self];
 }
 
 - (void)enqueue {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] enqueueOperation:self];
+    [_operationExecutor enqueueOperation:self];
 }
 
 - (void)replaceWith:(SMOperation*)op {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] replaceOperation:self with:op];
+    [_operationExecutor replaceOperation:self with:op];
 }
 
 - (NSString*)name {

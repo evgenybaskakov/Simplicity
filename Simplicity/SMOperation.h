@@ -14,9 +14,12 @@ typedef enum {
 } SMOpKind;
 
 @class SMOperation;
+@class SMOperationExecutor;
 @class MCOOperation;
 
-@interface SMOperation : NSObject<NSCoding>
+@interface SMOperation : NSObject<NSCoding> {
+    @protected SMOperationExecutor __weak *_operationExecutor;
+}
 
 @property (readonly) NSDate *timeCreated;
 @property (readonly) SMOpKind opKind;
@@ -26,7 +29,7 @@ typedef enum {
 
 @property MCOOperation *currentOp;
 
-- (id)initWithKind:(SMOpKind)opKind;
+- (id)initWithKind:(SMOpKind)opKind operationExecutor:(SMOperationExecutor*)operationExecutor;
 - (void)start;
 - (void)fail;
 - (Boolean)cancelOp;

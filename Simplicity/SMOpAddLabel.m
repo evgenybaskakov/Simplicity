@@ -17,8 +17,8 @@
     NSString *_label;
 }
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
     
     if(self) {
         _uids = uids;

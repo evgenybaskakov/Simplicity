@@ -18,6 +18,8 @@
 @class SMMessageListController;
 @class SMSearchResultsListController;
 @class SMMailboxController;
+@class SMOutboxController;
+@class SMOperationExecutor;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
@@ -34,11 +36,14 @@
 @property (readonly) SMMessageListController *messageListController;
 @property (readonly) SMSearchResultsListController *searchResultsListController;
 @property (readonly) SMMailboxController *mailboxController;
+@property (readonly) SMOutboxController *outboxController;
 @property (readonly) SMMailbox *mailbox;
+@property (readonly) SMOperationExecutor *operationExecutor;
 
 - (id)initWithAccount:(SMUserAccount*)account preferencesController:(SMPreferencesController*)preferencesController;
 
 - (void)initSession;
+- (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
 
 @end

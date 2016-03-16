@@ -12,6 +12,6 @@
 
 @interface SMOpAddLabel : SMOperation
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label;
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

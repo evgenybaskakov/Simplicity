@@ -13,11 +13,13 @@
 #import "SMPreferencesController.h"
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
+#import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMSearchResultsListController.h"
 #import "SMMailboxController.h"
+#import "SMOutboxController.h"
 #import "SMSuggestionProvider.h"
 
 @implementation SMSimplicityContainer {
@@ -38,6 +40,7 @@
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:_account];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:_account];
         _mailboxController = [[SMMailboxController alloc] initWithUserAccount:_account];
+        _outboxController = [[SMOutboxController alloc] initWithUserAccount:_account];
     }
     
     SM_LOG_DEBUG(@"model initialized");
@@ -95,6 +98,20 @@
     [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:_account.accountIdx]]];
     [_smtpSession setUsername:[_preferencesController smtpUserName:_account.accountIdx]];
     [_smtpSession setPassword:[_preferencesController smtpPassword:_account.accountIdx]];
+}
+
+- (void)initOpExecutor {
+    [_mailboxController initFolders];
+    
+    // TODO: use the resulting dbOp
+    [_database loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
+        // TODO: use the resulting dbOp
+        [_database loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
+            _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
+            
+            [_outboxController loadSMTPQueue:smtpQueue postSendActionTarget:_outboxController postSendActionSelector:@selector(finishMessageSending:)];
+        }];
+    }];
 }
 
 - (void)getIMAPServerCapabilities {

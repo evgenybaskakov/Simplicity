@@ -606,16 +606,15 @@
     message.unseen = unseen;
 
     // update the local database
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[_account.model database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
 
     // Notify listeners (mailbox, etc).
     [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
     
     // enqueue the remote folder operation
-    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen];
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen operationExecutor:[_account.model operationExecutor]];
     
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[_account.model operationExecutor] enqueueOperation:op];
 }
 
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
@@ -626,19 +625,17 @@
     message.flagged = flagged;
     
     // update the local database
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[_account.model database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
     
     // enqueue the remote folder operation
-    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged];
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged operationExecutor:[_account.model operationExecutor]];
     
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[_account.model operationExecutor] enqueueOperation:op];
 }
 
 #pragma mark Messages movement to other remote folders
 
 - (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [_account.model mailbox];
     SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
     
@@ -661,7 +658,7 @@
         for(SMMessageThread *messageThread in messageThreads) {
             for(SMMessage *message in messageThread.messagesSortedByDate) {
                 NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
-                [[[appDelegate appController] outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
+                [[_account.model outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
                 SMFolder *trashFolder = [[_account.model mailbox] trashFolder];
                 SMLocalFolder *trashLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:trashFolder.fullName];
@@ -721,17 +718,17 @@
         SMOperation *op = nil;
         
         if(_kind == SMFolderKindTrash) {
-            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName];
+            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName operationExecutor:[[_account model] operationExecutor]];
 
             SM_LOG_INFO(@"Enqueueing deleting of %u messages from remote folder %@", messagesToMoveUids.count, _remoteFolderName);
         }
         else {
-            op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
+            op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[_account.model operationExecutor]];
             
             SM_LOG_INFO(@"Enqeueing moving of %u messages from remote folder %@ to folder %@", messagesToMoveUids.count, _remoteFolderName, destRemoteFolderName);
         }
         
-        [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+        [[_account.model operationExecutor] enqueueOperation:op];
     }
     
     // Notify observers that message flags have possibly changed.
@@ -765,7 +762,6 @@
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     Boolean needUpdateMessageList = NO;
     
     if(useThreadId) {
@@ -789,9 +785,9 @@
 
     // After the local storage is cleared and there is no bodies loading,
     // actually move the messages on the server.
-    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName];
+    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[_account.model operationExecutor]];
     
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[_account.model operationExecutor] enqueueOperation:op];
     
     return needUpdateMessageList;
 }

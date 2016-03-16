@@ -19,8 +19,8 @@
     MCOMessageFlag _flags;
 }
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName kind:(MCOIMAPStoreFlagsRequestKind)kind flags:(MCOMessageFlag)flags {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName kind:(MCOIMAPStoreFlagsRequestKind)kind flags:(MCOMessageFlag)flags operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
     
     if(self) {
         _uids = uids;

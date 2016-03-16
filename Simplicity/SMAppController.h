@@ -22,8 +22,6 @@
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
 @class SMOperationQueueWindowController;
-@class SMOutboxController;
-@class SMOperationExecutor;
 @class SMMessageThread;
 
 @interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate, NSWindowDelegate>
@@ -46,10 +44,6 @@
 @property SMMessageThreadViewController *messageThreadViewController;
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMFolderColorController *folderColorController;
-@property SMOutboxController *outboxController;
-@property SMOperationExecutor *operationExecutor;
-
-- (void)initOpExecutor;
 
 - (void)updateMailboxFolderList;
 

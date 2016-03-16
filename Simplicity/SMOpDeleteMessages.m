@@ -19,8 +19,8 @@
     NSString *_remoteFolderName;
 }
 
-- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName {
-    self = [super initWithKind:kIMAPOpKind];
+- (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName operationExecutor:(SMOperationExecutor*)operationExecutor {
+    self = [super initWithKind:kIMAPOpKind operationExecutor:operationExecutor];
 
     if(self) {
         _uids = uids;
@@ -63,7 +63,7 @@
         if(error == nil) {
             SM_LOG_DEBUG(@"Flags for remote folder %@ successfully updated", _remoteFolderName);
             
-            SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName];
+            SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName operationExecutor:_operationExecutor];
             
             [self replaceWith:op];
         } else {

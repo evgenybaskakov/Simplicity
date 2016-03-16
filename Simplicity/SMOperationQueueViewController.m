@@ -17,12 +17,12 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    return [[[appDelegate appController] operationExecutor] operationsCount];
+    return [[[appDelegate model] operationExecutor] operationsCount];
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMOperationExecutor *opExecutor = [[appDelegate appController] operationExecutor];
+    SMOperationExecutor *opExecutor = [[appDelegate model] operationExecutor];
     SMOperation *op = [opExecutor getOpAtIndex:row];
     
     NSAssert(op != nil, @"op is nil");

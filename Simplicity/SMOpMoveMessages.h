@@ -12,6 +12,6 @@
 
 @interface SMOpMoveMessages : SMOperation
 
-- (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst;
+- (id)initWithUids:(MCOIndexSet*)uids srcRemoteFolderName:(NSString*)src dstRemoteFolderName:(NSString*)dst operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

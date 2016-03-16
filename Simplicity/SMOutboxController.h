@@ -8,13 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMOperationQueue;
 @class SMOutgoingMessage;
 
-@interface SMOutboxController : NSObject
+@interface SMOutboxController : SMUserAccountDataObject
 
 + (NSString*)outboxFolderName;
 
+- (id)initWithUserAccount:(SMUserAccount*)account;
 - (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 - (void)sendMessage:(SMOutgoingMessage*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 - (void)finishMessageSending:(SMOutgoingMessage*)message;

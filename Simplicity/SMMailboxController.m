@@ -223,13 +223,13 @@
 }
 
 - (void)deleteFolder:(NSString*)folderName {
-    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName];
+    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[_account.model operationExecutor]];
         
     SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
     
     // 1. Delete the remote folder
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] operationExecutor] enqueueOperation:op];
+    [[_account.model operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox
     [[_account.model mailbox] removeFolder:folderName];

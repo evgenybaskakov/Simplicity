@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
 #import "SMFolder.h"
 
 @class SMLocalFolder;
 
-@interface SMLocalFolderRegistry : NSObject
+@interface SMLocalFolderRegistry : SMUserAccountDataObject
 
+- (id)initWithUserAccount:(SMUserAccount*)account;
 - (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 - (SMLocalFolder*)getLocalFolder:(NSString*)folderName;
 - (void)removeLocalFolder:(NSString*)folderName;

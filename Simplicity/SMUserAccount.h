@@ -8,10 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMSimplicityContainer;
+
 @interface SMUserAccount : NSObject
 
 @property (readonly) NSUInteger accountIdx;
+@property (readonly) SMSimplicityContainer __weak *model; // TODO: remove __weak
 
-- (id)initWithIdx:(NSUInteger)idx;
+- (id)initWithIdx:(NSUInteger)idx model:(SMSimplicityContainer*)model;
 
 @end

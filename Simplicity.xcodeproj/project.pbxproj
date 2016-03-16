@@ -175,6 +175,7 @@
 		80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 80967AE81BF004F000ABF7AE /* icloud_logo.png */; };
 		80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */; };
 		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
+		80A33AED1C9930FA00243880 /* SMUserAccountDataObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A33AEC1C9930FA00243880 /* SMUserAccountDataObject.m */; };
 		80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B011B5A10BC0049AB88 /* Underline-128.png */; };
 		80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B021B5A10BC0049AB88 /* Italic-128.png */; };
 		80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B031B5A10BC0049AB88 /* Bold-128.png */; };
@@ -574,6 +575,8 @@
 		80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderICloud.m; sourceTree = "<group>"; };
 		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
 		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
+		80A33AEB1C9930FA00243880 /* SMUserAccountDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccountDataObject.h; sourceTree = "<group>"; };
+		80A33AEC1C9930FA00243880 /* SMUserAccountDataObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUserAccountDataObject.m; sourceTree = "<group>"; };
 		80A44B011B5A10BC0049AB88 /* Underline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Underline-128.png"; sourceTree = "<group>"; };
 		80A44B021B5A10BC0049AB88 /* Italic-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Italic-128.png"; sourceTree = "<group>"; };
 		80A44B031B5A10BC0049AB88 /* Bold-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Bold-128.png"; sourceTree = "<group>"; };
@@ -851,6 +854,8 @@
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
 				803932681C97D6E700CE38CB /* SMUserAccount.h */,
 				803932691C97D6E700CE38CB /* SMUserAccount.m */,
+				80A33AEB1C9930FA00243880 /* SMUserAccountDataObject.h */,
+				80A33AEC1C9930FA00243880 /* SMUserAccountDataObject.m */,
 				80628B531BE87A3400016803 /* SSKeychain.h */,
 				80628B541BE87A3400016803 /* SSKeychain.m */,
 			);
@@ -1440,6 +1445,7 @@
 				00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */,
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
+				80A33AED1C9930FA00243880 /* SMUserAccountDataObject.m in Sources */,
 				80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */,
 				803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */,
 				8024107E1C1E9E3B00493FB4 /* SMFolderLabel.m in Sources */,

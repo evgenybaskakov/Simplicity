@@ -33,9 +33,9 @@
     
     if(self) {
         _account = account;
-        _preferencesController = preferencesController;
+        _preferencesController = preferencesController; // TODO: why?
         _mailbox = [ SMMailbox new ];
-        _localFolderRegistry = [ SMLocalFolderRegistry new ];
+        _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:_account];
         _attachmentStorage = [ SMAttachmentStorage new ];
         _messageListController = [[ SMMessageListController alloc ] initWithModel:self ];
         _searchResultsListController = [[SMSearchResultsListController alloc] init];

@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
 #import "SMSimplicityContainer.h"
 #import "SMMessageListController.h"
 #import "SMFolder.h"
@@ -47,8 +48,8 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     NSComparator _accessTimeFolderComparator;
 }
 
-- (id)init {
-    self = [super init];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         _folders = [NSMutableDictionary new];
@@ -123,8 +124,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     (void)FOLDER_MEMORY_RED_ZONE_KB;
 
     if(foldersMemoryKb >= FOLDER_MEMORY_YELLOW_ZONE_KB) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMLocalFolder *currentLocalFolder = [[[appDelegate model] messageListController] currentLocalFolder];
+        SMLocalFolder *currentLocalFolder = [[_account.model messageListController] currentLocalFolder];
         
         const uint64_t totalMemoryToReclaimKb = foldersMemoryKb - FOLDER_MEMORY_YELLOW_ZONE_KB;
         uint64_t totalMemoryReclaimedKb = 0;

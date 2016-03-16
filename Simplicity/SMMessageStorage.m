@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMDatabase.h"
 #import "SMMessage.h"
 #import "SMOutgoingMessage.h"
@@ -18,13 +19,12 @@
 #import "SMAppDelegate.h"
 
 @implementation SMMessageStorage {
-@private
     NSMutableDictionary *_messagesThreadsMap;
     SMMessageThreadCollection *_messageThreadCollection;
 }
 
-- (id)init {
-    self = [ super init ];
+- (id)initWithUserAccount:(SMUserAccount *)account {
+    self = [super initWithUserAccount:account];
 
     if(self) {
         _messagesThreadsMap = [NSMutableDictionary new];
@@ -106,8 +106,7 @@
         for(SMMessageThread *thread in messageThreads) {
             SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
             
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            [[[appDelegate model] database] removeMessageThreadFromDB:thread.threadId folder:localFolder];
+            [[_account.model database] removeMessageThreadFromDB:thread.threadId folder:localFolder];
         }
     }
 }
@@ -196,21 +195,18 @@
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {
                 if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
+                    [[_account.model database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
                 }
                 else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
+                    [[_account.model database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
                 }
                 
                 if(threadUpdateResult == SMThreadUpdateResultStructureChanged && !newThreadCreated) {
                     // NOTE: Do not put the new (allocated) message thread to the DB - there's just one message in it.
                     // It will be put in the database on endUpdate if any subsequent updates follow.
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
                     SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                     
-                    [[[appDelegate model] database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
+                    [[_account.model database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
                 }
             }
         }
@@ -276,10 +272,9 @@
 
         if(updateResult == SMThreadUpdateResultStructureChanged) {
             if(updateDatabase) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
                 SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                 
-                [[[appDelegate model] database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
+                [[_account.model database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
             }
         }
     }
@@ -294,8 +289,7 @@
         if(updateDatabase) {
             for(SMMessage *message in vanishedMessages) {
                 if([message.remoteFolder isEqualToString:remoteFolder]) {
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
+                    [[_account.model database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
                 }
             }
         }
@@ -380,13 +374,11 @@
     }
 
     if(updateDatabase) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
         if([message isKindOfClass:[SMOutgoingMessage class]]) {
-            [[[appDelegate model] database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:folderName];
+            [[_account.model database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:folderName];
         }
         else {
-            [[[appDelegate model] database] putMessageToDBFolder:message.imapMessage folder:folderName];
+            [[_account.model database] putMessageToDBFolder:message.imapMessage folder:folderName];
         }
     }
     

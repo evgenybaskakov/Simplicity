@@ -164,14 +164,14 @@ const char *const mcoOpKinds[] = {
     
     _originalSearchString = searchString;
     
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [_account.model imapSession];
     
     NSAssert(session, @"session is nil");
     
     if(_searchResultsLocalFolderName == nil) {
         // TODO: handle search in search results differently
         NSString *remoteFolderName = nil;
-        NSString *allMailFolder = [[[[appDelegate model] mailbox] allMailFolder] fullName];
+        NSString *allMailFolder = [[[_account.model mailbox] allMailFolder] fullName];
         if(allMailFolder != nil) {
             SM_LOG_DEBUG(@"searching in all mail");
             remoteFolderName = allMailFolder;
@@ -179,7 +179,7 @@ const char *const mcoOpKinds[] = {
             NSAssert(nil, @"no all mail folder, revise this logic!");
             
             // TODO: will require another logic for non-gmail accounts
-            remoteFolderName = [[[[appDelegate model] messageListController] currentLocalFolder] localName];
+            remoteFolderName = [[[_account.model messageListController] currentLocalFolder] localName];
         }
         
         // TODO: introduce search results descriptor to avoid this funny folder name
@@ -188,7 +188,7 @@ const char *const mcoOpKinds[] = {
         NSAssert(searchResultsLocalFolder != nil, @"folder name couldn't be generated");
         NSAssert([_searchResults objectForKey:searchResultsLocalFolder] == nil, @"duplicated generated folder name");
         
-        if([[[appDelegate model] localFolderRegistry] createLocalFolder:searchResultsLocalFolder remoteFolder:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
+        if([[_account.model localFolderRegistry] createLocalFolder:searchResultsLocalFolder remoteFolder:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
             NSAssert(false, @"could not create local folder for search results");
         }
         
@@ -204,9 +204,9 @@ const char *const mcoOpKinds[] = {
         NSAssert(index == 0, @"no index for existing search results folder");
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[[appDelegate model] localFolderRegistry] removeLocalFolder:_searchResultsLocalFolderName];
+        [[_account.model localFolderRegistry] removeLocalFolder:_searchResultsLocalFolderName];
         
-        if([[[appDelegate model] localFolderRegistry] createLocalFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
+        if([[_account.model localFolderRegistry] createLocalFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
             NSAssert(false, @"could not create local folder for search results");
         }
 
@@ -348,7 +348,7 @@ const char *const mcoOpKinds[] = {
     //
 
     if(_mainSearchPart != nil) {
-        [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[_account.model database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -373,7 +373,7 @@ const char *const mcoOpKinds[] = {
             [self updateSearchMenuContent:@[]];
         }]];
         
-        [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[_account.model database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -391,7 +391,7 @@ const char *const mcoOpKinds[] = {
         }]];
     }
     
-    [_dbOps addObject:[[[appDelegate model] database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+    [_dbOps addObject:[[_account.model database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
         if(searchId != _currentSearchId) {
             SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
             return;
@@ -439,8 +439,7 @@ const char *const mcoOpKinds[] = {
 
     searchDescriptor.messagesLoadingStarted = YES;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:_searchResultsLocalFolderName updateResults:updateResults];
+    [[_account.model messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:_searchResultsLocalFolderName updateResults:updateResults];
 }
 
 - (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {
@@ -584,7 +583,7 @@ const char *const mcoOpKinds[] = {
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
+    SMLocalFolder *localFolder = [[_account.model localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     
     [localFolder stopMessagesLoading];
     
@@ -604,11 +603,10 @@ const char *const mcoOpKinds[] = {
     [self clearPreviousSearch];
     
     // stop message list loading, if anys
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
-    SMLocalFolder *localFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
+    SMLocalFolder *localFolder = [[_account.model localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     [localFolder stopMessagesLoading];
     
     searchDescriptor.searchStopped = true;

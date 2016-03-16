@@ -44,7 +44,7 @@
         _kind = kind;
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
-        _messageStorage = [[SMMessageStorage alloc] init];
+        _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account];
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
         _unseenMessagesCount = 0;
         _totalMessagesCount = 0;
@@ -57,7 +57,7 @@
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
-        _messageBodyFetchQueue = [[SMLocalFolderMessageBodyFetchQueue alloc] initWithLocalFolder:self];
+        _messageBodyFetchQueue = [[SMLocalFolderMessageBodyFetchQueue alloc] initWithUserAccount:account localFolder:self];
         _dbOps = [NSMutableArray array];
     }
     

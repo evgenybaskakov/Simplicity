@@ -65,9 +65,7 @@
         SMLocalFolder *localFolder = [[_account.model localFolderRegistry] getLocalFolder:folderName];
         
         if(localFolder == nil) {
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-            SMFolder *folder = [[[appDelegate model] mailbox] getFolderByName:folderName];
+            SMFolder *folder = [[_account.model mailbox] getFolderByName:folderName];
             SMFolderKind kind = (folder != nil? folder.kind : SMFolderKindRegular);
 
             localFolder = [[_account.model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];

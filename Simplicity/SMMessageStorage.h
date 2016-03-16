@@ -10,10 +10,12 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMMessage;
 @class SMMessageThread;
 
-@interface SMMessageStorage : NSObject
+@interface SMMessageStorage : SMUserAccountDataObject
 
 typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
     SMMesssageStorageUpdateResultNone,
@@ -22,6 +24,8 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 };
 
 @property (readonly) NSUInteger messageThreadsCount;
+
+- (id)initWithUserAccount:(SMUserAccount*)account;
 
 - (BOOL)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
 - (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;

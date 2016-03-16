@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
@@ -72,8 +73,8 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     NSUInteger _activeIMAPOpCount;
 }
 
-- (id)initWithLocalFolder:(SMLocalFolder*)localFolder {
-    self = [super init];
+- (id)initWithUserAccount:(SMUserAccount*)account localFolder:(SMLocalFolder*)localFolder {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         _localFolder = localFolder;
@@ -87,8 +88,6 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase {
     SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    
     if([_localFolder.messageStorage messageHasData:uid localFolder:_localFolder.localName threadId:threadId]) {
         SM_LOG_DEBUG(@"message body for uid %u already loaded", uid);
         return;
@@ -98,7 +97,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
         [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
         
-        SMDatabaseOp *dbOp = [[[appDelegate model] database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+        SMDatabaseOp *dbOp = [[_account.model database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
             FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
             if(currentOpDesc != opDesc) {
                 // TODO: it happens suspiciously often...
@@ -145,7 +144,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 return;
             }
             
-            MCOIMAPSession *session = [[appDelegate model] imapSession];
+            MCOIMAPSession *session = [_account.model imapSession];
             NSAssert(session, @"session is nil");
             
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
@@ -184,9 +183,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     NSString *messageBodyPlainText = [SMMessage imapMessagePlainTextBody:parser];
                     
                     if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
-                        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                        
-                        [[[appDelegate model] database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
+                        [[_account.model database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
                     }
                     
                     [self loadMessageBody:uid threadId:threadId parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPlainText];

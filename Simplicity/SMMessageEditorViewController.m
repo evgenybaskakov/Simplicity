@@ -87,17 +87,17 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         // To
         
         _toBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
-        _toBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
+        _toBoxViewController.suggestionProvider = [appDelegate addressBookController];
         
         // Cc
         
         _ccBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
-        _ccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
+        _ccBoxViewController.suggestionProvider = [appDelegate addressBookController];
 
         // Bcc
         
         _bccBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
-        _bccBoxViewController.suggestionProvider = [[appDelegate model] addressBookController];
+        _bccBoxViewController.suggestionProvider = [appDelegate addressBookController];
         
         // subject
         

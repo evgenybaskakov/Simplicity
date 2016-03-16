@@ -25,7 +25,7 @@
         [_imapSession cancelAllOperations];
         
         [[_imapSession disconnectOperation] start:^(NSError *error) {
-            if(error != nil) {
+            if(error != nil && error.code != MCOErrorNone) {
                 SM_LOG_ERROR(@"could not disconnect IMAP server: %@", error);
             }
         }];

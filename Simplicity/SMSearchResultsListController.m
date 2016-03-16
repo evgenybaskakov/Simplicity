@@ -249,9 +249,15 @@ const char *const mcoOpKinds[] = {
                 SearchOpInfo *opInfo = _suggestionSearchOps[i];
                 
                 if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                    SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
+                    if(error == nil || error.code == MCOErrorNone) {
+                        SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
+                    }
+                    else {
+                        SM_LOG_ERROR(@"search kind %s: search in folder %@ failed: %@", mcoOpKinds[opInfo.kind], remoteFolderName, error);
+                        uids = nil;
+                    }
                     
-                    if(uids.count > 0) {
+                    if(uids != nil && uids.count > 0) {
                         [self updateSuggestionSearchResults:uids kind:opInfo.kind];
                         
                         MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
@@ -315,15 +321,22 @@ const char *const mcoOpKinds[] = {
             return;
         }
         
-        if(_mainSearchOp.op == op) {
-            SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+        if(error == nil || error.code == MCOErrorNone) {
+            if(_mainSearchOp.op == op) {
+                SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
 
-            [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName];
-            
-            _mainSearchOp = nil;
+                [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName];
+            }
+            else {
+                SM_LOG_INFO(@"previous content search aborted");
+            }
         }
         else {
-            SM_LOG_INFO(@"previous content search aborted");
+            SM_LOG_ERROR(@"search in folder %@ failed: %@", remoteFolderName, error);
+        }
+
+        if(_mainSearchOp.op == op) {
+            _mainSearchOp = nil;
         }
     }];
  

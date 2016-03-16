@@ -1,5 +1,5 @@
 //
-//  SMModel.h
+//  SMSimplicityContainer.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 9/2/13.
@@ -19,8 +19,6 @@
 @class SMMessageListController;
 @class SMSearchResultsListController;
 @class SMMailboxController;
-@class SMAddressBookController;
-@class SMMessageComparators;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
@@ -39,8 +37,6 @@
 @property (readonly) SMSearchResultsListController *searchResultsListController;
 @property (readonly) SMMailboxController *mailboxController;
 @property (readonly) SMMailbox *mailbox;
-@property (readonly) SMMessageComparators *messageComparators;
-@property (readonly) SMAddressBookController *addressBookController;
 
 - (id)initWithAccount:(SMAccountDescriptor*)account preferencesController:(SMPreferencesController*)preferencesController;
 

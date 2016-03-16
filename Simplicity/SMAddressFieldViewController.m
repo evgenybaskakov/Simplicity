@@ -160,7 +160,7 @@ static NSArray *_lastAddressesUsed;
     NSString *addressUniqueId = nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
+    if([[appDelegate addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
         [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
     }
     else {
@@ -357,15 +357,15 @@ static NSArray *_lastAddressesUsed;
     NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
+    [[appDelegate addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
 }
 
 - (void)addToAddressBookAction:(NSMenuItem*)menuItem {
     NSString *addressUniqueId = nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
-        [[[appDelegate model] addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
+    if([[appDelegate addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
+        [[appDelegate addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }
     else {
         SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);

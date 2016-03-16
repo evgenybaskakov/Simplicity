@@ -12,6 +12,8 @@
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
+#import "SMAddressBookController.h"
+#import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
 #import "SMAppController.h"
 #import "SMAppDelegate.h"
@@ -25,6 +27,8 @@
         _preferencesController = [[SMPreferencesController alloc] init];
         _account = [[SMAccountDescriptor alloc] init];
         _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
+        _messageComparators = [SMMessageComparators new];
+        _addressBookController = [SMAddressBookController new];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _currentAccount = 0; // TODO: restore from properties
     }

@@ -13,6 +13,8 @@
 @class SMAppController;
 @class SMAccountDescriptor;
 @class SMPreferencesController;
+@class SMMessageComparators;
+@class SMAddressBookController;
 @class SMImageRegistry;
 
 @interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
@@ -22,6 +24,8 @@
 @property SMAppController *appController;
 
 @property (readonly) SMPreferencesController *preferencesController;
+@property (readonly) SMMessageComparators *messageComparators;
+@property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMAccountDescriptor *account; // TODO
 @property (readonly) SMSimplicityContainer *model; // TODO
 @property (readonly) SMImageRegistry *imageRegistry;

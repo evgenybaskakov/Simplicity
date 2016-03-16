@@ -94,7 +94,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     message.updateStatus = SMMessageUpdateStatus_Unknown;
     
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [appDelegate.model messageComparators];
+    SMMessageComparators *comparators = [appDelegate messageComparators];
 
     NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
     NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
@@ -129,7 +129,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (SMMessage*)getMessageByUID:(uint32_t)uid {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [appDelegate.model messageComparators];
+    SMMessageComparators *comparators = [appDelegate messageComparators];
 
     NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:uid];
     NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:comparators.messagesComparatorByUID];
@@ -292,7 +292,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
-    SMMessageComparators *comparators = [appDelegate.model messageComparators];
+    SMMessageComparators *comparators = [appDelegate messageComparators];
 
     SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
     

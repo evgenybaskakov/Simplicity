@@ -222,7 +222,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    NSImage *contactImage = [[[appDelegate model] addressBookController] pictureForEmail:[message.fromAddress mailbox]];
+    NSImage *contactImage = [[appDelegate addressBookController] pictureForEmail:[message.fromAddress mailbox]];
     if(contactImage != nil) {
         _contactButton.image = contactImage;
     }
@@ -273,7 +273,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     NSString *addressUniqueId = nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
+    if([[appDelegate addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
         [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
     }
     else {
@@ -319,15 +319,15 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
+    [[appDelegate addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
 }
 
 - (void)addToAddressBookAction:(NSMenuItem*)menuItem {
     NSString *addressUniqueId = nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
-        [[[appDelegate model] addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
+    if([[appDelegate addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
+        [[appDelegate addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }
     else {
         SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);

@@ -39,7 +39,7 @@
 }
 
 - (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread localFolder:(NSString*)localFolder {
-    NSComparator messageThreadComparator = [[[[[NSApplication sharedApplication] delegate] model] messageComparators] messageThreadsComparatorByDate];
+    NSComparator messageThreadComparator = [[[[NSApplication sharedApplication] delegate] messageComparators] messageThreadsComparatorByDate];
 
     NSMutableOrderedSet *sortedMessageThreads = _messageThreadCollection.messageThreadsByDate;
 
@@ -55,7 +55,7 @@
 }
 
 - (void)insertMessageThreadByDate:(SMMessageThread*)messageThread localFolder:(NSString*)localFolder oldIndex:(NSUInteger)oldIndex {
-    NSComparator messageThreadComparator = [[[[[NSApplication sharedApplication] delegate] model] messageComparators] messageThreadsComparatorByDate];
+    NSComparator messageThreadComparator = [[[[NSApplication sharedApplication] delegate] messageComparators] messageThreadsComparatorByDate];
 
     NSMutableOrderedSet *sortedMessageThreads = _messageThreadCollection.messageThreadsByDate;
 

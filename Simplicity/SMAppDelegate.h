@@ -11,6 +11,7 @@
 #import "SMSimplicityContainer.h"
 
 @class SMAppController;
+@class SMAccountDescriptor;
 @class SMPreferencesController;
 @class SMImageRegistry;
 
@@ -21,7 +22,8 @@
 @property SMAppController *appController;
 
 @property (readonly) SMPreferencesController *preferencesController;
-@property (readonly) SMSimplicityContainer *model;
+@property (readonly) SMAccountDescriptor *account; // TODO
+@property (readonly) SMSimplicityContainer *model; // TODO
 @property (readonly) SMImageRegistry *imageRegistry;
 
 @property (assign) IBOutlet NSWindow *window;

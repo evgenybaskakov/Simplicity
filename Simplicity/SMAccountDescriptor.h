@@ -12,4 +12,6 @@
 
 @property (readonly) NSUInteger accountIdx;
 
+- (id)initWithIdx:(NSUInteger)idx;
+
 @end

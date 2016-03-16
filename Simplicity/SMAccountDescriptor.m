@@ -10,4 +10,14 @@
 
 @implementation SMAccountDescriptor
 
+- (id)initWithIdx:(NSUInteger)idx {
+    self = [super init];
+    
+    if(self) {
+        _accountIdx = idx;
+    }
+    
+    return self;
+}
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMAccountDescriptor.h"
 #import "SMPreferencesController.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
@@ -22,7 +23,8 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _model = [[SMSimplicityContainer alloc] initWithPreferencesController:_preferencesController];
+        _account = [[SMAccountDescriptor alloc] init];
+        _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _currentAccount = 0; // TODO: restore from properties
     }
@@ -44,7 +46,7 @@
         [_appController showNewAccountWindow];
     }
     else {
-        [_model initAccountSession:_currentAccount];
+        [_model initSession];
         [_model getIMAPServerCapabilities];
         
         [_appController initOpExecutor];

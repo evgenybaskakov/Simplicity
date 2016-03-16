@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAccountDescriptor.h"
 #import "SMPreferencesController.h"
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
@@ -29,10 +30,11 @@
 
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 
-- (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {
+- (id)initWithAccount:(SMAccountDescriptor*)account preferencesController:(SMPreferencesController*)preferencesController {
     self = [ super init ];
     
     if(self) {
+        _account = account;
         _preferencesController = preferencesController;
         _mailbox = [ SMMailbox new ];
         _localFolderRegistry = [ SMLocalFolderRegistry new ];
@@ -57,9 +59,9 @@
     return capabilities;
 }
 
-- (void)initAccountSession:(NSUInteger)accountIdx {
+- (void)initSession {
     // Init the database.
-    NSString *databaseFilePath = [_preferencesController databaseFilePath:accountIdx];
+    NSString *databaseFilePath = [_preferencesController databaseFilePath:_account.accountIdx];
     const NSUInteger localStorageSize = [_preferencesController localStorageSizeMb];
     
     _database = [[SMDatabase alloc] initWithFilePath:databaseFilePath localStorageSizeMb:localStorageSize];
@@ -67,38 +69,38 @@
     // Init the IMAP server.
     _imapSession = [[MCOIMAPSession alloc] init];
     
-    [_imapSession setPort:[_preferencesController imapPort:accountIdx]];
-    [_imapSession setHostname:[_preferencesController imapServer:accountIdx]];
-    [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:accountIdx]];
+    [_imapSession setPort:[_preferencesController imapPort:_account.accountIdx]];
+    [_imapSession setHostname:[_preferencesController imapServer:_account.accountIdx]];
+    [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:_account.accountIdx]];
 
-    MCOAuthType imapAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:accountIdx]];
+    MCOAuthType imapAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:_account.accountIdx]];
     if(imapAuthType == MCOAuthTypeXOAuth2 || imapAuthType == MCOAuthTypeXOAuth2Outlook) {
         // TODO: Workaround for not having OAuth2 token input means.
         [_imapSession setOAuth2Token:@""];
     }
 
     [_imapSession setAuthType:imapAuthType];
-    [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:accountIdx]]];
-    [_imapSession setUsername:[_preferencesController imapUserName:accountIdx]];
-    [_imapSession setPassword:[_preferencesController imapPassword:accountIdx]];
+    [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:_account.accountIdx]]];
+    [_imapSession setUsername:[_preferencesController imapUserName:_account.accountIdx]];
+    [_imapSession setPassword:[_preferencesController imapPassword:_account.accountIdx]];
     
     // Init the SMTP server.
     _smtpSession = [[MCOSMTPSession alloc] init];
     
-    [_smtpSession setHostname:[_preferencesController smtpServer:accountIdx]];
-    [_smtpSession setPort:[_preferencesController smtpPort:accountIdx]];
-    [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:accountIdx]];
+    [_smtpSession setHostname:[_preferencesController smtpServer:_account.accountIdx]];
+    [_smtpSession setPort:[_preferencesController smtpPort:_account.accountIdx]];
+    [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:_account.accountIdx]];
     
-    MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:accountIdx]];
+    MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:_account.accountIdx]];
     if(smtpAuthType == MCOAuthTypeXOAuth2 || smtpAuthType == MCOAuthTypeXOAuth2Outlook) {
         // TODO: Workaround for not having OAuth2 token input means.
         [_smtpSession setOAuth2Token:@""];
     }
 
     [_smtpSession setAuthType:smtpAuthType];
-    [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:accountIdx]]];
-    [_smtpSession setUsername:[_preferencesController smtpUserName:accountIdx]];
-    [_smtpSession setPassword:[_preferencesController smtpPassword:accountIdx]];
+    [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:_account.accountIdx]]];
+    [_smtpSession setUsername:[_preferencesController smtpUserName:_account.accountIdx]];
+    [_smtpSession setPassword:[_preferencesController smtpPassword:_account.accountIdx]];
 }
 
 - (void)getIMAPServerCapabilities {

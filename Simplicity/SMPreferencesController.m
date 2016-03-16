@@ -217,7 +217,7 @@
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         
-        [[appDelegate model] initAccountSession:appDelegate.currentAccount];
+        [[appDelegate model] initSession];
         [[appDelegate model] getIMAPServerCapabilities];
         
         [[appDelegate appController] initOpExecutor];

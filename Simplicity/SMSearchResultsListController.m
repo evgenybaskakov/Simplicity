@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMDatabase.h"
@@ -103,8 +104,8 @@ const char *const mcoOpKinds[] = {
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
-- (id)init {
-    self = [super init];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self != nil) {
         _searchResults = [[NSMutableDictionary alloc] init];

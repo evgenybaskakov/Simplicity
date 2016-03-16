@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
@@ -25,23 +26,16 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
-@interface SMMessageListController()
-- (void)startMessagesUpdate;
-@end
-
 @implementation SMMessageListController {
-    __weak SMSimplicityContainer *_model;
     SMLocalFolder *_currentFolder;
     SMLocalFolder *_prevNonSearchFolder;
     MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
-- (id)initWithModel:(SMSimplicityContainer*)model {
-    self = [ super init ];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
-        _model = model;
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     }
@@ -68,7 +62,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 
     if(folderName != nil) {
-        SMLocalFolder *localFolder = [[_model localFolderRegistry] getLocalFolder:folderName];
+        SMLocalFolder *localFolder = [[_account.model localFolderRegistry] getLocalFolder:folderName];
         
         if(localFolder == nil) {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
@@ -76,7 +70,7 @@
             SMFolder *folder = [[[appDelegate model] mailbox] getFolderByName:folderName];
             SMFolderKind kind = (folder != nil? folder.kind : SMFolderKindRegular);
 
-            localFolder = [[_model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            localFolder = [[_account.model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
         }
         
         _currentFolder = localFolder;

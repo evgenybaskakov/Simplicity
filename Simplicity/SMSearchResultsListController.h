@@ -8,26 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMSearchDescriptor;
 
-@interface SMSearchResultsListController : NSObject
+@interface SMSearchResultsListController : SMUserAccountDataObject
 
 @property (readonly) MCOIndexSet *subjectSearchResults;
 @property (readonly) MCOIndexSet *contactSearchResults;
 
+- (id)initWithUserAccount:(SMUserAccount*)account;
 - (BOOL)startNewSearch:(NSString*)searchPattern;
-
 - (NSInteger)getSearchIndex:(NSString*)searchResultsLocalFolder;
 - (NSUInteger)searchResultsCount;
 - (SMSearchDescriptor*)getSearchResults:(NSUInteger)index;
 - (void)searchHasFailed:(NSString*)searchResultsLocalFolder;
-
 - (void)removeSearch:(NSInteger)index;
 - (void)reloadSearch:(NSInteger)index;
 - (void)stopSearch:(NSInteger)index;
-
 - (void)stopLatestSearch;
-
 - (Boolean)searchStopped:(NSInteger)index;
 
 @end

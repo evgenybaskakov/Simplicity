@@ -347,7 +347,7 @@ static NSString *unquote(NSString *s) {
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-        NSURL *attachmentUrl = [[[appDelegate model] attachmentStorage] attachmentLocation:attachmentContentId uid:self.uid folder:_remoteFolder];
+        NSURL *attachmentUrl = [[appDelegate attachmentStorage] attachmentLocation:attachmentContentId uid:self.uid folder:_remoteFolder];
         
         NSError *err;
         if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
@@ -356,7 +356,7 @@ static NSString *unquote(NSString *s) {
         }
         
         if(attachmentData) {
-            [[[appDelegate model] attachmentStorage] storeAttachment:attachmentData folder:_remoteFolder uid:self.uid contentId:attachmentContentId];
+            [[appDelegate attachmentStorage] storeAttachment:attachmentData folder:_remoteFolder uid:self.uid contentId:attachmentContentId];
         } else {
             MCOAbstractPart *part = [_imapMessage partForUniqueID:[attachment uniqueID]];
             
@@ -383,7 +383,7 @@ static NSString *unquote(NSString *s) {
                     NSAssert(data, @"no data");
                     
                     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication] delegate];
-                    [[[appDelegate model] attachmentStorage] storeAttachment:data folder:_remoteFolder uid:self.uid contentId:[imapPart contentID]];
+                    [[appDelegate attachmentStorage] storeAttachment:data folder:_remoteFolder uid:self.uid contentId:[imapPart contentID]];
                 } else {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", self.uid, partId, error);
                 }

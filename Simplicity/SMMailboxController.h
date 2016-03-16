@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMSimplicityContainer;
 
-@interface SMMailboxController : NSObject
+@interface SMMailboxController : SMUserAccountDataObject
 
-- (id)initWithModel:(SMSimplicityContainer*)model;
+- (id)initWithUserAccount:(SMUserAccount*)account;
 - (void)initFolders;
 - (void)loadExistingFolders:(NSArray*)folderDescs;
 - (void)scheduleFolderListUpdate:(Boolean)now;

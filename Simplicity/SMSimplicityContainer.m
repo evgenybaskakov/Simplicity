@@ -15,7 +15,6 @@
 #import "SMDatabase.h"
 #import "SMMailbox.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMAttachmentStorage.h"
 #import "SMMessageListController.h"
 #import "SMSearchResultsListController.h"
 #import "SMMailboxController.h"
@@ -36,10 +35,9 @@
         _preferencesController = preferencesController; // TODO: why?
         _mailbox = [ SMMailbox new ];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:_account];
-        _attachmentStorage = [ SMAttachmentStorage new ];
-        _messageListController = [[ SMMessageListController alloc ] initWithModel:self ];
-        _searchResultsListController = [[SMSearchResultsListController alloc] init];
-        _mailboxController = [[ SMMailboxController alloc ] initWithModel:self ];
+        _messageListController = [[SMMessageListController alloc] initWithUserAccount:_account];
+        _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:_account];
+        _mailboxController = [[SMMailboxController alloc] initWithUserAccount:_account];
     }
     
     SM_LOG_DEBUG(@"model initialized");

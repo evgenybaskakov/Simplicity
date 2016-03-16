@@ -135,7 +135,7 @@
         NSString *contentId = [absoluteUrl substringFromIndex:4];
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        NSURL *attachmentLocation = [[[appDelegate model] attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        NSURL *attachmentLocation = [[appDelegate attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
             SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);

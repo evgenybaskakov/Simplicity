@@ -10,13 +10,15 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMSimplicityContainer;
 @class SMLocalFolder;
 @class SMMessage;
 
-@interface SMMessageListController : NSObject
+@interface SMMessageListController : SMUserAccountDataObject
 
-- (id)initWithModel:(SMSimplicityContainer*)model;
+- (id)initWithUserAccount:(SMUserAccount*)account;
 - (void)changeFolder:(NSString*)folder;
 - (void)changeToPrevFolder;
 - (void)clearCurrentFolderSelection;

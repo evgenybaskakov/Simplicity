@@ -13,6 +13,7 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
+#import "SMAttachmentStorage.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
 #import "SMAppController.h"
@@ -28,8 +29,9 @@
         _account = [[SMUserAccount alloc] initWithIdx:0]; // TODO: account number!!!
         _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
         _account.model = _model; // TODO!!!
-        _messageComparators = [SMMessageComparators new];
-        _addressBookController = [SMAddressBookController new];
+        _attachmentStorage = [[SMAttachmentStorage alloc] init];
+        _messageComparators = [[SMMessageComparators alloc] init];
+        _addressBookController = [[SMAddressBookController alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _currentAccount = 0; // TODO: restore from properties
     }

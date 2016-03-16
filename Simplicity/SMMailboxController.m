@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
@@ -27,18 +28,15 @@
 #define FOLDER_LIST_UPDATE_INTERVAL_SEC 5
 
 @implementation SMMailboxController {
-    __weak SMSimplicityContainer *_model;
     MCOIMAPFetchFoldersOperation *_fetchFoldersOp;
     MCOIMAPOperation *_createFolderOp;
     MCOIMAPOperation *_renameFolderOp;
 }
 
-- (id)initWithModel:(SMSimplicityContainer*)model {
-    self = [ super init ];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
-        _model = model;
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesSyncedInFolder:) name:@"MessageHeadersSyncFinished" object:nil];
     }
     
@@ -81,7 +79,7 @@
 - (void)updateFolders {
     SM_LOG_DEBUG(@"updating folders");
 
-    MCOIMAPSession *session = [ _model imapSession ];
+    MCOIMAPSession *session = [ _account.model imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     if(_fetchFoldersOp == nil) {
@@ -96,7 +94,7 @@
         [self scheduleFolderListUpdate:NO];
         
         if(error == nil || error.code == MCOErrorNone) {
-            SMMailbox *mailbox = [ _model mailbox ];
+            SMMailbox *mailbox = [ _account.model mailbox ];
             NSAssert(mailbox != nil, @"mailbox is nil");
 
             NSMutableArray *vanishedFolders = [NSMutableArray array];
@@ -144,7 +142,7 @@
 }
 
 - (void)loadExistingFolders:(NSArray*)folderDescs {
-    SMMailbox *mailbox = [_model mailbox];
+    SMMailbox *mailbox = [_account.model mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     if([mailbox loadExistingFolders:folderDescs]) {
@@ -160,7 +158,7 @@
 - (void)addFoldersToDatabase {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    SMMailbox *mailbox = [_model mailbox];
+    SMMailbox *mailbox = [_account.model mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     for(SMFolder *folder in mailbox.mainFolders) {
@@ -175,10 +173,10 @@
 }
 
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {
-    SMMailbox *mailbox = [ _model mailbox ];
+    SMMailbox *mailbox = [ _account.model mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
-    MCOIMAPSession *session = [ _model imapSession ];
+    MCOIMAPSession *session = [ _account.model imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     NSString *fullFolderName = [mailbox constructFolderName:folderName parent:parentFolderName];
@@ -210,10 +208,10 @@
     if([oldFolderName isEqualToString:newFolderName])
         return;
 
-    SMMailbox *mailbox = [ _model mailbox ];
+    SMMailbox *mailbox = [ _account.model mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
-    MCOIMAPSession *session = [ _model imapSession ];
+    MCOIMAPSession *session = [ _account.model imapSession ];
     NSAssert(session != nil, @"session is nil");
     
     NSAssert(_renameFolderOp == nil, @"another create folder op exists");

@@ -15,6 +15,7 @@
 @class SMPreferencesController;
 @class SMMessageComparators;
 @class SMAddressBookController;
+@class SMAttachmentStorage;
 @class SMImageRegistry;
 
 @interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
@@ -25,6 +26,7 @@
 
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
+@property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMUserAccount *account; // TODO
 @property (readonly) SMSimplicityContainer *model; // TODO

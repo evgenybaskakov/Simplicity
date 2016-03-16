@@ -10,12 +10,12 @@
 
 @implementation SMUserAccount
 
-- (id)initWithIdx:(NSUInteger)idx model:(SMSimplicityContainer*)model {
+- (id)initWithIdx:(NSUInteger)idx {
     self = [super init];
     
     if(self) {
         _accountIdx = idx;
-        _model = model;
+        _model = nil;
     }
     
     return self;

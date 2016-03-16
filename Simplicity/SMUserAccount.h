@@ -12,9 +12,9 @@
 
 @interface SMUserAccount : NSObject
 
-@property (readonly) NSUInteger accountIdx;
-@property (readonly) SMSimplicityContainer __weak *model; // TODO: remove __weak
+@property NSUInteger accountIdx;
+@property SMSimplicityContainer *model;
 
-- (id)initWithIdx:(NSUInteger)idx model:(SMSimplicityContainer*)model;
+- (id)initWithIdx:(NSUInteger)idx;
 
 @end

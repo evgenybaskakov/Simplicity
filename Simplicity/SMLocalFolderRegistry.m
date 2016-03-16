@@ -93,7 +93,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
-    SMLocalFolder *localFolder = (kind == SMFolderKindSearch)? [[SMSearchFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName] : [[SMLocalFolder alloc] initWithLocalFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+    SMLocalFolder *localFolder = (kind == SMFolderKindSearch)? [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName] : [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
 
     folderEntry = [[FolderEntry alloc] initWithFolder:localFolder];
 

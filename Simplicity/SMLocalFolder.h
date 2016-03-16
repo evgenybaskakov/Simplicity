@@ -10,6 +10,7 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMUserAccountDataObject.h"
 #import "SMFolder.h"
 
 // TODO: move to advanced settings
@@ -38,7 +39,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 @class SMMessageStorage;
 @class SMMessage;
 
-@interface SMLocalFolder : NSObject {
+@interface SMLocalFolder : SMUserAccountDataObject {
     @protected SMFolderKind _kind;
     @protected NSString *_localName;
     @protected NSString *_remoteFolderName;
@@ -71,7 +72,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 @property (readonly) NSUInteger maxMessagesPerThisFolder;
 @property (readonly) Boolean syncedWithRemoteFolder;
 
-- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id)initWithAccount:(SMUserAccount*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;

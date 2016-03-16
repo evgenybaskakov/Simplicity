@@ -25,8 +25,9 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _account = [[SMUserAccount alloc] init];
+        _account = [[SMUserAccount alloc] initWithIdx:0]; // TODO: account number!!!
         _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
+        _account.model = _model; // TODO!!!
         _messageComparators = [SMMessageComparators new];
         _addressBookController = [SMAddressBookController new];
         _imageRegistry = [[SMImageRegistry alloc] init];

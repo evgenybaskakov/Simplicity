@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
 #import "SMMessageStorage.h"
 #import "SMNotificationsController.h"
 #import "SMAppController.h"
@@ -36,8 +37,8 @@
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
-- (id)initWithLocalFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-    self = [ super init ];
+- (id)initWithAccount:(SMUserAccount*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         _kind = kind;
@@ -64,13 +65,11 @@
 }
 
 - (void)rescheduleMessageListUpdate {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageListController] scheduleMessageListUpdate:NO];
+    [[_account.model messageListController] scheduleMessageListUpdate:NO];
 }
 
 - (void)cancelScheduledMessageListUpdate {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] messageListController] cancelScheduledMessageListUpdate];
+    [[_account.model messageListController] cancelScheduledMessageListUpdate];
 }
 
 - (void)cancelScheduledUpdateTimeout {
@@ -99,8 +98,7 @@
         return;
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] localFolderRegistry] keepFoldersMemoryLimit];
+    [[_account.model localFolderRegistry] keepFoldersMemoryLimit];
 
     _messageHeadersFetched = 0;
     
@@ -109,7 +107,7 @@
     if(_loadingFromDB) {
         _dbSyncInProgress = YES;
 
-        [_dbOps addObject:[[[appDelegate model] database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
+        [_dbOps addObject:[[_account.model database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
             SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
             _totalMessagesCount = messagesCount;
@@ -118,7 +116,7 @@
         }]];
     }
     else {
-        MCOIMAPSession *session = [[appDelegate model] imapSession];
+        MCOIMAPSession *session = [_account.model imapSession];
         
         NSAssert(session, @"session lost");
 
@@ -192,9 +190,8 @@
 - (void)syncFetchMessageThreadsHeaders {
     SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    MCOIMAPSession *session = [_account.model imapSession];
+    SMMailbox *mailbox = [_account.model mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
     
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
@@ -224,7 +221,7 @@
             
             [threadIds addObject:threadId];
             
-            [_dbOps addObject:[[[appDelegate model] database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMMessageThreadDescriptor *threadDesc) {
+            [_dbOps addObject:[[_account.model database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMMessageThreadDescriptor *threadDesc) {
                 if(threadDesc != nil) {
                     SM_LOG_DEBUG(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
 
@@ -301,8 +298,7 @@
 }
 
 - (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [_account.model imapSession];
     
     SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
@@ -310,9 +306,8 @@
 }
 
 - (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    MCOIMAPSession *session = [_account.model imapSession];
+    SMMailbox *mailbox = [_account.model mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
     MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:allMailFolder requestKind:messageHeadersRequestKind uids:messageUIDs];
@@ -355,7 +350,6 @@
 }
 
 - (void)fetchMessageThreadsHeadersFromDescriptor:(SMMessageThreadDescriptor*)threadDesc {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageThread *messageThread = [_messageStorage messageThreadById:threadDesc.threadId localFolder:_remoteFolderName];
 
     if(messageThread == nil) {
@@ -368,7 +362,7 @@
         if([messageThread getMessageByUID:entry.uid] == nil) {
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
-            [_dbOps addObject:[[[appDelegate model] database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
+            [_dbOps addObject:[[_account.model database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
                 if(message != nil) {
                     SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
                     SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, entry.folderName);
@@ -408,8 +402,7 @@
     // 2. The folder is the INBOX (TODO: make configurable);
     // 3. The message is new;
     // 4. The message is unseen.
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
+    SMFolder *inboxFolder = [[_account.model mailbox] inboxFolder];
 
     NSAssert(inboxFolder != nil, @"inboxFolder is nil");
     
@@ -463,8 +456,6 @@
         finishFetch = NO;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
     if(finishFetch) {
         if(_fetchMessageHeadersOp != nil) {
             [_fetchMessageHeadersOp cancel];
@@ -479,7 +470,7 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [_dbOps addObject:[[[appDelegate model] database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
+        [_dbOps addObject:[[_account.model database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
             SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
             
             for(SMOutgoingMessage *message in outgoingMessages) {
@@ -501,7 +492,7 @@
         const NSUInteger fetchMessagesFromIndex = restOfMessages - numberOfMessagesToFetch + 1;
         
         MCOIndexSet *regionToFetch = [MCOIndexSet indexSetWithRange:MCORangeMake(fetchMessagesFromIndex, numberOfMessagesToFetch - 1)];
-        MCOIMAPSession *session = [[appDelegate model] imapSession];
+        MCOIMAPSession *session = [_account.model imapSession];
         
         // TODO: handle session reopening/uids validation
         
@@ -616,7 +607,7 @@
 
     // update the local database
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+    [[_account.model database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
 
     // Notify listeners (mailbox, etc).
     [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
@@ -636,7 +627,7 @@
     
     // update the local database
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+    [[_account.model database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
     
     // enqueue the remote folder operation
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged];
@@ -648,7 +639,7 @@
 
 - (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [_account.model mailbox];
     SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
     
     if(destFolder == nil) {
@@ -672,9 +663,8 @@
                 NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
                 [[[appDelegate appController] outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                SMFolder *trashFolder = [[[appDelegate model] mailbox] trashFolder];
-                SMLocalFolder *trashLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:trashFolder.fullName];
+                SMFolder *trashFolder = [[_account.model mailbox] trashFolder];
+                SMLocalFolder *trashLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:trashFolder.fullName];
 
                 NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
                 [trashLocalFolder addMessage:message];
@@ -720,7 +710,7 @@
                 [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName];
 
                 // Delete the message from the local database as well.
-                [[[appDelegate model] database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
+                [[_account.model database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
             }
         }
     }
@@ -795,7 +785,7 @@
     [_messageBodyFetchQueue cancelBodyLoading:uid remoteFolder:_remoteFolderName];
 
     // Delete the message from the local database.
-    [[[appDelegate model] database] removeMessageFromDBFolder:uid folder:_remoteFolderName];
+    [[_account.model database] removeMessageFromDBFolder:uid folder:_remoteFolderName];
 
     // After the local storage is cleared and there is no bodies loading,
     // actually move the messages on the server.

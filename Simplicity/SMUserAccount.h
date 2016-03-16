@@ -1,5 +1,5 @@
 //
-//  SMAccountDescriptor.h
+//  SMUserAccount.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 3/14/16.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMAccountDescriptor : NSObject
+@interface SMUserAccount : NSObject
 
 @property (readonly) NSUInteger accountIdx;
 

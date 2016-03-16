@@ -7,7 +7,7 @@
 //
 
 #import "SMLog.h"
-#import "SMAccountDescriptor.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
@@ -25,7 +25,7 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _account = [[SMAccountDescriptor alloc] init];
+        _account = [[SMUserAccount alloc] init];
         _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
         _messageComparators = [SMMessageComparators new];
         _addressBookController = [SMAddressBookController new];

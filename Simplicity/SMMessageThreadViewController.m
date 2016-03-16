@@ -630,7 +630,7 @@ static const CGFloat CELL_SPACING = -1;
 - (void)messageBodyFetched:(NSNotification *)notification {
     uint32_t uid;
     int64_t threadId;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId account:&account];
     
@@ -639,7 +639,7 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)messageViewFrameLoaded:(NSNotification *)notification {
     uint32_t uid;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid account:&account];
 

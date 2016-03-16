@@ -11,7 +11,7 @@
 #import "SMSimplicityContainer.h"
 
 @class SMAppController;
-@class SMAccountDescriptor;
+@class SMUserAccount;
 @class SMPreferencesController;
 @class SMMessageComparators;
 @class SMAddressBookController;
@@ -26,7 +26,7 @@
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAddressBookController *addressBookController;
-@property (readonly) SMAccountDescriptor *account; // TODO
+@property (readonly) SMUserAccount *account; // TODO
 @property (readonly) SMSimplicityContainer *model; // TODO
 @property (readonly) SMImageRegistry *imageRegistry;
 

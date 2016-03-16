@@ -524,7 +524,7 @@
     NSString *localFolder;
     uint32_t uid;
     int64_t threadId;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId account:&account];
     

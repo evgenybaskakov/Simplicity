@@ -11,7 +11,7 @@
 #import <MailCore/MailCore.h>
 
 @class SMPreferencesController;
-@class SMAccountDescriptor;
+@class SMUserAccount;
 @class SMDatabase;
 @class SMMailbox;
 @class SMLocalFolderRegistry;
@@ -28,7 +28,7 @@
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
 
-@property (readonly) SMAccountDescriptor *account;
+@property (readonly) SMUserAccount *account;
 @property (readonly) SMDatabase *database;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
 @property (readonly) SMAttachmentStorage *attachmentStorage;
@@ -38,7 +38,7 @@
 @property (readonly) SMMailboxController *mailboxController;
 @property (readonly) SMMailbox *mailbox;
 
-- (id)initWithAccount:(SMAccountDescriptor*)account preferencesController:(SMPreferencesController*)preferencesController;
+- (id)initWithAccount:(SMUserAccount*)account preferencesController:(SMPreferencesController*)preferencesController;
 
 - (void)initSession;
 - (void)getIMAPServerCapabilities;

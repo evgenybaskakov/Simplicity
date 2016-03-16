@@ -284,7 +284,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)messageHeadersSyncFinished:(NSNotification*)notification {
     NSString *localFolder;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
@@ -293,7 +293,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)messageFlagsUpdated:(NSNotification*)notification {
     NSString *localFolder;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
@@ -302,7 +302,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)messagesUpdated:(NSNotification*)notification {
     NSString *localFolder;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     

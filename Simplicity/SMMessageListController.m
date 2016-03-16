@@ -234,7 +234,7 @@
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
     NSString *localFolder;
     BOOL hasUpdates;
-    SMAccountDescriptor *account;
+    SMUserAccount *account;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates account:&account];
 

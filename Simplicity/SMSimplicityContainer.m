@@ -9,7 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
-#import "SMAccountDescriptor.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMSimplicityContainer.h"
 #import "SMDatabase.h"
@@ -28,7 +28,7 @@
 
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 
-- (id)initWithAccount:(SMAccountDescriptor*)account preferencesController:(SMPreferencesController*)preferencesController {
+- (id)initWithAccount:(SMUserAccount*)account preferencesController:(SMPreferencesController*)preferencesController {
     self = [ super init ];
     
     if(self) {

@@ -30,6 +30,8 @@ typedef enum {
 @property MCOOperation *currentOp;
 
 - (id)initWithKind:(SMOpKind)opKind operationExecutor:(SMOperationExecutor*)operationExecutor;
+- (id)initWithCoder:(NSCoder*)coder;
+- (void)setOperationExecutor:(SMOperationExecutor*)operationExecutor;
 - (void)start;
 - (void)fail;
 - (Boolean)cancelOp;
@@ -40,6 +42,6 @@ typedef enum {
 - (NSString*)name;
 - (NSString*)details;
 - (void)encodeWithCoder:(NSCoder*)coder;
-- (id)initWithCoder:(NSCoder*)coder;
+
 
 @end

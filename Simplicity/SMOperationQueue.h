@@ -10,6 +10,7 @@
 
 @class SMOperation;
 @class SMOutgoingMessage;
+@class SMOperationExecutor;
 
 @interface SMOperationQueue : NSObject<NSCoding>
 
@@ -22,5 +23,6 @@
 - (SMOperation*)getFirstOp;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
 - (void)cancelSendOpWithMessage:(SMOutgoingMessage*)message;
+- (void)setOperationExecutorForPendingOps:(SMOperationExecutor*)operationExecutor;
 
 @end

@@ -8,15 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMOperation;
 @class SMOperationQueue;
 
-@interface SMOperationExecutor : NSObject
+@interface SMOperationExecutor : SMUserAccountDataObject
 
 @property (readonly) SMOperationQueue *smtpQueue;
 @property (readonly) SMOperationQueue *imapQueue;
 
-- (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue;
+- (id)initWithUserAccount:(SMUserAccount*)account;
+- (void)setSmtpQueue:(SMOperationQueue *)smtpQueue imapQueue:(SMOperationQueue *)imapQueue;
+- (SMUserAccount*)account;
 - (void)enqueueOperation:(SMOperation*)op;
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;
 - (void)completeOperation:(SMOperation*)op;

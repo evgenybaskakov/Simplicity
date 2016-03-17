@@ -718,7 +718,7 @@
         SMOperation *op = nil;
         
         if(_kind == SMFolderKindTrash) {
-            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName operationExecutor:[[_account model] operationExecutor]];
+            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName operationExecutor:[_account.model operationExecutor]];
 
             SM_LOG_INFO(@"Enqueueing deleting of %u messages from remote folder %@", messagesToMoveUids.count, _remoteFolderName);
         }

@@ -20,6 +20,7 @@
 #import "SMSearchResultsListController.h"
 #import "SMMailboxController.h"
 #import "SMOutboxController.h"
+#import "SMOperationQueue.h"
 #import "SMSuggestionProvider.h"
 
 @implementation SMSimplicityContainer {
@@ -41,6 +42,7 @@
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:_account];
         _mailboxController = [[SMMailboxController alloc] initWithUserAccount:_account];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:_account];
+        _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:_account];
     }
     
     SM_LOG_DEBUG(@"model initialized");
@@ -107,7 +109,10 @@
     [_database loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
         // TODO: use the resulting dbOp
         [_database loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
-            _operationExecutor = [[SMOperationExecutor alloc] initWithSMTPQueue:smtpQueue imapQueue:imapQueue];
+            [imapQueue setOperationExecutorForPendingOps:_operationExecutor];
+            [smtpQueue setOperationExecutorForPendingOps:_operationExecutor];
+            
+            [_operationExecutor setSmtpQueue:smtpQueue imapQueue:imapQueue];
             
             [_outboxController loadSMTPQueue:smtpQueue postSendActionTarget:_outboxController postSendActionSelector:@selector(finishMessageSending:)];
         }];

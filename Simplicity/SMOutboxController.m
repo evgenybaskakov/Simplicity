@@ -50,9 +50,8 @@
             opSendMessage.postActionTarget = target;
             opSendMessage.postActionSelector = selector;
 
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
-            SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+            SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
+            SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
             NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
             [outboxLocalFolder addMessage:opSendMessage.outgoingMessage];
@@ -63,9 +62,8 @@
 - (void)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
     SM_LOG_DEBUG(@"Sending message");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder addMessage:outgoingMessage];
@@ -82,9 +80,8 @@
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Removing message");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *outboxFolder = [[[appDelegate model] mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder removeMessage:message];

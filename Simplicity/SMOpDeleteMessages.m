@@ -10,6 +10,8 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
+#import "SMOperationExecutor.h"
 #import "SMMessageListController.h"
 #import "SMOpExpungeFolder.h"
 #import "SMOpDeleteMessages.h"
@@ -49,8 +51,7 @@
 }
 
 - (void)start {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindSet flags:MCOMessageFlagDeleted];

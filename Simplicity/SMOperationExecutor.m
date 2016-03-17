@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMDatabase.h"
 #import "SMOperationQueueWindowController.h"
 #import "SMOperation.h"
@@ -19,25 +20,34 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 
 @implementation SMOperationExecutor
 
-- (id)initWithSMTPQueue:(SMOperationQueue*)smtpQueue imapQueue:(SMOperationQueue*)imapQueue {
-    self = [super init];
+- (id)initWithUserAccount:(SMUserAccount*)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
-        _smtpQueue = (smtpQueue != nil? smtpQueue : [[SMOperationQueue alloc] init]);
-        _imapQueue = (imapQueue != nil? imapQueue : [[SMOperationQueue alloc] init]);
 
-        if(_smtpQueue.count > 0) {
-            [[_smtpQueue getFirstOp] start];
-        }
-
-        if(_imapQueue.count > 0) {
-            [[_imapQueue getFirstOp] start];
-        }
-
-        [self notifyController];
     }
     
     return self;
+}
+
+- (void)setSmtpQueue:(SMOperationQueue *)smtpQueue imapQueue:(SMOperationQueue *)imapQueue {
+    _smtpQueue = (smtpQueue != nil? smtpQueue : [[SMOperationQueue alloc] init]);
+    
+    if(_smtpQueue.count > 0) {
+        [[_smtpQueue getFirstOp] start];
+    }
+
+    _imapQueue = (imapQueue != nil? imapQueue : [[SMOperationQueue alloc] init]);
+    
+    if(_imapQueue.count > 0) {
+        [[_imapQueue getFirstOp] start];
+    }
+
+    [self notifyController];
+}
+
+- (SMUserAccount*)account {
+    return _account;
 }
 
 - (SMOperationQueue*)getQueue:(SMOpKind)kind {
@@ -161,13 +171,11 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 }
 
 - (void)saveSMTPQueue {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
+    [[_account.model database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
 }
 
 - (void)saveIMAPQueue {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
+    [[_account.model database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
 }
 
 - (void)saveOpQueues {

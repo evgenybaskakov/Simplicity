@@ -26,7 +26,6 @@
 #import "SMOperationQueueWindowController.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMFolderColorController.h"
-#import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
 #import "SMOutboxController.h"

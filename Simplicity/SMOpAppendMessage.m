@@ -10,6 +10,8 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
+#import "SMOperationExecutor.h"
 #import "SMMessageBuilder.h"
 #import "SMOpAppendMessage.h"
 
@@ -52,8 +54,7 @@
 }
 
 - (void)start {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_messageBuilder.mcoMessageBuilder.data flags:_flags customFlags:nil];

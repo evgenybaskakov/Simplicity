@@ -10,9 +10,12 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
+#import "SMSimplicityContainer.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMMessageListController.h"
+#import "SMOperationExecutor.h"
 #import "SMOpAddLabel.h"
 #import "SMOpDeleteMessages.h"
 #import "SMOpMoveMessages.h"
@@ -58,8 +61,7 @@
 - (void)start {
     NSAssert(_uids.count > 0, @"no message uids to move from %@ to %@", _srcRemoteFolderName, _dstRemoteFolderName);
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPCopyMessagesOperation *op = [session copyMessagesOperationWithFolder:_srcRemoteFolderName uids:_uids destFolder:_dstRemoteFolderName];
@@ -73,7 +75,7 @@
         
         if(error == nil) {
             if(uidMapping != nil) {
-                SMFolder *targetFolder = [[[appDelegate model] mailbox] getFolderByName:_dstRemoteFolderName];
+                SMFolder *targetFolder = [[[_operationExecutor.account model] mailbox] getFolderByName:_dstRemoteFolderName];
 
                 if(targetFolder != nil && targetFolder.kind == SMFolderKindRegular) {
                     MCOIndexSet *uids = [MCOIndexSet indexSet];

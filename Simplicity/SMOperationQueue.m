@@ -13,7 +13,7 @@
 #import "SMOperationQueue.h"
 
 @implementation SMOperationQueue {
-    NSMutableArray *_queue;
+    NSMutableArray<SMOperation*> *_queue;
 }
 
 - (id)init {
@@ -91,6 +91,12 @@
                 break;
             }
         }
+    }
+}
+
+- (void)setOperationExecutorForPendingOps:(SMOperationExecutor*)operationExecutor {
+    for(NSUInteger i = 0; i < _queue.count; i++) {
+        [_queue[i] setOperationExecutor:operationExecutor];
     }
 }
 

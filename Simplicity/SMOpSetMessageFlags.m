@@ -10,6 +10,8 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
+#import "SMOperationExecutor.h"
 #import "SMOpSetMessageFlags.h"
 
 @implementation SMOpSetMessageFlags {
@@ -55,8 +57,7 @@
 }
 
 - (void)start {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOIMAPSession *session = [[appDelegate model] imapSession];
+    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session storeFlagsOperationWithFolder:_remoteFolderName uids:_uids kind:_requestKind flags:_flags];

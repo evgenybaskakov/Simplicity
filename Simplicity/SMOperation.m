@@ -21,6 +21,7 @@
     if(self) {
         _opKind = opKind;
         _timeCreated = [NSDate dateWithTimeIntervalSinceNow:0];
+        _operationExecutor = operationExecutor;
     }
     
     return self;
@@ -38,6 +39,10 @@
     }
     
     return self;
+}
+
+- (void)setOperationExecutor:(SMOperationExecutor*)operationExecutor {
+    _operationExecutor = operationExecutor;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {

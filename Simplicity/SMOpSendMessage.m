@@ -10,6 +10,8 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMUserAccount.h"
+#import "SMOperationExecutor.h"
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
 #import "SMOpSendMessage.h"
@@ -54,8 +56,7 @@
     NSData *messageData = _outgoingMessage.messageBuilder.mcoMessageBuilder.data;
     NSAssert(messageData, @"no message data");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    MCOSMTPOperation *op = [[[appDelegate model] smtpSession] sendOperationWithData:messageData];
+    MCOSMTPOperation *op = [[[_operationExecutor.account model] smtpSession] sendOperationWithData:messageData];
     
     self.currentOp = op;
     

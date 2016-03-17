@@ -34,7 +34,7 @@
 - (SMFolderLabel*)getOrUpdateLabel:(NSString*)folderName withColor:(NSColor*)color {
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
 
-    NSUInteger accountIdx = appDelegate.currentAccount;
+    NSUInteger accountIdx = appDelegate.currentAccountIdx;
     NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
     SMFolderLabel *label = [labels objectForKey:folderName];
     
@@ -59,7 +59,7 @@
 - (void)deleteFolderColor:(NSString*)folderName {
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     
-    NSUInteger accountIdx = appDelegate.currentAccount;
+    NSUInteger accountIdx = appDelegate.currentAccountIdx;
     NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
     
     NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:labels];

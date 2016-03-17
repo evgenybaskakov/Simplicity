@@ -97,7 +97,7 @@
             if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-                NSUInteger accountIdx = appDelegate.currentAccount;
+                NSUInteger accountIdx = appDelegate.currentAccountIdx;
                 NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
 
                 for(SMFolderDesc *vanishedFolder in vanishedFolders) {
@@ -239,7 +239,7 @@
     [[_account.model database] removeDBFolder:folderName];
     
     // 4. Remove associated labels
-    NSUInteger accountIdx = appDelegate.currentAccount;
+    NSUInteger accountIdx = appDelegate.currentAccountIdx;
     NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
     [updatedLabels removeObjectForKey:folderName];
     [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];

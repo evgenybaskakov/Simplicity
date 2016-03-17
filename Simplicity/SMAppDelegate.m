@@ -33,12 +33,20 @@
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
-        _currentAccount = 0; // TODO: restore from properties
+        _currentAccountIdx = 0; // TODO: restore from properties
     }
     
     SM_LOG_DEBUG(@"app delegate initialized");
     
     return self;
+}
+
+- (NSArray<SMUserAccount*>*)accounts {
+    return @[_account];
+}
+
+- (SMUserAccount*)currentAccount {
+    return self.accounts[_currentAccountIdx];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {

@@ -41,7 +41,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    _selectedAccount = appDelegate.currentAccount;
+    _selectedAccount = appDelegate.currentAccountIdx;
     
     [self initAccountList];
     

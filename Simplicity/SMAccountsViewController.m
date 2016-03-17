@@ -111,7 +111,7 @@
             [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:prevView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:buttonView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         }
         
-        if(i == appDelegate.currentAccount) {
+        if(i == appDelegate.currentAccountIdx) {
             NSView *mailboxView = [appController.mailboxViewController view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 

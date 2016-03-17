@@ -24,6 +24,8 @@
 
 @property SMAppController *appController;
 
+@property (assign) IBOutlet NSWindow *window;
+
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAttachmentStorage *attachmentStorage;
@@ -31,9 +33,8 @@
 @property (readonly) SMUserAccount *account; // TODO
 @property (readonly) SMSimplicityContainer *model; // TODO
 @property (readonly) SMImageRegistry *imageRegistry;
-
-@property (assign) IBOutlet NSWindow *window;
-
-@property NSUInteger currentAccount;
+@property (readonly) NSArray<SMUserAccount*> *accounts;
+@property (readonly) NSUInteger currentAccountIdx;
+@property (readonly, nonatomic) SMUserAccount *currentAccount;
 
 @end

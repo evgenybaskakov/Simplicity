@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMMailServiceProvider.h"
 #import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"
@@ -216,10 +217,11 @@
         SM_LOG_INFO(@"Starting processing email account");
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMUserAccount *account = appDelegate.accounts[newAccountIdx];
         
-        [[appDelegate model] initSession];
-        [[appDelegate model] getIMAPServerCapabilities];
-        [[appDelegate model] initOpExecutor];
+        [account.model initSession];
+        [account.model getIMAPServerCapabilities];
+        [account.model initOpExecutor];
     }
 }
 

@@ -302,7 +302,7 @@
     
     SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
-    [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:updateResult account:nil/*TODO*/];
+    [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:updateResult account:_account];
 }
 
 - (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
@@ -424,7 +424,7 @@
     
     [self finishMessageHeadersFetching];
 
-    [SMNotificationsController localNotifyMessageHeadersSyncFinished:_localName hasUpdates:hasUpdates account:nil/*TODO*/];
+    [SMNotificationsController localNotifyMessageHeadersSyncFinished:_localName hasUpdates:hasUpdates account:_account];
 }
 
 - (void)updateMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
@@ -565,7 +565,7 @@
             _totalMessagesCount++;
         }
         
-        [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:SMMesssageStorageUpdateResultStructureChanged account:nil/*TODO*/];
+        [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:SMMesssageStorageUpdateResultStructureChanged account:_account];
     }
 }
 
@@ -579,7 +579,7 @@
     NSAssert(_totalMessagesCount > 0, @"_totalMessagesCount is 0");
     _totalMessagesCount--;
     
-    [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:SMMesssageStorageUpdateResultStructureChanged account:nil/*TODO*/];
+    [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:SMMesssageStorageUpdateResultStructureChanged account:_account];
 }
 
 - (void)adjustUnseenCount:(BOOL)messageUnseen {
@@ -609,7 +609,7 @@
     [[_account.model database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
 
     // Notify listeners (mailbox, etc).
-    [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
+    [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
     
     // enqueue the remote folder operation
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen operationExecutor:[_account.model operationExecutor]];
@@ -670,7 +670,7 @@
             }
         }
 
-        [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
+        [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
         
         return TRUE;
     }
@@ -732,7 +732,7 @@
     }
     
     // Notify observers that message flags have possibly changed.
-    [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
+    [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
     
     return TRUE;
 }
@@ -768,7 +768,7 @@
         needUpdateMessageList = [_messageStorage deleteMessageFromStorage:uid threadId:threadId localFolder:_localName remoteFolder:_remoteFolderName unseenMessagesCount:&_unseenMessagesCount];
 
         // Notify observers that message flags have possibly changed.
-        [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:nil/*TODO*/];
+        [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
     }
     else {
         // TODO: Should we adjust folder stats (unseen count)?

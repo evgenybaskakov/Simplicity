@@ -250,7 +250,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     if(message != nil) {
         [_localFolder increaseLocalFolderFootprint:message.messageSize];
         
-        [SMNotificationsController localNotifyMessageBodyFetched:_localFolder.localName uid:uid threadId:threadId account:nil/*TODO*/];
+        [SMNotificationsController localNotifyMessageBodyFetched:_localFolder.localName uid:uid threadId:threadId account:_account];
     }
 }
 

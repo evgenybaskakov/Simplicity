@@ -310,6 +310,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [[[self view] window] close];
     }
     
+    SM_FATAL(@"TODO!!! use the proper account");
     [SMNotificationsController localNotifyMessageSent:self account:nil/*TODO*/];
 }
 

@@ -8,6 +8,7 @@
 //
 
 #import "SMLog.h"
+#import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -103,7 +104,7 @@ static const CGFloat CELL_SPACING = -1;
         [message fetchInlineAttachments];
     } else {
         SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-        SMMessageListController *messageListController = [[appDelegate model] messageListController];
+        SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
 
         [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
     }
@@ -198,7 +199,7 @@ static const CGFloat CELL_SPACING = -1;
             SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             
-            [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+            [[[[appDelegate.currentAccount model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
             [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
             
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
@@ -483,7 +484,7 @@ static const CGFloat CELL_SPACING = -1;
     if(!collapsed && cell.message.unseen) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-        [[[[appDelegate model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+        [[[[appDelegate.currentAccount model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
         [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
 
         [self updateMessageThread];
@@ -839,7 +840,7 @@ static const CGFloat CELL_SPACING = -1;
 
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
@@ -852,7 +853,7 @@ static const CGFloat CELL_SPACING = -1;
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
         
-        SMMessageListController *messageListController = [[appDelegate model] messageListController];
+        SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
         SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"no current folder");
 
@@ -876,7 +877,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageThreadCell *cell = _cells[cellIdx];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
@@ -918,7 +919,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
 

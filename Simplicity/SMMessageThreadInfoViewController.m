@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMImageRegistry.h"
 #import "SMFolder.h"
 #import "SMFolderColorController.h"
@@ -247,7 +248,7 @@
     SMFolder *currentFolder = nil;
     NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
     if(currentFolderName != nil) {
-        currentFolder = [[[appDelegate model] mailbox] getFolderByName:currentFolderName];
+        currentFolder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:currentFolderName];
         NSAssert(currentFolder != nil, @"currentFolder == nil");
     }
 

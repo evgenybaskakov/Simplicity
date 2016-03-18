@@ -61,9 +61,7 @@
 - (void)initSession {
     // Init the database.
     NSString *databaseFilePath = [_preferencesController databaseFilePath:_account.accountIdx];
-    const NSUInteger localStorageSize = [_preferencesController localStorageSizeMb];
-    
-    _database = [[SMDatabase alloc] initWithFilePath:databaseFilePath localStorageSizeMb:localStorageSize];
+    _database = [[SMDatabase alloc] initWithFilePath:databaseFilePath];
     
     // Init the IMAP server.
     _imapSession = [[MCOIMAPSession alloc] init];

@@ -10,6 +10,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMFolderDesc.h"
 #import "SMAddress.h"
 #import "SMMessage.h"
@@ -88,12 +89,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     NSMutableDictionary *_messagesWithBodies;
     BOOL _dbInvalid;
     BOOL _dbMustBeReset;
-    uint64_t _dbFileSizeLimit;
-    uint64_t _dbSizeToReclaim;
     SMThreadSafeOperationQueue *_urgentTaskQueue;
 }
 
-- (id)initWithFilePath:(NSString*)dbFilePath localStorageSizeMb:(NSUInteger)localStorageSizeMb {
+- (id)initWithFilePath:(NSString*)dbFilePath {
     self = [self init];
     
     if(self) {
@@ -102,7 +101,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         _messagesWithBodies = [NSMutableDictionary dictionary];
         _dbFilePath = dbFilePath;
 
-        [self setFileSizeLimitMb:localStorageSizeMb];
 #ifdef CHECK_DATABASE
         [self checkDatabase:_dbFilePath];
 #endif
@@ -115,15 +113,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     return self;
-}
-
-- (void)setFileSizeLimitMb:(NSUInteger)sizeMb {
-    const NSUInteger sizeToReclaimMb = sizeMb / 5;
-    
-    SM_LOG_INFO(@"Database file limit: %lu Mb, size to reclaim: %lu Mb", sizeMb, sizeToReclaimMb);
-
-    _dbFileSizeLimit = ((uint64_t)sizeMb) * 1024 * 1024;
-    _dbSizeToReclaim = ((uint64_t)sizeToReclaimMb) * 1024 * 1024;
 }
 
 - (void)triggerDBFailureWithSQLiteError:(int)sqliteError {
@@ -226,11 +215,13 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (BOOL)shouldStartReclaimingOldData {
-    const uint64_t fileSize = [self dbFileSize];
+    const uint64_t fileSizeMb = [self dbFileSize] / (1024 * 1024);
 
-    if(_dbFileSizeLimit != 0 && fileSize >= _dbFileSizeLimit) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the max database size (%llu bytes)", _dbFilePath, fileSize, _dbFileSizeLimit);
-        
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSUInteger maxStorageSizeMb = [appDelegate preferencesController].localStorageSizeMb;
+    
+    if(maxStorageSizeMb != 0 && fileSizeMb >= maxStorageSizeMb) {
+        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which exceeds the max database size (%lu bytes)", _dbFilePath, fileSizeMb, maxStorageSizeMb);
         return YES;
     }
     
@@ -238,12 +229,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (BOOL)shouldReclaimMoreOldData {
-    const uint64_t fileSize = [self dbFileSize];
+    const uint64_t fileSizeMb = [self dbFileSize] / (1024 * 1024);
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSUInteger maxStorageSizeMb = [appDelegate preferencesController].localStorageSizeMb;
+    NSUInteger sizeToReclaimMb = maxStorageSizeMb / 5;
     
-    NSAssert(_dbFileSizeLimit > _dbSizeToReclaim, @"bad reclamation size limits _dbFileSizeLimit %llu, _dbSizeToReclaim %llu", _dbFileSizeLimit, _dbSizeToReclaim);
-    
-    if(fileSize >= _dbFileSizeLimit - _dbSizeToReclaim) {
-        SM_LOG_INFO(@"Database file '%@' size is %llu bytes, which still exceeds the reasonable database size (%llu bytes)", _dbFilePath, fileSize, _dbFileSizeLimit);
+    if(fileSizeMb > maxStorageSizeMb - sizeToReclaimMb) {
+        SM_LOG_INFO(@"Database file '%@' size is %llu mb, which still exceeds the reasonable database size (%lu mb)", _dbFilePath, fileSizeMb, maxStorageSizeMb);
         
         return YES;
     }
@@ -255,7 +248,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     NSDate *timeBefore = [NSDate date];
     const uint64_t fileSizeBefore = [self dbFileSize];
     
-    SM_LOG_INFO(@"Database '%@' reclamation is starting, file size %llu, limit %llu, size to reclaim %llu", _dbFilePath, fileSizeBefore, _dbFileSizeLimit, _dbSizeToReclaim);
+    SM_LOG_INFO(@"Database '%@' reclamation is starting, file size %llu", _dbFilePath, fileSizeBefore);
     
     NSAssert(folderBodiesCounts.count > 0, @"no folders with counts");
 

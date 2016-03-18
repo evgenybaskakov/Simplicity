@@ -89,12 +89,8 @@
     NSUInteger item = _localStorageSizeList.indexOfSelectedItem;
     NSAssert(item < _localStorageSizeValues.count, @"bad item %lu", item);
     
-    NSUInteger localStorageSizeMb = [_localStorageSizeValues[item] unsignedIntegerValue];
-    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].localStorageSizeMb = [_localStorageSizeValues[item] unsignedIntegerValue];
-    
-    [[[appDelegate model] database] setFileSizeLimitMb:localStorageSizeMb];
 }
 
 - (IBAction)logLevelAction:(id)sender {

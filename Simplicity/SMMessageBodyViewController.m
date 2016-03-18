@@ -211,7 +211,8 @@
         // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
         _contentHeight = [[[frame frameView] documentView] frame].size.height;
 
-        [SMNotificationsController localNotifyMessageViewFrameLoaded:_uid];
+        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        [SMNotificationsController localNotifyMessageViewFrameLoaded:_uid account:appDelegate.currentAccount];
     }
 }
 

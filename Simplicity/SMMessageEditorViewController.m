@@ -334,7 +334,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     _doNotSaveDraftOnClose = YES;
 
     if(_embedded) {
-        [SMNotificationsController localNotifyDeleteEditedMessageDraft:self];
+        // TODO: use the account the account bound the message to (via 'from'); see issue #77.
+        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        [SMNotificationsController localNotifyDeleteEditedMessageDraft:self account:appDelegate.currentAccount];
     }
     else {
         [[[self view] window] close];

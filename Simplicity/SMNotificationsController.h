@@ -25,9 +25,9 @@
 + (void)localNotifyMessagesUpdated:(NSString*)localFolder updateResult:(NSUInteger)updateResult account:(SMUserAccount*)account;
 + (void)localNotifyMessageSent:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account;
++ (void)localNotifyMessageViewFrameLoaded:(uint32_t)uid account:(SMUserAccount*)account;
++ (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
 
-+ (void)localNotifyMessageViewFrameLoaded:(uint32_t)uid;
-+ (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController;
 + (void)localNotifyChangeMessageFlaggedFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyChangeMessageUnreadFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyDeleteMessage:(SMMessageThreadCellViewController*)messageThreadCellViewController;

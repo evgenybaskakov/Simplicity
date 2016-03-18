@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
@@ -177,7 +178,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].messageCheckPeriodSec = [_messageCheckPeriodValues[item] unsignedIntegerValue];
 
-    [[[appDelegate model] messageListController] scheduleMessageListUpdate:YES];
+    [[[appDelegate.currentAccount model] messageListController] scheduleMessageListUpdate:YES];
 }
 
 - (IBAction)downloadsFolderPopupAction:(id)sender {

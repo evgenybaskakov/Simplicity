@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMFolderLabel.h"
@@ -98,10 +99,12 @@
         return;
     }
 
+    NSUInteger accountIdx = _selectedAccount;
+
     // Save label colors.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate.accounts[accountIdx] model] mailbox];
  
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
         NSColorWell *colorWell = [_colorWells objectForKey:[NSNumber numberWithInteger:i]];
@@ -113,7 +116,6 @@
     }
 
     // Save label favorite and visibility states.
-    NSUInteger accountIdx = _selectedAccount;
     NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
         SMFolder *folder = mailbox.folders[i];
@@ -194,7 +196,8 @@
     
     NSString *nestingLabel = nil;
     if(_labelTable.selectedRow >= 0) {
-        SMMailbox *mailbox = [[appDelegate model] mailbox];
+        SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+        SMMailbox *mailbox = [account.model mailbox];
         SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
         
         nestingLabel = folder.fullName;
@@ -209,7 +212,8 @@
 
     if(_labelTable.selectedRow >= 0) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMFolder *folder = [[appDelegate model] mailbox].folders[_labelTable.selectedRow];
+        SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+        SMFolder *folder = [account.model mailbox].folders[_labelTable.selectedRow];
 
         NSAlert *alert = [[NSAlert alloc] init];
         
@@ -223,7 +227,7 @@
             return;
         }
 
-        [[[appDelegate model] mailboxController] deleteFolder:folder.fullName];
+        [[account.model mailboxController] deleteFolder:folder.fullName];
 
         [self reloadAccountLabels];
     }
@@ -236,14 +240,15 @@
     NSInteger labelIndex = editedLabelField.tag;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(labelIndex < 0 || labelIndex >= [[appDelegate model] mailbox].folders.count) {
+    SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+    if(labelIndex < 0 || labelIndex >= [account.model mailbox].folders.count) {
         SM_LOG_ERROR(@"Bad edited label index %ld", labelIndex);
         return;
     }
     
-    SMFolder *folder = [[appDelegate model] mailbox].folders[labelIndex];
+    SMFolder *folder = [account.model mailbox].folders[labelIndex];
 
-    [[[appDelegate model] mailboxController] renameFolder:folder.fullName newFolderName:editedLabelField.stringValue];
+    [[account.model mailboxController] renameFolder:folder.fullName newFolderName:editedLabelField.stringValue];
 
     [self reloadLabelsAction:self];
 }
@@ -254,7 +259,8 @@
     [self showProgress];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailboxController *mailboxController = [[appDelegate model] mailboxController];
+    SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+    SMMailboxController *mailboxController = [account.model mailboxController];
 
     [mailboxController scheduleFolderListUpdate:YES];
 }
@@ -271,7 +277,8 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate model] mailbox]; // TODO: use selected account index here
+    SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+    SMMailbox *mailbox = [account.model mailbox];
     
     return mailbox.folders.count;
 }
@@ -279,7 +286,8 @@
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
-    SMMailbox *mailbox = [[appDelegate model] mailbox]; // TODO: use selected account index here
+    SMUserAccount *account = appDelegate.accounts[_selectedAccount];
+    SMMailbox *mailbox = [account.model mailbox];
     SMFolder *folder = mailbox.folders[row];
     
     NSNumber *rowNumber = [NSNumber numberWithInteger:row];

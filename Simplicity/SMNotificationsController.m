@@ -181,4 +181,12 @@
     }
 }
 
++ (void)getFolderListUpdatedParams:(NSNotification*)notification account:(SMUserAccount**)account {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(account) {
+        *account = [messageInfo objectForKey:@"Account"];
+    }
+}
+
 @end

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMStringUtils.h"
 #import "SMDatabase.h"
 #import "SMNotificationsController.h"
@@ -235,7 +236,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList) name:@"FolderListUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList:) name:@"FolderListUpdated" object:nil];
     
     //
     
@@ -283,7 +284,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
-    [self updateFolderStats:localFolder];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(account == appDelegate.currentAccount) {
+        [self updateFolderStats:localFolder];
+    }
 }
 
 - (void)messageFlagsUpdated:(NSNotification*)notification {
@@ -292,7 +296,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    [self updateFolderStats:localFolder];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(account == appDelegate.currentAccount) {
+        [self updateFolderStats:localFolder];
+    }
 }
 
 - (void)messagesUpdated:(NSNotification*)notification {
@@ -301,30 +308,37 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    [self updateFolderStats:localFolder];
-}
-
-- (void)finishMessageSending:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] outboxController] finishMessageSending:message];
+    if(account == appDelegate.currentAccount) {
+        [self updateFolderStats:localFolder];
+    }
 }
 
-- (void)updateMailboxFolderList {
-    SM_LOG_DEBUG(@"Updating folder list...");
-    
-    [ _mailboxViewController updateFolderListView ];
-
-    if(!_inboxInitialized) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
-
-        NSAssert(inboxFolder != nil, @"inboxFolder is nil");
-
-        [[[appDelegate model] messageListController] changeFolder:inboxFolder.fullName];
-        [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+- (void)updateMailboxFolderListForAccount:(SMUserAccount*)account {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(account == appDelegate.currentAccount) {
+        SM_LOG_DEBUG(@"Updating folder list...");
         
-        _inboxInitialized = YES;
+        [ _mailboxViewController updateFolderListView ];
+        
+        if(!_inboxInitialized) {
+            SMFolder *inboxFolder = [[account.model mailbox] inboxFolder];
+            NSAssert(inboxFolder != nil, @"inboxFolder is nil");
+            
+            [[account.model messageListController] changeFolder:inboxFolder.fullName];
+            
+            [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+            
+            _inboxInitialized = YES;
+        }
     }
+}
+
+- (void)updateMailboxFolderList:(NSNotification*)notification {
+    SMUserAccount *account;
+    [SMNotificationsController getFolderListUpdatedParams:notification account:&account];
+    
+    [self updateMailboxFolderListForAccount:account];
 }
 
 - (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted {
@@ -415,10 +429,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    [[[appDelegate model] searchResultsListController] stopLatestSearch];
+    [[[appDelegate.currentAccount model] searchResultsListController] stopLatestSearch];
     
     if(changeToPrevFolder) {
-        [[[appDelegate model] messageListController] changeToPrevFolder];
+        [[[appDelegate.currentAccount model] messageListController] changeToPrevFolder];
         [[[appDelegate appController] mailboxViewController] changeToPrevFolder];
     }
     
@@ -513,7 +527,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate model] searchResultsListController] startNewSearch:searchString]) {
+    if([[[appDelegate.currentAccount model] searchResultsListController] startNewSearch:searchString]) {
         if(showSuggestionsMenu && searchString.length != 0) {
             [_searchSuggestionsMenu makeKeyAndOrderFront:self];
             
@@ -541,7 +555,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
@@ -764,8 +778,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)updateFolderStats:(NSString*)localFolder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *inboxFolder = [[[appDelegate model] mailbox] inboxFolder];
-    SMLocalFolder *inboxLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    SMFolder *inboxFolder = [[[appDelegate.currentAccount model] mailbox] inboxFolder];
+    SMLocalFolder *inboxLocalFolder = [[[appDelegate.currentAccount model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
     if([localFolder isEqualToString:inboxLocalFolder.localName]) {
         NSString *messageCountString;

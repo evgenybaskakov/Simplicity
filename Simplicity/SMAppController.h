@@ -23,6 +23,7 @@
 @class SMMessageEditorWindowController;
 @class SMOperationQueueWindowController;
 @class SMMessageThread;
+@class SMUserAccount;
 
 @interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate, NSWindowDelegate>
 
@@ -45,7 +46,7 @@
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMFolderColorController *folderColorController;
 
-- (void)updateMailboxFolderList;
+- (void)updateMailboxFolderListForAccount:(SMUserAccount*)account;
 
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;

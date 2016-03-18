@@ -115,7 +115,7 @@
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
         }
         
-        [SMNotificationsController localNotifyFolderListUpdated:nil/*TODO*/];
+        [SMNotificationsController localNotifyFolderListUpdated:_account];
     }];
 }
 
@@ -144,7 +144,7 @@
         [self ensureMainLocalFoldersCreated];
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderList) withObject:nil waitUntilDone:NO];
+        [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderListForAccount:) withObject:_account waitUntilDone:NO];
     }
 
     [self scheduleFolderListUpdate:YES];

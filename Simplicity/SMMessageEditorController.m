@@ -77,13 +77,9 @@
     [[[appDelegate model] outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
-- (void)finishMessageSending:(SMOutgoingMessage*)message {
+- (void)messageSentByServer:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate model] outboxController] finishMessageSending:message];
-}
-
-- (void)messageSentByServer:(SMOutgoingMessage*)message {
-    [self finishMessageSending:message];
     
     [self deleteSavedDraft];
 

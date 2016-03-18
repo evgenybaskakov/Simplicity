@@ -40,5 +40,6 @@
 + (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder account:(SMUserAccount**)account;
 + (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder account:(SMUserAccount**)account;
 + (void)getMessageViewFrameLoadedParams:(NSNotification*)notification uid:(uint32_t*)uid account:(SMUserAccount**)account;
++ (void)getFolderListUpdatedParams:(NSNotification*)notification account:(SMUserAccount**)account;
 
 @end

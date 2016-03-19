@@ -9,6 +9,7 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
+#import "SMSimplicityContainer.h"
 #import "SMNotificationsController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -100,10 +101,10 @@ static const CGFloat CELL_SPACING = -1;
     
     [messageThreadCellViewController setMessage:message];
     
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if([messageThreadCellViewController loadMessageBody]) {
-        [message fetchInlineAttachments];
+        [[appDelegate.currentAccount model] fetchMessageInlineAttachments:message];
     } else {
-        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
         SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
 
         [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
@@ -445,7 +446,8 @@ static const CGFloat CELL_SPACING = -1;
         SMMessage *message = cell.message;
         
         if(message.uid == uid) {
-            [message fetchInlineAttachments];
+            SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+            [[appDelegate.currentAccount model] fetchMessageInlineAttachments:message];
 
             [cell.viewController updateMessage];
 

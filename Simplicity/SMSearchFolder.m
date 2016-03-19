@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
-#import "SMAppDelegate.h"
+#import "SMSimplicityContainer.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"

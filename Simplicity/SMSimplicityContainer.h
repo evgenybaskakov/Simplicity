@@ -20,6 +20,7 @@
 @class SMMailboxController;
 @class SMOutboxController;
 @class SMOperationExecutor;
+@class SMMessage;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
@@ -45,5 +46,6 @@
 - (void)initSession;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
+- (void)fetchMessageInlineAttachments:(SMMessage*)message;
 
 @end

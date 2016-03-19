@@ -9,6 +9,8 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAttachmentStorage.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMSimplicityContainer.h"
@@ -22,6 +24,7 @@
 #import "SMOutboxController.h"
 #import "SMOperationQueue.h"
 #import "SMSuggestionProvider.h"
+#import "SMMessage.h"
 
 @implementation SMSimplicityContainer {
     SMPreferencesController __weak *_preferencesController;
@@ -140,6 +143,75 @@
     };
 
     [_capabilitiesOp start:opBlock];
+}
+
+- (void)fetchMessageInlineAttachments:(SMMessage *)message {
+    NSString *remoteFolder = message.remoteFolder;
+    uint32_t uid = message.uid;
+    
+    NSArray *attachments = [message htmlInlineAttachments];
+    if(attachments == nil) {
+        SM_LOG_WARNING(@"no inline attachments for message uid %u", uid);
+        return;
+    }
+    
+    MCOIMAPMessage *imapMessage = message.imapMessage;
+    if(imapMessage == nil) {
+        SM_LOG_WARNING(@"no imap message for message uid %u", uid);
+        return;
+    }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAttachmentStorage *attachmentStorage = [appDelegate attachmentStorage];
+    
+    // TODO: fetch inline attachments on demand
+    // TODO: refresh current view of the message loaded from DB without attachments
+    for(MCOAttachment *attachment in attachments) {
+        NSString *attachmentContentId = [attachment contentID] != nil? [attachment contentID] : [attachment uniqueID];
+        NSData *attachmentData = [attachment data];
+        
+        SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
+        
+        NSURL *attachmentUrl = [attachmentStorage attachmentLocation:attachmentContentId uid:uid folder:remoteFolder];
+        
+        NSError *err;
+        if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
+            SM_LOG_DEBUG(@"stored attachment exists at '%@'", attachmentUrl);
+            continue;
+        }
+        
+        if(attachmentData) {
+            [attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId];
+        } else {
+            MCOAbstractPart *part = [imapMessage partForUniqueID:[attachment uniqueID]];
+            
+            NSAssert(part, @"Cannot find inline attachment part");
+            NSAssert([part isKindOfClass:[MCOIMAPPart class]], @"Bad inline attachment part type");
+            
+            MCOIMAPPart *imapPart = (MCOIMAPPart*)part;
+            NSString *partId = [imapPart partID];
+            
+            NSAssert([attachmentContentId isEqualToString:[imapPart contentID]], @"Attachment contentId is not equal to part contentId");
+            
+            SM_LOG_DEBUG(@"part %@, id %@, contentID %@", part, partId, [imapPart contentID]);
+            
+            // TODO: for older sessions, terminate attachment fetching
+            NSAssert(_imapSession, @"bad session");
+            
+            MCOIMAPFetchContentOperation *op = [_imapSession fetchMessageAttachmentOperationWithFolder:remoteFolder uid:uid partID:partId encoding:[imapPart encoding] urgent:YES];
+            
+            // TODO: check if there is a leak if imapPart is accessed in this block!!!
+            [op start:^(NSError * error, NSData * data) {
+                if ([error code] == MCOErrorNone) {
+                    NSAssert(data, @"no data");
+                    
+                    [attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
+                } else {
+                    SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
+                }
+            }];
+        }
+    }
 }
 
 @end

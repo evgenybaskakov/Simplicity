@@ -45,7 +45,13 @@
 }
 
 - (SMUserAccount*)currentAccount {
-    return self.accounts[_currentAccountIdx];
+    return _accounts[_currentAccountIdx];
+}
+
+- (void)setCurrentAccountIdx:(NSUInteger)currentAccountIdx {
+    NSAssert(currentAccountIdx < _accounts.count, @"bad currentAccountIdx %lu", currentAccountIdx);
+    
+    _currentAccountIdx = currentAccountIdx;
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {

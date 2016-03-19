@@ -136,7 +136,17 @@
 }
 
 - (void)accountButtonAction:(id)sender {
-    SM_LOG_WARNING(@"TODO: sender tag %ld", [(NSButton*)sender tag]);
+    NSUInteger clickedAccountIdx = [(NSButton*)sender tag];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(appDelegate.currentAccountIdx != clickedAccountIdx) {
+        SM_LOG_INFO(@"switching to account %lu", clickedAccountIdx);
+        
+        appDelegate.currentAccountIdx = clickedAccountIdx;
+        
+        [self reloadAccounts];
+    }
 }
 
 @end

@@ -16,7 +16,7 @@
 #import "SMAccountsViewController.h"
 
 @implementation SMAccountsViewController {
-    NSMutableArray<SMAccountButtonViewController*> *_accountButtons;
+    NSMutableArray<SMAccountButtonViewController*> *_accountButtonViewControllers;
     NSScrollView *_scrollView;
     NSView *_contentView;
 }
@@ -46,7 +46,7 @@
         _contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         _scrollView.documentView = _contentView;
         
-        _accountButtons = [NSMutableArray new];
+        _accountButtonViewControllers = [NSMutableArray array];
     }
     
     return self;
@@ -63,40 +63,42 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
-    [_accountButtons removeAllObjects];
+    [_accountButtonViewControllers removeAllObjects];
     [_contentView setSubviews:@[]];
 
-    ///
     for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {
-        SMAccountButtonViewController *button = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
-        NSAssert(button.view, @"button.view");
+        SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
+        NSAssert(accountButtonViewController.view, @"button.view");
 
-        button.view.translatesAutoresizingMaskIntoConstraints = NO;
+        accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+        accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
         
-        button.accountIdx = i;
-        
-        button.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
         if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-            button.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+            accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
         }
         else {
-            button.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+            accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
         }
         
         NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
         
-        button.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+        accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
         
-        [_accountButtons addObject:button];
+        accountButtonViewController.accountButton.action = @selector(accountButtonAction:);
+        accountButtonViewController.accountButton.target = self;
+        accountButtonViewController.accountButton.tag = i;
+
+        accountButtonViewController.accountIdx = i;
+
+        [_accountButtonViewControllers addObject:accountButtonViewController];
     }
-    ///
     
-    NSAssert(_accountButtons.count > 0, @"_accountButtons.count == 0");
+    NSAssert(_accountButtonViewControllers.count > 0, @"_accountButtonViewControllers.count == 0");
     
     NSView *prevView = nil;
-    for(NSUInteger i = 0; i < _accountButtons.count; i++) {
-        NSView *buttonView = _accountButtons[i].view;
+    for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
+        NSView *buttonView = _accountButtonViewControllers[i].view;
         
         [_contentView addSubview:buttonView];
         
@@ -131,6 +133,10 @@
     }
     
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+}
+
+- (void)accountButtonAction:(id)sender {
+    SM_LOG_WARNING(@"TODO: sender tag %ld", [(NSButton*)sender tag]);
 }
 
 @end

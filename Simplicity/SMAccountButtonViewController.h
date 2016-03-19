@@ -12,6 +12,7 @@
 
 @property (weak) IBOutlet NSImageView *accountImage;
 @property (weak) IBOutlet NSTextField *accountName;
+@property (weak) IBOutlet NSButton *accountButton;
 
 @property NSUInteger accountIdx;
 

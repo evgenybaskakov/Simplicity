@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMAccountButtonViewController">
             <connections>
+                <outlet property="accountButton" destination="uJm-rv-8Mj" id="SM4-3t-cFt"/>
                 <outlet property="accountImage" destination="O5E-Vt-tp8" id="r6g-6s-Bys"/>
                 <outlet property="accountName" destination="X4p-TU-6bL" id="lzD-0D-g0x"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -37,13 +38,24 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uJm-rv-8Mj" userLabel="Account Button">
+                    <rect key="frame" x="0.0" y="0.0" width="201" height="30"/>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" imagePosition="left" alignment="left" transparent="YES" inset="2" id="2gr-Sz-RDN">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
             </subviews>
             <constraints>
+                <constraint firstAttribute="bottom" secondItem="uJm-rv-8Mj" secondAttribute="bottom" id="4z2-qJ-Q5Q"/>
                 <constraint firstItem="O5E-Vt-tp8" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="2" id="BZl-km-CPn"/>
+                <constraint firstItem="uJm-rv-8Mj" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="DKX-G1-TUE"/>
                 <constraint firstItem="X4p-TU-6bL" firstAttribute="leading" secondItem="O5E-Vt-tp8" secondAttribute="trailing" constant="5" id="FAV-6q-xl5"/>
+                <constraint firstItem="uJm-rv-8Mj" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="NeM-su-UM3"/>
                 <constraint firstAttribute="bottom" secondItem="O5E-Vt-tp8" secondAttribute="bottom" constant="2" id="UPN-Kt-rCg"/>
                 <constraint firstItem="X4p-TU-6bL" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="10" id="XVk-l3-EPG"/>
                 <constraint firstAttribute="trailing" secondItem="X4p-TU-6bL" secondAttribute="trailing" constant="6" id="aou-Om-ZK4"/>
+                <constraint firstAttribute="trailing" secondItem="uJm-rv-8Mj" secondAttribute="trailing" id="vdN-ir-74D"/>
                 <constraint firstItem="O5E-Vt-tp8" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="2" id="vdO-Vu-M8G"/>
             </constraints>
             <point key="canvasLocation" x="218.5" y="200"/>

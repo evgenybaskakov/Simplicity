@@ -310,8 +310,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [[[self view] window] close];
     }
     
-    SM_FATAL(@"TODO!!! use the proper account");
-    [SMNotificationsController localNotifyMessageSent:self account:nil/*TODO*/];
+    // TODO: use the account the account bound the message to (via 'from'); see issue #77.
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    [SMNotificationsController localNotifyMessageSent:self account:appDelegate.currentAccount];
 }
 
 - (void)deleteEditedDraft {

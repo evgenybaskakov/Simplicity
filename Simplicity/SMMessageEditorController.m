@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMOperationExecutor.h"
 #import "SMOpAppendMessage.h"
@@ -31,6 +32,9 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageEditorController.h"
+
+// TODO: See issue #79. The editor should use not the current account, but allow the user to choose it.
+//       Also it should decide what account is to use by default when replying / forwarding.
 
 @implementation SMMessageEditorController {
     NSMutableArray *_attachmentItems;
@@ -74,12 +78,12 @@
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder ];
     
-    [[[appDelegate model] outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[[appDelegate.currentAccount model] outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate model] outboxController] finishMessageSending:message];
+    [[[appDelegate.currentAccount model] outboxController] finishMessageSending:message];
     
     [self deleteSavedDraft];
 
@@ -114,15 +118,15 @@
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[[appDelegate.currentAccount model] mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[[appDelegate model] operationExecutor]];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[[appDelegate.currentAccount model] operationExecutor]];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
     
-    [[[appDelegate model] operationExecutor] enqueueOperation:op];
+    [[[appDelegate.currentAccount model] operationExecutor] enqueueOperation:op];
     
     _saveDraftMessage = messageBuilder.mcoMessageBuilder;
     _saveDraftOp = op;
@@ -175,22 +179,22 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
-    SMMailbox *mailbox = [[appDelegate model] mailbox];
+    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
     NSAssert(mailbox != nil, @"no mailbox");
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    SMFolder *draftsFolder = [[[appDelegate model] mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[[appDelegate.currentAccount model] mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMLocalFolder *draftsLocalFolder = [[[appDelegate model] localFolderRegistry] getLocalFolder:draftsFolder.fullName];
+    SMLocalFolder *draftsLocalFolder = [[[appDelegate.currentAccount model] localFolderRegistry] getLocalFolder:draftsFolder.fullName];
     NSAssert(draftsLocalFolder != nil, @"no local drafts folder");
     
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
     
-    SMMessageListController *messageListController = [[appDelegate model] messageListController];
+    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
     
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];

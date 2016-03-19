@@ -12,9 +12,6 @@
 
 @interface SMUserAccount : NSObject
 
-@property NSUInteger accountIdx;
 @property SMSimplicityContainer *model;
-
-- (id)initWithIdx:(NSUInteger)idx;
 
 @end

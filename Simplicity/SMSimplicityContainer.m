@@ -61,46 +61,46 @@
     return capabilities;
 }
 
-- (void)initSession {
+- (void)initSession:(NSUInteger)accountIdx {
     // Init the database.
-    NSString *databaseFilePath = [_preferencesController databaseFilePath:_account.accountIdx];
+    NSString *databaseFilePath = [_preferencesController databaseFilePath:accountIdx];
     _database = [[SMDatabase alloc] initWithFilePath:databaseFilePath];
     
     // Init the IMAP server.
     _imapSession = [[MCOIMAPSession alloc] init];
     
-    [_imapSession setPort:[_preferencesController imapPort:_account.accountIdx]];
-    [_imapSession setHostname:[_preferencesController imapServer:_account.accountIdx]];
-    [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:_account.accountIdx]];
+    [_imapSession setPort:[_preferencesController imapPort:accountIdx]];
+    [_imapSession setHostname:[_preferencesController imapServer:accountIdx]];
+    [_imapSession setCheckCertificateEnabled:[_preferencesController imapNeedCheckCertificate:accountIdx]];
 
-    MCOAuthType imapAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:_account.accountIdx]];
+    MCOAuthType imapAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController imapAuthType:accountIdx]];
     if(imapAuthType == MCOAuthTypeXOAuth2 || imapAuthType == MCOAuthTypeXOAuth2Outlook) {
         // TODO: Workaround for not having OAuth2 token input means.
         [_imapSession setOAuth2Token:@""];
     }
 
     [_imapSession setAuthType:imapAuthType];
-    [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:_account.accountIdx]]];
-    [_imapSession setUsername:[_preferencesController imapUserName:_account.accountIdx]];
-    [_imapSession setPassword:[_preferencesController imapPassword:_account.accountIdx]];
+    [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:accountIdx]]];
+    [_imapSession setUsername:[_preferencesController imapUserName:accountIdx]];
+    [_imapSession setPassword:[_preferencesController imapPassword:accountIdx]];
     
     // Init the SMTP server.
     _smtpSession = [[MCOSMTPSession alloc] init];
     
-    [_smtpSession setHostname:[_preferencesController smtpServer:_account.accountIdx]];
-    [_smtpSession setPort:[_preferencesController smtpPort:_account.accountIdx]];
-    [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:_account.accountIdx]];
+    [_smtpSession setHostname:[_preferencesController smtpServer:accountIdx]];
+    [_smtpSession setPort:[_preferencesController smtpPort:accountIdx]];
+    [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:accountIdx]];
     
-    MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:_account.accountIdx]];
+    MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:accountIdx]];
     if(smtpAuthType == MCOAuthTypeXOAuth2 || smtpAuthType == MCOAuthTypeXOAuth2Outlook) {
         // TODO: Workaround for not having OAuth2 token input means.
         [_smtpSession setOAuth2Token:@""];
     }
 
     [_smtpSession setAuthType:smtpAuthType];
-    [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:_account.accountIdx]]];
-    [_smtpSession setUsername:[_preferencesController smtpUserName:_account.accountIdx]];
-    [_smtpSession setPassword:[_preferencesController smtpPassword:_account.accountIdx]];
+    [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:accountIdx]]];
+    [_smtpSession setUsername:[_preferencesController smtpUserName:accountIdx]];
+    [_smtpSession setPassword:[_preferencesController smtpPassword:accountIdx]];
 }
 
 - (void)initOpExecutor {

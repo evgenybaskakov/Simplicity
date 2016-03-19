@@ -43,7 +43,7 @@
 
 - (id)initWithAccount:(SMUserAccount*)account preferencesController:(SMPreferencesController*)preferencesController;
 
-- (void)initSession;
+- (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
 - (void)fetchMessageInlineAttachments:(SMMessage*)message;

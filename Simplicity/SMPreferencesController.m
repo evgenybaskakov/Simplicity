@@ -214,12 +214,14 @@
     
     // Now start normal account operationing.
     if(prevAccountCount == 0) {
+        NSAssert(newAccountIdx == 0, @"bad newAccountIdx %lu", newAccountIdx);
+        
         SM_LOG_INFO(@"Starting processing email account");
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMUserAccount *account = appDelegate.accounts[newAccountIdx];
         
-        [account.model initSession];
+        [account.model initSession:newAccountIdx];
         [account.model getIMAPServerCapabilities];
         [account.model initOpExecutor];
     }

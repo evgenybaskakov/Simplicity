@@ -239,6 +239,10 @@
 
 - (NSInteger)totalFolderRowsCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(appDelegate.accounts.count == 0) {
+        return 0;
+    }
+
     SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count + 1 + _visibleFolders.count;

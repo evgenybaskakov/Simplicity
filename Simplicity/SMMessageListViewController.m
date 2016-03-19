@@ -91,6 +91,10 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    if(appDelegate.accounts.count == 0) {
+        return 0;
+    }
+    
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];

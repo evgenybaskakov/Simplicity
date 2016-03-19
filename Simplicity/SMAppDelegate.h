@@ -31,8 +31,8 @@
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMImageRegistry *imageRegistry;
-@property (readonly) NSArray<SMUserAccount*> *accounts;
 @property (readonly) NSUInteger currentAccountIdx;
 @property (readonly, nonatomic) SMUserAccount *currentAccount;
+@property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
 
 @end

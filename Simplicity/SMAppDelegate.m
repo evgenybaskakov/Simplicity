@@ -20,7 +20,7 @@
 #import "SMAppDelegate.h"
 
 @implementation SMAppDelegate {
-    SMUserAccount *_account; // TODO
+    NSMutableArray<SMUserAccount*> *_accounts;
 }
 
 - (id)init {
@@ -28,12 +28,11 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController]; // TODO
         _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
-        _currentAccountIdx = 0; // TODO: restore from properties
+        _accounts = [NSMutableArray array];
     }
     
     SM_LOG_DEBUG(@"app delegate initialized");
@@ -42,7 +41,7 @@
 }
 
 - (NSArray<SMUserAccount*>*)accounts {
-    return @[_account];
+    return _accounts;
 }
 
 - (SMUserAccount*)currentAccount {
@@ -57,19 +56,23 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-     if([_preferencesController accountsCount] == 0) {
+    NSUInteger accountsCount = [_preferencesController accountsCount];
+    
+     if(accountsCount == 0) {
         [_appController showNewAccountWindow];
     }
     else {
-        NSArray<SMUserAccount*> *accounts = [self accounts];
-
-        for(NSUInteger i = 0; i < accounts.count; i++) {
-            SMUserAccount *account = accounts[i];
+        for(NSUInteger i = 0; i < accountsCount; i++) {
+            SMUserAccount *account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController];
             
+            [_accounts addObject:account];
+
             [account initSession:i];
             [account getIMAPServerCapabilities];
             [account initOpExecutor];
         }
+
+        _currentAccountIdx = 0; // TODO: restore from properties
     }
 }
 

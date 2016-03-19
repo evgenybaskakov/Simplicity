@@ -248,7 +248,7 @@
     SMFolder *currentFolder = nil;
     NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
     if(currentFolderName != nil) {
-        currentFolder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:currentFolderName];
+        currentFolder = [[appDelegate.currentAccount mailbox] getFolderByName:currentFolderName];
         NSAssert(currentFolder != nil, @"currentFolder == nil");
     }
 

@@ -13,7 +13,7 @@
 #import "SMMailbox.h"
 #import "SMFolder.h"
 #import "SMFolderCellView.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMSearchResultsListController.h"
@@ -105,7 +105,7 @@
         NSInteger selectedRow = -1;
 
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMFolder *currentFolder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:_currentFolderName];
+        SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] getFolderByName:_currentFolderName];
         
         selectedRow = [self getFolderRow:currentFolder];
 
@@ -132,7 +132,7 @@
         [_visibleFolders removeAllObjects];
         
         NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccountIdx];
-        SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+        SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
         
         for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
             SMFolder *folder = mailbox.folders[i];
@@ -147,7 +147,7 @@
             }
         }
 
-        SMFolder *currentFolder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:_currentFolderName];
+        SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] getFolderByName:_currentFolderName];
         
         if(currentFolder != nil) {
             selectedRow = [self getFolderRow:currentFolder];
@@ -180,7 +180,7 @@
 
 - (void)changeFolder:(NSString*)folderName {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *folder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:folderName];
+    SMFolder *folder = [[appDelegate.currentAccount mailbox] getFolderByName:folderName];
     
     [self doChangeFolder:folder];
 }
@@ -188,10 +188,10 @@
 - (void)doChangeFolder:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    [[[appDelegate.currentAccount model] searchResultsListController] stopLatestSearch];
+    [[appDelegate.currentAccount searchResultsListController] stopLatestSearch];
     
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
-    [[[appDelegate.currentAccount model] messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
+    [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
     
     _prevFolderName = _currentFolderName;
     _currentFolderName = folder.fullName;
@@ -225,21 +225,21 @@
 
 - (NSInteger)favoriteFoldersGroupOffset {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
 
     return 1 + mailbox.mainFolders.count;
 }
 
 - (NSInteger)allFoldersGroupOffset {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count;
 }
 
 - (NSInteger)totalFolderRowsCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count + 1 + _visibleFolders.count;
 }
@@ -250,7 +250,7 @@
 
 - (SMFolder*)selectedFolder:(NSInteger)row favoriteFolderSelected:(Boolean*)favoriteFolderSelected {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
@@ -283,7 +283,7 @@
 
 - (NSInteger)getFolderRow:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
@@ -489,10 +489,10 @@ typedef enum {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     NSUInteger unseenCount;
     if(folder.kind == SMFolderKindDrafts || folder.kind == SMFolderKindOutbox) {
-        unseenCount = [[[appDelegate.currentAccount model] mailboxController] totalMessagesCount:folder.fullName];
+        unseenCount = [[appDelegate.currentAccount mailboxController] totalMessagesCount:folder.fullName];
     }
     else {
-        unseenCount = [[[appDelegate.currentAccount model] mailboxController] unseenMessagesCount:folder.fullName];
+        unseenCount = [[appDelegate.currentAccount mailboxController] unseenMessagesCount:folder.fullName];
     }
     
     if(unseenCount != 0) {
@@ -548,7 +548,7 @@ typedef enum {
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *currentFolder = [[[appDelegate.currentAccount model] mailbox] getFolderByName:_currentFolderName];
+    SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] getFolderByName:_currentFolderName];
 
     if(currentFolder.kind == SMFolderKindOutbox && targetFolder.kind != SMFolderKindTrash) {
         SM_LOG_INFO(@"Cannot move messages from the Outbox folder to anything but Trash");
@@ -652,10 +652,10 @@ typedef enum {
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    [[[appDelegate.currentAccount model] mailboxController] deleteFolder:folder.fullName];
+    [[appDelegate.currentAccount mailboxController] deleteFolder:folder.fullName];
     
     if([[[[appDelegate appController] mailboxViewController] currentFolderName] isEqualToString:folder.fullName]) {
-        SMFolder *inboxFolder = [[[appDelegate.currentAccount model] mailbox] inboxFolder];
+        SMFolder *inboxFolder = [[appDelegate.currentAccount mailbox] inboxFolder];
         [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
     }
 }
@@ -727,7 +727,7 @@ typedef enum {
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     
-    [[[appDelegate.currentAccount model] mailboxController] renameFolder:_labelToRename newFolderName:newLabelName];
+    [[appDelegate.currentAccount mailboxController] renameFolder:_labelToRename newFolderName:newLabelName];
 }
 
 #pragma mark Cell selection

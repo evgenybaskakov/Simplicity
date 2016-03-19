@@ -97,7 +97,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
         FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
         [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
         
-        SMDatabaseOp *dbOp = [[_account.model database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
+        SMDatabaseOp *dbOp = [[_account database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(MCOMessageParser *parser, NSArray *attachments, NSString *messageBodyPreview) {
             FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
             if(currentOpDesc != opDesc) {
                 // TODO: it happens suspiciously often...
@@ -144,7 +144,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 return;
             }
             
-            MCOIMAPSession *session = [_account.model imapSession];
+            MCOIMAPSession *session = [_account imapSession];
             NSAssert(session, @"session is nil");
             
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];
@@ -183,7 +183,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                     NSString *messageBodyPlainText = [SMMessage imapMessagePlainTextBody:parser];
                     
                     if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
-                        [[_account.model database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
+                        [[_account database] putMessageBodyToDB:uid messageDate:messageDate data:data plainTextBody:messageBodyPlainText folderName:remoteFolderName];
                     }
                     
                     [self loadMessageBody:uid threadId:threadId parser:parser attachments:parser.attachments messageBodyPreview:messageBodyPlainText];

@@ -9,7 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMUserAccount.h"
 #import "SMMessageListController.h"
 #import "SMOperationExecutor.h"
@@ -46,7 +46,7 @@
 }
 
 - (void)start {
-    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
+    MCOIMAPSession *session = [_operationExecutor.account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session expungeOperation:_remoteFolderName];
@@ -59,7 +59,7 @@
         if(error == nil) {
             SM_LOG_DEBUG(@"Remote folder %@ successfully expunged", _remoteFolderName);
             
-            SMMessageListController *messageListController = [[_operationExecutor.account model] messageListController];
+            SMMessageListController *messageListController = [_operationExecutor.account messageListController];
             
             // TODO: should check if the current folder is the same as expunged one
             

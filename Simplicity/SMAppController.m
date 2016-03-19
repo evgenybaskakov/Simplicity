@@ -322,10 +322,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         [ _mailboxViewController updateFolderListView ];
         
         if(!_inboxInitialized) {
-            SMFolder *inboxFolder = [[account.model mailbox] inboxFolder];
+            SMFolder *inboxFolder = [[account mailbox] inboxFolder];
             NSAssert(inboxFolder != nil, @"inboxFolder is nil");
             
-            [[account.model messageListController] changeFolder:inboxFolder.fullName];
+            [[account messageListController] changeFolder:inboxFolder.fullName];
             
             [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
             
@@ -429,10 +429,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    [[[appDelegate.currentAccount model] searchResultsListController] stopLatestSearch];
+    [[appDelegate.currentAccount searchResultsListController] stopLatestSearch];
     
     if(changeToPrevFolder) {
-        [[[appDelegate.currentAccount model] messageListController] changeToPrevFolder];
+        [[appDelegate.currentAccount messageListController] changeToPrevFolder];
         [[[appDelegate appController] mailboxViewController] changeToPrevFolder];
     }
     
@@ -527,7 +527,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[[appDelegate.currentAccount model] searchResultsListController] startNewSearch:searchString]) {
+    if([[appDelegate.currentAccount searchResultsListController] startNewSearch:searchString]) {
         if(showSuggestionsMenu && searchString.length != 0) {
             [_searchSuggestionsMenu makeKeyAndOrderFront:self];
             
@@ -555,7 +555,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
@@ -778,8 +778,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)updateFolderStats:(NSString*)localFolder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *inboxFolder = [[[appDelegate.currentAccount model] mailbox] inboxFolder];
-    SMLocalFolder *inboxLocalFolder = [[[appDelegate.currentAccount model] localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    SMFolder *inboxFolder = [[appDelegate.currentAccount mailbox] inboxFolder];
+    SMLocalFolder *inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
     if([localFolder isEqualToString:inboxLocalFolder.localName]) {
         NSString *messageCountString;

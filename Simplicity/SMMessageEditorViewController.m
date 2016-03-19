@@ -16,7 +16,7 @@
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
 #import "SMAddress.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMSuggestionProvider.h"
 #import "SMAddressBookController.h"
 #import "SMFlippedView.h"

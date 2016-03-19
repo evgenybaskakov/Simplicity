@@ -106,7 +106,7 @@
         for(SMMessageThread *thread in messageThreads) {
             SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
             
-            [[_account.model database] removeMessageThreadFromDB:thread.threadId folder:localFolder];
+            [[_account database] removeMessageThreadFromDB:thread.threadId folder:localFolder];
         }
     }
 }
@@ -195,10 +195,10 @@
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {
                 if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
-                    [[_account.model database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
+                    [[_account database] putMessageToDBFolder:imapMessage folder:remoteFolderName];
                 }
                 else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
-                    [[_account.model database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
+                    [[_account database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
                 }
                 
                 if(threadUpdateResult == SMThreadUpdateResultStructureChanged && !newThreadCreated) {
@@ -206,7 +206,7 @@
                     // It will be put in the database on endUpdate if any subsequent updates follow.
                     SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                     
-                    [[_account.model database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
+                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
                 }
             }
         }
@@ -274,7 +274,7 @@
             if(updateDatabase) {
                 SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                 
-                [[_account.model database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
+                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:localFolder];
             }
         }
     }
@@ -289,7 +289,7 @@
         if(updateDatabase) {
             for(SMMessage *message in vanishedMessages) {
                 if([message.remoteFolder isEqualToString:remoteFolder]) {
-                    [[_account.model database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
+                    [[_account database] removeMessageFromDBFolder:message.uid folder:remoteFolder];
                 }
             }
         }
@@ -375,10 +375,10 @@
 
     if(updateDatabase) {
         if([message isKindOfClass:[SMOutgoingMessage class]]) {
-            [[_account.model database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:folderName];
+            [[_account database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:folderName];
         }
         else {
-            [[_account.model database] putMessageToDBFolder:message.imapMessage folder:folderName];
+            [[_account database] putMessageToDBFolder:message.imapMessage folder:folderName];
         }
     }
     

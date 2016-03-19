@@ -14,7 +14,7 @@
 #import "SMFolder.h"
 #import "SMFolderDesc.h"
 #import "SMAppDelegate.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMOutboxController.h"
 #import "SMMailbox.h"
 
@@ -24,8 +24,8 @@
     NSMutableArray<SMFolderDesc*> *_sortedFlatFolders;
 }
 
-- (id)init {
-    self = [ super init ];
+- (id)initWithUserAccount:(SMUserAccount *)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         [self cleanFolders];

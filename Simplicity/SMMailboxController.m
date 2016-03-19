@@ -13,7 +13,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 #import "SMDatabase.h"
@@ -67,15 +67,15 @@
     SM_LOG_DEBUG(@"initializing folders");
 
     // TODO: use the resulting dbOp
-    [[_account.model database] loadDBFolders:^(NSArray *folders) {
-        [[_account.model mailboxController] loadExistingFolders:folders];
+    [[_account database] loadDBFolders:^(NSArray *folders) {
+        [[_account mailboxController] loadExistingFolders:folders];
     }];
 }
 
 - (void)updateFolders {
     SM_LOG_DEBUG(@"updating folders");
 
-    MCOIMAPSession *session = [ _account.model imapSession ];
+    MCOIMAPSession *session = [ _account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     if(_fetchFoldersOp == nil) {
@@ -90,7 +90,7 @@
         [self scheduleFolderListUpdate:NO];
         
         if(error == nil || error.code == MCOErrorNone) {
-            SMMailbox *mailbox = [ _account.model mailbox ];
+            SMMailbox *mailbox = [ _account mailbox ];
             NSAssert(mailbox != nil, @"mailbox is nil");
 
             NSMutableArray *vanishedFolders = [NSMutableArray array];
@@ -101,7 +101,7 @@
                 NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
 
                 for(SMFolderDesc *vanishedFolder in vanishedFolders) {
-                    [[_account.model database] removeDBFolder:vanishedFolder.folderName];
+                    [[_account database] removeDBFolder:vanishedFolder.folderName];
                     [updatedLabels removeObjectForKey:vanishedFolder.folderName];
                 }
                 
@@ -120,8 +120,8 @@
 }
 
 - (void)ensureMainLocalFoldersCreated {
-    SMLocalFolderRegistry *localFolderRegistry = [_account.model localFolderRegistry];
-    SMMailbox *mailbox = [_account.model mailbox];
+    SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
+    SMMailbox *mailbox = [_account mailbox];
     
     for(SMFolder *folder in mailbox.mainFolders) {
         if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
@@ -137,7 +137,7 @@
 }
 
 - (void)loadExistingFolders:(NSArray*)folderDescs {
-    SMMailbox *mailbox = [_account.model mailbox];
+    SMMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     if([mailbox loadExistingFolders:folderDescs]) {
@@ -151,25 +151,25 @@
 }
 
 - (void)addFoldersToDatabase {
-    SMMailbox *mailbox = [_account.model mailbox];
+    SMMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     for(SMFolder *folder in mailbox.mainFolders) {
         NSAssert(folder != nil, @"folder in mailbox.mainFolders is nil");
-        [[_account.model database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
+        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 
     for(SMFolder *folder in mailbox.folders) {
         NSAssert(folder != nil, @"folder in mailbox.folders is nil");
-        [[_account.model database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
+        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.flags];
     }
 }
 
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {
-    SMMailbox *mailbox = [ _account.model mailbox ];
+    SMMailbox *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
-    MCOIMAPSession *session = [ _account.model imapSession ];
+    MCOIMAPSession *session = [ _account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     NSString *fullFolderName = [mailbox constructFolderName:folderName parent:parentFolderName];
@@ -187,7 +187,7 @@
         } else {
             SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
 
-            [[_account.model mailboxController] scheduleFolderListUpdate:YES];
+            [[_account mailboxController] scheduleFolderListUpdate:YES];
         }
     }];
     
@@ -200,10 +200,10 @@
     if([oldFolderName isEqualToString:newFolderName])
         return;
 
-    SMMailbox *mailbox = [ _account.model mailbox ];
+    SMMailbox *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
-    MCOIMAPSession *session = [ _account.model imapSession ];
+    MCOIMAPSession *session = [ _account imapSession ];
     NSAssert(session != nil, @"session is nil");
     
     NSAssert(_renameFolderOp == nil, @"another create folder op exists");
@@ -217,26 +217,26 @@
         } else {
             SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
 
-            [[_account.model mailboxController] scheduleFolderListUpdate:YES];
+            [[_account mailboxController] scheduleFolderListUpdate:YES];
         }
     }];
 }
 
 - (void)deleteFolder:(NSString*)folderName {
-    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[_account.model operationExecutor]];
+    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[_account operationExecutor]];
         
     SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
     
     // 1. Delete the remote folder
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[_account.model operationExecutor] enqueueOperation:op];
+    [[_account operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox
-    [[_account.model mailbox] removeFolder:folderName];
+    [[_account mailbox] removeFolder:folderName];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
     
     // 3. Delete the serialized folder from the database
-    [[_account.model database] removeDBFolder:folderName];
+    [[_account database] removeDBFolder:folderName];
     
     // 4. Remove associated labels
     NSUInteger accountIdx = appDelegate.currentAccountIdx;
@@ -246,7 +246,7 @@
 }
 
 - (NSUInteger)totalMessagesCount:(NSString*)folderName {
-    SMLocalFolderRegistry *localFolderRegistry = [_account.model localFolderRegistry];
+    SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
     SMLocalFolder *localFolder = [localFolderRegistry getLocalFolder:folderName];
     
     if(localFolder != nil) {
@@ -258,7 +258,7 @@
 }
 
 - (NSUInteger)unseenMessagesCount:(NSString*)folderName {
-    SMLocalFolderRegistry *localFolderRegistry = [_account.model localFolderRegistry];
+    SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
     SMLocalFolder *localFolder = [localFolderRegistry getLocalFolder:folderName];
     
     if(localFolder != nil) {
@@ -273,8 +273,8 @@
     //
     // Keep the inbox folder alway synced.
     //
-    SMFolder *inboxFolder = [[_account.model mailbox] inboxFolder];
-    SMLocalFolder *inboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    SMFolder *inboxFolder = [[_account mailbox] inboxFolder];
+    SMLocalFolder *inboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
     if(![[[notifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
         [inboxLocalFolder startLocalFolderSync];

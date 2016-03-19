@@ -171,11 +171,11 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 }
 
 - (void)saveSMTPQueue {
-    [[_account.model database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
+    [[_account database] saveOpQueue:_smtpQueue queueName:@"SMTPQueue"];
 }
 
 - (void)saveIMAPQueue {
-    [[_account.model database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
+    [[_account database] saveOpQueue:_imapQueue queueName:@"IMAPQueue"];
 }
 
 - (void)saveOpQueues {

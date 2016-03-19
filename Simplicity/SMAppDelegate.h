@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 
 @class SMAppController;
 @class SMUserAccount;

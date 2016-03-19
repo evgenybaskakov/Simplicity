@@ -11,7 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMAttachmentStorage.h"
 #import "SMMessage.h"
 

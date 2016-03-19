@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
@@ -54,13 +54,13 @@
         return;
     }
     
-    [[_account.model localFolderRegistry] keepFoldersMemoryLimit];
+    [[_account localFolderRegistry] keepFoldersMemoryLimit];
     
     [self loadSelectedMessagesInternal];
 }
 
 - (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs updateResults:(BOOL)updateResults {
-    [[_account.model localFolderRegistry] keepFoldersMemoryLimit];
+    [[_account localFolderRegistry] keepFoldersMemoryLimit];
     
     if(updateResults) {
         BOOL loadingFinished = (_restOfSelectedMessageUIDsToLoadFromDB.count == 0 && _restOfSelectedMessageUIDsToLoadFromServer.count == 0);
@@ -115,7 +115,7 @@
         return;
     }
     
-    MCOIMAPSession *session = [_account.model imapSession];
+    MCOIMAPSession *session = [_account imapSession];
     
     NSAssert(session, @"session lost");
     
@@ -172,7 +172,7 @@
             _loadMessageHeadersForUIDsFromDBFolderOp = nil;
         }
         
-        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account.model database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
+        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;

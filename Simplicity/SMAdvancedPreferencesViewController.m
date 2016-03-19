@@ -10,7 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMDatabase.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMAdvancedPreferencesViewController.h"
 

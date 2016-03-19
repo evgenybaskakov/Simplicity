@@ -11,7 +11,7 @@
 #import "SMAppController.h"
 #import "SMUserAccount.h"
 #import "SMNotificationsController.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMMailbox.h"
 #import "SMMailboxController.h"
 #import "SMFolder.h"
@@ -32,7 +32,7 @@
     NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailboxController *mailboxController = [[appDelegate.currentAccount model] mailboxController];
+    SMMailboxController *mailboxController = [appDelegate.currentAccount mailboxController];
 
     NSString *fullFolderName = [mailboxController createFolder:folderName parentFolder:parentFolderName];
     if(fullFolderName != nil) {
@@ -74,7 +74,7 @@
 
 - (void)updateExistingLabelsList {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
 
     NSMutableArray *labelsList = [NSMutableArray array];
     for(SMFolder *folder in mailbox.folders)

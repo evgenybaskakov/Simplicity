@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMOperationExecutor.h"
@@ -50,8 +50,8 @@
             opSendMessage.postActionTarget = target;
             opSendMessage.postActionSelector = selector;
 
-            SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
-            SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+            SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
+            SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
             NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
             [outboxLocalFolder addMessage:opSendMessage.outgoingMessage];
@@ -62,38 +62,38 @@
 - (void)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
     SM_LOG_DEBUG(@"Sending message");
     
-    SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder addMessage:outgoingMessage];
 
-    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage operationExecutor:[_account.model operationExecutor]];
+    SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage operationExecutor:[_account operationExecutor]];
 
     op.postActionTarget = target;
     op.postActionSelector = selector;
 
-    [[_account.model operationExecutor] enqueueOperation:op];
-    [[_account.model operationExecutor] saveSMTPQueue];
+    [[_account operationExecutor] enqueueOperation:op];
+    [[_account operationExecutor] saveSMTPQueue];
 }
 
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Removing message");
 
-    SMFolder *outboxFolder = [[_account.model mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[_account.model localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
+    SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder removeMessage:message];
 
-    [[_account.model operationExecutor] saveSMTPQueue];
+    [[_account operationExecutor] saveSMTPQueue];
 }
 
 - (void)cancelMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Cancel message sending");
 
-    [[[_account.model operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
-    [[_account.model operationExecutor] saveSMTPQueue];
+    [[[_account operationExecutor] smtpQueue] cancelSendOpWithMessage:message];
+    [[_account operationExecutor] saveSMTPQueue];
 }
 
 @end

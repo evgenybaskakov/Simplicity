@@ -104,7 +104,7 @@
     // Save label colors.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
-    SMMailbox *mailbox = [[appDelegate.accounts[accountIdx] model] mailbox];
+    SMMailbox *mailbox = [appDelegate.accounts[accountIdx] mailbox];
  
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
         NSColorWell *colorWell = [_colorWells objectForKey:[NSNumber numberWithInteger:i]];
@@ -197,7 +197,7 @@
     NSString *nestingLabel = nil;
     if(_labelTable.selectedRow >= 0) {
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-        SMMailbox *mailbox = [account.model mailbox];
+        SMMailbox *mailbox = [account mailbox];
         SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
         
         nestingLabel = folder.fullName;
@@ -213,7 +213,7 @@
     if(_labelTable.selectedRow >= 0) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-        SMFolder *folder = [account.model mailbox].folders[_labelTable.selectedRow];
+        SMFolder *folder = [account mailbox].folders[_labelTable.selectedRow];
 
         NSAlert *alert = [[NSAlert alloc] init];
         
@@ -227,7 +227,7 @@
             return;
         }
 
-        [[account.model mailboxController] deleteFolder:folder.fullName];
+        [[account mailboxController] deleteFolder:folder.fullName];
 
         [self reloadAccountLabels];
     }
@@ -241,14 +241,14 @@
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    if(labelIndex < 0 || labelIndex >= [account.model mailbox].folders.count) {
+    if(labelIndex < 0 || labelIndex >= [account mailbox].folders.count) {
         SM_LOG_ERROR(@"Bad edited label index %ld", labelIndex);
         return;
     }
     
-    SMFolder *folder = [account.model mailbox].folders[labelIndex];
+    SMFolder *folder = [account mailbox].folders[labelIndex];
 
-    [[account.model mailboxController] renameFolder:folder.fullName newFolderName:editedLabelField.stringValue];
+    [[account mailboxController] renameFolder:folder.fullName newFolderName:editedLabelField.stringValue];
 
     [self reloadLabelsAction:self];
 }
@@ -260,7 +260,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailboxController *mailboxController = [account.model mailboxController];
+    SMMailboxController *mailboxController = [account mailboxController];
 
     [mailboxController scheduleFolderListUpdate:YES];
 }
@@ -278,7 +278,7 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailbox *mailbox = [account.model mailbox];
+    SMMailbox *mailbox = [account mailbox];
     
     return mailbox.folders.count;
 }
@@ -287,7 +287,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailbox *mailbox = [account.model mailbox];
+    SMMailbox *mailbox = [account mailbox];
     SMFolder *folder = mailbox.folders[row];
     
     NSNumber *rowNumber = [NSNumber numberWithInteger:row];

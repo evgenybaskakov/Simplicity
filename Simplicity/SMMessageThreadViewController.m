@@ -9,7 +9,7 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -103,9 +103,9 @@ static const CGFloat CELL_SPACING = -1;
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if([messageThreadCellViewController loadMessageBody]) {
-        [[appDelegate.currentAccount model] fetchMessageInlineAttachments:message];
+        [appDelegate.currentAccount fetchMessageInlineAttachments:message];
     } else {
-        SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
+        SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
 
         [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
     }
@@ -200,7 +200,7 @@ static const CGFloat CELL_SPACING = -1;
             SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             
-            [[[[appDelegate.currentAccount model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+            [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
             [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
             
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
@@ -447,7 +447,7 @@ static const CGFloat CELL_SPACING = -1;
         
         if(message.uid == uid) {
             SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-            [[appDelegate.currentAccount model] fetchMessageInlineAttachments:message];
+            [appDelegate.currentAccount fetchMessageInlineAttachments:message];
 
             [cell.viewController updateMessage];
 
@@ -486,7 +486,7 @@ static const CGFloat CELL_SPACING = -1;
     if(!collapsed && cell.message.unseen) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-        [[[[appDelegate.currentAccount model] messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+        [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
         [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
 
         [self updateMessageThread];
@@ -848,7 +848,7 @@ static const CGFloat CELL_SPACING = -1;
 
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
@@ -861,7 +861,7 @@ static const CGFloat CELL_SPACING = -1;
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
         
-        SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
+        SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
         SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"no current folder");
 
@@ -885,7 +885,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageThreadCell *cell = _cells[cellIdx];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
@@ -927,7 +927,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
 

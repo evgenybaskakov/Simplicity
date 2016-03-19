@@ -54,7 +54,7 @@
 }
 
 - (void)start {
-    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
+    MCOIMAPSession *session = [_operationExecutor.account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_messageBuilder.mcoMessageBuilder.data flags:_flags customFlags:nil];

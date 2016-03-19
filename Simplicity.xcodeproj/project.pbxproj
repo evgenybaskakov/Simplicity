@@ -87,7 +87,6 @@
 		00ED318017F88DA700B04F5B /* SMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED317917F88DA700B04F5B /* SMMessage.m */; };
 		00ED318117F88DA700B04F5B /* SMAttachmentStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED317B17F88DA700B04F5B /* SMAttachmentStorage.m */; };
 		00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED317F17F88DA700B04F5B /* SMMessageStorage.m */; };
-		00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */; };
 		00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */; };
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
 		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
@@ -429,8 +428,6 @@
 		00ED317B17F88DA700B04F5B /* SMAttachmentStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAttachmentStorage.m; sourceTree = "<group>"; };
 		00ED317E17F88DA700B04F5B /* SMMessageStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageStorage.h; sourceTree = "<group>"; };
 		00ED317F17F88DA700B04F5B /* SMMessageStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageStorage.m; sourceTree = "<group>"; };
-		00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSimplicityContainer.h; sourceTree = "<group>"; };
-		00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSimplicityContainer.m; sourceTree = "<group>"; };
 		00F96C0B19343D8000CA5836 /* SMMessageFullDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageFullDetailsView.h; sourceTree = "<group>"; };
 		00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageFullDetailsView.m; sourceTree = "<group>"; };
 		00FC3C7619AADD67002DAF9C /* SMMessageThreadCellViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadCellViewController.h; sourceTree = "<group>"; };
@@ -843,8 +840,6 @@
 				80D1AAE81C4B7D170076DDFA /* SMSearchFolder.m */,
 				80EC90E81C65CC9500336312 /* SMSearchToken.h */,
 				80EC90E91C65CC9500336312 /* SMSearchToken.m */,
-				00ED318417F88E3000B04F5B /* SMSimplicityContainer.h */,
-				00ED318517F88E3000B04F5B /* SMSimplicityContainer.m */,
 				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
 				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
 				803A29AC1C0246E900FF8D7C /* SMSuggestionProvider.h */,
@@ -1527,7 +1522,6 @@
 				803A29A51C00399B00FF8D7C /* SMSignaturePreferencesViewController.m in Sources */,
 				80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */,
 				80ED78FC1C95351D00475EE5 /* SMAccountButtonViewController.m in Sources */,
-				00ED318617F88E3000B04F5B /* SMSimplicityContainer.m in Sources */,
 				80BD0A2E1C4E018B00F43EA2 /* SMSectionMenuItemView.m in Sources */,
 				80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */,
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,

@@ -16,7 +16,7 @@
 #import "SMOperationExecutor.h"
 #import "SMOpAppendMessage.h"
 #import "SMOpDeleteMessages.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMMessageBuilder.h"
 #import "SMMailbox.h"
 #import "SMAddress.h"
@@ -78,12 +78,12 @@
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder ];
     
-    [[[appDelegate.currentAccount model] outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[appDelegate.currentAccount outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate.currentAccount model] outboxController] finishMessageSending:message];
+    [[appDelegate.currentAccount outboxController] finishMessageSending:message];
     
     [self deleteSavedDraft];
 
@@ -118,15 +118,15 @@
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    SMFolder *draftsFolder = [[[appDelegate.currentAccount model] mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[appDelegate.currentAccount mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[[appDelegate.currentAccount model] operationExecutor]];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[appDelegate.currentAccount operationExecutor]];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
     
-    [[[appDelegate.currentAccount model] operationExecutor] enqueueOperation:op];
+    [[appDelegate.currentAccount operationExecutor] enqueueOperation:op];
     
     _saveDraftMessage = messageBuilder.mcoMessageBuilder;
     _saveDraftOp = op;
@@ -179,22 +179,22 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
-    SMMailbox *mailbox = [[appDelegate.currentAccount model] mailbox];
+    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
     NSAssert(mailbox != nil, @"no mailbox");
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    SMFolder *draftsFolder = [[[appDelegate.currentAccount model] mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[appDelegate.currentAccount mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMLocalFolder *draftsLocalFolder = [[[appDelegate.currentAccount model] localFolderRegistry] getLocalFolder:draftsFolder.fullName];
+    SMLocalFolder *draftsLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolder:draftsFolder.fullName];
     NSAssert(draftsLocalFolder != nil, @"no local drafts folder");
     
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
     
-    SMMessageListController *messageListController = [[appDelegate.currentAccount model] messageListController];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
     
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];

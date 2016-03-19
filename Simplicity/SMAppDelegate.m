@@ -28,8 +28,7 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _account = [[SMUserAccount alloc] init];
-        _account.model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController]; // TODO
+        _account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController]; // TODO
         _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
@@ -67,9 +66,9 @@
         for(NSUInteger i = 0; i < accounts.count; i++) {
             SMUserAccount *account = accounts[i];
             
-            [account.model initSession:i];
-            [account.model getIMAPServerCapabilities];
-            [account.model initOpExecutor];
+            [account initSession:i];
+            [account getIMAPServerCapabilities];
+            [account initOpExecutor];
         }
     }
 }

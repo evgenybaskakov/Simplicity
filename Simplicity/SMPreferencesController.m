@@ -221,9 +221,9 @@
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMUserAccount *account = appDelegate.accounts[newAccountIdx];
         
-        [account.model initSession:newAccountIdx];
-        [account.model getIMAPServerCapabilities];
-        [account.model initOpExecutor];
+        [account initSession:newAccountIdx];
+        [account getIMAPServerCapabilities];
+        [account initOpExecutor];
     }
 }
 

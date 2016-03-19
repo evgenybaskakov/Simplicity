@@ -14,7 +14,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
-#import "SMSimplicityContainer.h"
+#import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMMailbox.h"
 #import "SMMessage.h"
@@ -62,13 +62,13 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 
     if(folderName != nil) {
-        SMLocalFolder *localFolder = [[_account.model localFolderRegistry] getLocalFolder:folderName];
+        SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folderName];
         
         if(localFolder == nil) {
-            SMFolder *folder = [[_account.model mailbox] getFolderByName:folderName];
+            SMFolder *folder = [[_account mailbox] getFolderByName:folderName];
             SMFolderKind kind = (folder != nil? folder.kind : SMFolderKindRegular);
 
-            localFolder = [[_account.model localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            localFolder = [[_account localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
         }
         
         _currentFolder = localFolder;

@@ -52,7 +52,7 @@
 }
 
 - (void)start {
-    MCOIMAPSession *session = [[_operationExecutor.account model] imapSession];
+    MCOIMAPSession *session = [_operationExecutor.account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session storeLabelsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindAdd labels:[NSArray arrayWithObject:_label]];

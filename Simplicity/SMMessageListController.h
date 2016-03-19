@@ -12,7 +12,6 @@
 
 #import "SMUserAccountDataObject.h"
 
-@class SMSimplicityContainer;
 @class SMLocalFolder;
 @class SMMessage;
 

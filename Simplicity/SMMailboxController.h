@@ -10,8 +10,6 @@
 
 #import "SMUserAccountDataObject.h"
 
-@class SMSimplicityContainer;
-
 @interface SMMailboxController : SMUserAccountDataObject
 
 - (id)initWithUserAccount:(SMUserAccount*)account;

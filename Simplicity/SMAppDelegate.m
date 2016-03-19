@@ -19,7 +19,9 @@
 #import "SMAppController.h"
 #import "SMAppDelegate.h"
 
-@implementation SMAppDelegate
+@implementation SMAppDelegate {
+    SMUserAccount *_account; // TODO
+}
 
 - (id)init {
     self = [ super init ];
@@ -27,8 +29,7 @@
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
         _account = [[SMUserAccount alloc] initWithIdx:0]; // TODO: account number!!!
-        _model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController];
-        _account.model = _model; // TODO!!!
+        _account.model = [[SMSimplicityContainer alloc] initWithAccount:_account preferencesController:_preferencesController]; // TODO
         _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
@@ -61,9 +62,13 @@
         [_appController showNewAccountWindow];
     }
     else {
-        [_model initSession];
-        [_model getIMAPServerCapabilities];
-        [_model initOpExecutor];
+        NSArray<SMUserAccount*> *accounts = [self accounts];
+
+        for(SMUserAccount *account in accounts) {
+            [account.model initSession];
+            [account.model getIMAPServerCapabilities];
+            [account.model initOpExecutor];
+        }
     }
 }
 

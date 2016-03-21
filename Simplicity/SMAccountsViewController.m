@@ -135,18 +135,24 @@
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
+- (void)changeAccountTo:(NSUInteger)accountIdx {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(appDelegate.currentAccountIdx != accountIdx) {
+        SM_LOG_INFO(@"switching to account %lu", accountIdx);
+        
+        appDelegate.currentAccountIdx = accountIdx;
+        
+        [self reloadAccounts];
+        
+        [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
+    }
+}
+
 - (void)accountButtonAction:(id)sender {
     NSUInteger clickedAccountIdx = [(NSButton*)sender tag];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
-    if(appDelegate.currentAccountIdx != clickedAccountIdx) {
-        SM_LOG_INFO(@"switching to account %lu", clickedAccountIdx);
-        
-        appDelegate.currentAccountIdx = clickedAccountIdx;
-        
-        [self reloadAccounts];
-    }
+    [self changeAccountTo:clickedAccountIdx];
 }
 
 @end

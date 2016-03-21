@@ -251,12 +251,8 @@
     
     [view setMessagesCount:messageThread.messagesCount];
     
-    SMFolder *currentFolder = nil;
-    NSString *currentFolderName = [[appController mailboxViewController] currentFolderName];
-    if(currentFolderName != nil) {
-        SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] getFolderByName:currentFolderName];
-        NSAssert(currentFolder != nil, @"currentFolder == nil");
-    }
+    SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    NSAssert(currentFolder != nil, @"currentFolder == nil");
 
     NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
     

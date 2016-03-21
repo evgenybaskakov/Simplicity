@@ -10,6 +10,6 @@
 
 @interface SMAccountsViewController : NSViewController
 
-- (void)reloadAccounts;
+- (void)reloadAccountViews;
 
 @end

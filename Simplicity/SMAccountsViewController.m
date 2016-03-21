@@ -12,6 +12,8 @@
 #import "SMPreferencesController.h"
 #import "SMFlippedView.h"
 #import "SMMailboxViewController.h"
+#import "SMMessageListController.h"
+#import "SMMessageListViewController.h"
 #import "SMAccountButtonViewController.h"
 #import "SMAccountsViewController.h"
 
@@ -59,7 +61,7 @@
     
 }
 
-- (void)reloadAccounts {
+- (void)reloadAccountViews {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
@@ -140,12 +142,13 @@
     
     if(appDelegate.currentAccountIdx != accountIdx) {
         SM_LOG_INFO(@"switching to account %lu", accountIdx);
-        
+
         appDelegate.currentAccountIdx = accountIdx;
         
-        [self reloadAccounts];
-        
         [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
+        [[[appDelegate currentAccount] messageListController] updateMessageList];
+        
+        [self reloadAccountViews];
     }
 }
 

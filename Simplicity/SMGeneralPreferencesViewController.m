@@ -154,7 +154,7 @@
 - (IBAction)showEmailAddressesInMailboxesAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowEmailAddressesInMailboxes = (_showEmailAddressesInMailboxes.state == NSOnState);
-    [[[appDelegate appController] accountsViewController] reloadAccounts];
+    [[[appDelegate appController] accountsViewController] reloadAccountViews];
 }
 
 - (IBAction)showNotificationsAction:(id)sender {

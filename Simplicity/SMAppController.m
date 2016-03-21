@@ -269,7 +269,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    [_accountsViewController reloadAccounts];
+    [_accountsViewController reloadAccountViews];
     
     //
     

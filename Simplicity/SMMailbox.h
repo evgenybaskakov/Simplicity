@@ -27,6 +27,8 @@
 @property (readonly) NSArray *mainFolders;
 @property (readonly) NSArray *folders;
 
+@property SMFolder *selectedFolder;
+
 - (id)initWithUserAccount:(SMUserAccount *)account;
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;
 - (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;

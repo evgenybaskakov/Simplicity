@@ -14,8 +14,6 @@
 
 @property (weak) IBOutlet NSTableView *folderListView;
 
-@property (readonly) NSString *currentFolderName;
-
 - (void)changeFolder:(NSString*)folderName;
 - (void)changeToPrevFolder;
 - (void)updateFolderListView;

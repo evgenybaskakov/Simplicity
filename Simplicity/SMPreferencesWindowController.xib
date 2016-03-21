@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
@@ -65,10 +65,16 @@ Gw
                             <action selector="toolbarToggleLabelsAction:" target="-2" id="FHs-hZ-KDf"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="4FE08A73-261C-4E3B-9FCA-D2E29DC982B7" explicitItemIdentifier="Appearance" label="Appearance" paletteLabel="Appearance" tag="-1" image="NSColorPanel" selectable="YES" id="WsU-mV-2XB">
+                        <connections>
+                            <action selector="toolbarToggleAppearanceAction:" target="-2" id="tHa-3b-mTd"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="1Di-fo-Rp3"/>
                     <toolbarItem reference="MOs-Ow-R50"/>
+                    <toolbarItem reference="WsU-mV-2XB"/>
                     <toolbarItem reference="tRY-HJ-bbZ"/>
                     <toolbarItem reference="bX1-BH-XNB"/>
                     <toolbarItem reference="vtI-gT-y7u"/>
@@ -82,6 +88,7 @@ Gw
     </objects>
     <resources>
         <image name="NSAdvanced" width="32" height="32"/>
+        <image name="NSColorPanel" width="32" height="32"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUser" width="32" height="32"/>
         <image name="Quote-50" width="50" height="50"/>

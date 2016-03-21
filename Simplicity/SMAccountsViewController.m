@@ -29,10 +29,7 @@
     if(self) {
         NSVisualEffectView *rootView = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
         rootView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        rootView.state = NSVisualEffectStateActive;
-        rootView.material = NSVisualEffectMaterialUltraDark;
-        rootView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-
+        
         [self setView:rootView];
 
         _scrollView = [[NSScrollView alloc] initWithFrame:rootView.frame];
@@ -49,16 +46,47 @@
         _scrollView.documentView = _contentView;
         
         _accountButtonViewControllers = [NSMutableArray array];
+
+        [self loadAppearanceModeFromProperties];
     }
     
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)loadAppearanceModeFromProperties {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
+    SMMailboxTheme mailboxTheme = [preferencesController mailboxTheme];
     
-    // Do view setup here.
+    [self setMailboxTheme:mailboxTheme];
+}
+
+- (void)setMailboxTheme:(SMMailboxTheme)mailboxTheme {
+    NSVisualEffectView *rootView = (NSVisualEffectView*)self.view;
     
+    rootView.state = NSVisualEffectStateActive;
+    rootView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+
+    NSVisualEffectMaterial material = NSVisualEffectMaterialDark;
+    switch(mailboxTheme) {
+        case SMMailboxTheme_Light:
+            material = NSVisualEffectMaterialLight;
+            break;
+        case SMMailboxTheme_MediumLight:
+            material = NSVisualEffectMaterialMediumLight;
+            break;
+        case SMMailboxTheme_MediumDark:
+            material = NSVisualEffectMaterialDark;
+            break;
+        case SMMailboxTheme_Dark:
+            material = NSVisualEffectMaterialUltraDark;
+            break;
+        default:
+            SM_LOG_ERROR(@"unknown theme %lu", mailboxTheme);
+    }
+    
+    rootView.material = material;
 }
 
 - (void)reloadAccountViews {

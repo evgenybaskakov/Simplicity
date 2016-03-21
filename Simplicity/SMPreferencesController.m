@@ -30,6 +30,7 @@
 #define kDownloadsFolder                @"DownloadsFolder"
 #define kLocalStorageSizeMb             @"LocalStorageSizeMb"
 #define kDefaultReplyAction             @"DefaultReplyAction"
+#define kMailboxTheme                   @"MailboxTheme"
 #define kShouldShowNotifications        @"ShouldShowNotifications"
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
@@ -880,6 +881,32 @@
 
 - (void)setDefaultReplyAction:(SMDefaultReplyAction)value {
     [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kDefaultReplyAction];
+}
+
+#pragma mark Mailbox theme
+
+- (SMMailboxTheme)mailboxTheme {
+    SMMailboxTheme result = SMMailboxTheme_Dark;
+    
+    if([[NSUserDefaults standardUserDefaults] objectForKey:kMailboxTheme] == nil) {
+        SM_LOG_INFO(@"Value for %@ not found, using defaults", kMailboxTheme);
+    }
+    else {
+        NSUInteger value = [[NSUserDefaults standardUserDefaults] integerForKey:kMailboxTheme];
+        
+        if(value != SMMailboxTheme_Light && value != SMMailboxTheme_MediumLight && value != SMMailboxTheme_MediumDark && value != SMMailboxTheme_Dark) {
+            SM_LOG_INFO(@"Value %lu for %@ is invalid, using defaults", value, kMailboxTheme);
+        }
+        else {
+            result = value;
+        }
+    }
+    
+    return result;
+}
+
+- (void)setMailboxTheme:(SMMailboxTheme)value {
+    [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kMailboxTheme];
 }
 
 #pragma mark Signatures

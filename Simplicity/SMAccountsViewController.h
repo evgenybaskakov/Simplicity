@@ -8,7 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "SMPreferencesController.h"
+
 @interface SMAccountsViewController : NSViewController
+
+@property (nonatomic) SMMailboxTheme mailboxTheme;
 
 - (void)reloadAccountViews;
 

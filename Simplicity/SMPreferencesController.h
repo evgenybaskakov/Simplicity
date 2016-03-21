@@ -14,6 +14,13 @@
 
 @class SMFolderLabel;
 
+typedef NS_ENUM(NSUInteger, SMMailboxTheme) {
+    SMMailboxTheme_Light,
+    SMMailboxTheme_MediumLight,
+    SMMailboxTheme_MediumDark,
+    SMMailboxTheme_Dark,
+};
+
 typedef NS_ENUM(NSUInteger, SMDefaultReplyAction) {
     SMDefaultReplyAction_ReplyAll,
     SMDefaultReplyAction_Reply,
@@ -35,6 +42,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @property (nonatomic) NSString *downloadsFolder;
 @property (nonatomic) NSUInteger localStorageSizeMb;
 @property (nonatomic) SMDefaultReplyAction defaultReplyAction;
+@property (nonatomic) SMMailboxTheme mailboxTheme;
 @property (nonatomic) SMPreferableMessageFormat preferableMessageFormat;
 @property (nonatomic) NSString *singleSignature;
 @property (nonatomic) NSUInteger logLevel;

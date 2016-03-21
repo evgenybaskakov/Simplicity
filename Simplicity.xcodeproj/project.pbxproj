@@ -120,6 +120,8 @@
 		802410731C1E880C00493FB4 /* SMLabelPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802410711C1E880C00493FB4 /* SMLabelPreferencesViewController.m */; };
 		802410741C1E880C00493FB4 /* SMLabelPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802410721C1E880C00493FB4 /* SMLabelPreferencesViewController.xib */; };
 		8024107E1C1E9E3B00493FB4 /* SMFolderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8024107D1C1E9E3B00493FB4 /* SMFolderLabel.m */; };
+		80279AEB1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80279AE91C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.m */; };
+		80279AEC1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80279AEA1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
 		8039326A1C97D6E700CE38CB /* SMUserAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 803932691C97D6E700CE38CB /* SMUserAccount.m */; };
@@ -480,6 +482,9 @@
 		802410721C1E880C00493FB4 /* SMLabelPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabelPreferencesViewController.xib; sourceTree = "<group>"; };
 		8024107C1C1E9E3B00493FB4 /* SMFolderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderLabel.h; sourceTree = "<group>"; };
 		8024107D1C1E9E3B00493FB4 /* SMFolderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderLabel.m; sourceTree = "<group>"; };
+		80279AE81C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAppearancePreferencesViewController.h; sourceTree = "<group>"; };
+		80279AE91C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAppearancePreferencesViewController.m; sourceTree = "<group>"; };
+		80279AEA1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAppearancePreferencesViewController.xib; sourceTree = "<group>"; };
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
@@ -1082,6 +1087,7 @@
 			children = (
 				80238AE51BE32BA5009E090C /* SMAccountPreferencesViewController.xib */,
 				803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */,
+				80279AEA1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib */,
 				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
 				802410721C1E880C00493FB4 /* SMLabelPreferencesViewController.xib */,
 				803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */,
@@ -1100,6 +1106,8 @@
 				80238AE41BE32BA5009E090C /* SMAccountPreferencesViewController.m */,
 				803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */,
 				803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */,
+				80279AE81C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.h */,
+				80279AE91C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.m */,
 				80CEFA241BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.h */,
 				80CEFA251BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.m */,
 				802410701C1E880C00493FB4 /* SMLabelPreferencesViewController.h */,
@@ -1339,6 +1347,7 @@
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
 				802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */,
+				80279AEC1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib in Resources */,
 				801EDEF01BE9EB6700A16E85 /* at_sign.png in Resources */,
 				80A44B061B5A10BC0049AB88 /* Bold-128.png in Resources */,
 				80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */,
@@ -1409,6 +1418,7 @@
 				0002A09E17D1B1E000EA4AFF /* main.m in Sources */,
 				8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */,
 				0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */,
+				80279AEB1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.m in Sources */,
 				001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */,
 				80BD0A381C4E06AC00F43EA2 /* SMSectionMenuSeparatorView.m in Sources */,
 				00CAFBF31AC3A116005363CD /* SMMessageEditorWindowController.m in Sources */,

@@ -32,8 +32,10 @@
 @end
 
 @implementation SMGeneralPreferencesViewController {
-    NSArray *_messageListPreviewLinesNames, *_messageListPreviewLinesValues;
-    NSArray *_messageCheckPeriodNames, *_messageCheckPeriodValues;
+    NSArray *_messageListPreviewLinesNames;
+    NSArray *_messageListPreviewLinesValues;
+    NSArray *_messageCheckPeriodNames;
+    NSArray *_messageCheckPeriodValues;
     NSArray *_defaultReplyActionNames;
     NSArray *_preferableMessageFormatNames;
 }
@@ -62,7 +64,9 @@
     for(NSString *name in _messageCheckPeriodNames) {
         [_messageCheckPeriodList addItemWithTitle:name];
     }
-    
+
+    //
+
     _defaultReplyActionNames = @[@"Reply All", @"Reply"];
     
     [_defaultReplyActionList removeAllItems];

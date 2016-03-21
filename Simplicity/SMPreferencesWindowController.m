@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMAccountPreferencesViewController.h"
 #import "SMGeneralPreferencesViewController.h"
+#import "SMAppearancePreferencesViewController.h"
 #import "SMLabelPreferencesViewController.h"
 #import "SMSignaturePreferencesViewController.h"
 #import "SMAdvancedPreferencesViewController.h"
@@ -21,6 +22,7 @@
     NSArray *_tabViewControllers;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
+    SMAppearancePreferencesViewController *_appearancePreferencesViewController;
     SMSignaturePreferencesViewController *_signaturePreferencesViewController;
     SMLabelPreferencesViewController *_labelPreferencesViewController;
     SMAdvancedPreferencesViewController *_advancedPreferencesViewController;
@@ -32,12 +34,13 @@
 
     _accountPreferencesViewController = [[SMAccountPreferencesViewController alloc] initWithNibName:@"SMAccountPreferencesViewController" bundle:nil];
     _generalPreferencesViewController = [[SMGeneralPreferencesViewController alloc] initWithNibName:@"SMGeneralPreferencesViewController" bundle:nil];
+    _appearancePreferencesViewController = [[SMAppearancePreferencesViewController alloc] initWithNibName:@"SMAppearancePreferencesViewController" bundle:nil];
     _signaturePreferencesViewController = [[SMSignaturePreferencesViewController alloc] initWithNibName:@"SMSignaturePreferencesViewController" bundle:nil];
     _labelPreferencesViewController = [[SMLabelPreferencesViewController alloc] initWithNibName:@"SMLabelPreferencesViewController" bundle:nil];
     _advancedPreferencesViewController = [[SMAdvancedPreferencesViewController alloc] initWithNibName:@"SMAdvancedPreferencesViewController" bundle:nil];
 
-    _tabNames = @[@"Accounts", @"General", @"Signature", @"Labels", @"Advanced"];
-    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _signaturePreferencesViewController, _labelPreferencesViewController, _advancedPreferencesViewController];
+    _tabNames = @[@"Accounts", @"General", @"Appearance", @"Signature", @"Labels", @"Advanced"];
+    _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _appearancePreferencesViewController, _signaturePreferencesViewController, _labelPreferencesViewController, _advancedPreferencesViewController];
     
     [self toolbarToggleAccountAction:self];
 }
@@ -89,16 +92,20 @@
     [self selectTab:1];
 }
 
-- (IBAction)toolbarToggleSignatureAction:(id)sender {
+- (IBAction)toolbarToggleAppearanceAction:(id)sender {
     [self selectTab:2];
 }
 
-- (IBAction)toolbarToggleLabelsAction:(id)sender {
+- (IBAction)toolbarToggleSignatureAction:(id)sender {
     [self selectTab:3];
 }
 
-- (IBAction)toolbarToggleAdvancedAction:(id)sender {
+- (IBAction)toolbarToggleLabelsAction:(id)sender {
     [self selectTab:4];
+}
+
+- (IBAction)toolbarToggleAdvancedAction:(id)sender {
+    [self selectTab:5];
 }
 
 - (IBAction)closeAction:(id)sender {

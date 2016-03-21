@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMPreferencesController.h"
 #import "SMUserAccount.h"
 #import "SMMailbox.h"
 #import "SMFolder.h"
@@ -404,7 +405,11 @@ typedef enum {
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
     const NSInteger allFoldersGroupOffset = [self allFoldersGroupOffset];
 
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    
     NSTableCellView *result = nil;
+    BOOL adjustFont = YES;
 
     FolderListItemKind itemKind = [self getRowKind:row];
     switch(itemKind) {
@@ -488,10 +493,62 @@ typedef enum {
             } else if(row == allFoldersGroupOffset) {
                 [result.textField setStringValue:@"All Folders"];
             }
+            
+            adjustFont = NO;
+            
+            break;
         }
     }
     
     NSAssert(result != nil, @"cannot make folder cell view");
+
+    if(_folderListView.selectedRow != row) {
+        if(adjustFont) {
+            NSFont *existingFont = [result.textField font];
+            
+            switch(preferencesController.mailboxTheme) {
+                case SMMailboxTheme_Light:
+                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:5 size:existingFont.pointSize]];
+                    break;
+                    
+                case SMMailboxTheme_MediumLight:
+                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:5 size:existingFont.pointSize]];
+                    break;
+                    
+                case SMMailboxTheme_MediumDark:
+                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize]];
+                    break;
+                    
+                case SMMailboxTheme_Dark:
+                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize]];
+                    break;
+            }
+        }
+
+        switch(preferencesController.mailboxTheme) {
+            case SMMailboxTheme_Light:
+                [result.textField setTextColor:[NSColor blackColor]];
+                break;
+                
+            case SMMailboxTheme_MediumLight:
+                [result.textField setTextColor:[NSColor blackColor]];
+                break;
+                
+            case SMMailboxTheme_MediumDark:
+                [result.textField setTextColor:[NSColor whiteColor]];
+                break;
+                
+            case SMMailboxTheme_Dark:
+                [result.textField setTextColor:[NSColor colorWithCalibratedWhite:0.9 alpha:1.0]];
+                break;
+        }
+    }
+    else {
+        NSFont *existingFont = [result.textField font];
+
+        [result.textField setTextColor:[NSColor whiteColor]];
+        [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize]];
+    }
     
     return result;
 }

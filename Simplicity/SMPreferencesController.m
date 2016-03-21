@@ -67,6 +67,7 @@
     NSString *_downloadsFolderCached;
     NSUInteger _localStorageSizeMbCached;
     NSString *_singleSignatureCached;
+    SMMailboxTheme _mailboxThemeCached;
     NSDictionary<NSString*, SMFolderLabel*> *_labelsCached;
 }
 
@@ -886,27 +887,37 @@
 #pragma mark Mailbox theme
 
 - (SMMailboxTheme)mailboxTheme {
-    SMMailboxTheme result = SMMailboxTheme_Dark;
-    
-    if([[NSUserDefaults standardUserDefaults] objectForKey:kMailboxTheme] == nil) {
-        SM_LOG_INFO(@"Value for %@ not found, using defaults", kMailboxTheme);
-    }
-    else {
-        NSUInteger value = [[NSUserDefaults standardUserDefaults] integerForKey:kMailboxTheme];
+    static BOOL skipUserDefaults = NO;
+
+    if(!skipUserDefaults) {
+        SMMailboxTheme result = SMMailboxTheme_Dark;
         
-        if(value != SMMailboxTheme_Light && value != SMMailboxTheme_MediumLight && value != SMMailboxTheme_MediumDark && value != SMMailboxTheme_Dark) {
-            SM_LOG_INFO(@"Value %lu for %@ is invalid, using defaults", value, kMailboxTheme);
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMailboxTheme] == nil) {
+            SM_LOG_INFO(@"Value for %@ not found, using defaults", kMailboxTheme);
         }
         else {
-            result = value;
+            NSUInteger value = [[NSUserDefaults standardUserDefaults] integerForKey:kMailboxTheme];
+            
+            if(value != SMMailboxTheme_Light && value != SMMailboxTheme_MediumLight && value != SMMailboxTheme_MediumDark && value != SMMailboxTheme_Dark) {
+                SM_LOG_INFO(@"Value %lu for %@ is invalid, using defaults", value, kMailboxTheme);
+            }
+            else {
+                result = value;
+            }
         }
-    }
     
-    return result;
+        skipUserDefaults = YES;
+        
+        _mailboxThemeCached = result;
+    }
+
+    return _mailboxThemeCached;
 }
 
 - (void)setMailboxTheme:(SMMailboxTheme)value {
     [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kMailboxTheme];
+
+    _mailboxThemeCached = value;
 }
 
 #pragma mark Signatures

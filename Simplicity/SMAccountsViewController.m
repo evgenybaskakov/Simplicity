@@ -87,6 +87,8 @@
     }
     
     rootView.material = material;
+    
+    [self reloadAccountViews];
 }
 
 - (void)reloadAccountViews {
@@ -109,6 +111,27 @@
         else {
             accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
         }
+        
+        NSColor *color = [NSColor whiteColor];
+        switch([[appDelegate preferencesController] mailboxTheme]) {
+            case SMMailboxTheme_Light:
+                color = [NSColor blackColor];
+                break;
+                
+            case SMMailboxTheme_MediumLight:
+                color = [NSColor darkGrayColor];
+                break;
+                
+            case SMMailboxTheme_MediumDark:
+                color = [NSColor whiteColor];
+                break;
+                
+            case SMMailboxTheme_Dark:
+                color = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
+                break;
+        }
+        
+        [accountButtonViewController.accountName setTextColor:color];
         
         NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");

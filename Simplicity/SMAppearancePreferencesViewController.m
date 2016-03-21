@@ -10,6 +10,7 @@
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMAccountsViewController.h"
+#import "SMMailboxViewController.h"
 #import "SMAppearancePreferencesViewController.h"
 
 @interface SMAppearancePreferencesViewController ()
@@ -47,6 +48,7 @@
 
     [[appDelegate preferencesController] setMailboxTheme:mailboxThemeValue];
     [[[appDelegate appController] accountsViewController] setMailboxTheme:mailboxThemeValue];
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
 
 @end

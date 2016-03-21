@@ -408,10 +408,6 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    if(currentFolder == nil) {
-        SM_LOG_WARNING(@"no current folder");
-        return;
-    }
     
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which
@@ -438,40 +434,42 @@
     [_currentFolderScrollPosition.threadsAtRows removeAllObjects];
 
     // Load the current folder scroll information.
-    _currentFolderScrollPosition = [_folderScrollPositions objectForKey:currentFolder.localName];
-    
-    if(_currentFolderScrollPosition == nil) {
-        _currentFolderScrollPosition = [[ScrollPosition alloc] init];
-        [_folderScrollPositions setObject:_currentFolderScrollPosition forKey:currentFolder.localName];
-    }
-    
-    // after all is done, fix the currently selected
-    // message cell, if needed
-    if(preserveSelection) {
-        SMMessageStorage *messageStorage = currentFolder.messageStorage;
+    if(currentFolder != nil) {
+        _currentFolderScrollPosition = [_folderScrollPositions objectForKey:currentFolder.localName];
         
-        if(_selectedMessageThread != nil) {
-            NSAssert(_multipleSelectedMessageThreads.count == 0, @"multiple messages selection not empty");
+        if(_currentFolderScrollPosition == nil) {
+            _currentFolderScrollPosition = [[ScrollPosition alloc] init];
+            [_folderScrollPositions setObject:_currentFolderScrollPosition forKey:currentFolder.localName];
+        }
+        
+        // after all is done, fix the currently selected
+        // message cell, if needed
+        if(preserveSelection) {
+            SMMessageStorage *messageStorage = currentFolder.messageStorage;
+            
+            if(_selectedMessageThread != nil) {
+                NSAssert(_multipleSelectedMessageThreads.count == 0, @"multiple messages selection not empty");
 
-            NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:_selectedMessageThread localFolder:currentFolder.localName];
-            
-            if(threadIndex != NSNotFound) {
-                [_messageListTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] byExtendingSelection:NO];
-                return;
-            }
-        } else {
-            NSMutableIndexSet *threadIndexes = [NSMutableIndexSet indexSet];
-            
-            for(SMMessageThread *t in _multipleSelectedMessageThreads) {
-                NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:t localFolder:currentFolder.localName];
+                NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:_selectedMessageThread localFolder:currentFolder.localName];
                 
-                if(threadIndex != NSNotFound)
-                    [threadIndexes addIndex:threadIndex];
-            }
+                if(threadIndex != NSNotFound) {
+                    [_messageListTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] byExtendingSelection:NO];
+                    return;
+                }
+            } else {
+                NSMutableIndexSet *threadIndexes = [NSMutableIndexSet indexSet];
+                
+                for(SMMessageThread *t in _multipleSelectedMessageThreads) {
+                    NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:t localFolder:currentFolder.localName];
+                    
+                    if(threadIndex != NSNotFound)
+                        [threadIndexes addIndex:threadIndex];
+                }
 
-            if(threadIndexes.count != 0) {
-                [_messageListTableView selectRowIndexes:threadIndexes byExtendingSelection:NO];
-                return;
+                if(threadIndexes.count != 0) {
+                    [_messageListTableView selectRowIndexes:threadIndexes byExtendingSelection:NO];
+                    return;
+                }
             }
         }
     }

@@ -12,6 +12,7 @@
 #import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
+#import "SMAccountsViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -313,6 +314,24 @@
         SM_LOG_DEBUG(@"Account deletion cancelled");
         return;
     }
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    if(selectedAccount == appDelegate.currentAccountIdx) {
+        if(selectedAccount == 0) {
+            if(appDelegate.accounts.count > 1) {
+                [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
+            }
+            else {
+                NSAssert(nil, @"TODO: deletion of all accounts");
+            }
+        }
+        else {
+            [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
+        }
+    }
+
+    [appDelegate removeAccount:selectedAccount];
     
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:selectedAccount];
 
@@ -323,8 +342,8 @@
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+    [[[appDelegate appController] accountsViewController] reloadAccountViews];
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

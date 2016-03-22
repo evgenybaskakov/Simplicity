@@ -36,4 +36,7 @@
 
 @property (nonatomic) NSUInteger currentAccountIdx;
 
+- (void)addAccount;
+- (void)removeAccount:(NSUInteger)accountIdx;
+
 @end

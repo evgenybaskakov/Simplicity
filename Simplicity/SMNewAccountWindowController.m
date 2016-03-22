@@ -20,6 +20,7 @@
 #import "SMMailServiceProviderOutlook.h"
 #import "SMMailServiceProviderYandex.h"
 #import "SMMailServiceProviderCustom.h"
+#import "SMAccountsViewController.h"
 #import "SMNewAccountWindowController.h"
 
 static const NSUInteger LAST_STEP = 2;
@@ -412,6 +413,10 @@ static const NSUInteger LAST_STEP = 2;
         if(![[appDelegate appController] preferencesWindowShown]) {
             [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
         }
+
+        [appDelegate addAccount];
+        
+        [[[appDelegate appController] accountsViewController] reloadAccountViews];
     }
 }
 

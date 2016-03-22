@@ -54,6 +54,26 @@
     _currentAccountIdx = currentAccountIdx;
 }
 
+- (void)addAccount {
+    SMUserAccount *account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController];
+    
+    [_accounts addObject:account];
+    
+    [account initSession:_accounts.count-1];
+    [account getIMAPServerCapabilities];
+    [account initOpExecutor];
+}
+
+- (void)removeAccount:(NSUInteger)accountIdx {
+    NSAssert(accountIdx < _accounts.count, @"bad accountIdx %lu", accountIdx);
+
+    if(_currentAccountIdx >= accountIdx && accountIdx != 0) {
+        _currentAccountIdx--;
+    }
+    
+    [_accounts removeObjectAtIndex:accountIdx];
+}
+
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
     _window.titleVisibility = NSWindowTitleHidden;
     
@@ -69,13 +89,7 @@
     }
     else {
         for(NSUInteger i = 0; i < accountsCount; i++) {
-            SMUserAccount *account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController];
-            
-            [_accounts addObject:account];
-
-            [account initSession:i];
-            [account getIMAPServerCapabilities];
-            [account initOpExecutor];
+            [self addAccount];
         }
 
         _currentAccountIdx = 0; // TODO: restore from properties

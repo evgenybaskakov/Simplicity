@@ -18,8 +18,8 @@
 
 - (void)drawSelectionInRect:(NSRect)dirtyRect {
     if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone) {
-        NSColor *color1 = [NSColor colorWithCalibratedRed:0 green:0.3 blue:0.6 alpha:1];
-        NSColor *color2 = [NSColor colorWithCalibratedRed:0 green:0.5 blue:0.8 alpha:1];
+        NSColor *color1 = [NSColor colorWithCalibratedRed:0 green:0.3 blue:0.6 alpha:0.6];
+        NSColor *color2 = [NSColor colorWithCalibratedRed:0 green:0.5 blue:0.8 alpha:0.6];
         NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:color1 endingColor:color2];
 
         NSRect selectionRect = NSInsetRect(self.bounds, 0, 0);

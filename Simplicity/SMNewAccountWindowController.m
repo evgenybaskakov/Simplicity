@@ -406,7 +406,11 @@ static const NSUInteger LAST_STEP = 2;
 
         [[appDelegate appController] closeNewAccountWindow];
         
-        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider ];
+        if(_accountImage == nil) {
+            _accountImage = [SMAccountImageSelection defaultImage];
+        }
+        
+        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
         
         [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 

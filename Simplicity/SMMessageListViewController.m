@@ -252,10 +252,7 @@
     [view setMessagesCount:messageThread.messagesCount];
     
     SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
-    NSAssert(currentFolder != nil, @"currentFolder == nil");
-
     NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
-    
     [view.bookmarksView setBookmarkColors:bookmarkColors];
 
     if([[appDelegate preferencesController] shouldShowContactImages]) {
@@ -369,7 +366,10 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
+    
+    if(currentFolder == nil) {
+        return NO;
+    }
     
     SMMessageThread *messageThread = _currentFolderScrollPosition.visibleMessageThreads[idx];
     NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread localFolder:currentFolder.localName];

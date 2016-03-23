@@ -504,23 +504,27 @@ typedef enum {
 
     if(_folderListView.selectedRow != row) {
         if(adjustFont) {
-            NSFont *existingFont = [result.textField font];
-            
+            static NSFont *thinFont = nil;
+            if(thinFont == nil) {
+                NSFont *existingFont = [result.textField font];
+                thinFont = [[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize];
+            }
+
+            static NSFont *thickFont = nil;
+            if(thickFont == nil) {
+                NSFont *existingFont = [result.textField font];
+                thickFont = [[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:5 size:existingFont.pointSize];
+            }
+
             switch(preferencesController.mailboxTheme) {
                 case SMMailboxTheme_Light:
-                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:5 size:existingFont.pointSize]];
-                    break;
-                    
                 case SMMailboxTheme_MediumLight:
-                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:5 size:existingFont.pointSize]];
+                    [result.textField setFont:thickFont];
                     break;
                     
                 case SMMailboxTheme_MediumDark:
-                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize]];
-                    break;
-                    
                 case SMMailboxTheme_Dark:
-                    [result.textField setFont:[[NSFontManager sharedFontManager] fontWithFamily:existingFont.familyName traits:0 weight:0 size:existingFont.pointSize]];
+                    [result.textField setFont:thinFont];
                     break;
             }
         }

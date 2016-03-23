@@ -423,7 +423,7 @@ typedef enum {
             [result.textField setStringValue:folder.displayName];
             [result.imageView setImage:[self mainFolderImage:folder]];
 
-            [self displayUnseenCount:[(SMMailboxMainFolderView*)result unreadCount] folderName:folder];
+            [self displayUnseenCount:[(SMMailboxMainFolderView*)result unreadCount] folderName:folder selected:(_folderListView.selectedRow == row)];
             
             break;
         }
@@ -438,7 +438,7 @@ typedef enum {
             
             [result.textField setStringValue:folder.displayName];
 
-            [self displayUnseenCount:[(SMMailboxLabelView*)result unreadCount] folderName:folder];
+            [self displayUnseenCount:[(SMMailboxLabelView*)result unreadCount] folderName:folder selected:(_folderListView.selectedRow == row)];
             
             NSAssert([result.imageView isKindOfClass:[SMColorCircle class]], @"bad type of folder cell image");;
             
@@ -557,7 +557,7 @@ typedef enum {
     return result;
 }
 
-- (void)displayUnseenCount:(NSTextField*)textField folderName:(SMFolder*)folder {
+- (void)displayUnseenCount:(NSTextField*)textField folderName:(SMFolder*)folder selected:(BOOL)selected {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
     NSUInteger unseenCount;
@@ -575,6 +575,25 @@ typedef enum {
     else {
         textField.stringValue = @"0";
         textField.hidden = YES;
+    }
+    
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    
+    if(!selected) {
+        switch(preferencesController.mailboxTheme) {
+            case SMMailboxTheme_Light:
+            case SMMailboxTheme_MediumLight:
+                [textField setTextColor:[NSColor blackColor]];
+                break;
+                
+            case SMMailboxTheme_MediumDark:
+            case SMMailboxTheme_Dark:
+                [textField setTextColor:[NSColor whiteColor]];
+                break;
+        }
+    }
+    else {
+        [textField setTextColor:[NSColor whiteColor]];
     }
 }
 

@@ -24,6 +24,7 @@
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
 #import "SMAddressFieldViewController.h"
+#import "SMLabeledPopUpListViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
 #import "SMInlineButtonPanelViewController.h"
 #import "SMAttachmentItem.h"
@@ -36,6 +37,7 @@
 static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 @interface SMMessageEditorViewController ()
+@property (readonly) SMLabeledPopUpListViewController *fromBoxViewController;
 @property (readonly) SMAddressFieldViewController *toBoxViewController;
 @property (readonly) SMAddressFieldViewController *ccBoxViewController;
 @property (readonly) SMAddressFieldViewController *bccBoxViewController;
@@ -84,6 +86,10 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
+        // From
+        
+        _fromBoxViewController = [[SMLabeledPopUpListViewController alloc] initWithNibName:@"SMLabeledPopUpListViewController" bundle:nil];
+        
         // To
         
         _toBoxViewController = [[SMAddressFieldViewController alloc] initWithNibName:@"SMAddressFieldViewController" bundle:nil];
@@ -151,6 +157,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
     [_textAndAttachmentsSplitView addSubview:_messageTextEditor];
     [_textAndAttachmentsSplitView adjustSubviews];
+
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    if(appDelegate.accounts.count > 1) {
+        [_innerView addSubview:_fromBoxViewController.view];
+    }
     
     [_innerView addSubview:_toBoxViewController.view];
     [_innerView addSubview:_subjectBoxViewController.view];
@@ -169,7 +180,8 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
 
     // Controls initialization
-    
+
+    [_fromBoxViewController.label setStringValue:@"From:"];
     [_toBoxViewController.label setStringValue:@"To:"];
     [_ccBoxViewController.label setStringValue:@"Cc:"];
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
@@ -245,6 +257,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         }
         
         [window setInitialFirstResponder:_subjectBoxViewController.textField];
+
+        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        if(appDelegate.accounts.count > 1) {
+            [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
+        }
         
         [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
         [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
@@ -260,6 +277,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         
         [window setInitialFirstResponder:_subjectBoxViewController.textField];
 
+        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        if(appDelegate.accounts.count > 1) {
+            [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
+        }
+        
         [_toBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
         [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
     }
@@ -561,6 +583,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     const CGFloat curHeight = _innerView.frame.size.height;
     
     CGFloat yPos = -1;
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    if(appDelegate.accounts.count > 1) {
+        _fromBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _fromBoxViewController.view.frame.size.height);
+        _fromBoxViewController.view.autoresizingMask = NSViewWidthSizable;
+        _fromBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        yPos += _fromBoxViewController.view.frame.size.height - 1;
+    }
     
     _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height);
     _toBoxViewController.view.autoresizingMask = NSViewWidthSizable;

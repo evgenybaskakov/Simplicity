@@ -10,6 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
+#import "SMColorView.h"
 #import "SMFlippedView.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
@@ -119,7 +120,7 @@
                 break;
                 
             case SMMailboxTheme_MediumLight:
-                color = [NSColor darkGrayColor];
+                color = [NSColor blackColor];
                 break;
                 
             case SMMailboxTheme_MediumDark:
@@ -151,6 +152,43 @@
     
     NSView *prevView = nil;
     for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
+        if(i > 0) {
+            NSColor *color = [NSColor whiteColor];
+            switch([[appDelegate preferencesController] mailboxTheme]) {
+                case SMMailboxTheme_Light:
+                    color = [NSColor blackColor];
+                    break;
+                    
+                case SMMailboxTheme_MediumLight:
+                    color = [NSColor blackColor];
+                    break;
+                    
+                case SMMailboxTheme_MediumDark:
+                    color = [NSColor whiteColor];
+                    break;
+                    
+                case SMMailboxTheme_Dark:
+                    color = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
+                    break;
+            }
+            
+            SMColorView *separatorView = [[SMColorView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+            separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+            separatorView.backgroundColor = [color colorWithAlphaComponent:0.5];
+            
+            [_contentView addSubview:separatorView];
+
+            [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:separatorView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:1]];
+
+            [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:separatorView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+            
+            [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:separatorView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
+            
+            [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:prevView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:separatorView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+
+            prevView = separatorView;
+        }
+        
         NSView *buttonView = _accountButtonViewControllers[i].view;
         
         [_contentView addSubview:buttonView];

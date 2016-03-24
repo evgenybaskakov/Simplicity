@@ -101,6 +101,7 @@
 		800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67981B49A89B00272D60 /* MKColorSwatchCell.m */; };
 		800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */; };
 		800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679C1B49A89B00272D60 /* MKColorWell.m */; };
+		8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011CAE91CA3A91D00697210 /* SMColorView.m */; };
 		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
@@ -455,6 +456,8 @@
 		800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorSwatchMatrix.m; sourceTree = "<group>"; };
 		800C679B1B49A89B00272D60 /* MKColorWell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorWell.h; sourceTree = "<group>"; };
 		800C679C1B49A89B00272D60 /* MKColorWell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorWell.m; sourceTree = "<group>"; };
+		8011CAE81CA3A91D00697210 /* SMColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMColorView.h; sourceTree = "<group>"; };
+		8011CAE91CA3A91D00697210 /* SMColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMColorView.m; sourceTree = "<group>"; };
 		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
 		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
 		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
@@ -964,6 +967,8 @@
 				802408ED1B786FC80072FB98 /* SMBoxView.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
 				008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */,
+				8011CAE81CA3A91D00697210 /* SMColorView.h */,
+				8011CAE91CA3A91D00697210 /* SMColorView.m */,
 				800C67741B489FB300272D60 /* SMColorWellWithIcon.h */,
 				800C67751B489FB300272D60 /* SMColorWellWithIcon.m */,
 				0039B8501A67948500C03C3C /* SMFlippedView.h */,
@@ -1411,6 +1416,7 @@
 				80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */,
 				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
+				8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */,
 				80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */,

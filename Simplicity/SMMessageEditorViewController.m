@@ -295,13 +295,16 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     [_fromBoxViewController.itemList removeAllItems];
     
-    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
     for(NSUInteger i = 0, n = preferencesController.accountsCount; i < n; i++) {
         NSString *userAddressAndName = [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:i], [preferencesController userEmail:i] ];
         
         [_fromBoxViewController.itemList addItemWithTitle:userAddressAndName];
     }
-    
+
+    [_fromBoxViewController.itemList selectItemAtIndex:appDelegate.currentAccountIdx];
+
     if(subject) {
         [_subjectBoxViewController.textField setStringValue:subject];
     }

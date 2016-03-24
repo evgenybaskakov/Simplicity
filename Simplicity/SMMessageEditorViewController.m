@@ -29,6 +29,7 @@
 #import "SMInlineButtonPanelViewController.h"
 #import "SMAttachmentItem.h"
 #import "SMAttachmentsPanelViewController.h"
+#import "SMPreferencesController.h"
 #import "SMMessageEditorBase.h"
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWebView.h"
@@ -291,6 +292,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 #pragma mark Editor startup
 
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
+    
+    [_fromBoxViewController.itemList removeAllItems];
+    
+    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+    for(NSUInteger i = 0, n = preferencesController.accountsCount; i < n; i++) {
+        NSString *userAddressAndName = [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:i], [preferencesController userEmail:i] ];
+        
+        [_fromBoxViewController.itemList addItemWithTitle:userAddressAndName];
+    }
     
     if(subject) {
         [_subjectBoxViewController.textField setStringValue:subject];

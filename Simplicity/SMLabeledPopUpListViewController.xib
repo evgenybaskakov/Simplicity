@@ -15,7 +15,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY" customClass="NSBox">
-            <rect key="frame" x="0.0" y="0.0" width="388" height="30"/>
+            <rect key="frame" x="0.0" y="0.0" width="432" height="30"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OTd-48-Tjc">
@@ -30,9 +30,9 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="uZY-DX-cds">
-                    <rect key="frame" x="60" y="3" width="322" height="21"/>
+                    <rect key="frame" x="60" y="3" width="367" height="21"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="322" id="QxP-bf-aJ1"/>
+                        <constraint firstAttribute="width" constant="367" id="QxP-bf-aJ1"/>
                     </constraints>
                     <popUpButtonCell key="cell" type="bevel" title="Item 1" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" inset="2" selectedItem="Pz6-Ak-idK" id="2yq-RE-RnB">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -52,9 +52,9 @@
                 <constraint firstItem="OTd-48-Tjc" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="2" id="5bb-aQ-JGD"/>
                 <constraint firstItem="uZY-DX-cds" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="6" id="Dzz-g4-adj"/>
                 <constraint firstItem="uZY-DX-cds" firstAttribute="leading" secondItem="OTd-48-Tjc" secondAttribute="trailing" constant="3" id="ONU-ni-cIH"/>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="uZY-DX-cds" secondAttribute="trailing" constant="6" id="tC3-ln-O7Q"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="uZY-DX-cds" secondAttribute="trailing" constant="5" id="tC3-ln-O7Q"/>
             </constraints>
-            <point key="canvasLocation" x="421" y="335"/>
+            <point key="canvasLocation" x="443" y="335"/>
         </customView>
     </objects>
 </document>

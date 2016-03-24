@@ -29,11 +29,8 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="uZY-DX-cds">
-                    <rect key="frame" x="60" y="3" width="367" height="21"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="367" id="QxP-bf-aJ1"/>
-                    </constraints>
+                <popUpButton horizontalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="uZY-DX-cds">
+                    <rect key="frame" x="60" y="3" width="60" height="21"/>
                     <popUpButtonCell key="cell" type="bevel" title="Item 1" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" inset="2" selectedItem="Pz6-Ak-idK" id="2yq-RE-RnB">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>

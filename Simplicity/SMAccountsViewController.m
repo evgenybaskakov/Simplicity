@@ -144,6 +144,13 @@
         accountButtonViewController.accountButton.tag = i;
 
         accountButtonViewController.accountIdx = i;
+        
+        if(i == appDelegate.currentAccountIdx) {
+            accountButtonViewController.trackMouse = NO;
+        }
+        else {
+            accountButtonViewController.trackMouse = YES;
+        }
 
         [_accountButtonViewControllers addObject:accountButtonViewController];
     }
@@ -153,28 +160,28 @@
     NSView *prevView = nil;
     for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
         if(i > 0) {
-            NSColor *color = [NSColor whiteColor];
+            NSColor *separatorColor = [NSColor whiteColor];
             switch([[appDelegate preferencesController] mailboxTheme]) {
                 case SMMailboxTheme_Light:
-                    color = [NSColor blackColor];
+                    separatorColor = [NSColor blackColor];
                     break;
                     
                 case SMMailboxTheme_MediumLight:
-                    color = [NSColor blackColor];
+                    separatorColor = [NSColor blackColor];
                     break;
                     
                 case SMMailboxTheme_MediumDark:
-                    color = [NSColor whiteColor];
+                    separatorColor = [NSColor whiteColor];
                     break;
                     
                 case SMMailboxTheme_Dark:
-                    color = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
+                    separatorColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
                     break;
             }
             
             SMColorView *separatorView = [[SMColorView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
             separatorView.translatesAutoresizingMaskIntoConstraints = NO;
-            separatorView.backgroundColor = [color colorWithAlphaComponent:0.5];
+            separatorView.backgroundColor = [separatorColor colorWithAlphaComponent:0.5];
             
             [_contentView addSubview:separatorView];
 
@@ -203,7 +210,28 @@
         else {
             [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:prevView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:buttonView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         }
+
+        NSColor *buttonColor = [NSColor whiteColor];
+        switch([[appDelegate preferencesController] mailboxTheme]) {
+            case SMMailboxTheme_Light:
+                buttonColor = [NSColor colorWithCalibratedWhite:0.5 alpha:1.0];
+                break;
+                
+            case SMMailboxTheme_MediumLight:
+                buttonColor = [NSColor colorWithCalibratedWhite:0.3 alpha:1.0];
+                break;
+                
+            case SMMailboxTheme_MediumDark:
+                buttonColor = [NSColor colorWithCalibratedWhite:0.8 alpha:1.0];
+                break;
+                
+            case SMMailboxTheme_Dark:
+                buttonColor = [NSColor colorWithCalibratedWhite:0.7 alpha:1.0];
+                break;
+        }
         
+        _accountButtonViewControllers[i].backgroundColor = buttonColor;
+
         if(i == appDelegate.currentAccountIdx) {
             NSView *mailboxView = [appController.mailboxViewController view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;

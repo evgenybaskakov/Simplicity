@@ -14,6 +14,9 @@
 @property (weak) IBOutlet NSTextField *accountName;
 @property (weak) IBOutlet NSButton *accountButton;
 
+@property (nonatomic) NSColor *backgroundColor;
+
+@property BOOL trackMouse;
 @property NSUInteger accountIdx;
 
 @end

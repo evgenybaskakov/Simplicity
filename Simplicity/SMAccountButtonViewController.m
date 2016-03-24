@@ -7,18 +7,23 @@
 //
 
 #import "SMAppDelegate.h"
+#import "SMColorView.h"
 #import "SMPreferencesController.h"
 #import "SMAccountButtonViewController.h"
 
-@interface SMAccountButtonViewController ()
-
-@end
-
-@implementation SMAccountButtonViewController
+@implementation SMAccountButtonViewController {
+    NSTrackingArea *_trackingArea;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
+
+    ((SMColorView*)self.view).backgroundColor = [NSColor clearColor];
+    
+    _trackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited) owner:self userInfo:nil];
+    
+    [self.view addTrackingArea:_trackingArea];
 }
 
 - (void)reloadAccountInfo {
@@ -33,6 +38,28 @@
     else {
         _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
     }
+}
+
+- (void)mouseEntered:(NSEvent *)theEvent {
+    if(_trackMouse) {
+        ((SMColorView*)self.view).backgroundColor = _backgroundColor;
+    }
+    
+    [self.view setNeedsDisplay:YES];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent {
+    ((SMColorView*)self.view).backgroundColor = [NSColor clearColor];
+    
+    [self.view setNeedsDisplay:YES];
+}
+
+- (void)setBackgroundColor:(NSColor*)backgroundColor {
+    _backgroundColor = [backgroundColor colorWithAlphaComponent:0.2];
+
+    ((SMColorView*)self.view).backgroundColor = [NSColor clearColor];
+    
+    [self.view setNeedsDisplay:YES];
 }
 
 @end

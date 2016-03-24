@@ -228,7 +228,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSAssert(nil, @"should not happen");
 }
 
-- (void)setResponders {
+- (void)setResponders:(BOOL)force {
     NSWindow *window = [[self view] window];
     NSAssert(window, @"no window");
 
@@ -239,7 +239,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     if(_fullAddressPanelShown) {
         if(!messageEditorFocus) {
-            [window makeFirstResponder:_subjectBoxViewController.textField];
+            if(force) {
+                [window makeFirstResponder:_subjectBoxViewController.textField];
+            }
         }
         
         [window setInitialFirstResponder:_subjectBoxViewController.textField];
@@ -251,14 +253,18 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     }
     else {
         if(!messageEditorFocus) {
-            [window makeFirstResponder:_toBoxViewController.tokenField];
+            if(force) {
+                [window makeFirstResponder:_subjectBoxViewController.textField];
+            }
         }
         
-        [window setInitialFirstResponder:_toBoxViewController.tokenField];
+        [window setInitialFirstResponder:_subjectBoxViewController.textField];
 
-        [_toBoxViewController.tokenField setNextKeyView:_messageTextEditor];
+        [_toBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
+        [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
     }
 }
+
 
 #pragma mark Editor startup
 
@@ -512,13 +518,12 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
     }
 
-    [self setResponders];
+    [self setResponders:NO];
 }
 
 - (void)showFullAddressPanel {
     [_innerView addSubview:_ccBoxViewController.view];
     [_innerView addSubview:_bccBoxViewController.view];
-    [_innerView addSubview:_subjectBoxViewController.view];
     
     [self adjustFrames];
     [self notifyContentHeightChanged];
@@ -529,7 +534,6 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 - (void)hideFullAddressPanel {
     [_ccBoxViewController.view removeFromSuperview];
     [_bccBoxViewController.view removeFromSuperview];
-    [_subjectBoxViewController.view removeFromSuperview];
 
     [self adjustFrames];
     [self notifyContentHeightChanged];
@@ -576,13 +580,13 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         _bccBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
 
         yPos += _bccBoxViewController.view.frame.size.height - 1;
-
-        _subjectBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _subjectBoxViewController.view.frame.size.height);
-        _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
-        _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-
-        yPos += _subjectBoxViewController.view.frame.size.height - 1;
     }
+
+    _subjectBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _subjectBoxViewController.view.frame.size.height);
+    _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
+    _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+    
+    yPos += _subjectBoxViewController.view.frame.size.height - 1;
 
     _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
     _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;

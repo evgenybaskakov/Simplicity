@@ -53,7 +53,7 @@
 
     [[self window] setContentView:_messageEditorViewController.view];
     
-    [_messageEditorViewController setResponders];
+    [_messageEditorViewController setResponders:TRUE];
     
     // Editor setup
     

@@ -15,6 +15,7 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMOperationQueueWindowController.h"
 #import "SMAccountButtonViewController.h"
 #import "SMAccountsViewController.h"
 
@@ -263,6 +264,8 @@
         appDelegate.currentAccountIdx = accountIdx;
         
         [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
+        [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
+
         [[[appDelegate currentAccount] messageListController] updateMessageList];
         
         [self reloadAccountViews];

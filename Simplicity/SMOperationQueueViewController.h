@@ -12,6 +12,6 @@
 
 @property IBOutlet NSTableView *tableView;
 
-- (void)reloadData;
+- (void)reloadOperationQueue;
 
 @end

@@ -33,8 +33,8 @@
     [[appDelegate appController] hideOperationQueueSheet];
 }
 
-- (void)reloadData {
-    [_operationQueueViewController reloadData];
+- (void)reloadOperationQueue {
+    [_operationQueueViewController reloadOperationQueue];
 }
 
 - (void)cancelOperation:(id)sender {

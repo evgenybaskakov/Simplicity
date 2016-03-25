@@ -54,7 +54,8 @@
 }
 
 - (void)start {
-    MCOIMAPSession *session = [_operationExecutor.account imapSession];
+    SMUserAccount *account = _operationExecutor.account;
+    MCOIMAPSession *session = [account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPAppendMessageOperation *op = [session appendMessageOperationWithFolder:_remoteFolderName messageData:_messageBuilder.mcoMessageBuilder.data flags:_flags customFlags:nil];
@@ -68,7 +69,7 @@
             SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
 
             if(self.postActionTarget) {
-                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Message", @"UID", nil]];
+                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:account, _messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Account", @"Message", @"UID", nil]];
                 
                 [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
             }

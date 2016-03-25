@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMAddress;
+@class SMUserAccount;
 @class SMAttachmentItem;
 
 @interface SMMessageEditorController : NSObject
@@ -19,8 +21,8 @@
 - (id)initWithDraftUID:(uint32_t)draftMessageUid;
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)removeAttachmentItems:(NSArray*)attachmentItems;
-- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc;
-- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc;
-- (void)deleteSavedDraft;
+- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account;
+- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account;
+- (void)deleteSavedDraft:(SMUserAccount*)account;
 
 @end

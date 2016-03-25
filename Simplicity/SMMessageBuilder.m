@@ -83,10 +83,11 @@
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
+- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
     self = [super init];
     
     if(self) {
+        _account = account;
         _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
         _creationDate = _mcoMessageBuilder.header.date;

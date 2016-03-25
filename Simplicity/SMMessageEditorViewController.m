@@ -58,10 +58,12 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSView *_innerView;
     Boolean _fullAddressPanelShown;
     NSString *_lastSubject;
+    NSString *_lastFrom;
     NSArray<SMAddress*> *_lastTo;
     NSArray<SMAddress*> *_lastCc;
     NSArray<SMAddress*> *_lastBcc;
     Boolean _doNotSaveDraftOnClose;
+    SMUserAccount *_lastAccount;
 }
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid {
@@ -69,6 +71,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     
     if(self) {
         _lastSubject = @"";
+        _lastFrom = @"";
         _lastTo = @[];
         _lastCc = @[];
         _lastBcc = @[];
@@ -301,6 +304,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         NSString *userAddressAndName = [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:i], [preferencesController userEmail:i] ];
         
         [_fromBoxViewController.itemList addItemWithTitle:userAddressAndName];
+        [[_fromBoxViewController.itemList itemAtIndex:i] setRepresentedObject:appDelegate.accounts[i]];
     }
 
     [_fromBoxViewController.itemList selectItemAtIndex:appDelegate.currentAccountIdx];
@@ -329,7 +333,9 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         [self showAttachmentsPanel];
     }
     
+    _lastAccount = _fromBoxViewController.itemList.selectedItem.representedObject;
     _lastSubject = _subjectBoxViewController.textField.stringValue;
+    _lastFrom = _fromBoxViewController.itemList.titleOfSelectedItem;
     _lastTo = _toBoxViewController.tokenField.objectValue;
     _lastCc = _ccBoxViewController.tokenField.objectValue;
     _lastBcc = _bccBoxViewController.tokenField.objectValue;
@@ -343,17 +349,28 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 #pragma mark Message actions
 
 - (void)sendMessage {
+    NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
+    
+    SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
+    if(![[[[NSApplication sharedApplication] delegate] accounts] containsObject:account]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot send message, as the chosen user account %@ does not exist.", from]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+        
+        return;
+    }
     NSString *messageText = [_messageTextEditor getMessageText];
     
-    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue];
+    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
 
     if(!_embedded) {
         [[[self view] window] close];
     }
     
-    // TODO: use the account the account bound the message to (via 'from'); see issue #77.
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    [SMNotificationsController localNotifyMessageSent:self account:appDelegate.currentAccount];
+    [SMNotificationsController localNotifyMessageSent:self account:account];
 }
 
 - (void)deleteEditedDraft {
@@ -370,15 +387,13 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
             return;
         }
         
-        [_messageEditorController deleteSavedDraft];
+        [_messageEditorController deleteSavedDraft:_lastAccount];
     }
 
     _doNotSaveDraftOnClose = YES;
 
     if(_embedded) {
-        // TODO: use the account the account bound the message to (via 'from'); see issue #77.
-        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-        [SMNotificationsController localNotifyDeleteEditedMessageDraft:self account:appDelegate.currentAccount];
+        [SMNotificationsController localNotifyDeleteEditedMessageDraft:self account:_lastAccount];
     }
     else {
         [[[self view] window] close];
@@ -387,6 +402,7 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 - (Boolean)hasUnsavedContents {
     NSString *subject = _subjectBoxViewController.textField.stringValue;
+    NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
     NSArray *to = _toBoxViewController.tokenField.objectValue;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
@@ -395,7 +411,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         return YES;
     }
     
+    if(_lastAccount != nil && _lastAccount != _fromBoxViewController.itemList.selectedItem.representedObject) {
+        return YES;
+    }
+    
     if((_lastSubject != nil || subject != nil) && ![_lastSubject isEqualToString:subject]) {
+        return YES;
+    }
+
+    if((_lastFrom != nil || from != nil) && ![_lastFrom isEqualToString:from]) {
         return YES;
     }
 
@@ -420,6 +444,20 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
         return;
     }
 
+    NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
+    SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
+    
+    if(![[[[NSApplication sharedApplication] delegate] accounts] containsObject:account]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot save message, as the chosen user account %@ does not exist.", from]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+
+        return;
+    }
+    
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
 
     NSString *subject = _subjectBoxViewController.textField.stringValue;
@@ -427,13 +465,15 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
     
+    _lastAccount = account;
     _lastSubject = subject;
+    _lastFrom = from;
     _lastTo = to;
     _lastCc = cc;
     _lastBcc = bcc;
     
     NSString *messageText = [_messageTextEditor getMessageText];
-    [_messageEditorController saveDraft:messageText subject:subject to:to cc:cc bcc:bcc];
+    [_messageEditorController saveDraft:messageText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
     
     _messageTextEditor.unsavedContentPending = NO;
 }

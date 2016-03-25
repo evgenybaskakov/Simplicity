@@ -33,9 +33,6 @@
 #import "SMMessageThreadViewController.h"
 #import "SMMessageEditorController.h"
 
-// TODO: See issue #79. The editor should use not the current account, but allow the user to choose it.
-//       Also it should decide what account is to use by default when replying / forwarding.
-
 @implementation SMMessageEditorController {
     NSMutableArray *_attachmentItems;
     MCOMessageBuilder *_saveDraftMessage;
@@ -69,23 +66,22 @@
 
 #pragma mark Actions
 
-- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccountIdx] mailbox:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccountIdx]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
+- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder ];
+    SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
     
-    [[appDelegate.currentAccount outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    [[account outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate.currentAccount outboxController] finishMessageSending:message];
+    SMUserAccount *account = message.messageBuilder.account;
     
-    [self deleteSavedDraft];
+    [[account outboxController] finishMessageSending:message];
+    
+    [self deleteSavedDraft:account];
 
     if(_saveDraftOp) {
         if(![_saveDraftOp cancelOp]) {
@@ -96,7 +92,7 @@
     }
 }
 
-- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc {
+- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     if(_saveDraftOp) {
@@ -112,21 +108,19 @@
         _saveDraftOp = nil;
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[MCOAddress addressWithDisplayName:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccountIdx] mailbox:[[appDelegate preferencesController] smtpUserName:appDelegate.currentAccountIdx]] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
-    SMFolder *draftsFolder = [[appDelegate.currentAccount mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[account mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[appDelegate.currentAccount operationExecutor]];
+    SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[account operationExecutor]];
     
     op.postActionTarget = self;
     op.postActionSelector = @selector(messageSavedToDrafts:);
     
-    [[appDelegate.currentAccount operationExecutor] enqueueOperation:op];
+    [[account operationExecutor] enqueueOperation:op];
     
     _saveDraftMessage = messageBuilder.mcoMessageBuilder;
     _saveDraftOp = op;
@@ -137,13 +131,16 @@
 #pragma mark Message after-saving actions
 
 - (void)messageSavedToDrafts:(NSDictionary *)info {
+    SMUserAccount *account = [info objectForKey:@"Account"];
     MCOMessageBuilder *message = [info objectForKey:@"Message"]; // TODO: use SMMessage, not builder
     uint32_t uid = [[info objectForKey:@"UID"] unsignedIntValue];
+    
+    NSAssert(account != nil, @"no account in the notification");
     
     SM_LOG_DEBUG(@"uid %u", uid);
     
     if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
-        [self deleteSavedDraft];
+        [self deleteSavedDraft:account];
         
         if(message == _prevSaveDraftMessage) {
             _prevSaveDraftMessage = nil;
@@ -161,7 +158,7 @@
             // the message writing was finished and the message was sent.
             // So the draft that's been just saved suddenly became unneeded.
             // Hence, just delete it right away.
-            [self deleteSavedDraft];
+            [self deleteSavedDraft:account];
         }
     }
 }
@@ -170,7 +167,7 @@
     return (_saveDraftUID != 0);
 }
 
-- (void)deleteSavedDraft {
+- (void)deleteSavedDraft:(SMUserAccount*)account {
     if(_saveDraftUID == 0) {
         SM_LOG_DEBUG(@"No saved message draft");
         return;
@@ -179,26 +176,23 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = [account mailbox];
     NSAssert(mailbox != nil, @"no mailbox");
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    SMFolder *draftsFolder = [[appDelegate.currentAccount mailbox] draftsFolder];
+    SMFolder *draftsFolder = [[account mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMLocalFolder *draftsLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolder:draftsFolder.fullName];
+    SMLocalFolder *draftsLocalFolder = [[account localFolderRegistry] getLocalFolder:draftsFolder.fullName];
     NSAssert(draftsLocalFolder != nil, @"no local drafts folder");
     
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
     
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    SMMessageListController *messageListController = [account messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
-    
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
     
     if([draftsLocalFolder moveMessage:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];

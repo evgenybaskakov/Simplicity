@@ -180,7 +180,7 @@ static const NSUInteger LAST_STEP = 2;
 - (void)validateUserName:(BOOL)checkFirst {
     _fullNameValid = (_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0)? YES : NO;
 
-    if(checkFirst && _fullNameEntered) {
+    if(checkFirst || !_fullNameEntered) {
         _fullNameInvalidMarker.hidden = (_fullNameValid? YES : NO);
     }
     
@@ -190,7 +190,7 @@ static const NSUInteger LAST_STEP = 2;
 - (void)validateEmailAddress:(BOOL)checkFirst {
     _emailAddressValid = [SMStringUtils emailAddressValid:_emailAddressField.stringValue];
 
-    if(checkFirst && _emailAddressEntered) {
+    if(checkFirst || !_emailAddressEntered) {
         _emailInvalidMarker.hidden = (_emailAddressValid? YES : NO);
     }
 
@@ -202,7 +202,7 @@ static const NSUInteger LAST_STEP = 2;
 
     _accountNameValid = [SMPreferencesController accountNameValid:accountName]? YES : NO;
     
-    if(checkFirst && _accountNameEntered) {
+    if(checkFirst || !_accountNameEntered) {
         _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);
     }
     

@@ -296,6 +296,11 @@ static const NSUInteger EMBEDDED_MARGIN_H = 3, EMBEDDED_MARGIN_W = 3;
 
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
     
+    // Force the view loading for the 'from' box.
+    // Otherwise the following sequence is incorrect.
+    [_fromBoxViewController view];
+
+    NSAssert(_fromBoxViewController.itemList != nil, @"_fromBoxViewController.itemList == nil");
     [_fromBoxViewController.itemList removeAllItems];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

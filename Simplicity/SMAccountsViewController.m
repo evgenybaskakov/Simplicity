@@ -10,6 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
+#import "SMNotificationsController.h"
 #import "SMColorView.h"
 #import "SMFlippedView.h"
 #import "SMMailboxViewController.h"
@@ -50,6 +51,9 @@
         _accountButtonViewControllers = [NSMutableArray array];
 
         [self loadAppearanceModeFromProperties];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncSuccess:) name:@"FolderListUpdated" object:nil];
     }
     
     return self;
@@ -276,6 +280,44 @@
     NSUInteger clickedAccountIdx = [(NSButton*)sender tag];
     
     [self changeAccountTo:clickedAccountIdx];
+}
+
+- (void)accountSyncError:(NSNotification*)notification {
+    NSString *error;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getAccountSyncErrorParams:notification error:&error account:&account];
+    
+    NSAssert(account != nil, @"account is nil");
+    NSAssert(error != nil, @"error is nil");
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
+    
+    if(accountIdx != NSNotFound) {
+        [_accountButtonViewControllers[accountIdx] showAttention:error];
+    }
+    else {
+        SM_LOG_ERROR(@"account %@ not found", account);
+    }
+}
+
+- (void)accountSyncSuccess:(NSNotification*)notification {
+    SMUserAccount *account;
+    
+    [SMNotificationsController getFolderListUpdatedParams:notification account:&account];
+    
+    NSAssert(account != nil, @"account is nil");
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
+    
+    if(accountIdx != NSNotFound) {
+        [_accountButtonViewControllers[accountIdx] hideAttention];
+    }
+    else {
+        SM_LOG_ERROR(@"account %@ not found", account);
+    }
 }
 
 @end

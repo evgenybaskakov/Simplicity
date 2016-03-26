@@ -110,12 +110,14 @@
                 [self addFoldersToDatabase];
                 [self ensureMainLocalFoldersCreated];
             }
+
+            [SMNotificationsController localNotifyFolderListUpdated:_account];
         }
         else {
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
+
+            [SMNotificationsController localNotifyAccountSyncError:_account error:error.localizedDescription];
         }
-        
-        [SMNotificationsController localNotifyFolderListUpdated:_account];
     }];
 }
 

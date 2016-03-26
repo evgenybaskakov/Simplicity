@@ -44,6 +44,10 @@
 
 #pragma mark Local notifications
 
++ (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSString*)error {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AccountSyncError" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", error, @"Error", nil]];
+}
+
 + (void)localNotifyFolderListUpdated:(SMUserAccount*)account {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FolderListUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", nil]];
 }
@@ -107,6 +111,18 @@
 }
 
 #pragma mark Notification parameter getters
+
++ (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSString**)error account:(SMUserAccount**)account {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(error) {
+        *error = [messageInfo objectForKey:@"Error"];
+    }
+    
+    if(account) {
+        *account = [messageInfo objectForKey:@"Account"];
+    }
+}
 
 + (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];

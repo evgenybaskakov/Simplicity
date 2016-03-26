@@ -12,7 +12,7 @@
 #import "SMAccountButtonViewController.h"
 
 @interface SMAccountButtonViewController ()
-@property (weak) IBOutlet NSLayoutConstraint *accountNameToAttentionButtonContraint;
+@property IBOutlet NSLayoutConstraint *accountNameToAttentionButtonContraint;
 @end
 
 @implementation SMAccountButtonViewController {
@@ -39,15 +39,24 @@
     [self.view addTrackingArea:_trackingArea];
 }
 
-- (void)showAttention {
+- (void)showAttention:(NSString*)attentionText {
+    if(_attentionButton.toolTip != attentionText) {
+        _attentionButton.toolTip = attentionText;
+    }
+    
     if(_attentionButtonShown) {
         return;
     }
 
+    NSAssert(_accountNameToAttentionButtonContraint != nil, @"_accountNameToAttentionButtonContraint == nil");
+    NSAssert(_accountNameToViewContraint != nil, @"_accountNameToViewContraint == nil");
+    
     [self.view removeConstraint:_accountNameToViewContraint];
     [self.view addConstraint:_accountNameToAttentionButtonContraint];
     
     _attentionButton.hidden = NO;
+    
+    _attentionButtonShown = YES;
 }
 
 - (void)hideAttention {
@@ -55,10 +64,15 @@
         return;
     }
     
+    NSAssert(_accountNameToAttentionButtonContraint != nil, @"_accountNameToAttentionButtonContraint == nil");
+    NSAssert(_accountNameToViewContraint != nil, @"_accountNameToViewContraint == nil");
+    
     [self.view removeConstraint:_accountNameToAttentionButtonContraint];
     [self.view addConstraint:_accountNameToViewContraint];
     
     _attentionButton.hidden = YES;
+    
+    _attentionButtonShown = NO;
 }
 
 - (void)reloadAccountInfo {

@@ -20,7 +20,7 @@
 @property BOOL trackMouse;
 @property NSUInteger accountIdx;
 
-- (void)showAttention;
+- (void)showAttention:(NSString*)attentionText;
 - (void)hideAttention;
 
 @end

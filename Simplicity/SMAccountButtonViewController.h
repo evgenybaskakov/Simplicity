@@ -13,10 +13,14 @@
 @property (weak) IBOutlet NSImageView *accountImage;
 @property (weak) IBOutlet NSTextField *accountName;
 @property (weak) IBOutlet NSButton *accountButton;
+@property (weak) IBOutlet NSButton *attentionButton;
 
 @property (nonatomic) NSColor *backgroundColor;
 
 @property BOOL trackMouse;
 @property NSUInteger accountIdx;
+
+- (void)showAttention;
+- (void)hideAttention;
 
 @end

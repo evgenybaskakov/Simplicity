@@ -269,7 +269,13 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    [_accountsViewController reloadAccountViews];
+    [_accountsViewController reloadAccountViews:YES];
+    
+    //
+    
+    SMMailboxTheme mailboxTheme = [[appDelegate preferencesController] mailboxTheme];
+
+    [_accountsViewController setMailboxTheme:mailboxTheme];
     
     //
     

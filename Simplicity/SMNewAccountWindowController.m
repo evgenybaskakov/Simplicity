@@ -420,7 +420,7 @@ static const NSUInteger LAST_STEP = 2;
 
         [appDelegate addAccount];
         
-        [[[appDelegate appController] accountsViewController] reloadAccountViews];
+        [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
     }
 }
 

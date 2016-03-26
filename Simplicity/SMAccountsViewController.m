@@ -50,22 +50,11 @@
         
         _accountButtonViewControllers = [NSMutableArray array];
 
-        [self loadAppearanceModeFromProperties];
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncSuccess:) name:@"FolderListUpdated" object:nil];
     }
     
     return self;
-}
-
-- (void)loadAppearanceModeFromProperties {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMPreferencesController *preferencesController = [appDelegate preferencesController];
-
-    SMMailboxTheme mailboxTheme = [preferencesController mailboxTheme];
-    
-    [self setMailboxTheme:mailboxTheme];
 }
 
 - (void)setMailboxTheme:(SMMailboxTheme)mailboxTheme {
@@ -94,71 +83,67 @@
     
     rootView.material = material;
     
-    [self reloadAccountViews];
+    [self reloadAccountViews:NO];
 }
 
-- (void)reloadAccountViews {
+- (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
-    [_accountButtonViewControllers removeAllObjects];
-    [_contentView setSubviews:@[]];
+    if(reloadControllers) {
+        [_accountButtonViewControllers removeAllObjects];
 
-    for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {
-        SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
-        NSAssert(accountButtonViewController.view, @"button.view");
+        for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {
+            SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
+            NSAssert(accountButtonViewController.view, @"button.view");
 
-        accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-        accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
-        
-        if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-            accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
-        }
-        else {
-            accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
-        }
-        
-        NSColor *color = [NSColor whiteColor];
-        switch([[appDelegate preferencesController] mailboxTheme]) {
-            case SMMailboxTheme_Light:
-                color = [NSColor blackColor];
-                break;
-                
-            case SMMailboxTheme_MediumLight:
-                color = [NSColor blackColor];
-                break;
-                
-            case SMMailboxTheme_MediumDark:
-                color = [NSColor whiteColor];
-                break;
-                
-            case SMMailboxTheme_Dark:
-                color = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
-                break;
-        }
-        
-        [accountButtonViewController.accountName setTextColor:color];
-        
-        NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
-        NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-        
-        accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-        
-        accountButtonViewController.accountButton.action = @selector(accountButtonAction:);
-        accountButtonViewController.accountButton.target = self;
-        accountButtonViewController.accountButton.tag = i;
+            accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+            accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
+            
+            if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+            }
+            else {
+                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+            }
+            
+            NSColor *color = [NSColor whiteColor];
+            switch([[appDelegate preferencesController] mailboxTheme]) {
+                case SMMailboxTheme_Light:
+                    color = [NSColor blackColor];
+                    break;
+                    
+                case SMMailboxTheme_MediumLight:
+                    color = [NSColor blackColor];
+                    break;
+                    
+                case SMMailboxTheme_MediumDark:
+                    color = [NSColor whiteColor];
+                    break;
+                    
+                case SMMailboxTheme_Dark:
+                    color = [NSColor colorWithCalibratedWhite:0.9 alpha:1.0];
+                    break;
+            }
+            
+            [accountButtonViewController.accountName setTextColor:color];
+            
+            NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
+            NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+            
+            accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+            
+            accountButtonViewController.accountButton.action = @selector(accountButtonAction:);
+            accountButtonViewController.accountButton.target = self;
+            accountButtonViewController.accountButton.tag = i;
 
-        accountButtonViewController.accountIdx = i;
-        
-        if(i == appDelegate.currentAccountIdx) {
-            accountButtonViewController.trackMouse = NO;
+            accountButtonViewController.accountIdx = i;
+            
+            [_accountButtonViewControllers addObject:accountButtonViewController];
         }
-        else {
-            accountButtonViewController.trackMouse = YES;
-        }
-
-        [_accountButtonViewControllers addObject:accountButtonViewController];
     }
+    
+    [_contentView setSubviews:@[]];
     
     NSAssert(_accountButtonViewControllers.count > 0, @"_accountButtonViewControllers.count == 0");
     
@@ -238,6 +223,13 @@
         _accountButtonViewControllers[i].backgroundColor = buttonColor;
 
         if(i == appDelegate.currentAccountIdx) {
+            _accountButtonViewControllers[i].trackMouse = NO;
+        }
+        else {
+            _accountButtonViewControllers[i].trackMouse = YES;
+        }
+        
+        if(i == appDelegate.currentAccountIdx) {
             NSView *mailboxView = [appController.mailboxViewController view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -272,7 +264,7 @@
 
         [[[appDelegate currentAccount] messageListController] updateMessageList];
         
-        [self reloadAccountViews];
+        [self reloadAccountViews:NO];
     }
 }
 

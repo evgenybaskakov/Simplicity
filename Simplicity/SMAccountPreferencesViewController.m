@@ -343,7 +343,7 @@
     }
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
-    [[[appDelegate appController] accountsViewController] reloadAccountViews];
+    [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

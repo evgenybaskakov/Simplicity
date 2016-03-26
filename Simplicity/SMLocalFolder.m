@@ -129,13 +129,13 @@
             _folderInfoOp = nil;
 
             if(error == nil) {
-                SM_LOG_DEBUG(@"UIDNEXT: %u, UIDVALIDITY: %u, Messages count %u", info.uidNext, info.uidValidity, info.messageCount);
+                SM_LOG_DEBUG(@"Folder %@, UIDNEXT: %u, UIDVALIDITY: %u, Messages count %u", _localName, info.uidNext, info.uidValidity, info.messageCount);
                 
                 _totalMessagesCount = [info messageCount];
                 
                 [self syncFetchMessageHeaders];
             } else {
-                SM_LOG_ERROR(@"Error fetching folder info: %@", error);
+                SM_LOG_ERROR(@"Error fetching folder %@ info: %@", _localName, error);
             }
         }];
     }

@@ -186,7 +186,8 @@
         
         if (error != nil && [error code] != MCOErrorNone) {
             SM_LOG_ERROR(@"Error creating folder %@: %@", fullFolderName, error);
-        } else {
+        }
+        else {
             SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
 
             [[_account mailboxController] scheduleFolderListUpdate:YES];

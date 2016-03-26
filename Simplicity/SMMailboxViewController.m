@@ -487,11 +487,11 @@ typedef enum {
             [result.textField setFont:[NSFont boldSystemFontOfSize:fontSize]];
             
             if(row == mainFoldersGroupOffset) {
-                [result.textField setStringValue:@"Main Folders"];
+                [result.textField setStringValue:@"Mailbox"];
             } else if(row == favoriteFoldersGroupOffset) {
-                [result.textField setStringValue:@"Favorite Folders"];
+                [result.textField setStringValue:@"Favorite"];
             } else if(row == allFoldersGroupOffset) {
-                [result.textField setStringValue:@"All Folders"];
+                [result.textField setStringValue:@"Labels"];
             }
             
             adjustFont = NO;

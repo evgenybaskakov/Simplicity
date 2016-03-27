@@ -6,6 +6,7 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
@@ -14,6 +15,8 @@
 #import "SMAppearancePreferencesViewController.h"
 
 @interface SMAppearancePreferencesViewController ()
+@property (weak) IBOutlet NSButton *fixedSizeFontButton;
+@property (weak) IBOutlet NSButton *regularFontButton;
 @property (weak) IBOutlet NSPopUpButton *mailboxThemeList;
 @end
 
@@ -39,6 +42,14 @@
     NSAssert(mailboxThemeValue < _mailboxThemeNames.count, @"bad mailboxThemeValue %lu loaded from preferences", mailboxThemeValue);
 
     [_mailboxThemeList selectItemAtIndex:mailboxThemeValue];
+}
+
+- (IBAction)regularFontButtonAction:(id)sender {
+    SM_LOG_WARNING(@"TODO");
+}
+
+- (IBAction)fixedSizeButtonAction:(id)sender {
+    SM_LOG_WARNING(@"TODO");
 }
 
 - (IBAction)mailboxThemeListAction:(id)sender {

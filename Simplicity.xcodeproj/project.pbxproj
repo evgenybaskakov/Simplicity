@@ -886,10 +886,10 @@
 				004A64281AC7A40B0079A0C1 /* SMAddressFieldViewController.m */,
 				0002A0B317D1BB0100EA4AFF /* SMAppController.h */,
 				0002A0B417D1BB0100EA4AFF /* SMAppController.m */,
-				003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */,
-				003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */,
 				00A085AD1A72145300CC4E1C /* SMAttachmentsPanelViewController.h */,
 				00A085AE1A72145300CC4E1C /* SMAttachmentsPanelViewController.m */,
+				003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */,
+				003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */,
 				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
 				8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */,
 				006709311A99A77600C0C9CC /* SMFindContentsPanelViewController.h */,
@@ -922,8 +922,6 @@
 				00A25BB917E10D1400D0FCB1 /* SMMessageListController.m */,
 				00E9107B17D2F6F50028C679 /* SMMessageListViewController.h */,
 				00E9107C17D2F6F50028C679 /* SMMessageListViewController.m */,
-				8048FBD41C140B510083954D /* SMNotificationsController.h */,
-				8048FBD51C140B510083954D /* SMNotificationsController.m */,
 				00CB00E91A9E886700339E6D /* SMMessageThreadCell.h */,
 				00CB00EA1A9E886700339E6D /* SMMessageThreadCell.m */,
 				00FC3C7619AADD67002DAF9C /* SMMessageThreadCellViewController.h */,
@@ -938,6 +936,8 @@
 				801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */,
 				00AD52ED1AA81C7900627433 /* SMNewLabelWindowController.h */,
 				00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */,
+				8048FBD41C140B510083954D /* SMNotificationsController.h */,
+				8048FBD51C140B510083954D /* SMNotificationsController.m */,
 				801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */,
 				801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */,
 				801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */,
@@ -955,7 +955,6 @@
 		005B086D17D4F62600341051 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				80CE25E51C782E4500A9837F /* TokenField */,
 				800C67951B49A89B00272D60 /* MKColorPickerView.h */,
 				800C67961B49A89B00272D60 /* MKColorPickerView.m */,
 				800C67971B49A89B00272D60 /* MKColorSwatchCell.h */,
@@ -990,10 +989,10 @@
 				8048FBCB1C13D0800083954D /* SMInactiveButton.m */,
 				004A642A1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.h */,
 				004A642B1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m */,
-				803B10E01C1025DC0057E785 /* SMMailboxMainFolderView.h */,
-				803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */,
 				803B10EA1C1025F80057E785 /* SMMailboxLabelView.h */,
 				803B10EB1C1025F80057E785 /* SMMailboxLabelView.m */,
+				803B10E01C1025DC0057E785 /* SMMailboxMainFolderView.h */,
+				803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */,
 				803B10ED1C1123390057E785 /* SMMailboxRowView.h */,
 				803B10EE1C1123390057E785 /* SMMailboxRowView.m */,
 				005F9A391AAD46500022EDEF /* SMMailboxTableView.h */,
@@ -1018,6 +1017,7 @@
 				0034EBC019EA3A3200CDF656 /* SMTokenField.m */,
 				804207D01C55F72900EA7641 /* SMWindow.h */,
 				804207D11C55F72900EA7641 /* SMWindow.m */,
+				80CE25E51C782E4500A9837F /* TokenField */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -1025,18 +1025,18 @@
 		00621CF619230D4200BF1C01 /* Forms */ = {
 			isa = PBXGroup;
 			children = (
-				80238AEF1BE32BB2009E090C /* Preferences */,
 				0002A0A617D1B1E000EA4AFF /* MainMenu.xib */,
+				80238AEF1BE32BB2009E090C /* Preferences */,
 				80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */,
-				003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */,
+				004A64201AC7A3000079A0C1 /* SMAddressFieldViewController.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
+				003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */,
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
 				802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */,
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */,
 				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
-				004A64201AC7A3000079A0C1 /* SMAddressFieldViewController.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
@@ -1106,8 +1106,8 @@
 				80279AEA1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib */,
 				80CEFA261BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib */,
 				802410721C1E880C00493FB4 /* SMLabelPreferencesViewController.xib */,
-				803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */,
 				8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */,
+				803A29A41C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib */,
 			);
 			name = Preferences;
 			sourceTree = "<group>";

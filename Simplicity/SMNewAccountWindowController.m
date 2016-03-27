@@ -51,14 +51,12 @@ static const NSUInteger LAST_STEP = 2;
 @property (weak) IBOutlet NSButton *icloudRadioButton;
 @property (weak) IBOutlet NSButton *yahooRadioButton;
 @property (weak) IBOutlet NSButton *outlookRadioButton;
-@property (weak) IBOutlet NSButton *yandexRadioButton;
 @property (weak) IBOutlet NSButton *customServerRadioButton;
 
 @property (weak) IBOutlet NSButton *gmailImageButton;
 @property (weak) IBOutlet NSButton *icloudImageButton;
 @property (weak) IBOutlet NSButton *yahooImageButton;
 @property (weak) IBOutlet NSButton *outlookImageButton;
-@property (weak) IBOutlet NSButton *yandexImageButton;
 @property (weak) IBOutlet NSButton *customServerImageButton;
 
 #pragma mark Step 3
@@ -308,6 +306,42 @@ static const NSUInteger LAST_STEP = 2;
     }
 
     _curStep = step;
+    
+    [self initResponderChain];
+}
+
+- (void)initResponderChain {
+    if(_curStep == 0) {
+        [self.window setInitialFirstResponder:_fullNameField];
+        [self.window makeFirstResponder:_fullNameField];
+
+        [_fullNameField setNextKeyView:_emailAddressField];
+        [_emailAddressField setNextKeyView:_passwordField];
+        [_passwordField setNextKeyView:_nextButton];
+        [_nextButton setNextKeyView:_cancelButton];
+        [_cancelButton setNextKeyView:_fullNameField];
+    }
+    else if(_curStep == 1) {
+        [self.window makeFirstResponder:_customServerRadioButton];
+
+        [_gmailRadioButton setNextKeyView:_icloudRadioButton];
+        [_icloudRadioButton setNextKeyView:_outlookRadioButton];
+        [_outlookRadioButton setNextKeyView:_yahooRadioButton];
+        [_yahooRadioButton setNextKeyView:_customServerRadioButton];
+        [_customServerRadioButton setNextKeyView:_nextButton];
+        [_nextButton setNextKeyView:_backButton];
+        [_backButton setNextKeyView:_cancelButton];
+        [_cancelButton setNextKeyView:_gmailRadioButton];
+    }
+    else if(_curStep == 2) {
+        [self.window makeFirstResponder:_accountNameField];
+
+        [_accountNameField setNextKeyView:_accountImageButton];
+        [_accountImageButton setNextKeyView:_nextButton];
+        [_nextButton setNextKeyView:_backButton];
+        [_backButton setNextKeyView:_cancelButton];
+        [_cancelButton setNextKeyView:_accountNameField];
+    }
 }
 
 - (IBAction)serviceProviderSelectAction:(id)sender {
@@ -374,9 +408,6 @@ static const NSUInteger LAST_STEP = 2;
     }
     else if(selectedMailProviderButton == _outlookRadioButton) {
         provider = [[SMMailServiceProviderOutlook alloc] initWithEmailAddress:emailAddress password:password];
-    }
-    else if(selectedMailProviderButton == _yandexRadioButton) {
-        provider = [[SMMailServiceProviderYandex alloc] initWithEmailAddress:emailAddress password:password];
     }
     else if(selectedMailProviderButton == _customServerRadioButton) {
         provider = [[SMMailServiceProviderCustom alloc] initWithEmailAddress:emailAddress password:password];

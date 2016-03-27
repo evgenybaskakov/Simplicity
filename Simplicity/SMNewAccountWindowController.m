@@ -146,22 +146,36 @@ static const NSUInteger LAST_STEP = 2;
     [self validateUserName:NO];
     
     _fullNameEntered = YES;
+    
+    if(_fullNameValid) {
+        [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
+    }
 }
 
 - (IBAction)emailAddressEnterAction:(id)sender {
     [self validateEmailAddress:NO];
     
     _emailAddressEntered = YES;
+    
+    if(_emailAddressValid) {
+        [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
+    }
 }
 
 - (IBAction)passwordEnterAction:(id)sender {
-    // Nothing to do.
+    if(_nextButton.enabled) {
+        [self nextAction:self];
+    }
 }
 
 - (IBAction)accountNameEnterAction:(id)sender {
     [self validateAccountName:NO];
 
     _accountNameEntered = YES;
+
+    if(_accountNameValid) {
+        [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
+    }
 }
 
 - (IBAction)accountImageSelectAction:(id)sender {

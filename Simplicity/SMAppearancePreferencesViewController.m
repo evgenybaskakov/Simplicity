@@ -21,6 +21,8 @@
 @end
 
 @implementation SMAppearancePreferencesViewController {
+    NSFont *_regularFont;
+    NSFont *_fixedFont;
     NSArray *_mailboxThemeNames;
     NSArray *_mailboxThemeValues;
 }
@@ -45,19 +47,61 @@
     
     //
     
-    NSFont *regularFont = [[appDelegate preferencesController] regularMessageFont];
-    _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", regularFont.displayName, (NSUInteger)(regularFont.pointSize + 0.5)];
+    _regularFont = [[appDelegate preferencesController] regularMessageFont];
+    [self reloadRegularFontButton];
     
-    NSFont *fixedFont = [[appDelegate preferencesController] fixedMessageFont];
-    _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", fixedFont.displayName, (NSUInteger)(fixedFont.pointSize + 0.5)];
+    _fixedFont = [[appDelegate preferencesController] fixedMessageFont];
+    [self reloadFixedFontButton];
+}
+
+- (void)reloadRegularFontButton {
+    _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", _regularFont.displayName, (NSUInteger)_regularFont.pointSize];
+}
+
+- (void)reloadFixedFontButton {
+    _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", _fixedFont.displayName, (NSUInteger)_fixedFont.pointSize];
+}
+
+- (void)setRegularFont:(id)sender {
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    _regularFont = [fontManager convertFont:[fontManager selectedFont]];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setRegularMessageFont:_regularFont];
+    
+    [self reloadRegularFontButton];
+}
+
+- (void)setFixedFont:(id)sender {
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    _fixedFont = [fontManager convertFont:[fontManager selectedFont]];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setFixedMessageFont:_fixedFont];
+    
+    [self reloadFixedFontButton];
 }
 
 - (IBAction)regularFontButtonAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    [self.view.window makeFirstResponder:self];
+
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    [fontManager setSelectedFont:_regularFont isMultiple:NO];
+    [fontManager setAction:@selector(setRegularFont:)];
+
+    NSFontPanel *fontPanel = [fontManager fontPanel:YES];
+    [fontPanel makeKeyAndOrderFront:sender];
 }
 
 - (IBAction)fixedSizeButtonAction:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    [self.view.window makeFirstResponder:self];
+    
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    [fontManager setSelectedFont:_fixedFont isMultiple:NO];
+    [fontManager setAction:@selector(setFixedFont:)];
+    
+    NSFontPanel *fontPanel = [fontManager fontPanel:YES];
+    [fontPanel makeKeyAndOrderFront:sender];
 }
 
 - (IBAction)mailboxThemeListAction:(id)sender {

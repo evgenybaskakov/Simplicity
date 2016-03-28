@@ -15,7 +15,7 @@
 #import "SMAppearancePreferencesViewController.h"
 
 @interface SMAppearancePreferencesViewController ()
-@property (weak) IBOutlet NSButton *fixedSizeFontButton;
+@property (weak) IBOutlet NSButton *fixedFontButton;
 @property (weak) IBOutlet NSButton *regularFontButton;
 @property (weak) IBOutlet NSPopUpButton *mailboxThemeList;
 @end
@@ -42,6 +42,14 @@
     NSAssert(mailboxThemeValue < _mailboxThemeNames.count, @"bad mailboxThemeValue %lu loaded from preferences", mailboxThemeValue);
 
     [_mailboxThemeList selectItemAtIndex:mailboxThemeValue];
+    
+    //
+    
+    NSFont *regularFont = [[appDelegate preferencesController] regularMessageFont];
+    _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", regularFont.displayName, (NSUInteger)(regularFont.pointSize + 0.5)];
+    
+    NSFont *fixedFont = [[appDelegate preferencesController] fixedMessageFont];
+    _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", fixedFont.displayName, (NSUInteger)(fixedFont.pointSize + 0.5)];
 }
 
 - (IBAction)regularFontButtonAction:(id)sender {

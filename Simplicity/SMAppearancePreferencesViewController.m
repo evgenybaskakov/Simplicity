@@ -56,10 +56,14 @@
 
 - (void)reloadRegularFontButton {
     _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", _regularFont.displayName, (NSUInteger)_regularFont.pointSize];
+    _regularFontButton.font = _regularFont;
+    
+    NSLog(@"_regularFontButton.fittingSize: %g, %g", _regularFontButton.fittingSize.width, _regularFontButton.fittingSize.height);
 }
 
 - (void)reloadFixedFontButton {
     _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", _fixedFont.displayName, (NSUInteger)_fixedFont.pointSize];
+    _fixedFontButton.font = _fixedFont;
 }
 
 - (void)setRegularFont:(id)sender {

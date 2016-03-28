@@ -37,6 +37,10 @@
 #define kLogLevel                       @"LogLevel"
 #define kMailTransportLogLevel          @"MailTransportLogLevel"
 #define kPreferableMessageFormat        @"PreferableMessageFormat"
+#define kRegularMessageFont             @"RegularMessageFont"
+#define kRegularMessageFontSize         @"RegularMessageFontSize"
+#define kFixedMessageFont               @"FixedMessageFont"
+#define kFixedMessageFontSize           @"FixedMessageFontSize"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -1053,6 +1057,68 @@
 
 - (void)setPreferableMessageFormat:(SMPreferableMessageFormat)value {
     [[NSUserDefaults standardUserDefaults] setInteger:value forKey:kPreferableMessageFormat];
+}
+
+#pragma mark Regular message font
+
+- (NSFont*)regularMessageFont {
+    NSData *fontDescData = [[NSUserDefaults standardUserDefaults] objectForKey:kRegularMessageFont];
+    if(fontDescData != nil) {
+        NSFontDescriptor *fontDesc = [NSKeyedUnarchiver unarchiveObjectWithData:fontDescData];
+
+        CGFloat fontSize = 11;
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kRegularMessageFontSize] != nil) {
+            fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:kRegularMessageFontSize];
+        }
+        else {
+            SM_LOG_INFO(@"Value for %@ not found, using defaults", kRegularMessageFontSize);
+        }
+        
+        return [NSFont fontWithDescriptor:fontDesc size:fontSize];
+    }
+    else {
+        SM_LOG_INFO(@"Value for %@ not found, using defaults", kRegularMessageFont);
+        
+        return [NSFont fontWithName:@"Helvetica" size:11];
+    }
+}
+
+- (void)setRegularMessageFont:(NSFont*)font  {
+    NSFontDescriptor *fontDesc = font.fontDescriptor;
+    NSData *fontDescData = [NSKeyedArchiver archivedDataWithRootObject:fontDesc];
+    [[NSUserDefaults standardUserDefaults] setObject:fontDescData forKey:kRegularMessageFont];
+    [[NSUserDefaults standardUserDefaults] setFloat:font.pointSize forKey:kRegularMessageFontSize];
+}
+
+#pragma mark Fixed message font
+
+- (NSFont*)fixedMessageFont {
+    NSData *fontDescData = [[NSUserDefaults standardUserDefaults] objectForKey:kFixedMessageFont];
+    if(fontDescData != nil) {
+        NSFontDescriptor *fontDesc = [NSKeyedUnarchiver unarchiveObjectWithData:fontDescData];
+        
+        CGFloat fontSize = 11;
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kFixedMessageFontSize] != nil) {
+            fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:kFixedMessageFontSize];
+        }
+        else {
+            SM_LOG_INFO(@"Value for %@ not found, using defaults", kFixedMessageFontSize);
+        }
+        
+        return [NSFont fontWithDescriptor:fontDesc size:fontSize];
+    }
+    else {
+        SM_LOG_INFO(@"Value for %@ not found, using defaults", kFixedMessageFont);
+        
+        return [NSFont fontWithName:@"Menlo" size:11];
+    }
+}
+
+- (void)setFixedMessageFont:(NSFont*)font  {
+    NSFontDescriptor *fontDesc = font.fontDescriptor;
+    NSData *fontDescData = [NSKeyedArchiver archivedDataWithRootObject:fontDesc];
+    [[NSUserDefaults standardUserDefaults] setObject:fontDescData forKey:kFixedMessageFont];
+    [[NSUserDefaults standardUserDefaults] setFloat:font.pointSize forKey:kFixedMessageFontSize];
 }
 
 @end

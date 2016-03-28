@@ -47,6 +47,8 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @property (nonatomic) NSString *singleSignature;
 @property (nonatomic) NSUInteger logLevel;
 @property (nonatomic) NSUInteger mailTransportLogLevel;
+@property (nonatomic) NSFontDescriptor *regularMessageFont;
+@property (nonatomic) NSFontDescriptor *fixedMessageFont;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

@@ -14,5 +14,6 @@
 
 - (void)reloadAccounts;
 - (void)showAccount:(NSString*)accountName;
+- (void)adjustWindowSize:(NSSize)viewSize;
 
 @end

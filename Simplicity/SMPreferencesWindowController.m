@@ -18,8 +18,9 @@
 #import "SMPreferencesWindowController.h"
 
 @implementation SMPreferencesWindowController {
-    NSArray *_tabNames;
-    NSArray *_tabViewControllers;
+    NSArray<NSString*> *_tabNames;
+    NSArray<NSViewController*> *_tabViewControllers;
+    NSUInteger _currentTabIdx;
     SMAccountPreferencesViewController *_accountPreferencesViewController;
     SMGeneralPreferencesViewController *_generalPreferencesViewController;
     SMAppearancePreferencesViewController *_appearancePreferencesViewController;
@@ -53,17 +54,27 @@
             [subview removeFromSuperview];
         }
     }
-   
-    NSViewController *tabViewController = _tabViewControllers[idx];
-    
-    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
-    CGFloat windowHeight = tabViewController.view.frame.size.height + toolbarHeight;
 
-    [self setInnerSize:NSMakeSize(tabViewController.view.frame.size.width, windowHeight)];
+    _currentTabIdx = idx;
+   
+    [self adjustWindowSize:_tabViewControllers[idx].view.frame.size];
+
+    [view addSubview:_tabViewControllers[idx].view];
+}
+
+- (void)adjustWindowSize:(NSSize)viewSize {
+    NSViewController *tabViewController = _tabViewControllers[_currentTabIdx];
     
-    [view addSubview:tabViewController.view];
-    [view setFrameSize:NSMakeSize(tabViewController.view.frame.size.width, tabViewController.view.frame.size.height)];
+    NSView *view = [self window].contentView;
+
+    CGFloat toolbarHeight = [self window].frame.size.height - [self window].contentView.frame.size.height;
+    CGFloat windowHeight = viewSize.height + toolbarHeight;
     
+    [self setInnerSize:NSMakeSize(viewSize.width, windowHeight)];
+
+    [view setFrameSize:viewSize];
+    
+    [tabViewController.view setFrameSize:viewSize];
     [tabViewController.view setFrameOrigin:NSMakePoint(0, 0)];
 }
 
@@ -72,7 +83,7 @@
     
     NSRect origWindowFrame = [NSWindow contentRectForFrameRect:[[self window] frame] styleMask:[[self window] styleMask]];
     NSRect newWindowFrame = [NSWindow frameRectForContentRect:NSMakeRect(NSMinX(origWindowFrame), NSMaxY(origWindowFrame), origWindowFrame.size.width, innerSize.height) styleMask:[[self window] styleMask]];
-
+    
     newWindowFrame.size = innerSize;
     newWindowFrame.origin.y = origY - innerSize.height;
     

@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMAccountsViewController.h"
+#import "SMPreferencesWindowController.h"
 #import "SMMailboxViewController.h"
 #import "SMAppearancePreferencesViewController.h"
 
@@ -18,6 +19,10 @@
 @property (weak) IBOutlet NSButton *fixedFontButton;
 @property (weak) IBOutlet NSButton *regularFontButton;
 @property (weak) IBOutlet NSPopUpButton *mailboxThemeList;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint1;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint2;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint3;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint4;
 @end
 
 @implementation SMAppearancePreferencesViewController {
@@ -29,7 +34,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    [self.view setPostsFrameChangedNotifications:YES];
+    
     _mailboxThemeNames = @[@"Light", @"Medium light", @"Medium dark", @"Dark"];
     _mailboxThemeValues = @[@(SMMailboxTheme_Light), @(SMMailboxTheme_MediumLight), @(SMMailboxTheme_MediumDark), @(SMMailboxTheme_Dark)];
 
@@ -58,12 +65,22 @@
     _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", _regularFont.displayName, (NSUInteger)_regularFont.pointSize];
     _regularFontButton.font = _regularFont;
     
-    NSLog(@"_regularFontButton.fittingSize: %g, %g", _regularFontButton.fittingSize.width, _regularFontButton.fittingSize.height);
+    [self adjustWindowSize];
 }
 
 - (void)reloadFixedFontButton {
     _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", _fixedFont.displayName, (NSUInteger)_fixedFont.pointSize];
     _fixedFontButton.font = _fixedFont;
+    
+    [self adjustWindowSize];
+}
+
+- (void)adjustWindowSize {
+    [self.view layoutSubtreeIfNeeded];
+    
+    CGFloat newHeight = _heightConstraint1.constant + _heightConstraint2.constant + _heightConstraint3.constant + _heightConstraint4.constant + _regularFontButton.intrinsicContentSize.height + _fixedFontButton.intrinsicContentSize.height + _mailboxThemeList.intrinsicContentSize.height;
+    
+    [(SMPreferencesWindowController*)self.view.window.windowController adjustWindowSize:NSMakeSize(NSWidth(self.view.frame), newHeight)];
 }
 
 - (void)setRegularFont:(id)sender {
@@ -105,6 +122,7 @@
     [fontManager setAction:@selector(setFixedFont:)];
     
     NSFontPanel *fontPanel = [fontManager fontPanel:YES];
+    [fontPanel setWorksWhenModal:YES];
     [fontPanel makeKeyAndOrderFront:sender];
 }
 

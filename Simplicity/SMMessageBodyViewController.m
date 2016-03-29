@@ -14,10 +14,12 @@
 #import <WebKit/WebDataSource.h>
 #import <WebKit/WebFrameLoadDelegate.h>
 #import <WebKit/WebPolicyDelegate.h>
+#import <WebKit/WebPreferences.h>
 
 #import "SMLog.h"
-#import "SMMessageBodyViewController.h"
 #import "SMAppDelegate.h"
+#import "SMMessageBodyViewController.h"
+#import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMAttachmentStorage.h"
 
@@ -73,10 +75,27 @@
         
         [self setView:view];
         
+        [self setDefaultFonts];
+        
         _nextIdentifier = 0;
     }
     
     return self;
+}
+
+- (void)setDefaultFonts {
+    WebView *view = (WebView *)self.view;
+    
+    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+
+    NSFont *regularFont = preferencesController.regularMessageFont;
+    NSFont *fixedFont = preferencesController.fixedMessageFont;
+
+    [[view preferences] setDefaultFontSize:(int)regularFont.pointSize];
+    [[view preferences] setStandardFontFamily:regularFont.familyName];
+
+    [[view preferences] setDefaultFixedFontSize:(int)fixedFont.pointSize];
+    [[view preferences] setFixedFontFamily:fixedFont.familyName];
 }
 
 - (void)loadHTML {

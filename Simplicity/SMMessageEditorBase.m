@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMMessageEditorBase.h"
 
 static NSArray *fontFamilies;
@@ -80,12 +82,23 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 + (NSString*)newMessageHTMLBeginTemplate:(Boolean)folded {
+    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+    NSFont *regularFont = preferencesController.regularMessageFont;
+    NSString *fontFamily = regularFont.familyName;
+    NSUInteger fontSize = (NSUInteger)regularFont.pointSize;
+    NSFontDescriptor *fontDescriptor = regularFont.fontDescriptor;
+    NSString *fontWeight = (fontDescriptor.symbolicTraits & NSFontBoldTrait) ? @"bold" : @"normal";
+    NSString *fontStyle = (fontDescriptor.symbolicTraits & NSFontItalicTrait) ? @"italic" : @"normal";
+    NSString *style = (folded? @"style='display: none;'" : @"");
+    
     return [NSString stringWithFormat:@""
         "<html>"
         "<style>"
         "  body {"
-        "    font-family: 'Arial';" // TODO: sync with fontFamilies and User Prefs!
-        "    font-size: 12px;"      // TODO: sync with fontFamilies and User Prefs!
+        "    font-family: '%@';"
+        "    font-size: %lupx;"
+        "    font-weight: %@;"
+        "    font-style: %@;"
         "  }"
         "  blockquote {"
         "    display: block;"
@@ -97,7 +110,7 @@ static NSDictionary *fontNameToIndexMap;
         "  }"
         "</style>"
         "<body id='SimplicityEditor'>"
-        "  <div id='SimplicityContentToFold' %@>", (folded? @"style='display: none;'" : @""), nil ];
+        "  <div id='SimplicityContentToFold' %@>", fontFamily, fontSize, fontWeight, fontStyle, style, nil ];
 }
 
 + (NSString*)newFoldedMessageHTMLBeginTemplate {

@@ -61,16 +61,18 @@
     [self reloadFixedFontButton];
 }
 
+static const NSUInteger maxButtonFontSize = 24;
+
 - (void)reloadRegularFontButton {
     _regularFontButton.title = [NSString stringWithFormat:@"%@ %lu", _regularFont.displayName, (NSUInteger)_regularFont.pointSize];
-    _regularFontButton.font = _regularFont;
+    _regularFontButton.font = _regularFont.pointSize > maxButtonFontSize? [NSFont fontWithDescriptor:_regularFont.fontDescriptor size:maxButtonFontSize] : _regularFont;
     
     [self adjustWindowSize];
 }
 
 - (void)reloadFixedFontButton {
     _fixedFontButton.title = [NSString stringWithFormat:@"%@ %lu", _fixedFont.displayName, (NSUInteger)_fixedFont.pointSize];
-    _fixedFontButton.font = _fixedFont;
+    _fixedFontButton.font = _fixedFont.pointSize > maxButtonFontSize? [NSFont fontWithDescriptor:_fixedFont.fontDescriptor size:maxButtonFontSize] : _fixedFont;
     
     [self adjustWindowSize];
 }

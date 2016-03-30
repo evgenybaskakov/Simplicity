@@ -648,22 +648,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [NSApp runModalForWindow:newLabelSheet];
 }
 
-- (void)showRenameLabelSheet:(NSString*)labelNabel {
-    SM_LOG_WARNING(@"TODO: %@", labelNabel);
-/*
- if(_addNewLabelWindowController == nil) {
-        _addNewLabelWindowController = [[SMNewLabelWindowController alloc] initWithWindowNibName:@"SMNewLabelWindowController"];
-    }
-    
-    _addNewLabelWindowController.suggestedNestingLabel = suggestedParentFolder;
-    
-    NSWindow *newLabelSheet = _addNewLabelWindowController.window;
-    NSAssert(newLabelSheet != nil, @"newLabelSheet is nil");
-    
-    [NSApp runModalForWindow:newLabelSheet];
-*/
-}
-
 - (void)hideNewLabelSheet {
     NSAssert(_addNewLabelWindowController != nil, @"_addNewLabelWindowController is nil");
 

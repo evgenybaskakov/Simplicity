@@ -683,7 +683,6 @@ typedef enum {
         case kFavoriteFoldersGroupItem: {
             menu = [[NSMenu alloc] init];
             
-            [menu addItemWithTitle:@"Rename label" action:@selector(renameLabel) keyEquivalent:@""];
             [menu addItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@""];
             [menu addItemWithTitle:@"Remove label from favorites" action:@selector(removeLabelFromFavorites) keyEquivalent:@""];
             
@@ -696,7 +695,6 @@ typedef enum {
             menu = [[NSMenu alloc] init];
 
             [menu addItemWithTitle:@"New label" action:@selector(newLabel) keyEquivalent:@""];
-            [menu addItemWithTitle:@"Rename label" action:@selector(renameLabel) keyEquivalent:@""];
             [menu addItemWithTitle:@"Delete label" action:@selector(deleteLabel) keyEquivalent:@""];
             [menu addItemWithTitle:@"Hide label" action:@selector(hideLabel) keyEquivalent:@""];
             [menu addItemWithTitle:@"Make label favorite" action:@selector(makeLabelFavorite) keyEquivalent:@""];
@@ -735,18 +733,6 @@ typedef enum {
     else {
         [appController showNewLabelSheet:nil];
     }
-}
-
-- (void)renameLabel {
-    NSAssert(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows, @"bad _rowWithMenu %ld", _rowWithMenu);
-    
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    SMAppController *appController = [appDelegate appController];
-    
-    SMFolder *folder = [self selectedFolder:_rowWithMenu];
-    NSAssert(folder != nil, @"bad selected folder");
-    
-    [appController showRenameLabelSheet:folder.fullName];
 }
 
 - (void)deleteLabel {

@@ -56,9 +56,6 @@
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder;
 - (void)hideNewLabelSheet;
 
-- (void)showRenameLabelSheet:(NSString*)labelName;
-- (void)hideRenameLabelSheet;
-
 @property (nonatomic) SMOperationQueueWindowController *operationQueueWindowController;
 
 - (void)toggleOperationQueueSheet;

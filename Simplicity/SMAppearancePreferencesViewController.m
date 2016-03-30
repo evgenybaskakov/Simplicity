@@ -85,6 +85,10 @@ static const NSUInteger maxButtonFontSize = 24;
     [(SMPreferencesWindowController*)self.view.window.windowController adjustWindowSize:NSMakeSize(NSWidth(self.view.frame), newHeight)];
 }
 
+- (void)notifyFontsChanged {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SMDefaultMessageFontChanged" object:nil userInfo:nil];
+}
+
 - (void)setRegularFont:(id)sender {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     _regularFont = [fontManager convertFont:[fontManager selectedFont]];
@@ -92,6 +96,7 @@ static const NSUInteger maxButtonFontSize = 24;
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setRegularMessageFont:_regularFont];
     
+    [self notifyFontsChanged];
     [self reloadRegularFontButton];
 }
 
@@ -102,6 +107,7 @@ static const NSUInteger maxButtonFontSize = 24;
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setFixedMessageFont:_fixedFont];
     
+    [self notifyFontsChanged];
     [self reloadFixedFontButton];
 }
 

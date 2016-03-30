@@ -78,9 +78,19 @@
         [self setDefaultFonts];
         
         _nextIdentifier = 0;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultMessageFontChanged:) name:@"SMDefaultMessageFontChanged" object:nil];
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)defaultMessageFontChanged:(NSNotification*)notification {
+    [self setDefaultFonts];
 }
 
 - (void)setDefaultFonts {

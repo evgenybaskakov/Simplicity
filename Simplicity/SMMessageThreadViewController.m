@@ -42,6 +42,7 @@ static const CGFloat CELL_SPACING = -1;
 @end
 
 @implementation SMMessageThreadViewController {
+    NSScrollView *_messageThreadView;
     SMMessageThreadInfoViewController *_messageThreadInfoViewController;
     SMMessageEditorViewController *_messageEditorViewController;
     SMMessageThreadCellViewController *_cellViewControllerToReply;
@@ -62,17 +63,34 @@ static const CGFloat CELL_SPACING = -1;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if(self) {
-        NSScrollView *messageThreadView = [[NSScrollView alloc] init];
+        NSVisualEffectView *rootView = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+        rootView.translatesAutoresizingMaskIntoConstraints = NO;
+        rootView.state = NSVisualEffectStateActive;
+        rootView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+        rootView.material = NSVisualEffectMaterialLight;
         
-        [messageThreadView setBorderType:NSNoBorder];
-        [messageThreadView setHasVerticalScroller:YES];
-        [messageThreadView setHasHorizontalScroller:NO];
-        [messageThreadView setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-        [self setView:messageThreadView];
-
+        [self setView:rootView];
+        
+        _messageThreadView = [[NSScrollView alloc] init];
+        
+        [_messageThreadView setBorderType:NSNoBorder];
+        [_messageThreadView setHasVerticalScroller:YES];
+        [_messageThreadView setHasHorizontalScroller:NO];
+        [_messageThreadView setBackgroundColor:[NSColor clearColor]];
+        [_messageThreadView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        
+        [rootView addSubview:_messageThreadView];
+        
+        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        
+        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        
+        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        
+        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        
         _cells = [NSMutableArray new];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageViewFrameLoaded:) name:@"MessageViewFrameLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
@@ -106,7 +124,7 @@ static const CGFloat CELL_SPACING = -1;
         [appDelegate.currentAccount fetchMessageInlineAttachments:message];
     } else {
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-
+        
         [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
     }
     
@@ -130,45 +148,43 @@ static const CGFloat CELL_SPACING = -1;
         return;
     
     [self closeEmbeddedEditor:YES];
-
+    
     _currentMessageThread = messageThread;
-
+    
     if(_messageThreadInfoViewController == nil) {
         _messageThreadInfoViewController = [[SMMessageThreadInfoViewController alloc] init];
-
+        
         NSView *infoView = [_messageThreadInfoViewController view];
         NSAssert(infoView != nil, @"no info view");
         
         infoView.translatesAutoresizingMaskIntoConstraints = YES;
     }
-
+    
     [_messageThreadInfoViewController setMessageThread:_currentMessageThread];
-
+    
     [_cells removeAllObjects];
-
-    NSScrollView *messageThreadView = (NSScrollView*)[self view];
-
-    _contentView = [[SMFlippedView alloc] initWithFrame:[messageThreadView frame]];
+    
+    _contentView = [[SMFlippedView alloc] initWithFrame:_messageThreadView.frame];
     _contentView.translatesAutoresizingMaskIntoConstraints = YES;
     
-    [messageThreadView setDocumentView:_contentView];
+    [_messageThreadView setDocumentView:_contentView];
     
-    [[messageThreadView contentView] setPostsBoundsChangedNotifications:YES];
-    [[messageThreadView contentView] setPostsFrameChangedNotifications:YES];
+    [[_messageThreadView contentView] setPostsBoundsChangedNotifications:YES];
+    [[_messageThreadView contentView] setPostsFrameChangedNotifications:YES];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewBoundsDidChange:) name:NSViewBoundsDidChangeNotification object:[messageThreadView contentView]];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewFrameDidChange:) name:NSViewFrameDidChangeNotification object:[messageThreadView contentView]];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewBoundsDidChange:) name:NSViewBoundsDidChangeNotification object:[_messageThreadView contentView]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewFrameDidChange:) name:NSViewFrameDidChangeNotification object:[_messageThreadView contentView]];
+    
     if(_currentMessageThread != nil) {
         [_contentView addSubview:_messageThreadInfoViewController.view];
-
+        
         NSAssert(_currentMessageThread.messagesCount > 0, @"no messages in message thread");
-    
+        
         NSArray *messages = [_currentMessageThread messagesSortedByDate];
-
+        
         _cells = [NSMutableArray arrayWithCapacity:messages.count];
-
+        
         NSUInteger lastUnseenMessageIdx = NSUIntegerMax;
         if(_currentMessageThread.unseen) {
             for(NSUInteger i = messages.count; i > 0;) {
@@ -180,20 +196,20 @@ static const CGFloat CELL_SPACING = -1;
                 }
             }
         }
-
+        
         for(NSUInteger i = 0; i < messages.count; i++) {
             Boolean collapsed = (messages.count == 1? NO : (_currentMessageThread.unseen? i != lastUnseenMessageIdx : i > 0));
             SMMessageThreadCellViewController *viewController = [self createMessageThreadCell:messages[i] collapsed:collapsed];
-
+            
             [viewController enableCollapse:(messages.count > 1)];
             viewController.shouldDrawBottomLineWhenUncollapsed = (i != messages.count-1? YES : NO);
             viewController.cellIndex = i;
-
+            
             [_contentView addSubview:[viewController view]];
-
+            
             _cells[i] = [[SMMessageThreadCell alloc] initWithMessage:messages[i] viewController:viewController];
         }
-
+        
         [self updateCellFrames];
         
         if(lastUnseenMessageIdx != NSUIntegerMax) {
@@ -221,9 +237,9 @@ static const CGFloat CELL_SPACING = -1;
 - (void)updateMessageThread {
     if(_currentMessageThread == nil)
         return;
-
+    
     NSAssert(_cells != nil, @"no cells in the current thread");
-
+    
     NSArray *newMessages = [_currentMessageThread messagesSortedByDate];
     
     if(newMessages.count > 0) {
@@ -243,7 +259,7 @@ static const CGFloat CELL_SPACING = -1;
                     SMMessageThreadCell *cell = _cells[i];
                     [cell.viewController updateMessage];
                 }
-
+                
                 return;
             }
         }
@@ -263,11 +279,11 @@ static const CGFloat CELL_SPACING = -1;
                 if(_cellViewControllerToReply == cell.viewController) {
                     _cellViewControllerToReply = nil;
                 }
-
+                
                 // Physically remove the cell and its subview.
                 [cell.viewController.view removeFromSuperview];
                 [_cells removeObjectAtIndex:i];
-
+                
                 // Adjust the search marker position, if any.
                 if(_stringOccurrenceMarked) {
                     if(_stringOccurrenceMarkedCellIndex == i) {
@@ -293,15 +309,15 @@ static const CGFloat CELL_SPACING = -1;
                 updatedCells[i] = [[SMMessageThreadCell alloc] initWithMessage:newMessage viewController:viewController];
             } else {
                 SMMessageThreadCell *cell = _cells[j++];
-
+                
                 [cell.viewController updateMessage];
-
+                
                 updatedCells[i] = cell;
             }
-
+            
             SMMessageThreadCell *cell = updatedCells[i];
             cell.viewController.cellIndex = i;
-
+            
             [cell.viewController enableCollapse:(newMessages.count > 1)];
             
             if(newMessages.count == 1)
@@ -312,16 +328,16 @@ static const CGFloat CELL_SPACING = -1;
         _cells = updatedCells;
         
         [self updateCellFrames];
-
+        
         [_messageThreadInfoViewController updateMessageThread];
     } else {
         SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
-
+        
         [_cells removeAllObjects];
         [_contentView setSubviews:[NSArray array]];
-
+        
         _currentMessageThread = nil;
-
+        
         [_messageThreadInfoViewController setMessageThread:nil];
     }
 }
@@ -349,7 +365,7 @@ static const CGFloat CELL_SPACING = -1;
     }
     
     _cellsUpdateStarted = YES;
-
+    
     CGFloat fullHeight = 0;
     CGFloat editorHeight = 0;
     
@@ -359,7 +375,7 @@ static const CGFloat CELL_SPACING = -1;
         fullHeight += editorHeight;
         fullHeight += CELL_SPACING;
     }
-
+    
     if([self shouldUseFullHeightForFirstCell]) {
         fullHeight += _contentView.frame.size.height;
     }
@@ -374,20 +390,20 @@ static const CGFloat CELL_SPACING = -1;
                 fullHeight += CELL_SPACING;
         }
     }
-
+    
     _contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
     _contentView.autoresizingMask = NSViewWidthSizable;
-
+    
     if([self shouldUseFullHeightForFirstCell]) {
         _contentView.autoresizingMask |= NSViewHeightSizable;
     }
     
     NSView *infoView = [_messageThreadInfoViewController view];
     NSAssert(infoView != nil, @"no info view");
-
+    
     infoView.frame = NSMakeRect(-1, 0, _contentView.frame.size.width+2, [SMMessageThreadInfoViewController infoHeaderHeight]);
     infoView.autoresizingMask = NSViewWidthSizable;
-
+    
     CGFloat ypos = infoView.bounds.size.height + CELL_SPACING;
     
     for(NSInteger i = 0; i < _cells.count; i++) {
@@ -401,27 +417,27 @@ static const CGFloat CELL_SPACING = -1;
                     // is already borderless.
                     ypos -= CELL_SPACING;
                 }
-
+                
                 // Note that the editor width doesn't have to exceed the content view width,
                 // because it already does.
                 [_messageEditorViewController setEditorFrame:NSMakeRect(0, ypos, infoView.frame.size.width, editorHeight)];
                 ypos += editorHeight + CELL_SPACING;
             }
         }
-
+        
         NSView *subview = cell.viewController.view;
         subview.translatesAutoresizingMaskIntoConstraints = YES;
         subview.autoresizingMask = NSViewWidthSizable;
-
+        
         if([self shouldUseFullHeightForFirstCell]) {
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, fullHeight);
-
+            
             NSAssert(!cell.viewController.collapsed, @"cell must not be collapsed");
-
+            
             [cell.viewController adjustCellHeightToFitContentResizeable:YES];
         } else {
             subview.frame = NSMakeRect(-1, ypos, infoView.frame.size.width+2, cell.viewController.cellHeight);
-
+            
             if(!cell.viewController.collapsed) {
                 [cell.viewController adjustCellHeightToFitContentResizeable:NO];
             }
@@ -429,7 +445,7 @@ static const CGFloat CELL_SPACING = -1;
         
         ypos += cell.viewController.cellHeight + CELL_SPACING;
     }
-
+    
     _cellsUpdateStarted = NO;
     _cellsArranged = NO;
     
@@ -439,7 +455,7 @@ static const CGFloat CELL_SPACING = -1;
 - (void)updateMessageView:(uint32_t)uid threadId:(uint64_t)threadId {
     if(_currentMessageThread == nil || _currentMessageThread.threadId != threadId)
         return;
-
+    
     // TODO: optimize search?
     for(NSInteger i = 0; i < _cells.count; i++) {
         SMMessageThreadCell *cell = _cells[i];
@@ -448,9 +464,9 @@ static const CGFloat CELL_SPACING = -1;
         if(message.uid == uid) {
             SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
             [appDelegate.currentAccount fetchMessageInlineAttachments:message];
-
+            
             [cell.viewController updateMessage];
-
+            
             if(![cell.viewController loadMessageBody]) {
                 NSAssert(FALSE, @"message uid %u (thread id %lld) fetched with no body!!!", uid, threadId);
             }
@@ -466,9 +482,9 @@ static const CGFloat CELL_SPACING = -1;
 
 - (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex {
     NSAssert(cellIndex < _cells.count, @"bad index %lu", cellIndex);
-
+    
     SMMessageThreadCell *cell = _cells[cellIndex];
-
+    
     if(_findContentsActive) {
         if(collapsed) {
             [cell.viewController removeAllHighlightedOccurrencesOfString];
@@ -485,10 +501,10 @@ static const CGFloat CELL_SPACING = -1;
     // list to immediately reflect the changes.
     if(!collapsed && cell.message.unseen) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
+        
         [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
         [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
-
+        
         [self updateMessageThread];
         
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
@@ -505,10 +521,10 @@ static const CGFloat CELL_SPACING = -1;
         }
     } else {
         SMMessageThreadCell *cell = _cells[0];
-
+        
         NSAssert(!cell.viewController.collapsed, @"single cell is collapsed");
     }
-
+    
     [self updateCellFrames];
 }
 
@@ -519,7 +535,7 @@ static const CGFloat CELL_SPACING = -1;
     for(SMMessageThreadCell *cell in _cells) {
         [cell.viewController setCollapsed:NO];
     }
-
+    
     [self updateCellFrames];
 }
 
@@ -528,85 +544,84 @@ static const CGFloat CELL_SPACING = -1;
 - (void)arrangeVisibleCells {
     if(_cellsUpdateStarted)
         return;
-
+    
     if(_cells.count == 0)
         return;
-
+    
     if(!_cellsArranged) {
         for(SMMessageThreadCell *cell in _cells) {
             [cell.viewController.view removeFromSuperview];
         }
-
+        
         _firstVisibleCell = 0;
         _lastVisibleCell = 0;
-
+        
         SMMessageThreadCell *cell = _cells[0];
         [_contentView addSubview:cell.viewController.view];
     }
-
+    
     NSAssert(_firstVisibleCell <= _lastVisibleCell, @"bad _firstVisibleCell %lu, _lastVisibleCell %lu", _firstVisibleCell, _lastVisibleCell);
     NSAssert(_lastVisibleCell < _cells.count, @"bad _lastVisibleCell %lu, _cells.count %lu", _lastVisibleCell, _cells.count);
     
-    NSScrollView *messageThreadView = (NSScrollView*)[self view];
-    NSRect visibleRect = [[messageThreadView contentView] documentVisibleRect];
+    NSRect visibleRect = [[_messageThreadView contentView] documentVisibleRect];
     
     const NSUInteger oldFirstVisibleCell = _firstVisibleCell;
     const NSUInteger oldLastVisibleCell = _lastVisibleCell;
     
     SMMessageThreadCell *firstCell = _cells[_firstVisibleCell];
-
+    
     while(_firstVisibleCell > 0 && firstCell.viewController.view.frame.origin.y > visibleRect.origin.y) {
         firstCell = _cells[--_firstVisibleCell];
     }
-
+    
     while(_firstVisibleCell + 1 < _cells.count && firstCell.viewController.view.frame.origin.y + firstCell.viewController.cellHeight <= visibleRect.origin.y) {
-//TODO: should we?
-//      if(!firstCell.viewController.collapsed)
-            [firstCell.viewController.view removeFromSuperview];
-
+        //TODO: should we?
+        //      if(!firstCell.viewController.collapsed)
+        [firstCell.viewController.view removeFromSuperview];
+        
         firstCell = _cells[++_firstVisibleCell];
     }
-
+    
     if(_firstVisibleCell > _lastVisibleCell)
         _lastVisibleCell = _firstVisibleCell;
-
+    
     SMMessageThreadCell *lastCell = _cells[_lastVisibleCell];
-
+    
     while(_lastVisibleCell + 1 < _cells.count && lastCell.viewController.view.frame.origin.y + lastCell.viewController.cellHeight < visibleRect.origin.y + visibleRect.size.height) {
         lastCell = _cells[++_lastVisibleCell];
     }
-
+    
     while(_lastVisibleCell > 0 && lastCell.viewController.view.frame.origin.y > visibleRect.origin.y + visibleRect.size.height) {
-//TODO: should we?
-//      if(!lastCell.viewController.collapsed)
-            [lastCell.viewController.view removeFromSuperview];
-
+        //TODO: should we?
+        //      if(!lastCell.viewController.collapsed)
+        [lastCell.viewController.view removeFromSuperview];
+        
         lastCell = _cells[--_lastVisibleCell];
     }
-
+    
     NSAssert(_firstVisibleCell <= _lastVisibleCell, @"bad _firstVisibleCell %lu, _lastVisibleCell %lu", _firstVisibleCell, _lastVisibleCell);
-
+    
     if(_firstVisibleCell < oldFirstVisibleCell) {
         if(oldFirstVisibleCell <= _lastVisibleCell)
             [self showCellsRegion:_firstVisibleCell toInclusive:oldFirstVisibleCell - 1];
         else
             [self showCellsRegion:_firstVisibleCell toInclusive:_lastVisibleCell];
     }
-
+    
     if(_lastVisibleCell > oldLastVisibleCell) {
         if(_firstVisibleCell <= oldLastVisibleCell)
             [self showCellsRegion:oldLastVisibleCell + 1 toInclusive:_lastVisibleCell];
         else
             [self showCellsRegion:_firstVisibleCell toInclusive:_lastVisibleCell];
     }
-
+    
     _cellsArranged = YES;
 }
 
 - (void)showCellsRegion:(NSUInteger)from toInclusive:(NSUInteger)to {
     for(NSUInteger i = from; i <= to; i++) {
         SMMessageThreadCell *cell = _cells[i];
-
+        
         if(cell.viewController.view.superview == nil) {
             if([self shouldUseFullHeightForFirstCell]) {
                 [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, _contentView.frame.size.height)];
@@ -648,7 +663,7 @@ static const CGFloat CELL_SPACING = -1;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid account:&account];
-
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) {
         // TODO: optimize by adding a NSUndexSet with uids
@@ -673,25 +688,25 @@ static const CGFloat CELL_SPACING = -1;
     NSAssert(_cells.count > 0, @"no cells");
     
     SMMessageThreadCell *markedCell = nil;
-
+    
     if((_currentStringToFind != nil && ![_currentStringToFind isEqualToString:stringToFind]) || !_stringOccurrenceMarked) {
         // this is the case when there is no marked occurrence or the user has lost it
         // which can happen if the message cell is collapsed or vanished due to update
         // so just remove any stale mark and mark the first occurrence in the first cell
         // that has at least one
-
+        
         if(_stringOccurrenceMarked) {
             NSAssert(_stringOccurrenceMarkedCellIndex < _cells.count, @"_stringOccurrenceMarkedCellIndex %lu, cells count %lu", _stringOccurrenceMarkedCellIndex, _cells.count);
-
+            
             SMMessageThreadCell *cell = _cells[_stringOccurrenceMarkedCellIndex];
             [cell.viewController removeMarkedOccurrenceOfFoundString];
             
             _stringOccurrenceMarked = NO;
         }
-
+        
         for(NSUInteger i = 0; i < _cells.count; i++) {
             SMMessageThreadCell *cell = _cells[i];
-
+            
             if(!cell.viewController.collapsed) {
                 [cell.viewController highlightAllOccurrencesOfString:stringToFind matchCase:matchCase];
                 
@@ -715,20 +730,20 @@ static const CGFloat CELL_SPACING = -1;
         // this is the case when there is a marked occurrence already
         // so we just need to move it forward or backwards
         // just scan the cells in the corresponsing direction and choose the right place
-
+        
         NSAssert(_stringOccurrenceMarked, @"string occurrence not marked");
         NSAssert(_stringOccurrenceMarkedCellIndex < _cells.count, @"_stringOccurrenceMarkedCellIndex %lu, cells count %lu", _stringOccurrenceMarkedCellIndex, _cells.count);
-
+        
         SMMessageThreadCell *cell = _cells[_stringOccurrenceMarkedCellIndex];
         NSAssert(!cell.viewController.collapsed, @"cell with marked string is collapsed");
-
+        
         if(forward && _stringOccurrenceMarkedResultIndex+1 < cell.viewController.stringOccurrencesCount) {
             [cell.viewController markOccurrenceOfFoundString:(++_stringOccurrenceMarkedResultIndex)];
         } else if(!forward && _stringOccurrenceMarkedResultIndex > 0) {
             [cell.viewController markOccurrenceOfFoundString:(--_stringOccurrenceMarkedResultIndex)];
         } else {
             [cell.viewController removeMarkedOccurrenceOfFoundString];
-
+            
             Boolean wrap = NO;
             for(NSUInteger i = _stringOccurrenceMarkedCellIndex;;) {
                 if(forward) {
@@ -762,32 +777,31 @@ static const CGFloat CELL_SPACING = -1;
                 if(!cell.viewController.collapsed && cell.viewController.stringOccurrencesCount > 0) {
                     _stringOccurrenceMarkedResultIndex = forward? 0 : cell.viewController.stringOccurrencesCount-1;
                     _stringOccurrenceMarkedCellIndex = i;
-
+                    
                     [cell.viewController markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
-
+                    
                     break;
                 }
             }
         }
-
+        
         markedCell = cell;
     }
-
+    
     // if there is a marked occurrence, make sure it is visible
     // just scroll the thread view to the right cell
     // note that the cell itself will scroll the html text to the marked position
     if(_stringOccurrenceMarked) {
         NSAssert(markedCell != nil, @"no cell");
-
-        NSScrollView *messageThreadView = (NSScrollView*)[self view];
-        NSRect visibleRect = [[messageThreadView contentView] documentVisibleRect];
+        
+        NSRect visibleRect = [[_messageThreadView contentView] documentVisibleRect];
         
         if(markedCell.viewController.view.frame.origin.y < visibleRect.origin.y || markedCell.viewController.view.frame.origin.y + markedCell.viewController.view.frame.size.height >= visibleRect.origin.y + visibleRect.size.height) {
-            NSPoint cellPosition = NSMakePoint(messageThreadView.visibleRect.origin.x, markedCell.viewController.view.frame.origin.y);
-            [[messageThreadView documentView] scrollPoint:cellPosition];
+            NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, markedCell.viewController.view.frame.origin.y);
+            [[_messageThreadView documentView] scrollPoint:cellPosition];
         }
     }
-
+    
     _findContentsActive = YES;
 }
 
@@ -797,9 +811,9 @@ static const CGFloat CELL_SPACING = -1;
     
     for(SMMessageThreadCell *cell in _cells)
         [cell.viewController removeAllHighlightedOccurrencesOfString];
-
+    
     [self clearStringOccurrenceMarkIndex];
-
+    
     _currentStringToFind = nil;
     _currentStringToFindMatchCase = NO;
     _findContentsActive = NO;
@@ -845,7 +859,7 @@ static const CGFloat CELL_SPACING = -1;
         SM_LOG_DEBUG(@"cell to delete not found");
         return;
     }
-
+    
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
@@ -854,7 +868,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
-
+    
     if(_currentMessageThread.messagesCount == 1) {
         [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder.fullName];
     }
@@ -864,11 +878,11 @@ static const CGFloat CELL_SPACING = -1;
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
         SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"no current folder");
-
+        
         if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
             [messageListViewController reloadMessageList:YES];
         }
-
+        
         [self updateMessageThread];
     }
 }
@@ -883,7 +897,7 @@ static const CGFloat CELL_SPACING = -1;
     }
     
     SMMessageThreadCell *cell = _cells[cellIdx];
-
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
@@ -930,7 +944,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
-
+    
     [currentFolder setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
@@ -982,17 +996,17 @@ static const CGFloat CELL_SPACING = -1;
             return;
         }
     }
-
+    
     [self closeEmbeddedEditor:YES]; // Close the currently edited message; it should save draft, etc.
     
     SMMessageThreadCell *cell = _cells[cellIdx];
-
+    
     _cellViewControllerToReply = cell.viewController;
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES draftUid:0];
-
+    
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
-
+    
     NSMutableArray *toAddressList = nil;
     NSMutableArray *ccAddressList = nil;
     
@@ -1017,7 +1031,7 @@ static const CGFloat CELL_SPACING = -1;
             SMAddress *toAddress = [messageInfo objectForKey:@"ToAddress"];
             if(toAddress != nil) {
                 [toAddressList addObject:[toAddress mcoAddress]];
-
+                
                 toAddressIsSet = YES;
             }
         }
@@ -1027,7 +1041,7 @@ static const CGFloat CELL_SPACING = -1;
             
             reply = YES;
         }
-
+        
         // TODO: remove ourselves (myself) from CC and TO
         
         if(!toAddressIsSet) {
@@ -1043,15 +1057,15 @@ static const CGFloat CELL_SPACING = -1;
             }
         }
     }
-
+    
     if(cell.message.htmlBodyRendering != nil) {
         [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:(reply? nil : cell.message.attachments)];
-
+        
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;
         
         [_contentView addSubview:editorSubview];
-
+        
         [self updateCellFrames];
     }
     else {
@@ -1094,6 +1108,6 @@ static const CGFloat CELL_SPACING = -1;
             [self updateCellFrames];
         }
     }
-}
+}   
 
 @end

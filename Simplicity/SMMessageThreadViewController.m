@@ -20,6 +20,7 @@
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMMessagePlaceholderViewController.h"
 #import "SMLocalFolder.h"
 #import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
@@ -43,9 +44,12 @@ static const CGFloat CELL_SPACING = -1;
 
 @implementation SMMessageThreadViewController {
     NSScrollView *_messageThreadView;
+    SMMessagePlaceholderViewController *_messagePlaceHolderViewController;
     SMMessageThreadInfoViewController *_messageThreadInfoViewController;
     SMMessageEditorViewController *_messageEditorViewController;
     SMMessageThreadCellViewController *_cellViewControllerToReply;
+    NSArray *_messageThreadViewConstraints;
+    NSArray *_messagePlaceHolderViewConstraints;
     NSMutableArray *_cells;
     NSView *_contentView;
     Boolean _findContentsActive;
@@ -71,23 +75,15 @@ static const CGFloat CELL_SPACING = -1;
         
         [self setView:rootView];
         
+        _messagePlaceHolderViewController = [[SMMessagePlaceholderViewController alloc] initWithNibName:@"SMMessagePlaceholderViewController" bundle:nil];
+        [_messagePlaceHolderViewController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
+
         _messageThreadView = [[NSScrollView alloc] init];
-        
         [_messageThreadView setBorderType:NSNoBorder];
         [_messageThreadView setHasVerticalScroller:YES];
         [_messageThreadView setHasHorizontalScroller:NO];
         [_messageThreadView setBackgroundColor:[NSColor clearColor]];
         [_messageThreadView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        
-        [rootView addSubview:_messageThreadView];
-        
-        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-        
-        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-        
-        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-        
-        [rootView addConstraint:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
         
         _cells = [NSMutableArray new];
         
@@ -103,6 +99,9 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveAttachmentsToDownloads:) name:@"SaveAttachmentsToDownloads" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageThreadCellHeightChanged:) name:@"MessageThreadCellHeightChanged" object:nil];
+        
+        [self hideCurrentMessageThread];
+ //       [self showCurrentMessageThread];
     }
     
     return self;
@@ -150,7 +149,14 @@ static const CGFloat CELL_SPACING = -1;
     [self closeEmbeddedEditor:YES];
     
     _currentMessageThread = messageThread;
-    
+
+    if(_currentMessageThread != nil) {
+        [self showCurrentMessageThread];
+    }
+    else {
+        [self hideCurrentMessageThread];
+    }
+
     if(_messageThreadInfoViewController == nil) {
         _messageThreadInfoViewController = [[SMMessageThreadInfoViewController alloc] init];
         
@@ -230,6 +236,60 @@ static const CGFloat CELL_SPACING = -1;
     // because it is presumably needed only when the user means to search the particular message thread
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hideFindContentsPanel];
+}
+
+- (void)showCurrentMessageThread {
+    NSView *rootView = self.view;
+    
+    if(_messagePlaceHolderViewConstraints != nil) {
+        [rootView removeConstraints:_messagePlaceHolderViewConstraints];
+    }
+
+    [_messagePlaceHolderViewController.view removeFromSuperview];
+
+    if(_messageThreadViewConstraints == nil) {
+        NSMutableArray *constraints = [NSMutableArray array];
+
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messageThreadView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        
+        _messageThreadViewConstraints = constraints;
+    }
+    
+    [rootView addSubview:_messageThreadView];
+    [rootView addConstraints:_messageThreadViewConstraints];
+}
+
+- (void)hideCurrentMessageThread {
+    NSView *rootView = self.view;
+
+    if(_messageThreadViewConstraints != nil) {
+        [rootView removeConstraints:_messageThreadViewConstraints];
+    }
+
+    [_messageThreadView removeFromSuperview];
+
+    if(_messagePlaceHolderViewConstraints == nil) {
+        NSMutableArray *constraints = [NSMutableArray array];
+        
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_messagePlaceHolderViewController.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messagePlaceHolderViewController.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_messagePlaceHolderViewController.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        
+        [constraints addObject:[NSLayoutConstraint constraintWithItem:rootView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messagePlaceHolderViewController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        
+        _messagePlaceHolderViewConstraints = constraints;
+    }
+    
+    [rootView addSubview:_messagePlaceHolderViewController.view];
+    [rootView addConstraints:_messagePlaceHolderViewConstraints];
 }
 
 #pragma mark Building visual layout of message threads
@@ -1108,6 +1168,6 @@ static const CGFloat CELL_SPACING = -1;
             [self updateCellFrames];
         }
     }
-}   
+}
 
 @end

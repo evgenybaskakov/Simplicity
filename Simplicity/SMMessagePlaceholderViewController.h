@@ -10,4 +10,6 @@
 
 @interface SMMessagePlaceholderViewController : NSViewController
 
+@property (weak) IBOutlet NSTextField *selectedMessagesLabel;
+
 @end

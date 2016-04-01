@@ -17,7 +17,7 @@
 - (void)findContents:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward;
 - (void)removeFindContentsResults;
 
-- (void)setMessageThread:(SMMessageThread*)messageThread;
+- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount;
 - (void)updateMessageThread;
 
 - (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex;

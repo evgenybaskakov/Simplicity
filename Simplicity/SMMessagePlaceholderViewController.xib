@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessagePlaceholderViewController">
             <connections>
+                <outlet property="selectedMessagesLabel" destination="NGU-WW-7vu" id="aWB-Q8-Rsw"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -22,7 +23,7 @@
                         <constraint firstAttribute="height" constant="227" id="Vu7-mk-EjI"/>
                         <constraint firstAttribute="width" constant="282" id="ay6-Mg-gxw"/>
                     </constraints>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="D880AC68-7FEF-44A2-849C-2AC2E1905010" id="Hu9-Cw-ljA"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="53B2111A-CB00-44C5-8BB8-868657A4ED92" id="Hu9-Cw-ljA"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" alphaValue="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="NGU-WW-7vu">
                     <rect key="frame" x="110" y="30" width="282" height="31"/>
@@ -43,7 +44,7 @@
         </customView>
     </objects>
     <resources>
-        <image name="D880AC68-7FEF-44A2-849C-2AC2E1905010" width="512" height="512">
+        <image name="53B2111A-CB00-44C5-8BB8-868657A4ED92" width="512" height="512">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGOjtYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK0HCBEW
 GxwgISgrLjQ3VSRudWxs1AkKCwwNDg8QViRjbGFzc1xOU0ltYWdlRmxhZ3NWTlNSZXBzV05TQ29sb3KA

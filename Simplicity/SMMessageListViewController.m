@@ -108,7 +108,8 @@
 - (void)changeSelectedMessageThread {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    [[[appDelegate appController] messageThreadViewController] setMessageThread:_selectedMessageThread];
+    NSUInteger selectedThreadsCount = (_selectedMessageThread != nil? 1 : _multipleSelectedMessageThreads.count);
+    [[[appDelegate appController] messageThreadViewController] setMessageThread:_selectedMessageThread selectedThreadsCount:selectedThreadsCount];
 }
 
 - (void)delayChangeSelectedMessageThread {

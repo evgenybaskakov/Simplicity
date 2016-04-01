@@ -39,7 +39,7 @@
     messageThreadView.frame = view.frame;
     messageThreadView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     
-    [_messageThreadViewController setMessageThread:_currentMessageThread];
+    [_messageThreadViewController setMessageThread:_currentMessageThread selectedThreadsCount:1];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

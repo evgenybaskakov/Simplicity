@@ -100,7 +100,7 @@ static const CGFloat CELL_SPACING = -1;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageEditorContentHeightChanged:) name:@"MessageEditorContentHeightChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageThreadCellHeightChanged:) name:@"MessageThreadCellHeightChanged" object:nil];
         
-        [self hideCurrentMessageThread];
+        [self hideCurrentMessageThread:0];
     }
     
     return self;
@@ -141,7 +141,11 @@ static const CGFloat CELL_SPACING = -1;
     }
 }
 
-- (void)setMessageThread:(SMMessageThread*)messageThread {
+- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount {
+    if(messageThread == nil) {
+        [self hideCurrentMessageThread:selectedThreadsCount];
+    }
+
     if(_currentMessageThread == messageThread)
         return;
     
@@ -151,9 +155,6 @@ static const CGFloat CELL_SPACING = -1;
 
     if(_currentMessageThread != nil) {
         [self showCurrentMessageThread];
-    }
-    else {
-        [self hideCurrentMessageThread];
     }
 
     if(_messageThreadInfoViewController == nil) {
@@ -246,11 +247,13 @@ static const CGFloat CELL_SPACING = -1;
     _messageThreadView.frame = rootView.frame;
 }
 
-- (void)hideCurrentMessageThread {
+- (void)hideCurrentMessageThread:(NSUInteger)selectedThreadsCount {
     NSView *rootView = self.view;
 
     [_messageThreadView removeFromSuperview];
 
+    _messagePlaceHolderViewController.selectedMessagesLabel.stringValue = (selectedThreadsCount == 0? @"No messages selected" : [NSString stringWithFormat:@"%lu messages selected", selectedThreadsCount]);
+    
     [rootView addSubview:_messagePlaceHolderViewController.view];
     _messagePlaceHolderViewController.view.frame = rootView.frame;
 }
@@ -935,7 +938,7 @@ static const CGFloat CELL_SPACING = -1;
     
     if(cell.message.unseen) {
         if(_cells.count == 1) {
-            [self setMessageThread:nil];
+            [self setMessageThread:nil selectedThreadsCount:0]; // TODO: why clear the message thread?
             
             preserveMessageListSelection = NO;
         }

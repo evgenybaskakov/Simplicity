@@ -204,7 +204,7 @@
                 SMMessage *firstMessage = currentMessageThread.messagesSortedByDate[0];
                 
                 if(firstMessage.uid == _saveDraftUID) {
-                    [[[appDelegate appController] messageThreadViewController] setMessageThread:nil];
+                    [[[appDelegate appController] messageThreadViewController] setMessageThread:nil selectedThreadsCount:0];
                 }
             }
             else {

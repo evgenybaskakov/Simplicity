@@ -965,6 +965,12 @@
 
                 [self menuActionDelete:self];
             }
+            else if(pressedUnichar == 27) {
+                SM_LOG_INFO(@"escape key pressed");
+                
+                [self reloadMessageList:NO];
+                [self changeSelectedMessageThread];
+            }
         }
     }
 }

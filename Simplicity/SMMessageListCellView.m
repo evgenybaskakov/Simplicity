@@ -11,8 +11,6 @@
 
 @implementation SMMessageListCellView {
     Boolean _fieldsInitialized;
-    Boolean _attachmentImageHidden;
-    Boolean _draftLabelHidden;
 }
 
 - (void)initFields {
@@ -33,10 +31,7 @@
     _contactImage.scaleImage = YES;
     
     _attachmentImage.hidden = NO;
-    _attachmentImageHidden = NO;
-
     _draftLabel.hidden = NO;
-    _draftLabelHidden = NO;
     
     _fieldsInitialized = true;
 }
@@ -52,43 +47,41 @@
 }
 
 - (void)showDraftLabel {
-    if(!_draftLabelHidden) {
+    if(!_draftLabel.hidden) {
         return;
     }
     
     _subjectRightContraint.constant += 35;
     _draftLabel.hidden = NO;
-    _draftLabelHidden = NO;
 }
 
 - (void)hideDraftLabel {
-    if(_draftLabelHidden) {
+    if(_draftLabel.hidden) {
         return;
     }
 
     _subjectRightContraint.constant -= 35;
     _draftLabel.hidden = YES;
-    _draftLabelHidden = YES;
 }
 
 - (void)showAttachmentImage {
-    if(!_attachmentImageHidden)
+    if(!_attachmentImage.hidden) {
         return;
+    }
 
     _subjectRightContraint.constant += 18;
     _draftLabelRightContraint.constant += 18;
     _attachmentImage.hidden = NO;
-    _attachmentImageHidden = NO;
 }
 
 - (void)hideAttachmentImage {
-    if(_attachmentImageHidden)
+    if(_attachmentImage.hidden) {
         return;
+    }
 
     _subjectRightContraint.constant -= 18;
     _draftLabelRightContraint.constant -= 18;
     _attachmentImage.hidden = YES;
-    _attachmentImageHidden = YES;
 }
 
 - (void)setMessagesCount:(NSUInteger)messagesCount {

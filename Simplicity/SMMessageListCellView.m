@@ -17,21 +17,11 @@
     if(_fieldsInitialized)
         return;
     
-    NSFont *font = [_fromTextField font];
-    
-    font = [[NSFontManager sharedFontManager] convertFont:font toHaveTrait:NSFontBoldTrait];
-    
-    [_fromTextField setFont:font];
-
-    _contactImage.image = [NSImage imageNamed:NSImageNameUserGuest];
     _contactImage.cornerRadius = 3;
     _contactImage.borderWidth = 2;
     _contactImage.borderColor = [NSColor colorWithWhite:0.9 alpha:1];
     _contactImage.nonOriginalBehavior = YES;
     _contactImage.scaleImage = YES;
-    
-    _attachmentImage.hidden = NO;
-    _draftLabel.hidden = NO;
     
     _fieldsInitialized = true;
 }

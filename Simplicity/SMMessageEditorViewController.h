@@ -18,7 +18,7 @@
 @interface SMMessageEditorViewController : NSViewController
 
 @property (readonly) Boolean embedded;
-@property (readonly) NSUInteger editorFullHeight;
+@property (readonly) CGFloat editorFullHeight;
 @property (readonly) Boolean hasUnsavedContents;
 
 - (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid;

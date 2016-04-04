@@ -968,6 +968,9 @@
             else if(pressedUnichar == 27) {
                 SM_LOG_INFO(@"escape key pressed");
                 
+                // TODO: special case 1: editor is open
+                //
+                
                 [self reloadMessageList:NO];
                 [self changeSelectedMessageThread];
             }

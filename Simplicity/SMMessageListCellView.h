@@ -19,10 +19,12 @@
 @property IBOutlet NSTextField *fromTextField;
 @property IBOutlet NSLayoutConstraint *fromTextFieldLeftContraint;
 @property IBOutlet NSLayoutConstraint *subjectRightContraint;
+@property IBOutlet NSLayoutConstraint *draftLabelRightContraint;
 
 @property (weak) IBOutlet NSTextField *messagePreviewTextField;
 @property (weak) IBOutlet NSTextField *subjectTextField;
 @property (weak) IBOutlet NSTextField *dateTextField;
+@property (weak) IBOutlet NSTextField *draftLabel;
 @property (weak) IBOutlet NSButton *unseenButton;
 @property (weak) IBOutlet NSButton *starButton;
 @property (weak) IBOutlet SMMessageBookmarksView *bookmarksView;
@@ -37,6 +39,9 @@
 
 - (void)showAttachmentImage;
 - (void)hideAttachmentImage;
+
+- (void)showDraftLabel;
+- (void)hideDraftLabel;
 
 - (void)setMessagesCount:(NSUInteger)messagesCount;
 

@@ -268,6 +268,8 @@
     } else {
         [view hideAttachmentImage];
     }
+
+    [view hideDraftLabel];
     
     NSString *bodyPreview = [firstMessage bodyPreview];
     [view.messagePreviewTextField setStringValue:(bodyPreview != nil && bodyPreview.length > 0? bodyPreview : (firstMessage.hasData? @"Message has no content" : @""))];

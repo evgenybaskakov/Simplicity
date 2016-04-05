@@ -249,4 +249,8 @@
     }
 }
 
+- (NSArray*)alwaysSyncedFolders {
+    return @[_inboxFolder, _draftsFolder];
+}
+
 @end

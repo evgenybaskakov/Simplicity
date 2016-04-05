@@ -274,13 +274,14 @@
 
 - (void)messagesSyncedInFolder:(NSNotification*)notifcation {
     //
-    // Keep the inbox folder alway synced.
+    // Keep certain folders always synced.
     //
-    SMFolder *inboxFolder = [[_account mailbox] inboxFolder];
-    SMLocalFolder *inboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:inboxFolder.fullName];
-    
-    if(![[[notifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:inboxLocalFolder.localName]) {
-        [inboxLocalFolder startLocalFolderSync];
+    for(SMFolder *folder in [[_account mailbox] alwaysSyncedFolders]) {
+        SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folder.fullName];
+        
+        if(![[[notifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:localFolder.localName]) {
+            [localFolder startLocalFolderSync];
+        }
     }
 }
 

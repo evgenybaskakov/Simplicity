@@ -46,8 +46,10 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) NSString *bodyPreview;
 @property (readonly) NSUInteger messageSize;
 
-@property Boolean unseen;
-@property Boolean flagged;
+@property (nonatomic) Boolean unseen;
+@property (nonatomic) Boolean flagged;
+
+@property (readonly, nonatomic) Boolean draft;
 
 @property SMMessageUpdateStatus updateStatus;
 

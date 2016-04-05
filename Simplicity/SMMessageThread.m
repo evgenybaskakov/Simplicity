@@ -47,6 +47,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     ThreadFlagsFlagged        = 1 << 1,
     ThreadFlagsHasAttachment  = 1 << 2,
     ThreadFlagsHasPreview     = 1 << 3,
+    ThreadFlagsHasDraft       = 1 << 4,
 };
 
 @implementation SMMessageThread {
@@ -84,6 +85,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 - (Boolean)hasAttachments {
     return _threadFlags & ThreadFlagsHasAttachment;
+}
+
+- (Boolean)hasDraft {
+    return _threadFlags & ThreadFlagsHasDraft;
 }
 
 - (Boolean)hasPreview {
@@ -171,6 +176,24 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             }
         }
 
+        if(message.draft && ![self hasDraft]) {
+            _threadFlags |= ThreadFlagsHasDraft;
+            attributesChanged = YES;
+        }
+        else if(!message.draft && [self hasDraft]) {
+            Boolean draftFound = NO;
+            for(SMMessage *m in _messageCollection.messagesByUID) {
+                if(m.draft) {
+                    draftFound = YES;
+                    break;
+                }
+            }
+            if(!draftFound) {
+                _threadFlags &= ~ThreadFlagsHasDraft;
+                attributesChanged = YES;
+            }
+        }
+        
         if(message.unseen && ![self unseen]) {
             _threadFlags |= ThreadFlagsUnseen;
             attributesChanged = YES;
@@ -285,6 +308,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     
     if(message.hasAttachments) {
         _threadFlags |= ThreadFlagsHasAttachment;
+    }
+    
+    if(message.draft) {
+        _threadFlags |= ThreadFlagsHasDraft;
     }
 
     [_labels addObjectsFromArray:message.labels];

@@ -95,6 +95,10 @@
     return YES;
 }
 
+- (Boolean)isDraft {
+    return NO;
+}
+
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
     SM_FATAL(@"Cannot update outgoig message");
     return NO;

@@ -23,6 +23,7 @@
 @property (readonly) Boolean unseen;
 @property (readonly) Boolean flagged;
 @property (readonly) Boolean hasAttachments;
+@property (readonly) Boolean hasDraft;
 @property (readonly) NSOrderedSet *labels;
 
 - (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage;

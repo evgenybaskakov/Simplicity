@@ -41,7 +41,8 @@
         _imapMessage = m;
         _remoteFolder = remoteFolderName;
         _labels = m.gmailLabels;
-
+        
+        SM_LOG_NOISE(@"uid %u, remoteFolder: %@, draft: %d", m.uid, remoteFolderName, (m.flags & MCOMessageFlagDraft) != 0? 1 : 0);
         SM_LOG_NOISE(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
         SM_LOG_NOISE(@"uid %u, object %@, date %@", m.uid, m, m.header.date);
     }
@@ -257,6 +258,10 @@ static NSString *unquote(NSString *s) {
     }
     
     return 0;
+}
+
+- (Boolean)draft {
+    return (_imapMessage.flags & MCOMessageFlagDraft) != 0? YES : NO;
 }
 
 - (BOOL)hasData {

@@ -265,11 +265,17 @@
 
     if(messageThread.hasAttachments) {
         [view showAttachmentImage];
-    } else {
+    }
+    else {
         [view hideAttachmentImage];
     }
 
-    [view hideDraftLabel];
+    if(messageThread.hasDraft) {
+        [view showDraftLabel];
+    }
+    else {
+        [view hideDraftLabel];
+    }
     
     NSString *bodyPreview = [firstMessage bodyPreview];
     [view.messagePreviewTextField setStringValue:(bodyPreview != nil && bodyPreview.length > 0? bodyPreview : (firstMessage.hasData? @"Message has no content" : @""))];

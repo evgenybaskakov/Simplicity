@@ -10,6 +10,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMNotificationsController.h"
 #import "SMImageRegistry.h"
 #import "SMMessageDetailsViewController.h"
@@ -107,8 +108,6 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSAssert(message != nil, @"nil message");
     
     if(_currentMessage != message) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        
         _currentMessage = message;
         
         [_fromAddress setStringValue:[SMMessage parseAddress:_currentMessage.fromAddress]];
@@ -119,8 +118,13 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         }
         
         if(_currentMessage && _currentMessage.draft) {
-            _replyOrEditButton.image = appDelegate.imageRegistry.editImage;
+            _replyOrEditButton.action = @selector(editDraft:);
         }
+        else {
+            _replyOrEditButton.action = @selector(composeReplyOrReplyAll:);
+        }
+
+        [self setReplyButtonImage];
     }
 
     [self updateMessage];
@@ -276,7 +280,12 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 - (void)setReplyButtonImage {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    _replyOrEditButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
+    if(_currentMessage && _currentMessage.draft) {
+        _replyOrEditButton.image = appDelegate.imageRegistry.editImage;
+    }
+    else {
+        _replyOrEditButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
+    }
 }
 
 - (NSTextField*)createDraftLabel {
@@ -572,7 +581,11 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 #pragma mark Actions
 
 - (void)editDraft:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    SMMessage *m = _currentMessage;
+    
+    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:m.toAddressList cc:m.ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments];
 }
 
 - (void)discardDraft:(id)sender {

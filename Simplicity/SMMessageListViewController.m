@@ -936,11 +936,7 @@
     }
 
     for(SMMessage *m in messageThread.messagesSortedByDate) {
-        NSAssert(m != nil, @"messageToOpen is nil");
-
-        SMFolder *messageFolder = [[appDelegate.currentAccount mailbox] getFolderByName:m.remoteFolder];
-        
-        if(messageFolder != nil && messageFolder.kind == SMFolderKindDrafts) {
+        if(m.draft) {
             if(m.htmlBodyRendering != nil) {
                 [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering subject:m.subject to:m.toAddressList cc:m.ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments];
             }

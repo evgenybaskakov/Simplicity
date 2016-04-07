@@ -41,7 +41,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSButton *_attachmentButton;
     NSTextField *_dateLabel;
     NSButton *_infoButton;
-    NSButton *_replyButton;
+    NSButton *_replyOrEditButton;
     NSButton *_messageActionsButton;
     Boolean _fullDetailsShown;
     NSMutableArray *_fullDetailsViewConstraints;
@@ -107,6 +107,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSAssert(message != nil, @"nil message");
     
     if(_currentMessage != message) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        
         _currentMessage = message;
         
         [_fromAddress setStringValue:[SMMessage parseAddress:_currentMessage.fromAddress]];
@@ -114,6 +116,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         
         if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
             _starButton.enabled = NO;
+        }
+        
+        if(_currentMessage && _currentMessage.draft) {
+            _replyOrEditButton.image = appDelegate.imageRegistry.editImage;
         }
     }
 
@@ -269,7 +275,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 - (void)setReplyButtonImage {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
+
+    _replyOrEditButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
 }
 
 - (NSTextField*)createDraftLabel {
@@ -473,7 +480,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSAssert(view != nil, @"no view");
 
     if(_infoButton == nil) {
-        NSAssert(_replyButton == nil, @"reply button already created");
+        NSAssert(_replyOrEditButton == nil, @"reply button already created");
         NSAssert(_messageActionsButton == nil, @"message actions button already created");
 
         _infoButton = [[NSButton alloc] init];
@@ -485,13 +492,13 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         _infoButton.bordered = NO;
         _infoButton.action = @selector(toggleFullDetails:);
 
-        _replyButton = [[NSButton alloc] init];
-        _replyButton.translatesAutoresizingMaskIntoConstraints = NO;
-        _replyButton.bezelStyle = NSShadowlessSquareBezelStyle;
-        _replyButton.target = self;
-        [_replyButton.cell setImageScaling:NSImageScaleProportionallyDown];
-        _replyButton.bordered = NO;
-        _replyButton.action = @selector(composeReplyOrReplyAll:);
+        _replyOrEditButton = [[NSButton alloc] init];
+        _replyOrEditButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _replyOrEditButton.bezelStyle = NSShadowlessSquareBezelStyle;
+        _replyOrEditButton.target = self;
+        [_replyOrEditButton.cell setImageScaling:NSImageScaleProportionallyDown];
+        _replyOrEditButton.bordered = NO;
+        _replyOrEditButton.action = @selector(composeReplyOrReplyAll:);
         [self setReplyButtonImage];
 
         _messageActionsButton = [[NSButton alloc] init];
@@ -506,7 +513,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         NSAssert(_uncollapsedHeaderConstraints == nil, @"_uncollapsedHeaderConstraints already created");
         _uncollapsedHeaderConstraints = [NSMutableArray array];
 
-        for(NSButton *button in [NSArray arrayWithObjects:_infoButton, _replyButton, _messageActionsButton, nil]) {
+        for(NSButton *button in [NSArray arrayWithObjects:_infoButton, _replyOrEditButton, _messageActionsButton, nil]) {
             [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
 
             [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:button attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
@@ -518,10 +525,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_dateLabel attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
         [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
 
-        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_replyButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_replyOrEditButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
         [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
 
-        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageActionsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_replyButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageActionsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_replyOrEditButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
         [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
 
         [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_messageActionsButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
@@ -532,7 +539,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     [view removeConstraint:_collapsedHeaderConstraint];
 
     [view addSubview:_infoButton];
-    [view addSubview:_replyButton];
+    [view addSubview:_replyOrEditButton];
     [view addSubview:_messageActionsButton];
     [view addConstraints:_uncollapsedHeaderConstraints];
 
@@ -552,7 +559,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     
     [view removeConstraints:_uncollapsedHeaderConstraints];
     [_infoButton removeFromSuperview];
-    [_replyButton removeFromSuperview];
+    [_replyOrEditButton removeFromSuperview];
     [_messageActionsButton removeFromSuperview];
 
     [view addConstraint:_collapsedHeaderConstraint];
@@ -563,6 +570,14 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 #pragma mark Actions
+
+- (void)editDraft:(id)sender {
+    SM_LOG_WARNING(@"TODO");
+}
+
+- (void)discardDraft:(id)sender {
+    SM_LOG_WARNING(@"TODO");
+}
 
 - (void)toggleFullDetails:(id)sender {
     if(_fullDetailsShown) {
@@ -626,16 +641,23 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
     [theMenu setAutoenablesItems:NO];
 
-    [[theMenu addItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@""] setTarget:self];
-    [[theMenu addItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@""] setTarget:self];
-    [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
-    [theMenu addItem:[NSMenuItem separatorItem]];
-    [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
-
-    if(![_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
+    if(_currentMessage && _currentMessage.draft) {
+        [[theMenu addItemWithTitle:@"Edit draft" action:@selector(editDraft:) keyEquivalent:@""] setTarget:self];
         [theMenu addItem:[NSMenuItem separatorItem]];
-        
-        [[theMenu addItemWithTitle:(_currentMessage.unseen? @"Mark as Read" : @"Mark as Unread") action:@selector(changeMessageUnreadFlag:) keyEquivalent:@""] setTarget:self];
+        [[theMenu addItemWithTitle:@"Discard draft" action:@selector(discardDraft:) keyEquivalent:@""] setTarget:self];
+    }
+    else {
+        [[theMenu addItemWithTitle:@"Reply" action:@selector(composeReply:) keyEquivalent:@""] setTarget:self];
+        [[theMenu addItemWithTitle:@"Reply All" action:@selector(composeReplyAll:) keyEquivalent:@""] setTarget:self];
+        [[theMenu addItemWithTitle:@"Forward" action:@selector(composeForward:) keyEquivalent:@""] setTarget:self];
+        [theMenu addItem:[NSMenuItem separatorItem]];
+        [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteMessage:) keyEquivalent:@""] setTarget:self];
+
+        if(![_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
+            [theMenu addItem:[NSMenuItem separatorItem]];
+            
+            [[theMenu addItemWithTitle:(_currentMessage.unseen? @"Mark as Read" : @"Mark as Unread") action:@selector(changeMessageUnreadFlag:) keyEquivalent:@""] setTarget:self];
+        }
     }
     
     if(_currentMessage.hasAttachments) {

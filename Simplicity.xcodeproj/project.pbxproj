@@ -179,6 +179,7 @@
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
 		8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */; };
+		809430C31CB629AB000C1619 /* edit-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 809430C21CB629AB000C1619 /* edit-icon.png */; };
 		80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 80967AE81BF004F000ABF7AE /* icloud_logo.png */; };
 		80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */; };
 		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
@@ -587,6 +588,7 @@
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
 		8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindowController.xib; sourceTree = "<group>"; };
+		809430C21CB629AB000C1619 /* edit-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "edit-icon.png"; sourceTree = "<group>"; };
 		80967AE81BF004F000ABF7AE /* icloud_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icloud_logo.png; sourceTree = "<group>"; };
 		80967AEA1BF0623700ABF7AE /* SMMailServiceProviderICloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderICloud.h; sourceTree = "<group>"; };
 		80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderICloud.m; sourceTree = "<group>"; };
@@ -1075,6 +1077,7 @@
 				009C7B9F1A5BB558002EA2DF /* circle-blue.png */,
 				0047416A1AA42115002566E8 /* collapse-all.png */,
 				002057D61A85D87500D5FE8A /* drafts-white.png */,
+				809430C21CB629AB000C1619 /* edit-icon.png */,
 				002057C81A85D2DA00D5FE8A /* important-white.png */,
 				002057CE1A85D2DA00D5FE8A /* inbox-white.png */,
 				002556F91A5A3BF900C864D0 /* info-icon.png */,
@@ -1404,6 +1407,7 @@
 				80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */,
 				801EDEF51BE9F06500A16E85 /* yahoo_logo.png in Resources */,
 				002556FA1A5A3BF900C864D0 /* info-icon.png in Resources */,
+				809430C31CB629AB000C1619 /* edit-icon.png in Resources */,
 				002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */,
 				80ED78FD1C95351D00475EE5 /* SMAccountButtonViewController.xib in Resources */,
 				801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */,

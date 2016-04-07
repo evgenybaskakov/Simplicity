@@ -37,8 +37,9 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     SMRoundedImageView *_contactImageView;
     NSTextField *_fromAddress;
     NSTextField *_messageBodyPreviewField;
+    NSTextField *_draftLabel;
     NSButton *_attachmentButton;
-    NSTextField *_date;
+    NSTextField *_dateLabel;
     NSButton *_infoButton;
     NSButton *_replyButton;
     NSButton *_messageActionsButton;
@@ -109,7 +110,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         _currentMessage = message;
         
         [_fromAddress setStringValue:[SMMessage parseAddress:_currentMessage.fromAddress]];
-        [_date setStringValue:[_currentMessage localizedDate]];
+        [_dateLabel setStringValue:[_currentMessage localizedDate]];
         
         if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
             _starButton.enabled = NO;
@@ -135,12 +136,22 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         _starButton.image = appDelegate.imageRegistry.grayStarImage;
     }
 
+    if(_doesntHaveAttachmentsConstraints != nil) {
+        [self.view removeConstraints:_doesntHaveAttachmentsConstraints];
+        _doesntHaveAttachmentsConstraints = nil;
+    }
+    
+    if(_hasAttachmentsConstraints != nil) {
+        [self.view removeConstraints:_hasAttachmentsConstraints];
+        _hasAttachmentsConstraints = nil;
+    }
+    
     if(_currentMessage.hasAttachments) {
         [self showAttachmentButton];
     } else {
         [self hideAttachmentButton];
     }
-
+    
     [_messageBodyPreviewField setStringValue:[_currentMessage bodyPreview]];
 
     NSFont *font = [_messageBodyPreviewField font];
@@ -222,16 +233,16 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
     // init date label
     
-    _date = [SMMessageDetailsViewController createLabel:@"" bold:NO];
-    _date.textColor = [NSColor grayColor];
+    _dateLabel = [SMMessageDetailsViewController createLabel:@"" bold:NO];
+    _dateLabel.textColor = [NSColor grayColor];
     
-    [view addSubview:_date];
+    [view addSubview:_dateLabel];
 
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_date attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_dateLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
     
     // init header collapsing
 
-    _collapsedHeaderConstraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_date attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP];
+    _collapsedHeaderConstraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_dateLabel attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP];
     
     [view addConstraint:_collapsedHeaderConstraint];
 
@@ -249,18 +260,6 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
     [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_messageBodyPreviewField attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
 
-    // init attachment constraints
-    
-    _doesntHaveAttachmentsConstraints = [NSMutableArray array];
-
-    [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
-    
-    [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_date attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
-    
-    [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
-    
-    [view addConstraints:_doesntHaveAttachmentsConstraints];
-
     // init bottom constraint
 
     _bottomConstraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messageBodyPreviewField attribute:NSLayoutAttributeBottom multiplier:1.0 constant:V_MARGIN];
@@ -273,15 +272,31 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllImage : appDelegate.imageRegistry.replyImage;
 }
 
-- (void)showAttachmentButton {
-    if(_attachmentButtonShown)
-        return;
+- (NSTextField*)createDraftLabel {
+    NSTextField *label = [SMMessageDetailsViewController createLabel:@"Draft" bold:NO];
+    label.backgroundColor = [NSColor colorWithCalibratedRed:1 green:0.804262 blue:0.400805 alpha:1];
+    label.drawsBackground = YES;
+
+    [label setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
     
+    return label;
+}
+
+- (void)showAttachmentButton {
     NSView *view = [self view];
 
-    if(_attachmentButton == nil) {
-        NSAssert(_hasAttachmentsConstraints == nil, @"_hasAttachmentsConstraints != nil");
+    if(_currentMessage && _currentMessage.draft) {
+        if(_draftLabel == nil) {
+            _draftLabel = [self createDraftLabel];
+        }
+        
+        [view addSubview:_draftLabel];
+    }
+    else if(_draftLabel != nil) {
+        [_draftLabel removeFromSuperview];
+    }
 
+    if(_attachmentButton == nil) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
         _attachmentButton = [[NSButton alloc] init];
@@ -295,57 +310,98 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         
         // TODO: show popup menu asking the user to save/download the attachments
         //  _attachmentButton.action = @selector(toggleFullDetails:);
+    }
+    
+    NSAssert(_hasAttachmentsConstraints == nil, @"_hasAttachmentsConstraints != nil");
+    _hasAttachmentsConstraints = [NSMutableArray array];
+    
+    [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
+    
+    [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    
+    [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_attachmentButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:H_GAP]];
+    
+    [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
+    
+    [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_dateLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+
+    [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
+
+    if(_currentMessage.draft) {
+        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_draftLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
         
-        _hasAttachmentsConstraints = [NSMutableArray array];
+        [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
         
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/HEADER_ICON_HEIGHT_RATIO]];
-        
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_attachmentButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-        
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_attachmentButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:H_GAP]];
-        
-        [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
-        
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_date attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_draftLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 
         [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
 
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_attachmentButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_draftLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+        
+        [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
+    }
+    else {
+        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_attachmentButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 
         [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
-
-        [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-        
-        [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
     }
 
-    NSAssert(_doesntHaveAttachmentsConstraints != nil, @"_doesntHaveAttachmentsConstraints == nil");
-    [view removeConstraints:_doesntHaveAttachmentsConstraints];
+    [_hasAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_attachmentButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    
+    [_hasAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
     
     NSAssert(_attachmentButton != nil, @"_attachmentButton == nil");
     [view addSubview:_attachmentButton];
 
     NSAssert(_hasAttachmentsConstraints != nil, @"_hasAttachmentsConstraints == nil");
     [view addConstraints:_hasAttachmentsConstraints];
-
-    _attachmentButtonShown = YES;
 }
 
 - (void)hideAttachmentButton {
-    if(!_attachmentButtonShown)
-        return;
-    
     NSView *view = [self view];
     
-    NSAssert(_hasAttachmentsConstraints != nil, @"_hasAttachmentsConstraints == nil");
-    [view removeConstraints:_hasAttachmentsConstraints];
+    if(_attachmentButton != nil) {
+        [_attachmentButton removeFromSuperview];
+    }
     
-    NSAssert(_attachmentButton != nil, @"_attachmentButton == nil");
-    [_attachmentButton removeFromSuperview];
+    if(_currentMessage && _currentMessage.draft) {
+        if(_draftLabel == nil) {
+            _draftLabel = [self createDraftLabel];
+        }
+        
+        [view addSubview:_draftLabel];
+    }
+    else if(_draftLabel != nil) {
+        [_draftLabel removeFromSuperview];
+    }
+    
+    NSAssert(_doesntHaveAttachmentsConstraints == nil, @"_doesntHaveAttachmentsConstraints != nil");
+    _doesntHaveAttachmentsConstraints = [NSMutableArray array];
+
+    if(_currentMessage && _currentMessage.draft) {
+        [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_draftLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        
+        [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
+
+        [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_draftLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_dateLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+        
+        [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
+
+        [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_draftLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+        
+        [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
+
+        [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_draftLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
+        
+        [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityRequired];
+    }
+    else {
+        [_doesntHaveAttachmentsConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_dateLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+        
+        [_doesntHaveAttachmentsConstraints.lastObject setPriority:NSLayoutPriorityDefaultLow];
+    }
     
     [view addConstraints:_doesntHaveAttachmentsConstraints];
-    
-    _attachmentButtonShown = NO;
 }
 
 - (void)showFullDetails {
@@ -459,7 +515,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
             [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired];
         }
         
-        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_date attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+        [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_infoButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_dateLabel attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
         [_uncollapsedHeaderConstraints.lastObject setPriority:NSLayoutPriorityRequired-2];
 
         [_uncollapsedHeaderConstraints addObject:[NSLayoutConstraint constraintWithItem:_replyButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_infoButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];

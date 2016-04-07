@@ -157,7 +157,7 @@
                                                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Draft" drawsBackground="YES" id="lrL-RQ-5r4">
                                                             <font key="font" metaFont="systemMedium" size="11"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" red="1" green="0.80000001190000003" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="backgroundColor" red="1" green="0.80426197482491513" blue="0.40080488838021466" alpha="1" colorSpace="calibratedRGB"/>
                                                         </textFieldCell>
                                                     </textField>
                                                 </subviews>

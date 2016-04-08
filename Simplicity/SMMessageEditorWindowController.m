@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
@@ -69,6 +70,40 @@
     }
     
     [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    
+    appDelegate.richTextFormatMenuItem.state = NSOnState;
+    appDelegate.richTextFormatMenuItem.enabled = YES;
+    appDelegate.richTextFormatMenuItem.target = self;
+    appDelegate.richTextFormatMenuItem.action = @selector(makeRichTextFormat:);
+
+    appDelegate.plainTextFormatMenuItem.state = NSOffState;
+    appDelegate.plainTextFormatMenuItem.enabled = YES;
+    appDelegate.plainTextFormatMenuItem.target = self;
+    appDelegate.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
+
+    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+}
+
+- (void)makeRichTextFormat:(id)sender {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+
+    appDelegate.richTextFormatMenuItem.state = NSOnState;
+    appDelegate.plainTextFormatMenuItem.state = NSOffState;
+
+    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+}
+
+- (void)makePlainTextFormat:(id)sender {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    
+    appDelegate.richTextFormatMenuItem.state = NSOffState;
+    appDelegate.plainTextFormatMenuItem.state = NSOnState;
+    
+    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
 }
 
 #pragma mark Actions

@@ -26,6 +26,9 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
+@property (weak) IBOutlet NSMenuItem *richTextFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
+
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAttachmentStorage *attachmentStorage;

@@ -69,6 +69,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     //
     
+    appDelegate.richTextFormatMenuItem.enabled = NO;
+    appDelegate.plainTextFormatMenuItem.enabled = NO;
+    
+    //
+    
     _messageThreadAndFindContentsPanelView = [[NSView alloc] init];
     _messageThreadAndFindContentsPanelView.translatesAutoresizingMaskIntoConstraints = NO;
     

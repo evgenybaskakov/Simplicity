@@ -97,6 +97,18 @@
     return [SMMessageEditorBase fontNames][index];
 }
 
+- (void)makeRichText {
+    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+}
+
+- (void)makePlainText {
+    NSString *plainText = [(DOMHTMLElement *)[[self.mainFrame DOMDocument] documentElement] outerText];
+
+    NSLog(@"%s: '%@'", __FUNCTION__, plainText);
+
+    [self.mainFrame loadHTMLString:plainText baseURL:nil];
+}
+
 #pragma mark Web frame contents
 
 - (NSString*)getMessageText {

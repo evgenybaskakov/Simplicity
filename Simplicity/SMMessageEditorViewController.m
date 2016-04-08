@@ -550,6 +550,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Text attrbitute actions
 
+- (void)makeRichText {
+    [_messageTextEditor makeRichText];
+}
+
+- (void)makePlainText {
+    [_messageTextEditor makePlainText];
+}
+
 - (void)toggleBold {
     [_messageTextEditor toggleBold];
 }

@@ -25,6 +25,8 @@
 - (void)setEditorFrame:(NSRect)frame;
 - (void)setResponders:(BOOL)force;
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;
+- (void)makeRichText;
+- (void)makePlainText;
 - (void)sendMessage;
 - (void)deleteEditedDraft;
 //- (void)saveMessage;

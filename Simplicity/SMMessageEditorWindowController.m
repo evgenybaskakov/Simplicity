@@ -85,7 +85,7 @@
     appDelegate.plainTextFormatMenuItem.target = self;
     appDelegate.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
 
-    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+    // TODO: choose the default layout based on the current message settings and preferences 
 }
 
 - (void)makeRichTextFormat:(id)sender {
@@ -94,7 +94,7 @@
     appDelegate.richTextFormatMenuItem.state = NSOnState;
     appDelegate.plainTextFormatMenuItem.state = NSOffState;
 
-    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+    [_messageEditorViewController makeRichText];
 }
 
 - (void)makePlainTextFormat:(id)sender {
@@ -103,7 +103,7 @@
     appDelegate.richTextFormatMenuItem.state = NSOffState;
     appDelegate.plainTextFormatMenuItem.state = NSOnState;
     
-    NSLog(@"%s: TODO: %@", __FUNCTION__, self);
+    [_messageEditorViewController makePlainText];
 }
 
 #pragma mark Actions

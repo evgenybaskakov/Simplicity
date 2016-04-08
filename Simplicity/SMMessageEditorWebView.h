@@ -30,6 +30,8 @@ typedef enum {
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind;
 - (void)stopTextMonitor;
 - (NSString*)getMessageText;
+- (void)makeRichText;
+- (void)makePlainText;
 - (void)toggleBold;
 - (void)toggleItalic;
 - (void)toggleUnderline;

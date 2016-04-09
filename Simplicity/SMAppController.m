@@ -56,7 +56,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     NSMutableArray *_messageEditorWindowControllers;
     NSMutableArray *_messageWindowControllers;
     Boolean _operationQueueShown;
-    Boolean _inboxInitialized;
+    Boolean _syncedFoldersInitialized;
     BOOL _preferencesWindowShown;
     BOOL _searchSuggestionsMenuShown;
 }
@@ -332,7 +332,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         
         [ _mailboxViewController updateFolderListView ];
         
-        if(!_inboxInitialized) {
+        if(!_syncedFoldersInitialized) {
             SMFolder *inboxFolder = [[account mailbox] inboxFolder];
             NSAssert(inboxFolder != nil, @"inboxFolder is nil");
             
@@ -340,7 +340,14 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
             
             [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
             
-            _inboxInitialized = YES;
+            for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
+                if(folder != inboxFolder) {
+                    SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
+                    [localFolder startLocalFolderSync];
+                }
+            }
+            
+            _syncedFoldersInitialized = YES;
         }
     }
 }

@@ -272,15 +272,23 @@
     }
 }
 
-- (void)messagesSyncedInFolder:(NSNotification*)notifcation {
-    //
-    // Keep certain folders always synced.
-    //
-    for(SMFolder *folder in [[_account mailbox] alwaysSyncedFolders]) {
-        SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folder.fullName];
-        
-        if(![[[notifcation userInfo] objectForKey:@"LocalFolderName"] isEqualToString:localFolder.localName]) {
-            [localFolder startLocalFolderSync];
+- (void)messagesSyncedInFolder:(NSNotification*)notification {
+    SMUserAccount *account;
+    NSString *updatedFolderName;
+    BOOL hasUpdates;
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&updatedFolderName hasUpdates:&hasUpdates account:&account];
+
+    if(_account == account) {
+        //
+        // Keep certain folders always synced.
+        //
+        for(SMFolder *folder in [[_account mailbox] alwaysSyncedFolders]) {
+            SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folder.fullName];
+            
+            if([updatedFolderName isEqualToString:localFolder.localName]) {
+                [localFolder startLocalFolderSync];
+                break;
+            }
         }
     }
 }

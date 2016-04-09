@@ -94,7 +94,7 @@
     appDelegate.richTextFormatMenuItem.state = NSOnState;
     appDelegate.plainTextFormatMenuItem.state = NSOffState;
 
-    [_messageEditorViewController makeRichText];
+    [_messageEditorViewController makeRichText];	
 }
 
 - (void)makePlainTextFormat:(id)sender {

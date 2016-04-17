@@ -34,6 +34,8 @@
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
+#import "SMPlainTextMessageEditor.h"
+#import "SMBoxView.h"
 
 typedef NS_ENUM(NSUInteger, FrameAdjustment) {
     FrameAdjustment_ShowFullPanel,
@@ -55,7 +57,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
-    SMMessageEditorWebView *_messageTextEditor;
+    SMMessageEditorWebView *_richTextEditor;
+    SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     Boolean _attachmentsPanelShown;
@@ -136,7 +139,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         // editor area
         
-        _messageTextEditor = [[SMMessageEditorWebView alloc] init];
+        _richTextEditor = [[SMMessageEditorWebView alloc] init];
         
         // unfold panel
         
@@ -181,7 +184,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     //[_textAndAttachmentsSplitView setDelegate:self];
     [_textAndAttachmentsSplitView setVertical:NO];
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
-    [_textAndAttachmentsSplitView addSubview:_messageTextEditor];
+    [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
@@ -234,8 +237,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // WebView post-setup
     
-    _messageTextEditor.messageEditorBase = _messageEditorBase;
-    _messageTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+    _richTextEditor.messageEditorBase = _messageEditorBase;
+    _richTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
     
     // other stuff
     
@@ -262,7 +265,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_attachmentsPanelViewController enableEditing:_messageEditorController];
     [_attachmentsPanelViewController setToggleTarget:self];
     
-    [_textAndAttachmentsSplitView addSubview:_attachmentsPanelViewController.view];
+    [_textAndAttachmentsSplitView insertArrangedSubview:_attachmentsPanelViewController.view atIndex:1];
 }
 
 - (void)viewDidLoad {
@@ -295,7 +298,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
         [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
         [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-        [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
+        [_subjectBoxViewController.textField setNextKeyView:_richTextEditor];
     }
     else {
         if(!_embedded) {
@@ -313,7 +316,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             }
             
             [_toBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-            [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
+            [_subjectBoxViewController.textField setNextKeyView:_richTextEditor];
         }
         else {
             if(!messageEditorFocus) {
@@ -329,7 +332,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
                 [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
             }
             
-            [_toBoxViewController.tokenField setNextKeyView:_messageTextEditor];
+            [_toBoxViewController.tokenField setNextKeyView:_richTextEditor];
         }
     }
 }
@@ -391,7 +394,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean sendEnabled = (to != nil && to.count != 0);
     [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
     
-    [_messageTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
+    [_richTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 
 #pragma mark Message actions
@@ -410,7 +413,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         return;
     }
-    NSString *messageText = [_messageTextEditor getMessageText];
+    NSString *messageText = [_richTextEditor getMessageText];
     
     [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
     
@@ -455,7 +458,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
     
-    if(_messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
+    if(_richTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
         return YES;
     }
     
@@ -520,10 +523,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastCc = cc;
     _lastBcc = bcc;
     
-    NSString *messageText = [_messageTextEditor getMessageText];
+    NSString *messageText = [_richTextEditor getMessageText];
     [_messageEditorController saveDraft:messageText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
     
-    _messageTextEditor.unsavedContentPending = NO;
+    _richTextEditor.unsavedContentPending = NO;
 }
 
 - (void)attachDocument {
@@ -551,47 +554,71 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeRichText {
-    [_messageTextEditor makeRichText];
+    [_richTextEditor makeRichText];
 }
 
 - (void)makePlainText {
-    [_messageTextEditor makePlainText];
+    NSRect editorFrame = _richTextEditor.frame;
+    [_richTextEditor removeFromSuperview];
+    
+    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:editorFrame];
+    _plainTextEditor.richText = NO;
+    _plainTextEditor.verticallyResizable = YES;
+//    _plainTextEditor.scroll
+    _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
+/*    SMBoxView *innerView = [[SMBoxView alloc] initWithFrame:_plainTextEditor.frame];
+    innerView.translatesAutoresizingMaskIntoConstraints = YES;
+    innerView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    innerView.fillColor = [NSColor blueColor];
+*/
+    // use an intermediate view here because NSSplitView doesn't allow NSTextView to be its direct subview
+    // the reason is that NSSplitView creates a weak reference to its subview which NSTextView doesn't support
+    NSView *dummyView = [[SMBoxView alloc] initWithFrame:_plainTextEditor.frame];
+    dummyView.translatesAutoresizingMaskIntoConstraints = YES;
+    dummyView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [dummyView addSubview:_plainTextEditor];
+    
+    [_textAndAttachmentsSplitView insertArrangedSubview:dummyView atIndex:0];
+    [_textAndAttachmentsSplitView adjustSubviews];
 }
 
 - (void)toggleBold {
-    [_messageTextEditor toggleBold];
+    [_richTextEditor toggleBold];
 }
 
 - (void)toggleItalic {
-    [_messageTextEditor toggleItalic];
+    [_richTextEditor toggleItalic];
 }
 
 - (void)toggleUnderline {
-    [_messageTextEditor toggleUnderline];
+    [_richTextEditor toggleUnderline];
 }
 
 - (void)toggleBullets {
-    [_messageTextEditor toggleBullets];
+    [_richTextEditor toggleBullets];
 }
 
 - (void)toggleNumbering {
-    [_messageTextEditor toggleNumbering];
+    [_richTextEditor toggleNumbering];
 }
 
 - (void)toggleQuote {
-    [_messageTextEditor toggleQuote];
+    [_richTextEditor toggleQuote];
 }
 
 - (void)shiftLeft {
-    [_messageTextEditor shiftLeft];
+    [_richTextEditor shiftLeft];
 }
 
 - (void)shiftRight {
-    [_messageTextEditor shiftRight];
+    [_richTextEditor shiftRight];
 }
 
 - (void)selectFont {
-    [_messageTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
+    [_richTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
 }
 
 - (void)setTextSize {
@@ -604,23 +631,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
     
-    [_messageTextEditor setTextSize:textSize];
+    [_richTextEditor setTextSize:textSize];
 }
 
 - (void)justifyText {
-    [_messageTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
+    [_richTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
 }
 
 - (void)showSource {
-    [_messageTextEditor showSource];
+    [_richTextEditor showSource];
 }
 
 - (void)setTextForegroundColor {
-    [_messageTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
+    [_richTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
 }
 
 - (void)setTextBackgroundColor {
-    [_messageTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
+    [_richTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
 }
 
 #pragma mark UI elements collaboration
@@ -628,7 +655,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 - (void)unfoldHiddenText:(id)sender {
     NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
     
-    [_messageTextEditor unfoldContent];
+    [_richTextEditor unfoldContent];
     
     [_foldPanelViewController.view removeFromSuperview];
     _foldPanelViewController = nil;
@@ -772,7 +799,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (CGFloat)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
+    return _panelHeight + _richTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {
@@ -846,7 +873,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_messageTextEditor stopTextMonitor];
+    [_richTextEditor stopTextMonitor];
 }
 
 - (void)saveDocument:(id)sender {

@@ -194,6 +194,7 @@
 		80A44B191B5A19260049AB88 /* align_center-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B151B5A19260049AB88 /* align_center-128.png */; };
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
+		80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
 		80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */; };
 		80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */; };
@@ -606,6 +607,8 @@
 		80A44B151B5A19260049AB88 /* align_center-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_center-128.png"; sourceTree = "<group>"; };
 		80A44B161B5A19260049AB88 /* align_left-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_left-128.png"; sourceTree = "<group>"; };
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
+		80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPlainTextMessageEditor.h; sourceTree = "<group>"; };
+		80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPlainTextMessageEditor.m; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
 		80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuViewController.h; sourceTree = "<group>"; };
@@ -949,6 +952,8 @@
 				00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */,
 				8048FBD41C140B510083954D /* SMNotificationsController.h */,
 				8048FBD51C140B510083954D /* SMNotificationsController.m */,
+				80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */,
+				80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */,
 				801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */,
 				801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */,
 				801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */,
@@ -1570,6 +1575,7 @@
 				80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */,
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
+				80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

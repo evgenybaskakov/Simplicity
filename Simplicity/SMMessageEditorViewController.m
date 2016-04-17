@@ -35,7 +35,6 @@
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMPlainTextMessageEditor.h"
-#import "SMBoxView.h"
 
 typedef NS_ENUM(NSUInteger, FrameAdjustment) {
     FrameAdjustment_ShowFullPanel,
@@ -564,24 +563,17 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:editorFrame];
     _plainTextEditor.richText = NO;
     _plainTextEditor.verticallyResizable = YES;
-//    _plainTextEditor.scroll
     _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-/*    SMBoxView *innerView = [[SMBoxView alloc] initWithFrame:_plainTextEditor.frame];
-    innerView.translatesAutoresizingMaskIntoConstraints = YES;
-    innerView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    innerView.fillColor = [NSColor blueColor];
-*/
-    // use an intermediate view here because NSSplitView doesn't allow NSTextView to be its direct subview
-    // the reason is that NSSplitView creates a weak reference to its subview which NSTextView doesn't support
-    NSView *dummyView = [[SMBoxView alloc] initWithFrame:_plainTextEditor.frame];
-    dummyView.translatesAutoresizingMaskIntoConstraints = YES;
-    dummyView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    [dummyView addSubview:_plainTextEditor];
+    NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:_plainTextEditor.frame];
+    scrollView.borderType = NSNoBorder;
+    scrollView.translatesAutoresizingMaskIntoConstraints = YES;
+    scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [scrollView setDocumentView:_plainTextEditor];
     
-    [_textAndAttachmentsSplitView insertArrangedSubview:dummyView atIndex:0];
+    [_textAndAttachmentsSplitView insertArrangedSubview:scrollView atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
 }
 

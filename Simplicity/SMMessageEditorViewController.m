@@ -557,6 +557,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)makePlainText {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
     NSRect editorFrame = _richTextEditor.frame;
     [_richTextEditor removeFromSuperview];
     
@@ -564,6 +567,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _plainTextEditor.richText = NO;
     _plainTextEditor.verticallyResizable = YES;
     _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    _plainTextEditor.font = preferencesController.fixedMessageFont;
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 

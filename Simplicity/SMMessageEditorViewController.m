@@ -57,7 +57,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
-    SMMessageEditorWebView *_richTextEditor;
+    SMMessageEditorWebView *_htmlTextEditor;
     SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
@@ -240,8 +240,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // WebView post-setup
     
-    _richTextEditor.messageEditorBase = _messageEditorBase;
-    _richTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+    _htmlTextEditor.messageEditorBase = _messageEditorBase;
+    _htmlTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
     
     // other stuff
     
@@ -277,7 +277,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)setResponders:(BOOL)force {
     NSWindow *window = [[self view] window];
-    NSAssert(window, @"no window");
+    if(window == nil) {
+        SM_LOG_DEBUG(@"no window yet to set responders for");
+        return;
+    }
+    
+    NSView *editorView = _plainText? _plainTextEditor : _htmlTextEditor;
     
     // Workaround: it is nearly impossible to check if the webview has focus. The first responder in that case has
     // a type of "WebHTMLView", which is a private Apple class. When the focus is on address or subject fields,
@@ -301,7 +306,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
         [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
         [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-        [_subjectBoxViewController.textField setNextKeyView:_richTextEditor];
+        [_subjectBoxViewController.textField setNextKeyView:editorView];
     }
     else {
         if(!_embedded) {
@@ -319,7 +324,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             }
             
             [_toBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-            [_subjectBoxViewController.textField setNextKeyView:_richTextEditor];
+            [_subjectBoxViewController.textField setNextKeyView:editorView];
         }
         else {
             if(!messageEditorFocus) {
@@ -335,7 +340,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
                 [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
             }
             
-            [_toBoxViewController.tokenField setNextKeyView:_richTextEditor];
+            [_toBoxViewController.tokenField setNextKeyView:editorView];
         }
     }
 }
@@ -397,7 +402,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean sendEnabled = (to != nil && to.count != 0);
     [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
     
-    [_richTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
+    [_htmlTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 
 #pragma mark Message actions
@@ -416,7 +421,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         return;
     }
-    NSString *messageText = [_richTextEditor getMessageText];
+    NSString *messageText = [_htmlTextEditor getMessageText];
     
     [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
     
@@ -461,7 +466,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
     
-    if(_richTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
+    if(_htmlTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
         return YES;
     }
     
@@ -526,10 +531,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastCc = cc;
     _lastBcc = bcc;
     
-    NSString *messageText = [_richTextEditor getMessageText];
+    NSString *messageText = [_htmlTextEditor getMessageText];
     [_messageEditorController saveDraft:messageText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
     
-    _richTextEditor.unsavedContentPending = NO;
+    _htmlTextEditor.unsavedContentPending = NO;
 }
 
 - (void)attachDocument {
@@ -556,7 +561,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Text attrbitute actions
 
-- (void)makeRichText {
+- (void)makeHTMLText {
     [self makeHTMLText:NO];
 }
 
@@ -576,20 +581,22 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    _richTextEditor = [[SMMessageEditorWebView alloc] init];
-    _richTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
-    _richTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    _htmlTextEditor = [[SMMessageEditorWebView alloc] init];
+    _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
     // TODO: get rid of <pre> and do it right, see issue #90
     NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.string];
-    [_richTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
+    [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
     
-    [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
+    [_textAndAttachmentsSplitView insertArrangedSubview:_htmlTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
 
     if(restoreDividerPos) {
         [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
     }
+    
+    [self setResponders:NO];
 
     _plainText = NO;
 }
@@ -621,8 +628,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _plainTextEditor.richText = NO;
     _plainTextEditor.verticallyResizable = YES;
     
-    if(_richTextEditor != nil && _richTextEditor.mainFrame != nil) {
-        _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    if(_htmlTextEditor != nil && _htmlTextEditor.mainFrame != nil) {
+        _plainTextEditor.string = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
     }
     else {
         // convert html signature to plain text
@@ -650,43 +657,45 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
     }
 
+    [self setResponders:NO];
+    
     _plainText = YES;
 }
 
 - (void)toggleBold {
-    [_richTextEditor toggleBold];
+    [_htmlTextEditor toggleBold];
 }
 
 - (void)toggleItalic {
-    [_richTextEditor toggleItalic];
+    [_htmlTextEditor toggleItalic];
 }
 
 - (void)toggleUnderline {
-    [_richTextEditor toggleUnderline];
+    [_htmlTextEditor toggleUnderline];
 }
 
 - (void)toggleBullets {
-    [_richTextEditor toggleBullets];
+    [_htmlTextEditor toggleBullets];
 }
 
 - (void)toggleNumbering {
-    [_richTextEditor toggleNumbering];
+    [_htmlTextEditor toggleNumbering];
 }
 
 - (void)toggleQuote {
-    [_richTextEditor toggleQuote];
+    [_htmlTextEditor toggleQuote];
 }
 
 - (void)shiftLeft {
-    [_richTextEditor shiftLeft];
+    [_htmlTextEditor shiftLeft];
 }
 
 - (void)shiftRight {
-    [_richTextEditor shiftRight];
+    [_htmlTextEditor shiftRight];
 }
 
 - (void)selectFont {
-    [_richTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
+    [_htmlTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
 }
 
 - (void)setTextSize {
@@ -699,23 +708,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
     
-    [_richTextEditor setTextSize:textSize];
+    [_htmlTextEditor setTextSize:textSize];
 }
 
 - (void)justifyText {
-    [_richTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
+    [_htmlTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
 }
 
 - (void)showSource {
-    [_richTextEditor showSource];
+    [_htmlTextEditor showSource];
 }
 
 - (void)setTextForegroundColor {
-    [_richTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
+    [_htmlTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
 }
 
 - (void)setTextBackgroundColor {
-    [_richTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
+    [_htmlTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
 }
 
 #pragma mark UI elements collaboration
@@ -723,7 +732,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 - (void)unfoldHiddenText:(id)sender {
     NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
     
-    [_richTextEditor unfoldContent];
+    [_htmlTextEditor unfoldContent];
     
     [_foldPanelViewController.view removeFromSuperview];
     _foldPanelViewController = nil;
@@ -867,7 +876,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (CGFloat)editorFullHeight {
-    return _panelHeight + _richTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
+    return _panelHeight + _htmlTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {
@@ -941,7 +950,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_richTextEditor stopTextMonitor];
+    [_htmlTextEditor stopTextMonitor];
 }
 
 - (void)saveDocument:(id)sender {

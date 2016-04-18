@@ -80,7 +80,7 @@
     
     appDelegate.htmlTextFormatMenuItem.enabled = YES;
     appDelegate.htmlTextFormatMenuItem.target = self;
-    appDelegate.htmlTextFormatMenuItem.action = @selector(makeRichTextFormat:);
+    appDelegate.htmlTextFormatMenuItem.action = @selector(makeHTMLTextFormat:);
 
     appDelegate.plainTextFormatMenuItem.enabled = YES;
     appDelegate.plainTextFormatMenuItem.target = self;
@@ -92,13 +92,13 @@
     appDelegate.plainTextFormatMenuItem.state = (usePlainText? NSOnState : NSOffState);
 }
 
-- (void)makeRichTextFormat:(id)sender {
+- (void)makeHTMLTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
     appDelegate.htmlTextFormatMenuItem.state = NSOnState;
     appDelegate.plainTextFormatMenuItem.state = NSOffState;
 
-    [_messageEditorViewController makeRichText];	
+    [_messageEditorViewController makeHTMLText];	
 }
 
 - (void)makePlainTextFormat:(id)sender {

@@ -15,6 +15,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
+#import "SMStringUtils.h"
 #import "SMAddress.h"
 #import "SMUserAccount.h"
 #import "SMSuggestionProvider.h"
@@ -595,7 +596,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
     NSAttributedString *signatureHtmlString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
     
-    _plainTextEditor.string = (_richTextEditor != nil && _richTextEditor.mainFrame != nil)? [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText] : [NSString stringWithFormat:@"\n\n%@", signatureHtmlString.string];
+    _plainTextEditor.string = (_richTextEditor != nil && _richTextEditor.mainFrame != nil)? [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText] : [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlString.string]];
     
     _plainTextEditor.font = preferencesController.fixedMessageFont;
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;

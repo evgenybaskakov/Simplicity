@@ -187,7 +187,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [self makePlainText:YES];
     }
     else {
-        [self makeRichText:YES];
+        [self makeHTMLText:YES];
     }
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
@@ -557,23 +557,40 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeRichText {
-    [self makeRichText:NO];
+    [self makeHTMLText:NO];
 }
 
-- (void)makeRichText:(Boolean)force {
+- (void)makeHTMLText:(Boolean)force {
     if(!_plainText && !force) {
         return;
     }
 
-    [_plainTextEditor removeFromSuperview];
+    CGFloat dividerPos = 0;
+    BOOL restoreDividerPos = NO;
+    if(_textAndAttachmentsSplitView.subviews.count == 2) {
+        dividerPos = _textAndAttachmentsSplitView.subviews[0].frame.size.height;
+        restoreDividerPos = YES;
+    }
+
+    if(_textAndAttachmentsSplitView.subviews.count > 0) {
+        [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
+    }
 
     _richTextEditor = [[SMMessageEditorWebView alloc] init];
     _richTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     _richTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
+    // TODO: get rid of <pre> and do it right, see issue #90
+    NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.string];
+    [_richTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
     
     [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
-    
+
+    if(restoreDividerPos) {
+        [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
+    }
+
     _plainText = NO;
 }
 
@@ -586,21 +603,35 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         return;
     }
     
+    CGFloat dividerPos = 0;
+    BOOL restoreDividerPos = NO;
+    if(_textAndAttachmentsSplitView.subviews.count == 2) {
+        dividerPos = _textAndAttachmentsSplitView.subviews[0].frame.size.height;
+        restoreDividerPos = YES;
+    }
+    
+    if(_textAndAttachmentsSplitView.subviews.count > 0) {
+        [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
+    }
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
-    NSRect editorFrame = NSMakeRect(0, 0, 100, 100);
-    [_richTextEditor removeFromSuperview];
-    
-    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:editorFrame];
+    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
     _plainTextEditor.richText = NO;
     _plainTextEditor.verticallyResizable = YES;
     
-    // convert html signature to plain text
-    NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
-    NSAttributedString *signatureHtmlString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
-    
-    _plainTextEditor.string = (_richTextEditor != nil && _richTextEditor.mainFrame != nil)? [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText] : [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlString.string]];
+    if(_richTextEditor != nil && _richTextEditor.mainFrame != nil) {
+        _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    }
+    else {
+        // convert html signature to plain text
+        NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
+        NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
+        NSString *signaturePlainString = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
+        
+        _plainTextEditor.string = signaturePlainString;
+    }
     
     _plainTextEditor.font = preferencesController.fixedMessageFont;
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
@@ -615,6 +646,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_textAndAttachmentsSplitView insertArrangedSubview:scrollView atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
     
+    if(restoreDividerPos) {
+        [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
+    }
+
     _plainText = YES;
 }
 

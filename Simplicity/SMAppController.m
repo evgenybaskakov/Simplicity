@@ -69,7 +69,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     //
     
-    appDelegate.richTextFormatMenuItem.enabled = NO;
+    appDelegate.htmlTextFormatMenuItem.enabled = NO;
     appDelegate.plainTextFormatMenuItem.enabled = NO;
     
     //

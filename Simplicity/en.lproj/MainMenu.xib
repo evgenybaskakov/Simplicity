@@ -580,7 +580,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Format" id="dfQ-v9-ues">
                                     <items>
-                                        <menuItem title="Rich Text" state="on" id="vUH-6f-CGy">
+                                        <menuItem title="HTML" state="on" id="vUH-6f-CGy">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                         </menuItem>
                                         <menuItem title="Plain Text" id="lK6-yH-B4s">
@@ -671,8 +671,8 @@
         </window>
         <customObject id="494" customClass="SMAppDelegate">
             <connections>
+                <outlet property="htmlTextFormatMenuItem" destination="vUH-6f-CGy" id="ZAc-cY-u5X"/>
                 <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="eX9-5T-RgA"/>
-                <outlet property="richTextFormatMenuItem" destination="vUH-6f-CGy" id="rsm-e9-l89"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
         </customObject>

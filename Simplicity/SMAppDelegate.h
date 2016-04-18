@@ -26,7 +26,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
-@property (weak) IBOutlet NSMenuItem *richTextFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
 @property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
 
 @property (readonly) SMPreferencesController *preferencesController;

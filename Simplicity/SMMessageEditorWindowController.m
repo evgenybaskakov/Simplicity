@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
@@ -77,23 +78,24 @@
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     
-    appDelegate.richTextFormatMenuItem.state = NSOnState;
-    appDelegate.richTextFormatMenuItem.enabled = YES;
-    appDelegate.richTextFormatMenuItem.target = self;
-    appDelegate.richTextFormatMenuItem.action = @selector(makeRichTextFormat:);
+    appDelegate.htmlTextFormatMenuItem.enabled = YES;
+    appDelegate.htmlTextFormatMenuItem.target = self;
+    appDelegate.htmlTextFormatMenuItem.action = @selector(makeRichTextFormat:);
 
-    appDelegate.plainTextFormatMenuItem.state = NSOffState;
     appDelegate.plainTextFormatMenuItem.enabled = YES;
     appDelegate.plainTextFormatMenuItem.target = self;
     appDelegate.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
 
-    // TODO: choose the default layout based on the current message settings and preferences 
+    BOOL usePlainText = _messageEditorViewController.plainText;
+    
+    appDelegate.htmlTextFormatMenuItem.state = (usePlainText? NSOffState : NSOnState);
+    appDelegate.plainTextFormatMenuItem.state = (usePlainText? NSOnState : NSOffState);
 }
 
 - (void)makeRichTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
-    appDelegate.richTextFormatMenuItem.state = NSOnState;
+    appDelegate.htmlTextFormatMenuItem.state = NSOnState;
     appDelegate.plainTextFormatMenuItem.state = NSOffState;
 
     [_messageEditorViewController makeRichText];	
@@ -102,7 +104,7 @@
 - (void)makePlainTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     
-    appDelegate.richTextFormatMenuItem.state = NSOffState;
+    appDelegate.htmlTextFormatMenuItem.state = NSOffState;
     appDelegate.plainTextFormatMenuItem.state = NSOnState;
     
     [_messageEditorViewController makePlainText];

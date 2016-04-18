@@ -564,8 +564,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(!_plainText && !force) {
         return;
     }
-    
+
+    [_plainTextEditor removeFromSuperview];
+
     _richTextEditor = [[SMMessageEditorWebView alloc] init];
+    _richTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+    _richTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     
     [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
@@ -585,7 +589,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
-    NSRect editorFrame = NSMakeRect(0, 0, 100, 100); // _richTextEditor.frame;
+    NSRect editorFrame = NSMakeRect(0, 0, 100, 100);
     [_richTextEditor removeFromSuperview];
     
     _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:editorFrame];

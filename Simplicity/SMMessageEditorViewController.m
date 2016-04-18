@@ -75,10 +75,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean _adjustingFrames;
 }
 
-- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid  {
+- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
+        _plainText = plainText;
+        
         _lastSubject = @"";
         _lastFrom = @"";
         _lastTo = @[];
@@ -136,10 +138,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
-        // editor area
-        
-        _richTextEditor = [[SMMessageEditorWebView alloc] init];
-        
         // unfold panel
         
         if(embedded) {
@@ -183,8 +181,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     //[_textAndAttachmentsSplitView setDelegate:self];
     [_textAndAttachmentsSplitView setVertical:NO];
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
-    [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
-    [_textAndAttachmentsSplitView adjustSubviews];
+
+    if(_plainText) {
+        [self makePlainText:YES];
+    }
+    else {
+        [self makeRichText:YES];
+    }
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {
@@ -553,20 +556,41 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeRichText {
-    [_richTextEditor makeRichText];
+    [self makeRichText:NO];
+}
+
+- (void)makeRichText:(Boolean)force {
+    if(!_plainText && !force) {
+        return;
+    }
+    
+    _richTextEditor = [[SMMessageEditorWebView alloc] init];
+    
+    [_textAndAttachmentsSplitView insertArrangedSubview:_richTextEditor atIndex:0];
+    [_textAndAttachmentsSplitView adjustSubviews];
+    
+    _plainText = NO;
 }
 
 - (void)makePlainText {
+    [self makePlainText:NO];
+}
+
+- (void)makePlainText:(Boolean)force {
+    if(_plainText && !force) {
+        return;
+    }
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
-    NSRect editorFrame = _richTextEditor.frame;
+    NSRect editorFrame = NSMakeRect(0, 0, 100, 100); // _richTextEditor.frame;
     [_richTextEditor removeFromSuperview];
     
     _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:editorFrame];
     _plainTextEditor.richText = NO;
     _plainTextEditor.verticallyResizable = YES;
-    _plainTextEditor.string = [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    _plainTextEditor.string = (_richTextEditor != nil && _richTextEditor.mainFrame != nil)? [(DOMHTMLElement *)[[_richTextEditor.mainFrame DOMDocument] documentElement] outerText] : @""; // TODO: insert signature
     _plainTextEditor.font = preferencesController.fixedMessageFont;
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
@@ -575,10 +599,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     scrollView.borderType = NSNoBorder;
     scrollView.translatesAutoresizingMaskIntoConstraints = YES;
     scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    [scrollView setDocumentView:_plainTextEditor];
+    scrollView.documentView = _plainTextEditor;
     
     [_textAndAttachmentsSplitView insertArrangedSubview:scrollView atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
+    
+    _plainText = YES;
 }
 
 - (void)toggleBold {

@@ -1028,7 +1028,9 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageThreadCell *cell = _cells[cellIdx];
     
     _cellViewControllerToReply = cell.viewController;
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES draftUid:0];
+    
+    Boolean plainText = NO; // TODO: detect if the message being replied is plain text, see issue #88
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES draftUid:0 plainText:plainText];
     
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");

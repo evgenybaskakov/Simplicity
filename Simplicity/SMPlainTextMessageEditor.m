@@ -20,6 +20,7 @@
         SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
+        _textView.delegate = self;
         _textView.richText = NO;
         _textView.verticallyResizable = YES;
         _textView.string = string;
@@ -40,6 +41,15 @@
     [super drawRect:dirtyRect];
     
     // Drawing code here.
+}
+
+- (BOOL)textView:(NSTextView *)textView doCommandBySelector:(SEL)selector {
+    if (selector == @selector(insertBacktab:)) {
+        [[textView window] selectPreviousKeyView:nil];
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end

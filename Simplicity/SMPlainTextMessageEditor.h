@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMPlainTextMessageEditor : NSTextView
+@interface SMPlainTextMessageEditor : NSScrollView
+
+@property (readonly) NSTextView *textView;
+
+- (id)initWithString:(NSString*)string;
 
 @end

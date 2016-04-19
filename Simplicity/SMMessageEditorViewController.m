@@ -183,13 +183,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_textAndAttachmentsSplitView setVertical:NO];
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
 
-    if(_plainText) {
-        [self makePlainText:YES];
-    }
-    else {
-        [self makeHTMLText:YES];
-    }
-    
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {
         [_innerView addSubview:_fromBoxViewController.view];
@@ -237,11 +230,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
     _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
-    
-    // WebView post-setup
-    
-    _htmlTextEditor.messageEditorBase = _messageEditorBase;
-    _htmlTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+
+    // editor initialization
+
+    if(_plainText) {
+        [self makePlainText:YES];
+    }
+    else {
+        [self makeHTMLText:YES];
+    }
     
     // other stuff
     
@@ -281,7 +278,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         SM_LOG_DEBUG(@"no window yet to set responders for");
         return;
     }
-    
+
     NSView *editorView = _plainText? _plainTextEditor : _htmlTextEditor;
     
     // Workaround: it is nearly impossible to check if the webview has focus. The first responder in that case has
@@ -569,6 +566,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(!_plainText && !force) {
         return;
     }
+    
+    _plainText = NO;
 
     CGFloat dividerPos = 0;
     BOOL restoreDividerPos = NO;
@@ -586,9 +585,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
     // TODO: get rid of <pre> and do it right, see issue #90
-    NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.string];
+    NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
     [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
-    
+
+    _htmlTextEditor.messageEditorBase = _messageEditorBase;
+    _htmlTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+
     [_textAndAttachmentsSplitView insertArrangedSubview:_htmlTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
 
@@ -597,8 +599,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     [self setResponders:NO];
-
-    _plainText = NO;
 }
 
 - (void)makePlainText {
@@ -609,6 +609,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(_plainText && !force) {
         return;
     }
+    
+    _plainText = YES;
     
     CGFloat dividerPos = 0;
     BOOL restoreDividerPos = NO;
@@ -621,36 +623,25 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMPreferencesController *preferencesController = [appDelegate preferencesController];
-
-    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
-    _plainTextEditor.richText = NO;
-    _plainTextEditor.verticallyResizable = YES;
-    
+    NSString *plainText;
     if(_htmlTextEditor != nil && _htmlTextEditor.mainFrame != nil) {
-        _plainTextEditor.string = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+        plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
     }
     else {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
         // convert html signature to plain text
         NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
         NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
-        NSString *signaturePlainString = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
-        
-        _plainTextEditor.string = signaturePlainString;
+
+        plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
     }
     
-    _plainTextEditor.font = preferencesController.fixedMessageFont;
+    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithString:plainText];
     _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
     _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-
-    NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:_plainTextEditor.frame];
-    scrollView.borderType = NSNoBorder;
-    scrollView.translatesAutoresizingMaskIntoConstraints = YES;
-    scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    scrollView.documentView = _plainTextEditor;
     
-    [_textAndAttachmentsSplitView insertArrangedSubview:scrollView atIndex:0];
+    [_textAndAttachmentsSplitView insertArrangedSubview:_plainTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
     
     if(restoreDividerPos) {
@@ -658,8 +649,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 
     [self setResponders:NO];
-    
-    _plainText = YES;
 }
 
 - (void)toggleBold {

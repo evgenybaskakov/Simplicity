@@ -20,6 +20,9 @@
         SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
+        _textView.automaticQuoteSubstitutionEnabled = NO;
+        _textView.automaticDashSubstitutionEnabled = NO;
+        _textView.automaticLinkDetectionEnabled = YES;
         _textView.delegate = self;
         _textView.richText = NO;
         _textView.allowsUndo = YES;

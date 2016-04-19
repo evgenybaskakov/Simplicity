@@ -132,13 +132,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
-        // editor toolbox
-        
-        _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
-        _editorToolBoxViewController.messageEditorViewController = self;
-        _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
-        _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        
         // unfold panel
         
         if(embedded) {
@@ -189,7 +182,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     [_innerView addSubview:_toBoxViewController.view];
-    [_innerView addSubview:_editorToolBoxViewController.view];
     [_innerView addSubview:_textAndAttachmentsSplitView];
     
     if(_foldPanelViewController != nil) {
@@ -215,22 +207,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
     [_subjectBoxViewController.label setStringValue:@"Subject:"];
     
-    // Editor toolbox
-    NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
-    
-    [_editorToolBoxViewController.fontSelectionButton removeAllItems];
-    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:[SMMessageEditorBase fontFamilies]];
-    [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
-    
-    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
-    
-    [_editorToolBoxViewController.textSizeButton removeAllItems];
-    [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
-    [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
-    
-    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
-    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
-
     // editor initialization
 
     if(_plainText) {
@@ -556,6 +532,26 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
+- (void)createHTMLEditorToolbox {
+    _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
+    _editorToolBoxViewController.messageEditorViewController = self;
+    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
+    _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+    
+    [_editorToolBoxViewController.fontSelectionButton removeAllItems];
+    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:[SMMessageEditorBase fontFamilies]];
+    [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
+    
+    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
+    
+    [_editorToolBoxViewController.textSizeButton removeAllItems];
+    [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
+    [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
+    
+    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
+    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
+}
+
 #pragma mark Text attrbitute actions
 
 - (void)makeHTMLText {
@@ -568,6 +564,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     _plainText = NO;
+
+    [self createHTMLEditorToolbox];
+    
+    [_innerView addSubview:_editorToolBoxViewController.view];
 
     CGFloat dividerPos = 0;
     BOOL restoreDividerPos = NO;
@@ -598,6 +598,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
     }
     
+    [self adjustFrames:FrameAdjustment_Resize];
+
     [self setResponders:NO];
 }
 
@@ -612,6 +614,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     _plainText = YES;
     
+    [_editorToolBoxViewController.view removeFromSuperview];
+    
+    _editorToolBoxViewController = nil;
+    _htmlTextEditor.editorToolBoxViewController = nil;
+ 
     CGFloat dividerPos = 0;
     BOOL restoreDividerPos = NO;
     if(_textAndAttachmentsSplitView.subviews.count == 2) {
@@ -648,6 +655,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
     }
 
+    [self adjustFrames:FrameAdjustment_Resize];
+ 
     [self setResponders:NO];
 }
 
@@ -833,9 +842,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         fullAddressPanelHeight += _subjectBoxViewController.view.frame.size.height - 1;
     }
     
-    _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
-    
-    yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+    if(!_plainText) {
+        _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
+        
+        yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+    }
     
     _panelHeight = yPos - 1;
     

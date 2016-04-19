@@ -22,6 +22,7 @@
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
         _textView.delegate = self;
         _textView.richText = NO;
+        _textView.allowsUndo = YES;
         _textView.verticallyResizable = YES;
         _textView.string = string;
         _textView.font = preferencesController.fixedMessageFont;
@@ -48,7 +49,9 @@
         [[textView window] selectPreviousKeyView:nil];
         return YES;
     }
-    
+
+    [_textView breakUndoCoalescing];
+
     return NO;
 }
 

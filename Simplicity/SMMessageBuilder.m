@@ -14,7 +14,7 @@
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
     if(from != nil) {
@@ -52,10 +52,13 @@
         SM_LOG_WARNING(@"subject is not set");
     }
 
-    //TODO (send plain text): [(DOMHTMLElement *)[[[webView mainFrame] DOMDocument] documentElement] outerText];
-    
     if(messageText != nil) {
-        [builder setHTMLBody:messageText];
+        if(plainText) {
+            [builder setTextBody:messageText];
+        }
+        else {
+            [builder setHTMLBody:messageText];
+        }
     }
     else {
         SM_LOG_WARNING(@"messageText is not set");
@@ -83,12 +86,13 @@
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
+- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
     self = [super init];
     
     if(self) {
         _account = account;
-        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _plainText = plainText;
+        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _attachments = attachmentItems;
         _creationDate = _mcoMessageBuilder.header.date;
         _threadId = (((uint64_t)rand()) << 32) | rand();
@@ -105,6 +109,7 @@
     
     if (self) {
         NSString *messageText = [coder decodeObjectForKey:@"messageText"];
+        Boolean plainText = [coder decodeBoolForKey:@"plainText"];
         NSString *subject = [coder decodeObjectForKey:@"subject"];
         MCOAddress *from = [coder decodeObjectForKey:@"from"];
         NSArray *to = [coder decodeObjectForKey:@"to"];
@@ -115,7 +120,8 @@
         uint64_t threadId = [coder decodeInt64ForKey:@"threadId"];
         uint32_t uid = [coder decodeInt32ForKey:@"uid"];
     
-        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _plainText = plainText;
         _attachments = attachmentItems;
         _creationDate = creationDate;
         _threadId = threadId;
@@ -132,6 +138,7 @@
     [coder encodeObject:[[_mcoMessageBuilder header] to] forKey:@"to"];
     [coder encodeObject:[[_mcoMessageBuilder header] cc] forKey:@"cc"];
     [coder encodeObject:[[_mcoMessageBuilder header] bcc] forKey:@"bcc"];
+    [coder encodeBool:_plainText forKey:@"plainText"];
     [coder encodeObject:_attachments forKey:@"attachmentItems"];
     [coder encodeObject:_creationDate forKey:@"creationDate"];
     [coder encodeInt64:_threadId forKey:@"threadId"];

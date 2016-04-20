@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 
 @interface SMPreferencesController : NSObject
 
+@property (nonatomic) BOOL useFixedSizeFontForPlainTextMessages;
 @property (nonatomic) BOOL shouldShowContactImages;
 @property (nonatomic) BOOL shouldShowEmailAddressesInMailboxes;
 @property (nonatomic) BOOL shouldShowNotifications;

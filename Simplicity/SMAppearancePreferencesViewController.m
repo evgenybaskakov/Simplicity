@@ -18,10 +18,12 @@
 @interface SMAppearancePreferencesViewController ()
 @property (weak) IBOutlet NSButton *fixedFontButton;
 @property (weak) IBOutlet NSButton *regularFontButton;
+@property (weak) IBOutlet NSButton *fixedSizeFontForPlainMessagesCheckBox;
 @property (weak) IBOutlet NSPopUpButton *mailboxThemeList;
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint1;
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint2;
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint3;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint5;
 @property (weak) IBOutlet NSLayoutConstraint *heightConstraint4;
 @end
 
@@ -59,6 +61,10 @@
     
     _fixedFont = [[appDelegate preferencesController] fixedMessageFont];
     [self reloadFixedFontButton];
+    
+    //
+    
+    _fixedSizeFontForPlainMessagesCheckBox.state = ([[appDelegate preferencesController] useFixedSizeFontForPlainTextMessages]? NSOnState : NSOffState);
 }
 
 static const NSUInteger maxButtonFontSize = 24;
@@ -80,7 +86,7 @@ static const NSUInteger maxButtonFontSize = 24;
 - (void)adjustWindowSize {
     [self.view layoutSubtreeIfNeeded];
     
-    CGFloat newHeight = _heightConstraint1.constant + _heightConstraint2.constant + _heightConstraint3.constant + _heightConstraint4.constant + _regularFontButton.intrinsicContentSize.height + _fixedFontButton.intrinsicContentSize.height + _mailboxThemeList.intrinsicContentSize.height;
+    CGFloat newHeight = _heightConstraint1.constant + _heightConstraint2.constant + _heightConstraint3.constant + _heightConstraint4.constant + _heightConstraint5.constant + _regularFontButton.intrinsicContentSize.height + _fixedFontButton.intrinsicContentSize.height + _mailboxThemeList.intrinsicContentSize.height + _fixedSizeFontForPlainMessagesCheckBox.intrinsicContentSize.height;
     
     [(SMPreferencesWindowController*)self.view.window.windowController adjustWindowSize:NSMakeSize(NSWidth(self.view.frame), newHeight)];
 }
@@ -142,6 +148,13 @@ static const NSUInteger maxButtonFontSize = 24;
     [[appDelegate preferencesController] setMailboxTheme:mailboxThemeValue];
     [[[appDelegate appController] accountsViewController] setMailboxTheme:mailboxThemeValue];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
+}
+
+- (IBAction)useFixedSizeFontForPlainTextMessagesAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].useFixedSizeFontForPlainTextMessages = (_fixedSizeFontForPlainMessagesCheckBox.state == NSOnState);
+    
+    // TODO: send out a notification to reload currently opened plain text editors
 }
 
 @end

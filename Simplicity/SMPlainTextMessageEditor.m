@@ -16,9 +16,6 @@
     self = [super initWithFrame:NSMakeRect(0, 0, 100, 100)];
     
     if(self) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMPreferencesController *preferencesController = [appDelegate preferencesController];
-
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
         _textView.automaticQuoteSubstitutionEnabled = NO;
         _textView.automaticDashSubstitutionEnabled = NO;
@@ -28,17 +25,35 @@
         _textView.allowsUndo = YES;
         _textView.verticallyResizable = YES;
         _textView.string = string;
-        _textView.font = preferencesController.fixedMessageFont;
         _textView.translatesAutoresizingMaskIntoConstraints = YES;
         _textView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        
+
         self.borderType = NSNoBorder;
         self.translatesAutoresizingMaskIntoConstraints = YES;
         self.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         self.documentView = _textView;
+
+        [self setMessageFont];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultMessageFontChanged:) name:@"SMDefaultMessageFontChanged" object:nil];
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)defaultMessageFontChanged:(NSNotification*)notification {
+    [self setMessageFont];
+}
+
+- (void)setMessageFont {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    
+    _textView.font = (preferencesController.useFixedSizeFontForPlainTextMessages? preferencesController.fixedMessageFont : preferencesController.regularMessageFont);
 }
 
 - (void)drawRect:(NSRect)dirtyRect {

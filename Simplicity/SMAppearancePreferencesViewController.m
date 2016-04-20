@@ -153,8 +153,8 @@ static const NSUInteger maxButtonFontSize = 24;
 - (IBAction)useFixedSizeFontForPlainTextMessagesAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].useFixedSizeFontForPlainTextMessages = (_fixedSizeFontForPlainMessagesCheckBox.state == NSOnState);
-    
-    // TODO: send out a notification to reload currently opened plain text editors
+
+    [self notifyFontsChanged];
 }
 
 @end

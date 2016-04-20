@@ -43,7 +43,9 @@
     _tabNames = @[@"Accounts", @"General", @"Appearance", @"Signature", @"Labels", @"Advanced"];
     _tabViewControllers = @[_accountPreferencesViewController, _generalPreferencesViewController, _appearancePreferencesViewController, _signaturePreferencesViewController, _labelPreferencesViewController, _advancedPreferencesViewController];
     
-    [self toolbarToggleAccountAction:self];
+    [_preferencesToolbar setSelectedItemIdentifier:_tabNames[0]];
+    
+    [self selectTab:0];
 }
 
 - (void)selectTab:(NSUInteger)idx {

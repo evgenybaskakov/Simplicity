@@ -210,10 +210,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // editor initialization
 
     if(_plainText) {
-        [self makePlainText:YES];
+        [self makePlainText:YES reuseOld:NO];
     }
     else {
-        [self makeHTMLText:YES];
+        [self makeHTMLText:YES reuseOld:NO];
     }
     
     // other stuff
@@ -555,10 +555,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeHTMLText {
-    [self makeHTMLText:NO];
+    [self makeHTMLText:NO reuseOld:NO];
 }
 
-- (void)makeHTMLText:(Boolean)force {
+- (void)makeHTMLText:(Boolean)force reuseOld:(Boolean)reuseOld {
     if(!_plainText && !force) {
         return;
     }
@@ -580,17 +580,22 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    _htmlTextEditor = [[SMMessageEditorWebView alloc] init];
-    _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
-    _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    if(reuseOld) {
+        NSAssert(_htmlTextEditor, @"no _htmlTextEditor");
+    }
+    else {
+        _htmlTextEditor = [[SMMessageEditorWebView alloc] init];
+        _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+        _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-    // TODO: get rid of <pre> and do it right, see issue #90
-    NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
-    [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
-
+        // TODO: get rid of <pre> and do it right, see issue #90
+        NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
+        [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
+    }
+    
     _htmlTextEditor.messageEditorBase = _messageEditorBase;
     _htmlTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
-
+    
     [_textAndAttachmentsSplitView insertArrangedSubview:_htmlTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
 
@@ -599,15 +604,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     [self adjustFrames:FrameAdjustment_Resize];
-
     [self setResponders:NO];
+    
+    // Setup undo
+    
+    [_htmlTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakeHTMLText:) object:nil];
+    [_htmlTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to HTML", @"convert to html")];
+}
+
+- (void)undoMakeHTMLText:(id)object {
+    [self makePlainText:NO reuseOld:YES];
 }
 
 - (void)makePlainText {
-    [self makePlainText:NO];
+    [self makePlainText:NO reuseOld:NO];
 }
 
-- (void)makePlainText:(Boolean)force {
+- (void)makePlainText:(Boolean)force reuseOld:(Boolean)reuseOld {
     if(_plainText && !force) {
         return;
     }
@@ -630,23 +643,28 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    NSString *plainText;
-    if(_htmlTextEditor != nil && _htmlTextEditor.mainFrame != nil) {
-        plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+    if(reuseOld) {
+        NSAssert(_plainTextEditor, @"no _plainTextEditor");
     }
     else {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        NSString *plainText;
+        if(_htmlTextEditor != nil && _htmlTextEditor.mainFrame != nil) {
+            plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+        }
+        else {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-        // convert html signature to plain text
-        NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
-        NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
+            // convert html signature to plain text
+            NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
+            NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
 
-        plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
+            plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
+        }
+        
+        _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithString:plainText];
+        _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+        _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     }
-    
-    _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithString:plainText];
-    _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
-    _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     
     [_textAndAttachmentsSplitView insertArrangedSubview:_plainTextEditor atIndex:0];
     [_textAndAttachmentsSplitView adjustSubviews];
@@ -656,8 +674,16 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 
     [self adjustFrames:FrameAdjustment_Resize];
- 
     [self setResponders:NO];
+    
+    // Setup undo
+    
+    [_plainTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakePlainText:) object:nil];
+    [_plainTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to Plain Text", @"convert to plain text")];
+}
+
+- (void)undoMakePlainText:(id)object {
+    [self makeHTMLText:NO reuseOld:YES];
 }
 
 - (void)toggleBold {

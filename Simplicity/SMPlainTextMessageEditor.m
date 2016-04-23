@@ -24,9 +24,12 @@
         _textView.richText = NO;
         _textView.allowsUndo = YES;
         _textView.verticallyResizable = YES;
-        _textView.string = string;
         _textView.translatesAutoresizingMaskIntoConstraints = YES;
         _textView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
+        if(string) {
+            _textView.string = string;
+        }
 
         self.borderType = NSNoBorder;
         self.translatesAutoresizingMaskIntoConstraints = YES;

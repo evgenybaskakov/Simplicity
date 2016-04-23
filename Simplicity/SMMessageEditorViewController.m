@@ -61,6 +61,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
+    NSMutableArray<NSView*> *_editorsUndoList;
+    NSUInteger _editorUndoLevel;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
     NSSplitView *_textAndAttachmentsSplitView;
@@ -96,6 +98,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
         _messageEditorController = [[SMMessageEditorController alloc] initWithDraftUID:draftUid];
+        
+        _editorsUndoList = [NSMutableArray array];
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         
@@ -210,10 +214,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // editor initialization
 
     if(_plainText) {
-        [self makePlainText:YES reuseOld:NO];
+        [self makePlainText:YES undo:NO];
     }
     else {
-        [self makeHTMLText:YES reuseOld:NO];
+        [self makeHTMLText:YES undo:NO];
     }
     
     // other stuff
@@ -555,10 +559,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeHTMLText {
-    [self makeHTMLText:NO reuseOld:NO];
+    [self makeHTMLText:NO undo:NO];
 }
 
-- (void)makeHTMLText:(Boolean)force reuseOld:(Boolean)reuseOld {
+- (void)makeHTMLText:(Boolean)force undo:(Boolean)undo {
     if(!_plainText && !force) {
         return;
     }
@@ -580,17 +584,42 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    if(reuseOld) {
-        NSAssert(_htmlTextEditor, @"no _htmlTextEditor");
+    if(undo) {
+        NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+        
+        _editorUndoLevel--;
+        
+        NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
+        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMMessageEditorWebView class]], @"bad object in the editor undo list");
+        NSAssert(_htmlTextEditor == nil, @"_htmlTextEditor is nil");
+        
+        _htmlTextEditor = (SMMessageEditorWebView*)_editorsUndoList[_editorUndoLevel];
+        
+        NSAssert(_plainTextEditor != nil, @"_plainTextEditor is already nil");
+        _plainTextEditor = nil;
     }
     else {
         _htmlTextEditor = [[SMMessageEditorWebView alloc] init];
         _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
         _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        
+        if(_plainTextEditor) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_plainTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _plainTextEditor;
+            }
+            
+            _editorUndoLevel++;
 
-        // TODO: get rid of <pre> and do it right, see issue #90
-        NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
-        [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
+            // TODO: get rid of <pre> and do it right, see issue #90
+            NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
+            [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
+
+            _plainTextEditor = nil;
+        }
     }
     
     _htmlTextEditor.messageEditorBase = _messageEditorBase;
@@ -613,14 +642,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)undoMakeHTMLText:(id)object {
-    [self makePlainText:NO reuseOld:YES];
+    [self makePlainText:NO undo:YES];
 }
 
 - (void)makePlainText {
-    [self makePlainText:NO reuseOld:NO];
+    [self makePlainText:NO undo:NO];
 }
 
-- (void)makePlainText:(Boolean)force reuseOld:(Boolean)reuseOld {
+- (void)makePlainText:(Boolean)force undo:(Boolean)undo {
     if(_plainText && !force) {
         return;
     }
@@ -643,21 +672,47 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    if(reuseOld) {
-        NSAssert(_plainTextEditor, @"no _plainTextEditor");
+    if(undo) {
+        NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+
+        _editorUndoLevel--;
+        
+        NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
+        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMPlainTextMessageEditor class]], @"bad object in the editor undo list");
+        NSAssert(_plainTextEditor == nil, @"_plainTextEditor is nil");
+        
+        _plainTextEditor = (SMPlainTextMessageEditor*)_editorsUndoList[_editorUndoLevel];
+        
+        NSAssert(_htmlTextEditor != nil, @"_htmlTextEditor is already nil");
+        _htmlTextEditor = nil;
     }
     else {
-        NSString *plainText;
-        if(_htmlTextEditor != nil && _htmlTextEditor.mainFrame != nil) {
-            plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+        NSString *plainText = nil;
+        
+        if(_htmlTextEditor) {
+            if(_htmlTextEditor.mainFrame != nil) {
+                plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+            }
+            
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_htmlTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _htmlTextEditor;
+            }
+
+            _editorUndoLevel++;
+            
+            _htmlTextEditor = nil;
         }
         else {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
+            
             // convert html signature to plain text
             NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
             NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
-
+            
             plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
         }
         
@@ -683,7 +738,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)undoMakePlainText:(id)object {
-    [self makeHTMLText:NO reuseOld:YES];
+    [self makeHTMLText:NO undo:YES];
 }
 
 - (void)toggleBold {

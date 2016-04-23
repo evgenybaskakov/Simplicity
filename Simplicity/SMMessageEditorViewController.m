@@ -43,6 +43,12 @@ typedef NS_ENUM(NSUInteger, FrameAdjustment) {
     FrameAdjustment_Resize,
 };
 
+typedef NS_ENUM(NSUInteger, EditorConversion) {
+    EditorConversion_Direct,
+    EditorConversion_Undo,
+    EditorConversion_Redo,
+};
+
 static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 @interface SMMessageEditorViewController ()
@@ -214,10 +220,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // editor initialization
 
     if(_plainText) {
-        [self makePlainText:YES undo:NO];
+        [self makePlainText:YES conversion:EditorConversion_Direct];
     }
     else {
-        [self makeHTMLText:YES undo:NO];
+        [self makeHTMLText:YES conversion:EditorConversion_Direct];
     }
     
     // other stuff
@@ -559,10 +565,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Text attrbitute actions
 
 - (void)makeHTMLText {
-    [self makeHTMLText:NO undo:NO];
+    [self makeHTMLText:NO conversion:EditorConversion_Direct];
 }
 
-- (void)makeHTMLText:(Boolean)force undo:(Boolean)undo {
+- (void)makeHTMLText:(Boolean)force conversion:(EditorConversion)conversion {
     if(!_plainText && !force) {
         return;
     }
@@ -584,10 +590,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    if(undo) {
-        NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
-        
-        _editorUndoLevel--;
+    if(conversion != EditorConversion_Direct) {
+        if(conversion == EditorConversion_Undo) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_plainTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _plainTextEditor;
+            }
+
+            NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+            _editorUndoLevel--;
+        }
+        else {
+            NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo level is too high");
+            _editorUndoLevel++;
+        }
         
         NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
         NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMMessageEditorWebView class]], @"bad object in the editor undo list");
@@ -637,19 +656,21 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // Setup undo
     
-    [_htmlTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakeHTMLText:) object:nil];
+    [_htmlTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakeHTMLText:) object:_htmlTextEditor];
     [_htmlTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to HTML", @"convert to html")];
 }
 
 - (void)undoMakeHTMLText:(id)object {
-    [self makePlainText:NO undo:YES];
+    EditorConversion conversion = [[((SMMessageEditorWebView*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
+    
+    [self makePlainText:NO conversion:conversion];
 }
 
 - (void)makePlainText {
-    [self makePlainText:NO undo:NO];
+    [self makePlainText:NO conversion:EditorConversion_Direct];
 }
 
-- (void)makePlainText:(Boolean)force undo:(Boolean)undo {
+- (void)makePlainText:(Boolean)force conversion:(EditorConversion)conversion {
     if(_plainText && !force) {
         return;
     }
@@ -672,10 +693,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
     }
 
-    if(undo) {
-        NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+    if(conversion != EditorConversion_Direct) {
+        if(conversion == EditorConversion_Undo) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_htmlTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _htmlTextEditor;
+            }
 
-        _editorUndoLevel--;
+            NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+            _editorUndoLevel--;
+        }
+        else {
+            NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo level is too high");
+            _editorUndoLevel++;
+        }
         
         NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
         NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMPlainTextMessageEditor class]], @"bad object in the editor undo list");
@@ -733,12 +767,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // Setup undo
     
-    [_plainTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakePlainText:) object:nil];
+    [_plainTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakePlainText:) object:_plainTextEditor];
     [_plainTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to Plain Text", @"convert to plain text")];
 }
 
 - (void)undoMakePlainText:(id)object {
-    [self makeHTMLText:NO undo:YES];
+    EditorConversion conversion = [[((SMPlainTextMessageEditor*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
+    
+    [self makeHTMLText:NO conversion:conversion];
 }
 
 - (void)toggleBold {

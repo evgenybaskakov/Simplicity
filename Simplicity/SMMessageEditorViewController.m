@@ -658,6 +658,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [_htmlTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakeHTMLText:) object:_htmlTextEditor];
     [_htmlTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to HTML", @"convert to html")];
+    
+    // Adjust the main menu
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    
+    appDelegate.htmlTextFormatMenuItem.state = NSOnState;
+    appDelegate.plainTextFormatMenuItem.state = NSOffState;
 }
 
 - (void)undoMakeHTMLText:(id)object {
@@ -769,6 +776,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [_plainTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakePlainText:) object:_plainTextEditor];
     [_plainTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to Plain Text", @"convert to plain text")];
+    
+    // Adjust the main menu
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    
+    appDelegate.htmlTextFormatMenuItem.state = NSOffState;
+    appDelegate.plainTextFormatMenuItem.state = NSOnState;
 }
 
 - (void)undoMakePlainText:(id)object {

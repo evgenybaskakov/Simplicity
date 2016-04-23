@@ -46,6 +46,8 @@
     if(existingFolders.count > 0) {
         SM_LOG_INFO(@"%lu existing folders found", existingFolders.count);
 
+        _foldersLoaded = YES;
+        
         [self updateFlatFolders:[NSMutableArray arrayWithArray:existingFolders] vanishedFolders:nil];
         return TRUE;
     }
@@ -67,7 +69,9 @@
         
         [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
     }
-    
+
+    _foldersLoaded = YES;
+
     return [self updateFlatFolders:flatFolders vanishedFolders:vanishedFolders];
 }
         

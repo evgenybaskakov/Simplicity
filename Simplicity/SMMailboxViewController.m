@@ -47,6 +47,7 @@
         _rowWithMenu = -1;
         _favoriteFolders = [NSMutableArray array];
         _visibleFolders = [NSMutableArray array];
+        _progressIndicator.hidden = YES;
     }
     
     return self;
@@ -158,6 +159,19 @@
         [ _folderListView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO ];
     } else {
         [ _folderListView selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO ];
+    }
+    
+    if([[appDelegate.currentAccount mailbox] foldersLoaded]) {
+        if(!_progressIndicator.hidden) {
+            [_progressIndicator stopAnimation:self];
+            [_progressIndicator setHidden:YES];
+        }
+    }
+    else {
+        if(_progressIndicator.hidden) {
+            [_progressIndicator startAnimation:self];
+            [_progressIndicator setHidden:NO];
+        }
     }
 }
 

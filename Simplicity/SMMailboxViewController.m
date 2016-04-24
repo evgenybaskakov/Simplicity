@@ -29,6 +29,10 @@
 #import "SMFolderLabel.h"
 #import "SMMailboxRowView.h"
 
+@interface SMMailboxViewController()
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+@end
+
 @implementation SMMailboxViewController {
     NSInteger _rowWithMenu;
     NSString *_labelToRename;
@@ -47,7 +51,6 @@
         _rowWithMenu = -1;
         _favoriteFolders = [NSMutableArray array];
         _visibleFolders = [NSMutableArray array];
-        _progressIndicator.hidden = YES;
     }
     
     return self;
@@ -62,6 +65,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
+
+    [_progressIndicator startAnimation:self];
+    [_progressIndicator setHidden:NO];
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {

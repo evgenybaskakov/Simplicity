@@ -54,7 +54,7 @@
         _prevNonSearchFolder = _currentFolder;
     }
 
-    [_currentFolder stopMessagesLoading];
+    [_currentFolder stopLocalFolderSync];
     
     [_folderInfoOp cancel];
     _folderInfoOp = nil;
@@ -130,7 +130,7 @@
 }
 
 - (void)cancelMessageListUpdate {
-    [_currentFolder stopMessagesLoading];
+    [_currentFolder stopLocalFolderSync];
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder updateResults:(BOOL)updateResults {

@@ -607,7 +607,7 @@ const char *const mcoOpKinds[] = {
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
     SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
-    [localFolder stopMessagesLoading];
+    [localFolder stopLocalFolderSync];
     
     searchDescriptor.searchStopped = true;
     

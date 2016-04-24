@@ -139,6 +139,19 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
     [self scheduleOpQueuesSave];
 }
 
+- (void)cancelQueueOperations:(SMOperationQueue*)queue {
+    for(NSUInteger i = 0; i < _imapQueue.count; i++) {
+        [[queue getOpAtIndex:i] cancelOp];
+    }
+    
+    [queue clearQueue];
+}
+
+- (void)cancelAllOperations {
+    [self cancelQueueOperations:_imapQueue];
+    [self cancelQueueOperations:_smtpQueue];
+}
+
 - (NSUInteger)operationsCount {
     return _smtpQueue.count + _imapQueue.count;
 }
@@ -181,6 +194,21 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 - (void)saveOpQueues {
     [self saveSMTPQueue];
     [self saveIMAPQueue];
+}
+
+- (void)deleteSMTPQueue {
+    [[_account database] deleteOpQueue:@"SMTPQueue"];
+}
+
+- (void)deleteIMAPQueue {
+    [[_account database] deleteOpQueue:@"IMAPQueue"];
+}
+
+- (void)deleteOpQueues {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(saveOpQueues) object:nil];
+
+    [self deleteIMAPQueue];
+    [self deleteSMTPQueue];
 }
 
 @end

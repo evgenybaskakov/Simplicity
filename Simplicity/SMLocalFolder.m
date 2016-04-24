@@ -85,7 +85,7 @@
 - (void)updateTimeout {
     SM_LOG_WARNING(@"operation timeout");
     
-    [self stopMessagesLoading];
+    [self stopLocalFolderSync];
     [self startLocalFolderSync];
     [self rescheduleUpdateTimeout];
 }
@@ -523,7 +523,7 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)stopMessagesLoading {
+- (void)stopLocalFolderSync {
     [self cancelScheduledUpdateTimeout];
     
     [_fetchedMessageHeaders removeAllObjects];
@@ -677,7 +677,7 @@
 
     // Stop current message loading process.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopMessagesLoading];
+    [self stopLocalFolderSync];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];
@@ -755,7 +755,7 @@
 
     // Stop current message loading process.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopMessagesLoading];
+    [self stopLocalFolderSync];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];

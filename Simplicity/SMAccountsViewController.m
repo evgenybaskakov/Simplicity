@@ -145,6 +145,7 @@
     
     [_contentView setSubviews:@[]];
     
+    //TODO
     NSAssert(_accountButtonViewControllers.count > 0, @"_accountButtonViewControllers.count == 0");
     
     NSView *prevView = nil;

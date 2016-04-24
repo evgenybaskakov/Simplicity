@@ -40,6 +40,10 @@
     return self;
 }
 
+- (BOOL)accountsExist {
+    return _accounts.count != 0;
+}
+
 - (NSArray<SMUserAccount*>*)accounts {
     return _accounts;
 }
@@ -71,7 +75,10 @@
         _currentAccountIdx--;
     }
     
+    [_accounts[accountIdx] stopAccount];
     [_accounts removeObjectAtIndex:accountIdx];
+    
+    [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {

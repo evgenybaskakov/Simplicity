@@ -323,7 +323,7 @@
                 [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
             }
             else {
-                NSAssert(nil, @"TODO: deletion of all accounts");
+                SM_LOG_INFO(@"deleting the last account");
             }
         }
         else {
@@ -333,8 +333,6 @@
 
     [appDelegate removeAccount:selectedAccount];
     
-    [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:selectedAccount];
-
     [_accountImages removeObjectAtIndex:selectedAccount];
     [_accountTableView reloadData];
 
@@ -630,6 +628,7 @@
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     NSInteger selectedRow = [_accountTableView selectedRow];
     if(selectedRow < 0 || selectedRow >= [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount]) {
+        _removeAccountButton.enabled = NO;
         return;
     }
     
@@ -638,13 +637,7 @@
     [self checkImapConnectionAction:self];
     [self checkSmtpConnectionAction:self];
     
-    if(selectedRow == 0) {
-        // TODO: temp hack for not being able to remove account 0
-        _removeAccountButton.enabled = NO;
-    }
-    else {
-        _removeAccountButton.enabled = YES;
-    }
+    _removeAccountButton.enabled = YES;
 }
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {

@@ -94,6 +94,7 @@
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName;
 - (SMDatabaseOp*)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock;
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName;
+- (void)deleteOpQueue:(NSString*)queueName;
 - (SMDatabaseOp*)loadOpQueue:(NSString*)queueName block:(void (^)(SMOperationQueue*))getQueueBlock;
 - (SMDatabaseOp*)findMessages:(NSString*)folderName tokens:(NSArray<SMSearchToken*>*)tokens contact:(NSString*)contact subject:(NSString*)subject content:(NSString*)content block:(void (^)(NSArray<SMTextMessage*>*))getTextMessagesBlock;
 

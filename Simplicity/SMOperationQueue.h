@@ -20,6 +20,7 @@
 - (void)popFirstOp;
 - (void)replaceFirstOp:(SMOperation*)op;
 - (void)removeOp:(SMOperation*)op;
+- (void)clearQueue;
 - (SMOperation*)getFirstOp;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
 - (void)cancelSendOpWithMessage:(SMOutgoingMessage*)message;

@@ -38,6 +38,7 @@
 @property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
 
 @property (nonatomic) NSUInteger currentAccountIdx;
+@property (nonatomic) BOOL accountsExist;
 
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;

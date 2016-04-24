@@ -12,7 +12,6 @@
 
 @interface SMMailboxViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSMenuDelegate>
 
-@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (weak) IBOutlet NSTableView *folderListView;
 
 - (void)changeFolder:(NSString*)folderName;

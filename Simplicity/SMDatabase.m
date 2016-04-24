@@ -681,6 +681,37 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return TRUE;
 }
 
+- (void)deleteOpQueueInternal:(NSString *)queueName database:(sqlite3*)database{
+    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM OPQUEUES WHERE NAME = \"%@\"", queueName];
+    const char *removeStmt = [removeSql UTF8String];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
+    if(sqlPrepareResult != SQLITE_OK) {
+        SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
+        
+        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+        
+        return;
+    }
+    
+    const int sqlResult = sqlite3_step(statement);
+    
+    const int sqlFinalizeResult = sqlite3_finalize(statement);
+    SM_LOG_NOISE(@"finalize up queue statement result %d", sqlFinalizeResult);
+    
+    if(sqlResult == SQLITE_DONE) {
+        SM_LOG_DEBUG(@"Op queue %@ successfully removed", queueName);
+    }
+    else {
+        SM_LOG_ERROR(@"Failed to remove op queue %@, error %d", queueName, sqlResult);
+        
+        [self triggerDBFailureWithSQLiteError:sqlResult];
+        
+        return;
+    }
+}
+
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName {
     SM_LOG_INFO(@"scheduling save for op queue '%@', length %lu", queueName, opQueue.count);
 
@@ -697,34 +728,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                {
-                    NSString *removeSql = [NSString stringWithFormat:@"DELETE FROM OPQUEUES WHERE NAME = \"%@\"", queueName];
-                    const char *removeStmt = [removeSql UTF8String];
-                    
-                    sqlite3_stmt *statement = NULL;
-                    const int sqlPrepareResult = sqlite3_prepare_v2(database, removeStmt, -1, &statement, NULL);
-                    if(sqlPrepareResult != SQLITE_OK) {
-                        SM_LOG_ERROR(@"could not prepare folders remove statement, error %d", sqlPrepareResult);
-                        
-                        [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
-                        break;
-                    }
-                    
-                    const int sqlResult = sqlite3_step(statement);
-                    
-                    const int sqlFinalizeResult = sqlite3_finalize(statement);
-                    SM_LOG_NOISE(@"finalize up queue statement result %d", sqlFinalizeResult);
-                    
-                    if(sqlResult == SQLITE_DONE) {
-                        SM_LOG_DEBUG(@"Op queue %@ successfully removed", queueName);
-                    }
-                    else {
-                        SM_LOG_ERROR(@"Failed to remove op queue %@, error %d", queueName, sqlResult);
-                        
-                        [self triggerDBFailureWithSQLiteError:sqlResult];
-                        break;
-                    }
-                }
+                [self deleteOpQueueInternal:queueName database:database];
                 
                 NSString *opQueueInsertSql = [NSString stringWithFormat:@"INSERT INTO OPQUEUES (\"NAME\", \"CONTENTS\") VALUES (?, ?)"];
                 const char *opQueueInsertStmt = [opQueueInsertSql UTF8String];
@@ -783,6 +787,26 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 SM_LOG_INFO(@"Op queue '%@' successfully saved to database", queueName);
             } while(FALSE);
             
+            [self closeDatabase:database];
+        }
+        
+        OSAtomicAdd32(-1, &_serialQueueLength);
+    });
+}
+
+- (void)deleteOpQueue:(NSString*)queueName {
+    SM_LOG_INFO(@"deleting op queue '%@'", queueName);
+    
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+        
+        if(database != nil) {
+            [self deleteOpQueueInternal:queueName database:database];
             [self closeDatabase:database];
         }
         

@@ -16,5 +16,6 @@
 
 - (void)changeAccountTo:(NSUInteger)accountIdx;
 - (void)reloadAccountViews:(BOOL)reloadControllers;
+- (void)clearCurrentAccountSelection;
 
 @end

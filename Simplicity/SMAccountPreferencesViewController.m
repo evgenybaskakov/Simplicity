@@ -149,6 +149,8 @@
         [self checkImapConnectionAction:self];
         [self checkSmtpConnectionAction:self];
     }
+
+    _removeAccountButton.enabled = [preferencesController accountsCount] > 0? YES : NO;
 }
 
 - (void)viewDidAppear {
@@ -300,6 +302,10 @@
 - (IBAction)addAccountAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] showNewAccountWindow];
+
+    if(appDelegate.accounts.count != 0) {
+        _removeAccountButton.enabled = YES;
+    }
 }
 
 - (IBAction)removeAccountAction:(id)sender {
@@ -347,6 +353,10 @@
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
     [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+    
+    if(appDelegate.accounts.count == 0) {
+        _removeAccountButton.enabled = NO;
+    }
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

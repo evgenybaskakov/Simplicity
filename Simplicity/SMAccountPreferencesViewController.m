@@ -139,11 +139,16 @@
     
     [self reloadAccountImages];
     
-    [self loadCurrentValues:0];
-    [self togglePanel:0];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
-    [self checkImapConnectionAction:self];
-    [self checkSmtpConnectionAction:self];
+    if([preferencesController accountsCount] > 0) {
+        [self loadCurrentValues:0];
+        [self togglePanel:0];
+
+        [self checkImapConnectionAction:self];
+        [self checkSmtpConnectionAction:self];
+    }
 }
 
 - (void)viewDidAppear {

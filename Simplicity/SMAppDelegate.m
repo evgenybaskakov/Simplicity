@@ -49,6 +49,10 @@
 }
 
 - (SMUserAccount*)currentAccount {
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
     return _accounts[_currentAccountIdx];
 }
 

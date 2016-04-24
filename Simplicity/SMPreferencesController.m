@@ -219,20 +219,6 @@
     
         [SMAccountImageSelection saveImageFile:accountImagePath image:image];
     }
-    
-    // Now start normal account operationing.
-    if(prevAccountCount == 0) {
-        NSAssert(newAccountIdx == 0, @"bad newAccountIdx %lu", newAccountIdx);
-        
-        SM_LOG_INFO(@"Starting processing email account");
-        
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMUserAccount *account = appDelegate.accounts[newAccountIdx];
-        
-        [account initSession:newAccountIdx];
-        [account getIMAPServerCapabilities];
-        [account initOpExecutor];
-    }
 }
 
 - (void)removeAccount:(NSUInteger)idx {

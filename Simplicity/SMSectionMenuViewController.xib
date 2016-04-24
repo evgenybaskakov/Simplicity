@@ -8,7 +8,6 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMSectionMenuViewController">
             <connections>
                 <outlet property="itemsTable" destination="f18-2i-22p" id="Wgu-5D-Rdr"/>
-                <outlet property="scrollView" destination="a9U-No-mF3" id="yAh-SZ-pvH"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>

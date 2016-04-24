@@ -42,8 +42,6 @@
         _scrollView.hasVerticalScroller = YES;
         _scrollView.hasHorizontalScroller = NO;
         
-        [rootView addSubview:_scrollView];
-        
         _contentView = [[SMFlippedView alloc] initWithFrame:_scrollView.frame];
         _contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         _scrollView.documentView = _contentView;
@@ -88,8 +86,18 @@
 
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
 
+    if([[appDelegate preferencesController] accountsCount] == 0) {
+        SM_LOG_INFO(@"no accounts in the account properties");
+
+        [_scrollView removeFromSuperview];
+
+        return;
+    }
+    
+    [_scrollView setFrame:self.view.frame];
+    [self.view addSubview:_scrollView];
+    
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
@@ -144,9 +152,6 @@
     }
     
     [_contentView setSubviews:@[]];
-    
-    //TODO
-    NSAssert(_accountButtonViewControllers.count > 0, @"_accountButtonViewControllers.count == 0");
     
     NSView *prevView = nil;
     for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
@@ -231,7 +236,7 @@
         }
         
         if(i == appDelegate.currentAccountIdx) {
-            NSView *mailboxView = [appController.mailboxViewController view];
+            NSView *mailboxView = [[[appDelegate appController] mailboxViewController] view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
             [_contentView addSubview:mailboxView];

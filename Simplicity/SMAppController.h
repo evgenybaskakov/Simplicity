@@ -34,6 +34,11 @@
 @property (nonatomic) IBOutlet NSButton *trashButton;
 @property (nonatomic) IBOutlet NSView *searchField;
 
+@property (weak) IBOutlet NSMenuItem *composeMessageMenuItem;
+@property (weak) IBOutlet NSMenuItem *textFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
+
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 

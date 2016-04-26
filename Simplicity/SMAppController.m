@@ -69,8 +69,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     //
     
-    appDelegate.htmlTextFormatMenuItem.enabled = NO;
-    appDelegate.plainTextFormatMenuItem.enabled = NO;
+    _textFormatMenuItem.enabled = NO;
+    _htmlTextFormatMenuItem.enabled = NO;
+    _plainTextFormatMenuItem.enabled = NO;
     
     //
     
@@ -709,6 +710,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (IBAction)composeMessageAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(appDelegate.accounts.count == 0) {
+        SM_LOG_INFO(@"no accounts");
+        return;
+    }
     
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [self openMessageEditorWindow:nil plainText:plainText subject:nil to:nil cc:nil bcc:nil draftUid:0 mcoAttachments:nil];

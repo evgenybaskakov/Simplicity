@@ -350,13 +350,14 @@
     if(selectedAccount > 0) {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
     }
+    else {
+        _removeAccountButton.enabled = NO;
+    }
+
+    [appDelegate enableOrDisableAccountControls];
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
     [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
-    
-    if(appDelegate.accounts.count == 0) {
-        _removeAccountButton.enabled = NO;
-    }
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

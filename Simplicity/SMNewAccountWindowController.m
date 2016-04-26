@@ -89,7 +89,6 @@ static const NSUInteger LAST_STEP = 2;
     [super windowDidLoad];
     
     _mailServiceProviderButtons = @[ _gmailRadioButton, _icloudRadioButton, _yahooRadioButton, _outlookRadioButton, _customServerRadioButton ];
-
     _mailServiceProviderImageButtons = @[ _gmailImageButton, _icloudImageButton, _yahooImageButton, _outlookImageButton, _customServerImageButton ];
     
     [self resetState];
@@ -123,7 +122,11 @@ static const NSUInteger LAST_STEP = 2;
 
 - (IBAction)cancelAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] closeNewAccountWindow];
+    SMAppController *appController = [appDelegate appController];
+
+    [appController closeNewAccountWindow];
+    
+    appController.composeMessageMenuItem.enabled = (appDelegate.accounts.count != 0? YES : NO);
 }
 
 - (IBAction)backAction:(id)sender {
@@ -466,6 +469,8 @@ static const NSUInteger LAST_STEP = 2;
         [appDelegate addAccount];
         
         [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+
+        [appDelegate enableOrDisableAccountControls];
     }
 }
 

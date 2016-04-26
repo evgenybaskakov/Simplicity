@@ -662,9 +662,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // Adjust the main menu
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
     
-    appDelegate.htmlTextFormatMenuItem.state = NSOnState;
-    appDelegate.plainTextFormatMenuItem.state = NSOffState;
+    appController.htmlTextFormatMenuItem.state = NSOnState;
+    appController.plainTextFormatMenuItem.state = NSOffState;
 }
 
 - (void)undoMakeHTMLText:(id)object {
@@ -780,9 +781,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // Adjust the main menu
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
     
-    appDelegate.htmlTextFormatMenuItem.state = NSOffState;
-    appDelegate.plainTextFormatMenuItem.state = NSOnState;
+    appController.htmlTextFormatMenuItem.state = NSOffState;
+    appController.plainTextFormatMenuItem.state = NSOnState;
 }
 
 - (void)undoMakePlainText:(id)object {

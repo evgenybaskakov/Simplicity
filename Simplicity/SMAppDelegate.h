@@ -26,9 +26,6 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
-@property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
-@property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
-
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAttachmentStorage *attachmentStorage;
@@ -42,5 +39,6 @@
 
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;
+- (void)enableOrDisableAccountControls;
 
 @end

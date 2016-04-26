@@ -85,6 +85,16 @@
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
 }
 
+- (void)enableOrDisableAccountControls {
+    BOOL enableElements = (_accounts.count != 0);
+
+    _appController.composeMessageMenuItem.enabled = NO;
+    _appController.composeMessageButton.enabled = enableElements;
+    _appController.trashButton.enabled = enableElements;
+//TODO        _appController.searchField.enabled = enableElements;
+    _appController.composeMessageMenuItem.enabled = enableElements;
+}
+
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
     _window.titleVisibility = NSWindowTitleHidden;
     
@@ -94,8 +104,12 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
     NSUInteger accountsCount = [_preferencesController accountsCount];
+
+    _appController.composeMessageMenuItem.enabled = accountsCount != 0? YES : NO;
     
-     if(accountsCount == 0) {
+    if(accountsCount == 0) {
+        [self enableOrDisableAccountControls];
+
         [_appController showNewAccountWindow];
     }
     else {
@@ -104,7 +118,20 @@
         }
 
         _currentAccountIdx = 0; // TODO: restore from properties
+        
+        [self enableOrDisableAccountControls];
     }
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    // TODO: detect an active editor
+
+    appController.textFormatMenuItem.enabled = NO;
+    appController.htmlTextFormatMenuItem.enabled = NO;
+    appController.plainTextFormatMenuItem.enabled = NO;
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {

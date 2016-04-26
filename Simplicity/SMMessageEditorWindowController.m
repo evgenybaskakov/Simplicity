@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
@@ -77,35 +78,40 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    
-    appDelegate.htmlTextFormatMenuItem.enabled = YES;
-    appDelegate.htmlTextFormatMenuItem.target = self;
-    appDelegate.htmlTextFormatMenuItem.action = @selector(makeHTMLTextFormat:);
+    SMAppController *appController = [appDelegate appController];
 
-    appDelegate.plainTextFormatMenuItem.enabled = YES;
-    appDelegate.plainTextFormatMenuItem.target = self;
-    appDelegate.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
+    appController.textFormatMenuItem.enabled = YES;
+
+    appController.htmlTextFormatMenuItem.enabled = YES;
+    appController.htmlTextFormatMenuItem.target = self;
+    appController.htmlTextFormatMenuItem.action = @selector(makeHTMLTextFormat:);
+
+    appController.plainTextFormatMenuItem.enabled = YES;
+    appController.plainTextFormatMenuItem.target = self;
+    appController.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
 
     BOOL usePlainText = _messageEditorViewController.plainText;
     
-    appDelegate.htmlTextFormatMenuItem.state = (usePlainText? NSOffState : NSOnState);
-    appDelegate.plainTextFormatMenuItem.state = (usePlainText? NSOnState : NSOffState);
+    appController.htmlTextFormatMenuItem.state = (usePlainText? NSOffState : NSOnState);
+    appController.plainTextFormatMenuItem.state = (usePlainText? NSOnState : NSOffState);
 }
 
 - (void)makeHTMLTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-    appDelegate.htmlTextFormatMenuItem.state = NSOnState;
-    appDelegate.plainTextFormatMenuItem.state = NSOffState;
+    appController.htmlTextFormatMenuItem.state = NSOnState;
+    appController.plainTextFormatMenuItem.state = NSOffState;
 
     [_messageEditorViewController makeHTMLText];	
 }
 
 - (void)makePlainTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
     
-    appDelegate.htmlTextFormatMenuItem.state = NSOffState;
-    appDelegate.plainTextFormatMenuItem.state = NSOnState;
+    appController.htmlTextFormatMenuItem.state = NSOffState;
+    appController.plainTextFormatMenuItem.state = NSOnState;
     
     [_messageEditorViewController makePlainText];
 }

@@ -220,7 +220,6 @@
     // 2. Close any message thread windows
     // 3. Stop all local folders sync
     // 4. Cancel and clear any pending ops in the IMAP and SMTP queues
-    // 5. Delete user account folders and stuff from the database
  
     NSArray<SMLocalFolder*> *localFolders = _localFolderRegistry.localFolders;
     
@@ -229,7 +228,6 @@
     }
     
     [_operationExecutor cancelAllOperations];
-    [_operationExecutor deleteOpQueues];
     
     //
     SM_LOG_WARNING(@"TODO");

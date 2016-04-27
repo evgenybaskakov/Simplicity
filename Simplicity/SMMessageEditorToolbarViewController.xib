@@ -13,16 +13,38 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="388" height="37"/>
+            <rect key="frame" x="0.0" y="0.0" width="388" height="31"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="6zw-K1-zkc">
-                    <rect key="frame" x="5" y="5" width="40" height="28"/>
+                    <rect key="frame" x="5" y="4" width="32" height="23"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="28" id="Y0q-Ed-WLB"/>
-                        <constraint firstAttribute="width" constant="40" id="t21-gh-nH9"/>
+                        <constraint firstAttribute="height" constant="23" id="Y0q-Ed-WLB"/>
+                        <constraint firstAttribute="width" constant="32" id="t21-gh-nH9"/>
                     </constraints>
                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="sendicon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="LrL-rZ-X6M">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
+                    <rect key="frame" x="351" y="4" width="32" height="23"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="23" id="E26-cl-hKn"/>
+                        <constraint firstAttribute="width" constant="32" id="P7S-DL-aIP"/>
+                    </constraints>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="trash-white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="XMQ-k7-KRb">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
+                    <rect key="frame" x="315" y="4" width="32" height="23"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="23" id="ne9-Fn-GD1"/>
+                        <constraint firstAttribute="width" constant="32" id="oQ1-66-9lW"/>
+                    </constraints>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="attachment-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="9wt-gi-CN7">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -30,13 +52,18 @@
             </subviews>
             <constraints>
                 <constraint firstItem="6zw-K1-zkc" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="0FM-Np-syk"/>
-                <constraint firstAttribute="bottom" secondItem="6zw-K1-zkc" secondAttribute="bottom" constant="5" id="hn6-JI-6Ao"/>
+                <constraint firstAttribute="trailing" secondItem="jEL-eI-naP" secondAttribute="trailing" constant="5" id="6H3-sV-P5J"/>
+                <constraint firstItem="jEL-eI-naP" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="8oT-ZP-tj0"/>
+                <constraint firstItem="p8q-HM-jSs" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="aJO-gF-fAW"/>
+                <constraint firstItem="jEL-eI-naP" firstAttribute="leading" secondItem="p8q-HM-jSs" secondAttribute="trailing" constant="4" id="gWN-B5-9bt"/>
                 <constraint firstItem="6zw-K1-zkc" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="qH1-X3-CEc"/>
             </constraints>
-            <point key="canvasLocation" x="230" y="162.5"/>
+            <point key="canvasLocation" x="230" y="159.5"/>
         </customView>
     </objects>
     <resources>
+        <image name="attachment-icon" width="128" height="128"/>
         <image name="sendicon" width="256" height="167"/>
+        <image name="trash-white" width="512" height="512"/>
     </resources>
 </document>

@@ -24,6 +24,7 @@
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
+#import "SMMessageEditorToolbarViewController.h"
 #import "SMAddressFieldViewController.h"
 #import "SMLabeledPopUpListViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
@@ -66,6 +67,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMMessageEditorWebView *_htmlTextEditor;
     SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
+    SMMessageEditorToolbarViewController *_messageEditorToolbarViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray<NSView*> *_editorsUndoList;
     NSUInteger _editorUndoLevel;
@@ -108,6 +110,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _editorsUndoList = [NSMutableArray array];
         
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        
+        // Toolbar
+        
+        _messageEditorToolbarViewController = [[SMMessageEditorToolbarViewController alloc] initWithNibName:@"SMMessageEditorToolbarViewController" bundle:nil];
+        _messageEditorToolbarViewController.view.autoresizingMask = NSViewWidthSizable;
+        _messageEditorToolbarViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
         // From
         
@@ -185,6 +193,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     //[_textAndAttachmentsSplitView setDelegate:self];
     [_textAndAttachmentsSplitView setVertical:NO];
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    
+    [_innerView addSubview:_messageEditorToolbarViewController.view];
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {
@@ -941,6 +951,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     const CGFloat curHeight = _innerView.frame.size.height;
     
     CGFloat yPos = -1;
+    
+    _messageEditorToolbarViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _messageEditorToolbarViewController.view.frame.size.height);
+    
+    yPos += _messageEditorToolbarViewController.view.frame.size.height - 1;
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {

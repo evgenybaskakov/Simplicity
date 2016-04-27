@@ -116,6 +116,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _messageEditorToolbarViewController = [[SMMessageEditorToolbarViewController alloc] initWithNibName:@"SMMessageEditorToolbarViewController" bundle:nil];
         _messageEditorToolbarViewController.view.autoresizingMask = NSViewWidthSizable;
         _messageEditorToolbarViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        _messageEditorToolbarViewController.messageEditorViewController = self;
         
         // From
         
@@ -393,7 +394,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastBcc = _bccBoxViewController.tokenField.objectValue;
     
     Boolean sendEnabled = (to != nil && to.count != 0);
-    [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
+    [_messageEditorToolbarViewController.sendButton setEnabled:sendEnabled];
     
     [_htmlTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
@@ -414,8 +415,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         return;
     }
-    NSString *messageText = [_htmlTextEditor getMessageText];
-    
+
+    NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
+
     [_messageEditorController sendMessage:messageText plainText:_plainText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
     
     if(!_embedded) {
@@ -525,6 +527,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastBcc = bcc;
     
     NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
+    
     [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
     
     _htmlTextEditor.unsavedContentPending = NO;
@@ -1042,7 +1045,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         // TODO: verify the destination email address / recepient name more carefully
         
-        [_editorToolBoxViewController.sendButton setEnabled:(toValue.length != 0)];
+        [_messageEditorToolbarViewController.sendButton setEnabled:(toValue.length != 0)];
     }
 }
 

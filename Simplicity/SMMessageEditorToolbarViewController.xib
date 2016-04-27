@@ -7,6 +7,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageEditorToolbarViewController">
             <connections>
+                <outlet property="attachButton" destination="p8q-HM-jSs" id="SA4-g1-1Pd"/>
+                <outlet property="deleteButton" destination="jEL-eI-naP" id="wTH-9y-AFB"/>
+                <outlet property="sendButton" destination="6zw-K1-zkc" id="GcH-i2-CQg"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -26,6 +29,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="sendAction:" target="-2" id="YAd-aM-XnA"/>
+                    </connections>
                 </button>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
                     <rect key="frame" x="351" y="4" width="32" height="23"/>
@@ -37,6 +43,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="deleteAction:" target="-2" id="fCa-k5-kI4"/>
+                    </connections>
                 </button>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
                     <rect key="frame" x="315" y="4" width="32" height="23"/>
@@ -48,6 +57,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="attachAction:" target="-2" id="6mI-3X-Att"/>
+                    </connections>
                 </button>
             </subviews>
             <constraints>

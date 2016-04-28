@@ -65,6 +65,10 @@
     [_queue removeObject:op];
 }
 
+- (void)clearQueue {
+    [_queue removeAllObjects];
+}
+
 - (SMOperation*)getFirstOp {
     NSAssert(_queue.count != 0, @"queue is empty");
     return _queue[0];

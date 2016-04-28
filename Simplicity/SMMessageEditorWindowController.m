@@ -8,12 +8,15 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
+#import "SMPreferencesController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
 
 @implementation SMMessageEditorWindowController {
-    NSString *_htmlContents;
+    NSString *_initialTextContent;
+    Boolean _initialPlainText;
     NSString *_subject;
     NSArray *_to;
     NSArray *_cc;
@@ -22,8 +25,9 @@
     NSArray *_mcoAttachments;
 }
 
-- (void)initHtmlContents:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
-    _htmlContents = htmlContents;
+- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
+    _initialTextContent = textContent;
+    _initialPlainText = plainText;
     _subject = subject;
     _to = to;
     _cc = cc;
@@ -49,7 +53,7 @@
     
     // View setup
 
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO draftUid:_draftUid];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO draftUid:_draftUid plainText:_initialPlainText];
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 
     [[self window] setContentView:_messageEditorViewController.view];
@@ -60,7 +64,7 @@
     
     SMEditorContentsKind editorContentsKind = kEmptyEditorContentsKind;
     
-    if(_htmlContents != nil) {
+    if(_initialTextContent != nil) {
         if(_draftUid == 0) {
             editorContentsKind = kUnfoldedReplyEditorContentsKind;
         }
@@ -69,39 +73,45 @@
         }
     }
     
-    [_messageEditorViewController startEditorWithHTML:_htmlContents subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
+    [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+
+    appController.textFormatMenuItem.enabled = YES;
+
+    appController.htmlTextFormatMenuItem.enabled = YES;
+    appController.htmlTextFormatMenuItem.target = self;
+    appController.htmlTextFormatMenuItem.action = @selector(makeHTMLTextFormat:);
+
+    appController.plainTextFormatMenuItem.enabled = YES;
+    appController.plainTextFormatMenuItem.target = self;
+    appController.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
+
+    BOOL usePlainText = _messageEditorViewController.plainText;
     
-    appDelegate.richTextFormatMenuItem.state = NSOnState;
-    appDelegate.richTextFormatMenuItem.enabled = YES;
-    appDelegate.richTextFormatMenuItem.target = self;
-    appDelegate.richTextFormatMenuItem.action = @selector(makeRichTextFormat:);
-
-    appDelegate.plainTextFormatMenuItem.state = NSOffState;
-    appDelegate.plainTextFormatMenuItem.enabled = YES;
-    appDelegate.plainTextFormatMenuItem.target = self;
-    appDelegate.plainTextFormatMenuItem.action = @selector(makePlainTextFormat:);
-
-    // TODO: choose the default layout based on the current message settings and preferences 
+    appController.htmlTextFormatMenuItem.state = (usePlainText? NSOffState : NSOnState);
+    appController.plainTextFormatMenuItem.state = (usePlainText? NSOnState : NSOffState);
 }
 
-- (void)makeRichTextFormat:(id)sender {
+- (void)makeHTMLTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
 
-    appDelegate.richTextFormatMenuItem.state = NSOnState;
-    appDelegate.plainTextFormatMenuItem.state = NSOffState;
+    appController.htmlTextFormatMenuItem.state = NSOnState;
+    appController.plainTextFormatMenuItem.state = NSOffState;
 
-    [_messageEditorViewController makeRichText];	
+    [_messageEditorViewController makeHTMLText];	
 }
 
 - (void)makePlainTextFormat:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
     
-    appDelegate.richTextFormatMenuItem.state = NSOffState;
-    appDelegate.plainTextFormatMenuItem.state = NSOnState;
+    appController.htmlTextFormatMenuItem.state = NSOffState;
+    appController.plainTextFormatMenuItem.state = NSOnState;
     
     [_messageEditorViewController makePlainText];
 }

@@ -74,7 +74,7 @@
     
     //
     
-    _preferableMessageFormatNames = @[@"HTML", @"Raw text"];
+    _preferableMessageFormatNames = @[@"HTML", @"Plain text"];
     
     [_preferableMessageFormatList removeAllItems];
     [_preferableMessageFormatList addItemsWithTitles:_preferableMessageFormatNames];

@@ -66,8 +66,11 @@
 
 #pragma mark Actions
 
-- (void)sendMessage:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
+- (void)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+    
+    // TODO: why attachments are in this object, not parameters?
+    
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
 
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
@@ -92,7 +95,7 @@
     }
 }
 
-- (void)saveDraft:(NSString*)messageText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (void)saveDraft:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     if(_saveDraftOp) {
@@ -108,7 +111,7 @@
         _saveDraftOp = nil;
     }
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:[from mcoAddress] to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:_attachmentItems account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

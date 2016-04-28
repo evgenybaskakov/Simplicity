@@ -15,6 +15,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
+#import "SMStringUtils.h"
 #import "SMAddress.h"
 #import "SMUserAccount.h"
 #import "SMSuggestionProvider.h"
@@ -23,6 +24,7 @@
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
+#import "SMMessageEditorToolbarViewController.h"
 #import "SMAddressFieldViewController.h"
 #import "SMLabeledPopUpListViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
@@ -34,11 +36,18 @@
 #import "SMMessageEditorController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMMessageEditorViewController.h"
+#import "SMPlainTextMessageEditor.h"
 
 typedef NS_ENUM(NSUInteger, FrameAdjustment) {
     FrameAdjustment_ShowFullPanel,
     FrameAdjustment_HideFullPanel,
     FrameAdjustment_Resize,
+};
+
+typedef NS_ENUM(NSUInteger, EditorConversion) {
+    EditorConversion_Direct,
+    EditorConversion_Undo,
+    EditorConversion_Redo,
 };
 
 static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
@@ -55,9 +64,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
-    SMMessageEditorWebView *_messageTextEditor;
+    SMMessageEditorWebView *_htmlTextEditor;
+    SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
+    SMMessageEditorToolbarViewController *_messageEditorToolbarViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
+    NSMutableArray<NSView*> *_editorsUndoList;
+    NSUInteger _editorUndoLevel;
     Boolean _attachmentsPanelShown;
     NSUInteger _panelHeight;
     NSSplitView *_textAndAttachmentsSplitView;
@@ -73,10 +86,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean _adjustingFrames;
 }
 
-- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid  {
+- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
+        _plainText = plainText;
+        
         _lastSubject = @"";
         _lastFrom = @"";
         _lastTo = @[];
@@ -92,7 +107,16 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
         _messageEditorController = [[SMMessageEditorController alloc] initWithDraftUID:draftUid];
         
+        _editorsUndoList = [NSMutableArray array];
+        
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        
+        // Toolbar
+        
+        _messageEditorToolbarViewController = [[SMMessageEditorToolbarViewController alloc] initWithNibName:@"SMMessageEditorToolbarViewController" bundle:nil];
+        _messageEditorToolbarViewController.view.autoresizingMask = NSViewWidthSizable;
+        _messageEditorToolbarViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        _messageEditorToolbarViewController.messageEditorViewController = self;
         
         // From
         
@@ -126,17 +150,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _subjectBoxViewController = [[SMLabeledTextFieldBoxViewController alloc] initWithNibName:@"SMLabeledTextFieldBoxViewController" bundle:nil];
         _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        
-        // editor toolbox
-        
-        _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
-        _editorToolBoxViewController.messageEditorViewController = self;
-        _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
-        _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        
-        // editor area
-        
-        _messageTextEditor = [[SMMessageEditorWebView alloc] init];
         
         // unfold panel
         
@@ -181,16 +194,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     //[_textAndAttachmentsSplitView setDelegate:self];
     [_textAndAttachmentsSplitView setVertical:NO];
     [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
-    [_textAndAttachmentsSplitView addSubview:_messageTextEditor];
-    [_textAndAttachmentsSplitView adjustSubviews];
     
+    [_innerView addSubview:_messageEditorToolbarViewController.view];
+
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {
         [_innerView addSubview:_fromBoxViewController.view];
     }
     
     [_innerView addSubview:_toBoxViewController.view];
-    [_innerView addSubview:_editorToolBoxViewController.view];
     [_innerView addSubview:_textAndAttachmentsSplitView];
     
     if(_foldPanelViewController != nil) {
@@ -216,26 +228,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_bccBoxViewController.label setStringValue:@"Bcc:"];
     [_subjectBoxViewController.label setStringValue:@"Subject:"];
     
-    // Editor toolbox
-    NSAssert(_editorToolBoxViewController != nil, @"editor toolbox is nil");
-    
-    [_editorToolBoxViewController.fontSelectionButton removeAllItems];
-    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:[SMMessageEditorBase fontFamilies]];
-    [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
-    
-    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
-    
-    [_editorToolBoxViewController.textSizeButton removeAllItems];
-    [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
-    [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
-    
-    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
-    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
-    
-    // WebView post-setup
-    
-    _messageTextEditor.messageEditorBase = _messageEditorBase;
-    _messageTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+    // editor initialization
+
+    if(_plainText) {
+        [self makePlainText:YES conversion:EditorConversion_Direct];
+    }
+    else {
+        [self makeHTMLText:YES conversion:EditorConversion_Direct];
+    }
     
     // other stuff
     
@@ -262,7 +262,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_attachmentsPanelViewController enableEditing:_messageEditorController];
     [_attachmentsPanelViewController setToggleTarget:self];
     
-    [_textAndAttachmentsSplitView addSubview:_attachmentsPanelViewController.view];
+    [_textAndAttachmentsSplitView insertArrangedSubview:_attachmentsPanelViewController.view atIndex:1];
 }
 
 - (void)viewDidLoad {
@@ -271,7 +271,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)setResponders:(BOOL)force {
     NSWindow *window = [[self view] window];
-    NSAssert(window, @"no window");
+    if(window == nil) {
+        SM_LOG_DEBUG(@"no window yet to set responders for");
+        return;
+    }
+
+    NSView *editorView = _plainText? _plainTextEditor : _htmlTextEditor;
     
     // Workaround: it is nearly impossible to check if the webview has focus. The first responder in that case has
     // a type of "WebHTMLView", which is a private Apple class. When the focus is on address or subject fields,
@@ -295,7 +300,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_toBoxViewController.tokenField setNextKeyView:_ccBoxViewController.tokenField];
         [_ccBoxViewController.tokenField setNextKeyView:_bccBoxViewController.tokenField];
         [_bccBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-        [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
+        [_subjectBoxViewController.textField setNextKeyView:editorView];
     }
     else {
         if(!_embedded) {
@@ -313,7 +318,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             }
             
             [_toBoxViewController.tokenField setNextKeyView:_subjectBoxViewController.textField];
-            [_subjectBoxViewController.textField setNextKeyView:_messageTextEditor];
+            [_subjectBoxViewController.textField setNextKeyView:editorView];
         }
         else {
             if(!messageEditorFocus) {
@@ -329,7 +334,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
                 [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
             }
             
-            [_toBoxViewController.tokenField setNextKeyView:_messageTextEditor];
+            [_toBoxViewController.tokenField setNextKeyView:editorView];
         }
     }
 }
@@ -389,9 +394,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastBcc = _bccBoxViewController.tokenField.objectValue;
     
     Boolean sendEnabled = (to != nil && to.count != 0);
-    [_editorToolBoxViewController.sendButton setEnabled:sendEnabled];
+    [_messageEditorToolbarViewController.sendButton setEnabled:sendEnabled];
     
-    [_messageTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
+    [_htmlTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
 }
 
 #pragma mark Message actions
@@ -410,9 +415,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         return;
     }
-    NSString *messageText = [_messageTextEditor getMessageText];
-    
-    [_messageEditorController sendMessage:messageText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
+
+    NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
+
+    [_messageEditorController sendMessage:messageText plainText:_plainText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
     
     if(!_embedded) {
         [[[self view] window] close];
@@ -455,7 +461,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
     
-    if(_messageTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
+    if(_htmlTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
         return YES;
     }
     
@@ -520,10 +526,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastCc = cc;
     _lastBcc = bcc;
     
-    NSString *messageText = [_messageTextEditor getMessageText];
-    [_messageEditorController saveDraft:messageText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
+    NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
     
-    _messageTextEditor.unsavedContentPending = NO;
+    [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
+    
+    _htmlTextEditor.unsavedContentPending = NO;
 }
 
 - (void)attachDocument {
@@ -548,50 +555,291 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
+- (void)createHTMLEditorToolbox {
+    _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
+    _editorToolBoxViewController.messageEditorViewController = self;
+    _editorToolBoxViewController.view.autoresizingMask = NSViewWidthSizable;
+    _editorToolBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+    
+    [_editorToolBoxViewController.fontSelectionButton removeAllItems];
+    [_editorToolBoxViewController.fontSelectionButton addItemsWithTitles:[SMMessageEditorBase fontFamilies]];
+    [_editorToolBoxViewController.fontSelectionButton selectItemAtIndex:0];
+    
+    NSArray *textSizes = [[NSArray alloc] initWithObjects:@"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
+    
+    [_editorToolBoxViewController.textSizeButton removeAllItems];
+    [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
+    [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
+    
+    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
+    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
+}
+
 #pragma mark Text attrbitute actions
 
-- (void)makeRichText {
-    [_messageTextEditor makeRichText];
+- (void)makeHTMLText {
+    [self makeHTMLText:NO conversion:EditorConversion_Direct];
+}
+
+- (void)makeHTMLText:(Boolean)force conversion:(EditorConversion)conversion {
+    if(!_plainText && !force) {
+        return;
+    }
+    
+    _plainText = NO;
+
+    [self createHTMLEditorToolbox];
+    
+    [_innerView addSubview:_editorToolBoxViewController.view];
+
+    CGFloat dividerPos = 0;
+    BOOL restoreDividerPos = NO;
+    if(_textAndAttachmentsSplitView.subviews.count == 2) {
+        dividerPos = _textAndAttachmentsSplitView.subviews[0].frame.size.height;
+        restoreDividerPos = YES;
+    }
+
+    if(_textAndAttachmentsSplitView.subviews.count > 0) {
+        [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
+    }
+
+    if(conversion != EditorConversion_Direct) {
+        if(conversion == EditorConversion_Undo) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_plainTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _plainTextEditor;
+            }
+
+            NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+            _editorUndoLevel--;
+        }
+        else {
+            NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo level is too high");
+            _editorUndoLevel++;
+        }
+        
+        NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
+        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMMessageEditorWebView class]], @"bad object in the editor undo list");
+        NSAssert(_htmlTextEditor == nil, @"_htmlTextEditor is nil");
+        
+        _htmlTextEditor = (SMMessageEditorWebView*)_editorsUndoList[_editorUndoLevel];
+        
+        NSAssert(_plainTextEditor != nil, @"_plainTextEditor is already nil");
+        _plainTextEditor = nil;
+    }
+    else {
+        _htmlTextEditor = [[SMMessageEditorWebView alloc] init];
+        _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+        _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        
+        if(_plainTextEditor) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_plainTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _plainTextEditor;
+            }
+            
+            _editorUndoLevel++;
+
+            // TODO: get rid of <pre> and do it right, see issue #90
+            NSString *htmlText = [NSString stringWithFormat:@"<pre>%@</pre>", _plainTextEditor.textView.string];
+            [_htmlTextEditor startEditorWithHTML:htmlText kind:kUnfoldedDraftEditorContentsKind];
+
+            _plainTextEditor = nil;
+        }
+    }
+    
+    _htmlTextEditor.messageEditorBase = _messageEditorBase;
+    _htmlTextEditor.editorToolBoxViewController = _editorToolBoxViewController;
+    
+    [_textAndAttachmentsSplitView insertArrangedSubview:_htmlTextEditor atIndex:0];
+    [_textAndAttachmentsSplitView adjustSubviews];
+
+    if(restoreDividerPos) {
+        [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
+    }
+    
+    [self adjustFrames:FrameAdjustment_Resize];
+    [self setResponders:NO];
+    
+    // Setup undo
+    
+    [_htmlTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakeHTMLText:) object:_htmlTextEditor];
+    [_htmlTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to HTML", @"convert to html")];
+    
+    // Adjust the main menu
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    appController.htmlTextFormatMenuItem.state = NSOnState;
+    appController.plainTextFormatMenuItem.state = NSOffState;
+}
+
+- (void)undoMakeHTMLText:(id)object {
+    EditorConversion conversion = [[((SMMessageEditorWebView*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
+    
+    [self makePlainText:NO conversion:conversion];
 }
 
 - (void)makePlainText {
-    [_messageTextEditor makePlainText];
+    [self makePlainText:NO conversion:EditorConversion_Direct];
+}
+
+- (void)makePlainText:(Boolean)force conversion:(EditorConversion)conversion {
+    if(_plainText && !force) {
+        return;
+    }
+    
+    _plainText = YES;
+    
+    [_editorToolBoxViewController.view removeFromSuperview];
+    
+    _editorToolBoxViewController = nil;
+    _htmlTextEditor.editorToolBoxViewController = nil;
+ 
+    CGFloat dividerPos = 0;
+    BOOL restoreDividerPos = NO;
+    if(_textAndAttachmentsSplitView.subviews.count == 2) {
+        dividerPos = _textAndAttachmentsSplitView.subviews[0].frame.size.height;
+        restoreDividerPos = YES;
+    }
+    
+    if(_textAndAttachmentsSplitView.subviews.count > 0) {
+        [_textAndAttachmentsSplitView.subviews[0] removeFromSuperview];
+    }
+
+    if(conversion != EditorConversion_Direct) {
+        if(conversion == EditorConversion_Undo) {
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_htmlTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _htmlTextEditor;
+            }
+
+            NSAssert(_editorUndoLevel > 0, @"editor undo level is zero");
+            _editorUndoLevel--;
+        }
+        else {
+            NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo level is too high");
+            _editorUndoLevel++;
+        }
+        
+        NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
+        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMPlainTextMessageEditor class]], @"bad object in the editor undo list");
+        NSAssert(_plainTextEditor == nil, @"_plainTextEditor is nil");
+        
+        _plainTextEditor = (SMPlainTextMessageEditor*)_editorsUndoList[_editorUndoLevel];
+        
+        NSAssert(_htmlTextEditor != nil, @"_htmlTextEditor is already nil");
+        _htmlTextEditor = nil;
+    }
+    else {
+        NSString *plainText = nil;
+        
+        if(_htmlTextEditor) {
+            if(_htmlTextEditor.mainFrame != nil) {
+                plainText = [(DOMHTMLElement *)[[_htmlTextEditor.mainFrame DOMDocument] documentElement] outerText];
+            }
+            
+            if(_editorUndoLevel == _editorsUndoList.count) {
+                [_editorsUndoList addObject:_htmlTextEditor];
+            }
+            else {
+                NSAssert(_editorUndoLevel < _editorsUndoList.count, @"editor undo list corrupted");
+                _editorsUndoList[_editorUndoLevel] = _htmlTextEditor;
+            }
+
+            _editorUndoLevel++;
+            
+            _htmlTextEditor = nil;
+        }
+        else {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            
+            // convert html signature to plain text
+            NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
+            NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
+            
+            plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];
+        }
+        
+        _plainTextEditor = [[SMPlainTextMessageEditor alloc] initWithString:plainText];
+        _plainTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
+        _plainTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    }
+    
+    [_textAndAttachmentsSplitView insertArrangedSubview:_plainTextEditor atIndex:0];
+    [_textAndAttachmentsSplitView adjustSubviews];
+    
+    if(restoreDividerPos) {
+        [_textAndAttachmentsSplitView setPosition:dividerPos ofDividerAtIndex:0];
+    }
+
+    [self adjustFrames:FrameAdjustment_Resize];
+    [self setResponders:NO];
+    
+    // Setup undo
+    
+    [_plainTextEditor.undoManager registerUndoWithTarget:self selector:@selector(undoMakePlainText:) object:_plainTextEditor];
+    [_plainTextEditor.undoManager setActionName:NSLocalizedString(@"Convert to Plain Text", @"convert to plain text")];
+    
+    // Adjust the main menu
+    
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+    
+    appController.htmlTextFormatMenuItem.state = NSOffState;
+    appController.plainTextFormatMenuItem.state = NSOnState;
+}
+
+- (void)undoMakePlainText:(id)object {
+    EditorConversion conversion = [[((SMPlainTextMessageEditor*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
+    
+    [self makeHTMLText:NO conversion:conversion];
 }
 
 - (void)toggleBold {
-    [_messageTextEditor toggleBold];
+    [_htmlTextEditor toggleBold];
 }
 
 - (void)toggleItalic {
-    [_messageTextEditor toggleItalic];
+    [_htmlTextEditor toggleItalic];
 }
 
 - (void)toggleUnderline {
-    [_messageTextEditor toggleUnderline];
+    [_htmlTextEditor toggleUnderline];
 }
 
 - (void)toggleBullets {
-    [_messageTextEditor toggleBullets];
+    [_htmlTextEditor toggleBullets];
 }
 
 - (void)toggleNumbering {
-    [_messageTextEditor toggleNumbering];
+    [_htmlTextEditor toggleNumbering];
 }
 
 - (void)toggleQuote {
-    [_messageTextEditor toggleQuote];
+    [_htmlTextEditor toggleQuote];
 }
 
 - (void)shiftLeft {
-    [_messageTextEditor shiftLeft];
+    [_htmlTextEditor shiftLeft];
 }
 
 - (void)shiftRight {
-    [_messageTextEditor shiftRight];
+    [_htmlTextEditor shiftRight];
 }
 
 - (void)selectFont {
-    [_messageTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
+    [_htmlTextEditor selectFont:[_editorToolBoxViewController.fontSelectionButton indexOfSelectedItem]];
 }
 
 - (void)setTextSize {
@@ -604,23 +852,23 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     NSInteger textSize = [[_editorToolBoxViewController.textSizeButton itemTitleAtIndex:index] integerValue];
     
-    [_messageTextEditor setTextSize:textSize];
+    [_htmlTextEditor setTextSize:textSize];
 }
 
 - (void)justifyText {
-    [_messageTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
+    [_htmlTextEditor justifyText:[_editorToolBoxViewController.justifyTextControl selectedSegment]];
 }
 
 - (void)showSource {
-    [_messageTextEditor showSource];
+    [_htmlTextEditor showSource];
 }
 
 - (void)setTextForegroundColor {
-    [_messageTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
+    [_htmlTextEditor setTextForegroundColor:_editorToolBoxViewController.textForegroundColorSelector.color];
 }
 
 - (void)setTextBackgroundColor {
-    [_messageTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
+    [_htmlTextEditor setTextBackgroundColor:_editorToolBoxViewController.textBackgroundColorSelector.color];
 }
 
 #pragma mark UI elements collaboration
@@ -628,7 +876,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 - (void)unfoldHiddenText:(id)sender {
     NSAssert(_foldPanelViewController != nil, @"_inlineButtonPanelViewController is nil");
     
-    [_messageTextEditor unfoldContent];
+    [_htmlTextEditor unfoldContent];
     
     [_foldPanelViewController.view removeFromSuperview];
     _foldPanelViewController = nil;
@@ -707,6 +955,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     CGFloat yPos = -1;
     
+    _messageEditorToolbarViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _messageEditorToolbarViewController.view.frame.size.height);
+    
+    yPos += _messageEditorToolbarViewController.view.frame.size.height - 1;
+    
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     if(appDelegate.accounts.count > 1) {
         _fromBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _fromBoxViewController.view.frame.size.height);
@@ -740,9 +992,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         fullAddressPanelHeight += _subjectBoxViewController.view.frame.size.height - 1;
     }
     
-    _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
-    
-    yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+    if(!_plainText) {
+        _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
+        
+        yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+    }
     
     _panelHeight = yPos - 1;
     
@@ -772,7 +1026,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (CGFloat)editorFullHeight {
-    return _panelHeight + _messageTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
+    return _panelHeight + _htmlTextEditor.contentHeight + (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0) +  EMBEDDED_MARGIN_H * 2 + 2; // TODO
 }
 
 - (void)tokenFieldHeightChanged:(NSNotification*)notification {
@@ -791,7 +1045,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         // TODO: verify the destination email address / recepient name more carefully
         
-        [_editorToolBoxViewController.sendButton setEnabled:(toValue.length != 0)];
+        [_messageEditorToolbarViewController.sendButton setEnabled:(toValue.length != 0)];
     }
 }
 
@@ -846,7 +1100,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_messageTextEditor stopTextMonitor];
+    [_htmlTextEditor stopTextMonitor];
 }
 
 - (void)saveDocument:(id)sender {

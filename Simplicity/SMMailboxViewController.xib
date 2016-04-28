@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMailboxViewController">
             <connections>
                 <outlet property="folderListView" destination="idQ-VD-a7f" id="orU-y7-1Zl"/>
+                <outlet property="progressIndicator" destination="Wjx-nj-iOY" id="ieJ-PK-IZk"/>
                 <outlet property="view" destination="c22-O7-iKe" id="zx8-nl-l2u"/>
             </connections>
         </customObject>
@@ -16,6 +17,9 @@
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe">
             <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
             <subviews>
+                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Wjx-nj-iOY">
+                    <rect key="frame" x="84" y="180.5" width="32" height="32"/>
+                </progressIndicator>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zKI-Dq-3Sh">
                     <rect key="frame" x="0.0" y="0.0" width="200" height="393"/>
                     <clipView key="contentView" drawsBackground="NO" id="jWX-ka-Zfh">
@@ -180,8 +184,10 @@
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="zKI-Dq-3Sh" secondAttribute="bottom" id="5aL-we-yNa"/>
+                <constraint firstItem="Wjx-nj-iOY" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="D2N-u0-kLH"/>
                 <constraint firstItem="zKI-Dq-3Sh" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="PCb-7w-h1h"/>
                 <constraint firstAttribute="trailing" secondItem="zKI-Dq-3Sh" secondAttribute="trailing" id="XjF-lK-cOs"/>
+                <constraint firstItem="Wjx-nj-iOY" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="gBK-9z-cpB"/>
                 <constraint firstItem="zKI-Dq-3Sh" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="wZO-pf-rkI"/>
             </constraints>
         </customView>

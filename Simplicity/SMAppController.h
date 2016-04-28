@@ -34,6 +34,11 @@
 @property (nonatomic) IBOutlet NSButton *trashButton;
 @property (nonatomic) IBOutlet NSView *searchField;
 
+@property (weak) IBOutlet NSMenuItem *composeMessageMenuItem;
+@property (weak) IBOutlet NSMenuItem *textFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
+@property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
+
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 
@@ -62,7 +67,7 @@
 - (void)hideOperationQueueSheet;
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread;
-- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
+- (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
 
 - (void)moveSelectedMessageThreadsToTrash;
 

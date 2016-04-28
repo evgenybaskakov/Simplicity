@@ -69,8 +69,9 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
     //
     
-    appDelegate.richTextFormatMenuItem.enabled = NO;
-    appDelegate.plainTextFormatMenuItem.enabled = NO;
+    _textFormatMenuItem.enabled = NO;
+    _htmlTextFormatMenuItem.enabled = NO;
+    _plainTextFormatMenuItem.enabled = NO;
     
     //
     
@@ -708,13 +709,21 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 #pragma mark Message editor window management
 
 - (IBAction)composeMessageAction:(id)sender {
-    [self openMessageEditorWindow:nil subject:nil to:nil cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if(appDelegate.accounts.count == 0) {
+        SM_LOG_INFO(@"no accounts");
+        return;
+    }
+    
+    Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
+    [self openMessageEditorWindow:nil plainText:plainText subject:nil to:nil cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
 }
 
-- (void)openMessageEditorWindow:(NSString*)htmlContents subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
+- (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
     SMMessageEditorWindowController *messageEditorWindowController = [[SMMessageEditorWindowController alloc] initWithWindowNibName:@"SMMessageEditorWindowController"];
 
-    [messageEditorWindowController initHtmlContents:htmlContents subject:subject to:to cc:cc bcc:bcc draftUid:draftUid mcoAttachments:mcoAttachments];
+    [messageEditorWindowController initHtmlContents:textContent plainText:plainText subject:subject to:to cc:cc bcc:bcc draftUid:draftUid mcoAttachments:mcoAttachments];
     [messageEditorWindowController showWindow:self];
     
     [_messageEditorWindowControllers addObject:messageEditorWindowController];

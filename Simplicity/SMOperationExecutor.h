@@ -26,9 +26,11 @@
 - (void)completeOperation:(SMOperation*)op;
 - (void)restartOperation:(SMOperation*)op;
 - (void)cancelOperation:(SMOperation*)op;
+- (void)cancelAllOperations;
 - (NSUInteger)operationsCount;
 - (SMOperation*)getOpAtIndex:(NSUInteger)index;
 - (void)saveSMTPQueue;
 - (void)saveIMAPQueue;
+- (void)deleteOpQueues;
 
 @end

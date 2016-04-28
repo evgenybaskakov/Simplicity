@@ -65,6 +65,17 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     return self;
 }
 
+- (NSArray<SMLocalFolder*>*)localFolders {
+    NSArray<FolderEntry*> *folderEntires = _folders.allValues;
+    NSMutableArray<SMLocalFolder*> *localFolders = [NSMutableArray array];
+    
+    for(FolderEntry *entry in folderEntires) {
+        [localFolders addObject:entry.folder];
+    }
+    
+    return localFolders;
+}
+
 - (void)updateFolderEntryAccessTime:(FolderEntry*)folderEntry {
     [_accessTimeSortedFolders removeObjectAtIndex:[self getFolderEntryIndex:folderEntry]];
     
@@ -108,7 +119,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
 
 - (void)removeLocalFolder:(NSString*)folderName {
     FolderEntry *folderEntry = [_folders objectForKey:folderName];
-    [folderEntry.folder stopMessagesLoading];
+    [folderEntry.folder stopLocalFolderSync];
 
     [_folders removeObjectForKey:folderName];
 

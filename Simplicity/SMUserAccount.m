@@ -16,6 +16,7 @@
 #import "SMOperationExecutor.h"
 #import "SMMailbox.h"
 #import "SMMessage.h"
+#import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMSearchResultsListController.h"
@@ -210,6 +211,27 @@
             }];
         }
     }
+}
+
+- (void)stopAccount {
+    // For the given account, we need to do the following actions:
+    //
+    // 1. Ask to close all open editors with changes
+    // 2. Close any message thread windows
+    // 3. Stop all local folders sync
+    // 4. Cancel and clear any pending ops in the IMAP and SMTP queues
+ 
+    NSArray<SMLocalFolder*> *localFolders = _localFolderRegistry.localFolders;
+    
+    for(SMLocalFolder *localFolder in localFolders) {
+        [localFolder stopLocalFolderSync];
+    }
+    
+    [_operationExecutor cancelAllOperations];
+    
+    //
+    SM_LOG_WARNING(@"TODO");
+    //
 }
 
 @end

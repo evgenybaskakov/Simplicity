@@ -29,6 +29,10 @@
 #import "SMFolderLabel.h"
 #import "SMMailboxRowView.h"
 
+@interface SMMailboxViewController()
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+@end
+
 @implementation SMMailboxViewController {
     NSInteger _rowWithMenu;
     NSString *_labelToRename;
@@ -61,6 +65,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
+
+    [_progressIndicator startAnimation:self];
+    [_progressIndicator setHidden:NO];
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
@@ -158,6 +165,19 @@
         [ _folderListView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO ];
     } else {
         [ _folderListView selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO ];
+    }
+    
+    if([[appDelegate.currentAccount mailbox] foldersLoaded]) {
+        if(!_progressIndicator.hidden) {
+            [_progressIndicator stopAnimation:self];
+            [_progressIndicator setHidden:YES];
+        }
+    }
+    else {
+        if(_progressIndicator.hidden) {
+            [_progressIndicator startAnimation:self];
+            [_progressIndicator setHidden:NO];
+        }
     }
 }
 

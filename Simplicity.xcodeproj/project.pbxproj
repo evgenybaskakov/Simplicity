@@ -145,6 +145,9 @@
 		803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10EE1C1123390057E785 /* SMMailboxRowView.m */; };
 		803B10F21C116DD10057E785 /* SMMessageListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10F11C116DD10057E785 /* SMMessageListRowView.m */; };
 		804207D21C55F72900EA7641 /* SMWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 804207D11C55F72900EA7641 /* SMWindow.m */; };
+		804373AE1CCF412000C802EC /* SMMessageEditorToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */; };
+		804373AF1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */; };
+		804373B81CCF431500C802EC /* sendicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 804373B71CCF431500C802EC /* sendicon.png */; };
 		8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */; };
 		8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */; };
 		8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */; };
@@ -194,6 +197,7 @@
 		80A44B191B5A19260049AB88 /* align_center-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B151B5A19260049AB88 /* align_center-128.png */; };
 		80A44B1A1B5A19260049AB88 /* align_left-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B161B5A19260049AB88 /* align_left-128.png */; };
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
+		80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
 		80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */; };
 		80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */; };
@@ -532,6 +536,10 @@
 		803B10F11C116DD10057E785 /* SMMessageListRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListRowView.m; sourceTree = "<group>"; };
 		804207D01C55F72900EA7641 /* SMWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWindow.h; sourceTree = "<group>"; };
 		804207D11C55F72900EA7641 /* SMWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWindow.m; sourceTree = "<group>"; };
+		804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorToolbarViewController.h; sourceTree = "<group>"; };
+		804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorToolbarViewController.m; sourceTree = "<group>"; };
+		804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageEditorToolbarViewController.xib; sourceTree = "<group>"; };
+		804373B71CCF431500C802EC /* sendicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sendicon.png; sourceTree = "<group>"; };
 		8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-128.png"; sourceTree = "<group>"; };
 		8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-reply-all-128.png"; sourceTree = "<group>"; };
 		8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconsineed-icon-down-128.png"; sourceTree = "<group>"; };
@@ -606,6 +614,8 @@
 		80A44B151B5A19260049AB88 /* align_center-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_center-128.png"; sourceTree = "<group>"; };
 		80A44B161B5A19260049AB88 /* align_left-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_left-128.png"; sourceTree = "<group>"; };
 		80A44B171B5A19260049AB88 /* align_right-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align_right-128.png"; sourceTree = "<group>"; };
+		80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPlainTextMessageEditor.h; sourceTree = "<group>"; };
+		80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPlainTextMessageEditor.m; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
 		80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuViewController.h; sourceTree = "<group>"; };
@@ -919,6 +929,8 @@
 				00172FEE198B3BB700DB975E /* SMMessageBodyViewController.m */,
 				00BAE7F419207540001243F5 /* SMMessageDetailsViewController.h */,
 				00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */,
+				804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */,
+				804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */,
 				8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */,
 				8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */,
 				8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */,
@@ -949,6 +961,8 @@
 				00AD52EE1AA81C7900627433 /* SMNewLabelWindowController.m */,
 				8048FBD41C140B510083954D /* SMNotificationsController.h */,
 				8048FBD51C140B510083954D /* SMNotificationsController.m */,
+				80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */,
+				80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */,
 				801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */,
 				801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */,
 				801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */,
@@ -1049,6 +1063,7 @@
 				8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */,
 				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
+				804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
 				800AB7EB1CACF64600582B57 /* SMMessagePlaceholderViewController.xib */,
@@ -1089,6 +1104,7 @@
 				8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */,
 				8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
+				804373B71CCF431500C802EC /* sendicon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
 				002057CD1A85D2DA00D5FE8A /* spam-white.png */,
 				002556FD1A5A5C6600C864D0 /* star-gray-icon.png */,
@@ -1372,6 +1388,7 @@
 				00DBA6DE1AC2705F00DFE03D /* new-message.png in Resources */,
 				80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */,
 				002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */,
+				804373B81CCF431500C802EC /* sendicon.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
 				802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */,
@@ -1390,6 +1407,7 @@
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,
 				801EDEF81BEA784500A16E85 /* outlook_logo.png in Resources */,
+				804373AF1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib in Resources */,
 				80CE26001C782F5700A9837F /* SMTokenFieldViewController.xib in Resources */,
 				00DBA6D81AC25FD500DFE03D /* SMMessageEditorWindowController.xib in Resources */,
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
@@ -1539,6 +1557,7 @@
 				8071EDF91BDB515100175A7B /* SMLocalFolderMessageBodyFetchQueue.m in Sources */,
 				803B10EC1C1025F80057E785 /* SMMailboxLabelView.m in Sources */,
 				800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */,
+				804373AE1CCF412000C802EC /* SMMessageEditorToolbarViewController.m in Sources */,
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,
@@ -1570,6 +1589,7 @@
 				80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */,
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
+				80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

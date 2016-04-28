@@ -580,7 +580,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Format" id="dfQ-v9-ues">
                                     <items>
-                                        <menuItem title="Rich Text" state="on" id="vUH-6f-CGy">
+                                        <menuItem title="HTML" state="on" id="vUH-6f-CGy">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                         </menuItem>
                                         <menuItem title="Plain Text" id="lK6-yH-B4s">
@@ -671,8 +671,6 @@
         </window>
         <customObject id="494" customClass="SMAppDelegate">
             <connections>
-                <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="eX9-5T-RgA"/>
-                <outlet property="richTextFormatMenuItem" destination="vUH-6f-CGy" id="rsm-e9-l89"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
         </customObject>
@@ -680,7 +678,11 @@
         <customObject id="544" customClass="SMAppController">
             <connections>
                 <outlet property="composeMessageButton" destination="PxP-a3-Jxq" id="tJ3-Xf-cTx"/>
+                <outlet property="composeMessageMenuItem" destination="i3P-0b-cpV" id="co2-cG-CtP"/>
+                <outlet property="htmlTextFormatMenuItem" destination="vUH-6f-CGy" id="RWK-tG-Hk9"/>
+                <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="4Hc-La-8Ml"/>
                 <outlet property="searchField" destination="w9B-OG-la5" id="Lof-qa-D7m"/>
+                <outlet property="textFormatMenuItem" destination="3QV-S7-VIk" id="cPY-6I-SEi"/>
                 <outlet property="toolbar" destination="Set-cj-RY4" id="Yot-05-tWm"/>
                 <outlet property="trashButton" destination="Q0Q-AH-U6l" id="LXG-FO-qVB"/>
                 <outlet property="view" destination="372" id="OSt-G0-4ik"/>

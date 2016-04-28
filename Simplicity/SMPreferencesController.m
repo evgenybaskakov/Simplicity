@@ -41,6 +41,7 @@
 #define kRegularMessageFontSize         @"RegularMessageFontSize"
 #define kFixedMessageFont               @"FixedMessageFont"
 #define kFixedMessageFontSize           @"FixedMessageFontSize"
+#define kUseFixedSizeFontForPlainTextMessages @"UseFixedFontForPlainTextMessages"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -66,6 +67,7 @@
     BOOL _shouldShowContactImagesCached;
     BOOL _shouldShowEmailAddressesInMailboxesCached;
     BOOL _shouldUseSingleSignatureCached;
+    BOOL _useFixedSizeFontForPlainTextMessagesCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
     NSString *_downloadsFolderCached;
@@ -216,20 +218,6 @@
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
     
         [SMAccountImageSelection saveImageFile:accountImagePath image:image];
-    }
-    
-    // Now start normal account operationing.
-    if(prevAccountCount == 0) {
-        NSAssert(newAccountIdx == 0, @"bad newAccountIdx %lu", newAccountIdx);
-        
-        SM_LOG_INFO(@"Starting processing email account");
-        
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMUserAccount *account = appDelegate.accounts[newAccountIdx];
-        
-        [account initSession:newAccountIdx];
-        [account getIMAPServerCapabilities];
-        [account initOpExecutor];
     }
 }
 
@@ -634,6 +622,35 @@
     if(error != nil && error.code != noErr) {
         SM_LOG_ERROR(@"Cannot delete password for %@ account '%@', error '%@' (code %ld)", serverType, accountName, error, error? error.code : noErr);
     }
+}
+
+#pragma mark Use fixed size font for plain text messages
+
+- (BOOL)useFixedSizeFontForPlainTextMessages {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kUseFixedSizeFontForPlainTextMessages] == nil) {
+            _useFixedSizeFontForPlainTextMessagesCached = YES;
+            
+            SM_LOG_INFO(@"Using default kUseFixedSizeFontForPlainTextMessages: %@", _useFixedSizeFontForPlainTextMessagesCached? @"YES" : @"NO");
+        }
+        else {
+            _useFixedSizeFontForPlainTextMessagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kUseFixedSizeFontForPlainTextMessages]);
+            
+            SM_LOG_INFO(@"Loaded kUseFixedSizeFontForPlainTextMessages: %@", _useFixedSizeFontForPlainTextMessagesCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _useFixedSizeFontForPlainTextMessagesCached;
+}
+
+- (void)setUseFixedSizeFontForPlainTextMessages:(BOOL)flag {
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kUseFixedSizeFontForPlainTextMessages];
+    
+    _useFixedSizeFontForPlainTextMessagesCached = flag;
 }
 
 #pragma mark Should show contact images in message list

@@ -15,10 +15,7 @@
 
 @property __weak SMMessageEditorViewController *messageEditorViewController;
 
-@property IBOutlet NSButton *sendButton;
-@property IBOutlet NSButton *deleteButton;
 //@property IBOutlet NSButton *saveButton;
-@property IBOutlet NSButton *attachButton;
 @property IBOutlet NSSegmentedControl *textStyleButton;
 @property IBOutlet SMColorWellWithIcon *textForegroundColorSelector;
 @property IBOutlet SMColorWellWithIcon *textBackgroundColorSelector;
@@ -30,10 +27,7 @@
 @property IBOutlet NSSegmentedControl *justifyTextControl;
 @property IBOutlet NSButton *showSourceButton;
 
-- (IBAction)sendAction:(id)sender;
-- (IBAction)deleteAction:(id)sender;
 //- (IBAction)saveAction:(id)sender;
-- (IBAction)attachAction:(id)sender;
 - (IBAction)setTextStyleAction:(id)sender;
 - (IBAction)toggleListAction:(id)sender;
 - (IBAction)toggleQuoteAction:(id)sender;

@@ -14,18 +14,6 @@
 
 #pragma mark Text attrbitute actions
 
-- (IBAction)sendAction:(id)sender {
-    [_messageEditorViewController sendMessage];
-}
-
-- (IBAction)deleteAction:(id)sender {
-    [_messageEditorViewController deleteEditedDraft];
-}
-
-- (IBAction)attachAction:(id)sender {
-    [_messageEditorViewController attachDocument];
-}
-
 - (IBAction)setTextStyleAction:(id)sender {
     switch(_textStyleButton.selectedSegment) {
         case 0:

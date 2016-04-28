@@ -231,7 +231,7 @@
     [self loadSelectedMessagesInternal];
 }
 
-- (void)stopMessagesLoading {
+- (void)stopLocalFolderSync {
     _currentSearchId++;
 
     if(_loadMessageHeadersForUIDsFromDBFolderOp != nil) {
@@ -243,7 +243,7 @@
     _restOfSelectedMessageUIDsToLoadFromDB = nil;
     _restOfSelectedMessageUIDsToLoadFromServer = nil;
 
-    [super stopMessagesLoading];
+    [super stopLocalFolderSync];
 }
 
 @end

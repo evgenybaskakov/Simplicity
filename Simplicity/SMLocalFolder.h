@@ -84,14 +84,14 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 // with the remote folder with the same name
 - (void)startLocalFolderSync;
 
+// stops message headers and bodies loading
+- (void)stopLocalFolderSync;
+
 // urgently fetches the body of the message specified by its UID
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
 
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;
-
-// stops message headers and bodies loading
-- (void)stopMessagesLoading;
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.

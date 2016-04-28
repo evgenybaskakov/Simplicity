@@ -370,6 +370,19 @@
                             <action selector="selectAccountImageAction:" target="-2" id="eue-jF-Ibb"/>
                         </connections>
                     </button>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="955-Oi-nIC">
+                        <rect key="frame" x="5" y="186" width="396" height="5"/>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zQh-BX-2Oo">
+                        <rect key="frame" x="204" y="157" width="185" height="20"/>
+                        <buttonCell key="cell" type="check" title="Enable unified account" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="bvc-sv-Rtp">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                    </button>
                 </subviews>
             </view>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>

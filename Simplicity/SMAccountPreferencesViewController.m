@@ -13,6 +13,7 @@
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMAccountsViewController.h"
+#import "SMMessageListViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -358,6 +359,7 @@
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
     [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:NO];
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {

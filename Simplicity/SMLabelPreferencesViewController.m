@@ -30,7 +30,7 @@
 @end
 
 @implementation SMLabelPreferencesViewController {
-    NSUInteger _selectedAccount;
+    NSInteger _selectedAccount;
     BOOL _hasPendingChanges;
     NSMutableDictionary<NSNumber*, NSColorWell*> *_colorWells;
     NSMutableDictionary<NSNumber*, NSButton*> *_favoriteButtons;
@@ -42,9 +42,10 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    _selectedAccount = appDelegate.currentAccountIdx;
+    _selectedAccount = appDelegate.accountsExist? appDelegate.currentAccountIdx : -1;
     
     [self initAccountList];
+    [self setControlsEnabled:(appDelegate.accountsExist? YES : NO)];
     
     _reloadProgressIndicator.hidden = YES;
 
@@ -99,6 +100,8 @@
         return;
     }
 
+    NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
+    
     NSUInteger accountIdx = _selectedAccount;
 
     // Save label colors.
@@ -152,16 +155,34 @@
     
     [self initAccountList];
     
-    _selectedAccount = [[_accountList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
-    if(_selectedAccount == NSNotFound) {
-        SM_LOG_INFO(@"Account %@ disappeared, using default signature list position", selectedAccountName);
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[appDelegate preferencesController] accountsCount] > 0) {
+        _selectedAccount = [[_accountList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
+        if(_selectedAccount == NSNotFound) {
+            SM_LOG_INFO(@"Account %@ disappeared, using default signature list position", selectedAccountName);
+            
+            _selectedAccount = 0;
+        }
         
-        _selectedAccount = 0;
+        [self setControlsEnabled:YES];
+    }
+    else {
+        _selectedAccount = -1;
+        
+        [self setControlsEnabled:NO];
     }
     
     [_accountList selectItemAtIndex:_selectedAccount];
     
     [self updateLabels];
+}
+
+- (void)setControlsEnabled:(BOOL)enableControls {
+    _accountList.enabled = enableControls;
+    _labelTable.enabled = enableControls;
+    _addLabelButton.enabled = enableControls;
+    _removeLabelButton.enabled = enableControls;
+    _reloadLabelsButton.enabled = enableControls;
 }
 
 - (void)initAccountList {
@@ -277,6 +298,10 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(!appDelegate.accountsExist) {
+        return 0;
+    }
+    
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     SMMailbox *mailbox = [account mailbox];
     

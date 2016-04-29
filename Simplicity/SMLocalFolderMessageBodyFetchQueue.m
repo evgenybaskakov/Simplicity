@@ -70,7 +70,6 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     SMLocalFolder *__weak _localFolder;
     SMFolderUIDDictionary *_fetchMessageBodyOps;
     NSMutableArray *_nonUrgentfetchMessageBodyOpQueue;
-    NSUInteger _activeIMAPOpCount;
 }
 
 - (id)initWithUserAccount:(SMUserAccount*)account localFolder:(SMLocalFolder*)localFolder {
@@ -152,16 +151,10 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 
             currentOpDesc.imapOp = imapOp;
             
-            _activeIMAPOpCount++;
-            
-            SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' started, attempt %lu (_activeIMAPOpCount %lu)", uid, remoteFolderName, currentOpDesc.attempt, _activeIMAPOpCount);
+            SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' started, attempt %lu", uid, remoteFolderName, currentOpDesc.attempt);
             
             [imapOp start:^(NSError * error, NSData * data) {
-                NSAssert(_activeIMAPOpCount > 0, @"_activeIMAPOpCount is zero");
-                
-                _activeIMAPOpCount--;
-                
-                SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended (_activeIMAPOpCount %lu)", uid, remoteFolderName, _activeIMAPOpCount);
+                SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended", uid, remoteFolderName);
 
                 FetchOpDesc *currentOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName];
                 if(currentOpDesc == nil) {

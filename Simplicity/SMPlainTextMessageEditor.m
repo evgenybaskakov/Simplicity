@@ -14,7 +14,7 @@
 
 - (id)initWithString:(NSString*)string {
     self = [super initWithFrame:NSMakeRect(0, 0, 100, 100)];
-    
+
     if(self) {
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
         _textView.automaticQuoteSubstitutionEnabled = NO;

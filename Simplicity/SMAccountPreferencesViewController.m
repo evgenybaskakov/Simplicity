@@ -13,6 +13,7 @@
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMAccountsViewController.h"
+#import "SMMessageListViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -145,43 +146,68 @@
     if([preferencesController accountsCount] > 0) {
         [self loadCurrentValues:0];
         [self togglePanel:0];
-
         [self checkImapConnectionAction:self];
         [self checkSmtpConnectionAction:self];
     }
-
-    _removeAccountButton.enabled = [preferencesController accountsCount] > 0? YES : NO;
+    else {
+        [self loadCurrentValues:-1];
+        [self setAccountPanelEnabled:NO];
+    }
 }
 
 - (void)viewDidAppear {
     [self reloadAccounts];
 }
 
-- (void)loadCurrentValues:(NSUInteger)accountIdx {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMPreferencesController *preferencesController = [appDelegate preferencesController];
-    
-    _accountNameField.stringValue = [preferencesController accountName:accountIdx];
-    _fullUserNameField.stringValue = [preferencesController fullUserName:accountIdx];
-    
-    _emailAddressField.stringValue = [preferencesController userEmail:accountIdx];
-    _imapServerField.stringValue = [preferencesController imapServer:accountIdx];
-    _imapUserNameField.stringValue = [preferencesController imapUserName:accountIdx];
-    _imapPasswordField.stringValue = [preferencesController imapPassword:accountIdx];
-    
-    [_imapConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController imapConnectionType:accountIdx]]];
-    [_imapAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController imapAuthType:accountIdx]]];
-    
-    _smtpServerField.stringValue = [preferencesController smtpServer:accountIdx];
-    _smtpUserNameField.stringValue = [preferencesController smtpUserName:accountIdx];
-    _smtpPasswordField.stringValue = [preferencesController smtpPassword:accountIdx];
-    _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:accountIdx]];
-    _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:accountIdx]];
-    
-    [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:accountIdx]]];
-    [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
-    
-    _accountImageButton.image = _accountImages[accountIdx];
+- (void)loadCurrentValues:(NSInteger)accountIdx {
+    if(accountIdx >= 0) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMPreferencesController *preferencesController = [appDelegate preferencesController];
+        
+        _accountNameField.stringValue = [preferencesController accountName:accountIdx];
+        _fullUserNameField.stringValue = [preferencesController fullUserName:accountIdx];
+        
+        _emailAddressField.stringValue = [preferencesController userEmail:accountIdx];
+        _imapServerField.stringValue = [preferencesController imapServer:accountIdx];
+        _imapUserNameField.stringValue = [preferencesController imapUserName:accountIdx];
+        _imapPasswordField.stringValue = [preferencesController imapPassword:accountIdx];
+        
+        [_imapConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController imapConnectionType:accountIdx]]];
+        [_imapAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController imapAuthType:accountIdx]]];
+        
+        _smtpServerField.stringValue = [preferencesController smtpServer:accountIdx];
+        _smtpUserNameField.stringValue = [preferencesController smtpUserName:accountIdx];
+        _smtpPasswordField.stringValue = [preferencesController smtpPassword:accountIdx];
+        _imapPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController imapPort:accountIdx]];
+        _smtpPortField.stringValue = [NSString stringWithFormat:@"%u", [preferencesController smtpPort:accountIdx]];
+        
+        [_smtpConnectionTypeList selectItemAtIndex:[self connectionTypeIndex:[preferencesController smtpConnectionType:accountIdx]]];
+        [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
+        
+        _accountImageButton.image = _accountImages[accountIdx];
+    }
+    else {
+        _accountNameField.stringValue = @"";
+        _fullUserNameField.stringValue = @"";
+        _emailAddressField.stringValue = @"";
+        _imapServerField.stringValue = @"";
+        _imapUserNameField.stringValue = @"";
+        _imapPasswordField.stringValue = @"";
+        
+        [_imapConnectionTypeList selectItemAtIndex:-1];
+        [_imapAuthTypeList selectItemAtIndex:-1];
+        
+        _smtpServerField.stringValue = @"";
+        _smtpUserNameField.stringValue = @"";
+        _smtpPasswordField.stringValue = @"";
+        _imapPortField.stringValue = @"";
+        _smtpPortField.stringValue = @"";
+        
+        [_smtpConnectionTypeList selectItemAtIndex:-1];
+        [_smtpAuthTypeList selectItemAtIndex:-1];
+        
+        _accountImageButton.image = [SMAccountImageSelection defaultImage];
+    }
 }
 
 - (void)reloadAccountImages {
@@ -349,15 +375,18 @@
 
     if(selectedAccount > 0) {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
+
+        [self setAccountPanelEnabled:YES];
     }
     else {
-        _removeAccountButton.enabled = NO;
+        [self setAccountPanelEnabled:NO];
     }
 
     [appDelegate enableOrDisableAccountControls];
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
     [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:NO];
 }
 
 - (IBAction)toggleAccountPanelAction:(id)sender {
@@ -681,6 +710,13 @@
     else {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    
+    NSUInteger accountsCount = [preferencesController accountsCount];
+
+    [self setAccountPanelEnabled:(accountsCount > 0? YES : NO)];
 }
 
 - (void)showAccount:(NSString*)accountName {
@@ -692,6 +728,22 @@
             break;
         }
     }
+}
+
+- (void)setAccountPanelEnabled:(BOOL)enabled {
+    if(!enabled) {
+        [self loadCurrentValues:-1];
+        [self togglePanel:0];
+    }
+    
+    _removeAccountButton.enabled = enabled;
+    _toggleAccountSettingsPanelButton.enabled = enabled;
+    _accountTableView.enabled = enabled;
+    _toggleAccountSettingsPanelButton.enabled = enabled;
+    _accountImageButton.enabled = enabled;
+    _accountNameField.enabled = enabled;
+    _fullUserNameField.enabled = enabled;
+    _emailAddressField.enabled = enabled;
 }
 
 @end

@@ -13,6 +13,8 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
+#import "SMUnifiedMailboxController.h"
+#import "SMUnifiedMailbox.h"
 #import "SMAttachmentStorage.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
@@ -31,6 +33,8 @@
         _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
+        _unifiedMailbox = [[SMUnifiedMailbox alloc] init];
+        _unifiedMailboxController = [[SMUnifiedMailboxController alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _accounts = [NSMutableArray array];
     }

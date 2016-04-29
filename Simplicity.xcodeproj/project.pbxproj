@@ -181,6 +181,8 @@
 		8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9F11BBF770300446DFA /* SMMessageThreadDescriptorEntry.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
+		808BC04B1CD331630030E08E /* SMUnifiedMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */; };
+		808BC0591CD33E870030E08E /* SMUnifiedMailboxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */; };
 		8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */; };
 		809430C31CB629AB000C1619 /* edit-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 809430C21CB629AB000C1619 /* edit-icon.png */; };
 		80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 80967AE81BF004F000ABF7AE /* icloud_logo.png */; };
@@ -595,6 +597,10 @@
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
+		808BC0491CD331630030E08E /* SMUnifiedMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedMailbox.h; sourceTree = "<group>"; };
+		808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedMailbox.m; sourceTree = "<group>"; };
+		808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedMailboxController.h; sourceTree = "<group>"; };
+		808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedMailboxController.m; sourceTree = "<group>"; };
 		8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindowController.xib; sourceTree = "<group>"; };
 		809430C21CB629AB000C1619 /* edit-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "edit-icon.png"; sourceTree = "<group>"; };
 		80967AE81BF004F000ABF7AE /* icloud_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icloud_logo.png; sourceTree = "<group>"; };
@@ -883,6 +889,8 @@
 				8023F1A01C61D4F700C7AC89 /* SMTextMessage.m */,
 				80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */,
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
+				808BC0491CD331630030E08E /* SMUnifiedMailbox.h */,
+				808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */,
 				803932681C97D6E700CE38CB /* SMUserAccount.h */,
 				803932691C97D6E700CE38CB /* SMUserAccount.m */,
 				80A33AEB1C9930FA00243880 /* SMUserAccountDataObject.h */,
@@ -973,6 +981,8 @@
 				0082F5F71A0DD39B0050578A /* SMSearchResultsListController.m */,
 				80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */,
 				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
+				808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */,
+				808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1453,7 +1463,9 @@
 				800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */,
 				8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */,
 				00DC84961967A70E00577667 /* SMMailboxController.m in Sources */,
+				808BC0591CD33E870030E08E /* SMUnifiedMailboxController.m in Sources */,
 				00EB7E87199C70FA00CA2B1B /* SMMessageThread.m in Sources */,
+				808BC04B1CD331630030E08E /* SMUnifiedMailbox.m in Sources */,
 				80ED78F11C93F86700475EE5 /* SMAccountsViewController.m in Sources */,
 				00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */,
 				80E3F2341BE724BE0024AB6B /* SMConnectionCheck.m in Sources */,

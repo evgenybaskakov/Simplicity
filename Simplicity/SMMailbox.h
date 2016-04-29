@@ -26,12 +26,9 @@
 
 @property (readonly) NSArray *mainFolders;
 @property (readonly) NSArray *folders;
-
 @property (readonly) NSArray *alwaysSyncedFolders;
 
 @property (readonly) BOOL foldersLoaded;
-
-@property SMFolder *selectedFolder;
 
 - (id)initWithUserAccount:(SMUserAccount *)account;
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;

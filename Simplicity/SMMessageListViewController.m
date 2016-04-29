@@ -20,6 +20,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMailbox.h"
+#import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMFolderColorController.h"
 #import "SMMessageBookmarksView.h"
@@ -252,7 +253,7 @@
     
     [view setMessagesCount:messageThread.messagesCount];
     
-    SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *currentFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
     [view.bookmarksView setBookmarkColors:bookmarkColors];
 

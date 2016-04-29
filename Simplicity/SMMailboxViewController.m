@@ -39,8 +39,8 @@
     Boolean _favoriteFolderSelected;
     NSBox *_hightlightBox;
     Boolean _doHightlightRow;
-    NSMutableArray *_favoriteFolders;
-    NSMutableArray *_visibleFolders;
+    NSMutableArray<NSNumber*> *_favoriteFolders;
+    NSMutableArray<NSNumber*> *_visibleFolders;
     SMFolder *_prevFolder;
 }
 
@@ -110,7 +110,7 @@
     (void)localFolder;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *selectedFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *selectedFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     
     if(selectedFolder != nil) {
         NSInteger selectedRow = -1;
@@ -154,7 +154,7 @@
         }
     }
 
-    SMFolder *selectedFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *selectedFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     if(selectedFolder != nil) {
         selectedRow = [self getFolderRow:selectedFolder];
     }
@@ -189,7 +189,7 @@
     SMFolder *folder = [self selectedFolder:selectedRow favoriteFolderSelected:&_favoriteFolderSelected];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *selectedFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *selectedFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     
     if(folder == nil || [folder.fullName isEqualToString:selectedFolder.fullName])
         return;
@@ -214,11 +214,11 @@
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
     [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
     
-    SMFolder *selectedFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *selectedFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     
     _prevFolder = selectedFolder;
 
-    [appDelegate.currentAccount mailbox].selectedFolder = folder;
+    [appDelegate.currentAccount mailboxController].selectedFolder = folder;
     
     [self updateFolderListView];
 }
@@ -234,12 +234,12 @@
     [_folderListView deselectAll:self];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *selectedFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *selectedFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
     
     if(selectedFolder != nil) {
         _prevFolder = selectedFolder;
 
-        [appDelegate.currentAccount mailbox].selectedFolder = nil;
+        [appDelegate.currentAccount mailboxController].selectedFolder = nil;
     }
 }
 
@@ -636,7 +636,7 @@ typedef enum {
         SMFolder *targetFolder = [self selectedFolder:row];
 
         SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-        if(targetFolder != nil && ![targetFolder.fullName isEqualToString:[[[appDelegate.currentAccount mailbox] selectedFolder] fullName]])
+        if(targetFolder != nil && ![targetFolder.fullName isEqualToString:[[[appDelegate.currentAccount mailboxController] selectedFolder] fullName]])
             return NSDragOperationMove;
     }
     
@@ -661,7 +661,7 @@ typedef enum {
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *currentFolder = [[appDelegate.currentAccount mailbox] selectedFolder];
+    SMFolder *currentFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
 
     if(currentFolder.kind == SMFolderKindOutbox && targetFolder.kind != SMFolderKindTrash) {
         SM_LOG_INFO(@"Cannot move messages from the Outbox folder to anything but Trash");
@@ -777,7 +777,7 @@ typedef enum {
 
     [[appDelegate.currentAccount mailboxController] deleteFolder:folder.fullName];
     
-    if([[[[appDelegate.currentAccount mailbox] selectedFolder] fullName] isEqualToString:folder.fullName]) {
+    if([[[[appDelegate.currentAccount mailboxController] selectedFolder] fullName] isEqualToString:folder.fullName]) {
         SMFolder *inboxFolder = [[appDelegate.currentAccount mailbox] inboxFolder];
         [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
     }

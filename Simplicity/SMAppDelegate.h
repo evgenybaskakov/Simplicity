@@ -13,6 +13,8 @@
 @class SMAppController;
 @class SMUserAccount;
 @class SMPreferencesController;
+@class SMUnifiedMailbox;
+@class SMUnifiedMailboxController;
 @class SMMessageComparators;
 @class SMAddressBookController;
 @class SMAttachmentStorage;
@@ -33,6 +35,8 @@
 @property (readonly) SMImageRegistry *imageRegistry;
 @property (readonly, nonatomic) SMUserAccount *currentAccount;
 @property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
+@property (readonly) SMUnifiedMailbox *unifiedMailbox;
+@property (readonly) SMUnifiedMailboxController *unifiedMailboxController;
 
 @property (nonatomic) NSUInteger currentAccountIdx;
 @property (nonatomic) BOOL accountsExist;

@@ -378,7 +378,7 @@
                     </box>
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zQh-BX-2Oo">
                         <rect key="frame" x="204" y="157" width="185" height="20"/>
-                        <buttonCell key="cell" type="check" title="Enable unified account" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="bvc-sv-Rtp">
+                        <buttonCell key="cell" type="check" title="Enable unified mailbox" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="bvc-sv-Rtp">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>

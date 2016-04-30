@@ -9,6 +9,8 @@
 #import "SMLog.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
+#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
@@ -44,7 +46,7 @@
     return self;
 }
 
-- (SMMailbox*)currentMailbox {
+- (NSObject<SMMailbox>*)currentMailbox {
     return [[self currentAccount] mailbox];
 }
 

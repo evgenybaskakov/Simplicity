@@ -14,7 +14,7 @@
 #import "SMOperationExecutor.h"
 #import "SMOpSendMessage.h"
 #import "SMOpDeleteMessages.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"

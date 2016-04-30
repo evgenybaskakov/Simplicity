@@ -11,7 +11,7 @@
 #import "SMUserAccountDataObject.h"
 #import "SMFolder.h"
 
-@interface SMMailbox : SMUserAccountDataObject
+@protocol SMMailbox<NSObject>
 
 @property (readonly) SMFolder *rootFolder;
 @property (readonly) SMFolder *inboxFolder;
@@ -30,11 +30,7 @@
 
 @property (readonly) BOOL foldersLoaded;
 
-- (id)initWithUserAccount:(SMUserAccount *)account;
-- (BOOL)loadExistingFolders:(NSArray*)existingFolders;
-- (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;
 - (SMFolder*)getFolderByName:(NSString*)folderName;
-- (void)removeFolder:(NSString*)folderName;
 - (NSString*)constructFolderName:(NSString*)folderName parent:(NSString*)parentFolderName;
 
 @end

@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMUserAccount.h"
 #import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMFolder.h"
 #import "SMFolderLabel.h"
 #import "SMFolderColorController.h"
@@ -107,7 +108,7 @@
     // Save label colors.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
-    SMMailbox *mailbox = [appDelegate.accounts[accountIdx] mailbox];
+    SMAccountMailbox *mailbox = [appDelegate.accounts[accountIdx] mailbox];
  
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
         NSColorWell *colorWell = [_colorWells objectForKey:[NSNumber numberWithInteger:i]];
@@ -218,7 +219,7 @@
     NSString *nestingLabel = nil;
     if(_labelTable.selectedRow >= 0) {
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-        SMMailbox *mailbox = [account mailbox];
+        NSObject<SMMailbox> *mailbox = [account mailbox];
         SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
         
         nestingLabel = folder.fullName;
@@ -303,7 +304,7 @@
     }
     
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailbox *mailbox = [account mailbox];
+    NSObject<SMMailbox> *mailbox = [account mailbox];
     
     return mailbox.folders.count;
 }
@@ -312,7 +313,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailbox *mailbox = [account mailbox];
+    NSObject<SMMailbox> *mailbox = [account mailbox];
     SMFolder *folder = mailbox.folders[row];
     
     NSNumber *rowNumber = [NSNumber numberWithInteger:row];

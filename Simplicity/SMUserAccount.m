@@ -14,7 +14,7 @@
 #import "SMPreferencesController.h"
 #import "SMDatabase.h"
 #import "SMOperationExecutor.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMMessage.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
@@ -38,7 +38,7 @@
     
     if(self) {
         _preferencesController = preferencesController; // TODO: why?
-        _mailbox = [[SMMailbox alloc] initWithUserAccount:self];
+        _mailbox = [[SMAccountMailbox alloc] initWithUserAccount:self];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];

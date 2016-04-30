@@ -13,7 +13,7 @@
 @class SMPreferencesController;
 @class SMUserAccount;
 @class SMDatabase;
-@class SMMailbox;
+@class SMAccountMailbox;
 @class SMLocalFolderRegistry;
 @class SMMessageListController;
 @class SMSearchResultsListController;
@@ -37,7 +37,7 @@
 @property (readonly) SMSearchResultsListController *searchResultsListController;
 @property (readonly) SMMailboxController *mailboxController;
 @property (readonly) SMOutboxController *outboxController;
-@property (readonly) SMMailbox *mailbox;
+@property (readonly) SMAccountMailbox *mailbox;
 @property (readonly) SMOperationExecutor *operationExecutor;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;

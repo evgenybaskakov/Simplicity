@@ -61,7 +61,6 @@
 		009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 009217AE1A930019003A0348 /* SMMessageThreadCollection.m */; };
 		00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00974266195684DD00620145 /* SMMailboxViewController.xib */; };
 		0097426E195686F900620145 /* SMMailboxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0097426D195686F900620145 /* SMMailboxViewController.m */; };
-		009742721957C78E00620145 /* SMMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 009742711957C78E00620145 /* SMMailbox.m */; };
 		0099CE841A62332400AEA789 /* SMImageRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0099CE831A62332400AEA789 /* SMImageRegistry.m */; };
 		0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0099CE851A623B2A00AEA789 /* attachment-icon.png */; };
 		009C7BA01A5BB558002EA2DF /* circle-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 009C7B9F1A5BB558002EA2DF /* circle-blue.png */; };
@@ -177,6 +176,7 @@
 		80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
+		8078EAB41CD470D000EBF22B /* SMAccountMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */; };
 		8079C9E81BBF755700446DFA /* SMMessageThreadDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */; };
 		8079C9F21BBF770300446DFA /* SMMessageThreadDescriptorEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 8079C9F11BBF770300446DFA /* SMMessageThreadDescriptorEntry.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
@@ -400,7 +400,6 @@
 		0097426C195686F900620145 /* SMMailboxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxViewController.h; sourceTree = "<group>"; };
 		0097426D195686F900620145 /* SMMailboxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxViewController.m; sourceTree = "<group>"; };
 		009742701957C78E00620145 /* SMMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailbox.h; sourceTree = "<group>"; };
-		009742711957C78E00620145 /* SMMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailbox.m; sourceTree = "<group>"; };
 		0099CE821A62332400AEA789 /* SMImageRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMImageRegistry.h; sourceTree = "<group>"; };
 		0099CE831A62332400AEA789 /* SMImageRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMImageRegistry.m; sourceTree = "<group>"; };
 		0099CE851A623B2A00AEA789 /* attachment-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "attachment-icon.png"; sourceTree = "<group>"; };
@@ -589,6 +588,8 @@
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
+		8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountMailbox.h; sourceTree = "<group>"; };
+		8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountMailbox.m; sourceTree = "<group>"; };
 		8079C9E61BBF755700446DFA /* SMMessageThreadDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadDescriptor.h; sourceTree = "<group>"; };
 		8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadDescriptor.m; sourceTree = "<group>"; };
 		8079C9F01BBF770300446DFA /* SMMessageThreadDescriptorEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadDescriptorEntry.h; sourceTree = "<group>"; };
@@ -794,6 +795,8 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */,
+				8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */,
 				803A29AF1C02DC8800FF8D7C /* SMAddress.h */,
 				803A29B01C02DC8800FF8D7C /* SMAddress.m */,
 				803A29A91C02465C00FF8D7C /* SMAddressBookController.h */,
@@ -829,7 +832,6 @@
 				80A2EA9B1B844BC8001765EA /* SMLog.h */,
 				80A2EA9C1B844BC8001765EA /* SMLog.m */,
 				009742701957C78E00620145 /* SMMailbox.h */,
-				009742711957C78E00620145 /* SMMailbox.m */,
 				00ED317817F88DA700B04F5B /* SMMessage.h */,
 				00ED317917F88DA700B04F5B /* SMMessage.m */,
 				80AB99141BE0925200336A55 /* SMMessageBuilder.h */,
@@ -1471,6 +1473,7 @@
 				80E3F2341BE724BE0024AB6B /* SMConnectionCheck.m in Sources */,
 				80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */,
 				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
+				8078EAB41CD470D000EBF22B /* SMAccountMailbox.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
@@ -1578,7 +1581,6 @@
 				8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */,
 				00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */,
 				005F9A3B1AAD46500022EDEF /* SMMailboxTableView.m in Sources */,
-				009742721957C78E00620145 /* SMMailbox.m in Sources */,
 				8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */,
 				00A681701A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m in Sources */,
 				8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */,

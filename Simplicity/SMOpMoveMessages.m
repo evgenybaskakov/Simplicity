@@ -12,7 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMUserAccount.h"
 #import "SMUserAccount.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMFolder.h"
 #import "SMMessageListController.h"
 #import "SMOperationExecutor.h"

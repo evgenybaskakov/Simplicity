@@ -24,6 +24,7 @@
 #import "SMMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMDatabase.h"
 #import "SMOutboxController.h"
 #import "SMNotificationsController.h"
@@ -191,7 +192,7 @@
     SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
     MCOIMAPSession *session = [_account imapSession];
-    SMMailbox *mailbox = [_account mailbox];
+    NSObject<SMMailbox> *mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
     
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
@@ -307,7 +308,7 @@
 
 - (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
     MCOIMAPSession *session = [_account imapSession];
-    SMMailbox *mailbox = [_account mailbox];
+    NSObject<SMMailbox> *mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
     MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:allMailFolder requestKind:messageHeadersRequestKind uids:messageUIDs];
@@ -636,7 +637,7 @@
 #pragma mark Messages movement to other remote folders
 
 - (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
-    SMMailbox *mailbox = [_account mailbox];
+    NSObject<SMMailbox> *mailbox = [_account mailbox];
     SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
     
     if(destFolder == nil) {

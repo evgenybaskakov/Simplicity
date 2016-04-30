@@ -28,6 +28,7 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMFolderColorController.h"
 #import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMMailboxController.h"
 #import "SMOutboxController.h"
 #import "SMFolder.h"
@@ -574,7 +575,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = appDelegate.currentMailbox;
+    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");

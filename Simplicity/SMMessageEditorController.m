@@ -18,7 +18,7 @@
 #import "SMOpDeleteMessages.h"
 #import "SMUserAccount.h"
 #import "SMMessageBuilder.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
@@ -179,7 +179,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
-    SMMailbox *mailbox = [account mailbox];
+    NSObject<SMMailbox> *mailbox = [account mailbox];
     NSAssert(mailbox != nil, @"no mailbox");
     
     SMFolder *trashFolder = [mailbox trashFolder];

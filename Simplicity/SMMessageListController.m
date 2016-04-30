@@ -16,7 +16,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"

@@ -16,7 +16,7 @@
 #import "SMSearchToken.h"
 #import "SMSearchDescriptor.h"
 #import "SMTextMessage.h"
-#import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"

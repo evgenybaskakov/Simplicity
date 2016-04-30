@@ -18,6 +18,7 @@
 #import "SMLocalFolder.h"
 #import "SMDatabase.h"
 #import "SMMailbox.h"
+#import "SMAccountMailbox.h"
 #import "SMFolderDesc.h"
 #import "SMOpDeleteFolder.h"
 #import "SMOperationExecutor.h"
@@ -90,7 +91,7 @@
         [self scheduleFolderListUpdate:NO];
         
         if(error == nil || error.code == MCOErrorNone) {
-            SMMailbox *mailbox = [ _account mailbox ];
+            SMAccountMailbox *mailbox = [ _account mailbox ];
             NSAssert(mailbox != nil, @"mailbox is nil");
 
             NSMutableArray *vanishedFolders = [NSMutableArray array];
@@ -123,7 +124,7 @@
 
 - (void)ensureMainLocalFoldersCreated {
     SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMMailbox *mailbox = [_account mailbox];
+    SMAccountMailbox *mailbox = [_account mailbox];
     
     for(SMFolder *folder in mailbox.mainFolders) {
         if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
@@ -139,7 +140,7 @@
 }
 
 - (void)loadExistingFolders:(NSArray*)folderDescs {
-    SMMailbox *mailbox = [_account mailbox];
+    SMAccountMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     if([mailbox loadExistingFolders:folderDescs]) {
@@ -153,7 +154,7 @@
 }
 
 - (void)addFoldersToDatabase {
-    SMMailbox *mailbox = [_account mailbox];
+    SMAccountMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     for(SMFolder *folder in mailbox.mainFolders) {
@@ -168,7 +169,7 @@
 }
 
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {
-    SMMailbox *mailbox = [ _account mailbox ];
+    SMAccountMailbox *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     MCOIMAPSession *session = [ _account imapSession ];
@@ -203,7 +204,7 @@
     if([oldFolderName isEqualToString:newFolderName])
         return;
 
-    SMMailbox *mailbox = [ _account mailbox ];
+    NSObject<SMMailbox> *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
     MCOIMAPSession *session = [ _account imapSession ];

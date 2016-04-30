@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMMailboxController.h"
 #import "SMUserAccountDataObject.h"
 
 @class SMFolder;
 
-@interface SMAccountMailboxController : SMUserAccountDataObject
+@interface SMAccountMailboxController : SMUserAccountDataObject<SMMailboxController>
 
 @property SMFolder *selectedFolder;
 
@@ -21,10 +22,5 @@
 - (void)loadExistingFolders:(NSArray*)folderDescs;
 - (void)scheduleFolderListUpdate:(Boolean)now;
 - (void)stopFolderListUpdate;
-- (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName;
-- (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName;
-- (void)deleteFolder:(NSString*)oldFolderName;
-- (NSUInteger)unseenMessagesCount:(NSString*)folderName;
-- (NSUInteger)totalMessagesCount:(NSString*)folderName;
 
 @end

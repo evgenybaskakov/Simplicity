@@ -253,7 +253,7 @@
     
     [view setMessagesCount:messageThread.messagesCount];
     
-    SMFolder *currentFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
+    SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
     NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
     [view.bookmarksView setBookmarkColors:bookmarkColors];
 

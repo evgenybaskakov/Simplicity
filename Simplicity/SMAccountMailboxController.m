@@ -34,6 +34,8 @@
     MCOIMAPOperation *_renameFolderOp;
 }
 
+@synthesize selectedFolder = _selectedFolder;
+
 - (id)initWithUserAccount:(SMUserAccount*)account {
     self = [super initWithUserAccount:account];
     

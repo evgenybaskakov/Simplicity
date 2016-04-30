@@ -590,6 +590,7 @@
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
 		8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountMailbox.h; sourceTree = "<group>"; };
 		8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountMailbox.m; sourceTree = "<group>"; };
+		8078EABC1CD47CBB00EBF22B /* SMMailboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxController.h; sourceTree = "<group>"; };
 		8079C9E61BBF755700446DFA /* SMMessageThreadDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadDescriptor.h; sourceTree = "<group>"; };
 		8079C9E71BBF755700446DFA /* SMMessageThreadDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadDescriptor.m; sourceTree = "<group>"; };
 		8079C9F01BBF770300446DFA /* SMMessageThreadDescriptorEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadDescriptorEntry.h; sourceTree = "<group>"; };
@@ -933,6 +934,7 @@
 				8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */,
 				8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */,
 				8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */,
+				8078EABC1CD47CBB00EBF22B /* SMMailboxController.h */,
 				0097426C195686F900620145 /* SMMailboxViewController.h */,
 				0097426D195686F900620145 /* SMMailboxViewController.m */,
 				00172FED198B3BB700DB975E /* SMMessageBodyViewController.h */,

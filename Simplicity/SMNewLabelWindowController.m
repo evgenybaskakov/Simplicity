@@ -32,7 +32,9 @@
     NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAccountMailboxController *mailboxController = [appDelegate.currentAccount mailboxController];
+    
+    NSAssert([appDelegate.currentMailboxController isKindOfClass:[SMAccountMailboxController class]], @"can't create folders in the unified mailbox");
+    SMAccountMailboxController *mailboxController = (SMAccountMailboxController*)appDelegate.currentMailboxController;
 
     NSString *fullFolderName = [mailboxController createFolder:folderName parentFolder:parentFolderName];
     if(fullFolderName != nil) {

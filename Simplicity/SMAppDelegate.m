@@ -24,6 +24,7 @@
 #import "SMAppDelegate.h"
 
 @implementation SMAppDelegate {
+    SMUnifiedMailboxController *_unifiedMailboxController;
     NSMutableArray<SMUserAccount*> *_accounts;
 }
 
@@ -47,7 +48,13 @@
 }
 
 - (NSObject<SMMailbox>*)currentMailbox {
+    // TODO: return the unified mailbox, if it's selected
     return [[self currentAccount] mailbox];
+}
+
+- (NSObject<SMMailboxController>*)currentMailboxController {
+    // TODO: return the unified mailbox controller, if it's selected
+    return [[self currentAccount] mailboxController];
 }
 
 - (BOOL)accountsExist {

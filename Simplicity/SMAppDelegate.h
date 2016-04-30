@@ -11,6 +11,7 @@
 #import "SMUserAccount.h"
 
 @protocol SMMailbox;
+@protocol SMMailboxController;
 
 @class SMAppController;
 @class SMUserAccount;
@@ -38,8 +39,8 @@
 @property (readonly, nonatomic) SMUserAccount *currentAccount;
 @property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
 @property (readonly) SMUnifiedMailbox *unifiedMailbox;
-@property (readonly) SMUnifiedMailboxController *unifiedMailboxController;
 @property (readonly) NSObject<SMMailbox> *currentMailbox;
+@property (readonly) NSObject<SMMailboxController> *currentMailboxController;
 
 @property (nonatomic) NSUInteger currentAccountIdx;
 @property (nonatomic) BOOL accountsExist;

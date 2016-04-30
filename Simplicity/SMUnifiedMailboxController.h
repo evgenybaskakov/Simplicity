@@ -8,14 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMMailboxController.h"
+
 @class SMFolder;
 
-@interface SMUnifiedMailboxController : NSObject
+@interface SMUnifiedMailboxController : NSObject<SMMailboxController>
 
 @property SMFolder *selectedFolder;
-
-- (id)init;
-- (NSUInteger)unseenMessagesCount:(NSString*)folderName;
-- (NSUInteger)totalMessagesCount:(NSString*)folderName;
 
 @end

@@ -246,7 +246,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
-    SMFolder *currentFolder = [[appDelegate.currentAccount mailboxController] selectedFolder];
+    SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
 
     NSMutableArray *labels = [NSMutableArray array];
     NSArray *colors = [[appController folderColorController] colorsForMessageThread:_messageThread folder:currentFolder labels:labels];

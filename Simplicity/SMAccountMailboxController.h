@@ -1,5 +1,5 @@
 //
-//  SMMailboxController.h
+//  SMAccountMailboxController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 7/4/14.
@@ -12,7 +12,7 @@
 
 @class SMFolder;
 
-@interface SMMailboxController : SMUserAccountDataObject
+@interface SMAccountMailboxController : SMUserAccountDataObject
 
 @property SMFolder *selectedFolder;
 

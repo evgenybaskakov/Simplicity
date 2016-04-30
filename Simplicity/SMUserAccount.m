@@ -20,7 +20,7 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMSearchResultsListController.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMOutboxController.h"
 #import "SMOperationQueue.h"
 #import "SMSuggestionProvider.h"
@@ -42,7 +42,7 @@
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];
-        _mailboxController = [[SMMailboxController alloc] initWithUserAccount:self];
+        _mailboxController = [[SMAccountMailboxController alloc] initWithUserAccount:self];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:self];
     }

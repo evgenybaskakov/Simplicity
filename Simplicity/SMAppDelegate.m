@@ -11,7 +11,7 @@
 #import "SMPreferencesController.h"
 #import "SMMailbox.h"
 #import "SMAccountMailbox.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"

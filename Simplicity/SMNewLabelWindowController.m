@@ -13,7 +13,7 @@
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
 #import "SMMailbox.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMFolder.h"
 #import "SMFolderColorController.h"
 #import "SMNewLabelWindowController.h"
@@ -32,7 +32,7 @@
     NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailboxController *mailboxController = [appDelegate.currentAccount mailboxController];
+    SMAccountMailboxController *mailboxController = [appDelegate.currentAccount mailboxController];
 
     NSString *fullFolderName = [mailboxController createFolder:folderName parentFolder:parentFolderName];
     if(fullFolderName != nil) {

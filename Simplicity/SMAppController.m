@@ -29,7 +29,7 @@
 #import "SMFolderColorController.h"
 #import "SMMailbox.h"
 #import "SMAccountMailbox.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMOutboxController.h"
 #import "SMFolder.h"
 #import "SMLocalFolder.h"

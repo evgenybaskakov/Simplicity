@@ -20,7 +20,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMailbox.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMFolderColorController.h"
 #import "SMMessageBookmarksView.h"

@@ -14,7 +14,7 @@
 #import "SMFolder.h"
 #import "SMFolderColorController.h"
 #import "SMMailbox.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageThread.h"

@@ -1,5 +1,5 @@
 //
-//  SMMailboxController.m
+//  SMSMAccountMailboxController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 7/4/14.
@@ -24,11 +24,11 @@
 #import "SMOperationExecutor.h"
 #import "SMPreferencesController.h"
 #import "SMMailboxViewController.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 
 #define FOLDER_LIST_UPDATE_INTERVAL_SEC 5
 
-@implementation SMMailboxController {
+@implementation SMAccountMailboxController {
     MCOIMAPFetchFoldersOperation *_fetchFoldersOp;
     MCOIMAPOperation *_createFolderOp;
     MCOIMAPOperation *_renameFolderOp;

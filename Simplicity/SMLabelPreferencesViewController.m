@@ -15,7 +15,7 @@
 #import "SMFolder.h"
 #import "SMFolderLabel.h"
 #import "SMFolderColorController.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMPreferencesController.h"
 #import "SMLabelPreferencesViewController.h"
 
@@ -282,7 +282,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    SMMailboxController *mailboxController = [account mailboxController];
+    SMAccountMailboxController *mailboxController = [account mailboxController];
 
     [mailboxController scheduleFolderListUpdate:YES];
 }

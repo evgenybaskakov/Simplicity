@@ -20,7 +20,7 @@
 #import "SMSearchResultsListController.h"
 #import "SMNotificationsController.h"
 #import "SMColorCircle.h"
-#import "SMMailboxController.h"
+#import "SMAccountMailboxController.h"
 #import "SMMailboxViewController.h"
 #import "SMMailboxMainFolderView.h"
 #import "SMMailboxLabelView.h"

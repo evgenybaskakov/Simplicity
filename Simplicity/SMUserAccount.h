@@ -17,7 +17,7 @@
 @class SMLocalFolderRegistry;
 @class SMMessageListController;
 @class SMSearchResultsListController;
-@class SMMailboxController;
+@class SMAccountMailboxController;
 @class SMOutboxController;
 @class SMOperationExecutor;
 @class SMMessage;
@@ -35,7 +35,7 @@
 @property (readonly) MCOIndexSet *imapServerCapabilities;
 @property (readonly) SMMessageListController *messageListController;
 @property (readonly) SMSearchResultsListController *searchResultsListController;
-@property (readonly) SMMailboxController *mailboxController;
+@property (readonly) SMAccountMailboxController *mailboxController;
 @property (readonly) SMOutboxController *outboxController;
 @property (readonly) SMAccountMailbox *mailbox;
 @property (readonly) SMOperationExecutor *operationExecutor;

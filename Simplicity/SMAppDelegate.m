@@ -44,6 +44,10 @@
     return self;
 }
 
+- (SMMailbox*)currentMailbox {
+    return [[self currentAccount] mailbox];
+}
+
 - (BOOL)accountsExist {
     return _accounts.count != 0;
 }

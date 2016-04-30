@@ -139,7 +139,7 @@
     [_visibleFolders removeAllObjects];
     
     NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccountIdx];
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
     
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
         SMFolder *folder = mailbox.folders[i];
@@ -167,7 +167,7 @@
         [ _folderListView selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO ];
     }
     
-    if([[appDelegate.currentAccount mailbox] foldersLoaded]) {
+    if([appDelegate.currentMailbox foldersLoaded]) {
         if(!_progressIndicator.hidden) {
             [_progressIndicator stopAnimation:self];
             [_progressIndicator setHidden:YES];
@@ -201,7 +201,7 @@
 
 - (void)changeFolder:(NSString*)folderName {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *folder = [[appDelegate.currentAccount mailbox] getFolderByName:folderName];
+    SMFolder *folder = [appDelegate.currentMailbox getFolderByName:folderName];
     
     [self doChangeFolder:folder];
 }
@@ -253,14 +253,14 @@
 
 - (NSInteger)favoriteFoldersGroupOffset {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
 
     return 1 + mailbox.mainFolders.count;
 }
 
 - (NSInteger)allFoldersGroupOffset {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count;
 }
@@ -271,7 +271,7 @@
         return 0;
     }
 
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count + 1 + _visibleFolders.count;
 }
@@ -282,7 +282,7 @@
 
 - (SMFolder*)selectedFolder:(NSInteger)row favoriteFolderSelected:(Boolean*)favoriteFolderSelected {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
@@ -315,7 +315,7 @@
 
 - (NSInteger)getFolderRow:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMailbox *mailbox = [appDelegate.currentAccount mailbox];
+    SMMailbox *mailbox = appDelegate.currentMailbox;
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
@@ -778,8 +778,8 @@ typedef enum {
     [[appDelegate.currentAccount mailboxController] deleteFolder:folder.fullName];
     
     if([[[[appDelegate.currentAccount mailboxController] selectedFolder] fullName] isEqualToString:folder.fullName]) {
-        SMFolder *inboxFolder = [[appDelegate.currentAccount mailbox] inboxFolder];
-        [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+        SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
+        [self changeFolder:inboxFolder.fullName];
     }
 }
 
@@ -795,7 +795,7 @@ typedef enum {
     label.visible = NO;
     [[appDelegate preferencesController] setLabels:appDelegate.currentAccountIdx labels:labels];
     
-    [[[appDelegate appController] mailboxViewController] updateFolderListView];
+    [self updateFolderListView];
 }
 
 - (void)makeLabelFavorite {
@@ -811,7 +811,7 @@ typedef enum {
     label.favorite = YES;
     [[appDelegate preferencesController] setLabels:appDelegate.currentAccountIdx labels:labels];
     
-    [[[appDelegate appController] mailboxViewController] updateFolderListView];
+    [self updateFolderListView];
 }
 
 - (void)removeLabelFromFavorites {
@@ -827,7 +827,7 @@ typedef enum {
     label.favorite = NO;
     [[appDelegate preferencesController] setLabels:appDelegate.currentAccountIdx labels:labels];
 
-    [[[appDelegate appController] mailboxViewController] updateFolderListView];
+    [self updateFolderListView];
 }
 
 #pragma mark Editing cells (renaming labels)

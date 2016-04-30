@@ -6,10 +6,12 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMMailbox.h"
+
 @class SMMailbox;
 @class SMFolder;
 
-@interface SMUnifiedMailbox : NSObject
+@interface SMUnifiedMailbox : NSObject<SMMailbox>
 
 @property NSArray<SMFolder*> *mainFolders;
 @property BOOL loaded;

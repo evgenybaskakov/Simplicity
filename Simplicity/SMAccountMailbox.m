@@ -52,7 +52,7 @@
 }
 
 - (void)cleanFolders {
-    _rootFolder = [[SMFolder alloc] initWithFullName:@"ROOT" delimiter:'/' flags:MCOIMAPFolderFlagNone];
+    _rootFolder = [[SMFolder alloc] initWithFullName:@"ROOT" delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone];
     _mainFolders = [NSMutableArray array];
     _folders = [NSMutableArray array];
 }
@@ -150,7 +150,7 @@
     [self cleanFolders];
     
     for(SMFolderDesc *fd in _sortedFlatFolders) {
-        SMFolder *folder = [[SMFolder alloc] initWithFullName:fd.folderName delimiter:fd.delimiter flags:fd.flags];
+        SMFolder *folder = [[SMFolder alloc] initWithFullName:fd.folderName delimiter:fd.delimiter mcoFlags:fd.flags];
         
         [_folders addObject:folder];
     }
@@ -182,7 +182,7 @@
     
     _outboxFolder = [self filterOutFolder:MCOIMAPFolderFlagNone orName:outboxFolderName as:outboxFolderName setKind:SMFolderKindOutbox];
     if(_outboxFolder == nil) {
-        _outboxFolder = [[SMFolder alloc] initWithFullName:outboxFolderName delimiter:'/' flags:MCOIMAPFolderFlagNone];
+        _outboxFolder = [[SMFolder alloc] initWithFullName:outboxFolderName delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone];
         _outboxFolder.kind = SMFolderKindOutbox;
     }
     
@@ -197,11 +197,11 @@
     [_mainFolders addObject:_allMailFolder];
 }
 
-- (SMFolder*)filterOutFolder:(MCOIMAPFolderFlag)flags orName:(NSString*)name as:(NSString*)displayName setKind:(SMFolderKind)kind {
+- (SMFolder*)filterOutFolder:(MCOIMAPFolderFlag)mcoFlags orName:(NSString*)name as:(NSString*)displayName setKind:(SMFolderKind)kind {
     for(NSUInteger i = 0; i < _folders.count; i++) {
         SMFolder *folder = _folders[i];
         
-        if((folder.flags & flags) || (name != nil && [folder.fullName compare:name] == NSOrderedSame)) {
+        if((folder.mcoFlags & mcoFlags) || (name != nil && [folder.fullName compare:name] == NSOrderedSame)) {
             folder.displayName = displayName;
             folder.kind = kind;
             

@@ -10,10 +10,6 @@
 
 #import "SMMailboxController.h"
 
-@class SMFolder;
-
 @interface SMUnifiedMailboxController : NSObject<SMMailboxController>
-
-@property SMFolder *selectedFolder;
 
 @end

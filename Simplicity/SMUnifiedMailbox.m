@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMOutboxController.h"
 #import "SMMailbox.h"
 #import "SMUnifiedMailbox.h"
 
@@ -24,16 +25,26 @@
 @synthesize trashFolder = _trashFolder;
 @synthesize mainFolders = _mainFolders;
 @synthesize folders = _folders;
-@synthesize alwaysSyncedFolders = _alwaysSyncedFolders;
 @synthesize foldersLoaded = _foldersLoaded;
 
 - (id)init {
     self = [super init];
     
     if(self) {
+        _inboxFolder = [[SMFolder alloc] initWithFullName:@"Inbox" delimiter:'/' mcoFlags:MCOIMAPFolderFlagInbox kind:SMFolderKindInbox];
+        _importantFolder = [[SMFolder alloc] initWithFullName:@"Important" delimiter:'/' mcoFlags:MCOIMAPFolderFlagImportant kind:SMFolderKindImportant];
+        _sentFolder = [[SMFolder alloc] initWithFullName:@"Sent" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSentMail kind:SMFolderKindSent];
+        _draftsFolder = [[SMFolder alloc] initWithFullName:@"Drafts" delimiter:'/' mcoFlags:MCOIMAPFolderFlagDrafts kind:SMFolderKindDrafts];
+        _starredFolder = [[SMFolder alloc] initWithFullName:@"Starred" delimiter:'/' mcoFlags:MCOIMAPFolderFlagStarred kind:SMFolderKindStarred];
+        _spamFolder = [[SMFolder alloc] initWithFullName:@"Spam" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSpam kind:SMFolderKindSpam];
+        _trashFolder = [[SMFolder alloc] initWithFullName:@"Trash" delimiter:'/' mcoFlags:MCOIMAPFolderFlagTrash kind:SMFolderKindTrash];
+        _allMailFolder = [[SMFolder alloc] initWithFullName:@"All Mail" delimiter:'/' mcoFlags:MCOIMAPFolderFlagAllMail kind:SMFolderKindAllMail];
         
-        // Blah.
+        _outboxFolder = [[SMFolder alloc] initWithFullName:[SMOutboxController outboxFolderName] delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone kind:SMFolderKindOutbox];
         
+        _mainFolders = @[_inboxFolder, _importantFolder, _outboxFolder, _sentFolder, _draftsFolder, _starredFolder, _spamFolder, _trashFolder, _allMailFolder ];
+
+        _foldersLoaded = YES; // TODO
     }
     
     return self;

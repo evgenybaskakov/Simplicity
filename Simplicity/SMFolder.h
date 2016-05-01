@@ -28,11 +28,12 @@ typedef NS_ENUM(NSInteger, SMFolderKind) {
 
 @property (readonly) char delimiter;
 @property (readonly) NSString *fullName;
-@property (readonly) MCOIMAPFolderFlag flags;
+@property (readonly) MCOIMAPFolderFlag mcoFlags;
 
 @property NSString *displayName;
 @property SMFolderKind kind;
 
-- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
+- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags;
+- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags kind:(SMFolderKind)kind;
 
 @end

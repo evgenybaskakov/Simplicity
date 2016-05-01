@@ -11,11 +11,7 @@
 #import "SMMailboxController.h"
 #import "SMUserAccountDataObject.h"
 
-@class SMFolder;
-
 @interface SMAccountMailboxController : SMUserAccountDataObject<SMMailboxController>
-
-@property SMFolder *selectedFolder;
 
 - (id)initWithUserAccount:(SMUserAccount*)account;
 - (void)initFolders;

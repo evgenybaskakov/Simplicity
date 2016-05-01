@@ -13,10 +13,6 @@
 
 @interface SMUnifiedMailbox : NSObject<SMMailbox>
 
-@property NSArray<SMFolder*> *mainFolders;
-@property BOOL loaded;
-
-- (id)init;
 - (void)addMailbox:(SMMailbox*)mailbox;
 - (void)removeMailbox:(SMMailbox*)mailbox;
 - (void)updateMailbox:(SMMailbox*)mailbox;

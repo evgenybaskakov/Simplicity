@@ -13,13 +13,13 @@
     NSString *_displayName;
 }
 
-- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
+- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags {
     self = [ super init ];
     
     if(self) {
         _fullName = fullName;
         _delimiter = delimiter;
-        _flags = flags;
+        _mcoFlags = mcoFlags;
         _kind = SMFolderKindRegular;
     }
     

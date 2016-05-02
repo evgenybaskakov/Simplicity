@@ -23,6 +23,8 @@
 @class SMAttachmentStorage;
 @class SMImageRegistry;
 
+#define UNIFIED_ACCOUNT_IDX -1
+
 @interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
 + (NSURL*)appDataDir;
@@ -42,7 +44,7 @@
 @property (readonly) NSObject<SMMailbox> *currentMailbox;
 @property (readonly) NSObject<SMMailboxController> *currentMailboxController;
 
-@property (nonatomic) NSUInteger currentAccountIdx;
+@property (nonatomic) NSInteger currentAccountIdx;
 @property (nonatomic) BOOL accountsExist;
 
 - (void)addAccount;

@@ -70,11 +70,16 @@
         return nil;
     }
     
+    if(_currentAccountIdx < 0) {
+        // TODO? what's to return here?
+        return nil;
+    }
+    
     return _accounts[_currentAccountIdx];
 }
 
-- (void)setCurrentAccountIdx:(NSUInteger)currentAccountIdx {
-    NSAssert(currentAccountIdx < _accounts.count, @"bad currentAccountIdx %lu", currentAccountIdx);
+- (void)setCurrentAccountIdx:(NSInteger)currentAccountIdx {
+    NSAssert(currentAccountIdx == -1 || currentAccountIdx < _accounts.count, @"bad currentAccountIdx %lu", currentAccountIdx);
     
     _currentAccountIdx = currentAccountIdx;
 }

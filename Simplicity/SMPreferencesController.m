@@ -42,6 +42,7 @@
 #define kFixedMessageFont               @"FixedMessageFont"
 #define kFixedMessageFontSize           @"FixedMessageFontSize"
 #define kUseFixedSizeFontForPlainTextMessages @"UseFixedFontForPlainTextMessages"
+#define kShouldUseUnifiedMailbox        @"ShouldUseUnifiedMailbox"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -67,6 +68,7 @@
     BOOL _shouldShowContactImagesCached;
     BOOL _shouldShowEmailAddressesInMailboxesCached;
     BOOL _shouldUseSingleSignatureCached;
+    BOOL _shouldUseUnifiedMailboxCached;
     BOOL _useFixedSizeFontForPlainTextMessagesCached;
     NSUInteger _messageListPreviewLineCountCached;
     NSUInteger _messageCheckPeriodSecCached;
@@ -970,7 +972,6 @@
     _shouldUseSingleSignatureCached = shouldUseSingleSignature;
 }
 
-
 - (NSString*)singleSignature {
     static BOOL skipUserDefaults = NO;
     
@@ -1138,4 +1139,32 @@
     [[NSUserDefaults standardUserDefaults] setFloat:font.pointSize forKey:kFixedMessageFontSize];
 }
 
+#pragma mark Unified Mailbox
+
+- (BOOL)shouldUseUnifiedMailbox {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseUnifiedMailbox] == nil) {
+            _shouldUseUnifiedMailboxCached = YES;
+            
+            SM_LOG_INFO(@"Using default kShouldUseUnifiedMailbox: %@", _shouldUseUnifiedMailboxCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldUseUnifiedMailboxCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseUnifiedMailbox]);
+            
+            SM_LOG_INFO(@"Loaded kShouldUseUnifiedMailbox: %@", _shouldUseUnifiedMailboxCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldUseUnifiedMailboxCached;
+}
+
+- (void)setShouldUseUnifiedMailbox:(BOOL)shouldUseUnifiedMailbox {
+    [[NSUserDefaults standardUserDefaults] setBool:shouldUseUnifiedMailbox forKey:kShouldUseUnifiedMailbox];
+    
+    _shouldUseUnifiedMailboxCached = shouldUseUnifiedMailbox;
+}
 @end

@@ -40,6 +40,7 @@
                 <outlet property="smtpServerField" destination="kTr-WN-zmg" id="fC4-YP-Sn3"/>
                 <outlet property="smtpUserNameField" destination="XCF-NV-29U" id="HeH-bc-tJu"/>
                 <outlet property="toggleAccountSettingsPanelButton" destination="A8X-Bf-nYO" id="BtZ-fz-aSc"/>
+                <outlet property="useUnifiedMailboxButton" destination="zQh-BX-2Oo" id="3Nh-Sg-805"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -371,7 +372,7 @@
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="955-Oi-nIC">
-                        <rect key="frame" x="5" y="186" width="396" height="5"/>
+                        <rect key="frame" x="5" y="186" width="396" height="4"/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
@@ -382,6 +383,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="checkUnifiedMailboxAction:" target="-2" id="pnH-wD-TME"/>
+                        </connections>
                     </button>
                 </subviews>
             </view>

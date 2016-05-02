@@ -138,22 +138,24 @@
     [_favoriteFolders removeAllObjects];
     [_visibleFolders removeAllObjects];
     
-    NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccountIdx];
-    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
-    
-    for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
-        SMFolder *folder = mailbox.folders[i];
-        SMFolderLabel *label = [labels objectForKey:folder.fullName];
+    if(appDelegate.currentAccount != nil) {
+        NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccountIdx];
+        NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
         
-        if((label != nil && label.visible) || label == nil) {
-            [_visibleFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
-        }
-        
-        if((label != nil && label.favorite) || label == nil) {
-            [_favoriteFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
+        for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
+            SMFolder *folder = mailbox.folders[i];
+            SMFolderLabel *label = [labels objectForKey:folder.fullName];
+            
+            if((label != nil && label.visible) || label == nil) {
+                [_visibleFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
+            }
+            
+            if((label != nil && label.favorite) || label == nil) {
+                [_favoriteFolders addObject:[NSNumber numberWithUnsignedInteger:i]];
+            }
         }
     }
-
+    
     SMFolder *selectedFolder = [appDelegate.currentMailboxController selectedFolder];
     if(selectedFolder != nil) {
         selectedRow = [self getFolderRow:selectedFolder];

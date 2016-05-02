@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
+#import "SMAccountImageSelection.h"
 #import "SMColorView.h"
 #import "SMFlippedView.h"
 #import "SMMailboxViewController.h"
@@ -24,6 +25,8 @@
     NSMutableArray<SMAccountButtonViewController*> *_accountButtonViewControllers;
     NSScrollView *_scrollView;
     NSView *_contentView;
+    BOOL _unifiedMailboxShown;
+    BOOL _unifiedMailboxSelected;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -87,7 +90,9 @@
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    if([[appDelegate preferencesController] accountsCount] == 0) {
+    const NSInteger accountsCount = [[appDelegate preferencesController] accountsCount];
+    
+    if(accountsCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
 
         [_scrollView removeFromSuperview];
@@ -98,21 +103,36 @@
     [_scrollView setFrame:self.view.frame];
     [self.view addSubview:_scrollView];
     
+    _unifiedMailboxShown = accountsCount != 0 && [[appDelegate preferencesController] shouldUseUnifiedMailbox];
+
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
-        for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {
+        for(NSInteger beginIdx = (_unifiedMailboxShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
             SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
             NSAssert(accountButtonViewController.view, @"button.view");
 
             accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
             accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
             
-            if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+            if(i == -1) {
+                accountButtonViewController.accountName.stringValue = @"Unified Mailbox";
+                accountButtonViewController.accountImage.image = [SMAccountImageSelection defaultImage]; // TODO
             }
             else {
-                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+                if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+                    accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+                }
+                else {
+                    accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+                }
+
+                NSString *accountImagePath = nil;
+                
+                accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
+                NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+                
+                accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
             }
             
             NSColor *color = [NSColor whiteColor];
@@ -136,15 +156,9 @@
             
             [accountButtonViewController.accountName setTextColor:color];
             
-            NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
-            NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-            
-            accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-            
             accountButtonViewController.accountButton.action = @selector(accountButtonAction:);
             accountButtonViewController.accountButton.target = self;
             accountButtonViewController.accountButton.tag = i;
-
             accountButtonViewController.accountIdx = i;
             
             [_accountButtonViewControllers addObject:accountButtonViewController];
@@ -155,7 +169,7 @@
     
     NSView *prevView = nil;
     for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
-        if(i > 0) {
+        if(i != 0) {
             NSColor *separatorColor = [NSColor whiteColor];
             switch([[appDelegate preferencesController] mailboxTheme]) {
                 case SMMailboxTheme_Light:
@@ -228,14 +242,15 @@
         
         _accountButtonViewControllers[i].backgroundColor = buttonColor;
 
-        if(i == appDelegate.currentAccountIdx) {
+        const NSInteger accountIdx = (NSInteger)i - 1;
+        if(accountIdx == appDelegate.currentAccountIdx) {
             _accountButtonViewControllers[i].trackMouse = NO;
         }
         else {
             _accountButtonViewControllers[i].trackMouse = YES;
         }
         
-        if(i == appDelegate.currentAccountIdx) {
+        if(accountIdx == appDelegate.currentAccountIdx) {
             NSView *mailboxView = [[[appDelegate appController] mailboxViewController] view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -257,25 +272,33 @@
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
-- (void)changeAccountTo:(NSUInteger)accountIdx {
+- (void)changeAccountTo:(NSInteger)accountIdx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    if(appDelegate.currentAccountIdx != accountIdx) {
-        SM_LOG_INFO(@"switching to account %lu", accountIdx);
+    if(accountIdx == UNIFIED_ACCOUNT_IDX) {
+        if(!_unifiedMailboxSelected) {
+            
+            _unifiedMailboxSelected = YES;
+        }
+    }
+    else {
+        if(appDelegate.currentAccountIdx != accountIdx) {
+            SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
-        appDelegate.currentAccountIdx = accountIdx;
-        
-        [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
-        [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
+            appDelegate.currentAccountIdx = accountIdx;
+            
+            [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
+            [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
 
-        [[[appDelegate currentAccount] messageListController] updateMessageList];
-        
-        [self reloadAccountViews:NO];
+            [[[appDelegate currentAccount] messageListController] updateMessageList];
+            
+            [self reloadAccountViews:NO];
+        }
     }
 }
 
 - (void)accountButtonAction:(id)sender {
-    NSUInteger clickedAccountIdx = [(NSButton*)sender tag];
+    NSInteger clickedAccountIdx = [(NSButton*)sender tag];
     
     [self changeAccountTo:clickedAccountIdx];
 }

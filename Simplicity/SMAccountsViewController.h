@@ -14,7 +14,7 @@
 
 @property (nonatomic) SMMailboxTheme mailboxTheme;
 
-- (void)changeAccountTo:(NSUInteger)accountIdx;
+- (void)changeAccountTo:(NSInteger)accountIdx;
 - (void)reloadAccountViews:(BOOL)reloadControllers;
 
 @end

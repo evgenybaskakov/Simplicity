@@ -19,6 +19,7 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMOperationQueueWindowController.h"
 #import "SMAccountButtonViewController.h"
 #import "SMAccountsViewController.h"
@@ -27,7 +28,7 @@
     NSMutableArray<SMAccountButtonViewController*> *_accountButtonViewControllers;
     NSScrollView *_scrollView;
     NSView *_contentView;
-    BOOL _unifiedMailboxShown;
+    BOOL _unifiedMailboxButtonShown;
     BOOL _unifiedMailboxSelected;
 }
 
@@ -105,12 +106,12 @@
     [_scrollView setFrame:self.view.frame];
     [self.view addSubview:_scrollView];
     
-    _unifiedMailboxShown = accountsCount != 0 && [[appDelegate preferencesController] shouldUseUnifiedMailbox];
+    _unifiedMailboxButtonShown = accountsCount != 0 && [[appDelegate preferencesController] shouldUseUnifiedMailbox];
 
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
-        for(NSInteger beginIdx = (_unifiedMailboxShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
+        for(NSInteger beginIdx = (_unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
             SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
             NSAssert(accountButtonViewController.view, @"button.view");
 
@@ -244,15 +245,28 @@
         
         _accountButtonViewControllers[i].backgroundColor = buttonColor;
 
-        const NSInteger accountIdx = (NSInteger)i - 1;
-        if(accountIdx == appDelegate.currentAccountIdx) {
-            _accountButtonViewControllers[i].trackMouse = NO;
+        BOOL mailboxExpanded = NO;
+        if(_unifiedMailboxButtonShown) {
+            if(i == 0 && _unifiedMailboxSelected) {
+                mailboxExpanded = YES;
+            }
+            else {
+                const NSInteger accountIdx = (NSInteger)i - 1;
+                
+                if(accountIdx == appDelegate.currentAccountIdx) {
+                    mailboxExpanded = YES;
+                }
+            }
         }
         else {
-            _accountButtonViewControllers[i].trackMouse = YES;
+            if(i == appDelegate.currentAccountIdx) {
+                mailboxExpanded = YES;
+            }
         }
         
-        if(accountIdx == appDelegate.currentAccountIdx) {
+        if(mailboxExpanded) {
+            _accountButtonViewControllers[i].trackMouse = NO;
+
             NSView *mailboxView = [[[appDelegate appController] mailboxViewController] view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -267,6 +281,8 @@
             prevView = mailboxView;
         }
         else {
+            _accountButtonViewControllers[i].trackMouse = YES;
+
             prevView = buttonView;
         }
     }
@@ -276,27 +292,42 @@
 
 - (void)changeAccountTo:(NSInteger)accountIdx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    BOOL updateViewControllers = NO;
     
     if(accountIdx == UNIFIED_ACCOUNT_IDX) {
         if(!_unifiedMailboxSelected) {
             _unifiedMailboxSelected = YES;
             
             [appDelegate setCurrentMailbox:appDelegate.unifiedMailbox];
+            
+            updateViewControllers = YES;
         }
     }
     else {
         if(appDelegate.currentAccountIdx != accountIdx) {
             SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
+            _unifiedMailboxSelected = NO;
+
             [appDelegate setCurrentMailbox:[appDelegate.accounts[accountIdx] mailbox]];
 
-            [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
-            [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
-
-            [[[appDelegate currentAccount] messageListController] updateMessageList];
-            
-            [self reloadAccountViews:NO];
+            updateViewControllers = YES;
         }
+    }
+    
+    if(updateViewControllers) {
+        SMAppController *appController = appDelegate.appController;
+        
+        if(!_unifiedMailboxSelected) {
+            [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
+        }
+        
+        [[appController operationQueueWindowController] reloadOperationQueue];
+        [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
+        [[appController messageThreadViewController] updateMessageThread];
+        
+        [self reloadAccountViews:NO];
     }
 }
 

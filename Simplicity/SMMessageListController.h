@@ -27,6 +27,5 @@
 - (void)scheduleMessageListUpdate:(Boolean)now;
 - (void)cancelScheduledMessageListUpdate;
 - (void)cancelMessageListUpdate;
-- (void)updateMessageList;
 
 @end

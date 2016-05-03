@@ -27,12 +27,12 @@
 }
 
 - (NSUInteger)unseenMessagesCount:(NSString*)folderName {
-    SM_FATAL(@"TODO");
+    SM_LOG_WARNING(@"TODO");
     return 0;
 }
 
 - (NSUInteger)totalMessagesCount:(NSString*)folderName {
-    SM_FATAL(@"TODO");
+    SM_LOG_WARNING(@"TODO");
     return 0;
 }
 

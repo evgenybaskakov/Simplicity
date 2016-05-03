@@ -24,7 +24,6 @@
 #import "SMAppDelegate.h"
 
 @implementation SMAppDelegate {
-    SMUnifiedMailboxController *_unifiedMailboxController;
     NSMutableArray<SMUserAccount*> *_accounts;
 }
 
@@ -48,12 +47,26 @@
 }
 
 - (NSObject<SMMailbox>*)currentMailbox {
-    // TODO: return the unified mailbox, if it's selected
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
+    if(_currentAccountInactive) {
+        return _unifiedMailbox;
+    }
+    
     return [[self currentAccount] mailbox];
 }
 
 - (NSObject<SMMailboxController>*)currentMailboxController {
-    // TODO: return the unified mailbox controller, if it's selected
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
+    if(_currentAccountInactive) {
+        return _unifiedMailboxController;
+    }
+
     return [[self currentAccount] mailboxController];
 }
 
@@ -66,12 +79,8 @@
 }
 
 - (SMUserAccount*)currentAccount {
-    if(_accounts.count == 0) {
-        return nil;
-    }
-    
-    if(_currentAccountIdx < 0) {
-        // TODO? what's to return here?
+    if(_accounts.count == 0 || _currentAccountInactive) {
+        SM_LOG_INFO(@"no current account / current account inactive");
         return nil;
     }
     
@@ -105,6 +114,27 @@
     [_accounts removeObjectAtIndex:accountIdx];
     
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
+}
+
+- (void)setCurrentMailbox:(NSObject<SMMailbox>*)mailbox {
+    NSAssert(mailbox, @"no mailbox provided");
+    
+    if(mailbox == _unifiedMailbox) {
+        _currentAccountInactive = YES;
+    }
+    else {
+        _currentAccountIdx = NSNotFound;
+        
+        for(NSUInteger i = 0; i < _accounts.count; i++) {
+            if(_accounts[i].mailbox == mailbox) {
+                _currentAccountInactive = NO;
+                _currentAccountIdx = i;
+                break;
+            }
+        }
+        
+        NSAssert(_currentAccountIdx != NSNotFound, @"provided mailbox not found");
+    }    
 }
 
 - (void)enableOrDisableAccountControls {

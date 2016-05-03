@@ -9,6 +9,8 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAccountMailbox.h"
+#import "SMUnifiedMailbox.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMAccountImageSelection.h"
@@ -277,16 +279,17 @@
     
     if(accountIdx == UNIFIED_ACCOUNT_IDX) {
         if(!_unifiedMailboxSelected) {
-            
             _unifiedMailboxSelected = YES;
+            
+            [appDelegate setCurrentMailbox:appDelegate.unifiedMailbox];
         }
     }
     else {
         if(appDelegate.currentAccountIdx != accountIdx) {
             SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
-            appDelegate.currentAccountIdx = accountIdx;
-            
+            [appDelegate setCurrentMailbox:[appDelegate.accounts[accountIdx] mailbox]];
+
             [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
             [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
 

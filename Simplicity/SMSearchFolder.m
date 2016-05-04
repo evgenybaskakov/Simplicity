@@ -42,7 +42,7 @@
     NSUInteger _currentSearchId;
 }
 
-- (id)initWithAccount:(NSObject<SMAbstractAccount>*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
+- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
     self = [super initWithAccount:account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
     
     return self;

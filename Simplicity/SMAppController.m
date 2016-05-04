@@ -327,7 +327,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)updateMailboxFolderListForAccount:(NSObject<SMAbstractAccount>*)account {
+- (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) {
         SM_LOG_DEBUG(@"Updating folder list...");
@@ -575,7 +575,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
+    id<SMMailbox> mailbox = appDelegate.currentMailbox;
     
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");

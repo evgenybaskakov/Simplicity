@@ -46,7 +46,7 @@
     return self;
 }
 
-- (NSObject<SMMailbox>*)currentMailbox {
+- (id<SMMailbox>)currentMailbox {
     if(_accounts.count == 0) {
         return nil;
     }
@@ -58,7 +58,7 @@
     return [[self currentAccount] mailbox];
 }
 
-- (NSObject<SMMailboxController>*)currentMailboxController {
+- (id<SMMailboxController>)currentMailboxController {
     if(_accounts.count == 0) {
         return nil;
     }
@@ -116,7 +116,7 @@
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
 }
 
-- (void)setCurrentMailbox:(NSObject<SMMailbox>*)mailbox {
+- (void)setCurrentMailbox:(id<SMMailbox>)mailbox {
     NSAssert(mailbox, @"no mailbox provided");
     
     if(mailbox == _unifiedMailbox) {

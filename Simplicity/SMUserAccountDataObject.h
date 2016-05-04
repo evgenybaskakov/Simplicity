@@ -11,9 +11,9 @@
 #import "SMAbstractAccount.h"
 
 @interface SMUserAccountDataObject : NSObject {
-    @protected NSObject<SMAbstractAccount> *_account;
+    @protected id<SMAbstractAccount> _account;
 }
 
-- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 
 @end

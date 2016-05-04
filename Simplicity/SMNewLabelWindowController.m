@@ -76,7 +76,7 @@
 
 - (void)updateExistingLabelsList {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
+    id<SMMailbox> mailbox = appDelegate.currentMailbox;
 
     NSMutableArray *labelsList = [NSMutableArray array];
     for(SMFolder *folder in mailbox.folders)

@@ -17,7 +17,7 @@
 @property (readonly) MCOIndexSet *subjectSearchResults;
 @property (readonly) MCOIndexSet *contactSearchResults;
 
-- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (BOOL)startNewSearch:(NSString*)searchPattern;
 - (NSInteger)getSearchIndex:(NSString*)searchResultsLocalFolder;
 - (NSUInteger)searchResultsCount;

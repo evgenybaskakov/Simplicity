@@ -179,7 +179,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
-    NSObject<SMMailbox> *mailbox = [account mailbox];
+    id<SMMailbox> mailbox = [account mailbox];
     NSAssert(mailbox != nil, @"no mailbox");
     
     SMFolder *trashFolder = [mailbox trashFolder];

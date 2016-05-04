@@ -72,7 +72,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 @property (readonly) NSUInteger maxMessagesPerThisFolder;
 @property (readonly) Boolean syncedWithRemoteFolder;
 
-- (id)initWithAccount:(NSObject<SMAbstractAccount>*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;

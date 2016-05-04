@@ -53,7 +53,7 @@
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMFolderColorController *folderColorController;
 
-- (void)updateMailboxFolderListForAccount:(NSObject<SMAbstractAccount>*)account;
+- (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account;
 
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;

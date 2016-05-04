@@ -72,7 +72,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     NSMutableArray *_nonUrgentfetchMessageBodyOpQueue;
 }
 
-- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account localFolder:(SMLocalFolder*)localFolder {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(SMLocalFolder*)localFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {

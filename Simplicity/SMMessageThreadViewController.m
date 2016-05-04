@@ -888,7 +888,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
+    id<SMMailbox> mailbox = appDelegate.currentMailbox;
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     

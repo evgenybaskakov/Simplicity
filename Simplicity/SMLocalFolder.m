@@ -38,7 +38,7 @@
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
-- (id)initWithAccount:(NSObject<SMAbstractAccount>*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -192,7 +192,7 @@
     SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
-    NSObject<SMMailbox> *mailbox = [_account mailbox];
+    id<SMMailbox> mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
     
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
@@ -308,7 +308,7 @@
 
 - (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
-    NSObject<SMMailbox> *mailbox = [_account mailbox];
+    id<SMMailbox> mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
     MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:allMailFolder requestKind:messageHeadersRequestKind uids:messageUIDs];
@@ -637,7 +637,7 @@
 #pragma mark Messages movement to other remote folders
 
 - (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
-    NSObject<SMMailbox> *mailbox = [_account mailbox];
+    id<SMMailbox> mailbox = [_account mailbox];
     SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
     
     if(destFolder == nil) {

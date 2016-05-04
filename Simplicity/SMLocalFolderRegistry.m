@@ -48,7 +48,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     NSComparator _accessTimeFolderComparator;
 }
 
-- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {

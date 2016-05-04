@@ -37,7 +37,7 @@
 
 @synthesize selectedFolder = _selectedFolder;
 
-- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -207,7 +207,7 @@
     if([oldFolderName isEqualToString:newFolderName])
         return;
 
-    NSObject<SMMailbox> *mailbox = [ _account mailbox ];
+    id<SMMailbox> mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
     MCOIMAPSession *session = [ (SMUserAccount*)_account imapSession ];

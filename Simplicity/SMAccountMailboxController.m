@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -36,7 +37,7 @@
 
 @synthesize selectedFolder = _selectedFolder;
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -78,7 +79,7 @@
 - (void)updateFolders {
     SM_LOG_DEBUG(@"updating folders");
 
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)(SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     if(_fetchFoldersOp == nil) {
@@ -174,7 +175,7 @@
     SMAccountMailbox *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     NSString *fullFolderName = [mailbox constructFolderName:folderName parent:parentFolderName];
@@ -209,7 +210,7 @@
     NSObject<SMMailbox> *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
     
     NSAssert(_renameFolderOp == nil, @"another create folder op exists");
@@ -229,13 +230,13 @@
 }
 
 - (void)deleteFolder:(NSString*)folderName {
-    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[_account operationExecutor]];
+    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[(SMUserAccount*)_account operationExecutor]];
         
     SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
     
     // 1. Delete the remote folder
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[_account operationExecutor] enqueueOperation:op];
+    [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox
     [[_account mailbox] removeFolder:folderName];

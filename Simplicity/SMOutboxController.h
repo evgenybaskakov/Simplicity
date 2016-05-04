@@ -17,7 +17,7 @@
 
 + (NSString*)outboxFolderName;
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
 - (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 - (void)sendMessage:(SMOutgoingMessage*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
 - (void)finishMessageSending:(SMOutgoingMessage*)message;

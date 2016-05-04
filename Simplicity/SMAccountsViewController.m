@@ -116,7 +116,6 @@
             NSAssert(accountButtonViewController.view, @"button.view");
 
             accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-            accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
             
             if(i == -1) {
                 accountButtonViewController.accountName.stringValue = @"Unified Mailbox";
@@ -124,15 +123,15 @@
             }
             else {
                 if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-                    accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] userEmail:i];
                 }
                 else {
-                    accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
                 }
 
                 NSString *accountImagePath = nil;
                 
-                accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
+                accountImagePath = [[appDelegate preferencesController] accountImagePath:i];
                 NSAssert(accountImagePath != nil, @"accountImagePath is nil");
                 
                 accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
@@ -250,7 +249,7 @@
             if(i == 0 && _unifiedMailboxSelected) {
                 mailboxExpanded = YES;
             }
-            else {
+            else if(i != 0 && !_unifiedMailboxSelected) {
                 const NSInteger accountIdx = (NSInteger)i - 1;
                 
                 if(accountIdx == appDelegate.currentAccountIdx) {

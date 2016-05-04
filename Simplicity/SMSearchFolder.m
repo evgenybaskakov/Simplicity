@@ -115,7 +115,7 @@
         return;
     }
     
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
     NSAssert(session, @"session lost");
     

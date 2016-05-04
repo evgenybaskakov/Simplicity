@@ -13,7 +13,7 @@
 
 @property (readonly) NSArray *alwaysSyncedFolders;
 
-- (id)initWithUserAccount:(SMUserAccount *)account;
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;
 - (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;
 - (void)removeFolder:(NSString*)folderName;

@@ -143,7 +143,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 return;
             }
             
-            MCOIMAPSession *session = [_account imapSession];
+            MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
             NSAssert(session, @"session is nil");
             
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];

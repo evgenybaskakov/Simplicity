@@ -104,7 +104,7 @@ const char *const mcoOpKinds[] = {
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
     self = [super initWithUserAccount:account];
     
     if(self != nil) {
@@ -164,7 +164,7 @@ const char *const mcoOpKinds[] = {
     
     _originalSearchString = searchString;
     
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
     NSAssert(session, @"session is nil");
     

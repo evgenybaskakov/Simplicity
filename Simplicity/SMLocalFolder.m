@@ -117,7 +117,7 @@
         }]];
     }
     else {
-        MCOIMAPSession *session = [_account imapSession];
+        MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
         
         NSAssert(session, @"session lost");
 
@@ -191,7 +191,7 @@
 - (void)syncFetchMessageThreadsHeaders {
     SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     NSObject<SMMailbox> *mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
     
@@ -299,7 +299,7 @@
 }
 
 - (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
     SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
@@ -307,7 +307,7 @@
 }
 
 - (void)fetchMessageThreadsHeadersFromAllMailFolder:(NSNumber*)threadId uids:(MCOIndexSet*)messageUIDs updateDatabase:(Boolean)updateDatabase {
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     NSObject<SMMailbox> *mailbox = [_account mailbox];
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
 
@@ -493,7 +493,7 @@
         const NSUInteger fetchMessagesFromIndex = restOfMessages - numberOfMessagesToFetch + 1;
         
         MCOIndexSet *regionToFetch = [MCOIndexSet indexSetWithRange:MCORangeMake(fetchMessagesFromIndex, numberOfMessagesToFetch - 1)];
-        MCOIMAPSession *session = [_account imapSession];
+        MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
         
         // TODO: handle session reopening/uids validation
         
@@ -613,9 +613,9 @@
     [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
     
     // enqueue the remote folder operation
-    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen operationExecutor:[_account operationExecutor]];
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen operationExecutor:[(SMUserAccount*)_account operationExecutor]];
     
-    [[_account operationExecutor] enqueueOperation:op];
+    [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
 }
 
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
@@ -629,9 +629,9 @@
     [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
     
     // enqueue the remote folder operation
-    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged operationExecutor:[_account operationExecutor]];
+    SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged operationExecutor:[(SMUserAccount*)_account operationExecutor]];
     
-    [[_account operationExecutor] enqueueOperation:op];
+    [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
 }
 
 #pragma mark Messages movement to other remote folders
@@ -719,17 +719,17 @@
         SMOperation *op = nil;
         
         if(_kind == SMFolderKindTrash) {
-            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName operationExecutor:[_account operationExecutor]];
+            op = [[SMOpDeleteMessages alloc] initWithUids:messagesToMoveUids remoteFolderName:_remoteFolderName operationExecutor:[(SMUserAccount*)_account operationExecutor]];
 
             SM_LOG_INFO(@"Enqueueing deleting of %u messages from remote folder %@", messagesToMoveUids.count, _remoteFolderName);
         }
         else {
-            op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[_account operationExecutor]];
+            op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[(SMUserAccount*)_account operationExecutor]];
             
             SM_LOG_INFO(@"Enqeueing moving of %u messages from remote folder %@ to folder %@", messagesToMoveUids.count, _remoteFolderName, destRemoteFolderName);
         }
         
-        [[_account operationExecutor] enqueueOperation:op];
+        [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     }
     
     // Notify observers that message flags have possibly changed.
@@ -786,9 +786,9 @@
 
     // After the local storage is cleared and there is no bodies loading,
     // actually move the messages on the server.
-    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[_account operationExecutor]];
+    SMOpMoveMessages *op = [[SMOpMoveMessages alloc] initWithUids:messagesToMoveUids srcRemoteFolderName:_remoteFolderName dstRemoteFolderName:destRemoteFolderName operationExecutor:[(SMUserAccount*)_account operationExecutor]];
     
-    [[_account operationExecutor] enqueueOperation:op];
+    [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     return needUpdateMessageList;
 }

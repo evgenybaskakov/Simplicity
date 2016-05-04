@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class SMUserAccount;
+#import "SMAbstractAccount.h"
 
 @interface SMUserAccountDataObject : NSObject {
-    @protected SMUserAccount *_account;
+    @protected NSObject<SMAbstractAccount> *_account;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
 
 @end

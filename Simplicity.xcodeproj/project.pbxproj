@@ -166,6 +166,7 @@
 		80533AD11B41180D00A0A67F /* List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533ACF1B41180D00A0A67F /* List Filled-50.png */; };
 		80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */; };
 		80533AD41B41189B00A0A67F /* Quote-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AD31B41189B00A0A67F /* Quote-50.png */; };
+		805613DC1CD87B910055E3E9 /* SMUnifiedAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 805613DB1CD87B910055E3E9 /* SMUnifiedAccount.m */; };
 		805C61D41C42FBBC001365AC /* SMOpDeleteFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */; };
 		80628B551BE87A3400016803 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 80628B541BE87A3400016803 /* SSKeychain.m */; };
 		8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */; };
@@ -569,6 +570,9 @@
 		80533ACF1B41180D00A0A67F /* List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD01B41180D00A0A67F /* Numbered List Filled-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Numbered List Filled-50.png"; sourceTree = "<group>"; };
 		80533AD31B41189B00A0A67F /* Quote-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Quote-50.png"; sourceTree = "<group>"; };
+		805613D01CD87A390055E3E9 /* SMAbstractAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAbstractAccount.h; sourceTree = "<group>"; };
+		805613DA1CD87B900055E3E9 /* SMUnifiedAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedAccount.h; sourceTree = "<group>"; };
+		805613DB1CD87B910055E3E9 /* SMUnifiedAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedAccount.m; sourceTree = "<group>"; };
 		805C61D21C42FBBC001365AC /* SMOpDeleteFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpDeleteFolder.h; sourceTree = "<group>"; };
 		805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpDeleteFolder.m; sourceTree = "<group>"; };
 		80628B531BE87A3400016803 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
@@ -796,6 +800,7 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
 				8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */,
 				8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */,
 				803A29AF1C02DC8800FF8D7C /* SMAddress.h */,
@@ -892,6 +897,8 @@
 				8023F1A01C61D4F700C7AC89 /* SMTextMessage.m */,
 				80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */,
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
+				805613DA1CD87B900055E3E9 /* SMUnifiedAccount.h */,
+				805613DB1CD87B910055E3E9 /* SMUnifiedAccount.m */,
 				808BC0491CD331630030E08E /* SMUnifiedMailbox.h */,
 				808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */,
 				803932681C97D6E700CE38CB /* SMUserAccount.h */,
@@ -1544,6 +1551,7 @@
 				800AB7EC1CACF64600582B57 /* SMMessagePlaceholderViewController.m in Sources */,
 				00A085A01A7206FC00CC4E1C /* SMAttachmentItem.m in Sources */,
 				006C34621A181DEC00337A49 /* SMSearchDescriptor.m in Sources */,
+				805613DC1CD87B910055E3E9 /* SMUnifiedAccount.m in Sources */,
 				803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */,
 				004A64291AC7A40B0079A0C1 /* SMAddressFieldViewController.m in Sources */,
 				80E657601B1D79F500A0AA81 /* SMOpSendMessage.m in Sources */,

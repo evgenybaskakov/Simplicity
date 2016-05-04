@@ -26,6 +26,7 @@
 @synthesize mainFolders = _mainFolders;
 @synthesize folders = _folders;
 @synthesize foldersLoaded = _foldersLoaded;
+@synthesize alwaysSyncedFolders = _alwaysSyncedFolders;
 
 - (id)init {
     self = [super init];
@@ -43,6 +44,8 @@
         _outboxFolder = [[SMFolder alloc] initWithFullName:[SMOutboxController outboxFolderName] delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone kind:SMFolderKindOutbox];
         
         _mainFolders = @[_inboxFolder, _importantFolder, _outboxFolder, _sentFolder, _draftsFolder, _starredFolder, _spamFolder, _trashFolder, _allMailFolder ];
+
+        _alwaysSyncedFolders = @[];
 
         _foldersLoaded = YES; // TODO
     }

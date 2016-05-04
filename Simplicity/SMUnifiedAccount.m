@@ -8,6 +8,11 @@
 
 #import "SMLog.h"
 #import "SMUnifiedAccount.h"
+#import "SMUnifiedMailbox.h"
+#import "SMUnifiedMailboxController.h"
+#import "SMSearchResultsListController.h"
+#import "SMMessageListController.h"
+#import "SMOutboxController.h"
 
 @implementation SMUnifiedAccount
 
@@ -22,15 +27,12 @@
     self = [super init];
     
     if(self) {
-/*
- _mailbox = [[SMAccountMailbox alloc] initWithUserAccount:self];
-        _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
+        _mailbox = [[SMUnifiedMailbox alloc] init];
+        _localFolderRegistry = nil; // TODO
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];
-        _mailboxController = [[SMAccountMailboxController alloc] initWithUserAccount:self];
+        _mailboxController = [[SMUnifiedMailboxController alloc] init];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
-        _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:self];
- */
     }
     
     SM_LOG_DEBUG(@"user account initialized");
@@ -41,6 +43,10 @@
 - (SMDatabase*)database {
     SM_FATAL(@"no database instance in the unified account");
     return nil;
+}
+
+- (void)fetchMessageInlineAttachments:(SMMessage*)message {
+    SM_FATAL(@"TODO");
 }
 
 @end

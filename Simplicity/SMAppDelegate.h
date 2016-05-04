@@ -16,6 +16,7 @@
 @class SMAppController;
 @class SMUserAccount;
 @class SMPreferencesController;
+@class SMUnifiedAccount;
 @class SMUnifiedMailbox;
 @class SMUnifiedMailboxController;
 @class SMMessageComparators;
@@ -38,11 +39,10 @@
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMImageRegistry *imageRegistry;
-@property (readonly) SMUnifiedMailbox *unifiedMailbox;
-@property (readonly) SMUnifiedMailboxController *unifiedMailboxController;
+@property (readonly) SMUnifiedAccount *unifiedAccount;
 
 @property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
-@property (readonly, nonatomic) SMUserAccount *currentAccount;
+@property (readonly, nonatomic) id<SMAbstractAccount> currentAccount;
 @property (readonly, nonatomic) id<SMMailbox> currentMailbox;
 @property (readonly, nonatomic) id<SMMailboxController> currentMailboxController;
 @property (readonly, nonatomic) NSInteger currentAccountIdx;
@@ -51,7 +51,7 @@
 
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;
-- (void)setCurrentMailbox:(id<SMMailbox>)mailbox;
+- (void)setCurrentAccount:(id<SMAbstractAccount>)account;
 - (void)enableOrDisableAccountControls;
 
 @end

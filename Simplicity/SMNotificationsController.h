@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SMAbstractAccount.h"
+@protocol SMAbstractAccount;
 
 @class SMAddress;
 @class SMMessageEditorViewController;

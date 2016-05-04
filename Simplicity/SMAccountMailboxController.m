@@ -72,7 +72,7 @@
 
     // TODO: use the resulting dbOp
     [[_account database] loadDBFolders:^(NSArray *folders) {
-        [[_account mailboxController] loadExistingFolders:folders];
+        [(SMAccountMailboxController*)_account.mailboxController loadExistingFolders:folders];
     }];
 }
 
@@ -194,7 +194,7 @@
         else {
             SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
 
-            [[_account mailboxController] scheduleFolderListUpdate:YES];
+            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
         }
     }];
     
@@ -224,7 +224,7 @@
         } else {
             SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
 
-            [[_account mailboxController] scheduleFolderListUpdate:YES];
+            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
         }
     }];
 }
@@ -239,7 +239,7 @@
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox
-    [[_account mailbox] removeFolder:folderName];
+    [(SMAccountMailbox*)_account.mailbox removeFolder:folderName];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
     
     // 3. Delete the serialized folder from the database
@@ -286,7 +286,7 @@
         //
         // Keep certain folders always synced.
         //
-        for(SMFolder *folder in [[_account mailbox] alwaysSyncedFolders]) {
+        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
             SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folder.fullName];
             
             if([updatedFolderName isEqualToString:localFolder.localName]) {

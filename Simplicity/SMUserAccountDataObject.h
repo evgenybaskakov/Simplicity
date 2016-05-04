@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SMAbstractAccount.h"
+@protocol SMAbstractAccount;
 
 @interface SMUserAccountDataObject : NSObject {
     @protected id<SMAbstractAccount> _account;

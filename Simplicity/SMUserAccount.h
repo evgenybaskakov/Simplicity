@@ -31,7 +31,6 @@
 - (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
-- (void)fetchMessageInlineAttachments:(SMMessage*)message;
 - (void)stopAccount;
 
 @end

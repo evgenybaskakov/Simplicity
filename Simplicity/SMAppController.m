@@ -575,9 +575,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    id<SMMailbox> mailbox = appDelegate.currentMailbox;
     
-    SMFolder *trashFolder = [mailbox trashFolder];
+    SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
     [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder.fullName];

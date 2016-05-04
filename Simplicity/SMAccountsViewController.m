@@ -9,7 +9,9 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAbstractAccount.h"
 #import "SMAccountMailbox.h"
+#import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
@@ -298,7 +300,7 @@
         if(!_unifiedMailboxSelected) {
             _unifiedMailboxSelected = YES;
             
-            [appDelegate setCurrentMailbox:appDelegate.unifiedMailbox];
+            [appDelegate setCurrentAccount:appDelegate.unifiedAccount];
             
             updateViewControllers = YES;
         }
@@ -309,7 +311,7 @@
 
             _unifiedMailboxSelected = NO;
 
-            [appDelegate setCurrentMailbox:[appDelegate.accounts[accountIdx] mailbox]];
+            [appDelegate setCurrentAccount:appDelegate.accounts[accountIdx]];
 
             updateViewControllers = YES;
         }
@@ -318,10 +320,7 @@
     if(updateViewControllers) {
         SMAppController *appController = appDelegate.appController;
         
-        if(!_unifiedMailboxSelected) {
-            [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
-        }
-        
+        [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
         [[appController operationQueueWindowController] reloadOperationQueue];
         [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
         [[appController messageThreadViewController] updateMessageThread];

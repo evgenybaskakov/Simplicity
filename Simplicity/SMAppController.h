@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+#import "SMAbstractAccount.h"
+
 @class SMTokenFieldViewController;
 @class SMSectionMenuViewController;
 @class SMNewAccountWindowController;
@@ -51,7 +53,7 @@
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMFolderColorController *folderColorController;
 
-- (void)updateMailboxFolderListForAccount:(SMUserAccount*)account;
+- (void)updateMailboxFolderListForAccount:(NSObject<SMAbstractAccount>*)account;
 
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;

@@ -38,7 +38,7 @@
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
-- (id)initWithAccount:(SMUserAccount*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithAccount:(NSObject<SMAbstractAccount>*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {

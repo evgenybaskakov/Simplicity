@@ -20,7 +20,7 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 
 @implementation SMOperationExecutor
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -47,7 +47,7 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 }
 
 - (SMUserAccount*)account {
-    return _account;
+    return (SMUserAccount*)_account;
 }
 
 - (SMOperationQueue*)getQueue:(SMOpKind)kind {

@@ -17,7 +17,7 @@
 
 @property (readonly) NSArray<SMLocalFolder*> *localFolders;
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
 - (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
 - (SMLocalFolder*)getLocalFolder:(NSString*)folderName;
 - (void)removeLocalFolder:(NSString*)folderName;

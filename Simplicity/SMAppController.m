@@ -327,7 +327,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)updateMailboxFolderListForAccount:(SMUserAccount*)account {
+- (void)updateMailboxFolderListForAccount:(NSObject<SMAbstractAccount>*)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) {
         SM_LOG_DEBUG(@"Updating folder list...");

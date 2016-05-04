@@ -7,7 +7,7 @@
 //
 
 #import "SMLog.h"
-#import "SMUserAccount.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
@@ -42,7 +42,7 @@
     NSUInteger _currentSearchId;
 }
 
-- (id)initWithAccount:(SMUserAccount*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
+- (id)initWithAccount:(NSObject<SMAbstractAccount>*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
     self = [super initWithAccount:account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
     
     return self;

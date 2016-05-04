@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 
 @property (readonly) NSUInteger messageThreadsCount;
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account;
 
 - (BOOL)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;
 - (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase;

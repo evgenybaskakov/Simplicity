@@ -32,7 +32,7 @@
     MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(NSObject<SMAbstractAccount>*)account {
     self = [super initWithUserAccount:account];
     
     if(self) {

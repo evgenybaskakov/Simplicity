@@ -66,7 +66,7 @@
 }
 
 - (SMFolder*)getFolderByName:(NSString*)folderName {
-    SM_FATAL(@"TODO");
+    SM_LOG_WARNING(@"TODO: folder '%@'", folderName);
     return nil;
 }
 

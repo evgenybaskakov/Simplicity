@@ -39,7 +39,7 @@
 @synthesize alwaysSyncedFolders = _alwaysSyncedFolders;
 @synthesize foldersLoaded = _foldersLoaded;
 
-- (id)initWithUserAccount:(SMUserAccount *)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {

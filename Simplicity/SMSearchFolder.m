@@ -7,7 +7,7 @@
 //
 
 #import "SMLog.h"
-#import "SMUserAccount.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMMessageStorage.h"
 #import "SMAppController.h"
@@ -42,7 +42,7 @@
     NSUInteger _currentSearchId;
 }
 
-- (id)initWithAccount:(SMUserAccount*)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
+- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName {
     self = [super initWithAccount:account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
     
     return self;
@@ -115,7 +115,7 @@
         return;
     }
     
-    MCOIMAPSession *session = [_account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
     NSAssert(session, @"session lost");
     

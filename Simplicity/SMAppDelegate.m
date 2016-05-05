@@ -15,8 +15,7 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
-#import "SMUnifiedMailboxController.h"
-#import "SMUnifiedMailbox.h"
+#import "SMUnifiedAccount.h"
 #import "SMAttachmentStorage.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
@@ -24,7 +23,6 @@
 #import "SMAppDelegate.h"
 
 @implementation SMAppDelegate {
-    SMUnifiedMailboxController *_unifiedMailboxController;
     NSMutableArray<SMUserAccount*> *_accounts;
 }
 
@@ -36,8 +34,7 @@
         _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
-        _unifiedMailbox = [[SMUnifiedMailbox alloc] init];
-        _unifiedMailboxController = [[SMUnifiedMailboxController alloc] init];
+        _unifiedAccount = [[SMUnifiedAccount alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _accounts = [NSMutableArray array];
     }
@@ -47,14 +44,32 @@
     return self;
 }
 
-- (NSObject<SMMailbox>*)currentMailbox {
-    // TODO: return the unified mailbox, if it's selected
+- (id<SMMailbox>)currentMailbox {
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
     return [[self currentAccount] mailbox];
 }
 
-- (NSObject<SMMailboxController>*)currentMailboxController {
-    // TODO: return the unified mailbox controller, if it's selected
+- (id<SMMailboxController>)currentMailboxController {
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
     return [[self currentAccount] mailboxController];
+}
+
+- (id<SMAbstractAccount>)currentAccount {
+    if(_accounts.count == 0) {
+        return nil;
+    }
+    
+    if(_currentAccountInactive) {
+        return _unifiedAccount;
+    }
+    
+    return _accounts[_currentAccountIdx];
 }
 
 - (BOOL)accountsExist {
@@ -65,16 +80,8 @@
     return _accounts;
 }
 
-- (SMUserAccount*)currentAccount {
-    if(_accounts.count == 0) {
-        return nil;
-    }
-    
-    return _accounts[_currentAccountIdx];
-}
-
-- (void)setCurrentAccountIdx:(NSUInteger)currentAccountIdx {
-    NSAssert(currentAccountIdx < _accounts.count, @"bad currentAccountIdx %lu", currentAccountIdx);
+- (void)setCurrentAccountIdx:(NSInteger)currentAccountIdx {
+    NSAssert(currentAccountIdx == -1 || currentAccountIdx < _accounts.count, @"bad currentAccountIdx %lu", currentAccountIdx);
     
     _currentAccountIdx = currentAccountIdx;
 }
@@ -92,7 +99,7 @@
 - (void)removeAccount:(NSUInteger)accountIdx {
     NSAssert(accountIdx < _accounts.count, @"bad accountIdx %lu", accountIdx);
 
-    if(_currentAccountIdx >= accountIdx && accountIdx != 0) {
+    if(_currentAccountIdx >= accountIdx && _currentAccountIdx > 0) {
         _currentAccountIdx--;
     }
     
@@ -100,6 +107,27 @@
     [_accounts removeObjectAtIndex:accountIdx];
     
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
+}
+
+- (void)setCurrentAccount:(id<SMAbstractAccount>)account {
+    NSAssert(account, @"no account provided");
+    
+    if(account == _unifiedAccount) {
+        _currentAccountInactive = YES;
+    }
+    else {
+        _currentAccountIdx = NSNotFound;
+        
+        for(NSUInteger i = 0; i < _accounts.count; i++) {
+            if(_accounts[i] == account) {
+                _currentAccountInactive = NO;
+                _currentAccountIdx = i;
+                break;
+            }
+        }
+        
+        NSAssert(_currentAccountIdx != NSNotFound, @"provided mailbox not found");
+    }    
 }
 
 - (void)enableOrDisableAccountControls {

@@ -31,6 +31,13 @@
     MCOIMAPCapabilityOperation *_capabilitiesOp;
 }
 
+@synthesize messageListController = _messageListController;
+@synthesize searchResultsListController = _searchResultsListController;
+@synthesize mailboxController = _mailboxController;
+@synthesize outboxController = _outboxController;
+@synthesize mailbox = _mailbox;
+@synthesize database = _database;
+@synthesize localFolderRegistry = _localFolderRegistry;
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {

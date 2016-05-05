@@ -327,7 +327,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)updateMailboxFolderListForAccount:(SMUserAccount*)account {
+- (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) {
         SM_LOG_DEBUG(@"Updating folder list...");
@@ -336,20 +336,23 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         
         if(!_syncedFoldersInitialized) {
             SMFolder *inboxFolder = [[account mailbox] inboxFolder];
-            NSAssert(inboxFolder != nil, @"inboxFolder is nil");
-            
-            [[account messageListController] changeFolder:inboxFolder.fullName];
-            
-            [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
-            
-            for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
-                if(folder != inboxFolder) {
-                    SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
-                    [localFolder startLocalFolderSync];
+            if(inboxFolder != nil) {
+                [[account messageListController] changeFolder:inboxFolder.fullName];
+                
+                [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+                
+                for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
+                    if(folder != inboxFolder) {
+                        SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
+                        [localFolder startLocalFolderSync];
+                    }
                 }
+                
+                _syncedFoldersInitialized = YES;
             }
-            
-            _syncedFoldersInitialized = YES;
+            else {
+                SM_LOG_DEBUG(@"Folders not loaded yet");
+            }
         }
     }
 }
@@ -575,9 +578,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSObject<SMMailbox> *mailbox = appDelegate.currentMailbox;
     
-    SMFolder *trashFolder = [mailbox trashFolder];
+    SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
     [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder.fullName];

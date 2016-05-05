@@ -219,7 +219,7 @@
     NSString *nestingLabel = nil;
     if(_labelTable.selectedRow >= 0) {
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-        NSObject<SMMailbox> *mailbox = [account mailbox];
+        id<SMMailbox> mailbox = [account mailbox];
         SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
         
         nestingLabel = folder.fullName;
@@ -304,7 +304,7 @@
     }
     
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    NSObject<SMMailbox> *mailbox = [account mailbox];
+    id<SMMailbox> mailbox = [account mailbox];
     
     return mailbox.folders.count;
 }
@@ -313,7 +313,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
-    NSObject<SMMailbox> *mailbox = [account mailbox];
+    id<SMMailbox> mailbox = [account mailbox];
     SMFolder *folder = mailbox.folders[row];
     
     NSNumber *rowNumber = [NSNumber numberWithInteger:row];

@@ -32,7 +32,7 @@
     MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -149,30 +149,6 @@
     [[appController messageListViewController] reloadMessageList:preserveSelection];
 }
 
-- (void)updateMessageList {
-    //TODO:
-    //if(updateResult == SMMesssageStorageUpdateResultNone) {
-        // no updates, so no need to reload the message list
-    //  return;
-    //}
-    
-    // TODO: special case for flags changed in some cells only
-    
-    SM_LOG_DEBUG(@"some messages updated, the list will be reloaded");
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-
-    [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
-}
-
-- (void)updateMessageThreadView {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-    
-    [[appController messageThreadViewController] updateMessageThread];
-}
-
 - (void)cancelScheduledMessageListUpdate {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
 }
@@ -216,8 +192,11 @@
             NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
 
             if([_currentFolder.localName isEqualToString:localFolder]) {
-                [self updateMessageList];
-                [self updateMessageThreadView];
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                SMAppController *appController = [appDelegate appController];
+                
+                [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
+                [[appController messageThreadViewController] updateMessageThread];
             }
         }
     }

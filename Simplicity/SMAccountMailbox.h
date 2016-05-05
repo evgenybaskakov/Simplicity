@@ -11,9 +11,7 @@
 
 @interface SMAccountMailbox : SMUserAccountDataObject<SMMailbox>
 
-@property (readonly) NSArray *alwaysSyncedFolders;
-
-- (id)initWithUserAccount:(SMUserAccount *)account;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (BOOL)loadExistingFolders:(NSArray*)existingFolders;
 - (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;
 - (void)removeFolder:(NSString*)folderName;

@@ -14,6 +14,7 @@
 #import "SMPreferencesWindowController.h"
 #import "SMAccountsViewController.h"
 #import "SMMessageListViewController.h"
+#import "SMMailboxViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -39,6 +40,7 @@
 @property (weak) IBOutlet NSTextField *accountNameField;
 @property (weak) IBOutlet NSTextField *fullUserNameField;
 @property (weak) IBOutlet NSTextField *emailAddressField;
+@property (weak) IBOutlet NSButton *useUnifiedMailboxButton;
 
 #pragma mark Servers panel
 
@@ -153,6 +155,8 @@
         [self loadCurrentValues:-1];
         [self setAccountPanelEnabled:NO];
     }
+
+    _useUnifiedMailboxButton.state = ([[appDelegate preferencesController] shouldUseUnifiedMailbox]? NSOnState : NSOffState);
 }
 
 - (void)viewDidAppear {
@@ -354,17 +358,19 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    if(selectedAccount == appDelegate.currentAccountIdx) {
-        if(selectedAccount == 0) {
-            if(appDelegate.accounts.count > 1) {
-                [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
+    if(!appDelegate.currentAccountInactive) {
+        if(selectedAccount == appDelegate.currentAccountIdx) {
+            if(selectedAccount == 0) {
+                if(appDelegate.accounts.count > 1) {
+                    [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
+                }
+                else {
+                    SM_LOG_INFO(@"deleting the last account");
+                }
             }
             else {
-                SM_LOG_INFO(@"deleting the last account");
+                [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
             }
-        }
-        else {
-            [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
         }
     }
 
@@ -473,6 +479,22 @@
     
     // TODO: validate value
     [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
+}
+
+- (IBAction)checkUnifiedMailboxAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    BOOL useUnifiedAccount = (_useUnifiedMailboxButton.state == NSOnState);
+
+    [appDelegate preferencesController].shouldUseUnifiedMailbox = useUnifiedAccount;
+    
+    if(!useUnifiedAccount) {
+        if(appDelegate.accountsExist && appDelegate.currentAccountInactive) {
+            appDelegate.currentAccount = appDelegate.accounts[0];
+        }
+    }
+    
+    [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
 
 - (IBAction)enterImapServerAction:(id)sender {

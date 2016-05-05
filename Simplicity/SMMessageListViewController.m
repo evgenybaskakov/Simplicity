@@ -357,6 +357,10 @@
 }
 
 - (void)restoreScrollPosition {
+    if(_currentFolderScrollPosition == nil) {
+        return;
+    }
+    
     // First try to jump to one of previously visible selected rows.
     for(NSUInteger i = _currentFolderScrollPosition.visibleSelectedMessageThreadIndexes.firstIndex; i != NSNotFound; i = [_currentFolderScrollPosition.visibleSelectedMessageThreadIndexes indexGreaterThanIndex:i]) {
         if([self restoreScrollPositionAtRowIndex:i]) {

@@ -10,7 +10,7 @@
 
 @implementation SMUserAccountDataObject
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super init];
     
     if(self) {

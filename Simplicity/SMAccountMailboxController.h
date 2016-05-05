@@ -13,8 +13,7 @@
 
 @interface SMAccountMailboxController : SMUserAccountDataObject<SMMailboxController>
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
-- (void)initFolders;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)loadExistingFolders:(NSArray*)folderDescs;
 - (void)scheduleFolderListUpdate:(Boolean)now;
 - (void)stopFolderListUpdate;

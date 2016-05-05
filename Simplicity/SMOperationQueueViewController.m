@@ -20,12 +20,18 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    return [[appDelegate.currentAccount operationExecutor] operationsCount];
+    
+    if(appDelegate.currentAccountInactive) {
+        SM_LOG_WARNING(@"SMOperationQueueViewController not implemented for unified account");
+        return 0;
+    }
+    
+    return [[(SMUserAccount*)appDelegate.currentAccount operationExecutor] operationsCount];
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMOperationExecutor *opExecutor = [appDelegate.currentAccount operationExecutor];
+    SMOperationExecutor *opExecutor = [(SMUserAccount*)appDelegate.currentAccount operationExecutor];
     SMOperation *op = [opExecutor getOpAtIndex:row];
     
     NSAssert(op != nil, @"op is nil");

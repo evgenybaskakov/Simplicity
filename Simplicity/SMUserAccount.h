@@ -10,41 +10,27 @@
 
 #import <MailCore/MailCore.h>
 
+#import "SMAbstractAccount.h"
+
 @class SMPreferencesController;
-@class SMUserAccount;
-@class SMDatabase;
-@class SMAccountMailbox;
-@class SMLocalFolderRegistry;
-@class SMMessageListController;
-@class SMSearchResultsListController;
-@class SMAccountMailboxController;
-@class SMOutboxController;
 @class SMOperationExecutor;
 @class SMMessage;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
 
-@interface SMUserAccount : NSObject
+@interface SMUserAccount : NSObject<SMAbstractAccount>
 
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
 
-@property (readonly) SMDatabase *database;
-@property (readonly) SMLocalFolderRegistry *localFolderRegistry;
 @property (readonly) MCOIndexSet *imapServerCapabilities;
-@property (readonly) SMMessageListController *messageListController;
-@property (readonly) SMSearchResultsListController *searchResultsListController;
-@property (readonly) SMAccountMailboxController *mailboxController;
-@property (readonly) SMOutboxController *outboxController;
-@property (readonly) SMAccountMailbox *mailbox;
 @property (readonly) SMOperationExecutor *operationExecutor;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 - (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
-- (void)fetchMessageInlineAttachments:(SMMessage*)message;
 - (void)stopAccount;
 
 @end

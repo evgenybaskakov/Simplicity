@@ -72,7 +72,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
     NSMutableArray *_nonUrgentfetchMessageBodyOpQueue;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account localFolder:(SMLocalFolder*)localFolder {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(SMLocalFolder*)localFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -143,7 +143,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
                 return;
             }
             
-            MCOIMAPSession *session = [_account imapSession];
+            MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
             NSAssert(session, @"session is nil");
             
             MCOIMAPFetchContentOperation *imapOp = [session fetchMessageOperationWithFolder:remoteFolderName uid:uid urgent:urgent];

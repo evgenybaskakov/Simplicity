@@ -9,13 +9,19 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAbstractAccount.h"
+#import "SMAccountMailbox.h"
+#import "SMUnifiedAccount.h"
+#import "SMUnifiedMailbox.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
+#import "SMAccountImageSelection.h"
 #import "SMColorView.h"
 #import "SMFlippedView.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMOperationQueueWindowController.h"
 #import "SMAccountButtonViewController.h"
 #import "SMAccountsViewController.h"
@@ -24,6 +30,8 @@
     NSMutableArray<SMAccountButtonViewController*> *_accountButtonViewControllers;
     NSScrollView *_scrollView;
     NSView *_contentView;
+    BOOL _unifiedMailboxButtonShown;
+    BOOL _unifiedMailboxSelected;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -87,12 +95,23 @@
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    if([[appDelegate preferencesController] accountsCount] == 0) {
+    const NSInteger accountsCount = [[appDelegate preferencesController] accountsCount];
+    
+    if(accountsCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
+
+        _unifiedMailboxButtonShown = NO;
+        _unifiedMailboxSelected = NO;
 
         [_scrollView removeFromSuperview];
 
         return;
+    }
+    
+    _unifiedMailboxButtonShown = [[appDelegate preferencesController] shouldUseUnifiedMailbox]? YES : NO;
+    
+    if(!_unifiedMailboxButtonShown) {
+        _unifiedMailboxSelected = NO;
     }
     
     [_scrollView setFrame:self.view.frame];
@@ -101,18 +120,30 @@
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
-        for(NSUInteger i = 0; i < [[appDelegate preferencesController] accountsCount]; i++) {
+        for(NSInteger beginIdx = (_unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
             SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
             NSAssert(accountButtonViewController.view, @"button.view");
 
             accountButtonViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-            accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
             
-            if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:i];
+            if(i == -1) {
+                accountButtonViewController.accountName.stringValue = @"Unified Mailbox";
+                accountButtonViewController.accountImage.image = [SMAccountImageSelection defaultImage]; // TODO
             }
             else {
-                accountButtonViewController.accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:i];
+                if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] userEmail:i];
+                }
+                else {
+                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
+                }
+
+                NSString *accountImagePath = nil;
+                
+                accountImagePath = [[appDelegate preferencesController] accountImagePath:i];
+                NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+                
+                accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
             }
             
             NSColor *color = [NSColor whiteColor];
@@ -136,15 +167,9 @@
             
             [accountButtonViewController.accountName setTextColor:color];
             
-            NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:i];
-            NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-            
-            accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-            
             accountButtonViewController.accountButton.action = @selector(accountButtonAction:);
             accountButtonViewController.accountButton.target = self;
             accountButtonViewController.accountButton.tag = i;
-
             accountButtonViewController.accountIdx = i;
             
             [_accountButtonViewControllers addObject:accountButtonViewController];
@@ -155,7 +180,7 @@
     
     NSView *prevView = nil;
     for(NSUInteger i = 0; i < _accountButtonViewControllers.count; i++) {
-        if(i > 0) {
+        if(i != 0) {
             NSColor *separatorColor = [NSColor whiteColor];
             switch([[appDelegate preferencesController] mailboxTheme]) {
                 case SMMailboxTheme_Light:
@@ -228,14 +253,28 @@
         
         _accountButtonViewControllers[i].backgroundColor = buttonColor;
 
-        if(i == appDelegate.currentAccountIdx) {
-            _accountButtonViewControllers[i].trackMouse = NO;
+        BOOL mailboxExpanded = NO;
+        if(_unifiedMailboxButtonShown) {
+            if(i == 0 && _unifiedMailboxSelected) {
+                mailboxExpanded = YES;
+            }
+            else if(i != 0 && !_unifiedMailboxSelected) {
+                const NSInteger accountIdx = (NSInteger)i - 1;
+                
+                if(accountIdx == appDelegate.currentAccountIdx) {
+                    mailboxExpanded = YES;
+                }
+            }
         }
         else {
-            _accountButtonViewControllers[i].trackMouse = YES;
+            if(i == appDelegate.currentAccountIdx) {
+                mailboxExpanded = YES;
+            }
         }
         
-        if(i == appDelegate.currentAccountIdx) {
+        if(mailboxExpanded) {
+            _accountButtonViewControllers[i].trackMouse = NO;
+
             NSView *mailboxView = [[[appDelegate appController] mailboxViewController] view];
             mailboxView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -250,6 +289,8 @@
             prevView = mailboxView;
         }
         else {
+            _accountButtonViewControllers[i].trackMouse = YES;
+
             prevView = buttonView;
         }
     }
@@ -257,27 +298,56 @@
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
-- (void)changeAccountTo:(NSUInteger)accountIdx {
+- (void)changeAccountTo:(NSInteger)accountIdx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    BOOL updateViewControllers = NO;
     
-    if(appDelegate.currentAccountIdx != accountIdx) {
-        SM_LOG_INFO(@"switching to account %lu", accountIdx);
+    if(accountIdx == UNIFIED_ACCOUNT_IDX) {
+        if(!_unifiedMailboxSelected) {
+            _unifiedMailboxSelected = YES;
+            
+            [appDelegate setCurrentAccount:appDelegate.unifiedAccount];
+            
+            updateViewControllers = YES;
+        }
+    }
+    else {
+        if(appDelegate.currentAccountInactive || appDelegate.currentAccountIdx != accountIdx) {
+            SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
-        appDelegate.currentAccountIdx = accountIdx;
+            _unifiedMailboxSelected = NO;
+
+            [appDelegate setCurrentAccount:appDelegate.accounts[accountIdx]];
+
+            updateViewControllers = YES;
+        }
+    }
+    
+    if(updateViewControllers) {
+        SMAppController *appController = appDelegate.appController;
         
-        [[appDelegate appController] updateMailboxFolderListForAccount:appDelegate.currentAccount];
-        [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
-
-        [[[appDelegate currentAccount] messageListController] updateMessageList];
+        [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
+        [[appController operationQueueWindowController] reloadOperationQueue];
+        [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
+        [[appController messageThreadViewController] updateMessageThread];
         
         [self reloadAccountViews:NO];
     }
 }
 
 - (void)accountButtonAction:(id)sender {
-    NSUInteger clickedAccountIdx = [(NSButton*)sender tag];
+    NSInteger clickedAccountIdx = [(NSButton*)sender tag];
     
     [self changeAccountTo:clickedAccountIdx];
+}
+
+- (NSUInteger)accountIdxToAccountButtonIdx:(NSUInteger)accountIdx {
+    if(_unifiedMailboxButtonShown) {
+        return accountIdx + 1;
+    }
+    
+    return accountIdx;
 }
 
 - (void)accountSyncError:(NSNotification*)notification {
@@ -293,7 +363,8 @@
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
-        [_accountButtonViewControllers[accountIdx] showAttention:error];
+        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+        [_accountButtonViewControllers[buttonIdx] showAttention:error];
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);
@@ -311,7 +382,8 @@
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
-        [_accountButtonViewControllers[accountIdx] hideAttention];
+        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+        [_accountButtonViewControllers[buttonIdx] hideAttention];
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);

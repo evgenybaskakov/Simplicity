@@ -16,12 +16,15 @@
 @class SMAppController;
 @class SMUserAccount;
 @class SMPreferencesController;
+@class SMUnifiedAccount;
 @class SMUnifiedMailbox;
 @class SMUnifiedMailboxController;
 @class SMMessageComparators;
 @class SMAddressBookController;
 @class SMAttachmentStorage;
 @class SMImageRegistry;
+
+#define UNIFIED_ACCOUNT_IDX -1
 
 @interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
@@ -36,17 +39,19 @@
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMImageRegistry *imageRegistry;
-@property (readonly, nonatomic) SMUserAccount *currentAccount;
-@property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
-@property (readonly) SMUnifiedMailbox *unifiedMailbox;
-@property (readonly) NSObject<SMMailbox> *currentMailbox;
-@property (readonly) NSObject<SMMailboxController> *currentMailboxController;
+@property (readonly) SMUnifiedAccount *unifiedAccount;
 
-@property (nonatomic) NSUInteger currentAccountIdx;
-@property (nonatomic) BOOL accountsExist;
+@property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;
+@property (readonly, nonatomic) id<SMAbstractAccount> currentAccount;
+@property (readonly, nonatomic) id<SMMailbox> currentMailbox;
+@property (readonly, nonatomic) id<SMMailboxController> currentMailboxController;
+@property (readonly, nonatomic) NSInteger currentAccountIdx;
+@property (readonly, nonatomic) BOOL currentAccountInactive;
+@property (readonly, nonatomic) BOOL accountsExist;
 
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;
+- (void)setCurrentAccount:(id<SMAbstractAccount>)account;
 - (void)enableOrDisableAccountControls;
 
 @end

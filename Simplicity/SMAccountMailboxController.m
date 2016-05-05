@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
@@ -36,7 +37,7 @@
 
 @synthesize selectedFolder = _selectedFolder;
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -71,14 +72,14 @@
 
     // TODO: use the resulting dbOp
     [[_account database] loadDBFolders:^(NSArray *folders) {
-        [[_account mailboxController] loadExistingFolders:folders];
+        [(SMAccountMailboxController*)_account.mailboxController loadExistingFolders:folders];
     }];
 }
 
 - (void)updateFolders {
     SM_LOG_DEBUG(@"updating folders");
 
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)(SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     if(_fetchFoldersOp == nil) {
@@ -174,7 +175,7 @@
     SMAccountMailbox *mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
 
     NSString *fullFolderName = [mailbox constructFolderName:folderName parent:parentFolderName];
@@ -193,7 +194,7 @@
         else {
             SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
 
-            [[_account mailboxController] scheduleFolderListUpdate:YES];
+            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
         }
     }];
     
@@ -206,10 +207,10 @@
     if([oldFolderName isEqualToString:newFolderName])
         return;
 
-    NSObject<SMMailbox> *mailbox = [ _account mailbox ];
+    id<SMMailbox> mailbox = [ _account mailbox ];
     NSAssert(mailbox != nil, @"mailbox is nil");
     
-    MCOIMAPSession *session = [ _account imapSession ];
+    MCOIMAPSession *session = [ (SMUserAccount*)_account imapSession ];
     NSAssert(session != nil, @"session is nil");
     
     NSAssert(_renameFolderOp == nil, @"another create folder op exists");
@@ -223,22 +224,22 @@
         } else {
             SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
 
-            [[_account mailboxController] scheduleFolderListUpdate:YES];
+            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
         }
     }];
 }
 
 - (void)deleteFolder:(NSString*)folderName {
-    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[_account operationExecutor]];
+    SMOpDeleteFolder *op = [[SMOpDeleteFolder alloc] initWithRemoteFolder:folderName operationExecutor:[(SMUserAccount*)_account operationExecutor]];
         
     SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
     
     // 1. Delete the remote folder
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[_account operationExecutor] enqueueOperation:op];
+    [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox
-    [[_account mailbox] removeFolder:folderName];
+    [(SMAccountMailbox*)_account.mailbox removeFolder:folderName];
     [[[appDelegate appController] mailboxViewController] updateFolderListView];
     
     // 3. Delete the serialized folder from the database
@@ -285,7 +286,7 @@
         //
         // Keep certain folders always synced.
         //
-        for(SMFolder *folder in [[_account mailbox] alwaysSyncedFolders]) {
+        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
             SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folder.fullName];
             
             if([updatedFolderName isEqualToString:localFolder.localName]) {

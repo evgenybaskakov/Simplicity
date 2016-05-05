@@ -8,7 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
-#import "SMUserAccount.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMMessageListController.h"
 #import "SMFolder.h"
@@ -48,7 +48,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     NSComparator _accessTimeFolderComparator;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -104,8 +104,14 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
-    SMLocalFolder *localFolder = (kind == SMFolderKindSearch)? [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName] : [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
-
+    SMLocalFolder *localFolder = nil;
+    if(kind == SMFolderKindSearch) {
+        localFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+    }
+    else {
+        localFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+    }
+    
     folderEntry = [[FolderEntry alloc] initWithFolder:localFolder];
 
     [folderEntry updateTimestamp];

@@ -18,7 +18,7 @@
 @property (readonly) SMOperationQueue *smtpQueue;
 @property (readonly) SMOperationQueue *imapQueue;
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)setSmtpQueue:(SMOperationQueue *)smtpQueue imapQueue:(SMOperationQueue *)imapQueue;
 - (SMUserAccount*)account;
 - (void)enqueueOperation:(SMOperation*)op;

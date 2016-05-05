@@ -99,7 +99,7 @@
 - (void)removeAccount:(NSUInteger)accountIdx {
     NSAssert(accountIdx < _accounts.count, @"bad accountIdx %lu", accountIdx);
 
-    if(_currentAccountIdx >= accountIdx && accountIdx != 0) {
+    if(_currentAccountIdx >= accountIdx && _currentAccountIdx > 0) {
         _currentAccountIdx--;
     }
     

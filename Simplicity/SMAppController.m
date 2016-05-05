@@ -336,20 +336,23 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         
         if(!_syncedFoldersInitialized) {
             SMFolder *inboxFolder = [[account mailbox] inboxFolder];
-            NSAssert(inboxFolder != nil, @"inboxFolder is nil");
-            
-            [[account messageListController] changeFolder:inboxFolder.fullName];
-            
-            [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
-            
-            for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
-                if(folder != inboxFolder) {
-                    SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
-                    [localFolder startLocalFolderSync];
+            if(inboxFolder != nil) {
+                [[account messageListController] changeFolder:inboxFolder.fullName];
+                
+                [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+                
+                for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
+                    if(folder != inboxFolder) {
+                        SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
+                        [localFolder startLocalFolderSync];
+                    }
                 }
+                
+                _syncedFoldersInitialized = YES;
             }
-            
-            _syncedFoldersInitialized = YES;
+            else {
+                SM_LOG_DEBUG(@"Folders not loaded yet");
+            }
         }
     }
 }

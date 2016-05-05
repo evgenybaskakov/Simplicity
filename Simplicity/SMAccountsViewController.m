@@ -100,16 +100,23 @@
     if(accountsCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
 
+        _unifiedMailboxButtonShown = NO;
+        _unifiedMailboxSelected = NO;
+
         [_scrollView removeFromSuperview];
 
         return;
     }
     
+    _unifiedMailboxButtonShown = [[appDelegate preferencesController] shouldUseUnifiedMailbox]? YES : NO;
+    
+    if(!_unifiedMailboxButtonShown) {
+        _unifiedMailboxSelected = NO;
+    }
+    
     [_scrollView setFrame:self.view.frame];
     [self.view addSubview:_scrollView];
     
-    _unifiedMailboxButtonShown = accountsCount != 0 && [[appDelegate preferencesController] shouldUseUnifiedMailbox];
-
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 

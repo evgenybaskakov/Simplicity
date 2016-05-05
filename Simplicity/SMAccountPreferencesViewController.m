@@ -14,6 +14,7 @@
 #import "SMPreferencesWindowController.h"
 #import "SMAccountsViewController.h"
 #import "SMMessageListViewController.h"
+#import "SMMailboxViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
 
@@ -480,7 +481,18 @@
 
 - (IBAction)checkUnifiedMailboxAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [appDelegate preferencesController].shouldUseUnifiedMailbox = (_useUnifiedMailboxButton.state == NSOnState);
+    BOOL useUnifiedAccount = (_useUnifiedMailboxButton.state == NSOnState);
+
+    [appDelegate preferencesController].shouldUseUnifiedMailbox = useUnifiedAccount;
+    
+    if(!useUnifiedAccount) {
+        if(appDelegate.accountsExist && appDelegate.currentAccountInactive) {
+            appDelegate.currentAccount = appDelegate.accounts[0];
+        }
+    }
+    
+    [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+    [[[appDelegate appController] mailboxViewController] updateFolderListView];
 }
 
 - (IBAction)enterImapServerAction:(id)sender {

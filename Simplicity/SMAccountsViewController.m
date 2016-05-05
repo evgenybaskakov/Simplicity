@@ -335,6 +335,14 @@
     [self changeAccountTo:clickedAccountIdx];
 }
 
+- (NSUInteger)accountIdxToAccountButtonIdx:(NSUInteger)accountIdx {
+    if(_unifiedMailboxButtonShown) {
+        return accountIdx + 1;
+    }
+    
+    return accountIdx;
+}
+
 - (void)accountSyncError:(NSNotification*)notification {
     NSString *error;
     SMUserAccount *account;
@@ -348,7 +356,8 @@
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
-        [_accountButtonViewControllers[accountIdx] showAttention:error];
+        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+        [_accountButtonViewControllers[buttonIdx] showAttention:error];
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);
@@ -366,7 +375,8 @@
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
-        [_accountButtonViewControllers[accountIdx] hideAttention];
+        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+        [_accountButtonViewControllers[buttonIdx] hideAttention];
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);

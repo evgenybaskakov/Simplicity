@@ -21,14 +21,14 @@
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMLocalFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMSearchFolder.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
 @implementation SMMessageListController {
-    SMLocalFolder *_currentFolder;
-    SMLocalFolder *_prevNonSearchFolder;
+    id<SMAbstractLocalFolder> _currentFolder;
+    id<SMAbstractLocalFolder> _prevNonSearchFolder;
     MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
@@ -43,14 +43,14 @@
     return self;
 }
 
-- (SMLocalFolder*)currentLocalFolder {
+- (id<SMAbstractLocalFolder>)currentLocalFolder {
     return _currentFolder;
 }
 
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
-    if(_currentFolder != nil && ![_currentFolder isKindOfClass:[SMSearchFolder class]]) {
+    if(_currentFolder != nil && ![(NSObject*)_currentFolder isKindOfClass:[SMSearchFolder class]]) {
         _prevNonSearchFolder = _currentFolder;
     }
 
@@ -62,7 +62,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 
     if(folderName != nil) {
-        SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:folderName];
+        id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolder:folderName];
         
         if(localFolder == nil) {
             SMFolder *folder = [[_account mailbox] getFolderByName:folderName];
@@ -139,7 +139,7 @@
         [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     }
     
-    NSAssert([_currentFolder isKindOfClass:[SMSearchFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
+    NSAssert([(NSObject*)_currentFolder isKindOfClass:[SMSearchFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
     [(SMSearchFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateResults];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

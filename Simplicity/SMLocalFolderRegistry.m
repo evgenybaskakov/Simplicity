@@ -12,19 +12,20 @@
 #import "SMUserAccount.h"
 #import "SMMessageListController.h"
 #import "SMFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMSearchFolder.h"
 
 @interface FolderEntry : NSObject
-@property (readonly) SMLocalFolder *folder;
+@property (readonly) id<SMAbstractLocalFolder> folder;
 @property (readonly) NSTimeInterval timestamp;
-- (id)initWithFolder:(SMLocalFolder*)folder;
+- (id)initWithFolder:(id<SMAbstractLocalFolder>)folder;
 - (void)updateTimestamp;
 @end
 
 @implementation FolderEntry
-- (id)initWithFolder:(SMLocalFolder*)folder {
+- (id)initWithFolder:(id<SMAbstractLocalFolder>)folder {
     self = [super init];
     if(self) {
         _folder = folder;
@@ -65,9 +66,9 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     return self;
 }
 
-- (NSArray<SMLocalFolder*>*)localFolders {
+- (NSArray<id<SMAbstractLocalFolder>>*)localFolders {
     NSArray<FolderEntry*> *folderEntires = _folders.allValues;
-    NSMutableArray<SMLocalFolder*> *localFolders = [NSMutableArray array];
+    NSMutableArray<id<SMAbstractLocalFolder>> *localFolders = [NSMutableArray array];
     
     for(FolderEntry *entry in folderEntires) {
         [localFolders addObject:entry.folder];
@@ -84,7 +85,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     [_accessTimeSortedFolders insertObject:folderEntry atIndex:[self getFolderEntryIndex:folderEntry]];
 }
 
-- (SMLocalFolder*)getLocalFolder:(NSString*)localFolderName {
+- (id<SMAbstractLocalFolder>)getLocalFolder:(NSString*)localFolderName {
     FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
     
     if(folderEntry == nil)
@@ -99,16 +100,17 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     return [_accessTimeSortedFolders indexOfObject:folderEntry inSortedRange:NSMakeRange(0, _accessTimeSortedFolders.count) options:NSBinarySearchingInsertionIndex usingComparator:_accessTimeFolderComparator];
 }
 
-- (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
-    SMLocalFolder *localFolder = nil;
+    id<SMAbstractLocalFolder> localFolder = nil;
     if(kind == SMFolderKindSearch) {
         localFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
     }
     else {
+        // TODO: how do we create SMUnifiedLocalFolder?
         localFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
     }
     
@@ -141,7 +143,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     (void)FOLDER_MEMORY_RED_ZONE_KB;
 
     if(foldersMemoryKb >= FOLDER_MEMORY_YELLOW_ZONE_KB) {
-        SMLocalFolder *currentLocalFolder = [[_account messageListController] currentLocalFolder];
+        id<SMAbstractLocalFolder> currentLocalFolder = [[_account messageListController] currentLocalFolder];
         
         const uint64_t totalMemoryToReclaimKb = foldersMemoryKb - FOLDER_MEMORY_YELLOW_ZONE_KB;
         uint64_t totalMemoryReclaimedKb = 0;

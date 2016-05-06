@@ -606,7 +606,7 @@ const char *const mcoOpKinds[] = {
     SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
-    SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
+    id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
     [localFolder stopLocalFolderSync];
     
     searchDescriptor.searchStopped = true;

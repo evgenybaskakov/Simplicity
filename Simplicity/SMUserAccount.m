@@ -16,7 +16,7 @@
 #import "SMOperationExecutor.h"
 #import "SMAccountMailbox.h"
 #import "SMMessage.h"
-#import "SMLocalFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMSearchResultsListController.h"
@@ -228,9 +228,9 @@
     // 3. Stop all local folders sync
     // 4. Cancel and clear any pending ops in the IMAP and SMTP queues
  
-    NSArray<SMLocalFolder*> *localFolders = _localFolderRegistry.localFolders;
+    NSArray<id<SMAbstractLocalFolder>> *localFolders = _localFolderRegistry.localFolders;
     
-    for(SMLocalFolder *localFolder in localFolders) {
+    for(id<SMAbstractLocalFolder> localFolder in localFolders) {
         [localFolder stopLocalFolderSync];
     }
     

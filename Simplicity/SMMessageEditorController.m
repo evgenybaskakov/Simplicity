@@ -188,7 +188,7 @@
     SMFolder *draftsFolder = [[account mailbox] draftsFolder];
     NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
-    SMLocalFolder *draftsLocalFolder = [[account localFolderRegistry] getLocalFolder:draftsFolder.fullName];
+    SMLocalFolder *draftsLocalFolder = (SMLocalFolder*)[[account localFolderRegistry] getLocalFolder:draftsFolder.fullName];
     NSAssert(draftsLocalFolder != nil, @"no local drafts folder");
     
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController];

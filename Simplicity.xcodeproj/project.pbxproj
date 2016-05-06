@@ -612,6 +612,7 @@
 		80967AE81BF004F000ABF7AE /* icloud_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icloud_logo.png; sourceTree = "<group>"; };
 		80967AEA1BF0623700ABF7AE /* SMMailServiceProviderICloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderICloud.h; sourceTree = "<group>"; };
 		80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderICloud.m; sourceTree = "<group>"; };
+		809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAbstractLocalFolder.h; sourceTree = "<group>"; };
 		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
 		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
 		80A33AEB1C9930FA00243880 /* SMUserAccountDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccountDataObject.h; sourceTree = "<group>"; };
@@ -801,6 +802,7 @@
 			isa = PBXGroup;
 			children = (
 				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
+				809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */,
 				8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */,
 				8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */,
 				803A29AF1C02DC8800FF8D7C /* SMAddress.h */,

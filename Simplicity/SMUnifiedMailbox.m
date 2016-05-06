@@ -58,7 +58,7 @@
 }
 
 - (void)removeMailbox:(SMMailbox*)mailbox {
-    SM_FATAL(@"TODO");
+    SM_FATAL(@"TODO"); 
 }
 
 - (void)updateMailbox:(SMMailbox*)mailbox {

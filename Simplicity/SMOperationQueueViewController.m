@@ -21,7 +21,7 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    if(appDelegate.currentAccountInactive) {
+    if(appDelegate.currentAccountIsUnified) {
         SM_LOG_WARNING(@"SMOperationQueueViewController not implemented for unified account");
         return 0;
     }

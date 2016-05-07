@@ -11,15 +11,15 @@
 #import "SMUserAccountDataObject.h"
 #import "SMFolder.h"
 
-@class SMLocalFolder;
+@protocol SMAbstractLocalFolder;
 
 @interface SMLocalFolderRegistry : SMUserAccountDataObject
 
-@property (readonly) NSArray<SMLocalFolder*> *localFolders;
+@property (readonly) NSArray<id<SMAbstractLocalFolder>> *localFolders;
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (SMLocalFolder*)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
-- (SMLocalFolder*)getLocalFolder:(NSString*)folderName;
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id<SMAbstractLocalFolder>)getLocalFolder:(NSString*)folderName;
 - (void)removeLocalFolder:(NSString*)folderName;
 - (void)keepFoldersMemoryLimit;
 

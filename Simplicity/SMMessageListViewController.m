@@ -27,7 +27,7 @@
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMAddressBookController.h"
-#import "SMLocalFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -98,7 +98,7 @@
     
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSInteger messageThreadsCount = [currentFolder.messageStorage messageThreadsCount];
 
     SM_LOG_DEBUG(@"self %@, tableView %@, its datasource %@, view %@, messagesTableView %@, message threads count %ld", self, tableView, [tableView dataSource], [self view], _messageListTableView, messageThreadsCount);
@@ -134,7 +134,7 @@
         if(selectedRow >= 0) {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-            SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+            id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
             NSAssert(currentFolder != nil, @"bad corrent folder");
             
             _selectedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:selectedRow localFolder:[currentFolder localName]];
@@ -164,7 +164,7 @@
     } else {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+        id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"bad corrent folder");
         
         // TODO: optimize later
@@ -199,7 +199,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
 
     if(messageThread == nil) {
@@ -379,7 +379,7 @@
 - (BOOL)restoreScrollPositionAtRowIndex:(NSUInteger)idx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     
     if(currentFolder == nil) {
         return NO;
@@ -421,7 +421,7 @@
 - (void)reloadMessageList:(Boolean)preserveSelection {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which
@@ -512,7 +512,7 @@
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
 
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     if(currentFolder != nil && [currentFolder messageHeadersAreBeingLoaded] == NO) {
         [currentFolder increaseLocalFolderCapacity];
         [messageListController scheduleMessageListUpdate:YES];
@@ -544,7 +544,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) {
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+        id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
         
         if(currentFolder != nil && [currentFolder.localName isEqualToString:localFolder]) {
             SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadById:threadId localFolder:currentFolder.localName];
@@ -595,7 +595,7 @@
 
     NSArray *messageThreadsToMove = _selectedMessageThread != nil? [NSArray arrayWithObject:_selectedMessageThread] : _multipleSelectedMessageThreads.count > 0? [NSArray arrayWithArray:_multipleSelectedMessageThreads] : [NSArray arrayWithObject:_draggedMessageThread];
     
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
 
     if([currentFolder moveMessageThreads:messageThreadsToMove toRemoteFolder:remoteFolderName]) {
@@ -650,7 +650,7 @@
 
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-            SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+            id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
             NSAssert(currentFolder != nil, @"no current folder");
 
             _draggedMessageThread = [currentFolder.messageStorage messageThreadAtIndexByDate:rowIndexes.firstIndex localFolder:[currentFolder localName]];
@@ -688,7 +688,7 @@
 
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
     
     NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
@@ -739,7 +739,7 @@
     
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row localFolder:[currentLocalFolder localName]];
     
     NSAssert(messageThread != nil, @"row %ld, message thread is nil", row);
@@ -775,7 +775,7 @@
 - (NSMenu*)menuForRow:(NSInteger)row {
     SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
 
     NSMutableArray *messageThreads = [NSMutableArray array];
     
@@ -867,7 +867,7 @@
 - (void)menuActionAddStar:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
@@ -885,7 +885,7 @@
 - (void)menuActionRemoveStar:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
@@ -903,7 +903,7 @@
 - (void)markMessageThreadsAsUnseen:(Boolean)unseen {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentLocalFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
     for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
         uint64_t threadId = [threadIdNumber unsignedLongLongValue];
@@ -926,7 +926,7 @@
 - (void)openMessageInWindow:(id)sender {
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *localFolder = messageListController.currentLocalFolder;
+    id<SMAbstractLocalFolder> localFolder = messageListController.currentLocalFolder;
     
     if(localFolder == nil) {
         SM_LOG_INFO(@"no local folder");

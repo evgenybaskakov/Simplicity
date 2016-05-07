@@ -10,6 +10,7 @@
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
 #import "SMUnifiedMailboxController.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMSearchResultsListController.h"
 #import "SMMessageListController.h"
 #import "SMOutboxController.h"
@@ -28,7 +29,7 @@
     
     if(self) {
         _mailbox = [[SMUnifiedMailbox alloc] init];
-        _localFolderRegistry = nil; // TODO
+        _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];
         _mailboxController = [[SMUnifiedMailboxController alloc] init];
@@ -38,6 +39,10 @@
     SM_LOG_DEBUG(@"user account initialized");
     
     return self;
+}
+
+- (BOOL)unified {
+    return YES;
 }
 
 - (SMDatabase*)database {

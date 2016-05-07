@@ -313,7 +313,7 @@
         }
     }
     else {
-        if(appDelegate.currentAccountInactive || appDelegate.currentAccountIdx != accountIdx) {
+        if(appDelegate.currentAccountIsUnified || appDelegate.currentAccountIdx != accountIdx) {
             SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
             _unifiedMailboxSelected = NO;

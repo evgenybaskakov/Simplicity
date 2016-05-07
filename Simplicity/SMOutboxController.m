@@ -16,7 +16,7 @@
 #import "SMOpDeleteMessages.h"
 #import "SMAccountMailbox.h"
 #import "SMFolder.h"
-#import "SMLocalFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessage.h"
 #import "SMOperationQueue.h"
@@ -51,7 +51,7 @@
             opSendMessage.postActionSelector = selector;
 
             SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-            SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+            id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
             NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
             [outboxLocalFolder addMessage:opSendMessage.outgoingMessage];
@@ -63,7 +63,7 @@
     SM_LOG_DEBUG(@"Sending message");
     
     SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder addMessage:outgoingMessage];
@@ -81,7 +81,7 @@
     SM_LOG_DEBUG(@"Removing message");
 
     SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-    SMLocalFolder *outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
+    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolder:outboxFolder.fullName];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder removeMessage:message];

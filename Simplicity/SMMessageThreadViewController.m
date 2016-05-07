@@ -21,7 +21,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessagePlaceholderViewController.h"
-#import "SMLocalFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWebView.h"
@@ -902,7 +902,7 @@ static const CGFloat CELL_SPACING = -1;
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
         
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+        id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
         NSAssert(currentFolder != nil, @"no current folder");
         
         if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
@@ -926,7 +926,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
     [currentFolder setMessageUnseen:cell.message unseen:!cell.message.unseen];
@@ -968,7 +968,7 @@ static const CGFloat CELL_SPACING = -1;
     SMMessageThreadCell *cell = _cells[cellIdx];
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    SMLocalFolder *currentFolder = [messageListController currentLocalFolder];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
     [currentFolder setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];

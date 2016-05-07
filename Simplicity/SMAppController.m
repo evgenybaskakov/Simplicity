@@ -32,6 +32,7 @@
 #import "SMAccountMailboxController.h"
 #import "SMOutboxController.h"
 #import "SMFolder.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMLocalFolder.h"
 #import "SMMessageThread.h"
 #import "SMNewAccountWindowController.h"
@@ -343,7 +344,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
                 
                 for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
                     if(folder != inboxFolder) {
-                        SMLocalFolder *localFolder = [[account localFolderRegistry] getLocalFolder:folder.fullName];
+                        SMLocalFolder *localFolder = (SMLocalFolder*)[[account localFolderRegistry] getLocalFolder:folder.fullName];
                         [localFolder startLocalFolderSync];
                     }
                 }
@@ -809,7 +810,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 - (void)updateFolderStats:(NSString*)localFolder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
-    SMLocalFolder *inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolder:inboxFolder.fullName];
+    id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolder:inboxFolder.fullName];
     
     if([localFolder isEqualToString:inboxLocalFolder.localName]) {
         NSString *messageCountString;

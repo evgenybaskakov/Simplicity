@@ -38,6 +38,16 @@
     NSMutableArray<SMDatabaseOp*> *_dbOps;
 }
 
+@synthesize kind = _kind;
+@synthesize messageStorage = _messageStorage;
+@synthesize localName = _localName;
+@synthesize remoteFolderName = _remoteFolderName;
+@synthesize unseenMessagesCount = _unseenMessagesCount;
+@synthesize totalMessagesCount = _totalMessagesCount;
+@synthesize messageHeadersFetched = _messageHeadersFetched;
+@synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
+@synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
+
 - (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];
     
@@ -662,7 +672,7 @@
                 [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
                 SMFolder *trashFolder = [[_account mailbox] trashFolder];
-                SMLocalFolder *trashLocalFolder = [[_account localFolderRegistry] getLocalFolder:trashFolder.fullName];
+                SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolder:trashFolder.fullName];
 
                 NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
                 [trashLocalFolder addMessage:message];

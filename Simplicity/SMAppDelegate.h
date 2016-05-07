@@ -46,7 +46,7 @@
 @property (readonly, nonatomic) id<SMMailbox> currentMailbox;
 @property (readonly, nonatomic) id<SMMailboxController> currentMailboxController;
 @property (readonly, nonatomic) NSInteger currentAccountIdx;
-@property (readonly, nonatomic) BOOL currentAccountInactive;
+@property (readonly, nonatomic) BOOL currentAccountIsUnified;
 @property (readonly, nonatomic) BOOL accountsExist;
 
 - (void)addAccount;

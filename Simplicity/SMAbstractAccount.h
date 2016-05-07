@@ -20,6 +20,7 @@
 
 @protocol SMAbstractAccount
 
+@property (readonly) BOOL unified;
 @property (readonly) SMMessageListController *messageListController;
 @property (readonly) SMSearchResultsListController *searchResultsListController;
 @property (readonly) SMOutboxController *outboxController;

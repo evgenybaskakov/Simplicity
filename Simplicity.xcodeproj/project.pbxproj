@@ -244,6 +244,7 @@
 		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
 		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
+		80FBF54C1CDDB8B30041E230 /* SMUnifiedLocalFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -705,6 +706,8 @@
 		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
 		80F7EA7C1B81B0C80000992E /* SMStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMStringUtils.h; sourceTree = "<group>"; };
 		80F7EA7D1B81B0C80000992E /* SMStringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMStringUtils.m; sourceTree = "<group>"; };
+		80FBF54A1CDDB8B30041E230 /* SMUnifiedLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedLocalFolder.h; sourceTree = "<group>"; };
+		80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedLocalFolder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -901,6 +904,8 @@
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
 				805613DA1CD87B900055E3E9 /* SMUnifiedAccount.h */,
 				805613DB1CD87B910055E3E9 /* SMUnifiedAccount.m */,
+				80FBF54A1CDDB8B30041E230 /* SMUnifiedLocalFolder.h */,
+				80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */,
 				808BC0491CD331630030E08E /* SMUnifiedMailbox.h */,
 				808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */,
 				803932681C97D6E700CE38CB /* SMUserAccount.h */,
@@ -1533,6 +1538,7 @@
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				0002A0B517D1BB0100EA4AFF /* SMAppController.m in Sources */,
 				800C679D1B49A89B00272D60 /* MKColorWell+Bindings.m in Sources */,
+				80FBF54C1CDDB8B30041E230 /* SMUnifiedLocalFolder.m in Sources */,
 				800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */,
 				801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */,
 				80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */,

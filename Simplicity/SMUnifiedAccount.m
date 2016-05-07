@@ -41,6 +41,10 @@
     return self;
 }
 
+- (BOOL)unified {
+    return YES;
+}
+
 - (SMDatabase*)database {
     SM_FATAL(@"no database instance in the unified account");
     return nil;

@@ -13,6 +13,8 @@
 #import "SMMessageListController.h"
 #import "SMFolder.h"
 #import "SMAbstractLocalFolder.h"
+#import "SMUnifiedLocalFolder.h"
+#import "SMUnifiedAccount.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMSearchFolder.h"
@@ -106,12 +108,22 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
     id<SMAbstractLocalFolder> localFolder = nil;
-    if(kind == SMFolderKindSearch) {
-        localFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+    if(_account.unified) {
+        if(kind == SMFolderKindSearch) {
+            SM_FATAL(@"TODO");
+        }
+        else {
+            localFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName kind:kind];
+        }
     }
     else {
-        // TODO: how do we create SMUnifiedLocalFolder?
-        localFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+        if(kind == SMFolderKindSearch) {
+            // TODO: how do we create SMUnifiedLocalFolder?
+            localFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+        }
+        else {
+            localFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+        }
     }
     
     folderEntry = [[FolderEntry alloc] initWithFolder:localFolder];

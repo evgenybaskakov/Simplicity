@@ -358,7 +358,7 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    if(!appDelegate.currentAccountInactive) {
+    if(!appDelegate.currentAccountIsUnified) {
         if(selectedAccount == appDelegate.currentAccountIdx) {
             if(selectedAccount == 0) {
                 if(appDelegate.accounts.count > 1) {
@@ -488,7 +488,7 @@
     [appDelegate preferencesController].shouldUseUnifiedMailbox = useUnifiedAccount;
     
     if(!useUnifiedAccount) {
-        if(appDelegate.accountsExist && appDelegate.currentAccountInactive) {
+        if(appDelegate.accountsExist && appDelegate.currentAccountIsUnified) {
             appDelegate.currentAccount = appDelegate.accounts[0];
         }
     }

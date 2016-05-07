@@ -31,6 +31,7 @@
     MCOIMAPCapabilityOperation *_capabilitiesOp;
 }
 
+@synthesize unified = _unified;
 @synthesize messageListController = _messageListController;
 @synthesize searchResultsListController = _searchResultsListController;
 @synthesize mailboxController = _mailboxController;

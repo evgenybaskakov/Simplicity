@@ -65,7 +65,7 @@
         return nil;
     }
     
-    if(_currentAccountInactive) {
+    if(_currentAccountIsUnified) {
         return _unifiedAccount;
     }
     
@@ -113,14 +113,14 @@
     NSAssert(account, @"no account provided");
     
     if(account == _unifiedAccount) {
-        _currentAccountInactive = YES;
+        _currentAccountIsUnified = YES;
     }
     else {
         _currentAccountIdx = NSNotFound;
         
         for(NSUInteger i = 0; i < _accounts.count; i++) {
             if(_accounts[i] == account) {
-                _currentAccountInactive = NO;
+                _currentAccountIsUnified = NO;
                 _currentAccountIdx = i;
                 break;
             }

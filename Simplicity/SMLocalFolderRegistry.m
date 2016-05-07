@@ -107,26 +107,56 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
     
-    id<SMAbstractLocalFolder> localFolder = nil;
+    id<SMAbstractLocalFolder> newLocalFolder = nil;
+    
     if(_account.unified) {
         if(kind == SMFolderKindSearch) {
             SM_FATAL(@"TODO");
         }
         else {
-            localFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName kind:kind];
+            SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName kind:kind];
+
+            // Go through user accounts and attach their local folder to this unified one
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            
+            for(SMUserAccount *userAccount in appDelegate.accounts) {
+                SMLocalFolder *userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolder:localFolderName];
+                
+                if(userLocalFolder) {
+                    SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder);
+                    
+                    [unifiedLocalFolder attachLocalFolder:userLocalFolder];
+                }
+            }
+            
+            newLocalFolder = unifiedLocalFolder;
         }
     }
     else {
+        SMLocalFolder *userLocalFolder;
+        
         if(kind == SMFolderKindSearch) {
             // TODO: how do we create SMUnifiedLocalFolder?
-            localFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+            userLocalFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
         }
         else {
-            localFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            userLocalFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
         }
+        
+        // Attach the new local folder to the unified account
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMUnifiedLocalFolder *unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolder:localFolderName];
+        
+        if(unifiedLocalFolder) {
+            SM_LOG_INFO(@"attaching new local folder %@ to the unified account", localFolderName);
+            
+            [unifiedLocalFolder attachLocalFolder:userLocalFolder];
+        }
+        
+        newLocalFolder = userLocalFolder;
     }
     
-    folderEntry = [[FolderEntry alloc] initWithFolder:localFolder];
+    folderEntry = [[FolderEntry alloc] initWithFolder:newLocalFolder];
 
     [folderEntry updateTimestamp];
 

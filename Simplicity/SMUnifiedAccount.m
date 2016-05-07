@@ -36,8 +36,6 @@
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
     }
     
-    SM_LOG_DEBUG(@"user account initialized");
-    
     return self;
 }
 

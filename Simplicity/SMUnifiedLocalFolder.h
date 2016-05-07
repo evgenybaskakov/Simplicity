@@ -16,5 +16,6 @@
 @interface SMUnifiedLocalFolder : SMUserAccountDataObject<SMAbstractLocalFolder>
 
 - (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind;
+- (void)attachLocalFolder:(id<SMAbstractLocalFolder>)localFolder;
 
 @end

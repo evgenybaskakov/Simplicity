@@ -8,6 +8,7 @@
 
 #import "SMLog.h"
 #import "SMAbstractAccount.h"
+#import "SMLocalFolder.h"
 #import "SMUnifiedLocalFolder.h"
 
 @implementation SMUnifiedLocalFolder
@@ -33,6 +34,10 @@
     }
     
     return self;
+}
+
+- (void)attachLocalFolder:(id<SMAbstractLocalFolder>)localFolder {
+    SM_FATAL(@"TODO: attaching localFolder %@", localFolder.localName);
 }
 
 - (void)increaseLocalFolderCapacity {

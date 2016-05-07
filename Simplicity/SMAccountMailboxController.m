@@ -15,6 +15,8 @@
 #import "SMAppController.h"
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
+#import "SMUnifiedAccount.h"
+#import "SMUnifiedLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolder.h"
 #import "SMDatabase.h"

@@ -19,7 +19,8 @@
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
-- (id<SMAbstractLocalFolder>)getLocalFolder:(NSString*)folderName;
+- (id<SMAbstractLocalFolder>)getLocalFolderByName:(NSString*)folderName;
+- (id<SMAbstractLocalFolder>)getLocalFolderByKind:(SMFolderKind)kind;
 - (void)removeLocalFolder:(NSString*)folderName;
 - (void)keepFoldersMemoryLimit;
 

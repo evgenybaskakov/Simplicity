@@ -46,8 +46,8 @@ static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 200 * 1024;
 static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
 
 @implementation SMLocalFolderRegistry {
-    NSMutableDictionary *_folders;
-    NSMutableOrderedSet *_accessTimeSortedFolders;
+    NSMutableDictionary<NSString*, FolderEntry*> *_folders;
+    NSMutableOrderedSet<FolderEntry*> *_accessTimeSortedFolders;
     NSComparator _accessTimeFolderComparator;
 }
 
@@ -87,7 +87,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     [_accessTimeSortedFolders insertObject:folderEntry atIndex:[self getFolderEntryIndex:folderEntry]];
 }
 
-- (id<SMAbstractLocalFolder>)getLocalFolder:(NSString*)localFolderName {
+- (id<SMAbstractLocalFolder>)getLocalFolderByName:(NSString*)localFolderName {
     FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
     
     if(folderEntry == nil)
@@ -96,6 +96,18 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     [self updateFolderEntryAccessTime:folderEntry];
     
     return folderEntry.folder;
+}
+
+- (id<SMAbstractLocalFolder>)getLocalFolderByKind:(SMFolderKind)kind {
+    NSAssert(kind != SMFolderKindRegular, @"regular folders should not be accessed by kind");
+    
+    for(FolderEntry *folderEntry in _folders.allValues) {
+        if(folderEntry.folder.kind == kind) {
+            return folderEntry.folder;
+        }
+    }
+    
+    return nil;
 }
 
 - (NSUInteger)getFolderEntryIndex:(FolderEntry*)folderEntry {
@@ -116,13 +128,22 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
         else {
             SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName kind:kind];
 
-            // Go through user accounts and attach their local folder to this unified one
+            // Go through user accounts and attach their local folder to this unified folder, using the appropriate kind and name
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             
             for(SMUserAccount *userAccount in appDelegate.accounts) {
-                SMLocalFolder *userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolder:localFolderName];
+                SMLocalFolder *userLocalFolder;
                 
+                if(kind == SMFolderKindRegular) {
+                    userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByName:localFolderName];
+                }
+                else {
+                    userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByKind:kind];
+                }
+
                 if(userLocalFolder) {
+                    NSAssert([userLocalFolder isKindOfClass:[SMLocalFolder class]], @"bad local folder type");
+                    
                     SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder);
                     
                     [unifiedLocalFolder attachLocalFolder:userLocalFolder];
@@ -145,7 +166,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
         
         // Attach the new local folder to the unified account
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMUnifiedLocalFolder *unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolder:localFolderName];
+        SMUnifiedLocalFolder *unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByName:localFolderName];
         
         if(unifiedLocalFolder) {
             SM_LOG_INFO(@"attaching new local folder %@ to the unified account", localFolderName);

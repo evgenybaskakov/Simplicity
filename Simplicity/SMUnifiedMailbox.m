@@ -66,7 +66,16 @@
 }
 
 - (SMFolder*)getFolderByName:(NSString*)folderName {
-    SM_LOG_WARNING(@"TODO: folder '%@'", folderName);
+    for(SMFolder *f in _folders) {
+        if([f.fullName isEqualToString:folderName])
+            return f;
+    }
+    
+    for(SMFolder *f in _mainFolders) {
+        if([f.fullName isEqualToString:folderName])
+            return f;
+    }
+    
     return nil;
 }
 

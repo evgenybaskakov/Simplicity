@@ -62,7 +62,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self]; // cancel scheduled message list update
 
     if(folderName != nil) {
-        id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolder:folderName];
+        id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolderByName:folderName];
         
         if(localFolder == nil) {
             SMFolder *folder = [[_account mailbox] getFolderByName:folderName];

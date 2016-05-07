@@ -132,7 +132,7 @@
     SMAccountMailbox *mailbox = [_account mailbox];
     
     for(SMFolder *folder in mailbox.mainFolders) {
-        if([localFolderRegistry getLocalFolder:folder.fullName] == nil) {
+        if([localFolderRegistry getLocalFolderByName:folder.fullName] == nil) {
             if(folder.kind == SMFolderKindOutbox) {
                 // TODO: workaround for possible "Outbox" folder name collision
                 [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind syncWithRemoteFolder:NO];
@@ -256,7 +256,7 @@
 
 - (NSUInteger)totalMessagesCount:(NSString*)folderName {
     SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolder:folderName];
+    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolderByName:folderName];
     
     if(localFolder != nil) {
         return localFolder.totalMessagesCount;
@@ -268,7 +268,7 @@
 
 - (NSUInteger)unseenMessagesCount:(NSString*)folderName {
     SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolder:folderName];
+    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolderByName:folderName];
     
     if(localFolder != nil) {
         return localFolder.unseenMessagesCount;
@@ -289,7 +289,7 @@
         // Keep certain folders always synced.
         //
         for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
-            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolder:folder.fullName];
+            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
             
             if([updatedFolderName isEqualToString:localFolder.localName]) {
                 [localFolder startLocalFolderSync];

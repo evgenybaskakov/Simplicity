@@ -672,7 +672,7 @@
                 [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
                 SMFolder *trashFolder = [[_account mailbox] trashFolder];
-                SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolder:trashFolder.fullName];
+                SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:trashFolder.fullName];
 
                 NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
                 [trashLocalFolder addMessage:message];

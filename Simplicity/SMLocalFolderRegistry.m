@@ -144,7 +144,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
                 if(userLocalFolder) {
                     NSAssert([userLocalFolder isKindOfClass:[SMLocalFolder class]], @"bad local folder type");
                     
-                    SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder);
+                    SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder.localName);
                     
                     [unifiedLocalFolder attachLocalFolder:userLocalFolder];
                 }

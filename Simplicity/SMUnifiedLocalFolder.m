@@ -11,10 +11,12 @@
 #import "SMLocalFolder.h"
 #import "SMUnifiedLocalFolder.h"
 
-@implementation SMUnifiedLocalFolder
+@implementation SMUnifiedLocalFolder {
+    NSMutableArray<id<SMAbstractLocalFolder>> *_attachedLocalFolders;
+}
 
 @synthesize kind = _kind;
-@synthesize messageStorage = _messageStorage;
+//@synthesize messageStorage = _messageStorage;
 @synthesize localName = _localName;
 @synthesize remoteFolderName = _remoteFolderName;
 @synthesize unseenMessagesCount = _unseenMessagesCount;
@@ -31,13 +33,27 @@
         
         _localName = localFolderName;
         _kind = kind;
+        _attachedLocalFolders = [NSMutableArray array];
     }
     
     return self;
 }
 
 - (void)attachLocalFolder:(id<SMAbstractLocalFolder>)localFolder {
-    SM_FATAL(@"TODO: attaching localFolder %@", localFolder.localName);
+    //SM_FATAL(@"TODO: attaching localFolder %@", localFolder.localName);
+    
+    NSAssert([_attachedLocalFolders indexOfObject:localFolder] == NSNotFound, @"folder %@ already attached", localFolder.localName);
+    
+    [_attachedLocalFolders addObject:localFolder];
+    
+    // TODO: Refresh message storage
+}
+
+- (SMMessageStorage*)messageStorage {
+    
+    // TODO
+    
+    return _attachedLocalFolders.count > 0? [_attachedLocalFolders[0] messageStorage] : nil;
 }
 
 - (void)increaseLocalFolderCapacity {

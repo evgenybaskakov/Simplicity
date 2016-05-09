@@ -23,6 +23,8 @@
     SMMessageThreadCollection *_messageThreadCollection;
 }
 
+@synthesize messageThreadsCount = _messageThreadsCount;
+
 - (id)initWithUserAccount:(SMUserAccount *)account {
     self = [super initWithUserAccount:account];
 

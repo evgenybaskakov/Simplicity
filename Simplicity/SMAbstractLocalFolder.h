@@ -10,13 +10,14 @@
 
 #import "SMFolder.h"
 
+@protocol SMAbstractMessageStorage;
+
 @class SMMessage;
 @class SMMessageStorage;
 
 @protocol SMAbstractLocalFolder
 
 @property (readonly) SMFolderKind kind;
-@property (readonly) SMMessageStorage *messageStorage;
 @property (readonly) NSString *localName;
 @property (readonly) NSString *remoteFolderName;
 @property (readonly) NSUInteger unseenMessagesCount;
@@ -24,6 +25,8 @@
 @property (readonly) NSUInteger messageHeadersFetched;
 @property (readonly) NSUInteger maxMessagesPerThisFolder;
 @property (readonly) Boolean syncedWithRemoteFolder;
+
+@property (readonly) id<SMAbstractMessageStorage> messageStorage;
 
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;

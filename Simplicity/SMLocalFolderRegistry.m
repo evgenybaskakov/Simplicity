@@ -126,7 +126,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
             SM_FATAL(@"TODO");
         }
         else {
-            SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName kind:kind];
+            SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:(SMUnifiedAccount*)_account localFolderName:localFolderName kind:kind];
 
             // Go through user accounts and attach their local folder to this unified folder, using the appropriate kind and name
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

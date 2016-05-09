@@ -7,8 +7,9 @@
 //
 
 #import "SMLog.h"
-#import "SMAbstractAccount.h"
 #import "SMLocalFolder.h"
+#import "SMUnifiedAccount.h"
+#import "SMUnifiedMessageStorage.h"
 #import "SMUnifiedLocalFolder.h"
 
 @implementation SMUnifiedLocalFolder {
@@ -16,7 +17,7 @@
 }
 
 @synthesize kind = _kind;
-//@synthesize messageStorage = _messageStorage;
+@synthesize messageStorage = _messageStorage;
 @synthesize localName = _localName;
 @synthesize remoteFolderName = _remoteFolderName;
 @synthesize unseenMessagesCount = _unseenMessagesCount;
@@ -25,21 +26,20 @@
 @synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
 
-- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind {
+- (id)initWithAccount:(SMUnifiedAccount*)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind {
     self = [super initWithUserAccount:account];
     
     if(self) {
-        NSAssert(account.unified, @"unified local folder can only be created for the unified account");
-        
         _localName = localFolderName;
         _kind = kind;
         _attachedLocalFolders = [NSMutableArray array];
+        _messageStorage = [[SMUnifiedMessageStorage alloc] initWithUserAccount:account];
     }
     
     return self;
 }
 
-- (void)attachLocalFolder:(id<SMAbstractLocalFolder>)localFolder {
+- (void)attachLocalFolder:(SMLocalFolder*)localFolder {
     //SM_FATAL(@"TODO: attaching localFolder %@", localFolder.localName);
     
     NSAssert([_attachedLocalFolders indexOfObject:localFolder] == NSNotFound, @"folder %@ already attached", localFolder.localName);
@@ -47,13 +47,6 @@
     [_attachedLocalFolders addObject:localFolder];
     
     // TODO: Refresh message storage
-}
-
-- (SMMessageStorage*)messageStorage {
-    
-    // TODO
-    
-    return _attachedLocalFolders.count > 0? [_attachedLocalFolders[0] messageStorage] : nil;
 }
 
 - (void)increaseLocalFolderCapacity {

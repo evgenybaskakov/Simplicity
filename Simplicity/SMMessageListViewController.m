@@ -459,7 +459,7 @@
         // after all is done, fix the currently selected
         // message cell, if needed
         if(preserveSelection) {
-            SMMessageStorage *messageStorage = currentFolder.messageStorage;
+            id<SMAbstractMessageStorage> messageStorage = currentFolder.messageStorage;
             
             if(_selectedMessageThread != nil) {
                 NSAssert(_multipleSelectedMessageThreads.count == 0, @"multiple messages selection not empty");

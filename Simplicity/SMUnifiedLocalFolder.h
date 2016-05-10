@@ -19,5 +19,6 @@
 
 - (id)initWithAccount:(SMUnifiedAccount*)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind;
 - (void)attachLocalFolder:(SMLocalFolder*)localFolder;
+- (void)detachLocalFolder:(SMLocalFolder*)localFolder;
 
 @end

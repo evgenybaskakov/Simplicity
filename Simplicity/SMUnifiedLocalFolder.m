@@ -13,7 +13,7 @@
 #import "SMUnifiedLocalFolder.h"
 
 @implementation SMUnifiedLocalFolder {
-    NSMutableArray<id<SMAbstractLocalFolder>> *_attachedLocalFolders;
+    NSMutableArray<SMLocalFolder*> *_attachedLocalFolders;
 }
 
 @synthesize kind = _kind;
@@ -47,6 +47,10 @@
     [_attachedLocalFolders addObject:localFolder];
     
     // TODO: Refresh message storage
+}
+
+- (void)detachLocalFolder:(SMLocalFolder*)localFolder {
+    // TODO!!! Issue #97.
 }
 
 - (void)increaseLocalFolderCapacity {

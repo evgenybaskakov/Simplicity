@@ -14,9 +14,14 @@
 @protocol SMAbstractAccount;
 
 @class SMUnifiedAccount;
+@class SMMessageStorage;
 
 @interface SMUnifiedMessageStorage : SMUserAccountDataObject<SMAbstractMessageStorage>
 
 - (id)initWithUserAccount:(SMUnifiedAccount*)account;
+
+- (void)attachMessageStorage:(SMMessageStorage*)messageStorage;
+- (void)detachMessageStorage:(SMMessageStorage*)localFolder;
+- (void)refreshUnifiedMessageStorage;
 
 @end

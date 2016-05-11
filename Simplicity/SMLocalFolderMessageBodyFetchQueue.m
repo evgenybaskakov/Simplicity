@@ -87,7 +87,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase {
     SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolderName, threadId, urgent? "YES" : "NO");
     
-    if([_localFolder.messageStorage messageHasData:uid localFolder:_localFolder.localName threadId:threadId]) {
+    if([_localFolder.messageStorage messageHasData:uid threadId:threadId]) {
         SM_LOG_DEBUG(@"message body for uid %u already loaded", uid);
         return;
     }
@@ -238,7 +238,7 @@ static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 }
 
 - (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview {
-    SMMessage *message = [_localFolder.messageStorage setMessageParser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid localFolder:_localFolder.localName threadId:threadId];
+    SMMessage *message = [_localFolder.messageStorage setMessageParser:parser attachments:attachments messageBodyPreview:messageBodyPreview uid:uid threadId:threadId];
     
     if(message != nil) {
         [_localFolder increaseLocalFolderFootprint:message.messageSize];

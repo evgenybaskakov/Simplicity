@@ -79,7 +79,7 @@
         if(loadingFinished) {
             // Restart fetching the updated rest of messages.
             // Don't invalidate existing messages.
-            [_messageStorage startUpdate:_localName];
+            [_messageStorage startUpdate];
             
             [self loadSelectedMessagesInternal];
         }
@@ -98,7 +98,7 @@
 
         _totalMessagesCount = _allSelectedMessageUIDsToLoad.count;
         
-        [_messageStorage startUpdate:_localName];
+        [_messageStorage startUpdate];
         
         [self loadSelectedMessagesInternal];
     }
@@ -130,7 +130,7 @@
     }
     
     if(finishFetch) {
-        [_messageStorage endUpdate:_localName removeFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
+        [_messageStorage endUpdateWithRemoteFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
         
         [self finishMessageHeadersFetching];
         

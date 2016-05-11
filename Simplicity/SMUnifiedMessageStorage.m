@@ -35,7 +35,7 @@
     // TODO: Refresh message storage
 }
 
-- (void)detachMessageStorage:(SMMessageStorage*)localFolder {
+- (void)detachMessageStorage:(SMMessageStorage*)messageStorage {
     // TODO!!! Issue #97.
 }
 
@@ -51,12 +51,12 @@
     });
 }
 
-- (BOOL)addMessage:(SMMessage*)message toLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+- (BOOL)addMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
     SM_FATAL(@"TODO");
     return NO;
 }
 
-- (void)removeMessage:(SMMessage*)message fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase {
+- (void)removeMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
     SM_FATAL(@"TODO");
 }
 
@@ -65,26 +65,26 @@
     return nil;
 }
 
-- (SMMessageThread*)messageThreadById:(uint64_t)threadId localFolder:(NSString*)folder {
+- (SMMessageThread*)messageThreadById:(uint64_t)threadId {
     SM_FATAL(@"TODO");
     return nil;
 }
 
-- (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index localFolder:(NSString*)folder {
+- (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index {
     SM_FATAL(@"TODO");
     return nil;
 }
 
-- (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread localFolder:(NSString*)localFolder {
+- (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread {
     SM_FATAL(@"TODO");
     return 0;
 }
 
-- (void)deleteMessageThreads:(NSArray*)messageThreads fromLocalFolder:(NSString*)localFolder updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (void)deleteMessageThreads:(NSArray*)messageThreads updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SM_FATAL(@"TODO");
 }
 
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId localFolder:(NSString*)localFolder remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SM_FATAL(@"TODO");
     return NO;
 }
@@ -93,12 +93,12 @@
     SM_FATAL(@"TODO");
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview uid:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview uid:(uint32_t)uid threadId:(uint64_t)threadId {
     SM_FATAL(@"TODO");
     return nil;
 }
 
-- (BOOL)messageHasData:(uint32_t)uid localFolder:(NSString*)localFolder threadId:(uint64_t)threadId {
+- (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId {
     SM_FATAL(@"TODO");
     return NO;
 }

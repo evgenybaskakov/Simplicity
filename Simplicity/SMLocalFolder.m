@@ -55,7 +55,7 @@
         _kind = kind;
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
-        _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account];
+        _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account localFolder:_localName];
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
         _unseenMessagesCount = 0;
         _totalMessagesCount = 0;
@@ -113,7 +113,7 @@
 
     _messageHeadersFetched = 0;
     
-    [_messageStorage startUpdate:_localName];
+    [_messageStorage startUpdate];
     
     if(_loadingFromDB) {
         _dbSyncInProgress = YES;
@@ -305,13 +305,13 @@
 }
 
 - (void)markMessageThreadAsUpdated:(NSNumber*)threadId {
-    [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue] localFolder:_localName];
+    [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue]];
 }
 
 - (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
-    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages localFolder:_localName remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
+    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
     [SMNotificationsController localNotifyMessagesUpdated:_localName updateResult:updateResult account:_account];
 }
@@ -361,7 +361,7 @@
 }
 
 - (void)fetchMessageThreadsHeadersFromDescriptor:(SMMessageThreadDescriptor*)threadDesc {
-    SMMessageThread *messageThread = [_messageStorage messageThreadById:threadDesc.threadId localFolder:_remoteFolderName];
+    SMMessageThread *messageThread = [_messageStorage messageThreadById:threadDesc.threadId];
 
     if(messageThread == nil) {
         // It is possible that the user has a chance to delete something in the middle of loading from DB.
@@ -419,7 +419,7 @@
     
     BOOL shouldUseNotifications = (!_loadingFromDB && [_remoteFolderName isEqualToString:inboxFolder.fullName]);
     
-    SMMessageStorageUpdateResult updateResult = [_messageStorage endUpdate:_localName removeFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
+    SMMessageStorageUpdateResult updateResult = [_messageStorage endUpdateWithRemoteFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
         if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
             for(SMMessage *m in newUnseenMessages) {
                 SMAddress *from = [[SMAddress alloc] initWithMCOAddress:m.fromAddress];
@@ -571,7 +571,7 @@
 }
 
 - (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {
-    if([_messageStorage addMessage:message toLocalFolder:_localName updateDatabase:updateUpdate]) {
+    if([_messageStorage addMessage:message updateDatabase:updateUpdate]) {
         if(externalMessage) {
             _totalMessagesCount++;
         }
@@ -585,7 +585,7 @@
 }
 
 - (void)removeMessage:(SMMessage*)message {
-    [_messageStorage removeMessage:message fromLocalFolder:_localName updateDatabase:NO];
+    [_messageStorage removeMessage:message updateDatabase:NO];
     
     NSAssert(_totalMessagesCount > 0, @"_totalMessagesCount is 0");
     _totalMessagesCount--;
@@ -694,7 +694,7 @@
     [self cancelScheduledMessageListUpdate];
 
     // Remove the deleted message threads from the message storage.
-    [_messageStorage deleteMessageThreads:messageThreads fromLocalFolder:_localName updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
+    [_messageStorage deleteMessageThreads:messageThreads updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
 
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
@@ -776,7 +776,7 @@
     Boolean needUpdateMessageList = NO;
     
     if(useThreadId) {
-        needUpdateMessageList = [_messageStorage deleteMessageFromStorage:uid threadId:threadId localFolder:_localName remoteFolder:_remoteFolderName unseenMessagesCount:&_unseenMessagesCount];
+        needUpdateMessageList = [_messageStorage deleteMessageFromStorage:uid threadId:threadId remoteFolder:_remoteFolderName unseenMessagesCount:&_unseenMessagesCount];
 
         // Notify observers that message flags have possibly changed.
         [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
@@ -815,7 +815,7 @@
 
     NSUInteger threadsCount = [_messageStorage messageThreadsCount];
     for(NSUInteger i = threadsCount; !stop && i > 0; i--) {
-        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:(i-1) localFolder:_localName];
+        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:(i-1)];
         NSArray *messages = [thread messagesSortedByDate];
         
         for(NSUInteger j = messages.count; j > 0; j--) {
@@ -849,7 +849,7 @@
 
     NSUInteger threadsCount = [_messageStorage messageThreadsCount];
     for(NSUInteger i = 0; i < threadsCount; i++) {
-        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:i localFolder:_localName];
+        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:i];
 
         for(SMMessage *message in [thread messagesSortedByDate]) {
             if([message hasData]) {

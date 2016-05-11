@@ -571,7 +571,7 @@
 }
 
 - (void)addMessage:(SMMessage*)message externalMessage:(BOOL)externalMessage updateDatabase:(BOOL)updateUpdate {
-    if([_messageStorage addMessage:message updateDatabase:updateUpdate]) {
+    if([_messageStorage addMessageToStorage:message updateDatabase:updateUpdate]) {
         if(externalMessage) {
             _totalMessagesCount++;
         }
@@ -585,7 +585,7 @@
 }
 
 - (void)removeMessage:(SMMessage*)message {
-    [_messageStorage removeMessage:message updateDatabase:NO];
+    [_messageStorage removeMessageFromStorage:message updateDatabase:NO];
     
     NSAssert(_totalMessagesCount > 0, @"_totalMessagesCount is 0");
     _totalMessagesCount--;

@@ -100,6 +100,8 @@
 
         [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:thread.threadId]];
         [_messageThreadCollection.messageThreadsByDate removeObject:thread];
+        
+        // TODO: delete thread from the unified storage
     }
     
     if(updateDatabase) {
@@ -344,7 +346,7 @@
 }
 
 // TODO: update unseenMessagesCount
-- (BOOL)addMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
+- (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
     NSUInteger oldIndex = NSUIntegerMax;
 
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];
@@ -384,7 +386,7 @@
 
 // TODO: update database
 // TODO: update unseenMessagesCount
-- (void)removeMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
+- (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
     NSAssert(!updateDatabase, @"TODO: implement updateDatabase");
 
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];

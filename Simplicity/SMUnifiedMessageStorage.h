@@ -19,9 +19,7 @@
 @interface SMUnifiedMessageStorage : SMUserAccountDataObject<SMAbstractMessageStorage>
 
 - (id)initWithUserAccount:(SMUnifiedAccount*)account;
-
 - (void)attachMessageStorage:(SMMessageStorage*)messageStorage;
 - (void)detachMessageStorage:(SMMessageStorage*)messageStorage;
-- (void)refreshUnifiedMessageStorage;
 
 @end

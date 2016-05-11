@@ -7,13 +7,17 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
 #import "SMMessage.h"
 #import "SMMessageStorage.h"
+#import "SMMessageComparators.h"
+#import "SMMessageThread.h"
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMessageStorage.h"
 
 @implementation SMUnifiedMessageStorage {
     NSMutableArray<SMMessageStorage*> *_attachedMessageStorages;
+    NSMutableOrderedSet<SMMessageThread*> *_messageThreadsByDate;
 }
 
 - (id)initWithUserAccount:(SMUnifiedAccount *)account {
@@ -39,32 +43,6 @@
     // TODO!!! Issue #97.
 }
 
-- (void)refreshUnifiedMessageStorage {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        
-        // Merge
-        
-        
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            //Run UI Updates
-        });
-    });
-}
-
-- (BOOL)addMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
-    SM_FATAL(@"TODO");
-    return NO;
-}
-
-- (void)removeMessage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
-    SM_FATAL(@"TODO");
-}
-
-- (NSNumber*)messageThreadByMessageUID:(uint32_t)uid {
-    SM_FATAL(@"TODO");
-    return nil;
-}
-
 - (SMMessageThread*)messageThreadById:(uint64_t)threadId {
     SM_FATAL(@"TODO");
     return nil;
@@ -76,35 +54,16 @@
 }
 
 - (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread {
-    SM_FATAL(@"TODO");
-    return 0;
-}
-
-- (void)deleteMessageThreads:(NSArray*)messageThreads updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
-    SM_FATAL(@"TODO");
-}
-
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
-    SM_FATAL(@"TODO");
-    return NO;
-}
-
-- (void)deleteMessagesFromStorageByUIDs:(NSArray*)messageUIDs {
-    SM_FATAL(@"TODO");
-}
-
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview uid:(uint32_t)uid threadId:(uint64_t)threadId {
-    SM_FATAL(@"TODO");
-    return nil;
-}
-
-- (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId {
-    SM_FATAL(@"TODO");
-    return NO;
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSComparator messageThreadComparator = [[appDelegate messageComparators] messageThreadsComparatorByDate];
+    NSMutableOrderedSet *sortedMessageThreads = _messageThreadsByDate;
+    NSUInteger idx = [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingFirstEqual usingComparator:messageThreadComparator];
+    
+    return idx;
 }
 
 - (NSUInteger)messageThreadsCount {
-    return 0; // TODO
+    return _messageThreadsByDate.count;
 }
 
 @end

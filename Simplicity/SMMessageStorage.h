@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 // TODO: use folder name along with UID!!! See https://github.com/evgenybaskakov/Simplicity/issues/20.
 // TODO: return SMMessageThread*
 - (NSNumber*)messageThreadByMessageUID:(uint32_t)uid;
+- (SMMessageThread*)messageThreadById:(uint64_t)threadId;
 
 - (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments messageBodyPreview:(NSString*)messageBodyPreview uid:(uint32_t)uid threadId:(uint64_t)threadId;
 

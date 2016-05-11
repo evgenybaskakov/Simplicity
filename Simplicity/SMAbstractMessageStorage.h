@@ -14,7 +14,6 @@
 
 @property (readonly) NSUInteger messageThreadsCount;
 
-- (SMMessageThread*)messageThreadById:(uint64_t)threadId;
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index;
 - (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread;
 

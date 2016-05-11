@@ -43,11 +43,6 @@
     // TODO!!! Issue #97.
 }
 
-- (SMMessageThread*)messageThreadById:(uint64_t)threadId {
-    SM_FATAL(@"TODO");
-    return nil;
-}
-
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index {
     SM_FATAL(@"TODO");
     return nil;

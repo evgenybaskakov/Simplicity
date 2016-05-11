@@ -66,7 +66,7 @@
     Boolean _immediateSelection;
     Boolean _mouseSelectionInProcess;
     Boolean _reloadDeferred;
-    NSArray *_selectedMessageThreadsForContextMenu;
+    NSIndexSet *_selectedRowsWithMenu;
     NSMutableDictionary<NSString*, ScrollPosition*> *_folderScrollPositions;
     ScrollPosition *_currentFolderScrollPosition;
 }
@@ -547,7 +547,8 @@
         id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
         
         if(currentFolder != nil && [currentFolder.localName isEqualToString:localFolder]) {
-            SMMessageThread *messageThread = [currentFolder.messageStorage messageThreadById:threadId];
+            NSAssert([(NSObject*)currentFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"current folder is unified");
+            SMMessageThread *messageThread = [(SMMessageStorage*)currentFolder.messageStorage messageThreadById:threadId];
             
             if(messageThread != nil) {
                 if([messageThread updateThreadAttributesFromMessageUID:uid]) {
@@ -777,52 +778,51 @@
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
 
-    NSMutableArray *messageThreads = [NSMutableArray array];
-    
     NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
-    if(![selectedRows containsIndex:row]) {
-        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:row];
-        [_messageListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
-
-        [self reloadMessageList:YES];
-        
-        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row];
-        
-        if(messageThread == nil) {
-            // TODO: fix this logic
-            return nil;
-        }
-
-        [messageThreads addObject:[NSNumber numberWithUnsignedLong:messageThread.threadId]];
-    }
-    else {
+    if([selectedRows containsIndex:row]) {
         NSUInteger selectedRow = [selectedRows firstIndex];
         while(selectedRow != NSNotFound) {
             SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
             NSAssert(messageThread != nil, @"message thread at selected row %lu not found", selectedRow);
             
-            [messageThreads addObject:[NSNumber numberWithUnsignedLong:messageThread.threadId]];
-            
             selectedRow = [selectedRows indexGreaterThanIndex:selectedRow];
         }
+        
+        _selectedRowsWithMenu = selectedRows;
+    }
+    else {
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:row];
+        [_messageListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+        
+        [self reloadMessageList:YES];
+        
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row];
+        
+        if(messageThread == nil) {
+            SM_LOG_ERROR(@"clicked message thread at row %ld not found", row);
+            // TODO: fix this logic
+            return nil;
+        }
+        
+        _selectedRowsWithMenu = indexSet;
     }
 
-    _selectedMessageThreadsForContextMenu = messageThreads;
+    BOOL onlyOneMessageThreadSelected = (_selectedRowsWithMenu.count == 1? YES : NO);
     
     NSMenu *menu = [[NSMenu alloc] init];
     menu.autoenablesItems = NO;
 
     NSMenuItem *item = [menu addItemWithTitle:@"Reply" action:@selector(menuActionReply:) keyEquivalent:@""];
     [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    [item setEnabled:onlyOneMessageThreadSelected];
     
     item = [menu addItemWithTitle:@"Reply All" action:@selector(menuActionReplyAll:) keyEquivalent:@""];
     [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    [item setEnabled:onlyOneMessageThreadSelected];
     
     item = [menu addItemWithTitle:@"Forward" action:@selector(menuActionForward:) keyEquivalent:@""];
     [item setTarget:self];
-    [item setEnabled:_selectedMessageThreadsForContextMenu.count == 1];
+    [item setEnabled:onlyOneMessageThreadSelected];
     
     [menu addItem:[NSMenuItem separatorItem]];
     [[menu addItemWithTitle:@"Delete" action:@selector(menuActionDelete:) keyEquivalent:@""] setTarget:self];
@@ -869,12 +869,14 @@
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
-    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
-        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId];
+    for(NSUInteger selectedRow = [_selectedRowsWithMenu firstIndex]; selectedRow != NSNotFound; selectedRow = [_selectedRowsWithMenu indexGreaterThanIndex:selectedRow]) {
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
 
         if(messageThread != nil) {
             [self addStarToMessageThread:messageThread];
+        }
+        else {
+            SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
@@ -887,12 +889,14 @@
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
-    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
-        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId];
+    for(NSUInteger selectedRow = [_selectedRowsWithMenu firstIndex]; selectedRow != NSNotFound; selectedRow = [_selectedRowsWithMenu indexGreaterThanIndex:selectedRow]) {
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
         
         if(messageThread != nil) {
             [self removeStarFromMessageThread:messageThread];
+        }
+        else {
+            SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
@@ -905,15 +909,17 @@
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     
-    for(NSNumber *threadIdNumber in _selectedMessageThreadsForContextMenu) {
-        uint64_t threadId = [threadIdNumber unsignedLongLongValue];
-        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadById:threadId];
+    for(NSUInteger selectedRow = [_selectedRowsWithMenu firstIndex]; selectedRow != NSNotFound; selectedRow = [_selectedRowsWithMenu indexGreaterThanIndex:selectedRow]) {
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
         
         if(messageThread != nil) {
             for(SMMessage *message in messageThread.messagesSortedByDate) {
                 [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
                 [messageThread updateThreadAttributesFromMessageUID:message.uid];
             }
+        }
+        else {
+            SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     

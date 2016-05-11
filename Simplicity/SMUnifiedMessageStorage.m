@@ -44,14 +44,20 @@
 }
 
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index {
-    SM_FATAL(@"TODO");
-    return nil;
+    NSOrderedSet *sortedMessageThreads = _messageThreadsByDate;
+
+    if(index >= sortedMessageThreads.count) {
+        SM_LOG_WARNING(@"index %lu is beyond message thread size %lu", index, sortedMessageThreads.count);
+        return nil;
+    }
+    
+    return [sortedMessageThreads objectAtIndex:index];
 }
 
 - (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     NSComparator messageThreadComparator = [[appDelegate messageComparators] messageThreadsComparatorByDate];
-    NSMutableOrderedSet *sortedMessageThreads = _messageThreadsByDate;
+    NSOrderedSet *sortedMessageThreads = _messageThreadsByDate;
     NSUInteger idx = [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingFirstEqual usingComparator:messageThreadComparator];
     
     return idx;

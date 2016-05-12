@@ -157,6 +157,7 @@
     }
 
     _useUnifiedMailboxButton.state = ([[appDelegate preferencesController] shouldUseUnifiedMailbox]? NSOnState : NSOffState);
+    _useUnifiedMailboxButton.enabled = ([preferencesController accountsCount] > 1? YES : NO);
 }
 
 - (void)viewDidAppear {
@@ -739,6 +740,8 @@
     NSUInteger accountsCount = [preferencesController accountsCount];
 
     [self setAccountPanelEnabled:(accountsCount > 0? YES : NO)];
+    
+    _useUnifiedMailboxButton.enabled = (accountsCount > 1? YES : NO);
 }
 
 - (void)showAccount:(NSString*)accountName {

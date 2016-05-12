@@ -812,6 +812,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
     id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByName:inboxFolder.fullName];
     
+    // TODO: use sum for inbox folders across all accounts
+    
     if([localFolder isEqualToString:inboxLocalFolder.localName]) {
         NSString *messageCountString;
         

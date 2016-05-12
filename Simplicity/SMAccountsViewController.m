@@ -108,7 +108,7 @@
         return;
     }
     
-    _unifiedMailboxButtonShown = [[appDelegate preferencesController] shouldUseUnifiedMailbox]? YES : NO;
+    _unifiedMailboxButtonShown = ([[appDelegate preferencesController] shouldUseUnifiedMailbox] && accountsCount > 1)? YES : NO;
     
     if(!_unifiedMailboxButtonShown) {
         _unifiedMailboxSelected = NO;

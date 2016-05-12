@@ -20,8 +20,6 @@
 @synthesize messageStorage = _messageStorage;
 @synthesize localName = _localName;
 @synthesize remoteFolderName = _remoteFolderName;
-@synthesize unseenMessagesCount = _unseenMessagesCount;
-@synthesize totalMessagesCount = _totalMessagesCount;
 @synthesize messageHeadersFetched = _messageHeadersFetched;
 @synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
@@ -51,6 +49,26 @@
     [(SMUnifiedMessageStorage*)_messageStorage detachMessageStorage:(SMMessageStorage*)localFolder.messageStorage];
 
     [_attachedLocalFolders removeObject:localFolder];
+}
+
+- (NSUInteger)totalMessagesCount {
+    NSUInteger count = 0;
+    
+    for(SMLocalFolder *localFolder in _attachedLocalFolders) {
+        count += localFolder.totalMessagesCount;
+    }
+    
+    return count;
+}
+
+- (NSUInteger)unseenMessagesCount {
+    NSUInteger count = 0;
+    
+    for(SMLocalFolder *localFolder in _attachedLocalFolders) {
+        count += localFolder.unseenMessagesCount;
+    }
+    
+    return count;
 }
 
 - (void)increaseLocalFolderCapacity {

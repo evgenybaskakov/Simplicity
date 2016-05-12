@@ -254,9 +254,9 @@
     [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
 }
 
-- (NSUInteger)totalMessagesCount:(NSString*)folderName {
+- (NSUInteger)totalMessagesCount:(SMFolder*)folder {
     SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolderByName:folderName];
+    id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByName:folder.fullName];
     
     if(localFolder != nil) {
         return localFolder.totalMessagesCount;
@@ -266,9 +266,9 @@
     }
 }
 
-- (NSUInteger)unseenMessagesCount:(NSString*)folderName {
+- (NSUInteger)unseenMessagesCount:(SMFolder*)folder {
     SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMLocalFolder *localFolder = (SMLocalFolder*)[localFolderRegistry getLocalFolderByName:folderName];
+    id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByName:folder.fullName];
     
     if(localFolder != nil) {
         return localFolder.unseenMessagesCount;

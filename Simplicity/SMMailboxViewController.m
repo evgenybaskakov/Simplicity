@@ -584,10 +584,10 @@ typedef enum {
 
     NSUInteger unseenCount;
     if(folder.kind == SMFolderKindDrafts || folder.kind == SMFolderKindOutbox) {
-        unseenCount = [appDelegate.currentMailboxController totalMessagesCount:folder.fullName];
+        unseenCount = [appDelegate.currentMailboxController totalMessagesCount:folder];
     }
     else {
-        unseenCount = [appDelegate.currentMailboxController unseenMessagesCount:folder.fullName];
+        unseenCount = [appDelegate.currentMailboxController unseenMessagesCount:folder];
     }
     
     if(unseenCount != 0) {

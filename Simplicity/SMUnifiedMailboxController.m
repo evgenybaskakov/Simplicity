@@ -7,6 +7,10 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMUnifiedAccount.h"
+#import "SMLocalFolderRegistry.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMUnifiedMailboxController.h"
 
 @implementation SMUnifiedMailboxController
@@ -30,14 +34,38 @@
     SM_FATAL(@"Unified mailbox can't do this (folderName %@)", folderName);
 }
 
-- (NSUInteger)unseenMessagesCount:(NSString*)folderName {
-    SM_LOG_WARNING(@"TODO");
-    return 0;
+- (NSUInteger)totalMessagesCount:(SMFolder*)folder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate unifiedAccount] localFolderRegistry];
+    id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByKind:folder.kind];
+    
+    if(localFolder == nil) {
+        localFolder = [localFolderRegistry getLocalFolderByName:folder.fullName];
+    }
+    
+    if(localFolder != nil) {
+        return localFolder.totalMessagesCount;
+    }
+    else {
+        return 0;
+    }
 }
 
-- (NSUInteger)totalMessagesCount:(NSString*)folderName {
-    SM_LOG_WARNING(@"TODO");
-    return 0;
+- (NSUInteger)unseenMessagesCount:(SMFolder*)folder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMLocalFolderRegistry *localFolderRegistry = [[appDelegate unifiedAccount] localFolderRegistry];
+    id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByKind:folder.kind];
+    
+    if(localFolder == nil) {
+        localFolder = [localFolderRegistry getLocalFolderByName:folder.fullName];
+    }
+    
+    if(localFolder != nil) {
+        return localFolder.unseenMessagesCount;
+    }
+    else {
+        return 0;
+    }
 }
 
 @end

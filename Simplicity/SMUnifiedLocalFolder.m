@@ -40,17 +40,17 @@
 }
 
 - (void)attachLocalFolder:(SMLocalFolder*)localFolder {
-    //SM_FATAL(@"TODO: attaching localFolder %@", localFolder.localName);
-    
     NSAssert([_attachedLocalFolders indexOfObject:localFolder] == NSNotFound, @"folder %@ already attached", localFolder.localName);
     
     [_attachedLocalFolders addObject:localFolder];
     
-    // TODO: Refresh message storage
+    [(SMUnifiedMessageStorage*)_messageStorage attachMessageStorage:(SMMessageStorage*)localFolder.messageStorage];
 }
 
 - (void)detachLocalFolder:(SMLocalFolder*)localFolder {
-    // TODO!!! Issue #97.
+    [(SMUnifiedMessageStorage*)_messageStorage detachMessageStorage:(SMMessageStorage*)localFolder.messageStorage];
+
+    [_attachedLocalFolders removeObject:localFolder];
 }
 
 - (void)increaseLocalFolderCapacity {

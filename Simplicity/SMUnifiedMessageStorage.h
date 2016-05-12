@@ -22,4 +22,8 @@
 - (void)attachMessageStorage:(SMMessageStorage*)messageStorage;
 - (void)detachMessageStorage:(SMMessageStorage*)messageStorage;
 
+// These two methods are called from the attached message storages.
+- (void)addMessageThread:(SMMessageThread*)messageThread;
+- (void)removeMessageThread:(SMMessageThread*)messageThread;
+
 @end

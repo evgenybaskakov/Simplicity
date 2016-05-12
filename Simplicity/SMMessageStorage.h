@@ -17,6 +17,7 @@
 
 @class SMMessage;
 @class SMMessageThread;
+@class SMUnifiedMessageStorage;
 
 @interface SMMessageStorage : SMUserAccountDataObject<SMAbstractMessageStorage>
 
@@ -27,6 +28,9 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 };
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(NSString*)localFolder;
+
+- (void)attachToUnifiedMessageStorage:(SMUnifiedMessageStorage*)unifiedMessageStorage;
+- (void)deattachFromUnifiedMessageStorage;
 
 - (void)startUpdate;
 - (void)cancelUpdate;

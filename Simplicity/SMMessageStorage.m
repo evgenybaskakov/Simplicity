@@ -1,4 +1,4 @@
- //
+//
 //  SM_messagestorage.m
 //  Simplicity
 //
@@ -16,12 +16,14 @@
 #import "SMMessageThread.h"
 #import "SMMessageThreadCollection.h"
 #import "SMMessageThreadDescriptor.h"
+#import "SMUnifiedMessageStorage.h"
 #import "SMAppDelegate.h"
 
 @implementation SMMessageStorage {
     NSString *_localFolder; // TODO: rename if local folder is renamed; see issue #98
     NSMutableDictionary *_messagesThreadsMap;
     SMMessageThreadCollection *_messageThreadCollection;
+    __weak SMUnifiedMessageStorage *_unifiedMessageStorage;
 }
 
 @synthesize messageThreadsCount = _messageThreadsCount;
@@ -36,6 +38,28 @@
     }
 
     return self;
+}
+
+- (void)attachToUnifiedMessageStorage:(SMUnifiedMessageStorage*)unifiedMessageStorage {
+    NSAssert(_unifiedMessageStorage == nil, @"already attached to a unified message storage");
+    
+    _unifiedMessageStorage = unifiedMessageStorage;
+    
+    for(NSNumber *threadId in _messageThreadCollection.messageThreads) {
+        SMMessageThread *messageThread = [_messageThreadCollection.messageThreads objectForKey:threadId];
+
+        [_unifiedMessageStorage addMessageThread:messageThread];
+    }
+}
+
+- (void)deattachFromUnifiedMessageStorage {
+    for(NSNumber *threadId in _messageThreadCollection.messageThreads) {
+        SMMessageThread *messageThread = [_messageThreadCollection.messageThreads objectForKey:threadId];
+        
+        [_unifiedMessageStorage removeMessageThread:messageThread];
+    }
+    
+    _unifiedMessageStorage = nil;
 }
 
 - (NSUInteger)messageThreadsCount {
@@ -63,13 +87,16 @@
 
     NSMutableOrderedSet *sortedMessageThreads = _messageThreadCollection.messageThreadsByDate;
 
-    if(oldIndex != NSUIntegerMax) {
+    if(oldIndex != NSNotFound) {
         NSAssert(_messageThreadCollection.messageThreadsByDate.count == _messageThreadCollection.messageThreads.count, @"message thread counts (sorted %lu, unsorted %lu) don't match", _messageThreadCollection.messageThreadsByDate.count, _messageThreadCollection.messageThreads.count);
 
         SMMessageThread *oldMessageThread = sortedMessageThreads[oldIndex];
         NSAssert(oldMessageThread == messageThread, @"bad message thread at index %lu (actual id %llu, expected id %llu)", oldIndex, oldMessageThread.threadId, messageThread.threadId);
 
         [sortedMessageThreads removeObjectAtIndex:oldIndex];
+
+        // Update the unified storage, if any.
+        [_unifiedMessageStorage removeMessageThread:messageThread];
     }
     
     NSUInteger messageThreadIndexByDate = [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingInsertionIndex usingComparator:messageThreadComparator];
@@ -78,6 +105,10 @@
     
     [sortedMessageThreads insertObject:messageThread atIndex:messageThreadIndexByDate];
     
+    // Update the unified storage, if any.
+    [_unifiedMessageStorage addMessageThread:messageThread];
+
+    // Update thread id map.
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:messageThread.threadId];
     for(SMMessage *m in messageThread.messagesSortedByDate) {
         [_messagesThreadsMap setObject:threadIdNum forKey:[NSNumber numberWithUnsignedInt:m.uid]];
@@ -101,7 +132,8 @@
         [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:thread.threadId]];
         [_messageThreadCollection.messageThreadsByDate removeObject:thread];
         
-        // TODO: delete thread from the unified storage
+        // Update the unified storage, if any.
+        [_unifiedMessageStorage removeMessageThread:thread];
     }
     
     if(updateDatabase) {
@@ -171,7 +203,7 @@
         SMMessageThread *messageThread = [[_messageThreadCollection messageThreads] objectForKey:threadIdKey];
 
         NSDate *firstMessageDate = nil;
-        NSUInteger oldIndex = NSUIntegerMax;
+        NSUInteger oldIndex = NSNotFound;
         
         Boolean threadUpdated = NO;
         Boolean newThreadCreated = NO;
@@ -347,7 +379,7 @@
 
 // TODO: update unseenMessagesCount
 - (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
-    NSUInteger oldIndex = NSUIntegerMax;
+    NSUInteger oldIndex = NSNotFound;
 
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];
     SMMessageThread *messageThread = [_messageThreadCollection.messageThreads objectForKey:threadIdNum];

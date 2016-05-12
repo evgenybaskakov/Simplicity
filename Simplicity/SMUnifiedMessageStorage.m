@@ -25,7 +25,7 @@
     
     if(self) {
         _attachedMessageStorages = [NSMutableArray array];
-        // nothing yet
+        _messageThreadsByDate = [NSMutableOrderedSet orderedSet];
     }
     
     return self;
@@ -36,11 +36,31 @@
     
     [_attachedMessageStorages addObject:messageStorage];
     
-    // TODO: Refresh message storage
+    [messageStorage attachToUnifiedMessageStorage:self];
 }
 
 - (void)detachMessageStorage:(SMMessageStorage*)messageStorage {
-    // TODO!!! Issue #97.
+    [messageStorage deattachFromUnifiedMessageStorage];
+
+    [_attachedMessageStorages removeObject:messageStorage];
+}
+
+- (void)addMessageThread:(SMMessageThread*)messageThread {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSComparator messageThreadComparator = [[appDelegate messageComparators] messageThreadsComparatorByDate];
+    NSUInteger index = [_messageThreadsByDate indexOfObject:messageThread inSortedRange:NSMakeRange(0, _messageThreadsByDate.count) options:NSBinarySearchingInsertionIndex usingComparator:messageThreadComparator];
+    
+    NSAssert(index != NSNotFound, @"message thread not found");
+    
+    if(index < _messageThreadsByDate.count) {
+        NSAssert([_messageThreadsByDate objectAtIndex:index] != messageThread, @"message thread being inserted already exists");
+    }
+    
+    [_messageThreadsByDate insertObject:messageThread atIndex:index];
+}
+
+- (void)removeMessageThread:(SMMessageThread*)messageThread {
+    [_messageThreadsByDate removeObject:messageThread];
 }
 
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index {

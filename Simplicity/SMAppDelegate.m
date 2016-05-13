@@ -12,6 +12,7 @@
 #import "SMMailbox.h"
 #import "SMAccountMailbox.h"
 #import "SMAccountMailboxController.h"
+#import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
@@ -127,7 +128,9 @@
         }
         
         NSAssert(_currentAccountIdx != NSNotFound, @"provided mailbox not found");
-    }    
+    }
+    
+    _preferencesController.currentAccount = (_currentAccountIsUnified? UNIFIED_ACCOUNT_IDX : _currentAccountIdx);
 }
 
 - (void)enableOrDisableAccountControls {
@@ -162,10 +165,15 @@
             [self addAccount];
         }
 
-        _currentAccountIdx = 0; // TODO: restore from properties
+        _currentAccountIdx = _preferencesController.currentAccount;
+        if(_currentAccountIdx == UNIFIED_ACCOUNT_IDX) {
+            _currentAccountIsUnified = YES;
+        }
         
         [self enableOrDisableAccountControls];
     }
+
+    [_appController.accountsViewController reloadAccountViews:YES];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {

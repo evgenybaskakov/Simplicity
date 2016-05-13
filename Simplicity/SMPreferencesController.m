@@ -22,6 +22,7 @@
 #define kServerTypeSMTP                 @"SMTP"
 
 // General properties
+#define kCurrentAccount                 @"CurrentAccount"
 #define kAccountsCount                  @"AccountsCount"
 #define kShouldShowContactImages        @"ShouldShowContactImages"
 #define kShouldShowEmailAddressesInMailboxes @"ShouldShowEmailAddressesInMailboxes"
@@ -740,6 +741,21 @@
     [[NSUserDefaults standardUserDefaults] setBool:shouldShowNotifications forKey:kShouldShowNotifications];
     
     _shouldShowNotificationsCached = shouldShowNotifications;
+}
+
+#pragma mark Current Account
+
+- (NSInteger)currentAccount {
+    if([[NSUserDefaults standardUserDefaults] objectForKey:kCurrentAccount] == nil) {
+        return 0;
+    }
+    else {
+        return [[NSUserDefaults standardUserDefaults] integerForKey:kCurrentAccount];
+    }
+}
+
+- (void)setCurrentAccount:(NSInteger)accountIdx {
+    [[NSUserDefaults standardUserDefaults] setInteger:accountIdx forKey:kCurrentAccount];
 }
 
 #pragma mark Message list preview lines

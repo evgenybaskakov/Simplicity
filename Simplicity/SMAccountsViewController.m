@@ -31,7 +31,6 @@
     NSScrollView *_scrollView;
     NSView *_contentView;
     BOOL _unifiedMailboxButtonShown;
-    BOOL _unifiedMailboxSelected;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -95,13 +94,12 @@
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    const NSInteger accountsCount = [[appDelegate preferencesController] accountsCount];
+    const NSInteger accountsCount = appDelegate.accounts.count;
     
     if(accountsCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
 
         _unifiedMailboxButtonShown = NO;
-        _unifiedMailboxSelected = NO;
 
         [_scrollView removeFromSuperview];
 
@@ -109,10 +107,6 @@
     }
     
     _unifiedMailboxButtonShown = ([[appDelegate preferencesController] shouldUseUnifiedMailbox] && accountsCount > 1)? YES : NO;
-    
-    if(!_unifiedMailboxButtonShown) {
-        _unifiedMailboxSelected = NO;
-    }
     
     [_scrollView setFrame:self.view.frame];
     [self.view addSubview:_scrollView];
@@ -255,10 +249,10 @@
 
         BOOL mailboxExpanded = NO;
         if(_unifiedMailboxButtonShown) {
-            if(i == 0 && _unifiedMailboxSelected) {
+            if(i == 0 && appDelegate.currentAccountIsUnified) {
                 mailboxExpanded = YES;
             }
-            else if(i != 0 && !_unifiedMailboxSelected) {
+            else if(i != 0 && !appDelegate.currentAccountIsUnified) {
                 const NSInteger accountIdx = (NSInteger)i - 1;
                 
                 if(accountIdx == appDelegate.currentAccountIdx) {
@@ -304,9 +298,7 @@
     BOOL updateViewControllers = NO;
     
     if(accountIdx == UNIFIED_ACCOUNT_IDX) {
-        if(!_unifiedMailboxSelected) {
-            _unifiedMailboxSelected = YES;
-            
+        if(!appDelegate.currentAccountIsUnified) {
             [appDelegate setCurrentAccount:appDelegate.unifiedAccount];
             
             updateViewControllers = YES;
@@ -315,8 +307,6 @@
     else {
         if(appDelegate.currentAccountIsUnified || appDelegate.currentAccountIdx != accountIdx) {
             SM_LOG_INFO(@"switching to account %lu", accountIdx);
-
-            _unifiedMailboxSelected = NO;
 
             [appDelegate setCurrentAccount:appDelegate.accounts[accountIdx]];
 

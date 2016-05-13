@@ -277,14 +277,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    [_accountsViewController reloadAccountViews:YES];
-    
-    //
-    
     SMMailboxTheme mailboxTheme = [[appDelegate preferencesController] mailboxTheme];
 
     [_accountsViewController setMailboxTheme:mailboxTheme];
-    
+
     //
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];

@@ -114,6 +114,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     NSAssert(accountsView, @"accountsView");
     
+    accountsView.translatesAutoresizingMaskIntoConstraints = NO;
+    
     //
 
     _messageListViewController = [ [ SMMessageListViewController alloc ] initWithNibName:@"SMMessageListViewController" bundle:nil ];
@@ -150,93 +152,50 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
     
-    // TODO: remove search results view
+    [_instrumentPanelViewController.workView addSubview:accountsView];
+
+    [_instrumentPanelViewController.workView addConstraint:[NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:accountsView attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
     
-    NSSplitView *accountsAndSearchResultsView = [[NSSplitView alloc] init];
-    accountsAndSearchResultsView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_instrumentPanelViewController.workView addConstraint:[NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:accountsView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
     
-    [accountsAndSearchResultsView setDelegate:self];
-    [accountsAndSearchResultsView setVertical:NO];
-    [accountsAndSearchResultsView setDividerStyle:NSSplitViewDividerStyleThin];
-    [accountsAndSearchResultsView addSubview:accountsView];
-    [accountsAndSearchResultsView adjustSubviews];
+    [_instrumentPanelViewController.workView addConstraint:[NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:accountsView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
     
+    [_instrumentPanelViewController.workView addConstraint:[NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:accountsView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+
     //
     
-    [_instrumentPanelViewController.workView addSubview:accountsAndSearchResultsView];
-
-    [_instrumentPanelViewController.workView addConstraint:
-     [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
-                                  attribute:NSLayoutAttributeLeading
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:accountsAndSearchResultsView
-                                  attribute:NSLayoutAttributeLeading
-                                 multiplier:1
-                                   constant:0]];
-
-    [_instrumentPanelViewController.workView addConstraint:
-     [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
-                                  attribute:NSLayoutAttributeTrailing
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:accountsAndSearchResultsView
-                                  attribute:NSLayoutAttributeTrailing
-                                 multiplier:1
-                                   constant:0]];
+    NSSplitView *mainSplitView = [[NSSplitView alloc] init];
+    mainSplitView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [_instrumentPanelViewController.workView addConstraint:
-     [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
-                                  attribute:NSLayoutAttributeTop
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:accountsAndSearchResultsView
-                                  attribute:NSLayoutAttributeTop
-                                 multiplier:1
-                                   constant:0]];
+    [mainSplitView setVertical:YES];
+    [mainSplitView setDividerStyle:NSSplitViewDividerStyleThin];
     
-    [_instrumentPanelViewController.workView addConstraint:
-     [NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView
-                                  attribute:NSLayoutAttributeBottom
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:accountsAndSearchResultsView
-                                  attribute:NSLayoutAttributeBottom
-                                 multiplier:1
-                                   constant:0]];
+    [mainSplitView addSubview:instrumentPanelView];
+    [mainSplitView addSubview:messageListView];
+    [mainSplitView addSubview:_messageThreadAndFindContentsPanelView];
+    
+    [mainSplitView adjustSubviews];
+
+    [mainSplitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-1 forSubviewAtIndex:0];
+    [mainSplitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-2 forSubviewAtIndex:1];
+    [mainSplitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-3 forSubviewAtIndex:2];
+    
+    mainSplitView.autosaveName = @"MainSplitView";
+    
+    [_view addSubview:mainSplitView];
     
     //
-    
-    NSSplitView *splitView = [[NSSplitView alloc] init];
-    splitView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [splitView setVertical:YES];
-    [splitView setDividerStyle:NSSplitViewDividerStyleThin];
-    
-    [splitView addSubview:instrumentPanelView];
-    [splitView addSubview:messageListView];
-    [splitView addSubview:_messageThreadAndFindContentsPanelView];
-    
-    [splitView adjustSubviews];
-
-    [splitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-1 forSubviewAtIndex:0];
-    [splitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-2 forSubviewAtIndex:1];
-    [splitView setHoldingPriority:NSLayoutPriorityDragThatCannotResizeWindow-3 forSubviewAtIndex:2];
-
-    [_view addSubview:splitView];
-    
-    // 
 
     [_view addConstraint:[NSLayoutConstraint constraintWithItem:accountsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:_view attribute:NSLayoutAttributeHeight multiplier:0.3 constant:0]];
 
-    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:mainSplitView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
     
-    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
+    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:mainSplitView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
     
-    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:mainSplitView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
 
-    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:splitView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:mainSplitView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     
-    //
-/*
-    [self hideSearchResultsView];
-*/
     //
     
     _messageEditorWindowControllers = [NSMutableArray array];

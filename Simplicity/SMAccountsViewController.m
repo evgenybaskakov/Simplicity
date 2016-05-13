@@ -30,7 +30,6 @@
     NSMutableArray<SMAccountButtonViewController*> *_accountButtonViewControllers;
     NSScrollView *_scrollView;
     NSView *_contentView;
-    BOOL _unifiedMailboxButtonShown;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -91,6 +90,12 @@
     [self reloadAccountViews:NO];
 }
 
+- (BOOL)shouldShowUnifiedMailboxButton {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    return ([[appDelegate preferencesController] shouldUseUnifiedMailbox] && appDelegate.accounts.count > 1)? YES : NO;
+}
+
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
@@ -99,22 +104,20 @@
     if(accountsCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
 
-        _unifiedMailboxButtonShown = NO;
-
         [_scrollView removeFromSuperview];
 
         return;
     }
     
-    _unifiedMailboxButtonShown = ([[appDelegate preferencesController] shouldUseUnifiedMailbox] && accountsCount > 1)? YES : NO;
-    
     [_scrollView setFrame:self.view.frame];
     [self.view addSubview:_scrollView];
+    
+    BOOL unifiedMailboxButtonShown = [self shouldShowUnifiedMailboxButton];
     
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
-        for(NSInteger beginIdx = (_unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
+        for(NSInteger beginIdx = (unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
             SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
             NSAssert(accountButtonViewController.view, @"button.view");
 
@@ -248,7 +251,7 @@
         _accountButtonViewControllers[i].backgroundColor = buttonColor;
 
         BOOL mailboxExpanded = NO;
-        if(_unifiedMailboxButtonShown) {
+        if(unifiedMailboxButtonShown) {
             if(i == 0 && appDelegate.currentAccountIsUnified) {
                 mailboxExpanded = YES;
             }
@@ -333,7 +336,7 @@
 }
 
 - (NSUInteger)accountIdxToAccountButtonIdx:(NSUInteger)accountIdx {
-    if(_unifiedMailboxButtonShown) {
+    if([self shouldShowUnifiedMailboxButton]) {
         return accountIdx + 1;
     }
     

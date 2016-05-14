@@ -308,6 +308,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
                     [localFolder startLocalFolderSync];
                 }
             }
+
+            if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
+                [[[appDelegate appController] mailboxViewController] updateFolderListView];
+            }
             
             account.foldersInitialized = YES;
         }

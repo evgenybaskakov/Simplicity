@@ -77,7 +77,7 @@
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         [self updateFolders:localFolder];
     }
 }
@@ -89,7 +89,7 @@
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         [self updateFolders:localFolder];
     }
 }
@@ -101,7 +101,7 @@
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         [self updateFolders:localFolder];
     }
 }

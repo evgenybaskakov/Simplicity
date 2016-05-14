@@ -8,8 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
 #import "SMMailboxController.h"
 
-@interface SMUnifiedMailboxController : NSObject<SMMailboxController>
+@protocol SMAbstractAccount;
+
+@interface SMUnifiedMailboxController : SMUserAccountDataObject<SMMailboxController>
+
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 
 @end

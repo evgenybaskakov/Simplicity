@@ -32,8 +32,10 @@
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
         _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];
-        _mailboxController = [[SMUnifiedMailboxController alloc] init];
+        _mailboxController = [[SMUnifiedMailboxController alloc] initWithUserAccount:self];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
+        
+        [_mailboxController initFolders];
     }
     
     return self;

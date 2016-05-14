@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMUnifiedAccount.h"
+#import "SMUnifiedMailbox.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMUnifiedMailboxController.h"
@@ -17,8 +18,31 @@
 
 @synthesize selectedFolder = _selectedFolder;
 
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
+    self = [super initWithUserAccount:account];
+    
+    if(self) {
+        // nothing yet
+    }
+    
+    return self;
+}
+
 - (void)initFolders {
-    // TODO
+    SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
+    SMUnifiedMailbox *mailbox = (SMUnifiedMailbox*)[_account mailbox];
+    
+    for(SMFolder *folder in mailbox.mainFolders) {
+        if([localFolderRegistry getLocalFolderByName:folder.fullName] == nil) {
+            if(folder.kind == SMFolderKindOutbox) {
+                // TODO: workaround for possible "Outbox" folder name collision
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind syncWithRemoteFolder:NO];
+            }
+            else {
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind syncWithRemoteFolder:YES];
+            }
+        }
+    }
 }
 
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {

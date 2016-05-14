@@ -46,10 +46,6 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
     [self notifyController];
 }
 
-- (SMUserAccount*)account {
-    return (SMUserAccount*)_account;
-}
-
 - (SMOperationQueue*)getQueue:(SMOpKind)kind {
     switch(kind) {
         case kSMTPOpKind: return _smtpQueue;

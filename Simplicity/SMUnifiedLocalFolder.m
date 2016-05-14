@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
 #import "SMLocalFolder.h"
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMessageStorage.h"
@@ -38,6 +39,10 @@
 }
 
 - (void)attachLocalFolder:(SMLocalFolder*)localFolder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    SM_LOG_INFO(@"Unified folder %@: attaching folder %@ from account %lu", _localName, localFolder.localName, [appDelegate.accounts indexOfObject:(SMUserAccount*)localFolder.account]);
+    
     NSAssert([_attachedLocalFolders indexOfObject:localFolder] == NSNotFound, @"folder %@ already attached", localFolder.localName);
     
     [_attachedLocalFolders addObject:localFolder];

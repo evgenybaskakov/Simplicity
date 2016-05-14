@@ -55,7 +55,7 @@
 }
 
 - (void)start {
-    MCOIMAPSession *session = [_operationExecutor.account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_operationExecutor.account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPOperation *op = [session deleteFolderOperation:_remoteFolderName];

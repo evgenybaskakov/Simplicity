@@ -26,9 +26,10 @@
 @property (readonly) SMOutboxController *outboxController;
 @property (readonly) SMDatabase *database;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
-
 @property (readonly) id<SMMailbox> mailbox;
 @property (readonly) id<SMMailboxController> mailboxController;
+
+@property BOOL foldersInitialized; // TODO: this is crap
 
 - (void)fetchMessageInlineAttachments:(SMMessage*)message;
 

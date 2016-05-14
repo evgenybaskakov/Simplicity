@@ -10,6 +10,8 @@
 
 @implementation SMUserAccountDataObject
 
+@synthesize account = _account;
+
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super init];
     

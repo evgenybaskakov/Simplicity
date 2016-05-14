@@ -54,7 +54,7 @@
 }
 
 - (void)start {
-    SMUserAccount *account = _operationExecutor.account;
+    SMUserAccount *account = (SMUserAccount*)_operationExecutor.account;
     MCOIMAPSession *session = [account imapSession];
     NSAssert(session, @"session lost");
     

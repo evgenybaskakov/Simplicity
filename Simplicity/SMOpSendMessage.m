@@ -56,7 +56,7 @@
     NSData *messageData = _outgoingMessage.messageBuilder.mcoMessageBuilder.data;
     NSAssert(messageData, @"no message data");
     
-    MCOSMTPOperation *op = [[_operationExecutor.account smtpSession] sendOperationWithData:messageData];
+    MCOSMTPOperation *op = [[(SMUserAccount*)_operationExecutor.account smtpSession] sendOperationWithData:messageData];
     
     self.currentOp = op;
     

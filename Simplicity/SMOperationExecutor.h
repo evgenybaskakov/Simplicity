@@ -20,7 +20,6 @@
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)setSmtpQueue:(SMOperationQueue *)smtpQueue imapQueue:(SMOperationQueue *)imapQueue;
-- (SMUserAccount*)account;
 - (void)enqueueOperation:(SMOperation*)op;
 - (void)replaceOperation:(SMOperation*)op with:(SMOperation*)replacementOp;
 - (void)completeOperation:(SMOperation*)op;

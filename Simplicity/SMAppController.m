@@ -285,30 +285,34 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    SM_LOG_DEBUG(@"Updating folder list...");
+
     if(account == appDelegate.currentAccount) {
-        SM_LOG_DEBUG(@"Updating folder list...");
-        
         [ _mailboxViewController updateFolderListView ];
-        
-        if(!_syncedFoldersInitialized) {
-            SMFolder *inboxFolder = [[account mailbox] inboxFolder];
-            if(inboxFolder != nil) {
-                [[account messageListController] changeFolder:inboxFolder.fullName];
-                
+    }
+    
+    if(!account.foldersInitialized) {
+        SMFolder *inboxFolder = [[account mailbox] inboxFolder];
+        if(inboxFolder != nil) {
+            [[account messageListController] changeFolder:inboxFolder.fullName];
+            
+            if(account == appDelegate.currentAccount) {
+                // TODO: do we want the inbox folder to be first shown?
                 [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
-                
-                for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
-                    if(folder != inboxFolder) {
-                        SMLocalFolder *localFolder = (SMLocalFolder*)[[account localFolderRegistry] getLocalFolderByName:folder.fullName];
-                        [localFolder startLocalFolderSync];
-                    }
+            }
+            
+            for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
+                if(folder != inboxFolder) {
+                    SMLocalFolder *localFolder = (SMLocalFolder*)[[account localFolderRegistry] getLocalFolderByName:folder.fullName];
+                    [localFolder startLocalFolderSync];
                 }
-                
-                _syncedFoldersInitialized = YES;
             }
-            else {
-                SM_LOG_DEBUG(@"Folders not loaded yet");
-            }
+            
+            account.foldersInitialized = YES;
+        }
+        else {
+            SM_LOG_DEBUG(@"Folders not loaded yet");
         }
     }
 }

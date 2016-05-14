@@ -61,7 +61,7 @@
 - (void)start {
     NSAssert(_uids.count > 0, @"no message uids to move from %@ to %@", _srcRemoteFolderName, _dstRemoteFolderName);
     
-    MCOIMAPSession *session = [_operationExecutor.account imapSession];
+    MCOIMAPSession *session = [(SMUserAccount*)_operationExecutor.account imapSession];
     NSAssert(session, @"session lost");
     
     MCOIMAPCopyMessagesOperation *op = [session copyMessagesOperationWithFolder:_srcRemoteFolderName uids:_uids destFolder:_dstRemoteFolderName];

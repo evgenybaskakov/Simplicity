@@ -23,6 +23,7 @@
 @synthesize outboxController = _outboxController;
 @synthesize mailbox = _mailbox;
 @synthesize localFolderRegistry = _localFolderRegistry;
+@synthesize foldersInitialized = _foldersInitialized;
 
 - (id)init {
     self = [super init];

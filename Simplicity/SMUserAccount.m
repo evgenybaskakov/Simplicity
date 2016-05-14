@@ -40,6 +40,7 @@
 @synthesize database = _database;
 @synthesize localFolderRegistry = _localFolderRegistry;
 @synthesize imapServerCapabilities = _imapServerCapabilities;
+@synthesize foldersInitialized = _foldersInitialized;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {
     self = [super init];

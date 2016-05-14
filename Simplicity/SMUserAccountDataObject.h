@@ -14,6 +14,8 @@
     @protected id<SMAbstractAccount> _account;
 }
 
+@property id<SMAbstractAccount> account;
+
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 
 @end

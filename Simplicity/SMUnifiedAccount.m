@@ -37,6 +37,11 @@
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         
         [_mailboxController initFolders];
+        
+        SMFolder *inboxFolder = [_mailbox inboxFolder];
+        NSAssert(inboxFolder, @"no inbox folder in the unified mailbox");
+        
+        [_messageListController changeFolder:inboxFolder.fullName];
     }
     
     return self;

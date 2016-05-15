@@ -198,17 +198,10 @@
     
     SM_LOG_DEBUG(@"selected row %lu, folder full name '%@'", selectedRow, folder.fullName);
 
-    [self doChangeFolder:folder];
+    [self changeFolder:folder];
 }
 
-- (void)changeFolder:(NSString*)folderName {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolder *folder = [appDelegate.currentMailbox getFolderByName:folderName];
-    
-    [self doChangeFolder:folder];
-}
-
-- (void)doChangeFolder:(SMFolder*)folder {
+- (void)changeFolder:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     [[appDelegate.currentAccount searchResultsListController] stopLatestSearch];
@@ -220,14 +213,14 @@
     
     _prevFolder = selectedFolder;
 
-    appDelegate.currentMailboxController.selectedFolder = folder;
+    [appDelegate.currentMailboxController changeFolder:folder];
     
     [self updateFolderListView];
 }
 
 - (void)changeToPrevFolder {
     if(_prevFolder != nil) {
-        [self changeFolder:_prevFolder.fullName];
+        [self changeFolder:_prevFolder];
         _prevFolder = nil;
     }
 }
@@ -241,7 +234,7 @@
     if(selectedFolder != nil) {
         _prevFolder = selectedFolder;
 
-        appDelegate.currentMailboxController.selectedFolder = nil;
+        [appDelegate.currentMailboxController changeFolder:nil];
     }
 }
 
@@ -781,7 +774,7 @@ typedef enum {
     
     if([[[appDelegate.currentMailboxController selectedFolder] fullName] isEqualToString:folder.fullName]) {
         SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
-        [self changeFolder:inboxFolder.fullName];
+        [self changeFolder:inboxFolder];
     }
 }
 

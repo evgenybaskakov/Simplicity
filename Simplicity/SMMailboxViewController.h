@@ -8,13 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMFolder;
 @class SMMailbox;
 
 @interface SMMailboxViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSMenuDelegate>
 
 @property (weak) IBOutlet NSTableView *folderListView;
 
-- (void)changeFolder:(NSString*)folderName;
+- (void)changeFolder:(SMFolder*)folder;
 - (void)changeToPrevFolder;
 - (void)updateFolderListView;
 - (void)clearSelection;

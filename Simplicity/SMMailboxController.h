@@ -12,12 +12,13 @@
 
 @protocol SMMailboxController<NSObject>
 
-@property SMFolder *selectedFolder;
+@property (readonly) SMFolder *selectedFolder;
 
 - (void)initFolders;
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName;
 - (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName;
 - (void)deleteFolder:(NSString*)oldFolderName;
+- (void)changeFolder:(SMFolder*)folder;
 - (NSUInteger)unseenMessagesCount:(SMFolder*)folder;
 - (NSUInteger)totalMessagesCount:(SMFolder*)folder;
 

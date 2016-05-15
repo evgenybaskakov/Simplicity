@@ -45,6 +45,10 @@
     }
 }
 
+- (void)changeFolder:(SMFolder *)folder {
+    _selectedFolder = folder;
+}
+
 - (NSString*)createFolder:(NSString*)folderName parentFolder:(NSString*)parentFolderName {
     SM_FATAL(@"Unified mailbox can't do this (folderName %@, parentFolderName %@)", folderName, parentFolderName);
     return 0;

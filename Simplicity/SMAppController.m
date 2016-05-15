@@ -296,10 +296,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         SMFolder *inboxFolder = [[account mailbox] inboxFolder];
         if(inboxFolder != nil) {
             [[account messageListController] changeFolder:inboxFolder.fullName];
+            [[account mailboxController] changeFolder:inboxFolder];
             
             if(account == appDelegate.currentAccount) {
                 // TODO: do we want the inbox folder to be first shown?
-                [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder.fullName];
+                [[[appDelegate appController] mailboxViewController] changeFolder:inboxFolder];
             }
             
             for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {

@@ -42,6 +42,7 @@
         NSAssert(inboxFolder, @"no inbox folder in the unified mailbox");
         
         [_messageListController changeFolder:inboxFolder.fullName];
+        [_mailboxController changeFolder:inboxFolder];
     }
     
     return self;

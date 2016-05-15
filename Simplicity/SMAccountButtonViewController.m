@@ -12,11 +12,11 @@
 #import "SMAccountButtonViewController.h"
 
 @interface SMAccountButtonViewController ()
-@property IBOutlet NSLayoutConstraint *accountNameToAttentionButtonContraint;
+@property IBOutlet NSLayoutConstraint *unreadCountToAttentionButtonContraint;
 @end
 
 @implementation SMAccountButtonViewController {
-    NSLayoutConstraint *_accountNameToViewContraint;
+    NSLayoutConstraint *_unreadCountToViewContraint;
     NSTrackingArea *_trackingArea;
     BOOL _attentionButtonShown;
 }
@@ -26,7 +26,7 @@
     
     // Do view setup here.
     
-    _accountNameToViewContraint = [NSLayoutConstraint constraintWithItem:_accountName attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:-5];
+    _unreadCountToViewContraint = [NSLayoutConstraint constraintWithItem:_unreadCountField attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:-5];
     
     _attentionButtonShown = YES;
     
@@ -48,11 +48,11 @@
         return;
     }
 
-    NSAssert(_accountNameToAttentionButtonContraint != nil, @"_accountNameToAttentionButtonContraint == nil");
-    NSAssert(_accountNameToViewContraint != nil, @"_accountNameToViewContraint == nil");
+    NSAssert(_unreadCountToAttentionButtonContraint != nil, @"_unreadCountToAttentionButtonContraint == nil");
+    NSAssert(_unreadCountToViewContraint != nil, @"_unreadCountToViewContraint == nil");
     
-    [self.view removeConstraint:_accountNameToViewContraint];
-    [self.view addConstraint:_accountNameToAttentionButtonContraint];
+    [self.view removeConstraint:_unreadCountToViewContraint];
+    [self.view addConstraint:_unreadCountToAttentionButtonContraint];
     
     _attentionButton.hidden = NO;
     
@@ -64,11 +64,11 @@
         return;
     }
     
-    NSAssert(_accountNameToAttentionButtonContraint != nil, @"_accountNameToAttentionButtonContraint == nil");
-    NSAssert(_accountNameToViewContraint != nil, @"_accountNameToViewContraint == nil");
+    NSAssert(_unreadCountToAttentionButtonContraint != nil, @"_unreadCountToAttentionButtonContraint == nil");
+    NSAssert(_unreadCountToViewContraint != nil, @"_unreadCountToViewContraint == nil");
     
-    [self.view removeConstraint:_accountNameToAttentionButtonContraint];
-    [self.view addConstraint:_accountNameToViewContraint];
+    [self.view removeConstraint:_unreadCountToAttentionButtonContraint];
+    [self.view addConstraint:_unreadCountToViewContraint];
     
     _attentionButton.hidden = YES;
     

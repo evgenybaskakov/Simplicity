@@ -14,6 +14,7 @@
 @property (weak) IBOutlet NSTextField *accountName;
 @property (weak) IBOutlet NSButton *accountButton;
 @property (weak) IBOutlet NSButton *attentionButton;
+@property (weak) IBOutlet NSTextField *unreadCountField;
 
 @property (nonatomic) NSColor *backgroundColor;
 

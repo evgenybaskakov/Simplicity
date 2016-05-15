@@ -573,6 +573,9 @@ typedef enum {
 }
 
 - (void)displayUnseenCount:(NSTextField*)textField folderName:(SMFolder*)folder selected:(BOOL)selected {
+    // TODO: this is called too often (Issue #99)
+    SM_LOG_DEBUG(@"folderName: %@", folder.fullName);
+    
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
 
     NSUInteger unseenCount;

@@ -25,6 +25,8 @@
     [super viewDidLoad];
     
     // Do view setup here.
+
+    _unreadCountField.stringValue = @"";
     
     _unreadCountToViewContraint = [NSLayoutConstraint constraintWithItem:_unreadCountField attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:-5];
     

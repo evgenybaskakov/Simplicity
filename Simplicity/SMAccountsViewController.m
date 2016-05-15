@@ -10,6 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMAbstractAccount.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMAccountMailbox.h"
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
@@ -18,6 +19,7 @@
 #import "SMAccountImageSelection.h"
 #import "SMColorView.h"
 #import "SMFlippedView.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
@@ -56,6 +58,7 @@
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncSuccess:) name:@"FolderListUpdated" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
     }
     
     return self;
@@ -380,6 +383,37 @@
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);
+    }
+}
+
+- (void)messagesUpdated:(NSNotification *)notification {
+    NSString *localFolder;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSInteger accountIdx = [appDelegate.accounts indexOfObject:account];
+    
+    if(accountIdx != NSNotFound) {
+        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+
+        SMFolder *inboxFolder = [[account mailbox] inboxFolder];
+        id<SMAbstractLocalFolder> inboxLocalFolder = [account.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
+
+        NSString *unreadCountStr = @"";
+        if(appDelegate.currentAccount != account) {
+            // Don't show unread count for collapsed accounts
+            if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
+                unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
+            }
+        }
+
+        [_accountButtonViewControllers[buttonIdx].unreadCountField setStringValue:unreadCountStr];
+    }
+
+    if([self shouldShowUnifiedMailboxButton]) {
+        // TODO
     }
 }
 

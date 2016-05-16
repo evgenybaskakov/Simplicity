@@ -20,10 +20,13 @@
     NSMutableOrderedSet<SMMessageThread*> *_messageThreadsByDate;
 }
 
-- (id)initWithUserAccount:(SMUnifiedAccount *)account {
+@synthesize localFolder = _localFolder;
+
+- (id)initWithUserAccount:(SMUnifiedAccount *)account localFolder:(id<SMAbstractLocalFolder>)localFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {
+        _localFolder = localFolder;
         _attachedMessageStorages = [NSMutableArray array];
         _messageThreadsByDate = [NSMutableOrderedSet orderedSet];
     }

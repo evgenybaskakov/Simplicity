@@ -14,6 +14,7 @@
 #import "SMAbstractMessageStorage.h"
 
 @protocol SMAbstractAccount;
+@protocol SMAbstractLocalFolder;
 
 @class SMMessage;
 @class SMMessageThread;
@@ -27,7 +28,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
     SMMesssageStorageUpdateResultStructureChanged
 };
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(NSString*)localFolder;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(id<SMAbstractLocalFolder>)localFolder;
 
 - (void)attachToUnifiedMessageStorage:(SMUnifiedMessageStorage*)unifiedMessageStorage;
 - (void)deattachFromUnifiedMessageStorage;

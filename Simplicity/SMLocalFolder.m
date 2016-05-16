@@ -55,7 +55,7 @@
         _kind = kind;
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
-        _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account localFolder:_localName];
+        _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account localFolder:self];
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
         _unseenMessagesCount = 0;
         _totalMessagesCount = 0;

@@ -8,10 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol SMAbstractLocalFolder;
+
 @class SMMessageThread;
 
 @protocol SMAbstractMessageStorage
 
+@property (readonly) id<SMAbstractLocalFolder> __weak localFolder;
 @property (readonly) NSUInteger messageThreadsCount;
 
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index;

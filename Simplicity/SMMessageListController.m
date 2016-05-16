@@ -175,6 +175,11 @@
     [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
+- (void)fetchMessageInlineAttachments:(SMMessage*)message {
+    //[[_currentMessageThread.messageStorage localFolder] ]appDelegate.currentAccount
+    [_account fetchMessageInlineAttachments:message];
+}
+
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
     SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
 

@@ -11,6 +11,7 @@
 #import "SMUserAccountDataObject.h"
 #import "SMAbstractMessageStorage.h"
 
+@protocol SMAbstractLocalFolder;
 @protocol SMAbstractAccount;
 
 @class SMUnifiedAccount;
@@ -18,7 +19,8 @@
 
 @interface SMUnifiedMessageStorage : SMUserAccountDataObject<SMAbstractMessageStorage>
 
-- (id)initWithUserAccount:(SMUnifiedAccount*)account;
+- (id)initWithUserAccount:(SMUnifiedAccount *)account localFolder:(id<SMAbstractLocalFolder>)localFolder;
+
 - (void)attachMessageStorage:(SMMessageStorage*)messageStorage;
 - (void)detachMessageStorage:(SMMessageStorage*)messageStorage;
 

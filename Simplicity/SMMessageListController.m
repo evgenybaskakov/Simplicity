@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMMessageListController.h"
@@ -173,6 +174,15 @@
     SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
 
     [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
+}
+
+- (void)fetchMessageInlineAttachments:(SMMessage*)message messageThread:(SMMessageThread*)messageThread {
+    if(_account.unified) {
+        [[messageThread.messageStorage account] fetchMessageInlineAttachments:message];
+    }
+    else {
+        [_account fetchMessageInlineAttachments:message];
+    }
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {

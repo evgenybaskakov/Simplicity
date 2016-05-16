@@ -118,11 +118,12 @@ static const CGFloat CELL_SPACING = -1;
     [messageThreadCellViewController setMessage:message];
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+
     if([messageThreadCellViewController loadMessageBody]) {
-        [appDelegate.currentAccount fetchMessageInlineAttachments:message];
-    } else {
-        SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        
+        [messageListController fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
+    }
+    else {
         [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
     }
     

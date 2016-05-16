@@ -17,6 +17,8 @@
 
 @interface SMMessageThread : NSObject
 
+@property (readonly) __weak SMMessageStorage *messageStorage;
+
 @property (readonly) uint64_t threadId;
 @property (readonly) NSInteger messagesCount;
 @property (readonly) NSInteger unseenMessagesCount;

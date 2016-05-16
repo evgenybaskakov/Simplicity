@@ -32,7 +32,7 @@
         _localName = localFolderName;
         _kind = kind;
         _attachedLocalFolders = [NSMutableArray array];
-        _messageStorage = [[SMUnifiedMessageStorage alloc] initWithUserAccount:account];
+        _messageStorage = [[SMUnifiedMessageStorage alloc] initWithUserAccount:account localFolder:self];
     }
     
     return self;

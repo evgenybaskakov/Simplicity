@@ -52,7 +52,6 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
 @implementation SMMessageThread {
     uint64_t _threadId;
-    SMMessageStorage __weak *_messageStorage;
     ThreadFlags _threadFlags;
     MessageCollection *_messageCollection;
     NSMutableOrderedSet *_labels;

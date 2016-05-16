@@ -17,18 +17,19 @@
 #import "SMMessageThreadCollection.h"
 #import "SMMessageThreadDescriptor.h"
 #import "SMUnifiedMessageStorage.h"
+#import "SMAbstractLocalFolder.h"
 #import "SMAppDelegate.h"
 
 @implementation SMMessageStorage {
-    NSString *_localFolder; // TODO: rename if local folder is renamed; see issue #98
     NSMutableDictionary *_messagesThreadsMap;
     SMMessageThreadCollection *_messageThreadCollection;
     __weak SMUnifiedMessageStorage *_unifiedMessageStorage;
 }
 
+@synthesize localFolder = _localFolder;
 @synthesize messageThreadsCount = _messageThreadsCount;
 
-- (id)initWithUserAccount:(SMUserAccount *)account localFolder:(NSString*)localFolder {
+- (id)initWithUserAccount:(SMUserAccount *)account localFolder:(id<SMAbstractLocalFolder>)localFolder {
     self = [super initWithUserAccount:account];
 
     if(self) {
@@ -140,7 +141,7 @@
         for(SMMessageThread *thread in messageThreads) {
             SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
             
-            [[_account database] removeMessageThreadFromDB:thread.threadId folder:_localFolder];
+            [[_account database] removeMessageThreadFromDB:thread.threadId folder:_localFolder.localName];
         }
     }
 }
@@ -238,7 +239,7 @@
                     // It will be put in the database on endUpdate if any subsequent updates follow.
                     SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                     
-                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder];
+                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.localName];
                 }
             }
         }
@@ -270,7 +271,7 @@
 }
 
 - (SMMessageStorageUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock {
-    SM_LOG_DEBUG(@"localFolder '%@'", _localFolder);
+    SM_LOG_DEBUG(@"localFolder '%@'", _localFolder.localName);
     
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
     
@@ -306,7 +307,7 @@
             if(updateDatabase) {
                 SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                 
-                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder];
+                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.localName];
             }
         }
     }
@@ -357,7 +358,7 @@
 - (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId {
     SMMessageThread *thread = [self messageThreadById:threadId];
     if(thread == nil) {
-        SM_LOG_DEBUG(@"thread id %lld not found in local folder %@", threadId, _localFolder);
+        SM_LOG_DEBUG(@"thread id %lld not found in local folder %@", threadId, _localFolder.localName);
         return NO;
     }
 
@@ -396,7 +397,7 @@
     const SMThreadUpdateResult threadUpdateResult = [messageThread addMessage:message];
     
     if(threadUpdateResult == SMThreadUpdateResultNone) {
-        SM_LOG_INFO(@"Message uid %u, threadId %llu already exists in folder %@", message.uid, message.threadId, _localFolder);
+        SM_LOG_INFO(@"Message uid %u, threadId %llu already exists in folder %@", message.uid, message.threadId, _localFolder.localName);
         return FALSE;
     }
     
@@ -406,10 +407,10 @@
 
     if(updateDatabase) {
         if([message isKindOfClass:[SMOutgoingMessage class]]) {
-            [[_account database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:_localFolder];
+            [[_account database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:_localFolder.localName];
         }
         else {
-            [[_account database] putMessageToDBFolder:message.imapMessage folder:_localFolder];
+            [[_account database] putMessageToDBFolder:message.imapMessage folder:_localFolder.localName];
         }
     }
     
@@ -427,7 +428,7 @@
     if(messageThread != nil) {
         NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread];
         if(oldIndex == NSNotFound) {
-            SM_LOG_ERROR(@"message thead %llu not found in local folder '%@'", message.threadId, _localFolder);
+            SM_LOG_ERROR(@"message thead %llu not found in local folder '%@'", message.threadId, _localFolder.localName);
         }
 
         const SMThreadUpdateResult threadUpdateResult = [messageThread removeMessage:message];

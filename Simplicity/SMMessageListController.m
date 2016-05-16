@@ -9,6 +9,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMMessageListController.h"
@@ -175,9 +176,13 @@
     [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
-- (void)fetchMessageInlineAttachments:(SMMessage*)message {
-    //[[_currentMessageThread.messageStorage localFolder] ]appDelegate.currentAccount
-    [_account fetchMessageInlineAttachments:message];
+- (void)fetchMessageInlineAttachments:(SMMessage*)message messageStorage:(SMMessageStorage*)messageStorage {
+    if(_account.unified) {
+        [messageStorage.account fetchMessageInlineAttachments:message];
+    }
+    else {
+        [_account fetchMessageInlineAttachments:message];
+    }
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {

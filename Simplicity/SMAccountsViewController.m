@@ -296,6 +296,12 @@
     }
     
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    
+    for(NSInteger i = 0; i < accountsCount; i++) {
+        [self updateAccountButtonInfo:i];
+    }
+    
+    [self updateUnifiedAccountButtonInfo];
 }
 
 - (void)changeAccountTo:(NSInteger)accountIdx {
@@ -396,25 +402,46 @@
     NSInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
-        NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+        [self updateAccountButtonInfo:accountIdx];
+    }
 
-        SMFolder *inboxFolder = [[account mailbox] inboxFolder];
-        id<SMAbstractLocalFolder> inboxLocalFolder = [account.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
+    [self updateUnifiedAccountButtonInfo];
+}
 
-        NSString *unreadCountStr = @"";
-        if(appDelegate.currentAccount != account) {
-            // Don't show unread count for collapsed accounts
-            if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
-                unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
-            }
+- (void)updateAccountButtonInfo:(NSInteger)accountIdx {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMUserAccount *account = appDelegate.accounts[accountIdx];
+    
+    NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
+    
+    SMFolder *inboxFolder = [[account mailbox] inboxFolder];
+    id<SMAbstractLocalFolder> inboxLocalFolder = [account.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
+    
+    NSString *unreadCountStr = @"";
+    if(appDelegate.currentAccount != account) {
+        if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
+            unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
         }
+    }
+    
+    [_accountButtonViewControllers[buttonIdx].unreadCountField setStringValue:unreadCountStr];
+}
 
-        [_accountButtonViewControllers[buttonIdx].unreadCountField setStringValue:unreadCountStr];
+- (void)updateUnifiedAccountButtonInfo {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    NSString *unreadCountStr = @"";
+    if([self shouldShowUnifiedMailboxButton] && !appDelegate.currentAccountIsUnified) {
+        SMUnifiedAccount *unifiedAccount = appDelegate.unifiedAccount;
+        SMFolder *inboxFolder = [unifiedAccount.mailbox inboxFolder];
+        id<SMAbstractLocalFolder> inboxLocalFolder = [unifiedAccount.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
+        
+        if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
+            unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
+        }
     }
 
-    if([self shouldShowUnifiedMailboxButton]) {
-        // TODO
-    }
+    [_accountButtonViewControllers[0].unreadCountField setStringValue:unreadCountStr];
 }
 
 @end

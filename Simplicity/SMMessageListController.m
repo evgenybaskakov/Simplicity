@@ -176,9 +176,9 @@
     [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
 }
 
-- (void)fetchMessageInlineAttachments:(SMMessage*)message messageStorage:(SMMessageStorage*)messageStorage {
+- (void)fetchMessageInlineAttachments:(SMMessage*)message messageThread:(SMMessageThread*)messageThread {
     if(_account.unified) {
-        [messageStorage.account fetchMessageInlineAttachments:message];
+        [[messageThread.messageStorage account] fetchMessageInlineAttachments:message];
     }
     else {
         [_account fetchMessageInlineAttachments:message];

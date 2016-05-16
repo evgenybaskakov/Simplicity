@@ -21,7 +21,6 @@
 		001A41CE199EFB5300AA3AE6 /* SMMessageComparators.m in Sources */ = {isa = PBXBuildFile; fileRef = 001A41CD199EFB5300AA3AE6 /* SMMessageComparators.m */; };
 		002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057C81A85D2DA00D5FE8A /* important-white.png */; };
 		002057D01A85D2DA00D5FE8A /* star-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057C91A85D2DA00D5FE8A /* star-white.png */; };
-		002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057CA1A85D2DA00D5FE8A /* trash-white.png */; };
 		002057D21A85D2DA00D5FE8A /* sent-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057CB1A85D2DA00D5FE8A /* sent-white.png */; };
 		002057D31A85D2DA00D5FE8A /* outbox-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057CC1A85D2DA00D5FE8A /* outbox-white.png */; };
 		002057D41A85D2DA00D5FE8A /* spam-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 002057CD1A85D2DA00D5FE8A /* spam-white.png */; };
@@ -57,7 +56,6 @@
 		008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */; };
 		008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 008F93691AC4F8E600C21D62 /* SMOutboxController.m */; };
 		00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */ = {isa = PBXBuildFile; fileRef = 00909E741A9ACDE300636C90 /* SearchWebView.js */; };
-		009217A51A92F007003A0348 /* trash-black.png in Resources */ = {isa = PBXBuildFile; fileRef = 009217A41A92F007003A0348 /* trash-black.png */; };
 		009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 009217AE1A930019003A0348 /* SMMessageThreadCollection.m */; };
 		00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00974266195684DD00620145 /* SMMailboxViewController.xib */; };
 		0097426E195686F900620145 /* SMMailboxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0097426D195686F900620145 /* SMMailboxViewController.m */; };
@@ -202,6 +200,8 @@
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
+		80B9DF231CE9919D00C9058C /* trash-black.png in Resources */ = {isa = PBXBuildFile; fileRef = 80B9DF221CE9919D00C9058C /* trash-black.png */; };
+		80B9DF251CE9926A00C9058C /* trash-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 80B9DF241CE9926A00C9058C /* trash-white.png */; };
 		80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */; };
 		80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */; };
 		80BD0A2E1C4E018B00F43EA2 /* SMSectionMenuItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A2D1C4E018B00F43EA2 /* SMSectionMenuItemView.m */; };
@@ -342,7 +342,6 @@
 		001A41CD199EFB5300AA3AE6 /* SMMessageComparators.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageComparators.m; sourceTree = "<group>"; };
 		002057C81A85D2DA00D5FE8A /* important-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "important-white.png"; sourceTree = "<group>"; };
 		002057C91A85D2DA00D5FE8A /* star-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star-white.png"; sourceTree = "<group>"; };
-		002057CA1A85D2DA00D5FE8A /* trash-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-white.png"; sourceTree = "<group>"; };
 		002057CB1A85D2DA00D5FE8A /* sent-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sent-white.png"; sourceTree = "<group>"; };
 		002057CC1A85D2DA00D5FE8A /* outbox-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "outbox-white.png"; sourceTree = "<group>"; };
 		002057CD1A85D2DA00D5FE8A /* spam-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spam-white.png"; sourceTree = "<group>"; };
@@ -396,7 +395,6 @@
 		008F93681AC4F8E600C21D62 /* SMOutboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOutboxController.h; sourceTree = "<group>"; };
 		008F93691AC4F8E600C21D62 /* SMOutboxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOutboxController.m; sourceTree = "<group>"; };
 		00909E741A9ACDE300636C90 /* SearchWebView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SearchWebView.js; sourceTree = "<group>"; };
-		009217A41A92F007003A0348 /* trash-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-black.png"; sourceTree = "<group>"; };
 		009217AD1A930019003A0348 /* SMMessageThreadCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadCollection.h; sourceTree = "<group>"; };
 		009217AE1A930019003A0348 /* SMMessageThreadCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadCollection.m; sourceTree = "<group>"; };
 		00974266195684DD00620145 /* SMMailboxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMailboxViewController.xib; sourceTree = "<group>"; };
@@ -633,6 +631,8 @@
 		80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPlainTextMessageEditor.m; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
+		80B9DF221CE9919D00C9058C /* trash-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-black.png"; sourceTree = "<group>"; };
+		80B9DF241CE9926A00C9058C /* trash-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-white.png"; sourceTree = "<group>"; };
 		80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuViewController.h; sourceTree = "<group>"; };
 		80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSectionMenuViewController.m; sourceTree = "<group>"; };
 		80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMSectionMenuViewController.xib; sourceTree = "<group>"; };
@@ -1145,8 +1145,8 @@
 				002556FD1A5A5C6600C864D0 /* star-gray-icon.png */,
 				002057C91A85D2DA00D5FE8A /* star-white.png */,
 				002556F01A5A2EC700C864D0 /* star-yellow-icon.png */,
-				009217A41A92F007003A0348 /* trash-black.png */,
-				002057CA1A85D2DA00D5FE8A /* trash-white.png */,
+				80B9DF221CE9919D00C9058C /* trash-black.png */,
+				80B9DF241CE9926A00C9058C /* trash-white.png */,
 				0047416B1AA42115002566E8 /* uncollapse-all.png */,
 			);
 			name = Resources;
@@ -1398,7 +1398,6 @@
 				800AB7F61CACF79A00582B57 /* Envelope.png in Resources */,
 				0047416C1AA42115002566E8 /* collapse-all.png in Resources */,
 				002057D21A85D2DA00D5FE8A /* sent-white.png in Resources */,
-				009217A51A92F007003A0348 /* trash-black.png in Resources */,
 				80A44B181B5A19260049AB88 /* align_justify-128.png in Resources */,
 				80533AD41B41189B00A0A67F /* Quote-50.png in Resources */,
 				002057D01A85D2DA00D5FE8A /* star-white.png in Resources */,
@@ -1426,6 +1425,7 @@
 				804373B81CCF431500C802EC /* sendicon.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,
 				0099CE861A623B2A00AEA789 /* attachment-icon.png in Resources */,
+				80B9DF251CE9926A00C9058C /* trash-white.png in Resources */,
 				802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */,
 				80279AEC1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib in Resources */,
 				801EDEF01BE9EB6700A16E85 /* at_sign.png in Resources */,
@@ -1435,9 +1435,9 @@
 				80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */,
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */,
-				002057D11A85D2DA00D5FE8A /* trash-white.png in Resources */,
 				80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */,
 				80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */,
+				80B9DF231CE9919D00C9058C /* trash-black.png in Resources */,
 				80D443751B5F51C000D0FC26 /* full_recycle_bin-128.png in Resources */,
 				002556F11A5A2EC700C864D0 /* star-yellow-icon.png in Resources */,
 				0002A0A817D1B1E000EA4AFF /* MainMenu.xib in Resources */,

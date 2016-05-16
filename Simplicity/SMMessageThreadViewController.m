@@ -223,7 +223,7 @@ static const CGFloat CELL_SPACING = -1;
             SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             
-            [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+            [_currentMessageThread setMessageUnseen:cell.message unseen:NO];
             [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
             
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
@@ -529,7 +529,7 @@ static const CGFloat CELL_SPACING = -1;
     if(!collapsed && cell.message.unseen) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         
-        [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:cell.message unseen:NO];
+        [_currentMessageThread setMessageUnseen:cell.message unseen:NO];
         [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
         
         [self updateMessageThread];
@@ -925,12 +925,7 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
-    
-    [currentFolder setMessageUnseen:cell.message unseen:!cell.message.unseen];
+    [_currentMessageThread setMessageUnseen:cell.message unseen:!cell.message.unseen];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     // If the message is being marked unseen, collapse its cell.
@@ -954,6 +949,7 @@ static const CGFloat CELL_SPACING = -1;
         [self updateMessageThread];
     }
     
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveMessageListSelection];
 }
 

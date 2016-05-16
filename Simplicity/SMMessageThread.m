@@ -16,6 +16,10 @@
 #import "SMMessageStorage.h"
 #import "SMMessageThread.h"
 
+// TODO: get rid of this
+#import "SMAbstractLocalFolder.h"
+#import "SMMessageListController.h"
+
 @interface MessageCollection : NSObject
 @property NSMutableOrderedSet *messagesByDate;
 @property NSMutableOrderedSet *messagesByUID;
@@ -506,6 +510,12 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     }
     
     NSAssert([_messageCollection messagesByUID].count == [_messageCollection messagesByDate].count, @"message storage inconsistency after removing a message");
+}
+
+// TODO: Find a better place for these?
+
+- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
+    [[[_messageStorage.account messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
 }
 
 @end

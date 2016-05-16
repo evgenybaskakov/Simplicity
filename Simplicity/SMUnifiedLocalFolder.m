@@ -77,67 +77,67 @@
 }
 
 - (void)increaseLocalFolderCapacity {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
 }
 
 - (void)increaseLocalFolderFootprint:(uint64_t)size {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
 }
 
 - (void)startLocalFolderSync {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
 }
 
 - (void)stopLocalFolderSync {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
 - (Boolean)messageHeadersAreBeingLoaded {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"TODO");
     return NO;
 }
 
 - (void)addMessage:(SMMessage*)message {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
 - (void)removeMessage:(SMMessage*)message {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
 - (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
     return NO;
 }
 
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
     return NO;
 }
 
 - (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)remoteFolderName {
-    SM_LOG_WARNING(@"TODO");
+    SM_FATAL(@"TODO");
     return NO;
 }
 
 - (void)reclaimMemory:(uint64_t)memoryToReclaimKb {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
 }
 
 - (uint64_t)getTotalMemoryKb {
-    SM_LOG_WARNING(@"TODO");
+    // Nothing to do
     return 0;
 }
 

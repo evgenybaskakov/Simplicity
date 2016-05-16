@@ -754,7 +754,7 @@
             //
             // TODO: Optimize by using the bulk API for setting IMAP flags
             //
-            [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:message unseen:NO];
+            [messageThread setMessageUnseen:message unseen:NO];
             [messageThread updateThreadAttributesFromMessageUID:message.uid];
         }
     }
@@ -764,7 +764,7 @@
         //
         SMMessage *message = messageThread.messagesSortedByDate[0];
         
-        [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:message unseen:!message.unseen];
+        [messageThread setMessageUnseen:message unseen:!message.unseen];
         [messageThread updateThreadAttributesFromMessageUID:message.uid];
     }
     
@@ -914,7 +914,7 @@
         
         if(messageThread != nil) {
             for(SMMessage *message in messageThread.messagesSortedByDate) {
-                [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
+                [messageThread setMessageUnseen:message unseen:unseen];
                 [messageThread updateThreadAttributesFromMessageUID:message.uid];
             }
         }

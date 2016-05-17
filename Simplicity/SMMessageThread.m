@@ -518,4 +518,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [[[_messageStorage.account messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
 }
 
+- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
+    [[[_messageStorage.account messageListController] currentLocalFolder] setMessageFlagged:message flagged:flagged];
+}
+
 @end

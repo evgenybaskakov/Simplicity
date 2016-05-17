@@ -711,9 +711,7 @@
     //
     SMMessage *message = messageThread.messagesSortedByDate[0];
     
-    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
-    [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageFlagged:message flagged:YES];
-    
+    [messageThread setMessageFlagged:message flagged:YES];
     [messageThread updateThreadAttributesFromMessageUID:message.uid];
 }
 
@@ -725,9 +723,7 @@
         //
         // TODO: Optimize by using the bulk API for setting IMAP flags
         //
-        SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
-        [[[appDelegate.currentAccount messageListController] currentLocalFolder] setMessageFlagged:message flagged:NO];
-
+        [messageThread setMessageFlagged:message flagged:NO];
         [messageThread updateThreadAttributesFromMessageUID:message.uid];
     }
 }

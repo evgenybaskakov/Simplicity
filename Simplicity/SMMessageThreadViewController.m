@@ -968,7 +968,7 @@ static const CGFloat CELL_SPACING = -1;
     id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    [currentFolder setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];
+    [_currentMessageThread setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     [self updateMessageThread];

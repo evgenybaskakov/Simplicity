@@ -625,7 +625,7 @@
 
     // Check how many threads could make the move
     // Use the rest to decide how to change the table selection
-    if(messageThreadsToMove.count > 1) {
+    if(messageThreadsCouldntBeMoved.count > 1) {
         [_multipleSelectedMessageThreads addObjectsFromArray:messageThreadsCouldntBeMoved];
     }
     else if(messageThreadsCouldntBeMoved.count == 1) {

@@ -902,11 +902,7 @@ static const CGFloat CELL_SPACING = -1;
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
         
-        SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-        NSAssert(currentFolder != nil, @"no current folder");
-        
-        if([currentFolder moveMessage:cell.message.uid threadId:_currentMessageThread.threadId toRemoteFolder:trashFolder.fullName]) {
+        if([_currentMessageThread moveMessage:cell.message toRemoteFolder:trashFolder.fullName]) {
             [messageListViewController reloadMessageList:YES];
         }
         

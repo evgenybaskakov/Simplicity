@@ -14,6 +14,7 @@
 
 @class SMMessage;
 @class SMMessageStorage;
+@class SMMessageThread;
 
 @protocol SMAbstractLocalFolder
 
@@ -71,7 +72,7 @@
 
 // starts asynchronous process of moving the messages from the selected message threads
 // to the chosen folder
-- (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)remoteFolderName;
+- (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;
 
 // frees the occupied memory until the requested amount is reclaimed
 // or there is nothing to reclaim within this folder

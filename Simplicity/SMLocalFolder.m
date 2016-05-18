@@ -646,18 +646,18 @@
 
 #pragma mark Messages movement to other remote folders
 
-- (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)destRemoteFolderName {
+- (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     id<SMMailbox> mailbox = [_account mailbox];
-    SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
+    SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName]; // TODO: use folder kind along with the name
     
     if(destFolder == nil) {
-        SM_LOG_INFO(@"Destination folder %@ not found", destRemoteFolderName);
+        SM_LOG_ERROR(@"Destination folder %@ not found", destRemoteFolderName);
         return FALSE;
     }
 
     if(_kind == SMFolderKindOutbox) {
         if(destFolder.kind != SMFolderKindTrash) {
-            SM_LOG_INFO(@"Destination folder %@ (kind %ld) is not Trash", destRemoteFolderName, destFolder.kind);
+            SM_LOG_WARNING(@"Destination folder %@ (kind %ld) is not Trash", destRemoteFolderName, destFolder.kind);
             return FALSE;
         }
         
@@ -666,19 +666,17 @@
         // 2) Remove the messages from the storage for the outbox folder;
         // 3) Put the deleted messages to the local Trash folder.
 
-        for(SMMessageThread *messageThread in messageThreads) {
-            for(SMMessage *message in messageThread.messagesSortedByDate) {
-                NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
-                [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
+        for(SMMessage *message in messageThread.messagesSortedByDate) {
+            NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
+            [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
-                SMFolder *trashFolder = [[_account mailbox] trashFolder];
-                SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:trashFolder.fullName];
+            SMFolder *trashFolder = [[_account mailbox] trashFolder];
+            SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:trashFolder.fullName];
 
-                NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
-                [trashLocalFolder addMessage:message];
+            NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
+            [trashLocalFolder addMessage:message];
 
-                [self removeMessage:message];
-            }
+            [self removeMessage:message];
         }
 
         [SMNotificationsController localNotifyMessageFlagsUpdates:_localName account:_account];
@@ -694,32 +692,30 @@
     [self cancelScheduledMessageListUpdate];
 
     // Remove the deleted message threads from the message storage.
-    [_messageStorage deleteMessageThreads:messageThreads updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
+    [_messageStorage deleteMessageThread:messageThread updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
 
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
-    for(SMMessageThread *thread in messageThreads) {
-        NSArray *messages = [thread messagesSortedByDate];
-        
-        // Iterate messages for each deleted message thread.
-        for(SMMessage *message in messages) {
-            // Note that we choose only messages that belong to the current folder.
-            // If a message doesn't belong to the folder, it's already in another folder
-            // and hence has been shown in this message thread because of its thread id.
-            // So leave it alone (skip it).
-            if([message.remoteFolder isEqualToString:_remoteFolderName] || [message isKindOfClass:[SMOutgoingMessage class]]) {
-                if(![message isKindOfClass:[SMOutgoingMessage class]]) {
-                    // Keep the message for later; we'll have to actually move it remotely.
-                    // Note that local (outgoing) messages do not require moving.
-                    [messagesToMoveUids addIndex:message.uid];
-                }
-
-                // Cancel message body fetching.
-                [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName];
-
-                // Delete the message from the local database as well.
-                [[_account database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
+    NSArray *messages = [messageThread messagesSortedByDate];
+    
+    // Iterate messages for each deleted message thread.
+    for(SMMessage *message in messages) {
+        // Note that we choose only messages that belong to the current folder.
+        // If a message doesn't belong to the folder, it's already in another folder
+        // and hence has been shown in this message thread because of its thread id.
+        // So leave it alone (skip it).
+        if([message.remoteFolder isEqualToString:_remoteFolderName] || [message isKindOfClass:[SMOutgoingMessage class]]) {
+            if(![message isKindOfClass:[SMOutgoingMessage class]]) {
+                // Keep the message for later; we'll have to actually move it remotely.
+                // Note that local (outgoing) messages do not require moving.
+                [messagesToMoveUids addIndex:message.uid];
             }
+
+            // Cancel message body fetching.
+            [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName];
+
+            // Delete the message from the local database as well.
+            [[_account database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
         }
     }
     

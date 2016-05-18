@@ -127,7 +127,7 @@
     return NO;
 }
 
-- (BOOL)moveMessageThreads:(NSArray*)messageThreads toRemoteFolder:(NSString*)remoteFolderName {
+- (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     SM_FATAL(@"TODO");
     return NO;
 }

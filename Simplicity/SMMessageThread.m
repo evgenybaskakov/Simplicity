@@ -515,11 +515,24 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 // TODO: Find a better place for these?
 
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
-    [[[_messageStorage.account messageListController] currentLocalFolder] setMessageUnseen:message unseen:unseen];
+    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
+    [localFolder setMessageUnseen:message unseen:unseen];
 }
 
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
-    [[[_messageStorage.account messageListController] currentLocalFolder] setMessageFlagged:message flagged:flagged];
+    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
+    [localFolder setMessageFlagged:message flagged:flagged];
+}
+
+- (BOOL)moveMessage:(SMMessage *)message toRemoteFolder:(NSString *)remoteFolder {
+    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
+    return [localFolder moveMessage:message.uid threadId:_threadId toRemoteFolder:remoteFolder];
+    
+}
+
+- (BOOL)moveMessageThreadToRemoteFolder:(NSString*)remoteFolder {
+    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
+    return [localFolder moveMessageThread:self toRemoteFolder:remoteFolder];
 }
 
 @end

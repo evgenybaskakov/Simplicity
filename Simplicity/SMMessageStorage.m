@@ -120,29 +120,25 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
 }
 
-- (void)deleteMessageThreads:(NSArray *)messageThreads updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
-    for(SMMessageThread *thread in messageThreads) {
-        for(SMMessage *m in thread.messagesSortedByDate) {
-            if(m.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
-                (*unseenMessagesCount)--;
-            }
-
-            [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
+- (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+    for(SMMessage *m in messageThread.messagesSortedByDate) {
+        if(m.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
+            (*unseenMessagesCount)--;
         }
 
-        [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:thread.threadId]];
-        [_messageThreadCollection.messageThreadsByDate removeObject:thread];
-        
-        // Update the unified storage, if any.
-        [_unifiedMessageStorage removeMessageThread:thread];
+        [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
     }
+
+    [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageThread.threadId]];
+    [_messageThreadCollection.messageThreadsByDate removeObject:messageThread];
+    
+    // Update the unified storage, if any.
+    [_unifiedMessageStorage removeMessageThread:messageThread];
     
     if(updateDatabase) {
-        for(SMMessageThread *thread in messageThreads) {
-            SM_LOG_INFO(@"Deleting message thread %llu from the database", thread.threadId);
-            
-            [[_account database] removeMessageThreadFromDB:thread.threadId folder:_localFolder.localName];
-        }
+        SM_LOG_INFO(@"Deleting message thread %llu from the database", messageThread.threadId);
+        
+        [[_account database] removeMessageThreadFromDB:messageThread.threadId folder:_localFolder.localName];
     }
 }
 
@@ -154,7 +150,7 @@
     NSAssert([messageThread getMessageByUID:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
 
     if(messageThread.messagesCount == 1) {
-        [self deleteMessageThreads:[NSArray arrayWithObject:messageThread] updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
+        [self deleteMessageThread:messageThread updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
         return true;
     }
     else {
@@ -316,7 +312,9 @@
     // message thread update automatically removes vanished message threads.
     // Also note that the unseen message count is not needed to be updated, because
     // we've already got it right.
-    [self deleteMessageThreads:vanishedThreads updateDatabase:NO unseenMessagesCount:nil];
+    for(SMMessageThread *messageThread in vanishedThreads) {
+        [self deleteMessageThread:messageThread updateDatabase:NO unseenMessagesCount:nil];
+    }
 
     if(removeVanishedMessages) {
         if(updateDatabase) {
@@ -441,7 +439,7 @@
             }
         }
         else {
-            [self deleteMessageThreads:@[messageThread] updateDatabase:updateDatabase unseenMessagesCount:nil];
+            [self deleteMessageThread:messageThread updateDatabase:updateDatabase unseenMessagesCount:nil];
         }
     }
     else {

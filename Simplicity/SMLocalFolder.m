@@ -744,6 +744,10 @@
     return TRUE;
 }
 
+- (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
+    return [self moveMessage:message.uid threadId:messageThread.threadId useThreadId:(messageThread? YES : NO) toRemoteFolder:destRemoteFolderName];
+}
+
 - (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     NSNumber *threadIdNum = [_messageStorage messageThreadByMessageUID:uid]; // TODO: use folder name along with UID!
 
@@ -751,10 +755,6 @@
     const Boolean useThreadId = (threadIdNum != nil);
 
     return [self moveMessage:uid threadId:threadId useThreadId:useThreadId toRemoteFolder:destRemoteFolderName];
-}
-
-- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName {
-    return [self moveMessage:uid threadId:threadId useThreadId:YES toRemoteFolder:destRemoteFolderName];
 }
 
 - (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {

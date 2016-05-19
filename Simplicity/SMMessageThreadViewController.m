@@ -901,9 +901,11 @@ static const CGFloat CELL_SPACING = -1;
     }
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
-        
-        // TODO: trashFolder is invalid if it comes from the unified folder
-        if([_currentMessageThread moveMessage:cell.message toRemoteFolder:trashFolder.fullName]) {
+
+        id<SMAbstractLocalFolder> currentLocalFolder = [[appDelegate.currentAccount messageListController] currentLocalFolder];
+        NSAssert(currentLocalFolder != nil, @"no current local folder");
+
+        if([currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
             [messageListViewController reloadMessageList:YES];
         }
         

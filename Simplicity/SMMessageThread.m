@@ -524,10 +524,4 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [localFolder setMessageFlagged:message flagged:flagged];
 }
 
-- (BOOL)moveMessage:(SMMessage *)message toRemoteFolder:(NSString *)remoteFolder {
-    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
-    return [localFolder moveMessage:message.uid threadId:_threadId toRemoteFolder:remoteFolder];
-    
-}
-
 @end

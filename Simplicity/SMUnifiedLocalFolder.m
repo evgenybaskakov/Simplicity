@@ -132,12 +132,27 @@
 }
 
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
+    SMLocalFolder *destAccountLocalFolder;
     SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];
-    SMLocalFolder *targetAccountLocalFolder = [self attachedLocalFolderForAccount:targetAccount];
-    SMUnifiedLocalFolder *destUnifiedLocalFolder = (SMUnifiedLocalFolder*)[_account.localFolderRegistry getLocalFolderByName:destRemoteFolderName];
-    SMLocalFolder *destAccountLocalFolder = [destUnifiedLocalFolder attachedLocalFolderForAccount:targetAccount];
+    SMLocalFolder *targetAccountLocalFolder = [self targetAndDestLocalFoldersForAccount:targetAccount remoteFolderName:destRemoteFolderName destAccountLocalFolder:&destAccountLocalFolder];
     
     return [targetAccountLocalFolder moveMessageThread:messageThread toRemoteFolder:destAccountLocalFolder.remoteFolderName];
+}
+
+- (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
+    SMLocalFolder *destAccountLocalFolder;
+    SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];
+    SMLocalFolder *targetAccountLocalFolder = [self targetAndDestLocalFoldersForAccount:targetAccount remoteFolderName:destRemoteFolderName destAccountLocalFolder:&destAccountLocalFolder];
+
+    return [targetAccountLocalFolder moveMessage:message withinMessageThread:messageThread toRemoteFolder:destAccountLocalFolder.remoteFolderName];
+}
+
+- (SMLocalFolder*)targetAndDestLocalFoldersForAccount:(SMUserAccount*)account remoteFolderName:(NSString*)remoteFolderName destAccountLocalFolder:(SMLocalFolder**)destAccountLocalFolder {
+    SMLocalFolder *targetAccountLocalFolder = [self attachedLocalFolderForAccount:account];
+    SMUnifiedLocalFolder *destUnifiedLocalFolder = (SMUnifiedLocalFolder*)[_account.localFolderRegistry getLocalFolderByName:remoteFolderName];
+    
+    *destAccountLocalFolder = [destUnifiedLocalFolder attachedLocalFolderForAccount:account];
+    return targetAccountLocalFolder;
 }
 
 - (SMLocalFolder*)attachedLocalFolderForAccount:(SMUserAccount*)account {

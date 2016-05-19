@@ -64,11 +64,12 @@
 // sets/clears the "flag" mark
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
 
-// initiates process of moving the selected message to another (remote) folder
+// initiates process of moving the given message to another (remote) folder
+//TODO!!!!!!!
 - (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName;
 
 // initiates process of moving the selected message to another (remote) folder
-- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName;
+- (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;
 
 // starts asynchronous process of moving the messages from the selected message threads
 // to the chosen folder

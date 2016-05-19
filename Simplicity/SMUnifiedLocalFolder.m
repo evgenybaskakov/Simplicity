@@ -126,11 +126,6 @@
     return NO;
 }
 
-- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId toRemoteFolder:(NSString*)destRemoteFolderName {
-    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
-    return NO;
-}
-
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     SMLocalFolder *destAccountLocalFolder;
     SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];

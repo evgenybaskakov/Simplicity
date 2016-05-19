@@ -666,7 +666,7 @@ typedef enum {
         return NO;
     }
 
-    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:targetFolder.fullName];
+    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:targetFolder];
     
     SM_LOG_INFO(@"Moving messages from %@ to %@", currentFolder.fullName, targetFolder.fullName);
     return YES;

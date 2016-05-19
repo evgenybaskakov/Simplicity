@@ -9,7 +9,11 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMLocalFolder.h"
+#import "SMMessageThread.h"
+#import "SMMessageStorage.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMUnifiedAccount.h"
+#import "SMUnifiedMailbox.h"
 #import "SMUnifiedMessageStorage.h"
 #import "SMUnifiedLocalFolder.h"
 
@@ -128,8 +132,23 @@
 }
 
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
-    SM_FATAL(@"TODO");
-    return NO;
+    SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];
+    SMLocalFolder *targetAccountLocalFolder = [self attachedLocalFolderForAccount:targetAccount];
+    SMUnifiedLocalFolder *destUnifiedLocalFolder = (SMUnifiedLocalFolder*)[_account.localFolderRegistry getLocalFolderByName:destRemoteFolderName];
+    SMLocalFolder *destAccountLocalFolder = [destUnifiedLocalFolder attachedLocalFolderForAccount:targetAccount];
+    
+    return [targetAccountLocalFolder moveMessageThread:messageThread toRemoteFolder:destAccountLocalFolder.remoteFolderName];
+}
+
+- (SMLocalFolder*)attachedLocalFolderForAccount:(SMUserAccount*)account {
+    for(SMLocalFolder *f in _attachedLocalFolders) {
+        if(f.account == account) {
+            return f;
+        }
+    }
+    
+    SM_FATAL(@"Attached local folder %@ not found for the given account", _localName);
+    return nil;
 }
 
 - (void)reclaimMemory:(uint64_t)memoryToReclaimKb {

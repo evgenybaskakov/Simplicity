@@ -530,9 +530,4 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     
 }
 
-- (BOOL)moveMessageThreadToRemoteFolder:(NSString*)remoteFolder {
-    id<SMAbstractLocalFolder> localFolder = [[_messageStorage.account messageListController] currentLocalFolder];
-    return [localFolder moveMessageThread:self toRemoteFolder:remoteFolder];
-}
-
 @end

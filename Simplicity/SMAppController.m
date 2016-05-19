@@ -542,7 +542,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder.fullName];
+    [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder];
 }
 
 #pragma mark Find Contents panel management

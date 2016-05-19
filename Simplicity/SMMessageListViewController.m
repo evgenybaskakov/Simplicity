@@ -571,8 +571,8 @@
     [_loadingMoreMessagesProgressIndicator stopAnimation:self];
 }
 
-- (void)moveSelectedMessageThreadsToFolder:(NSString*)remoteFolderName {
-    SM_LOG_DEBUG(@"to remote folder %@", remoteFolderName);
+- (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolder {
+    SM_LOG_DEBUG(@"to remote folder %@", remoteFolder.fullName);
     
     // 1. stop current sync, disable further syncs
     // 2. remote selected message threads from the list
@@ -612,8 +612,8 @@
     NSMutableArray *messageThreadsCouldntBeMoved = [NSMutableArray array];
 
     for(SMMessageThread *messageThread in messageThreadsToMove) {
-        if(![messageThread moveMessageThreadToRemoteFolder:remoteFolderName]) {
-            SM_LOG_DEBUG(@"Could not move message thread %lld to %@", messageThread.threadId, remoteFolderName);
+        if(![currentFolder moveMessageThread:messageThread toRemoteFolder:remoteFolder.fullName]) {
+            SM_LOG_DEBUG(@"Could not move message thread %lld to %@", messageThread.threadId, remoteFolder.fullName);
             
             [messageThreadsCouldntBeMoved addObject:messageThread];
         }

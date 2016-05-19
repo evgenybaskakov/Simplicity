@@ -648,13 +648,13 @@
 
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     id<SMMailbox> mailbox = [_account mailbox];
-    SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName]; // TODO: use folder kind along with the name
+    SMFolder *destFolder = [mailbox getFolderByName:destRemoteFolderName];
     
     if(destFolder == nil) {
         SM_LOG_ERROR(@"Destination folder %@ not found", destRemoteFolderName);
         return FALSE;
     }
-
+    
     if(_kind == SMFolderKindOutbox) {
         if(destFolder.kind != SMFolderKindTrash) {
             SM_LOG_WARNING(@"Destination folder %@ (kind %ld) is not Trash", destRemoteFolderName, destFolder.kind);

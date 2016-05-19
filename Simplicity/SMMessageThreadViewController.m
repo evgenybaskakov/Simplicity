@@ -897,11 +897,12 @@ static const CGFloat CELL_SPACING = -1;
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
     
     if(_currentMessageThread.messagesCount == 1) {
-        [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder.fullName];
+        [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder];
     }
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
         
+        // TODO: trashFolder is invalid if it comes from the unified folder
         if([_currentMessageThread moveMessage:cell.message toRemoteFolder:trashFolder.fullName]) {
             [messageListViewController reloadMessageList:YES];
         }

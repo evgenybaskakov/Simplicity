@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMFolder;
+
 @interface SMMessageListViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
 @property IBOutlet NSButton *updateMessagesNowButton;
@@ -27,7 +29,7 @@
 
 - (void)stopProgressIndicators;
 
-- (void)moveSelectedMessageThreadsToFolder:(NSString*)remoteFolderName;
+- (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolderName;
 
 - (NSMenu*)menuForRow:(NSInteger)row;
 

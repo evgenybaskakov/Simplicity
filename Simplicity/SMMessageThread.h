@@ -59,6 +59,5 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 - (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
 - (BOOL)moveMessage:(SMMessage*)message toRemoteFolder:(NSString*)remoteFolder;
-- (BOOL)moveMessageThreadToRemoteFolder:(NSString*)remoteFolder;
 
 @end

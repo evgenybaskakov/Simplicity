@@ -360,7 +360,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [[_fromBoxViewController.itemList itemAtIndex:i] setRepresentedObject:appDelegate.accounts[i]];
     }
     
-    [_fromBoxViewController.itemList selectItemAtIndex:appDelegate.currentAccountIdx];
+    if(appDelegate.currentAccountIsUnified) {
+        [_fromBoxViewController.itemList selectItemAtIndex:0];
+    }
+    else {
+        [_fromBoxViewController.itemList selectItemAtIndex:appDelegate.currentAccountIdx];
+    }
     
     if(subject) {
         [_subjectBoxViewController.textField setStringValue:subject];
@@ -762,10 +767,20 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             _htmlTextEditor = nil;
         }
         else {
+            NSString *signature;
+            
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            if([[appDelegate preferencesController] shouldUseSingleSignature]) {
+                signature = [[appDelegate preferencesController] singleSignature];
+            }
+            else if(appDelegate.currentAccountIsUnified) {
+                signature = [[appDelegate preferencesController] accountSignature:0];
+            }
+            else {
+                signature = [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
+            }
             
             // convert html signature to plain text
-            NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
             NSAttributedString *signatureHtmlAttributedString = [[NSAttributedString alloc] initWithData:[signature dataUsingEncoding:NSUTF8StringEncoding] options:@{NSDocumentTypeDocumentAttribute:NSHTMLTextDocumentType, NSCharacterEncodingDocumentAttribute:@(NSUTF8StringEncoding)} documentAttributes:nil error:nil];
             
             plainText = [NSString stringWithFormat:@"\n\n%@", [SMStringUtils trimString:signatureHtmlAttributedString.string]];

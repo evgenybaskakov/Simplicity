@@ -34,7 +34,7 @@
     [_signatureEditor setEditable:YES];
     [_signatureEditor setEditingDelegate:self];
 
-    _selectedAccount = appDelegate.currentAccountIdx;
+    _selectedAccount = appDelegate.currentAccountIsUnified? 0 : appDelegate.currentAccountIdx;
 
     if([[appDelegate preferencesController] shouldUseSingleSignature]) {
         _useOneSignatureCheckBox.state = NSOnState;

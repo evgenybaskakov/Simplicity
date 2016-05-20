@@ -224,80 +224,82 @@
     }
 }
 
-- (void)removeAccount:(NSUInteger)idx {
+- (void)removeAccount:(NSUInteger)accountIdx {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
     NSUInteger accountCount = [self accountsCount];
-    NSAssert(idx < accountCount, @"bad idx %lu, account count %lu", idx, accountCount);
+    NSAssert(accountIdx < accountCount, @"bad accountIdx %lu, account count %lu", accountIdx, accountCount);
     
     NSError *error = nil;
 
-    NSString *accountImageFilePath = [self accountImagePath:idx];
+    NSString *accountImageFilePath = [self accountImagePath:accountIdx];
     [[NSFileManager defaultManager] removeItemAtPath:accountImageFilePath error:&error];
     if(error != nil && error.code != noErr) {
         SM_LOG_ERROR(@"Could not remove '%@', error '%@'", accountImageFilePath, error);
     }
 
-    NSString *accountDatabaseFilePath = [self databaseFilePath:idx];
+    NSString *accountDatabaseFilePath = [self databaseFilePath:accountIdx];
     [[NSFileManager defaultManager] removeItemAtPath:accountDatabaseFilePath error:&error];
     if(error != nil && error.code != noErr) {
         SM_LOG_ERROR(@"Could not remove '%@', error '%@'", accountDatabaseFilePath, error);
     }
 
-    NSString *cacheDirPath = [self cacheDirPath:idx];
+    NSString *cacheDirPath = [self cacheDirPath:accountIdx];
     if(![[NSFileManager defaultManager] removeItemAtPath:cacheDirPath error:&error]) {
         SM_LOG_ERROR(@"Could not remove cache directory '%@', error: %@", cacheDirPath, error);
     }
 
-    NSString *accountDirPath = [self accountDirPath:idx];
+    NSString *accountDirPath = [self accountDirPath:accountIdx];
     if(![[NSFileManager defaultManager] removeItemAtPath:accountDirPath error:&error]) {
         SM_LOG_ERROR(@"Could not remove account directory '%@', error: %@", accountDirPath, error);
     }
 
-    [self removePassword:idx serverType:kServerTypeIMAP];
-    [self removePassword:idx serverType:kServerTypeSMTP];
+    [self removePassword:accountIdx serverType:kServerTypeIMAP];
+    [self removePassword:accountIdx serverType:kServerTypeSMTP];
 
-    [self removeProperty:kAccountName idx:idx];
-    [self removeProperty:kFullUserName idx:idx];
-    [self removeProperty:kUserEmail idx:idx];
-    [self removeProperty:kImapServer idx:idx];
-    [self removeProperty:kImapPort idx:idx];
-    [self removeProperty:kImapUserName idx:idx];
-    [self removeProperty:kImapConnectionType idx:idx];
-    [self removeProperty:kImapAuthType idx:idx];
-    [self removeProperty:kImapNeedCheckCertificate idx:idx];
-    [self removeProperty:kSmtpServer idx:idx];
-    [self removeProperty:kSmtpPort idx:idx];
-    [self removeProperty:kSmtpUserName idx:idx];
-    [self removeProperty:kSmtpConnectionType idx:idx];
-    [self removeProperty:kSmtpAuthType idx:idx];
-    [self removeProperty:kSmtpNeedCheckCertificate idx:idx];
-    [self removeProperty:kAccountSignature idx:idx];
+    [self removeProperty:kAccountName accountIdx:accountIdx];
+    [self removeProperty:kFullUserName accountIdx:accountIdx];
+    [self removeProperty:kUserEmail accountIdx:accountIdx];
+    [self removeProperty:kImapServer accountIdx:accountIdx];
+    [self removeProperty:kImapPort accountIdx:accountIdx];
+    [self removeProperty:kImapUserName accountIdx:accountIdx];
+    [self removeProperty:kImapConnectionType accountIdx:accountIdx];
+    [self removeProperty:kImapAuthType accountIdx:accountIdx];
+    [self removeProperty:kImapNeedCheckCertificate accountIdx:accountIdx];
+    [self removeProperty:kSmtpServer accountIdx:accountIdx];
+    [self removeProperty:kSmtpPort accountIdx:accountIdx];
+    [self removeProperty:kSmtpUserName accountIdx:accountIdx];
+    [self removeProperty:kSmtpConnectionType accountIdx:accountIdx];
+    [self removeProperty:kSmtpAuthType accountIdx:accountIdx];
+    [self removeProperty:kSmtpNeedCheckCertificate accountIdx:accountIdx];
+    [self removeProperty:kAccountSignature accountIdx:accountIdx];
     
     [[NSUserDefaults standardUserDefaults] setInteger:(accountCount - 1) forKey:kAccountsCount];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (BOOL)renameAccount:(NSUInteger)idx newName:(NSString*)newName {
-    NSString *accountDirPath = [self accountDirPath:idx];
+- (BOOL)renameAccount:(NSUInteger)accountIdx newName:(NSString*)newName {
+    NSString *accountDirPath = [self accountDirPath:accountIdx];
     NSString *newAccountDirPath = [[accountDirPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:newName];
 
     NSError *error = nil;
     [[NSFileManager defaultManager] moveItemAtPath:accountDirPath toPath:newAccountDirPath error:&error];
     
     if(error && error.code != noErr) {
-        SM_LOG_ERROR(@"Could not rename account '%@' to '%@': %@", [self accountName:idx], newName, error.localizedDescription);
+        SM_LOG_ERROR(@"Could not rename account '%@' to '%@': %@", [self accountName:accountIdx], newName, error.localizedDescription);
         return FALSE;
     }
     
-    NSString *imapPassword = [self imapPassword:idx];
-    NSString *smtpPassword = [self smtpPassword:idx];
+    NSString *imapPassword = [self imapPassword:accountIdx];
+    NSString *smtpPassword = [self smtpPassword:accountIdx];
     
-    [self removePassword:idx serverType:kServerTypeIMAP];
-    [self removePassword:idx serverType:kServerTypeSMTP];
+    [self removePassword:accountIdx serverType:kServerTypeIMAP];
+    [self removePassword:accountIdx serverType:kServerTypeSMTP];
     
-    [self setAccountName:idx name:newName];
+    [self setAccountName:accountIdx name:newName];
     
-    [self setImapPassword:idx password:imapPassword];
-    [self setSmtpPassword:idx password:smtpPassword];
+    [self setImapPassword:accountIdx password:imapPassword];
+    [self setSmtpPassword:accountIdx password:smtpPassword];
 
     return TRUE;
 }
@@ -320,276 +322,284 @@
 
 #pragma Property accessors
 
-- (void)setProperty:(NSString*)propertyName idx:(NSUInteger)idx obj:(NSObject*)obj {
+- (void)setProperty:(NSString*)propertyName accountIdx:(NSUInteger)accountIdx obj:(NSObject*)obj {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
     NSMutableArray *newArr = [NSMutableArray arrayWithArray:arr];
-    if(newArr.count <= idx) {
-        while(newArr.count <= idx) {
+    if(newArr.count <= accountIdx) {
+        while(newArr.count <= accountIdx) {
             [newArr addObject:obj];
         }
     }
     else {
-        newArr[idx] = obj;
+        newArr[accountIdx] = obj;
     }
     
     [[NSUserDefaults standardUserDefaults] setObject:newArr forKey:propertyName];
 }
 
-- (void)removeProperty:(NSString*)propertyName idx:(NSUInteger)idx {
+- (void)removeProperty:(NSString*)propertyName accountIdx:(NSUInteger)accountIdx {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
-    if(idx < arr.count) {
+    if(accountIdx < arr.count) {
         NSMutableArray *newArr = [NSMutableArray arrayWithArray:arr];
-        [newArr removeObjectAtIndex:idx];
+        [newArr removeObjectAtIndex:accountIdx];
     
         [[NSUserDefaults standardUserDefaults] setObject:newArr forKey:propertyName];
     }
     else {
-        SM_LOG_ERROR(@"Could not remove property %@ for idx %lu", propertyName, idx);
+        SM_LOG_ERROR(@"Could not remove property %@ for accountIdx %lu", propertyName, accountIdx);
     }
 }
 
-- (NSObject*)loadProperty:(NSString*)propertyName idx:(NSUInteger)idx {
+- (NSObject*)loadProperty:(NSString*)propertyName accountIdx:(NSUInteger)accountIdx {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
     NSArray *arr = [[NSUserDefaults standardUserDefaults] arrayForKey:propertyName];
     
-    if(arr != nil && idx < arr.count) {
-        return arr[idx];
+    if(arr != nil && accountIdx < arr.count) {
+        return arr[accountIdx];
     }
     else {
-        SM_LOG_ERROR(@"Could not load property %@ for idx %lu", propertyName, idx);
+        SM_LOG_ERROR(@"Could not load property %@ for accountIdx %lu", propertyName, accountIdx);
         return nil;
     }
 }
 
 #pragma mark Property setters
 
-- (void)setAccountName:(NSUInteger)idx name:(NSString*)name {
-    [self setProperty:kAccountName idx:idx obj:name];
+- (void)setAccountName:(NSUInteger)accountIdx name:(NSString*)name {
+    [self setProperty:kAccountName accountIdx:accountIdx obj:name];
 }
 
-- (void)setFullUserName:(NSUInteger)idx userName:(NSString*)fullUserName {
-    [self setProperty:kFullUserName idx:idx obj:fullUserName];
+- (void)setFullUserName:(NSUInteger)accountIdx userName:(NSString*)fullUserName {
+    [self setProperty:kFullUserName accountIdx:accountIdx obj:fullUserName];
 }
 
-- (void)setUserEmail:(NSUInteger)idx email:(NSString*)userEmail {
-    [self setProperty:kUserEmail idx:idx obj:userEmail];
+- (void)setUserEmail:(NSUInteger)accountIdx email:(NSString*)userEmail {
+    [self setProperty:kUserEmail accountIdx:accountIdx obj:userEmail];
 }
 
-- (void)setLabels:(NSUInteger)idx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels {
+- (void)setLabels:(NSUInteger)accountIdx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels {
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:labels];
-    [self setProperty:kAccountLabels idx:idx obj:data];
+    [self setProperty:kAccountLabels accountIdx:accountIdx obj:data];
     
     _labelsCached = labels;
 }
 
-- (void)setImapServer:(NSUInteger)idx server:(NSString*)server {
-    [self setProperty:kImapServer idx:idx obj:server];
+- (void)setImapServer:(NSUInteger)accountIdx server:(NSString*)server {
+    [self setProperty:kImapServer accountIdx:accountIdx obj:server];
 }
 
-- (void)setImapPort:(NSUInteger)idx port:(unsigned int)port {
-    [self setProperty:kImapPort idx:idx obj:[NSNumber numberWithUnsignedInt:port]];
+- (void)setImapPort:(NSUInteger)accountIdx port:(unsigned int)port {
+    [self setProperty:kImapPort accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInt:port]];
 }
 
-- (void)setImapUserName:(NSUInteger)idx userName:(NSString*)userName {
-    [self setProperty:kImapUserName idx:idx obj:userName];
+- (void)setImapUserName:(NSUInteger)accountIdx userName:(NSString*)userName {
+    [self setProperty:kImapUserName accountIdx:accountIdx obj:userName];
 }
 
-- (void)setImapConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    [self setProperty:kImapConnectionType idx:idx obj:[NSNumber numberWithUnsignedInteger:connectionType]];
+- (void)setImapConnectionType:(NSUInteger)accountIdx connectionType:(SMServerConnectionType)connectionType {
+    [self setProperty:kImapConnectionType accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:connectionType]];
 }
 
-- (void)setImapAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
-    [self setProperty:kImapAuthType idx:idx obj:[NSNumber numberWithUnsignedInteger:authType]];
+- (void)setImapAuthType:(NSUInteger)accountIdx authType:(SMServerAuthType)authType {
+    [self setProperty:kImapAuthType accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:authType]];
 }
 
-- (void)setImapNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    [self setProperty:kImapNeedCheckCertificate idx:idx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
+- (void)setImapNeedCheckCertificate:(NSUInteger)accountIdx checkCertificate:(BOOL)checkCertificate {
+    [self setProperty:kImapNeedCheckCertificate accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
 }
 
-- (void)setSmtpServer:(NSUInteger)idx server:(NSString*)server {
-    [self setProperty:kSmtpServer idx:idx obj:server];
+- (void)setSmtpServer:(NSUInteger)accountIdx server:(NSString*)server {
+    [self setProperty:kSmtpServer accountIdx:accountIdx obj:server];
 }
 
-- (void)setSmtpPort:(NSUInteger)idx port:(unsigned int)port {
-    [self setProperty:kSmtpPort idx:idx obj:[NSNumber numberWithUnsignedInt:port]];
+- (void)setSmtpPort:(NSUInteger)accountIdx port:(unsigned int)port {
+    [self setProperty:kSmtpPort accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInt:port]];
 }
 
-- (void)setSmtpUserName:(NSUInteger)idx userName:(NSString*)userName {
-    [self setProperty:kSmtpUserName idx:idx obj:userName];
+- (void)setSmtpUserName:(NSUInteger)accountIdx userName:(NSString*)userName {
+    [self setProperty:kSmtpUserName accountIdx:accountIdx obj:userName];
 }
 
-- (void)setSmtpConnectionType:(NSUInteger)idx connectionType:(SMServerConnectionType)connectionType {
-    [self setProperty:kSmtpConnectionType idx:idx obj:[NSNumber numberWithUnsignedInteger:connectionType]];
+- (void)setSmtpConnectionType:(NSUInteger)accountIdx connectionType:(SMServerConnectionType)connectionType {
+    [self setProperty:kSmtpConnectionType accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:connectionType]];
 }
 
-- (void)setSmtpAuthType:(NSUInteger)idx authType:(SMServerAuthType)authType {
-    [self setProperty:kSmtpAuthType idx:idx obj:[NSNumber numberWithUnsignedInteger:authType]];
+- (void)setSmtpAuthType:(NSUInteger)accountIdx authType:(SMServerAuthType)authType {
+    [self setProperty:kSmtpAuthType accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:authType]];
 }
 
-- (void)setSmtpNeedCheckCertificate:(NSUInteger)idx checkCertificate:(BOOL)checkCertificate {
-    [self setProperty:kSmtpNeedCheckCertificate idx:idx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
+- (void)setSmtpNeedCheckCertificate:(NSUInteger)accountIdx checkCertificate:(BOOL)checkCertificate {
+    [self setProperty:kSmtpNeedCheckCertificate accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
 }
 
 #pragma mark Property getters
 
-- (NSString*)accountName:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kAccountName idx:idx];
+- (NSString*)accountName:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kAccountName accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (NSString*)fullUserName:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kFullUserName idx:idx];
+- (NSString*)fullUserName:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kFullUserName accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (NSString*)userEmail:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kUserEmail idx:idx];
+- (NSString*)userEmail:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kUserEmail accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSUInteger)idx {
+- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSUInteger)accountIdx {
     if(_labelsCached != nil) {
         return _labelsCached;
     }
     
-    NSData *data = (NSData*)[self loadProperty:kAccountLabels idx:idx];
+    NSData *data = (NSData*)[self loadProperty:kAccountLabels accountIdx:accountIdx];
     return data? [NSKeyedUnarchiver unarchiveObjectWithData:data] : [NSDictionary dictionary];
 }
 
-- (NSURL*)accountDirURL:(NSUInteger)idx {
+- (NSURL*)accountDirURL:(NSUInteger)accountIdx {
     NSURL* appDataDir = [SMAppDelegate appDataDir];
     NSAssert(appDataDir, @"no app data dir");
     
-    NSString *accountName = [self accountName:idx];
+    NSString *accountName = [self accountName:accountIdx];
     NSAssert(accountName != nil && accountName.length > 0, @"bad account name");
     
     return [appDataDir URLByAppendingPathComponent:accountName isDirectory:YES];
 }
 
-- (NSString*)accountDirPath:(NSUInteger)idx {
-    return [[self accountDirURL:idx] path];
+- (NSString*)accountDirPath:(NSUInteger)accountIdx {
+    return [[self accountDirURL:accountIdx] path];
 }
 
-- (NSString*)accountImagePath:(NSUInteger)idx {
-    NSURL *accountUrl = [self accountDirURL:idx];
+- (NSString*)accountImagePath:(NSUInteger)accountIdx {
+    NSURL *accountUrl = [self accountDirURL:accountIdx];
     NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Image.png"] isDirectory:NO];
     NSAssert(url, @"no image url");
     
     return [url path];
 }
 
-- (NSString*)databaseFilePath:(NSUInteger)idx {
-    NSURL *accountUrl = [self accountDirURL:idx];
+- (NSString*)databaseFilePath:(NSUInteger)accountIdx {
+    NSURL *accountUrl = [self accountDirURL:accountIdx];
     NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Database.sqlite"] isDirectory:NO];
     NSAssert(url, @"no data url");
     
     return [url path];
 }
 
-- (NSString*)cacheDirPath:(NSUInteger)idx {
-    NSURL *accountUrl = [self accountDirURL:idx];
+- (NSString*)cacheDirPath:(NSUInteger)accountIdx {
+    NSURL *accountUrl = [self accountDirURL:accountIdx];
     NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Cache"] isDirectory:YES];
     NSAssert(url, @"no data url");
     
     return [url path];
 }
 
-- (NSString*)imapServer:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kImapServer idx:idx];
+- (NSString*)imapServer:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kImapServer accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (unsigned int)imapPort:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kImapPort idx:idx];
+- (unsigned int)imapPort:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapPort accountIdx:accountIdx];
     return number? [number unsignedIntValue] : 0;
 }
 
-- (NSString*)imapUserName:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kImapUserName idx:idx];
+- (NSString*)imapUserName:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kImapUserName accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (SMServerConnectionType)imapConnectionType:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kImapConnectionType idx:idx];
+- (SMServerConnectionType)imapConnectionType:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapConnectionType accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
-- (SMServerAuthType)imapAuthType:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kImapAuthType idx:idx];
+- (SMServerAuthType)imapAuthType:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapAuthType accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
-- (BOOL)imapNeedCheckCertificate:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kImapNeedCheckCertificate idx:idx];
+- (BOOL)imapNeedCheckCertificate:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kImapNeedCheckCertificate accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
-- (NSString*)smtpServer:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kSmtpServer idx:idx];
+- (NSString*)smtpServer:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kSmtpServer accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (unsigned int)smtpPort:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpPort idx:idx];
+- (unsigned int)smtpPort:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpPort accountIdx:accountIdx];
     return number? [number unsignedIntValue] : 0;
 }
 
-- (NSString*)smtpUserName:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kSmtpUserName idx:idx];
+- (NSString*)smtpUserName:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kSmtpUserName accountIdx:accountIdx];
     return str? str : @"";
 }
 
-- (SMServerConnectionType)smtpConnectionType:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpConnectionType idx:idx];
+- (SMServerConnectionType)smtpConnectionType:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpConnectionType accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
-- (SMServerAuthType)smtpAuthType:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpAuthType idx:idx];
+- (SMServerAuthType)smtpAuthType:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpAuthType accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
-- (BOOL)smtpNeedCheckCertificate:(NSUInteger)idx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate idx:idx];
+- (BOOL)smtpNeedCheckCertificate:(NSUInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kSmtpNeedCheckCertificate accountIdx:accountIdx];
     return number? [number unsignedIntegerValue] : 0;
 }
 
 #pragma mark Signature
 
-- (void)setAccountSignature:(NSUInteger)idx signature:(NSString*)signature {
-    [self setProperty:kAccountSignature idx:idx obj:signature];
+- (void)setAccountSignature:(NSUInteger)accountIdx signature:(NSString*)signature {
+    [self setProperty:kAccountSignature accountIdx:accountIdx obj:signature];
 }
 
-- (NSString*)accountSignature:(NSUInteger)idx {
-    NSString *str = (NSString*)[self loadProperty:kAccountSignature idx:idx];
+- (NSString*)accountSignature:(NSUInteger)accountIdx {
+    NSString *str = (NSString*)[self loadProperty:kAccountSignature accountIdx:accountIdx];
     return str? str : @"";
 }
 
 #pragma mark Password management
 
-- (void)setImapPassword:(NSUInteger)idx password:(NSString*)password {
-    [self savePassword:idx serverType:kServerTypeIMAP password:password];
+- (void)setImapPassword:(NSUInteger)accountIdx password:(NSString*)password {
+    [self savePassword:accountIdx serverType:kServerTypeIMAP password:password];
 }
 
-- (void)setSmtpPassword:(NSUInteger)idx password:(NSString*)password {
-    [self savePassword:idx serverType:kServerTypeSMTP password:password];
+- (void)setSmtpPassword:(NSUInteger)accountIdx password:(NSString*)password {
+    [self savePassword:accountIdx serverType:kServerTypeSMTP password:password];
 }
 
-- (NSString*)imapPassword:(NSUInteger)idx {
-    NSString *str = [self loadPassword:idx serverType:kServerTypeIMAP];
+- (NSString*)imapPassword:(NSUInteger)accountIdx {
+    NSString *str = [self loadPassword:accountIdx serverType:kServerTypeIMAP];
     return str? str : @"";
 }
 
-- (NSString*)smtpPassword:(NSUInteger)idx {
-    NSString *str = [self loadPassword:idx serverType:kServerTypeSMTP];
+- (NSString*)smtpPassword:(NSUInteger)accountIdx {
+    NSString *str = [self loadPassword:accountIdx serverType:kServerTypeSMTP];
     return str? str : @"";
 }
 
 #pragma mark Secured data accessors
 
-- (void)savePassword:(NSUInteger)idx serverType:(NSString*)serverType password:(NSString*)password {
-    NSString *accountName = [self accountName:idx];
+- (void)savePassword:(NSUInteger)accountIdx serverType:(NSString*)serverType password:(NSString*)password {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
+    NSString *accountName = [self accountName:accountIdx];
     NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
     
     NSError *error = nil;
@@ -600,8 +610,10 @@
     }
 }
 
-- (NSString*)loadPassword:(NSUInteger)idx serverType:(NSString*)serverType {
-    NSString *accountName = [self accountName:idx];
+- (NSString*)loadPassword:(NSUInteger)accountIdx serverType:(NSString*)serverType {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
+    NSString *accountName = [self accountName:accountIdx];
     NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
     
     NSError *error = nil;
@@ -615,8 +627,10 @@
     return password;
 }
 
-- (void)removePassword:(NSUInteger)idx serverType:(NSString*)serverType {
-    NSString *accountName = [self accountName:idx];
+- (void)removePassword:(NSUInteger)accountIdx serverType:(NSString*)serverType {
+    NSAssert(accountIdx >= 0, @"bad account accountIdx");
+    
+    NSString *accountName = [self accountName:accountIdx];
     NSString *serviceAccount = [NSString stringWithFormat:@"%@ (%@)", accountName, serverType];
     
     NSError *error = nil;

@@ -18,7 +18,6 @@
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
 #import "SMUnifiedAccount.h"
-#import "SMAttachmentStorage.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
 #import "SMAppController.h"
@@ -33,7 +32,6 @@
 
     if(self) {
         _preferencesController = [[SMPreferencesController alloc] init];
-        _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
         _unifiedAccount = [[SMUnifiedAccount alloc] init];

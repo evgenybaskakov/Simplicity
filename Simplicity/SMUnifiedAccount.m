@@ -10,6 +10,7 @@
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
 #import "SMUnifiedMailboxController.h"
+#import "SMAttachmentStorage.h"
 #import "SMFolderColorController.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMSearchResultsListController.h"
@@ -18,6 +19,7 @@
 
 @implementation SMUnifiedAccount
 
+@synthesize attachmentStorage = _attachmentStorage;
 @synthesize folderColorController = _folderColorController;
 @synthesize messageListController = _messageListController;
 @synthesize searchResultsListController = _searchResultsListController;
@@ -32,6 +34,7 @@
     
     if(self) {
         _mailbox = [[SMUnifiedMailbox alloc] init];
+        _attachmentStorage = [[SMAttachmentStorage alloc] initWithUserAccount:self];
         _folderColorController = [[SMFolderColorController alloc] initWithUserAccount:self];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];

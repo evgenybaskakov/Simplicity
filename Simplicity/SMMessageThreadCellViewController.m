@@ -10,6 +10,8 @@
 #import "SMBoxView.h"
 #import "SMAttachmentItem.h"
 #import "SMMessage.h"
+#import "SMMessageThread.h"
+#import "SMMessageStorage.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageBodyViewController.h"
 #import "SMAttachmentsPanelViewController.h"
@@ -399,7 +401,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     NSView *messageBodyView = [_messageBodyViewController view];
     NSAssert(messageBodyView, @"messageBodyView");
     
-    [_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:[_message remoteFolder]];
+    SMMessageThread *messageThread = _messageThreadViewController.currentMessageThread;
+    SMUserAccount *account = (SMUserAccount*)[messageThread.messageStorage account];
+    
+    [_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:_message.remoteFolder account:account];
     
     if(_progressIndicator != nil) {
         [_progressIndicator stopAnimation:self];

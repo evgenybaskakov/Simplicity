@@ -19,6 +19,16 @@
 
 @implementation SMAttachmentStorage
 
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
+    self = [super initWithUserAccount:account];
+    
+    if(self) {
+        
+    }
+    
+    return self;
+}
+
 - (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
     NSAssert(data, @"bad data");
     
@@ -50,10 +60,14 @@
 }
 
 - (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
+    NSAssert(!_account.unified, @"current account is unified, attachment storage is stubbed");
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
-    NSString *accountCacheDirPath = [preferencesController cacheDirPath:appDelegate.currentAccountIdx]; // BUG!!!
+    NSInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
+    
+    NSString *accountCacheDirPath = [preferencesController cacheDirPath:accountIdx];
     NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
     
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];

@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMAttachmentStorage : NSObject
+#import "SMUserAccountDataObject.h"
 
+@interface SMAttachmentStorage : SMUserAccountDataObject
+
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)storeAttachment:(NSData*)data folder:(NSString*)folder uid:(uint32_t)uid contentId:(NSString*)contentId;
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder;
 

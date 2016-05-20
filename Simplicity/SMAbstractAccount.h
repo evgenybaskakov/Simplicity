@@ -11,6 +11,7 @@
 @protocol SMMailbox;
 @protocol SMMailboxController;
 
+@class SMAttachmentStorage;
 @class SMFolderColorController;
 @class SMMessageListController;
 @class SMSearchResultsListController;
@@ -28,6 +29,7 @@
 @property (readonly) SMOutboxController *outboxController;
 @property (readonly) SMDatabase *database;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
+@property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) id<SMMailbox> mailbox;
 @property (readonly) id<SMMailboxController> mailboxController;
 

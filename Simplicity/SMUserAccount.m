@@ -33,6 +33,7 @@
 }
 
 @synthesize unified = _unified;
+@synthesize attachmentStorage = _attachmentStorage;
 @synthesize folderColorController = _folderColorController;
 @synthesize messageListController = _messageListController;
 @synthesize searchResultsListController = _searchResultsListController;
@@ -49,6 +50,7 @@
     
     if(self) {
         _preferencesController = preferencesController; // TODO: why?
+        _attachmentStorage = [[SMAttachmentStorage alloc] initWithUserAccount:self];
         _folderColorController = [[SMFolderColorController alloc] initWithUserAccount:self];
         _mailbox = [[SMAccountMailbox alloc] initWithUserAccount:self];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
@@ -172,9 +174,6 @@
         return;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAttachmentStorage *attachmentStorage = [appDelegate attachmentStorage];
-    
     // TODO: fetch inline attachments on demand
     // TODO: refresh current view of the message loaded from DB without attachments
     for(MCOAttachment *attachment in attachments) {
@@ -183,7 +182,7 @@
         
         SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
         
-        NSURL *attachmentUrl = [attachmentStorage attachmentLocation:attachmentContentId uid:uid folder:remoteFolder];
+        NSURL *attachmentUrl = [_attachmentStorage attachmentLocation:attachmentContentId uid:uid folder:remoteFolder];
         
         NSError *err;
         if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
@@ -192,7 +191,7 @@
         }
         
         if(attachmentData) {
-            [attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId];
+            [_attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId];
         } else {
             MCOAbstractPart *part = [imapMessage partForUniqueID:[attachment uniqueID]];
             
@@ -216,7 +215,7 @@
                 if ([error code] == MCOErrorNone) {
                     NSAssert(data, @"no data");
                     
-                    [attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
+                    [_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
                 } else {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
                 }

@@ -14,6 +14,8 @@
 
 @class WebView;
 
+@class SMUserAccount;
+
 @interface SMMessageBodyViewController : NSViewController<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebUIDelegate>
 
 @property (readonly) NSUInteger contentHeight;
@@ -21,7 +23,7 @@
 @property (readonly) Boolean mainFrameLoaded;
 
 - (void)uncollapse;
-- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder;
+- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account;
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;
 - (void)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;

@@ -48,6 +48,7 @@
 @end
 
 @implementation SMMessageBodyViewController {
+    SMUserAccount *_account;
     unsigned long long _nextIdentifier;
     NSString *_currentFindString;
     Boolean _currentFindStringMatchCase;
@@ -115,7 +116,9 @@
     [[view mainFrame] loadHTMLString:_htmlText baseURL:nil];
 }
 
-- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder {
+- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account {
+    _account = account;
+    
     WebView *view = (WebView*)[self view];
     [view stopLoading:self];
     
@@ -162,9 +165,7 @@
         // TODO: handle not completely downloaded attachments
         // TODO: implement a precise contentId matching (to handle the really existing imap parts)
         NSString *contentId = [absoluteUrl substringFromIndex:4];
-        
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        NSURL *attachmentLocation = [[appDelegate attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
             SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);

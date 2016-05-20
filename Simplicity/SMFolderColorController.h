@@ -8,13 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMUserAccountDataObject.h"
+
 @class SMMessageThread;
 @class SMFolder;
                                               
-@interface SMFolderColorController : NSObject
+@interface SMFolderColorController : SMUserAccountDataObject
 
 + (NSColor*)randomLabelColor;
 
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)setFolderColor:(NSString*)folderName color:(NSColor*)color;
 - (void)deleteFolderColor:(NSString*)folderName;
 - (NSColor*)colorForFolder:(NSString*)folderName;

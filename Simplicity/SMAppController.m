@@ -82,10 +82,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     //
 
-    _folderColorController = [[SMFolderColorController alloc] init];
-
-    //
-
     _instrumentPanelViewController = [ [ SMInstrumentPanelViewController alloc ] initWithNibName:@"SMInstrumentPanelViewController" bundle:nil ];
     
     NSAssert(_instrumentPanelViewController, @"_instrumentPanelViewController");

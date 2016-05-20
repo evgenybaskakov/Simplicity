@@ -25,8 +25,12 @@
     return color;
 }
 
-- (id)init {
-    self = [super init];
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
+    self = [super initWithUserAccount:account];
+
+    if(self) {
+        
+    }
     
     return self;
 }
@@ -78,10 +82,11 @@
 
 - (NSArray*)colorsForMessageThread:(SMMessageThread*)messageThread folder:(SMFolder*)folder labels:(NSMutableArray*)labels {
     NSMutableArray *bookmarkColors = [NSMutableArray array];
-    
-    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
-    SMAppController *appController = [appDelegate appController];
-    NSColor *mainColor = (folder != nil && folder.kind == SMFolderKindRegular)? [[appController folderColorController] colorForFolder:folder.fullName] : nil;
+
+    NSColor *mainColor = nil;
+    if(folder != nil && folder.kind == SMFolderKindRegular) {
+        mainColor = [self colorForFolder:folder.fullName];
+    }
     
     [labels removeAllObjects];
 
@@ -93,11 +98,8 @@
     }
     
     for(NSString *label in messageThread.labels) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        SMAppController *appController = [appDelegate appController];
-        
         if([label characterAtIndex:0] != '\\') {
-            NSColor *color = [[appController folderColorController] colorForFolder:label];
+            NSColor *color = [self colorForFolder:label];
             
             if(color != mainColor) {
                 [bookmarkColors addObject:color];

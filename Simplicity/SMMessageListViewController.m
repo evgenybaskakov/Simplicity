@@ -197,7 +197,6 @@
     SM_LOG_DEBUG(@"tableView %@, datasource %@, delegate call: %@, row %ld", tableView, [tableView dataSource], [tableColumn identifier], row);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row];
@@ -254,7 +253,7 @@
     [view setMessagesCount:messageThread.messagesCount];
     
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
-    NSArray *bookmarkColors = [[appController folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
+    NSArray *bookmarkColors = [[appDelegate.currentAccount folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
     [view.bookmarksView setBookmarkColors:bookmarkColors];
 
     if([[appDelegate preferencesController] shouldShowContactImages]) {

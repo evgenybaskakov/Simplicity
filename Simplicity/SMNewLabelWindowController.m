@@ -41,8 +41,7 @@
         
         // TODO: sophisticated error handling
         
-        SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
-        [folderColorController setFolderColor:fullFolderName color:_labelColorWell.color];
+        [[appDelegate.currentAccount folderColorController] setFolderColor:fullFolderName color:_labelColorWell.color];
         
         [mailboxController scheduleFolderListUpdate:YES];
         
@@ -93,7 +92,7 @@
         [_labelNestedCheckbox setState:NSOnState];
 
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        NSColor *nestingColor = [[[appDelegate appController] folderColorController] colorForFolder:_suggestedNestingLabel];
+        NSColor *nestingColor = [[appDelegate.currentAccount folderColorController] colorForFolder:_suggestedNestingLabel];
         
         if(nestingColor != nil) {
             _labelColorWell.color = nestingColor;

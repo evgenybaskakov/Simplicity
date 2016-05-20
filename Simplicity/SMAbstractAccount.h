@@ -11,6 +11,7 @@
 @protocol SMMailbox;
 @protocol SMMailboxController;
 
+@class SMFolderColorController;
 @class SMMessageListController;
 @class SMSearchResultsListController;
 @class SMOutboxController;
@@ -21,6 +22,7 @@
 @protocol SMAbstractAccount
 
 @property (readonly) BOOL unified;
+@property (readonly) SMFolderColorController *folderColorController;
 @property (readonly) SMMessageListController *messageListController;
 @property (readonly) SMSearchResultsListController *searchResultsListController;
 @property (readonly) SMOutboxController *outboxController;

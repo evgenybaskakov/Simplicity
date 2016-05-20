@@ -459,10 +459,8 @@ typedef enum {
             
             SMColorCircle *colorMark = (SMColorCircle *)result.imageView;
             
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            SMAppController *appController = [appDelegate appController];
-            
-            colorMark.color = [[appController folderColorController] colorForFolder:folder.fullName];
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];            
+            colorMark.color = [[appDelegate.currentAccount folderColorController] colorForFolder:folder.fullName];
 
             if(row == _rowWithMenu) {
                 if(_doHightlightRow) {

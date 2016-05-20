@@ -107,7 +107,7 @@
 
     // Save label colors.
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMFolderColorController *folderColorController = [[appDelegate appController] folderColorController];
+    SMFolderColorController *folderColorController = [appDelegate.accounts[accountIdx] folderColorController];
     SMAccountMailbox *mailbox = [appDelegate.accounts[accountIdx] mailbox];
  
     for(NSUInteger i = 0, n = mailbox.folders.count; i < n; i++) {
@@ -311,7 +311,6 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     id<SMMailbox> mailbox = [account mailbox];
     SMFolder *folder = mailbox.folders[row];
@@ -327,7 +326,7 @@
         }
         
         // TODO: use selected account index here too
-        colorWell.color = [[appController folderColorController] colorForFolder:folder.fullName];
+        colorWell.color = [account.folderColorController colorForFolder:folder.fullName];
 
         return colorWell;
     }

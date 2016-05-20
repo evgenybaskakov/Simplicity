@@ -20,7 +20,6 @@
 @class SMAccountsViewController;
 @class SMMessageThreadViewController;
 @class SMInstrumentPanelViewController;
-@class SMFolderColorController;
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
 @class SMOperationQueueWindowController;
@@ -51,7 +50,6 @@
 @property SMMessageListViewController *messageListViewController;
 @property SMMessageThreadViewController *messageThreadViewController;
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
-@property SMFolderColorController *folderColorController;
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account;
 

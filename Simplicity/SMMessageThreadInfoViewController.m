@@ -244,12 +244,10 @@
         return;
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
-
+    
     NSMutableArray *labels = [NSMutableArray array];
-    NSArray *colors = [[appController folderColorController] colorsForMessageThread:_messageThread folder:currentFolder labels:labels];
+    NSArray *colors = [[appDelegate.currentAccount folderColorController] colorsForMessageThread:_messageThread folder:currentFolder labels:labels];
 
     NSAssert(labels.count == colors.count, @"labels count %lu != colors count %lu", labels.count, colors.count);
     

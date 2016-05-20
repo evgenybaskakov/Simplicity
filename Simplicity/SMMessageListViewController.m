@@ -13,6 +13,7 @@
 #import "SMNotificationsController.h"
 #import "SMImageRegistry.h"
 #import "SMRoundedImageView.h"
+#import "SMMessageThreadAccountProxy.h"
 #import "SMMessageBodyViewController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
@@ -253,7 +254,7 @@
     [view setMessagesCount:messageThread.messagesCount];
     
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
-    NSArray *bookmarkColors = [[appDelegate.currentAccount folderColorController] colorsForMessageThread:messageThread folder:currentFolder labels:nil];
+    NSArray *bookmarkColors = [appDelegate.messageThreadAccountProxy colorsForMessageThread:messageThread folder:currentFolder labels:nil];
     [view.bookmarksView setBookmarkColors:bookmarkColors];
 
     if([[appDelegate preferencesController] shouldShowContactImages]) {
@@ -713,7 +714,7 @@
 
     NSInteger row = button.tag;
 
-    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
     SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:row];
@@ -737,7 +738,9 @@
     //
     SMMessage *message = messageThread.messagesSortedByDate[0];
     
-    [messageThread setMessageFlagged:message flagged:YES];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate.messageThreadAccountProxy setMessageFlagged:messageThread message:message flagged:YES];
+    
     [messageThread updateThreadAttributesFromMessageUID:message.uid];
 }
 
@@ -749,7 +752,9 @@
         //
         // TODO: Optimize by using the bulk API for setting IMAP flags
         //
-        [messageThread setMessageFlagged:message flagged:NO];
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [appDelegate.messageThreadAccountProxy setMessageFlagged:messageThread message:message flagged:NO];
+        
         [messageThread updateThreadAttributesFromMessageUID:message.uid];
     }
 }
@@ -776,7 +781,9 @@
             //
             // TODO: Optimize by using the bulk API for setting IMAP flags
             //
-            [messageThread setMessageUnseen:message unseen:NO];
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:NO];
+
             [messageThread updateThreadAttributesFromMessageUID:message.uid];
         }
     }
@@ -786,7 +793,9 @@
         //
         SMMessage *message = messageThread.messagesSortedByDate[0];
         
-        [messageThread setMessageUnseen:message unseen:!message.unseen];
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:!message.unseen];
+
         [messageThread updateThreadAttributesFromMessageUID:message.uid];
     }
     
@@ -936,7 +945,9 @@
         
         if(messageThread != nil) {
             for(SMMessage *message in messageThread.messagesSortedByDate) {
-                [messageThread setMessageUnseen:message unseen:unseen];
+                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:unseen];
+                
                 [messageThread updateThreadAttributesFromMessageUID:message.uid];
             }
         }

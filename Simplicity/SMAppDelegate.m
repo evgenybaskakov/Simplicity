@@ -13,6 +13,7 @@
 #import "SMAccountMailbox.h"
 #import "SMAccountMailboxController.h"
 #import "SMAccountsViewController.h"
+#import "SMMessageThreadAccountProxy.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
@@ -37,6 +38,7 @@
         _addressBookController = [[SMAddressBookController alloc] init];
         _unifiedAccount = [[SMUnifiedAccount alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
+        _messageThreadAccountProxy = [[SMMessageThreadAccountProxy alloc] init];
         _accounts = [NSMutableArray array];
     }
     

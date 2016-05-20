@@ -135,6 +135,7 @@
 		803A29A81C01839E00FF8D7C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803A29A71C01839E00FF8D7C /* AddressBook.framework */; };
 		803A29AB1C02465C00FF8D7C /* SMAddressBookController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29AA1C02465C00FF8D7C /* SMAddressBookController.m */; };
 		803A29B11C02DC8800FF8D7C /* SMAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29B01C02DC8800FF8D7C /* SMAddress.m */; };
+		803A653E1CEED32E0026B194 /* SMMessageThreadAccountProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A653D1CEED32E0026B194 /* SMMessageThreadAccountProxy.m */; };
 		803A830F1BE47BBE006520DD /* SMPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */; };
 		803A831A1BE59059006520DD /* SMPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A83191BE59059006520DD /* SMPreferencesController.m */; };
 		803B10E21C1025DC0057E785 /* SMMailboxMainFolderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10E11C1025DC0057E785 /* SMMailboxMainFolderView.m */; };
@@ -524,6 +525,8 @@
 		803A29AC1C0246E900FF8D7C /* SMSuggestionProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSuggestionProvider.h; sourceTree = "<group>"; };
 		803A29AF1C02DC8800FF8D7C /* SMAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAddress.h; sourceTree = "<group>"; };
 		803A29B01C02DC8800FF8D7C /* SMAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAddress.m; sourceTree = "<group>"; };
+		803A653C1CEED32E0026B194 /* SMMessageThreadAccountProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadAccountProxy.h; sourceTree = "<group>"; };
+		803A653D1CEED32E0026B194 /* SMMessageThreadAccountProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadAccountProxy.m; sourceTree = "<group>"; };
 		803A830D1BE47BBE006520DD /* SMPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesWindowController.h; sourceTree = "<group>"; };
 		803A830E1BE47BBE006520DD /* SMPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPreferencesWindowController.m; sourceTree = "<group>"; };
 		803A83181BE59059006520DD /* SMPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPreferencesController.h; sourceTree = "<group>"; };
@@ -862,6 +865,8 @@
 				00ED317F17F88DA700B04F5B /* SMMessageStorage.m */,
 				00EB7E85199C70FA00CA2B1B /* SMMessageThread.h */,
 				00EB7E86199C70FA00CA2B1B /* SMMessageThread.m */,
+				803A653C1CEED32E0026B194 /* SMMessageThreadAccountProxy.h */,
+				803A653D1CEED32E0026B194 /* SMMessageThreadAccountProxy.m */,
 				009217AD1A930019003A0348 /* SMMessageThreadCollection.h */,
 				009217AE1A930019003A0348 /* SMMessageThreadCollection.m */,
 				8079C9E61BBF755700446DFA /* SMMessageThreadDescriptor.h */,
@@ -1613,6 +1618,7 @@
 				80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				8039326A1C97D6E700CE38CB /* SMUserAccount.m in Sources */,
+				803A653E1CEED32E0026B194 /* SMMessageThreadAccountProxy.m in Sources */,
 				80BFC3C21BEDCA5C00467243 /* SMMailServiceProviderYandex.m in Sources */,
 				80CE25F91C782E6A00A9837F /* SMTokenFieldView.m in Sources */,
 				0034EBC119EA3A3200CDF656 /* SMTokenField.m in Sources */,

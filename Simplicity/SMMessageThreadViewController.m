@@ -21,6 +21,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessagePlaceholderViewController.h"
+#import "SMMessageThreadAccountProxy.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMMailbox.h"
 #import "SMMessageEditorViewController.h"
@@ -221,9 +222,10 @@ static const CGFloat CELL_SPACING = -1;
         
         if(lastUnseenMessageIdx != NSUIntegerMax) {
             SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
+
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            
-            [_currentMessageThread setMessageUnseen:cell.message unseen:NO];
+            [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
+
             [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
             
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
@@ -528,8 +530,8 @@ static const CGFloat CELL_SPACING = -1;
     // list to immediately reflect the changes.
     if(!collapsed && cell.message.unseen) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
         
-        [_currentMessageThread setMessageUnseen:cell.message unseen:NO];
         [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
         
         [self updateMessageThread];
@@ -924,7 +926,9 @@ static const CGFloat CELL_SPACING = -1;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     
-    [_currentMessageThread setMessageUnseen:cell.message unseen:!cell.message.unseen];
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:!cell.message.unseen];
+
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     // If the message is being marked unseen, collapse its cell.
@@ -948,7 +952,6 @@ static const CGFloat CELL_SPACING = -1;
         [self updateMessageThread];
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveMessageListSelection];
 }
 
@@ -967,7 +970,8 @@ static const CGFloat CELL_SPACING = -1;
     id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
     NSAssert(currentFolder != nil, @"no current folder");
     
-    [_currentMessageThread setMessageFlagged:cell.message flagged:(cell.message.flagged? NO : YES)];
+    [appDelegate.messageThreadAccountProxy setMessageFlagged:_currentMessageThread message:cell.message flagged:(cell.message.flagged? NO : YES)];
+    
     [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
     
     [self updateMessageThread];

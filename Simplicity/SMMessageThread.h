@@ -54,9 +54,4 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 
 - (void)removeMessageFromMessageThread:(uint32_t)uid;
 
-// TODO: think how to remove the following methods to another place
-
-- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
-- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
-
 @end

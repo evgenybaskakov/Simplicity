@@ -138,7 +138,7 @@
     [_favoriteFolders removeAllObjects];
     [_visibleFolders removeAllObjects];
     
-    if(appDelegate.currentAccount != nil) {
+    if(appDelegate.currentAccount != nil && !appDelegate.currentAccountIsUnified) {
         NSDictionary<NSString*, SMFolderLabel*> *labels = [[appDelegate preferencesController] labels:appDelegate.currentAccountIdx];
         id<SMMailbox> mailbox = appDelegate.currentMailbox;
         

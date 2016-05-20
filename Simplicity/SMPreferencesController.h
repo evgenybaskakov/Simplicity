@@ -64,56 +64,56 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (NSUInteger)accountsCount;
 
 - (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;
-- (void)removeAccount:(NSUInteger)accountIdx;
-- (BOOL)renameAccount:(NSUInteger)accountIdx newName:(NSString*)newName;
+- (void)removeAccount:(NSInteger)accountIdx;
+- (BOOL)renameAccount:(NSInteger)accountIdx newName:(NSString*)newName;
 - (BOOL)accountExists:(NSString*)accountName;
 
-- (void)setAccountName:(NSUInteger)accountIdx name:(NSString*)name;
-- (void)setFullUserName:(NSUInteger)accountIdx userName:(NSString*)fullUserName;
-- (void)setUserEmail:(NSUInteger)accountIdx email:(NSString*)userEmail;
-- (void)setLabels:(NSUInteger)accountIdx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels;
+- (void)setAccountName:(NSInteger)accountIdx name:(NSString*)name;
+- (void)setFullUserName:(NSInteger)accountIdx userName:(NSString*)fullUserName;
+- (void)setUserEmail:(NSInteger)accountIdx email:(NSString*)userEmail;
+- (void)setLabels:(NSInteger)accountIdx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels;
 
-- (void)setImapServer:(NSUInteger)accountIdx server:(NSString*)server;
-- (void)setImapPort:(NSUInteger)accountIdx port:(unsigned int)port;
-- (void)setImapUserName:(NSUInteger)accountIdx userName:(NSString*)userName;
-- (void)setImapPassword:(NSUInteger)accountIdx password:(NSString*)password;
-- (void)setImapConnectionType:(NSUInteger)accountIdx connectionType:(SMServerConnectionType)connectionType;
-- (void)setImapAuthType:(NSUInteger)accountIdx authType:(SMServerAuthType)authType;
-- (void)setImapNeedCheckCertificate:(NSUInteger)accountIdx checkCertificate:(BOOL)checkCertificate;
+- (void)setImapServer:(NSInteger)accountIdx server:(NSString*)server;
+- (void)setImapPort:(NSInteger)accountIdx port:(unsigned int)port;
+- (void)setImapUserName:(NSInteger)accountIdx userName:(NSString*)userName;
+- (void)setImapPassword:(NSInteger)accountIdx password:(NSString*)password;
+- (void)setImapConnectionType:(NSInteger)accountIdx connectionType:(SMServerConnectionType)connectionType;
+- (void)setImapAuthType:(NSInteger)accountIdx authType:(SMServerAuthType)authType;
+- (void)setImapNeedCheckCertificate:(NSInteger)accountIdx checkCertificate:(BOOL)checkCertificate;
 
-- (void)setSmtpServer:(NSUInteger)accountIdx server:(NSString*)server;
-- (void)setSmtpPort:(NSUInteger)accountIdx port:(unsigned int)port;
-- (void)setSmtpUserName:(NSUInteger)accountIdx userName:(NSString*)userName;
-- (void)setSmtpPassword:(NSUInteger)accountIdx password:(NSString*)password;
-- (void)setSmtpConnectionType:(NSUInteger)accountIdx connectionType:(SMServerConnectionType)connectionType;
-- (void)setSmtpAuthType:(NSUInteger)accountIdx authType:(SMServerAuthType)authType;
-- (void)setSmtpNeedCheckCertificate:(NSUInteger)accountIdx checkCertificate:(BOOL)checkCertificate;
+- (void)setSmtpServer:(NSInteger)accountIdx server:(NSString*)server;
+- (void)setSmtpPort:(NSInteger)accountIdx port:(unsigned int)port;
+- (void)setSmtpUserName:(NSInteger)accountIdx userName:(NSString*)userName;
+- (void)setSmtpPassword:(NSInteger)accountIdx password:(NSString*)password;
+- (void)setSmtpConnectionType:(NSInteger)accountIdx connectionType:(SMServerConnectionType)connectionType;
+- (void)setSmtpAuthType:(NSInteger)accountIdx authType:(SMServerAuthType)authType;
+- (void)setSmtpNeedCheckCertificate:(NSInteger)accountIdx checkCertificate:(BOOL)checkCertificate;
 
-- (NSString*)accountName:(NSUInteger)accountIdx;
-- (NSString*)fullUserName:(NSUInteger)accountIdx;
-- (NSString*)userEmail:(NSUInteger)accountIdx;
-- (NSString*)accountImagePath:(NSUInteger)accountIdx;
-- (NSString*)databaseFilePath:(NSUInteger)accountIdx;
-- (NSString*)cacheDirPath:(NSUInteger)accountIdx;
-- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSUInteger)accountIdx;
+- (NSString*)accountName:(NSInteger)accountIdx;
+- (NSString*)fullUserName:(NSInteger)accountIdx;
+- (NSString*)userEmail:(NSInteger)accountIdx;
+- (NSString*)accountImagePath:(NSInteger)accountIdx;
+- (NSString*)databaseFilePath:(NSInteger)accountIdx;
+- (NSString*)cacheDirPath:(NSInteger)accountIdx;
+- (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSInteger)accountIdx;
 
-- (void)setAccountSignature:(NSUInteger)accountIdx signature:(NSString*)signature;
-- (NSString*)accountSignature:(NSUInteger)accountIdx;
+- (void)setAccountSignature:(NSInteger)accountIdx signature:(NSString*)signature;
+- (NSString*)accountSignature:(NSInteger)accountIdx;
 
-- (NSString*)imapServer:(NSUInteger)accountIdx;
-- (unsigned int)imapPort:(NSUInteger)accountIdx;
-- (NSString*)imapUserName:(NSUInteger)accountIdx;
-- (NSString*)imapPassword:(NSUInteger)accountIdx;
-- (SMServerConnectionType)imapConnectionType:(NSUInteger)accountIdx;
-- (SMServerAuthType)imapAuthType:(NSUInteger)accountIdx;
-- (BOOL)imapNeedCheckCertificate:(NSUInteger)accountIdx;
+- (NSString*)imapServer:(NSInteger)accountIdx;
+- (unsigned int)imapPort:(NSInteger)accountIdx;
+- (NSString*)imapUserName:(NSInteger)accountIdx;
+- (NSString*)imapPassword:(NSInteger)accountIdx;
+- (SMServerConnectionType)imapConnectionType:(NSInteger)accountIdx;
+- (SMServerAuthType)imapAuthType:(NSInteger)accountIdx;
+- (BOOL)imapNeedCheckCertificate:(NSInteger)accountIdx;
 
-- (NSString*)smtpServer:(NSUInteger)accountIdx;
-- (unsigned int)smtpPort:(NSUInteger)accountIdx;
-- (NSString*)smtpUserName:(NSUInteger)accountIdx;
-- (NSString*)smtpPassword:(NSUInteger)accountIdx;
-- (SMServerConnectionType)smtpConnectionType:(NSUInteger)accountIdx;
-- (SMServerAuthType)smtpAuthType:(NSUInteger)accountIdx;
-- (BOOL)smtpNeedCheckCertificate:(NSUInteger)accountIdx;
+- (NSString*)smtpServer:(NSInteger)accountIdx;
+- (unsigned int)smtpPort:(NSInteger)accountIdx;
+- (NSString*)smtpUserName:(NSInteger)accountIdx;
+- (NSString*)smtpPassword:(NSInteger)accountIdx;
+- (SMServerConnectionType)smtpConnectionType:(NSInteger)accountIdx;
+- (SMServerAuthType)smtpAuthType:(NSInteger)accountIdx;
+- (BOOL)smtpNeedCheckCertificate:(NSInteger)accountIdx;
 
 @end

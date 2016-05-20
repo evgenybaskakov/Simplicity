@@ -1,0 +1,20 @@
+//
+//  SMMessageThreadAccountProxy.h
+//  Simplicity
+//
+//  Created by Evgeny Baskakov on 5/19/16.
+//  Copyright © 2016 Evgeny Baskakov. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@class SMFolder;
+@class SMMessageThread;
+
+@interface SMMessageThreadAccountProxy : NSObject
+
+- (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(Boolean)unseen;
+- (void)setMessageFlagged:(SMMessageThread*)messageThread message:(SMMessage*)message flagged:(Boolean)flagged;
+- (NSArray*)colorsForMessageThread:(SMMessageThread*)messageThread folder:(SMFolder*)folder labels:(NSMutableArray*)labels;
+
+@end

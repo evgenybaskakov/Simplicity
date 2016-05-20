@@ -22,6 +22,7 @@
 @class SMMessageComparators;
 @class SMAddressBookController;
 @class SMAttachmentStorage;
+@class SMMessageThreadAccountProxy;
 @class SMImageRegistry;
 
 #define UNIFIED_ACCOUNT_IDX -1
@@ -39,6 +40,7 @@
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) SMAddressBookController *addressBookController;
 @property (readonly) SMImageRegistry *imageRegistry;
+@property (readonly) SMMessageThreadAccountProxy *messageThreadAccountProxy;
 @property (readonly) SMUnifiedAccount *unifiedAccount;
 
 @property (readonly, nonatomic) NSArray<SMUserAccount*> *accounts;

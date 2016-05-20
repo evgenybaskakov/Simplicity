@@ -13,6 +13,7 @@
 #import "SMImageRegistry.h"
 #import "SMFolder.h"
 #import "SMFolderColorController.h"
+#import "SMMessageThreadAccountProxy.h"
 #import "SMMailbox.h"
 #import "SMAccountMailboxController.h"
 #import "SMMailboxViewController.h"
@@ -247,7 +248,7 @@
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
     
     NSMutableArray *labels = [NSMutableArray array];
-    NSArray *colors = [[appDelegate.currentAccount folderColorController] colorsForMessageThread:_messageThread folder:currentFolder labels:labels];
+    NSArray *colors = [appDelegate.messageThreadAccountProxy colorsForMessageThread:_messageThread folder:currentFolder labels:labels];
 
     NSAssert(labels.count == colors.count, @"labels count %lu != colors count %lu", labels.count, colors.count);
     

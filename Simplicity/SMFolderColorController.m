@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMAbstractAccount.h"
 #import "SMFolder.h"
 #import "SMFolderLabel.h"
 #import "SMMessageThread.h"
@@ -36,9 +37,11 @@
 }
 
 - (SMFolderLabel*)getOrUpdateLabel:(NSString*)folderName withColor:(NSColor*)color {
-    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
+    NSAssert(!_account.unified, @"account is unified; label acquision is stubbed");
 
-    NSUInteger accountIdx = appDelegate.currentAccountIdx;
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
+    
     NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
     SMFolderLabel *label = [labels objectForKey:folderName];
     

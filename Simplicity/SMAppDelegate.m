@@ -72,6 +72,7 @@
         return _unifiedAccount;
     }
     
+    NSAssert(_currentAccountIdx >= 0 && _currentAccountIdx < _accounts.count, @"bad current account idx %ld", _currentAccountIdx);
     return _accounts[_currentAccountIdx];
 }
 

@@ -63,18 +63,6 @@
     return label;
 }
 
-- (void)deleteFolderColor:(NSString*)folderName {
-    SMAppDelegate *appDelegate =  [[ NSApplication sharedApplication ] delegate];
-    
-    NSUInteger accountIdx = appDelegate.currentAccountIdx;
-    NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];
-    
-    NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:labels];
-    [updatedLabels removeObjectForKey:folderName];
-    
-    [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
-}
-
 - (NSColor*)colorForFolder:(NSString*)folderName {
     return [self getOrUpdateLabel:folderName withColor:nil].color;
 }

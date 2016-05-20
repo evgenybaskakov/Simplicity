@@ -786,6 +786,8 @@ typedef enum {
     NSAssert(folder != nil, @"bad selected folder");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
+    
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.visible = NO;
@@ -801,7 +803,8 @@ typedef enum {
     NSAssert(folder != nil, @"bad selected folder");
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-
+    NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
+    
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = YES;
@@ -817,7 +820,8 @@ typedef enum {
     NSAssert(folder != nil, @"bad selected folder");
 
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-
+    NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
+    
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
     SMFolderLabel *label = [labels objectForKey:folder.fullName];
     label.favorite = NO;

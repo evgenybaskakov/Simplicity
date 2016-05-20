@@ -43,7 +43,12 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    _selectedAccount = appDelegate.accountsExist? appDelegate.currentAccountIdx : -1;
+    if(appDelegate.accountsExist && !appDelegate.currentAccountIsUnified) {
+        _selectedAccount = appDelegate.currentAccountIdx;
+    }
+    else {
+        _selectedAccount = -1;
+    }
     
     [self initAccountList];
     [self setControlsEnabled:(appDelegate.accountsExist? YES : NO)];

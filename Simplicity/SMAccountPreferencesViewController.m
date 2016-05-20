@@ -359,19 +359,17 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    if(!appDelegate.currentAccountIsUnified) {
-        if(selectedAccount == appDelegate.currentAccountIdx) {
-            if(selectedAccount == 0) {
-                if(appDelegate.accounts.count > 1) {
-                    [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
-                }
-                else {
-                    SM_LOG_INFO(@"deleting the last account");
-                }
+    if(!appDelegate.currentAccountIsUnified && selectedAccount == appDelegate.currentAccountIdx) {
+        if(selectedAccount == 0) {
+            if(appDelegate.accounts.count > 1) {
+                [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount+1];
             }
             else {
-                [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
+                SM_LOG_INFO(@"deleting the last account");
             }
+        }
+        else {
+            [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
         }
     }
 

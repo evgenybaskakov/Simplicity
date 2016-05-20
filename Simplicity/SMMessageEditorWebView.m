@@ -53,7 +53,15 @@
     _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSString *signature = [[appDelegate preferencesController] shouldUseSingleSignature]? [[appDelegate preferencesController] singleSignature] : [[appDelegate preferencesController] accountSignature:appDelegate.currentAccountIdx];
+    NSString *signature = nil;
+    
+    if([[appDelegate preferencesController] shouldUseSingleSignature]) {
+        signature = [[appDelegate preferencesController] singleSignature];
+    }
+    else {
+        signature = [[appDelegate preferencesController] accountSignature:(appDelegate.currentAccountIsUnified? 0 : appDelegate.currentAccountIdx)];
+    }
+    
     NSString *signatureText = signature? [NSString stringWithFormat:@"<br/>%@", signature] : @"";
     
     NSString *bodyHtml = nil;

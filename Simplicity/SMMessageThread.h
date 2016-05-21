@@ -12,6 +12,7 @@
 @class MCOIMAPMessage;
 @class MCOIMAPSession;
 
+@class SMUserAccount;
 @class SMMessageStorage;
 @class SMMessage;
 
@@ -27,6 +28,8 @@
 @property (readonly) Boolean hasAttachments;
 @property (readonly) Boolean hasDraft;
 @property (readonly) NSOrderedSet *labels;
+
+@property (readonly, nonatomic) SMUserAccount *account;
 
 - (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage;
 

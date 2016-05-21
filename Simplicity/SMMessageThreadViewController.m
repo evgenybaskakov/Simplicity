@@ -125,7 +125,7 @@ static const CGFloat CELL_SPACING = -1;
         [messageListController fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
     }
     else {
-        [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] threadId:[_currentMessageThread threadId]];
+        [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] messageThread:_currentMessageThread];
     }
     
     return messageThreadCellViewController;
@@ -492,7 +492,7 @@ static const CGFloat CELL_SPACING = -1;
         
         if(message.uid == uid) {
             SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-            [appDelegate.currentAccount fetchMessageInlineAttachments:message];
+            [[appDelegate.currentAccount messageListController] fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
             
             [cell.viewController updateMessage];
             
@@ -681,8 +681,7 @@ static const CGFloat CELL_SPACING = -1;
     
     [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(_currentMessageThread.account == account) {
         [self updateMessageView:uid threadId:threadId];
     }
 }

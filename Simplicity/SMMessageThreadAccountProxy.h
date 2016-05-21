@@ -16,5 +16,6 @@
 - (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(Boolean)unseen;
 - (void)setMessageFlagged:(SMMessageThread*)messageThread message:(SMMessage*)message flagged:(Boolean)flagged;
 - (NSArray*)colorsForMessageThread:(SMMessageThread*)messageThread folder:(SMFolder*)folder labels:(NSMutableArray*)labels;
+- (void)fetchMessageBodyUrgently:(SMMessageThread*)messageThread uid:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName;
 
 @end

@@ -128,7 +128,7 @@
 
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     SMLocalFolder *destAccountLocalFolder;
-    SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];
+    SMUserAccount *targetAccount = (SMUserAccount*)messageThread.account;
     SMLocalFolder *targetAccountLocalFolder = [self targetAndDestLocalFoldersForAccount:targetAccount remoteFolderName:destRemoteFolderName destAccountLocalFolder:&destAccountLocalFolder];
     
     return [targetAccountLocalFolder moveMessageThread:messageThread toRemoteFolder:destAccountLocalFolder.remoteFolderName];
@@ -136,7 +136,7 @@
 
 - (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
     SMLocalFolder *destAccountLocalFolder;
-    SMUserAccount *targetAccount = (SMUserAccount*)[messageThread.messageStorage account];
+    SMUserAccount *targetAccount = (SMUserAccount*)messageThread.account;
     SMLocalFolder *targetAccountLocalFolder = [self targetAndDestLocalFoldersForAccount:targetAccount remoteFolderName:destRemoteFolderName destAccountLocalFolder:&destAccountLocalFolder];
 
     return [targetAccountLocalFolder moveMessage:message withinMessageThread:messageThread toRemoteFolder:destAccountLocalFolder.remoteFolderName];

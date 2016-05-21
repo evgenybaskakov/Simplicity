@@ -15,6 +15,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
+#import "SMMessageThreadAccountProxy.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMAccountMailbox.h"
@@ -178,17 +179,23 @@
 
 - (void)fetchMessageInlineAttachments:(SMMessage*)message messageThread:(SMMessageThread*)messageThread {
     if(_account.unified) {
-        [[messageThread.messageStorage account] fetchMessageInlineAttachments:message];
+        [messageThread.account fetchMessageInlineAttachments:message];
     }
     else {
         [_account fetchMessageInlineAttachments:message];
     }
 }
 
-- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-    SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, threadId);
+- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName messageThread:(SMMessageThread*)messageThread {
+    SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, messageThread.threadId);
 
-    [_currentFolder fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId];
+    if(_account.unified) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [appDelegate.messageThreadAccountProxy fetchMessageBodyUrgently:messageThread uid:uid messageDate:messageDate remoteFolder:remoteFolderName];
+    }
+    else {
+        [_currentFolder fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
+    }
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {

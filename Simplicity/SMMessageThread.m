@@ -71,8 +71,13 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (SMUserAccount*)account {
-    NSAssert([(NSObject*)_messageStorage.account isKindOfClass:[SMUserAccount class]], @"bad account type in this message threads' message storage");
-    return (SMUserAccount*)_messageStorage.account;
+    SMMessageStorage *messageStorage = _messageStorage;
+    if(messageStorage == nil) {
+        return nil;
+    }
+    
+    NSAssert([(NSObject*)messageStorage.account isKindOfClass:[SMUserAccount class]], @"bad account type in this message thread's message storage");
+    return (SMUserAccount*)messageStorage.account;
 }
 
 - (uint64_t)threadId {

@@ -33,6 +33,7 @@
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
+    NSAssert(!appDelegate.currentAccountIsUnified, @"cannot create label in unified account");
     NSAssert([appDelegate.currentMailboxController isKindOfClass:[SMAccountMailboxController class]], @"can't create folders in the unified mailbox");
     SMAccountMailboxController *mailboxController = (SMAccountMailboxController*)appDelegate.currentMailboxController;
 
@@ -45,7 +46,7 @@
         
         [mailboxController scheduleFolderListUpdate:YES];
         
-        [SMNotificationsController localNotifyNewLabelCreated:fullFolderName account:appDelegate.currentAccount];
+        [SMNotificationsController localNotifyNewLabelCreated:fullFolderName account:(SMUserAccount*)appDelegate.currentAccount];
     }
 
     [self closeNewLabelWindow];

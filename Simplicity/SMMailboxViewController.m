@@ -71,7 +71,7 @@
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
@@ -83,7 +83,7 @@
 }
 
 - (void)messageFlagsUpdated:(NSNotification *)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
@@ -95,7 +95,7 @@
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
@@ -106,7 +106,7 @@
     }
 }
 
-- (void)updateFolders:(NSString*)localFolder {
+- (void)updateFolders:(SMLocalFolder*)localFolder {
     (void)localFolder;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];

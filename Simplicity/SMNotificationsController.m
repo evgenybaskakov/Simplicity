@@ -52,20 +52,20 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FolderListUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageHeadersSyncFinished:(NSString *)localFolder hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderName", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", account, @"Account", nil]];
++ (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageBodyFetched:(NSString*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderName", [NSNumber numberWithUnsignedInteger:uid], @"UID", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", account, @"Account", nil]];
++ (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:uid], @"UID", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageFlagsUpdates:(NSString *)localFolder account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderName", account, @"Account", nil]];
++ (void)localNotifyMessageFlagsUpdates:(SMLocalFolder*)localFolder account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessagesUpdated:(NSString *)localFolder updateResult:(NSUInteger)updateResult account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderName", [NSNumber numberWithUnsignedInteger:updateResult], @"UpdateResult", account, @"Account", nil]];
++ (void)localNotifyMessagesUpdated:(SMLocalFolder*)localFolder updateResult:(NSUInteger)updateResult account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessagesUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:updateResult], @"UpdateResult", account, @"Account", nil]];
 }
 
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account {
@@ -124,11 +124,11 @@
     }
 }
 
-+ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(NSString**)localFolder hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account {
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
-        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+        *localFolder = [messageInfo objectForKey:@"LocalFolderInstance"];
     }
 
     if(hasUpdates) {
@@ -141,11 +141,11 @@
     }
 }
 
-+ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(NSString**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId account:(SMUserAccount**)account {
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
-        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+        *localFolder = [messageInfo objectForKey:@"LocalFolderInstance"];
     }
     
     if(threadId) {
@@ -161,11 +161,11 @@
     }
 }
 
-+ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder account:(SMUserAccount**)account {
++ (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
-        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+        *localFolder = [messageInfo objectForKey:@"LocalFolderInstance"];
     }
     
     if(account) {
@@ -173,11 +173,11 @@
     }
 }
 
-+ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(NSString**)localFolder account:(SMUserAccount**)account {
++ (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
-        *localFolder = [messageInfo objectForKey:@"LocalFolderName"];
+        *localFolder = [messageInfo objectForKey:@"LocalFolderInstance"];
     }
     
     if(account) {

@@ -33,6 +33,7 @@
 #import "SMOutboxController.h"
 #import "SMFolder.h"
 #import "SMAbstractLocalFolder.h"
+#import "SMUnifiedLocalFolder.h"
 #import "SMLocalFolder.h"
 #import "SMMessageThread.h"
 #import "SMNewAccountWindowController.h"
@@ -244,38 +245,38 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification*)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) { // TODO: update unified account?
-        [self updateFolderStats:localFolder];
+    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
+        [self updateApplicationUnreadCountBadge:localFolder];
     }
 }
 
 - (void)messageFlagsUpdated:(NSNotification*)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
-        [self updateFolderStats:localFolder];
+    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
+        [self updateApplicationUnreadCountBadge:localFolder];
     }
 }
 
 - (void)messagesUpdated:(NSNotification*)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
-        [self updateFolderStats:localFolder];
+    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
+        [self updateApplicationUnreadCountBadge:localFolder];
     }
 }
 
@@ -762,14 +763,20 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 #pragma mark Folder stats
 
-- (void)updateFolderStats:(NSString*)localFolder {
+- (void)updateApplicationUnreadCountBadge:(SMLocalFolder*)localFolder {
+/*
+ 
+ TODO!
+ 
+ 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
     id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByName:inboxFolder.fullName];
     
     // TODO: use sum for inbox folders across all accounts
-    
-    if([localFolder isEqualToString:inboxLocalFolder.localName]) {
+
+    if(((appDelegate.currentAccountIsUnified && [(SMUnifiedLocalFolder*)inboxLocalFolder attachedLocalFolderForAccount:\
+                                                 appDelegate.currentAccount] == localFolder) || ((SMLocalFolder*)inboxLocalFolder == localFolder))) {
         NSString *messageCountString;
         
         if(inboxLocalFolder.unseenMessagesCount > 999) {
@@ -784,6 +791,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         
         [[[NSApplication sharedApplication] dockTile] setBadgeLabel:messageCountString];
     }
+ */
 }
 
 @end

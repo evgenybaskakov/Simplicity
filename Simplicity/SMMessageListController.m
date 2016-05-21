@@ -199,34 +199,30 @@
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-    NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
+    SMLocalFolder *localFolder = [[notification userInfo] objectForKey:@"LocalFolderInstance"];
 
-    if([_currentFolder.localName isEqualToString:localFolder]) {
+    if(_currentFolder == localFolder) {
         NSNumber *resultValue = [[notification userInfo] objectForKey:@"UpdateResult"];
         SMMessageStorageUpdateResult updateResult = [resultValue unsignedIntegerValue];
         
         if(updateResult != SMMesssageStorageUpdateResultNone) {
-            NSString *localFolder = [[notification userInfo] objectForKey:@"LocalFolderName"];
-
-            if([_currentFolder.localName isEqualToString:localFolder]) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-                SMAppController *appController = [appDelegate appController];
-                
-                [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
-                [[appController messageThreadViewController] updateMessageThread];
-            }
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMAppController *appController = [appDelegate appController];
+            
+            [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
+            [[appController messageThreadViewController] updateMessageThread];
         }
     }
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     BOOL hasUpdates;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates account:&account];
 
-    if([_currentFolder.localName isEqualToString:localFolder]) {
+    if(_currentFolder == localFolder) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMAppController *appController = [appDelegate appController];
         

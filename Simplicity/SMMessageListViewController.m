@@ -26,9 +26,11 @@
 #import "SMFolderColorController.h"
 #import "SMMessageBookmarksView.h"
 #import "SMUserAccount.h"
+#import "SMAbstractLocalFolder.h"
+#import "SMUnifiedLocalFolder.h"
+#import "SMLocalFolder.h"
 #import "SMPreferencesController.h"
 #import "SMAddressBookController.h"
-#import "SMAbstractLocalFolder.h"
 #import "SMFolder.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -534,37 +536,48 @@
 }
 
 - (void)messageBodyFetched:(NSNotification *)notification {
-    NSString *localFolder;
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
+
+    if(currentFolder == nil) {
+        return;
+    }
+
+    SMLocalFolder *localFolder;
     uint32_t uid;
     int64_t threadId;
     SMUserAccount *account;
     
     [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
-        SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-        id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-        
-        // TODO: For the unified account, the local folder should be get not by name (which wouldn't
-        //       match unified local folder names), but by some other way
-        
-        if(currentFolder != nil && [currentFolder.localName isEqualToString:localFolder]) {
-            NSAssert([(NSObject*)currentFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"current folder is unified");
-            SMMessageThread *messageThread = [(SMMessageStorage*)currentFolder.messageStorage messageThreadById:threadId];
+        SMMessageThread *messageThread = nil;
+
+        if(appDelegate.currentAccountIsUnified) {
+            NSAssert([(NSObject*)currentFolder isKindOfClass:[SMUnifiedLocalFolder class]], @"current folder is not unified, the current account is");
+            SMLocalFolder *attachedFolder = [(SMUnifiedLocalFolder*)currentFolder attachedLocalFolderForAccount:account];
             
-            if(messageThread != nil) {
-                if([messageThread updateThreadAttributesFromMessageUID:uid]) {
-                    NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread];
-                    
-                    if(threadIndex != NSNotFound) {
-                        [_messageListTableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
-                    }
+            if(attachedFolder == localFolder) {
+                messageThread = [(SMMessageStorage*)attachedFolder.messageStorage messageThreadById:threadId];
+            }
+        }
+        else if((SMLocalFolder*)currentFolder == localFolder) {
+            NSAssert([(NSObject*)currentFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"current folder is unified, but it must not be");
+            messageThread = [(SMMessageStorage*)currentFolder.messageStorage messageThreadById:threadId];
+        }
+
+        if(messageThread != nil) {
+            if([messageThread updateThreadAttributesFromMessageUID:uid]) {
+                NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread];
+                
+                if(threadIndex != NSNotFound) {
+                    [_messageListTableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
                 }
             }
-            else {
-                SM_LOG_WARNING(@"Message body fetched (uid %u, thread id %llu), but message thread not found", uid, threadId);
-            }
+        }
+        else {
+            SM_LOG_WARNING(@"Message body fetched (uid %u, thread id %llu), but message thread not found", uid, threadId);
         }
     }
 }

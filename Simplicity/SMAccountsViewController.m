@@ -393,7 +393,7 @@
 }
 
 - (void)messagesUpdated:(NSNotification *)notification {
-    NSString *localFolder;
+    SMLocalFolder *localFolder;
     SMUserAccount *account;
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];

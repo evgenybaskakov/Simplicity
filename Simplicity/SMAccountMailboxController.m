@@ -288,9 +288,9 @@
 
 - (void)messagesSyncedInFolder:(NSNotification*)notification {
     SMUserAccount *account;
-    NSString *updatedFolderName;
+    SMLocalFolder *updatedLocalFolder;
     BOOL hasUpdates;
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&updatedFolderName hasUpdates:&hasUpdates account:&account];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&updatedLocalFolder hasUpdates:&hasUpdates account:&account];
 
     if(_account == account) {
         //
@@ -299,7 +299,7 @@
         for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
             SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
             
-            if([updatedFolderName isEqualToString:localFolder.localName]) {
+            if(localFolder == updatedLocalFolder) {
                 [localFolder startLocalFolderSync];
                 break;
             }

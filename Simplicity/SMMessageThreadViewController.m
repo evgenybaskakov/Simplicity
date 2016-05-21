@@ -692,8 +692,7 @@ static const CGFloat CELL_SPACING = -1;
     
     [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(account == _currentMessageThread.account) {
         // TODO: optimize by adding a NSUndexSet with uids
         for(NSInteger i = 0; i < _cells.count; i++) {
             SMMessageThreadCell *cell = _cells[i];

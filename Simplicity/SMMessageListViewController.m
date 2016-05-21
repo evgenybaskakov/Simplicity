@@ -542,9 +542,12 @@
     [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
         id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
+        
+        // TODO: For the unified account, the local folder should be get not by name (which wouldn't
+        //       match unified local folder names), but by some other way
         
         if(currentFolder != nil && [currentFolder.localName isEqualToString:localFolder]) {
             NSAssert([(NSObject*)currentFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"current folder is unified");

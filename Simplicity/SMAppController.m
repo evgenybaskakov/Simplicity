@@ -250,7 +250,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) {
+    if(account == appDelegate.currentAccount) { // TODO: update unified account?
         [self updateFolderStats:localFolder];
     }
 }

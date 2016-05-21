@@ -62,6 +62,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 + (BOOL)accountNameValid:(NSString*)name;
 
 - (NSUInteger)accountsCount;
+- (NSURL*)accountDirURL:(NSInteger)accountIdx;
 
 - (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;
 - (void)removeAccount:(NSInteger)accountIdx;

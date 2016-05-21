@@ -75,6 +75,22 @@
 }
 
 - (void)initSession:(NSUInteger)accountIdx {
+    // Init the account data directory.
+    NSURL *accountDirURL = [_preferencesController accountDirURL:accountIdx];
+
+    NSError *dirCreateError;
+    if(![[NSFileManager defaultManager] createDirectoryAtURL:accountDirURL withIntermediateDirectories:YES attributes:nil error:&dirCreateError]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"Exit application"];
+        [alert setMessageText:@"Unable to create application directory"];
+        [alert setInformativeText:[NSString stringWithFormat:@"Error creating directory %@. %@", accountDirURL.path, dirCreateError.localizedDescription]];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        [alert runModal];
+
+        [NSApp terminate:nil];
+    }
+
     // Init the database.
     NSString *databaseFilePath = [_preferencesController databaseFilePath:accountIdx];
     _database = [[SMDatabase alloc] initWithFilePath:databaseFilePath];

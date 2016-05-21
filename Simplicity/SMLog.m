@@ -28,9 +28,15 @@ static const char *getFileName(const char *path) {
 }
 
 void SMFatal(const char *file, int line, const char *func) {
-    SM_LOG_FATAL(@"FATAL ERROR IN %s, line %d, function %s", getFileName(file), line, func);
-
-    abort();
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert addButtonWithTitle:@"Exit application"];
+    [alert setMessageText:@"APPLICATION INTERNAL ERROR"];
+    [alert setInformativeText:[NSString stringWithFormat:@"Fatal error occurred in %s, line %d, function %s.", getFileName(file), line, func]];
+    [alert setAlertStyle:NSCriticalAlertStyle];
+    [alert runModal];
+    
+    [NSApp terminate:nil];
 }
 
 void SMLog(NSUInteger level, const char *file, int line, const char *func, NSString *format, ...) {

@@ -728,6 +728,9 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)finishSuggestionSearch {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] finishSearch:SMSearchOperationKind_Suggestions];
+    
     if(_subjectSearchResults.count == 0 && _contactSearchResults.count == 0) {
         [_suggestionResultsSubjects removeAllObjects];
         [_suggestionResultsContacts removeAllObjects];

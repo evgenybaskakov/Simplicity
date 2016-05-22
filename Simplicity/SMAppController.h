@@ -26,6 +26,11 @@
 @class SMMessageThread;
 @class SMUserAccount;
 
+typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
+    SMSearchOperationKind_Suggestions,
+    SMSearchOperationKind_Content,
+};
+
 @interface SMAppController : NSObject <NSToolbarDelegate, NSSplitViewDelegate, NSWindowDelegate>
 
 @property (weak, nonatomic) IBOutlet NSView *view;
@@ -86,6 +91,7 @@
 - (void)closeSearchSuggestionsMenu;
 - (void)adjustSearchSuggestionsMenuFrame;
 - (void)startNewSearch:(BOOL)showSuggestionsMenu;
+- (void)finishSearch:(SMSearchOperationKind)searchOperationKind;
 - (void)clearSearch;
 
 @end

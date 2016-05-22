@@ -46,6 +46,8 @@
 - (void)triggerArrowUp:(SMTokenEditView*)sender;
 - (void)triggerArrowDown:(SMTokenEditView*)sender;
 - (void)triggerEnter:(SMTokenEditView*)sender;
+- (void)startProgress;
+- (void)stopProgress;
 
 @end
 

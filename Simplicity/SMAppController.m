@@ -17,6 +17,7 @@
 #import "SMNewLabelWindowController.h"
 #import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
+#import "SMSearchFolder.h"
 #import "SMSearchResultsListController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
@@ -62,6 +63,8 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     Boolean _syncedFoldersInitialized;
     BOOL _preferencesWindowShown;
     BOOL _searchSuggestionsMenuShown;
+    BOOL _searchingForSuggestions;
+    BOOL _searchingForContent;
 }
 
 - (void)awakeFromNib {
@@ -406,6 +409,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
 
 - (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus {
     [_searchFieldViewController deleteAllTokensAndText];
+    [_searchFieldViewController stopProgress];
+    
+    _searchingForSuggestions = NO;
+    _searchingForContent = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
@@ -419,6 +426,25 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     if(cancelFocus) {
         NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
         [[_searchField window] makeFirstResponder:messageListView];
+    }
+}
+
+- (void)finishSearch:(SMSearchOperationKind)searchOperationKind {
+    switch(searchOperationKind) {
+        case SMSearchOperationKind_Suggestions:
+            _searchingForSuggestions = NO;
+            break;
+
+        case SMSearchOperationKind_Content:
+            _searchingForContent = NO;
+            break;
+            
+        default:
+            SM_FATAL(@"Unknown search operation kind %lu", searchOperationKind);
+    }
+
+    if(!_searchingForSuggestions && !_searchingForContent) {
+        [_searchFieldViewController stopProgress];
     }
 }
 
@@ -508,6 +534,11 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate.currentAccount searchResultsListController] startNewSearch:searchString]) {
+        [_searchFieldViewController startProgress];
+
+        _searchingForSuggestions = YES;
+        _searchingForContent = YES;
+
         if(showSuggestionsMenu && searchString.length != 0) {
             [_searchSuggestionsMenu makeKeyAndOrderFront:self];
             

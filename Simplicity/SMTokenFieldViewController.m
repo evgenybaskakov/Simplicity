@@ -14,6 +14,7 @@
 
 @implementation SMTokenFieldViewController {
     __weak IBOutlet NSButton *_clearButton;
+    __weak IBOutlet NSProgressIndicator *_progressIndicator;
 
     SMTokenFieldView *_tokenFieldView;
     NSMutableArray<SMTokenView*> *_tokens;
@@ -45,6 +46,7 @@
     [self adjustTokenFrames];
     
     _clearButton.hidden = YES;
+    _progressIndicator.hidden = YES;
 }
 
 - (IBAction)clearButtonAction:(id)sender {
@@ -782,6 +784,18 @@
 - (NSArray<NSString *> *)textView:(NSTextView *)textView completions:(NSArray<NSString *> *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(nullable NSInteger *)index {
     *index = -1;
     return nil;
+}
+
+- (void)startProgress {
+    [_clearButton setAlphaValue:0];
+    [_progressIndicator setHidden:NO];
+    [_progressIndicator startAnimation:self];
+}
+
+- (void)stopProgress {
+    [_clearButton setAlphaValue:1];
+    [_progressIndicator setHidden:YES];
+    [_progressIndicator stopAnimation:self];
 }
 
 @end

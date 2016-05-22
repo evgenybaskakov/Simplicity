@@ -7,6 +7,8 @@
 //
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMAbstractAccount.h"
 #import "SMUserAccount.h"
 #import "SMMessageStorage.h"
@@ -82,6 +84,9 @@
             [_messageStorage startUpdate];
             
             [self loadSelectedMessagesInternal];
+            
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[appDelegate appController] finishSearch:SMSearchOperationKind_Content];
         }
     }
     else {

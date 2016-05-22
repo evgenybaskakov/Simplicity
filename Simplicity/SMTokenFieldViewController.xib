@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMTokenFieldViewController">
             <connections>
                 <outlet property="_clearButton" destination="dB2-NS-n2g" id="fwj-EX-8AY"/>
+                <outlet property="_progressIndicator" destination="v3R-uR-s2s" id="Oy1-tY-x3x"/>
                 <outlet property="scrollView" destination="ICV-Fl-f4g" id="bgq-oA-Vd9"/>
                 <outlet property="view" destination="8m1-xC-ItL" id="ejI-PX-7zf"/>
             </connections>
@@ -25,6 +26,13 @@
                         <rect key="frame" x="1" y="1" width="207" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="v3R-uR-s2s">
+                                <rect key="frame" x="189" y="2" width="16" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="KaO-kC-exl"/>
+                                    <constraint firstAttribute="width" constant="16" id="cVN-VJ-FG4"/>
+                                </constraints>
+                            </progressIndicator>
                             <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="ICV-Fl-f4g">
                                 <rect key="frame" x="20" y="0.0" width="167" height="22"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="dw6-0d-1iy">
@@ -70,7 +78,9 @@
                             </button>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="v3R-uR-s2s" firstAttribute="centerY" secondItem="dB2-NS-n2g" secondAttribute="centerY" id="124-d7-7Y5"/>
                             <constraint firstAttribute="bottom" secondItem="dB2-NS-n2g" secondAttribute="bottom" id="6yG-Je-e6S"/>
+                            <constraint firstItem="v3R-uR-s2s" firstAttribute="centerX" secondItem="dB2-NS-n2g" secondAttribute="centerX" id="Dtq-Ig-eQY"/>
                             <constraint firstItem="JQp-s0-5rB" firstAttribute="leading" secondItem="TDt-eB-H5t" secondAttribute="leading" constant="3" id="J1M-wh-Rez"/>
                             <constraint firstAttribute="trailing" secondItem="dB2-NS-n2g" secondAttribute="trailing" constant="4" id="Kph-9F-4bF"/>
                             <constraint firstAttribute="bottom" secondItem="JQp-s0-5rB" secondAttribute="bottom" constant="3" id="UyW-b9-MPD"/>

@@ -77,6 +77,8 @@
 - (void)initSession:(NSUInteger)accountIdx {
     // Init the account data directory.
     NSURL *accountDirURL = [_preferencesController accountDirURL:accountIdx];
+    
+    SM_LOG_INFO(@"Account %lu data directory: %@", accountIdx, accountDirURL.path);
 
     NSError *dirCreateError;
     if(![[NSFileManager defaultManager] createDirectoryAtURL:accountDirURL withIntermediateDirectories:YES attributes:nil error:&dirCreateError]) {

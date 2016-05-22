@@ -170,6 +170,10 @@
         if(_currentAccountIdx == UNIFIED_ACCOUNT_IDX) {
             _currentAccountIsUnified = YES;
         }
+        else if(_currentAccountIdx >= accountsCount) {
+            // Sanity check
+            _currentAccountIdx = 0;
+        }
         
         [self enableOrDisableAccountControls];
     }

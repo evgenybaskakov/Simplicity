@@ -15,7 +15,7 @@
 - (void)addSection:(NSString*)sectionName;
 - (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action;
 - (NSString*)getSelectedItemWithObject:(id*)object;
-- (void)clearAllItems;
+- (void)clearItemsWithObject:(id)object;
 - (void)reloadItems;
 - (void)selectItem:(NSInteger)itemIndex;
 - (void)unselectItem:(NSInteger)itemIndex;

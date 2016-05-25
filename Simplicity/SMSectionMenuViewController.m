@@ -106,19 +106,29 @@
     }
 }
 
-
-- (void)clearAllItems {
-    [_sections removeAllObjects];
-    [_sectionItems removeAllObjects];
-    [_itemsFlat removeAllObjects];
+- (void)clearItemsWithObject:(id)object {
+    for(NSUInteger s = 0; s < _sectionItems.count; s++) {
+        NSMutableArray<ItemInfo*> *section = _sectionItems[s];
+        NSMutableArray<ItemInfo*> *newSection = [NSMutableArray array];
+        
+        for(NSUInteger i = 0, j = 0; i < section.count; i++) {
+            if(section[i].object != object) {
+                newSection[j++] = section[i];
+            }
+        }
+        
+        _sectionItems[s] = newSection;
+    }
 }
 
 - (void)reloadItems {
     [_itemsFlat removeAllObjects];
 
     for(NSMutableArray<ItemInfo*> *section in _sectionItems) {
-        for(ItemInfo *item in section) {
-            [_itemsFlat addObject:item];
+        if(section.count > 1) {
+            for(ItemInfo *item in section) {
+                [_itemsFlat addObject:item];
+            }
         }
     }
     

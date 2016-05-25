@@ -663,7 +663,7 @@ const char *const mcoOpKinds[] = {
 
 - (void)updateSearchMenuContent:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchMenuViewController] clearAllItems];
+    [[[appDelegate appController] searchMenuViewController] clearItemsWithObject:_account];
     
     // TODO: do it asynchronously
     [self addContentsSection:imapMessages];

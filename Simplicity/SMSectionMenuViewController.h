@@ -11,10 +11,10 @@
 @interface SMSectionMenuViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
 @property (readonly) NSUInteger totalHeight;
-@property (readonly) NSString *selectedItem;
 
 - (void)addSection:(NSString*)sectionName;
-- (void)addItem:(NSString*)itemName section:(NSString*)sectionName target:(id)target action:(SEL)action;
+- (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action;
+- (NSString*)getSelectedItemWithObject:(id*)object;
 - (void)clearAllItems;
 - (void)reloadItems;
 - (void)selectItem:(NSInteger)itemIndex;

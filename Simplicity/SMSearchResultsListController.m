@@ -586,7 +586,7 @@ const char *const mcoOpKinds[] = {
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addItem:(_mainSearchPart != nil? _mainSearchPart : @"??? TODO") section:section target:self action:@selector(searchForContentsAction:)];
+    [[[appDelegate appController] searchMenuViewController] addItem:(_mainSearchPart != nil? _mainSearchPart : @"??? TODO") object:_account section:section target:self action:@selector(searchForContentsAction:)];
 }
 
 - (void)addContactsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
@@ -621,11 +621,11 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForContactAction:)];
+            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForContactAction:)];
         }
         
         for(NSString *contact in sortedContacts) {
-            [[[appDelegate appController] searchMenuViewController] addItem:contact section:section target:self action:@selector(searchForContactAction:)];
+            [[[appDelegate appController] searchMenuViewController] addItem:contact object:_account section:section target:self action:@selector(searchForContactAction:)];
         }
     }
 }
@@ -652,11 +652,11 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart section:section target:self action:@selector(searchForSubjectAction:)];
+            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForSubjectAction:)];
         }
         
         for(NSString *subject in sortedSubjects) {
-            [[[appDelegate appController] searchMenuViewController] addItem:subject section:section target:self action:@selector(searchForSubjectAction:)];
+            [[[appDelegate appController] searchMenuViewController] addItem:subject object:_account section:section target:self action:@selector(searchForSubjectAction:)];
         }
     }
 }
@@ -703,7 +703,14 @@ const char *const mcoOpKinds[] = {
 
 - (void)submitNewSearchRequest:(SearchExpressionKind)kind {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] selectedItem];
+    
+    id searchItemAccount;
+    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] getSelectedItemWithObject:&searchItemAccount];
+    
+    if(searchItemAccount != _account) {
+        SM_LOG_DEBUG(@"Search menu item skipped for this account");
+        return;
+    }
     
     if(searchItem == nil || searchItem.length == 0) {
         SM_LOG_ERROR(@"Empty search menu item (request kind %lu)", kind);

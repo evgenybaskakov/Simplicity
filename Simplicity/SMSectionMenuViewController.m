@@ -14,19 +14,21 @@
 
 @interface ItemInfo : NSOrderedSet
 @property NSString *label;
+@property id object;
 @property Boolean separator;
 @property id target;
 @property SEL action;
-- (id)initWithLabel:(NSString*)label separator:(Boolean)separator target:(id)target action:(SEL)action;
+- (id)initWithLabel:(NSString*)label object:(NSObject*)object separator:(Boolean)separator target:(id)target action:(SEL)action;
 @end
 
 @implementation ItemInfo
 
-- (id)initWithLabel:(NSString*)label separator:(Boolean)separator target:(id)target action:(SEL)action {
+- (id)initWithLabel:(NSString*)label object:(id)object separator:(Boolean)separator target:(id)target action:(SEL)action {
     self = [super init];
     
     if(self) {
         _label = label;
+        _object = object;
         _separator = separator;
         _target = target;
         _action = action;
@@ -82,15 +84,28 @@
     
     [_sections addObject:sectionName];
     [_sectionItems addObject:[NSMutableArray array]];
-    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName separator:YES target:nil action:nil]];
+    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName object:nil separator:YES target:nil action:nil]];
 }
 
-- (void)addItem:(NSString*)itemName section:(NSString*)sectionName target:(id)target action:(SEL)action {
+- (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
     NSUInteger idx = [_sections indexOfObject:sectionName];
     NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
     
-    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName separator:NO target:target action:action]];
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object separator:NO target:target action:action]];
 }
+
+- (NSString*)getSelectedItemWithObject:(id*)object {
+    NSInteger selectedRow = _itemsTable.selectedRow;
+    
+    if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
+        *object = _itemsFlat[selectedRow].object;
+        return _itemsFlat[selectedRow].label;
+    }
+    else {
+        return nil;
+    }
+}
+
 
 - (void)clearAllItems {
     [_sections removeAllObjects];
@@ -229,17 +244,6 @@
     }
     
     return viewHeight + 3;
-}
-
-- (NSString*)selectedItem {
-    NSInteger selectedRow = _itemsTable.selectedRow;
-    
-    if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
-        return _itemsFlat[selectedRow].label;
-    }
-    else {
-        return nil;
-    }
 }
 
 - (void)cursorDown {

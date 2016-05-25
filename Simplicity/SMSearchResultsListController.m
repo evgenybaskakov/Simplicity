@@ -146,7 +146,7 @@ const char *const mcoOpKinds[] = {
     _currentSearchId++;
 }
 
-- (BOOL)startNewSearch:(NSString*)searchString {
+- (BOOL)startNewSearchWithPattern:(NSString*)searchString {
     searchString = [SMStringUtils trimString:searchString];
     SM_LOG_INFO(@"searching for string '%@'", searchString);
     
@@ -548,50 +548,8 @@ const char *const mcoOpKinds[] = {
     return -1;
 }
 
-- (NSUInteger)searchResultsCount {
-    return [_searchResults count];
-}
-
 - (SMSearchDescriptor*)getSearchResults:(NSUInteger)index {
     return [_searchResults objectForKey:[_searchResultsFolderNames objectAtIndex:index]];
-}
-
-- (void)searchHasFailed:(NSString*)searchResultsLocalFolder {
-    SMSearchDescriptor *searchDescriptor = [_searchResults objectForKey:searchResultsLocalFolder];
-    searchDescriptor.searchFailed = true;
-}
-
-- (void)removeSearch:(NSInteger)index {
-    SM_LOG_DEBUG(@"request for index %ld", index);
-    
-    NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
-    
-    [_searchResults removeObjectForKey:[_searchResultsFolderNames objectAtIndex:index]];
-    [_searchResultsFolderNames removeObjectAtIndex:index];
-}
-
-- (void)reloadSearch:(NSInteger)index {
-#if 0
-    //
-    // This logic is disabled.
-    //
-    SM_LOG_DEBUG(@"request for index %ld", index);
-    
-    NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
-    
-    SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
-    NSAssert(searchDescriptor != nil, @"search descriptor not found");
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMLocalFolder *localFolder = [[_account localFolderRegistry] getLocalFolder:searchDescriptor.localFolder];
-    
-    [localFolder stopMessagesLoading];
-    
-    Boolean preserveSelection = NO;
-    [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
-    
-    [self startNewSearch:searchDescriptor.searchPattern exitingLocalFolder:localFolder.localName];
-#endif
 }
 
 - (void)stopSearch:(NSInteger)index {
@@ -618,17 +576,6 @@ const char *const mcoOpKinds[] = {
     if(_searchResultsFolderNames.count > 0) {
         [self stopSearch:_searchResultsFolderNames.count - 1];
     }
-}
-
-- (Boolean)searchStopped:(NSInteger)index {
-    SM_LOG_DEBUG(@"request for index %ld", index);
-    
-    NSAssert(index >= 0 && index < _searchResultsFolderNames.count, @"index is out of bounds");
-    
-    // stop message list loading, if anys
-    SMSearchDescriptor *searchDescriptor = [self getSearchResults:index];
-    
-    return searchDescriptor.searchStopped;
 }
 
 - (void)addContentsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {

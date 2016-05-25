@@ -18,15 +18,8 @@
 @property (readonly) MCOIndexSet *contactSearchResults;
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (BOOL)startNewSearch:(NSString*)searchPattern;
-- (NSInteger)getSearchIndex:(NSString*)searchResultsLocalFolder;
-- (NSUInteger)searchResultsCount;
+- (BOOL)startNewSearchWithPattern:(NSString*)searchPattern;
 - (SMSearchDescriptor*)getSearchResults:(NSUInteger)index;
-- (void)searchHasFailed:(NSString*)searchResultsLocalFolder;
-- (void)removeSearch:(NSInteger)index;
-- (void)reloadSearch:(NSInteger)index;
-- (void)stopSearch:(NSInteger)index;
 - (void)stopLatestSearch;
-- (Boolean)searchStopped:(NSInteger)index;
 
 @end

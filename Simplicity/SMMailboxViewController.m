@@ -17,7 +17,7 @@
 #import "SMUserAccount.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
-#import "SMSearchResultsListController.h"
+#import "SMSearchResultsController.h"
 #import "SMNotificationsController.h"
 #import "SMColorCircle.h"
 #import "SMAccountMailboxController.h"
@@ -204,7 +204,7 @@
 - (void)changeFolder:(SMFolder*)folder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    [[appDelegate.currentAccount searchResultsListController] stopLatestSearch];
+    [[appDelegate.currentAccount searchResultsController] stopLatestSearch];
     
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
     [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil)];

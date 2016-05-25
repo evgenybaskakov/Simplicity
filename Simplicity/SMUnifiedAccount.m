@@ -10,10 +10,11 @@
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
 #import "SMUnifiedMailboxController.h"
+#import "SMUnifiedSearchResultsController.h"
 #import "SMAttachmentStorage.h"
 #import "SMFolderColorController.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMSearchResultsListController.h"
+#import "SMSearchResultsController.h"
 #import "SMMessageListController.h"
 #import "SMOutboxController.h"
 
@@ -22,7 +23,7 @@
 @synthesize attachmentStorage = _attachmentStorage;
 @synthesize folderColorController = _folderColorController;
 @synthesize messageListController = _messageListController;
-@synthesize searchResultsListController = _searchResultsListController;
+@synthesize searchResultsController = _searchResultsController;
 @synthesize mailboxController = _mailboxController;
 @synthesize outboxController = _outboxController;
 @synthesize mailbox = _mailbox;
@@ -38,7 +39,7 @@
         _folderColorController = [[SMFolderColorController alloc] initWithUserAccount:self];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
         _messageListController = [[SMMessageListController alloc] initWithUserAccount:self];
-        _searchResultsListController = [[SMSearchResultsListController alloc] initWithUserAccount:self];
+        _searchResultsController = [[SMUnifiedSearchResultsController alloc] initWithUserAccount:self];
         _mailboxController = [[SMUnifiedMailboxController alloc] initWithUserAccount:self];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         

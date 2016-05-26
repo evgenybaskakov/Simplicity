@@ -615,10 +615,6 @@ const char *const mcoOpKinds[] = {
     }
     
     if(_mainSearchPart != nil || _suggestionResultsContacts.count > 0) {
-        NSArray *sortedContacts = [_suggestionResultsContacts sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-            return [str1 compare:str2];
-        }];
-        
         NSString *section = @"Contacts";
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
@@ -626,7 +622,7 @@ const char *const mcoOpKinds[] = {
             [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForContactAction:)];
         }
         
-        for(NSString *contact in sortedContacts) {
+        for(NSString *contact in _suggestionResultsContacts) {
             [[[appDelegate appController] searchMenuViewController] addItem:contact object:_account section:section target:self action:@selector(searchForContactAction:)];
         }
     }
@@ -646,10 +642,6 @@ const char *const mcoOpKinds[] = {
     }
     
     if(_mainSearchPart != nil || _suggestionResultsSubjects.count > 0) {
-        NSArray *sortedSubjects = [_suggestionResultsSubjects sortedArrayUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-            return [str1 compare:str2];
-        }];
-        
         NSString *section = @"Subjects";
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
@@ -657,7 +649,7 @@ const char *const mcoOpKinds[] = {
             [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForSubjectAction:)];
         }
         
-        for(NSString *subject in sortedSubjects) {
+        for(NSString *subject in _suggestionResultsSubjects) {
             [[[appDelegate appController] searchMenuViewController] addItem:subject object:_account section:section target:self action:@selector(searchForSubjectAction:)];
         }
     }

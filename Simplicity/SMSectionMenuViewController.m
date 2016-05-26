@@ -46,7 +46,7 @@
 @implementation SMSectionMenuViewController {
     NSMutableArray<NSString*> *_sections;
     NSMutableArray<NSMutableArray<ItemInfo*>*> *_sectionItems;
-    NSMutableArray<ItemInfo*> *_itemsFlat;
+    NSArray<ItemInfo*> *_itemsFlat;
 }
 
 - (void)viewDidLoad {
@@ -122,15 +122,24 @@
 }
 
 - (void)reloadItems {
-    [_itemsFlat removeAllObjects];
-
-    for(NSMutableArray<ItemInfo*> *section in _sectionItems) {
+    NSMutableArray *flatItems = [NSMutableArray array];
+    
+    for(NSArray<ItemInfo*> *section in _sectionItems) {
+        // Skip the section header
         if(section.count > 1) {
-            for(ItemInfo *item in section) {
-                [_itemsFlat addObject:item];
+            NSArray *sortedItems = [section sortedArrayUsingComparator:^NSComparisonResult(ItemInfo *item1, ItemInfo *item2) {
+                return [item1.label compare:item2.label];
+            }];
+            
+            for(ItemInfo *item in sortedItems) {
+                if(flatItems.count == 0 || ![[flatItems.lastObject label] isEqualToString:item.label]) {
+                    [flatItems addObject:item];
+                }
             }
         }
     }
+    
+    _itemsFlat = flatItems;
     
     [_itemsTable reloadData];
 }

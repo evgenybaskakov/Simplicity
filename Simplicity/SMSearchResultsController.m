@@ -588,7 +588,7 @@ const char *const mcoOpKinds[] = {
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addItem:(_mainSearchPart != nil? _mainSearchPart : @"??? TODO") object:_account section:section target:self action:@selector(searchForContentsAction:)];
+    [[[appDelegate appController] searchMenuViewController] addTopLevelItem:(_mainSearchPart != nil? [NSString stringWithFormat:@"Message contains: %@", _mainSearchPart] : @"??? TODO") object:_account section:section target:self action:@selector(searchForContentsAction:)];
 }
 
 - (void)addContactsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
@@ -619,7 +619,7 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForContactAction:)];
+            [[[appDelegate appController] searchMenuViewController] addTopLevelItem:[NSString stringWithFormat:@"Contact contains: %@", _mainSearchPart] object:_account section:section target:self action:@selector(searchForContactAction:)];
         }
         
         for(NSString *contact in _suggestionResultsContacts) {
@@ -646,7 +646,7 @@ const char *const mcoOpKinds[] = {
         [[[appDelegate appController] searchMenuViewController] addSection:section];
         
         if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addItem:_mainSearchPart object:_account section:section target:self action:@selector(searchForSubjectAction:)];
+            [[[appDelegate appController] searchMenuViewController] addTopLevelItem:[NSString stringWithFormat:@"Subject contains: %@", _mainSearchPart] object:_account section:section target:self action:@selector(searchForSubjectAction:)];
         }
         
         for(NSString *subject in _suggestionResultsSubjects) {

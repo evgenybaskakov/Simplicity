@@ -12,24 +12,30 @@
 #import "SMSectionMenuItemView.h"
 #import "SMSectionMenuViewController.h"
 
+typedef NS_ENUM(NSUInteger, ItemKind) {
+    ItemKind_Separator,
+    ItemKind_TopLevel,
+    ItemKind_BottomLevel,
+};
+
 @interface ItemInfo : NSOrderedSet
 @property NSString *label;
 @property id object;
-@property Boolean separator;
+@property ItemKind kind;
 @property id target;
 @property SEL action;
-- (id)initWithLabel:(NSString*)label object:(NSObject*)object separator:(Boolean)separator target:(id)target action:(SEL)action;
+- (id)initWithLabel:(NSString*)label object:(NSObject*)object kind:(ItemKind)kind target:(id)target action:(SEL)action;
 @end
 
 @implementation ItemInfo
 
-- (id)initWithLabel:(NSString*)label object:(id)object separator:(Boolean)separator target:(id)target action:(SEL)action {
+- (id)initWithLabel:(NSString*)label object:(id)object kind:(ItemKind)kind target:(id)target action:(SEL)action {
     self = [super init];
     
     if(self) {
         _label = label;
         _object = object;
-        _separator = separator;
+        _kind = kind;
         _target = target;
         _action = action;
     }
@@ -84,14 +90,21 @@
     
     [_sections addObject:sectionName];
     [_sectionItems addObject:[NSMutableArray array]];
-    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName object:nil separator:YES target:nil action:nil]];
+    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName object:nil kind:ItemKind_Separator target:nil action:nil]];
+}
+
+- (void)addTopLevelItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
+    NSUInteger idx = [_sections indexOfObject:sectionName];
+    NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
+    
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object kind:ItemKind_TopLevel target:target action:action]];
 }
 
 - (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
     NSUInteger idx = [_sections indexOfObject:sectionName];
     NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
     
-    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object separator:NO target:target action:action]];
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object kind:ItemKind_BottomLevel target:target action:action]];
 }
 
 - (NSString*)getSelectedItemWithObject:(id*)object {
@@ -125,10 +138,31 @@
     NSMutableArray *flatItems = [NSMutableArray array];
     
     for(NSArray<ItemInfo*> *section in _sectionItems) {
-        // Skip the section header
+        // Skip sections containing only header
         if(section.count > 1) {
             NSArray *sortedItems = [section sortedArrayUsingComparator:^NSComparisonResult(ItemInfo *item1, ItemInfo *item2) {
-                return [item1.label compare:item2.label];
+                if(item1.kind == ItemKind_Separator) {
+                    NSAssert(item2.kind != ItemKind_Separator, @"there must not be two separators in the same section");
+                    return NSOrderedAscending;
+                }
+                else if(item2.kind == ItemKind_Separator) {
+                    NSAssert(item1.kind != ItemKind_Separator, @"there must not be two separators in the same section");
+                    return NSOrderedDescending;
+                }
+                else if(item1.kind == ItemKind_TopLevel) {
+                    if(item2.kind == ItemKind_TopLevel) {
+                        return [item1.label compare:item2.label];
+                    }
+                    else {
+                        return NSOrderedAscending;
+                    }
+                }
+                else if(item2.kind == ItemKind_TopLevel) {
+                    return NSOrderedDescending;
+                }
+                else {
+                    return [item1.label compare:item2.label];
+                }
             }];
             
             for(ItemInfo *item in sortedItems) {
@@ -156,7 +190,7 @@
     
     ItemInfo *item = _itemsFlat[row];
     
-    if(item.separator) {
+    if(item.kind == ItemKind_Separator) {
         SMSectionMenuSeparatorView *separatorView = [tableView makeViewWithIdentifier:@"SectionMenuSeparator" owner:self];
         
         SMBoxView *separatorBox = separatorView.separatorLine;
@@ -198,7 +232,7 @@
     
     ItemInfo *item = _itemsFlat[row];
 
-    return !item.separator;
+    return item.kind != ItemKind_Separator;
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row {
@@ -208,7 +242,7 @@
     
     ItemInfo *item = _itemsFlat[row];
     
-    return item.separator? 22 : 17;
+    return item.kind == ItemKind_Separator? 22 : 17;
 }
 
 - (void)selectItem:(NSInteger)itemIndex {

@@ -13,6 +13,7 @@
 @property (readonly) NSUInteger totalHeight;
 
 - (void)addSection:(NSString*)sectionName;
+- (void)addTopLevelItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action;
 - (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action;
 - (NSString*)getSelectedItemWithObject:(id*)object;
 - (void)clearItemsWithObject:(id)object;

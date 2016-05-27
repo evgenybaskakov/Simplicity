@@ -23,7 +23,8 @@ static NSComparisonResult compareMessagesByUID(SMMessage *a, SMMessage *b) {
 
 static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessageThread *b) {
     if(a.threadId == b.threadId) {
-        assert(a == b);
+        // Note: threads still can be different.
+        // Such collision may happen in a unified local folder.
         return NSOrderedSame;
     }
     

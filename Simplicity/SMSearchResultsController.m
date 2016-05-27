@@ -171,52 +171,37 @@ const char *const mcoOpKinds[] = {
     NSAssert(session, @"session is nil");
     
     if(_searchResultsLocalFolderName == nil) {
-        // TODO: handle search in search results differently
-        NSString *remoteFolderName = nil;
-        NSString *allMailFolder = [[[_account mailbox] allMailFolder] fullName];
-        if(allMailFolder != nil) {
-            SM_LOG_DEBUG(@"searching in all mail");
-            remoteFolderName = allMailFolder;
-        } else {
-            NSAssert(nil, @"no all mail folder, revise this logic!");
-            
-            // TODO: will require another logic for non-gmail accounts
-            remoteFolderName = [[[_account messageListController] currentLocalFolder] localName];
-        }
-        
         // TODO: introduce search results descriptor to avoid this funny folder name
-        NSString *searchResultsLocalFolder = [NSString stringWithFormat:@"//search_results//%lu", _searchId++];
-        
-        NSAssert(searchResultsLocalFolder != nil, @"folder name couldn't be generated");
-        NSAssert([_searchResults objectForKey:searchResultsLocalFolder] == nil, @"duplicated generated folder name");
-        
-        if([[_account localFolderRegistry] createLocalFolder:searchResultsLocalFolder remoteFolder:remoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
-            NSAssert(false, @"could not create local folder for search results");
-        }
-        
-        SMSearchDescriptor *searchDescriptor = [[SMSearchDescriptor alloc] init:searchString localFolder:searchResultsLocalFolder remoteFolder:remoteFolderName];
-        
-        [_searchResults setObject:searchDescriptor forKey:searchResultsLocalFolder];
-        [_searchResultsFolderNames addObject:searchResultsLocalFolder];
-        
-        _searchRemoteFolderName = remoteFolderName;
-        _searchResultsLocalFolderName = searchResultsLocalFolder;
-    } else {
-        NSInteger index = [self getSearchIndex:_searchResultsLocalFolderName];
-        NSAssert(index == 0, @"no index for existing search results folder");
-        
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[_account localFolderRegistry] removeLocalFolder:_searchResultsLocalFolderName];
-        
-        if([[_account localFolderRegistry] createLocalFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO] == nil) {
-            NSAssert(false, @"could not create local folder for search results");
-        }
+        _searchResultsLocalFolderName = [NSString stringWithFormat:@"//search_results//%lu", _searchId++];
+    
+        NSString *allMailFolder = [[[_account mailbox] allMailFolder] fullName]; // TODO: provide a choice
+        if(allMailFolder != nil) {
+            _searchRemoteFolderName = allMailFolder;
 
-        Boolean preserveSelection = NO;
-        [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
+            SM_LOG_DEBUG(@"searching in all mail (%@)", _searchRemoteFolderName);
+        } else {
+            // TODO: will require another logic for non-gmail accounts
+            _searchRemoteFolderName = [[[_account messageListController] currentLocalFolder] remoteFolderName];
+            
+            SM_LOG_DEBUG(@"searching in %@", _searchRemoteFolderName);
+        }
     }
     
-    NSString *remoteFolderName = _searchRemoteFolderName;
+    // Remove the folder with old results.
+    if([_searchResults objectForKey:_searchResultsLocalFolderName]) {
+        [[_account localFolderRegistry] removeLocalFolder:_searchResultsLocalFolderName];
+    }
+    
+    // Create a new folder which will contain new search results.
+    [[_account localFolderRegistry] createLocalFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
+       
+    SMSearchDescriptor *searchDescriptor = [[SMSearchDescriptor alloc] init:searchString localFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName];
+    
+    [_searchResults setObject:searchDescriptor forKey:_searchResultsLocalFolderName];
+    [_searchResultsFolderNames addObject:_searchResultsLocalFolderName];
+
+    Boolean preserveSelection = NO;
+    [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
     
     [self clearPreviousSearch];
     [self updateSearchMenuContent:@[]];
@@ -239,7 +224,7 @@ const char *const mcoOpKinds[] = {
             SearchExpressionKind kind = kinds[i];
             
             MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
-            MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
+            MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:_searchRemoteFolderName expression:searchExpression];
             
             op.urgent = YES;
             
@@ -253,17 +238,17 @@ const char *const mcoOpKinds[] = {
                 
                 if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
                     if(error == nil || error.code == MCOErrorNone) {
-                        SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, remoteFolderName);
+                        SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, _searchRemoteFolderName);
                     }
                     else {
-                        SM_LOG_ERROR(@"search kind %s: search in folder %@ failed: %@", mcoOpKinds[opInfo.kind], remoteFolderName, error);
+                        SM_LOG_ERROR(@"search kind %s: search in folder %@ failed: %@", mcoOpKinds[opInfo.kind], _searchRemoteFolderName, error);
                         uids = nil;
                     }
                     
                     if(uids != nil && uids.count > 0) {
                         [self updateSuggestionSearchResults:uids kind:opInfo.kind];
                         
-                        MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:remoteFolderName requestKind:messageHeadersRequestKind uids:uids];
+                        MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:_searchRemoteFolderName requestKind:messageHeadersRequestKind uids:uids];
                         
                         op.urgent = YES;
                         
@@ -303,7 +288,7 @@ const char *const mcoOpKinds[] = {
     // Prepare the search folder.
     //
     
-    [self loadSearchResults:[MCOIndexSet indexSet] remoteFolderToSearch:remoteFolderName];
+    [self loadSearchResults:[MCOIndexSet indexSet] remoteFolderToSearch:_searchRemoteFolderName];
 
     //
     // Load server contents search results to the search local folder.
@@ -315,7 +300,7 @@ const char *const mcoOpKinds[] = {
     }
 
     MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:SearchExpressionKind_Any];
-    MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:remoteFolderName expression:searchExpression];
+    MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:_searchRemoteFolderName expression:searchExpression];
     op.urgent = YES;
   
     [op start:^(NSError *error, MCOIndexSet *uids) {
@@ -326,16 +311,16 @@ const char *const mcoOpKinds[] = {
         
         if(error == nil || error.code == MCOErrorNone) {
             if(_mainSearchOp.op == op) {
-                SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+                SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, _searchRemoteFolderName);
 
-                [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName];
+                [self loadSearchResults:uids remoteFolderToSearch:_searchRemoteFolderName];
             }
             else {
                 SM_LOG_INFO(@"previous content search aborted");
             }
         }
         else {
-            SM_LOG_ERROR(@"search in folder %@ failed: %@", remoteFolderName, error);
+            SM_LOG_ERROR(@"search in folder %@ failed: %@", _searchRemoteFolderName, error);
         }
 
         if(_mainSearchOp.op == op) {
@@ -350,7 +335,7 @@ const char *const mcoOpKinds[] = {
     //
 
     if(_mainSearchPart != nil) {
-        [_dbOps addObject:[[_account database] findMessages:remoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -375,7 +360,7 @@ const char *const mcoOpKinds[] = {
             [self updateSearchMenuContent:@[]];
         }]];
         
-        [_dbOps addObject:[[_account database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -393,7 +378,7 @@ const char *const mcoOpKinds[] = {
         }]];
     }
     
-    [_dbOps addObject:[[_account database] findMessages:remoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+    [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
         if(searchId != _currentSearchId) {
             SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
             return;
@@ -405,9 +390,9 @@ const char *const mcoOpKinds[] = {
             [uids addIndex:m.uid];
         }
 
-        SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, remoteFolderName);
+        SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, _searchRemoteFolderName);
         
-        [self loadSearchResults:uids remoteFolderToSearch:remoteFolderName];
+        [self loadSearchResults:uids remoteFolderToSearch:_searchRemoteFolderName];
     }]];
 
     //

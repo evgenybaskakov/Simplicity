@@ -115,7 +115,6 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
 }
 
 - (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
@@ -123,62 +122,25 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     id<SMAbstractLocalFolder> newLocalFolder = nil;
     
     if(_account.unified) {
-        if(kind == SMFolderKindSearch) {
-            SM_FATAL(@"TODO");
-        }
-        else {
-            SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:(SMUnifiedAccount*)_account localFolderName:localFolderName kind:kind];
+        SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:(SMUnifiedAccount*)_account localFolderName:localFolderName kind:kind];
 
-            // Go through user accounts and attach their local folder to this unified folder, using the appropriate kind and name
-            for(SMUserAccount *userAccount in appDelegate.accounts) {
-                SMLocalFolder *userLocalFolder;
-                
-                if(kind == SMFolderKindRegular) {
-                    userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByName:localFolderName];
-                }
-                else {
-                    userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByKind:kind];
-                }
-
-                if(userLocalFolder) {
-                    NSAssert([userLocalFolder isKindOfClass:[SMLocalFolder class]], @"bad local folder type");
-                    
-                    SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder.localName);
-                    
-                    [unifiedLocalFolder attachLocalFolder:userLocalFolder];
-                }
-            }
-            
-            newLocalFolder = unifiedLocalFolder;
-        }
+        newLocalFolder = unifiedLocalFolder;
+        
+        [self attachUnifiedLocalFolderToUserAccounts:unifiedLocalFolder];
     }
     else {
         SMLocalFolder *userLocalFolder;
         
         if(kind == SMFolderKindSearch) {
-            // TODO: how do we create SMUnifiedLocalFolder?
             userLocalFolder = [[SMSearchLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
         }
         else {
             userLocalFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
-
-            // Attach the new local folder to the unified account
-            SMUnifiedLocalFolder *unifiedLocalFolder;
-            if(kind == SMFolderKindRegular) {
-                unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByName:localFolderName];
-            }
-            else {
-                unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByKind:kind];
-            }
-            
-            if(unifiedLocalFolder) {
-                SM_LOG_INFO(@"attaching new local folder %@ to the unified account", localFolderName);
-                
-                [unifiedLocalFolder attachLocalFolder:userLocalFolder];
-            }
         }
         
         newLocalFolder = userLocalFolder;
+
+        [self attachLocalFolderToUnifiedAccount:userLocalFolder];
     }
     
     folderEntry = [[FolderEntry alloc] initWithFolder:newLocalFolder];
@@ -192,6 +154,49 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     return folderEntry.folder;
 }
 
+- (void)attachUnifiedLocalFolderToUserAccounts:(SMUnifiedLocalFolder*)unifiedLocalFolder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSAssert(_account.unified, @"account is not unified as expected");
+
+    for(SMUserAccount *userAccount in appDelegate.accounts) {
+        SMLocalFolder *userLocalFolder;
+        
+        if(unifiedLocalFolder.kind == SMFolderKindRegular) {
+            userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByName:unifiedLocalFolder.localName];
+        }
+        else {
+            userLocalFolder = (SMLocalFolder*)[[userAccount localFolderRegistry] getLocalFolderByKind:unifiedLocalFolder.kind];
+        }
+        
+        if(userLocalFolder) {
+            NSAssert([userLocalFolder isKindOfClass:[SMLocalFolder class]], @"bad local folder type");
+            
+            SM_LOG_INFO(@"attaching local folder %@ to the new unified folder", userLocalFolder.localName);
+            
+            [unifiedLocalFolder attachLocalFolder:userLocalFolder];
+        }
+    }
+}
+
+- (void)attachLocalFolderToUnifiedAccount:(SMLocalFolder*)localFolder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSAssert(!_account.unified, @"account itself is unified");
+    
+    SMUnifiedLocalFolder *unifiedLocalFolder;
+    if(localFolder.kind == SMFolderKindRegular) {
+        unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByName:localFolder.localName];
+    }
+    else {
+        unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByKind:localFolder.kind];
+    }
+    
+    if(unifiedLocalFolder) {
+        SM_LOG_INFO(@"attaching new local folder %@ to the unified account", localFolder.localName);
+        
+        [unifiedLocalFolder attachLocalFolder:localFolder];
+    }
+}
+
 - (void)removeLocalFolder:(NSString*)folderName {
     FolderEntry *folderEntry = [_folders objectForKey:folderName];
     [folderEntry.folder stopLocalFolderSync];
@@ -199,6 +204,32 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     [_folders removeObjectForKey:folderName];
 
     [_accessTimeSortedFolders removeObjectAtIndex:[self getFolderEntryIndex:folderEntry]];
+
+    if(_account.unified) {
+        SM_FATAL(@"removing folders from the unified account is not implemented");
+    }
+    else {
+        [self detachLocalFolderFromUnifiedAccount:(SMLocalFolder*)folderEntry.folder];
+    }
+}
+
+- (void)detachLocalFolderFromUnifiedAccount:(SMLocalFolder*)localFolder {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSAssert(!_account.unified, @"account itself is unified");
+    
+    SMUnifiedLocalFolder *unifiedLocalFolder;
+    if(localFolder.kind == SMFolderKindRegular) {
+        unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByName:localFolder.localName];
+    }
+    else {
+        unifiedLocalFolder = (SMUnifiedLocalFolder*)[[appDelegate.unifiedAccount localFolderRegistry] getLocalFolderByKind:localFolder.kind];
+    }
+    
+    if(unifiedLocalFolder) {
+        SM_LOG_INFO(@"detaching local folder %@ from the unified account", localFolder.localName);
+        
+        [unifiedLocalFolder detachLocalFolder:localFolder];
+    }
 }
 
 - (void)keepFoldersMemoryLimit {

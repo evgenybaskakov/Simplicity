@@ -52,7 +52,7 @@
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
-    if(_currentFolder != nil && ![(NSObject*)_currentFolder isKindOfClass:[SMSearchLocalFolder class]]) {
+    if(_currentFolder != nil && _currentFolder.kind != SMFolderKindSearch) {
         _prevNonSearchFolder = _currentFolder;
     }
 

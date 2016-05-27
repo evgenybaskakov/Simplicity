@@ -8,6 +8,9 @@
 
 #import "SMAppDelegate.h"
 #import "SMUserAccount.h"
+#import "SMAbstractLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
+#import "SMMessageListController.h"
 #import "SMUnifiedSearchResultsController.h"
 
 @implementation SMUnifiedSearchResultsController
@@ -24,7 +27,18 @@
 
 - (BOOL)startNewSearchWithPattern:(NSString*)searchPattern {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    id<SMAbstractLocalFolder> searchFolder = [[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindSearch];
     
+    if(searchFolder == nil) {
+        NSString *localName = @"__unified_search_local_folder";
+        NSString *remoteName = @"__unified_search_remote_folder";
+        
+        searchFolder = [[_account localFolderRegistry] createLocalFolder:localName remoteFolder:remoteName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
+        NSAssert(searchFolder != nil, @"search folder not created");
+    }
+
+    [[_account messageListController] changeFolder:searchFolder.localName];
+
     BOOL result = NO;
     for(SMUserAccount *account in appDelegate.accounts) {
         if([[account searchResultsController] startNewSearchWithPattern:searchPattern]) {

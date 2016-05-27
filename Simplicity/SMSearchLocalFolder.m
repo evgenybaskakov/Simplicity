@@ -1,5 +1,5 @@
 //
-//  SMSearchFolder.m
+//  SMSearchLocalFolder.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 1/16/16.
@@ -34,9 +34,9 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
-#import "SMSearchFolder.h"
+#import "SMSearchLocalFolder.h"
 
-@implementation SMSearchFolder {
+@implementation SMSearchLocalFolder {
     MCOIndexSet *_allSelectedMessageUIDsToLoad;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromDB;
     MCOIndexSet *_restOfSelectedMessageUIDsToLoadFromServer;

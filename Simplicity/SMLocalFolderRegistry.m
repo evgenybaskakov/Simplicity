@@ -17,7 +17,7 @@
 #import "SMUnifiedAccount.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMSearchFolder.h"
+#import "SMSearchLocalFolder.h"
 
 @interface FolderEntry : NSObject
 @property (readonly) id<SMAbstractLocalFolder> folder;
@@ -157,7 +157,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
         
         if(kind == SMFolderKindSearch) {
             // TODO: how do we create SMUnifiedLocalFolder?
-            userLocalFolder = [[SMSearchFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+            userLocalFolder = [[SMSearchLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
         }
         else {
             userLocalFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];

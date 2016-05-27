@@ -1,5 +1,5 @@
 //
-//  SMSearchFolder.h
+//  SMSearchLocalFolder.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 1/16/16.
@@ -8,7 +8,7 @@
 
 #import "SMLocalFolder.h"
 
-@interface SMSearchFolder : SMLocalFolder
+@interface SMSearchLocalFolder : SMLocalFolder
 
 - (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName;
 

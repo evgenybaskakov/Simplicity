@@ -17,7 +17,7 @@
 #import "SMNewLabelWindowController.h"
 #import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
-#import "SMSearchFolder.h"
+#import "SMSearchLocalFolder.h"
 #import "SMSearchResultsController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"

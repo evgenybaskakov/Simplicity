@@ -24,7 +24,7 @@
 #import "SMMessageStorage.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMAbstractLocalFolder.h"
-#import "SMSearchFolder.h"
+#import "SMSearchLocalFolder.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
@@ -52,7 +52,7 @@
 - (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
-    if(_currentFolder != nil && ![(NSObject*)_currentFolder isKindOfClass:[SMSearchFolder class]]) {
+    if(_currentFolder != nil && ![(NSObject*)_currentFolder isKindOfClass:[SMSearchLocalFolder class]]) {
         _prevNonSearchFolder = _currentFolder;
     }
 
@@ -141,8 +141,8 @@
         [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     }
     
-    NSAssert([(NSObject*)_currentFolder isKindOfClass:[SMSearchFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
-    [(SMSearchFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateResults];
+    NSAssert([(NSObject*)_currentFolder isKindOfClass:[SMSearchLocalFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
+    [(SMSearchLocalFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateResults];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];

@@ -202,6 +202,7 @@
 		80A44B1B1B5A19260049AB88 /* align_right-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A44B171B5A19260049AB88 /* align_right-128.png */; };
 		80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */; };
 		80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AB99151BE0925200336A55 /* SMMessageBuilder.m */; };
+		80B8600F1CF979EA00BD0804 /* SMSearchRequestInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80B8600E1CF979EA00BD0804 /* SMSearchRequestInputController.m */; };
 		80B9DF231CE9919D00C9058C /* trash-black.png in Resources */ = {isa = PBXBuildFile; fileRef = 80B9DF221CE9919D00C9058C /* trash-black.png */; };
 		80B9DF251CE9926A00C9058C /* trash-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 80B9DF241CE9926A00C9058C /* trash-white.png */; };
 		80BD0A221C4DFF0600F43EA2 /* SMSectionMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */; };
@@ -638,6 +639,8 @@
 		80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPlainTextMessageEditor.m; sourceTree = "<group>"; };
 		80AB99141BE0925200336A55 /* SMMessageBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageBuilder.h; sourceTree = "<group>"; };
 		80AB99151BE0925200336A55 /* SMMessageBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageBuilder.m; sourceTree = "<group>"; };
+		80B8600D1CF979EA00BD0804 /* SMSearchRequestInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSearchRequestInputController.h; sourceTree = "<group>"; };
+		80B8600E1CF979EA00BD0804 /* SMSearchRequestInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSearchRequestInputController.m; sourceTree = "<group>"; };
 		80B9DF221CE9919D00C9058C /* trash-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-black.png"; sourceTree = "<group>"; };
 		80B9DF241CE9926A00C9058C /* trash-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-white.png"; sourceTree = "<group>"; };
 		80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSectionMenuViewController.h; sourceTree = "<group>"; };
@@ -937,14 +940,12 @@
 		005B086C17D4F5D000341051 /* Control */ = {
 			isa = PBXGroup;
 			children = (
+				80B860101CF97A1300BD0804 /* Search */,
 				80238AF01BE32BCE009E090C /* Preferences */,
-				80571A8E1CF5847A001E25C8 /* SMAbstractSearchController.h */,
 				80ED78F91C95351D00475EE5 /* SMAccountButtonViewController.h */,
 				80ED78FA1C95351D00475EE5 /* SMAccountButtonViewController.m */,
 				00DC84941967A70E00577667 /* SMAccountMailboxController.h */,
 				00DC84951967A70E00577667 /* SMAccountMailboxController.m */,
-				0082F5F61A0DD39B0050578A /* SMAccountSearchController.h */,
-				0082F5F71A0DD39B0050578A /* SMAccountSearchController.m */,
 				80ED78EF1C93F86700475EE5 /* SMAccountsViewController.h */,
 				80ED78F01C93F86700475EE5 /* SMAccountsViewController.m */,
 				004A64271AC7A40B0079A0C1 /* SMAddressFieldViewController.h */,
@@ -1018,8 +1019,6 @@
 				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
 				808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */,
 				808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */,
-				80571A981CF585CC001E25C8 /* SMUnifiedSearchController.h */,
-				80571A991CF585CC001E25C8 /* SMUnifiedSearchController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1249,6 +1248,20 @@
 				80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */,
 			);
 			name = TextEditorIcons;
+			sourceTree = "<group>";
+		};
+		80B860101CF97A1300BD0804 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				80571A8E1CF5847A001E25C8 /* SMAbstractSearchController.h */,
+				0082F5F61A0DD39B0050578A /* SMAccountSearchController.h */,
+				0082F5F71A0DD39B0050578A /* SMAccountSearchController.m */,
+				80B8600D1CF979EA00BD0804 /* SMSearchRequestInputController.h */,
+				80B8600E1CF979EA00BD0804 /* SMSearchRequestInputController.m */,
+				80571A981CF585CC001E25C8 /* SMUnifiedSearchController.h */,
+				80571A991CF585CC001E25C8 /* SMUnifiedSearchController.m */,
+			);
+			name = Search;
 			sourceTree = "<group>";
 		};
 		80CE25E51C782E4500A9837F /* TokenField */ = {
@@ -1514,6 +1527,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80B8600F1CF979EA00BD0804 /* SMSearchRequestInputController.m in Sources */,
 				800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */,
 				8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */,
 				00DC84961967A70E00577667 /* SMAccountMailboxController.m in Sources */,

@@ -19,7 +19,7 @@
 #import "SMOpDeleteMessages.h"
 #import "SMOpSetMessageFlags.h"
 #import "SMMessageListController.h"
-#import "SMSearchResultsController.h"
+#import "SMAccountSearchController.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadDescriptor.h"
 #import "SMMessageThreadDescriptorEntry.h"

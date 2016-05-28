@@ -1,5 +1,5 @@
 //
-//  SMSearchResultsController.h
+//  SMAccountSearchController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 11/7/14.
@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SMAbstractSearchResultsController.h"
+#import "SMAbstractSearchController.h"
 #import "SMUserAccountDataObject.h"
 
-@interface SMSearchResultsController : SMUserAccountDataObject<SMAbstractSearchResultsController>
+@interface SMAccountSearchController : SMUserAccountDataObject<SMAbstractSearchController>
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 

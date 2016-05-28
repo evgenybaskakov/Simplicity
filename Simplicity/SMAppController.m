@@ -18,7 +18,7 @@
 #import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
 #import "SMSearchLocalFolder.h"
-#import "SMSearchResultsController.h"
+#import "SMAccountSearchController.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageDetailsViewController.h"
@@ -416,7 +416,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    [[appDelegate.currentAccount searchResultsController] stopLatestSearch];
+    [[appDelegate.currentAccount searchController] stopLatestSearch];
     
     if(changeToPrevFolder) {
         [[appDelegate.currentAccount messageListController] changeToPrevFolder];
@@ -533,7 +533,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[appDelegate.currentAccount searchResultsController] startNewSearchWithPattern:searchString]) {
+    if([[appDelegate.currentAccount searchController] startNewSearchWithPattern:searchString]) {
         [_searchFieldViewController startProgress];
 
         _searchingForSuggestions = YES;

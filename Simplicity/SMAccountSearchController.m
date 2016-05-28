@@ -1,5 +1,5 @@
 //
-//  SMSearchResultsController.m
+//  SMAccountSearchController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 11/7/14.
@@ -22,7 +22,7 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
-#import "SMSearchResultsController.h"
+#import "SMAccountSearchController.h"
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
 #import "SMTokenView.h"
@@ -84,7 +84,7 @@ const char *const mcoOpKinds[] = {
 }
 @end
 
-@implementation SMSearchResultsController {
+@implementation SMAccountSearchController {
     NSUInteger _searchId;
     NSString *_originalSearchString;
     NSMutableArray<SMSearchToken*> *_searchTokens;

@@ -1,5 +1,5 @@
 //
-//  SMUnifiedSearchResultsController.m
+//  SMUnifiedSearchController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 5/25/16.
@@ -11,9 +11,9 @@
 #import "SMAbstractLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
-#import "SMUnifiedSearchResultsController.h"
+#import "SMUnifiedSearchController.h"
 
-@implementation SMUnifiedSearchResultsController
+@implementation SMUnifiedSearchController
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
     self = [super initWithUserAccount:account];
@@ -41,7 +41,7 @@
 
     BOOL result = NO;
     for(SMUserAccount *account in appDelegate.accounts) {
-        if([[account searchResultsController] startNewSearchWithPattern:searchPattern]) {
+        if([[account searchController] startNewSearchWithPattern:searchPattern]) {
             result = YES;
         }
     }
@@ -53,7 +53,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
     for(SMUserAccount *account in appDelegate.accounts) {
-        [[account searchResultsController] stopLatestSearch];
+        [[account searchController] stopLatestSearch];
     }
 }
 

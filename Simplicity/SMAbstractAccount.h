@@ -10,12 +10,12 @@
 
 @protocol SMMailbox;
 @protocol SMMailboxController;
-@protocol SMAbstractSearchResultsController;
+@protocol SMAbstractSearchController;
 
 @class SMAttachmentStorage;
 @class SMFolderColorController;
 @class SMMessageListController;
-@class SMSearchResultsController;
+@class SMAccountSearchController;
 @class SMOutboxController;
 @class SMLocalFolderRegistry;
 @class SMDatabase;
@@ -32,7 +32,7 @@
 @property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) id<SMMailbox> mailbox;
 @property (readonly) id<SMMailboxController> mailboxController;
-@property (readonly) id<SMAbstractSearchResultsController> searchResultsController;
+@property (readonly) id<SMAbstractSearchController> searchController;
 
 @property BOOL foldersInitialized; // TODO: this is crap
 

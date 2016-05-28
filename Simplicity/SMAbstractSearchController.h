@@ -1,5 +1,5 @@
 //
-//  SMAbstractSearchResultsController.h
+//  SMAbstractSearchController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 5/24/16.
@@ -10,7 +10,7 @@
 
 #import "SMAbstractAccount.h"
 
-@protocol SMAbstractSearchResultsController
+@protocol SMAbstractSearchController
 
 - (BOOL)startNewSearchWithPattern:(NSString*)searchPattern;
 - (void)stopLatestSearch;

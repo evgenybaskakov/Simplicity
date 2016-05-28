@@ -85,10 +85,11 @@ const char *const mcoOpKinds[] = {
 @end
 
 @implementation SMAccountSearchController {
-    NSUInteger _searchId;
-    NSString *_originalSearchString;
     NSMutableArray<SMSearchToken*> *_searchTokens;
     NSString *_mainSearchPart;
+    SMTokenView *_tokenViewWithMenu;
+
+    NSUInteger _currentSearchId;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
     NSMutableArray<SearchOpInfo*> *_suggestionSearchOps;
@@ -97,8 +98,6 @@ const char *const mcoOpKinds[] = {
     NSMutableOrderedSet *_suggestionResultsSubjects;
     NSMutableOrderedSet *_suggestionResultsContacts;
     MCOIndexSet *_searchMessagesUIDs;
-    SMTokenView *_tokenViewWithMenu;
-    NSUInteger _currentSearchId;
     NSString *_searchRemoteFolderName;
     NSString *_searchResultsLocalFolderName;
     NSMutableArray<SMDatabaseOp*> *_dbOps;
@@ -164,15 +163,12 @@ const char *const mcoOpKinds[] = {
     
     NSAssert(_searchTokens.count != 0 || _mainSearchPart != nil, @"no search tokens");
     
-    _originalSearchString = searchString;
-    
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
-    
     NSAssert(session, @"session is nil");
     
     if(_searchResultsLocalFolderName == nil) {
         // TODO: introduce search results descriptor to avoid this funny folder name
-        _searchResultsLocalFolderName = [NSString stringWithFormat:@"//search_results//%lu", _searchId++];
+        _searchResultsLocalFolderName = [NSString stringWithFormat:@"//search_results//0"];
     
         NSString *allMailFolder = [[[_account mailbox] allMailFolder] fullName]; // TODO: provide a choice
         if(allMailFolder != nil) {

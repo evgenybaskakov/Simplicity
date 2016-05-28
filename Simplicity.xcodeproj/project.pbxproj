@@ -818,6 +818,7 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				80B860111CF97AD400BD0804 /* Search */,
 				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
 				809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */,
 				80FBF5561CE052AE0041E230 /* SMAbstractMessageStorage.h */,
@@ -906,12 +907,6 @@
 				8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */,
 				803A83181BE59059006520DD /* SMPreferencesController.h */,
 				803A83191BE59059006520DD /* SMPreferencesController.m */,
-				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
-				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
-				80D1AAE71C4B7D170076DDFA /* SMSearchLocalFolder.h */,
-				80D1AAE81C4B7D170076DDFA /* SMSearchLocalFolder.m */,
-				80EC90E81C65CC9500336312 /* SMSearchToken.h */,
-				80EC90E91C65CC9500336312 /* SMSearchToken.m */,
 				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
 				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
 				803A29AC1C0246E900FF8D7C /* SMSuggestionProvider.h */,
@@ -1260,6 +1255,19 @@
 				80B8600E1CF979EA00BD0804 /* SMSearchRequestInputController.m */,
 				80571A981CF585CC001E25C8 /* SMUnifiedSearchController.h */,
 				80571A991CF585CC001E25C8 /* SMUnifiedSearchController.m */,
+			);
+			name = Search;
+			sourceTree = "<group>";
+		};
+		80B860111CF97AD400BD0804 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				006C34601A181DEC00337A49 /* SMSearchDescriptor.h */,
+				006C34611A181DEC00337A49 /* SMSearchDescriptor.m */,
+				80D1AAE71C4B7D170076DDFA /* SMSearchLocalFolder.h */,
+				80D1AAE81C4B7D170076DDFA /* SMSearchLocalFolder.m */,
+				80EC90E81C65CC9500336312 /* SMSearchToken.h */,
+				80EC90E91C65CC9500336312 /* SMSearchToken.m */,
 			);
 			name = Search;
 			sourceTree = "<group>";

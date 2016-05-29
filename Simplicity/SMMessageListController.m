@@ -135,14 +135,16 @@
     [_currentFolder stopLocalFolderSync];
 }
 
-- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder updateResults:(BOOL)updateResults {
+- (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder changeFolder:(BOOL)changeFolder {
     
-    if(!updateResults) {
+    if(changeFolder) {
         [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     }
     
     NSAssert([(NSObject*)_currentFolder isKindOfClass:[SMSearchLocalFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
-    [(SMSearchLocalFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateResults];
+    
+    BOOL updateSearchResults = (changeFolder? NO : YES);
+    [(SMSearchLocalFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateSearchResults];
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];

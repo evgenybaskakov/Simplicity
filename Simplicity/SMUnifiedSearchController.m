@@ -25,7 +25,7 @@
     return self;
 }
 
-- (BOOL)startNewSearchWithPattern:(NSString*)searchPattern {
+- (void)startNewSearchWithPattern:(NSString*)searchPattern searchTokens:(NSArray<SMSearchToken*>*)searchTokens {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     id<SMAbstractLocalFolder> searchFolder = [[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindSearch];
     
@@ -39,14 +39,9 @@
 
     [[_account messageListController] changeFolder:searchFolder.localName];
 
-    BOOL result = NO;
     for(SMUserAccount *account in appDelegate.accounts) {
-        if([[account searchController] startNewSearchWithPattern:searchPattern]) {
-            result = YES;
-        }
+        [[account searchController] startNewSearchWithPattern:searchPattern searchTokens:searchTokens];
     }
-    
-    return result;
 }
 
 - (void)stopLatestSearch {

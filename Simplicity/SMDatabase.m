@@ -22,6 +22,7 @@
 #import "SMThreadSafeOperationQueue.h"
 #import "SMOperationQueue.h"
 #import "SMTextMessage.h"
+#import "SMSearchExpressionKind.h"
 #import "SMSearchToken.h"
 #import "SMDatabase.h"
 
@@ -2108,23 +2109,23 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         NSString *requestStr = nil;
 
                         switch(token.kind) {
-                            case SearchExpressionKind_To:
+                            case SMSearchExpressionKind_To:
                                 requestStr = @"TO";
                                 break;
                                 
-                            case SearchExpressionKind_From:
+                            case SMSearchExpressionKind_From:
                                 requestStr = @"FROM";
                                 break;
                                 
-                            case SearchExpressionKind_Cc:
+                            case SMSearchExpressionKind_Cc:
                                 requestStr = @"CC";
                                 break;
                                 
-                            case SearchExpressionKind_Subject:
+                            case SMSearchExpressionKind_Subject:
                                 requestStr = @"SUBJECT";
                                 break;
                                 
-                            case SearchExpressionKind_Content:
+                            case SMSearchExpressionKind_Content:
                                 requestStr = @"MESSAGEBODY";
                                 break;
                                 
@@ -2133,7 +2134,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                                 break;
                         }
 
-                        if((token.kind == SearchExpressionKind_To) || (token.kind == SearchExpressionKind_From) || (token.kind == SearchExpressionKind_Cc)) {
+                        if((token.kind == SMSearchExpressionKind_To) || (token.kind == SMSearchExpressionKind_From) || (token.kind == SMSearchExpressionKind_Cc)) {
                             NSString *contactName = nil;
                             NSString *email = [SMAddress extractEmailFromAddressString:token.string name:&contactName];
                         

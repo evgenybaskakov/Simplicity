@@ -10,9 +10,11 @@
 
 #import "SMAbstractAccount.h"
 
+@class SMSearchToken;
+
 @protocol SMAbstractSearchController
 
-- (BOOL)startNewSearchWithPattern:(NSString*)searchPattern;
+- (void)startNewSearchWithPattern:(NSString*)searchPattern searchTokens:(NSArray<SMSearchToken*>*)searchTokens;
 - (void)stopLatestSearch;
 
 @end

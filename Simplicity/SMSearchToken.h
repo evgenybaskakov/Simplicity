@@ -8,20 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, SearchExpressionKind) {
-    SearchExpressionKind_To,
-    SearchExpressionKind_From,
-    SearchExpressionKind_Cc,
-    SearchExpressionKind_Subject,
-    SearchExpressionKind_Content,
-    SearchExpressionKind_Any,
-};
+#import "SMSearchExpressionKind.h"
 
 @interface SMSearchToken : NSObject
 
-@property SearchExpressionKind kind;
+@property SMSearchExpressionKind kind;
 @property NSString *string;
 
-- (id)initWithKind:(SearchExpressionKind)kind string:(NSString*)string;
+- (id)initWithKind:(SMSearchExpressionKind)kind string:(NSString*)string;
 
 @end

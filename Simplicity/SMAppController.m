@@ -42,6 +42,7 @@
 #import "SMPreferencesWindowController.h"
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
+#import "SMSearchRequestInputController.h"
 
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
@@ -204,6 +205,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     //
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateMailboxFolderList:) name:@"FolderListUpdated" object:nil];
+    
+    //
+    
+    _searchRequestInputController = [[SMSearchRequestInputController alloc] init];
     
     //
     
@@ -533,7 +538,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     _searchSuggestionsMenuShown = NO;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[appDelegate.currentAccount searchController] startNewSearchWithPattern:searchString]) {
+    if([[appDelegate.appController searchRequestInputController] startNewSearchWithPattern:searchString]) {
         [_searchFieldViewController startProgress];
 
         _searchingForSuggestions = YES;

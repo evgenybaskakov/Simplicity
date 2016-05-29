@@ -21,11 +21,9 @@
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
-#import "SMMessageListViewController.h"
+#import "SMSearchExpressionKind.h"
+#import "SMSearchRequestInputController.h"
 #import "SMAccountSearchController.h"
-#import "SMSectionMenuViewController.h"
-#import "SMTokenFieldViewController.h"
-#import "SMTokenView.h"
 
 const char *const mcoOpKinds[] = {
     "MCOIMAPSearchKindAll",
@@ -67,12 +65,12 @@ const char *const mcoOpKinds[] = {
 };
 
 @interface SearchOpInfo : NSObject
-@property (readonly) SearchExpressionKind kind;
+@property (readonly) SMSearchExpressionKind kind;
 @property MCOIMAPBaseOperation *op;
 @end
 
 @implementation SearchOpInfo
-- (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(SearchExpressionKind)kind {
+- (id)initWithOp:(MCOIMAPSearchOperation*)op kind:(SMSearchExpressionKind)kind {
     self = [super init];
     
     if(self) {
@@ -85,10 +83,6 @@ const char *const mcoOpKinds[] = {
 @end
 
 @implementation SMAccountSearchController {
-    NSMutableArray<SMSearchToken*> *_searchTokens;
-    NSString *_mainSearchPart;
-    SMTokenView *_tokenViewWithMenu;
-
     NSUInteger _currentSearchId;
     NSMutableDictionary *_searchResults;
     NSMutableArray *_searchResultsFolderNames;
@@ -147,21 +141,8 @@ const char *const mcoOpKinds[] = {
     _currentSearchId++;
 }
 
-- (BOOL)startNewSearchWithPattern:(NSString*)searchString {
-    searchString = [SMStringUtils trimString:searchString];
-    SM_LOG_INFO(@"searching for string '%@'", searchString);
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    _searchTokens = [[[[appDelegate appController] searchFieldViewController] representedTokenObjects] mutableCopy];
-
-    if(searchString.length != 0) {
-        _mainSearchPart = searchString;
-    }
-    else {
-        _mainSearchPart = nil;
-    }
-    
-    NSAssert(_searchTokens.count != 0 || _mainSearchPart != nil, @"no search tokens");
+- (void)startNewSearchWithPattern:(NSString*)searchPattern searchTokens:(NSArray<SMSearchToken*>*)searchTokens {
+    NSAssert(searchPattern != nil || searchTokens.count != 0, @"no search tokens and pattern provided by the caller");
     
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     NSAssert(session, @"session is nil");
@@ -191,16 +172,13 @@ const char *const mcoOpKinds[] = {
     // Create a new folder which will contain new search results.
     [[_account localFolderRegistry] createLocalFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName kind:SMFolderKindSearch syncWithRemoteFolder:NO];
        
-    SMSearchDescriptor *searchDescriptor = [[SMSearchDescriptor alloc] init:searchString localFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName];
+    SMSearchDescriptor *searchDescriptor = [[SMSearchDescriptor alloc] init:searchPattern localFolder:_searchResultsLocalFolderName remoteFolder:_searchRemoteFolderName];
     
     [_searchResults setObject:searchDescriptor forKey:_searchResultsLocalFolderName];
     [_searchResultsFolderNames addObject:_searchResultsLocalFolderName];
-
-    Boolean preserveSelection = NO;
-    [[[appDelegate appController] messageListViewController] reloadMessageList:preserveSelection];
     
     [self clearPreviousSearch];
-    [self updateSearchMenuContent:@[]];
+    [self updateSearchMenuContent:searchPattern imapMessages:@[]];
     
     NSUInteger searchId = _currentSearchId;
     
@@ -208,18 +186,18 @@ const char *const mcoOpKinds[] = {
     // Load search results to the suggestions menu.
     //
     
-    if(_mainSearchPart != nil) {
-        SearchExpressionKind kinds[] = {
-            SearchExpressionKind_To,
-            SearchExpressionKind_From,
-            SearchExpressionKind_Cc,
-            SearchExpressionKind_Subject
+    if(searchPattern != nil) {
+        SMSearchExpressionKind kinds[] = {
+            SMSearchExpressionKind_To,
+            SMSearchExpressionKind_From,
+            SMSearchExpressionKind_Cc,
+            SMSearchExpressionKind_Subject
         };
         
         for(int i = 0; i < sizeof(kinds)/sizeof(kinds[0]); i++) {
-            SearchExpressionKind kind = kinds[i];
+            SMSearchExpressionKind kind = kinds[i];
             
-            MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:kind];
+            MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:searchTokens searchPattern:searchPattern searchKind:kind];
             MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:_searchRemoteFolderName expression:searchExpression];
             
             op.urgent = YES;
@@ -255,8 +233,8 @@ const char *const mcoOpKinds[] = {
                             }
                             
                             if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                                [self updateSearchMenuContent:imapMessages];
-                                [self checkSuggestionSearchCompletion];
+                                [self updateSearchMenuContent:searchPattern imapMessages:imapMessages];
+                                [self checkSuggestionSearchCompletion:searchPattern];
                             }
                             else {
                                 SM_LOG_INFO(@"previous search aborted");
@@ -266,7 +244,7 @@ const char *const mcoOpKinds[] = {
                         opInfo.op = op;
                     }
                     else {
-                        [self checkSuggestionSearchCompletion];
+                        [self checkSuggestionSearchCompletion:searchPattern];
                     }
                 }
                 else {
@@ -295,7 +273,7 @@ const char *const mcoOpKinds[] = {
         _mainSearchOp = nil;
     }
 
-    MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:_searchTokens mainSearchPart:_mainSearchPart searchKind:SearchExpressionKind_Any];
+    MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:searchTokens searchPattern:searchPattern searchKind:SMSearchExpressionKind_Any];
     MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:_searchRemoteFolderName expression:searchExpression];
     op.urgent = YES;
   
@@ -324,14 +302,14 @@ const char *const mcoOpKinds[] = {
         }
     }];
  
-    _mainSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SearchExpressionKind_Content];
+    _mainSearchOp = [[SearchOpInfo alloc] initWithOp:op kind:SMSearchExpressionKind_Content];
 
     //
     // Trigger parallel DB search.
     //
 
-    if(_mainSearchPart != nil) {
-        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:_mainSearchPart subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+    if(searchPattern != nil) {
+        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:searchPattern subject:nil content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -353,10 +331,10 @@ const char *const mcoOpKinds[] = {
             
             SM_LOG_DEBUG(@"Total %lu messages with matching contacts found", textMessages.count);
             
-            [self updateSearchMenuContent:@[]];
+            [self updateSearchMenuContent:searchPattern imapMessages:@[]];
         }]];
         
-        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:nil subject:_mainSearchPart content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:searchPattern content:nil block:^(NSArray<SMTextMessage*> *textMessages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -370,11 +348,11 @@ const char *const mcoOpKinds[] = {
             
             SM_LOG_DEBUG(@"Total %lu messages with matching subject found", textMessages.count);
             
-            [self updateSearchMenuContent:@[]];
+            [self updateSearchMenuContent:searchPattern imapMessages:@[]];
         }]];
     }
     
-    [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:_searchTokens contact:nil subject:nil content:_mainSearchPart block:^(NSArray<SMTextMessage*> *textMessages) {
+    [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:nil content:searchPattern block:^(NSArray<SMTextMessage*> *textMessages) {
         if(searchId != _currentSearchId) {
             SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
             return;
@@ -390,31 +368,20 @@ const char *const mcoOpKinds[] = {
         
         [self loadSearchResults:uids remoteFolderToSearch:_searchRemoteFolderName];
     }]];
-
-    //
-    // Finish. Report if the caller should maintain the menu open or it should be closed.
-    //
-    
-    if(_mainSearchPart != nil) {
-        return TRUE;
-    }
-    else {
-        return FALSE;
-    }
 }
 
 - (void)loadSearchResults:(MCOIndexSet*)uids remoteFolderToSearch:(NSString*)remoteFolderName {
-    BOOL updateResults;
+    BOOL changeFolder;
     
     if(_searchMessagesUIDs == nil) {
         _searchMessagesUIDs = uids;
         
-        updateResults = NO;
+        changeFolder = YES;
     }
     else {
         [_searchMessagesUIDs addIndexSet:uids];
         
-        updateResults = YES;
+        changeFolder = NO;
     }
     
     SMSearchDescriptor *searchDescriptor = [_searchResults objectForKey:_searchResultsLocalFolderName];
@@ -422,53 +389,35 @@ const char *const mcoOpKinds[] = {
 
     searchDescriptor.messagesLoadingStarted = YES;
     
-    [[_account messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:_searchResultsLocalFolderName updateResults:updateResults];
+    [[_account messageListController] loadSearchResults:uids remoteFolderToSearch:remoteFolderName searchResultsLocalFolder:_searchResultsLocalFolderName changeFolder:changeFolder];
 }
 
-- (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SearchExpressionKind)kind {
+- (MCOIMAPSearchExpression*)mapSearchPartToMCOExpression:(NSString*)string kind:(SMSearchExpressionKind)kind {
     switch(kind) {
-        case SearchExpressionKind_From:
+        case SMSearchExpressionKind_From:
             // TODO: add search by full name
             return [MCOIMAPSearchExpression searchFrom:[SMAddress extractEmailFromAddressString:string name:nil]];
-        case SearchExpressionKind_To:
+        case SMSearchExpressionKind_To:
             return [MCOIMAPSearchExpression searchTo:[SMAddress extractEmailFromAddressString:string name:nil]];
-        case SearchExpressionKind_Cc:
+        case SMSearchExpressionKind_Cc:
             return [MCOIMAPSearchExpression searchCc:[SMAddress extractEmailFromAddressString:string name:nil]];
-        case SearchExpressionKind_Subject:
+        case SMSearchExpressionKind_Subject:
             return [MCOIMAPSearchExpression searchSubject:string];
-        case SearchExpressionKind_Content:
+        case SMSearchExpressionKind_Content:
             return [MCOIMAPSearchExpression searchContent:string];
-        case SearchExpressionKind_Any:
-            return [MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_From]
-                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_To]
-                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Cc]
-                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Subject]
-                other:[self mapSearchPartToMCOExpression:string kind:SearchExpressionKind_Content]]]]];
+        case SMSearchExpressionKind_Any:
+            return [MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SMSearchExpressionKind_From]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SMSearchExpressionKind_To]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SMSearchExpressionKind_Cc]
+                other:[MCOIMAPSearchExpression searchOr:[self mapSearchPartToMCOExpression:string kind:SMSearchExpressionKind_Subject]
+                other:[self mapSearchPartToMCOExpression:string kind:SMSearchExpressionKind_Content]]]]];
         default:
             NSAssert(nil, @"Search kind %lu not supported", kind);
             return nil;
     }
 }
 
-- (NSString*)mapSearchPartToStringExpression:(NSString*)string kind:(SearchExpressionKind)kind {
-    switch(kind) {
-        case SearchExpressionKind_From:
-            return [NSString stringWithFormat:@"from:(%@)", string];
-        case SearchExpressionKind_To:
-            return [NSString stringWithFormat:@"to:(%@)", string];
-        case SearchExpressionKind_Cc:
-            return [NSString stringWithFormat:@"cc:(%@)", string];
-        case SearchExpressionKind_Subject:
-            return [NSString stringWithFormat:@"subject:(%@)", string];
-        case SearchExpressionKind_Content:
-            return [NSString stringWithFormat:@"contains:(%@)", string];
-        default:
-            NSAssert(nil, @"Search kind %lu not supported", kind);
-            return nil;
-    }
-}
-
-- (MCOIMAPSearchExpression*)buildMCOSearchExpression:(NSArray<SMSearchToken*>*)tokens mainSearchPart:(NSString*)mainSearchPart searchKind:(SearchExpressionKind)searchKind {
+- (MCOIMAPSearchExpression*)buildMCOSearchExpression:(NSArray<SMSearchToken*>*)tokens searchPattern:(NSString*)searchPattern searchKind:(SMSearchExpressionKind)searchKind {
     MCOIMAPSearchExpression *expression = nil;
     
     for(NSUInteger i = 0; i < tokens.count; i++) {
@@ -482,8 +431,8 @@ const char *const mcoOpKinds[] = {
         }
     }
     
-    if(mainSearchPart != nil) {
-        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToMCOExpression:mainSearchPart kind:searchKind];
+    if(searchPattern != nil) {
+        MCOIMAPSearchExpression *subExpression = [self mapSearchPartToMCOExpression:searchPattern kind:searchKind];
         
         if(expression == nil) {
             expression = subExpression;
@@ -496,23 +445,23 @@ const char *const mcoOpKinds[] = {
     return expression;
 }
 
-- (void)checkSuggestionSearchCompletion {
+- (void)checkSuggestionSearchCompletion:(NSString*)searchPattern {
     NSAssert(_completedSuggestionSearchOps < _suggestionSearchOps.count, @"_completedSuggestionSearchOps %lu, _suggestionSearchOps.count %lu", _completedSuggestionSearchOps, _suggestionSearchOps.count);
     
     if(++_completedSuggestionSearchOps == _suggestionSearchOps.count) {
-        [self finishSuggestionSearch];
+        [self finishSuggestionSearch:searchPattern];
     }
 }
 
-- (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(SearchExpressionKind)kind {
+- (void)updateSuggestionSearchResults:(MCOIndexSet*)uids kind:(SMSearchExpressionKind)kind {
     switch(kind) {
-        case SearchExpressionKind_From:
-        case SearchExpressionKind_To:
-        case SearchExpressionKind_Cc:
+        case SMSearchExpressionKind_From:
+        case SMSearchExpressionKind_To:
+        case SMSearchExpressionKind_Cc:
             [_contactSearchResults addIndexSet:uids];
             break;
             
-        case SearchExpressionKind_Subject:
+        case SMSearchExpressionKind_Subject:
             [_subjectSearchResults addIndexSet:uids];
             break;
             
@@ -561,18 +510,16 @@ const char *const mcoOpKinds[] = {
     }
 }
 
-- (void)addContentsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)addContentsSection:(NSString*)searchPattern {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    NSAssert(_searchTokens.count > 0 || _mainSearchPart != nil, @"no search tokens");
-    
-    NSString *section = @"Contents";
-    
-    [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addTopLevelItem:(_mainSearchPart != nil? [NSString stringWithFormat:@"Message contains: %@", _mainSearchPart] : @"??? TODO") object:_account section:section target:self action:@selector(searchForContentsAction:)];
+    if(searchPattern != nil) {
+        NSString *topItem = [NSString stringWithFormat:@"Messages contain: %@", searchPattern];
+        [[appDelegate.appController searchRequestInputController] addContentsSectionToSuggestionsMenu:topItem account:(SMUserAccount*)_account];
+    }
 }
 
-- (void)addContactsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)addContactsSection:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     for(MCOIMAPMessage *imapMessage in imapMessages) {
@@ -584,7 +531,7 @@ const char *const mcoOpKinds[] = {
             for(MCOAddress *address in addresses) {
                 NSString *nonEncodedRFC822String = address.nonEncodedRFC822String;
                 
-                if([[nonEncodedRFC822String lowercaseString] containsString:[_mainSearchPart lowercaseString]]) {
+                if([[nonEncodedRFC822String lowercaseString] containsString:[searchPattern lowercaseString]]) {
                     NSString *displayContactAddress = [SMAddress displayAddress:nonEncodedRFC822String];
                     
                     SM_LOG_DEBUG(@"%@ -> %@", nonEncodedRFC822String, displayContactAddress);
@@ -595,21 +542,13 @@ const char *const mcoOpKinds[] = {
         }
     }
     
-    if(_mainSearchPart != nil || _suggestionResultsContacts.count > 0) {
-        NSString *section = @"Contacts";
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        
-        if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addTopLevelItem:[NSString stringWithFormat:@"Contact contains: %@", _mainSearchPart] object:_account section:section target:self action:@selector(searchForContactAction:)];
-        }
-        
-        for(NSString *contact in _suggestionResultsContacts) {
-            [[[appDelegate appController] searchMenuViewController] addItem:contact object:_account section:section target:self action:@selector(searchForContactAction:)];
-        }
+    if(searchPattern != nil || _suggestionResultsContacts.count > 0) {
+        NSString *topItem = [NSString stringWithFormat:@"Contact contains: %@", searchPattern];
+        [[appDelegate.appController searchRequestInputController] addContactsSectionToSuggestionsMenu:topItem contacts:_suggestionResultsContacts.array account:(SMUserAccount*)_account];
     }
 }
 
-- (void)addSubjectsSection:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)addSubjectsSection:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     for(MCOIMAPMessage *imapMessage in imapMessages) {
@@ -622,34 +561,25 @@ const char *const mcoOpKinds[] = {
         }
     }
     
-    if(_mainSearchPart != nil || _suggestionResultsSubjects.count > 0) {
-        NSString *section = @"Subjects";
-        [[[appDelegate appController] searchMenuViewController] addSection:section];
-        
-        if(_mainSearchPart != nil) {
-            [[[appDelegate appController] searchMenuViewController] addTopLevelItem:[NSString stringWithFormat:@"Subject contains: %@", _mainSearchPart] object:_account section:section target:self action:@selector(searchForSubjectAction:)];
-        }
-        
-        for(NSString *subject in _suggestionResultsSubjects) {
-            [[[appDelegate appController] searchMenuViewController] addItem:subject object:_account section:section target:self action:@selector(searchForSubjectAction:)];
+    if(searchPattern != nil || _suggestionResultsSubjects.count > 0) {
+        if(searchPattern != nil || _suggestionResultsSubjects.count > 0) {
+            NSString *topItem = [NSString stringWithFormat:@"Subject contains: %@", searchPattern];
+            [[appDelegate.appController searchRequestInputController] addSubjectsSectionToSuggestionsMenu:topItem subjects:_suggestionResultsSubjects.array account:(SMUserAccount*)_account];
         }
     }
 }
 
-- (void)updateSearchMenuContent:(NSArray<MCOIMAPMessage*>*)imapMessages {
+- (void)updateSearchMenuContent:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchMenuViewController] clearItemsWithObject:_account];
     
-    // TODO: do it asynchronously
-    [self addContentsSection:imapMessages];
-    [self addContactsSection:imapMessages];
-    [self addSubjectsSection:imapMessages];
+    [[appDelegate.appController searchRequestInputController] clearSuggestionsForAccount:(SMUserAccount*)_account];
     
-    [[[appDelegate appController] searchMenuViewController] reloadItems];
-    [[appDelegate appController] adjustSearchSuggestionsMenuFrame];
+    [self addContentsSection:searchPattern];
+    [self addContactsSection:searchPattern imapMessages:imapMessages];
+    [self addSubjectsSection:searchPattern imapMessages:imapMessages];
 }
 
-- (void)finishSuggestionSearch {
+- (void)finishSuggestionSearch:(NSString*)searchPattern {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] finishSearch:SMSearchOperationKind_Suggestions];
     
@@ -657,211 +587,8 @@ const char *const mcoOpKinds[] = {
         [_suggestionResultsSubjects removeAllObjects];
         [_suggestionResultsContacts removeAllObjects];
         
-        [self updateSearchMenuContent:@[]];
+        [self updateSearchMenuContent:searchPattern imapMessages:@[]];
     }
-}
-
-- (NSString*)buildSearchString:(NSArray<SMSearchToken*>*)tokens {
-    NSString *string = @"";
-    
-    for(NSUInteger i = 0; i < tokens.count; i++) {
-        SMSearchToken *token = tokens[i];
-        string = [string stringByAppendingString:[self mapSearchPartToStringExpression:token.string kind:token.kind]];
-        
-        if(i + 1 < tokens.count) {
-            string = [string stringByAppendingString:@" "];
-        }
-    }
-    
-    return string;
-}
-
-- (void)submitNewSearchRequest:(SearchExpressionKind)kind {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
-    id searchItemAccount;
-    NSString *searchItem = [[[appDelegate appController] searchMenuViewController] getSelectedItemWithObject:&searchItemAccount];
-    
-    if(searchItemAccount != _account) {
-        SM_LOG_DEBUG(@"Search menu item skipped for this account");
-        return;
-    }
-    
-    if(searchItem == nil || searchItem.length == 0) {
-        SM_LOG_ERROR(@"Empty search menu item (request kind %lu)", kind);
-        return;
-    }
-    
-    [[[appDelegate appController] searchFieldViewController] deleteAllTokensAndText];
-
-    [_searchTokens addObject:[[SMSearchToken alloc] initWithKind:kind string:searchItem]];
-
-    for(SMSearchToken *token in _searchTokens) {
-        NSString *tokenName = [self tokenKindToName:token.kind];
-
-        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(editedTokenAction:) deletedAction:@selector(deletedTokenAction:)];
-    }
-    
-    [[appDelegate appController] startNewSearch:YES];
-}
-
-- (NSString*)tokenKindToName:(SearchExpressionKind)kind {
-    NSString *tokenName = nil;
-    
-    switch(kind) {
-        case SearchExpressionKind_From:
-            tokenName = @"From";
-            break;
-        case SearchExpressionKind_To:
-            tokenName = @"To";
-            break;
-        case SearchExpressionKind_Cc:
-            tokenName = @"Cc";
-            break;
-        case SearchExpressionKind_Subject:
-            tokenName = @"Subject";
-            break;
-        case SearchExpressionKind_Content:
-            tokenName = @"Contains";
-            break;
-        default:
-            NSAssert(nil, @"Search kind %lu not supported", kind);
-    }
-    
-    return tokenName;
-}
-
-#pragma mark Actions
-
-- (void)tokenSearchMenuAction:(id)sender {
-    NSAssert([sender isKindOfClass:[NSView class]], @"unexpected sender (it should be SMTokenView)");
-    SMTokenView *tokenView = (SMTokenView*)sender;
-    
-    _tokenViewWithMenu = tokenView;
-
-    NSAssert([tokenView.representedObject isKindOfClass:[SMSearchToken class]], @"unexpected tokenView.representedObject (it should be SMSearch)");
-    SMSearchToken *token = (SMSearchToken *)tokenView.representedObject;
-    
-    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
-    
-    SearchExpressionKind availableKinds[] = {
-        SearchExpressionKind_To,
-        SearchExpressionKind_From,
-        SearchExpressionKind_Cc,
-        SearchExpressionKind_Subject,
-        SearchExpressionKind_Content
-    };
-    
-    for(int i = 0; i < sizeof(availableKinds)/sizeof(availableKinds[0]); i++) {
-        if(token.kind != availableKinds[i]) {
-            NSString *tokenName = [self tokenKindToName:availableKinds[i]];
-
-            switch(availableKinds[i]) {
-                case SearchExpressionKind_To:
-                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToTo:) keyEquivalent:@""] setTarget:self];
-                    break;
-                case SearchExpressionKind_From:
-                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToFrom:) keyEquivalent:@""] setTarget:self];
-                    break;
-                case SearchExpressionKind_Cc:
-                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToCc:) keyEquivalent:@""] setTarget:self];
-                    break;
-                case SearchExpressionKind_Subject:
-                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToSubject:) keyEquivalent:@""] setTarget:self];
-                    break;
-                case SearchExpressionKind_Content:
-                    [[theMenu addItemWithTitle:tokenName action:@selector(changeTokenKindToContent:) keyEquivalent:@""] setTarget:self];
-                    break;
-                default:
-                    SM_FATAL(@"unexpected kind %lu", availableKinds[i]);
-            }
-        }
-    }
-
-    [theMenu addItem:[NSMenuItem separatorItem]];
-    [[theMenu addItemWithTitle:@"Edit" action:@selector(editTokenInSearchField:) keyEquivalent:@""] setTarget:self];
-    [[theMenu addItemWithTitle:@"Delete" action:@selector(deleteTokenFromSearchField:) keyEquivalent:@""] setTarget:self];
-    
-    [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(0, -6) inView:tokenView];
-}
-
-- (void)changeTokenKindToTo:(id)sender {
-    [self changeTokenKind:SearchExpressionKind_To];
-}
-
-- (void)changeTokenKindToFrom:(id)sender {
-    [self changeTokenKind:SearchExpressionKind_From];
-}
-
-- (void)changeTokenKindToCc:(id)sender {
-    [self changeTokenKind:SearchExpressionKind_Cc];
-}
-
-- (void)changeTokenKindToSubject:(id)sender {
-    [self changeTokenKind:SearchExpressionKind_Subject];
-}
-
-- (void)changeTokenKindToContent:(id)sender {
-    [self changeTokenKind:SearchExpressionKind_Content];
-}
-    
-- (void)changeTokenKind:(SearchExpressionKind)newKind {
-    SMSearchToken *oldToken = (SMSearchToken *)_tokenViewWithMenu.representedObject;
-    SMSearchToken *newToken = [[SMSearchToken alloc] initWithKind:newKind string:oldToken.string];
-    NSString *newTokenName = [self tokenKindToName:newToken.kind];
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction deletedAction:_tokenViewWithMenu.deletedAction];
-    
-    [[appDelegate appController] startNewSearch:NO];
-}
-
-- (void)editTokenInSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] editToken:_tokenViewWithMenu];
-
-    // Note: no other actions is to trigger here. It'll be triggered by the token itself.
-}
-
-- (void)deleteTokenFromSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
-    
-    // Note: no other actions is to trigger here. It'll be triggered by the token itself.
-}
-
-- (void)editedTokenAction:(id)sender {
-    SMTokenView *tokenView = (SMTokenView *)sender;
-    SMSearchToken *token = (SMSearchToken *)tokenView.representedObject;
-
-    // Propagate the token string the user entered to the search.
-    token.string = tokenView.contentsText;
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] startNewSearch:NO];
-}
-
-- (void)deletedTokenAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] startNewSearch:NO];
-}
-
-- (void)tokenSearchEditedAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] startNewSearch:NO];
-}
-
-- (void)searchForContentsAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] closeSearchSuggestionsMenu];
-}
-
-- (void)searchForContactAction:(id)sender {
-    [self submitNewSearchRequest:SearchExpressionKind_From];
-}
-
-- (void)searchForSubjectAction:(id)sender {
-    [self submitNewSearchRequest:SearchExpressionKind_Subject];
 }
 
 @end

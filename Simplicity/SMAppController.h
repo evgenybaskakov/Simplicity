@@ -24,6 +24,7 @@
 @class SMMessageEditorWindowController;
 @class SMOperationQueueWindowController;
 @class SMMessageThread;
+@class SMSearchRequestInputController;
 @class SMUserAccount;
 
 typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
@@ -86,6 +87,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)showNewAccountWindow;
 - (void)closeNewAccountWindow;
 
+@property (readonly, nonatomic) SMSearchRequestInputController *searchRequestInputController;
 @property (readonly, nonatomic) NSWindow *searchSuggestionsMenu;
 
 - (void)closeSearchSuggestionsMenu;

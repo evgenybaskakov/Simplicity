@@ -11,7 +11,7 @@
 
 @implementation SMSearchToken
 
-- (id)initWithKind:(SearchExpressionKind)kind string:(NSString*)string {
+- (id)initWithKind:(SMSearchExpressionKind)kind string:(NSString*)string {
     self = [super init];
     
     if(self) {

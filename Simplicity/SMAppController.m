@@ -408,10 +408,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     }
 }
 
-- (void)clearSearch {
-    [self clearSearch:NO cancelFocus:YES];
-}
-
 - (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus {
     [_searchFieldViewController deleteAllTokensAndText];
     [_searchFieldViewController stopProgress];

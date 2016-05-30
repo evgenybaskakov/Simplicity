@@ -88,7 +88,7 @@
     SMAppController *appController = [appDelegate appController];
     
     if(clearSearch) {
-        [appController clearSearch];
+        [appController clearSearch:NO cancelFocus:YES];
     }
     
     [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
@@ -115,7 +115,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [appController clearSearch];
+    [appController clearSearch:NO cancelFocus:YES];
     
     [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
     

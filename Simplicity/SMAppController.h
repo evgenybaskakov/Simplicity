@@ -94,6 +94,6 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)adjustSearchSuggestionsMenuFrame;
 - (void)startNewSearch:(BOOL)showSuggestionsMenu;
 - (void)finishSearch:(SMSearchOperationKind)searchOperationKind;
-- (void)clearSearch;
+- (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus;
 
 @end

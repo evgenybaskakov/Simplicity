@@ -20,7 +20,6 @@
 @interface SMMessageListController : SMUserAccountDataObject
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (void)changeFolder:(NSString*)folder;
 - (void)changeFolder:(NSString*)folder clearSearch:(BOOL)clearSearch;
 - (void)changeToPrevFolder;
 - (void)clearCurrentFolderSelection;

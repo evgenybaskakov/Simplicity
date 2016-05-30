@@ -79,10 +79,6 @@
     }
 }
 
-- (void)changeFolder:(NSString*)folder {
-    [self changeFolder:folder clearSearch:YES];
-}
-
 - (void)changeFolder:(NSString*)folder clearSearch:(BOOL)clearSearch {
     if([_currentFolder.localName isEqualToString:folder]) {
         return;

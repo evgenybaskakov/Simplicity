@@ -207,7 +207,7 @@
     [[appDelegate.currentAccount searchController] stopLatestSearch];
     
     [[[appDelegate appController] messageListViewController] stopProgressIndicators];
-    [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil)];
+    [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil) clearSearch:YES];
     
     SMFolder *selectedFolder = [appDelegate.currentMailboxController selectedFolder];
     

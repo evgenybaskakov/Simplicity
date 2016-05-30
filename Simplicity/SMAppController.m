@@ -300,7 +300,7 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     if(!account.foldersInitialized) {
         SMFolder *inboxFolder = [[account mailbox] inboxFolder];
         if(inboxFolder != nil) {
-            [[account messageListController] changeFolder:inboxFolder.fullName];
+            [[account messageListController] changeFolder:inboxFolder.fullName clearSearch:YES];
             [[account mailboxController] changeFolder:inboxFolder];
             
             for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {

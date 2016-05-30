@@ -22,7 +22,6 @@
     NSMutableArray<SMSearchToken*> *_searchTokens;
     NSString *_searchPattern;
     SMTokenView *_tokenViewWithMenu;
-    
 }
 
 - (NSString*)mapSearchPartToStringExpression:(NSString*)string kind:(SMSearchExpressionKind)kind {

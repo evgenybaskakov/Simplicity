@@ -98,8 +98,10 @@
     [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
     [self startMessagesUpdate];
     
-    Boolean preserveSelection = NO;
-    [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
+    if(_account == appDelegate.currentAccount) {
+        Boolean preserveSelection = NO;
+        [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
+    }
 }
 
 - (void)changeToPrevFolder {
@@ -121,8 +123,10 @@
     
     [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
     
-    Boolean preserveSelection = NO;
-    [[appController messageListViewController] reloadMessageList:preserveSelection];
+    if(_account == appDelegate.currentAccount) {
+        Boolean preserveSelection = NO;
+        [[appController messageListViewController] reloadMessageList:preserveSelection];
+    }
 }
 
 - (void)startMessagesUpdate {
@@ -149,8 +153,10 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    Boolean preserveSelection = NO;
-    [[appController messageListViewController] reloadMessageList:preserveSelection];
+    if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
+        Boolean preserveSelection = NO;
+        [[appController messageListViewController] reloadMessageList:preserveSelection];
+    }
 }
 
 - (void)cancelScheduledMessageListUpdate {
@@ -209,10 +215,13 @@
         
         if(updateResult != SMMesssageStorageUpdateResultNone) {
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-            SMAppController *appController = [appDelegate appController];
             
-            [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
-            [[appController messageThreadViewController] updateMessageThread];
+            if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
+                SMAppController *appController = [appDelegate appController];
+
+                [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
+                [[appController messageThreadViewController] updateMessageThread];
+            }
         }
     }
 }

@@ -37,7 +37,7 @@
         NSAssert(searchFolder != nil, @"search folder not created");
     }
 
-    [[_account messageListController] changeFolder:searchFolder.localName];
+    [[_account messageListController] changeFolder:searchFolder.localName clearSearch:NO];
 
     for(SMUserAccount *account in appDelegate.accounts) {
         [[account searchController] startNewSearchWithPattern:searchPattern searchTokens:searchTokens];

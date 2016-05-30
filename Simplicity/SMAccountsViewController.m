@@ -306,11 +306,13 @@
 
 - (void)changeAccountTo:(NSInteger)accountIdx {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = appDelegate.appController;
 
     BOOL updateViewControllers = NO;
     
     if(accountIdx == UNIFIED_ACCOUNT_IDX) {
         if(!appDelegate.currentAccountIsUnified) {
+            [appController clearSearch:YES cancelFocus:YES];
             [appDelegate setCurrentAccount:appDelegate.unifiedAccount];
             
             updateViewControllers = YES;
@@ -320,6 +322,7 @@
         if(appDelegate.currentAccountIsUnified || appDelegate.currentAccountIdx != accountIdx) {
             SM_LOG_INFO(@"switching to account %lu", accountIdx);
 
+            [appController clearSearch:YES cancelFocus:YES];
             [appDelegate setCurrentAccount:appDelegate.accounts[accountIdx]];
 
             updateViewControllers = YES;
@@ -327,8 +330,6 @@
     }
     
     if(updateViewControllers) {
-        SMAppController *appController = appDelegate.appController;
-        
         [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
         [[appController operationQueueWindowController] reloadOperationQueue];
         [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];

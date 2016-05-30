@@ -420,6 +420,15 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     [[appDelegate.currentAccount searchController] stopLatestSearch];
     
     if(changeToPrevFolder) {
+        // If the current account is unified, it means the search results
+        // is loaded within each. So clear evething.
+        // TODO: get rid of this weird logic (See issue #103).
+        if(appDelegate.currentAccountIsUnified) {
+            for(id<SMAbstractAccount> account in appDelegate.accounts) {
+                [[account messageListController] changeToPrevFolder];
+            }
+        }
+
         [[appDelegate.currentAccount messageListController] changeToPrevFolder];
         [[[appDelegate appController] mailboxViewController] changeToPrevFolder];
     }

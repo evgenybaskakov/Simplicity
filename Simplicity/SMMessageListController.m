@@ -141,6 +141,10 @@
         [self changeFolderInternal:searchResultsLocalFolder remoteFolder:remoteFolderNameToSearch syncWithRemoteFolder:NO];
     }
     
+    // TODO: This is wrong. The message list controller shouldn't be dependent on the
+    //       actual nature of the local folder. It should just show whateher the local folder has.
+    //       So when searching within the Unified Account, each account's message list controller
+    //       shouldn't change to the search local folder. See issue #103.
     NSAssert([(NSObject*)_currentFolder isKindOfClass:[SMSearchLocalFolder class]], @"local folder %@ is not an instance of search folder", _currentFolder.localName);
     
     BOOL updateSearchResults = (changeFolder? NO : YES);

@@ -514,8 +514,9 @@ const char *const mcoOpKinds[] = {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
     if(searchPattern != nil) {
-        NSString *topItem = [NSString stringWithFormat:@"Messages contain: %@", searchPattern];
-        [[appDelegate.appController searchRequestInputController] addContentsSectionToSuggestionsMenu:topItem account:(SMUserAccount*)_account];
+        NSString *sectionTitle = [NSString stringWithFormat:@"Messages contain: %@", searchPattern];
+        
+        [[appDelegate.appController searchRequestInputController] addContentsSectionToSuggestionsMenu:sectionTitle topLevelItemValue:searchPattern account:(SMUserAccount*)_account];
     }
 }
 
@@ -543,8 +544,9 @@ const char *const mcoOpKinds[] = {
     }
     
     if(searchPattern != nil || _suggestionResultsContacts.count > 0) {
-        NSString *topItem = [NSString stringWithFormat:@"Contact contains: %@", searchPattern];
-        [[appDelegate.appController searchRequestInputController] addContactsSectionToSuggestionsMenu:topItem contacts:_suggestionResultsContacts.array account:(SMUserAccount*)_account];
+        NSString *sectionTitle = [NSString stringWithFormat:@"Contact contains: %@", searchPattern];
+        
+        [[appDelegate.appController searchRequestInputController] addContactsSectionToSuggestionsMenu:sectionTitle topLevelItemValue:searchPattern contacts:_suggestionResultsContacts.array account:(SMUserAccount*)_account];
     }
 }
 
@@ -563,8 +565,9 @@ const char *const mcoOpKinds[] = {
     
     if(searchPattern != nil || _suggestionResultsSubjects.count > 0) {
         if(searchPattern != nil || _suggestionResultsSubjects.count > 0) {
-            NSString *topItem = [NSString stringWithFormat:@"Subject contains: %@", searchPattern];
-            [[appDelegate.appController searchRequestInputController] addSubjectsSectionToSuggestionsMenu:topItem subjects:_suggestionResultsSubjects.array account:(SMUserAccount*)_account];
+            NSString *sectionTitle = [NSString stringWithFormat:@"Subject contains: %@", searchPattern];
+            
+            [[appDelegate.appController searchRequestInputController] addSubjectsSectionToSuggestionsMenu:sectionTitle topLevelItemValue:searchPattern  subjects:_suggestionResultsSubjects.array account:(SMUserAccount*)_account];
         }
     }
 }

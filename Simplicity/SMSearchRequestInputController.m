@@ -114,25 +114,26 @@
     [[appDelegate appController] startNewSearch:YES];
 }
 
-- (void)addContentsSectionToSuggestionsMenu:(NSString*)topLevelRequest account:(SMUserAccount*)account {
+- (void)addContentsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue account:(SMUserAccount*)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
     NSString *section = @"Contents";
     
     [[[appDelegate appController] searchMenuViewController] addSection:section];
-    [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelRequest object:account section:section target:self action:@selector(searchForContentsAction:)];
+    
+    [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelItemTitle topLevelItemValue:topLevelItemValue object:account section:section target:self action:@selector(searchForContentsAction:)];
     
     [self reloadSuggestionsMenu];
 }
 
-- (void)addContactsSectionToSuggestionsMenu:(NSString*)topLevelItem contacts:(NSArray*)contacts account:(SMUserAccount *)account {
+- (void)addContactsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue contacts:(NSArray*)contacts account:(SMUserAccount *)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     NSString *section = @"Contacts";
     [[[appDelegate appController] searchMenuViewController] addSection:section];
     
-    if(topLevelItem != nil) {
-        [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelItem object:account section:section target:self action:@selector(searchForContactAction:)];
+    if(topLevelItemTitle != nil) {
+        [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelItemTitle topLevelItemValue:topLevelItemValue object:account section:section target:self action:@selector(searchForContactAction:)];
     }
     
     for(NSString *contact in contacts) {
@@ -142,14 +143,14 @@
     [self reloadSuggestionsMenu];
 }
 
-- (void)addSubjectsSectionToSuggestionsMenu:(NSString*)topLevelItem subjects:(NSArray*)subjects account:(SMUserAccount*)account {
+- (void)addSubjectsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue subjects:(NSArray*)subjects account:(SMUserAccount*)account {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
     NSString *section = @"Subjects";
     [[[appDelegate appController] searchMenuViewController] addSection:section];
     
-    if(_searchPattern != nil) {
-        [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelItem object:account section:section target:self action:@selector(searchForSubjectAction:)];
+    if(topLevelItemTitle != nil) {
+        [[[appDelegate appController] searchMenuViewController] addTopLevelItem:topLevelItemTitle topLevelItemValue:topLevelItemValue object:account section:section target:self action:@selector(searchForSubjectAction:)];
     }
     
     for(NSString *subject in subjects) {

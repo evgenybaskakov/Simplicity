@@ -20,20 +20,22 @@ typedef NS_ENUM(NSUInteger, ItemKind) {
 
 @interface ItemInfo : NSOrderedSet
 @property NSString *label;
+@property NSString *value;
 @property id object;
 @property ItemKind kind;
 @property id target;
 @property SEL action;
-- (id)initWithLabel:(NSString*)label object:(NSObject*)object kind:(ItemKind)kind target:(id)target action:(SEL)action;
+- (id)initWithLabel:(NSString*)label value:(NSString*)value object:(NSObject*)object kind:(ItemKind)kind target:(id)target action:(SEL)action;
 @end
 
 @implementation ItemInfo
 
-- (id)initWithLabel:(NSString*)label object:(id)object kind:(ItemKind)kind target:(id)target action:(SEL)action {
+- (id)initWithLabel:(NSString*)label value:(NSString*)value object:(id)object kind:(ItemKind)kind target:(id)target action:(SEL)action {
     self = [super init];
     
     if(self) {
         _label = label;
+        _value = value;
         _object = object;
         _kind = kind;
         _target = target;
@@ -90,21 +92,21 @@ typedef NS_ENUM(NSUInteger, ItemKind) {
     
     [_sections addObject:sectionName];
     [_sectionItems addObject:[NSMutableArray array]];
-    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName object:nil kind:ItemKind_Separator target:nil action:nil]];
+    [_sectionItems.lastObject addObject:[[ItemInfo alloc] initWithLabel:sectionName value:nil object:nil kind:ItemKind_Separator target:nil action:nil]];
 }
 
-- (void)addTopLevelItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
+- (void)addTopLevelItem:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
     NSUInteger idx = [_sections indexOfObject:sectionName];
     NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
     
-    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object kind:ItemKind_TopLevel target:target action:action]];
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:topLevelItemTitle value:topLevelItemValue object:object kind:ItemKind_TopLevel target:target action:action]];
 }
 
 - (void)addItem:(NSString*)itemName object:(id)object section:(NSString*)sectionName target:(id)target action:(SEL)action {
     NSUInteger idx = [_sections indexOfObject:sectionName];
     NSAssert(idx != NSNotFound, @"section %@ not found", sectionName);
     
-    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName object:object kind:ItemKind_BottomLevel target:target action:action]];
+    [_sectionItems[idx] addObject:[[ItemInfo alloc] initWithLabel:itemName value:itemName object:object kind:ItemKind_BottomLevel target:target action:action]];
 }
 
 - (NSString*)getSelectedItemWithObject:(id*)object {
@@ -112,7 +114,7 @@ typedef NS_ENUM(NSUInteger, ItemKind) {
     
     if(selectedRow >= 0 && selectedRow < _itemsFlat.count) {
         *object = _itemsFlat[selectedRow].object;
-        return _itemsFlat[selectedRow].label;
+        return _itemsFlat[selectedRow].value;
     }
     else {
         return nil;

@@ -11,9 +11,9 @@
 @interface SMSearchRequestInputController : NSObject
 
 - (void)clearSuggestionsForAccount:(SMUserAccount*)account;
-- (void)addContentsSectionToSuggestionsMenu:(NSString*)topLevelItem account:(SMUserAccount*)account;
-- (void)addContactsSectionToSuggestionsMenu:(NSString *)topLevelItem contacts:(NSArray*)contacts account:(SMUserAccount*)account;
-- (void)addSubjectsSectionToSuggestionsMenu:(NSString *)topLevelItem subjects:(NSArray*)subjects account:(SMUserAccount*)account;
+- (void)addContentsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue account:(SMUserAccount*)account;
+- (void)addContactsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue contacts:(NSArray*)contacts account:(SMUserAccount*)account;
+- (void)addSubjectsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue subjects:(NSArray*)subjects account:(SMUserAccount*)account;
 - (BOOL)startNewSearchWithPattern:(NSString*)searchPattern;
 
 @end

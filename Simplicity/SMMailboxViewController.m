@@ -102,6 +102,8 @@
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
+        // This is happening very, very often
+        // TODO: Fix!!! Issue #104.
         [self updateFolders:localFolder];
     }
 }

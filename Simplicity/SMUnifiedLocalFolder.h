@@ -13,6 +13,7 @@
 
 @protocol SMAbstractAccount;
 
+@class SMUnifiedAccount;
 @class SMLocalFolder;
 
 @interface SMUnifiedLocalFolder : SMUserAccountDataObject<SMAbstractLocalFolder>
@@ -21,5 +22,6 @@
 - (void)attachLocalFolder:(SMLocalFolder*)localFolder;
 - (void)detachLocalFolder:(SMLocalFolder*)localFolder;
 - (SMLocalFolder*)attachedLocalFolderForAccount:(SMUserAccount*)account;
+- (BOOL)hasLocalFolderAttached:(SMLocalFolder*)localFolder;
 
 @end

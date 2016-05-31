@@ -89,11 +89,15 @@
 }
 
 - (void)startLocalFolderSync {
-    // Nothing to do
+    for(SMLocalFolder *localFolder in _attachedLocalFolders) {
+        [localFolder startLocalFolderSync];
+    }
 }
 
 - (void)stopLocalFolderSync {
-    // Nothing to do
+    for(SMLocalFolder *localFolder in _attachedLocalFolders) {
+        [localFolder stopLocalFolderSync];
+    }
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
@@ -159,6 +163,16 @@
     
     SM_FATAL(@"Attached local folder %@ not found for the given account", _localName);
     return nil;
+}
+
+- (BOOL)hasLocalFolderAttached:(SMLocalFolder*)localFolder {
+    for(SMLocalFolder *f in _attachedLocalFolders) {
+        if(f == localFolder) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 - (void)reclaimMemory:(uint64_t)memoryToReclaimKb {

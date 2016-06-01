@@ -118,7 +118,7 @@
     if(_loadingFromDB) {
         _dbSyncInProgress = YES;
 
-        [_dbOps addObject:[[_account database] getMessagesCountInDBFolder:_localName block:^(NSUInteger messagesCount) {
+        [_dbOps addObject:[[_account database] getMessagesCountInDBFolder:_remoteFolderName block:^(NSUInteger messagesCount) {
             SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
             _totalMessagesCount = messagesCount;
@@ -373,6 +373,7 @@
         if([messageThread getMessageByUID:entry.uid] == nil) {
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
+            // ??? entry.folderName -> entry.remoteFolderName
             [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(MCOIMAPMessage *message) {
                 if(message != nil) {
                     SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
@@ -481,7 +482,7 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_localName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
+        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(NSArray *outgoingMessages, NSArray *messages) {
             SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
             
             for(SMOutgoingMessage *message in outgoingMessages) {

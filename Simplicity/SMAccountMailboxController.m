@@ -170,12 +170,12 @@
 
     for(SMFolder *folder in mailbox.mainFolders) {
         NSAssert(folder != nil, @"folder in mailbox.mainFolders is nil");
-        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.mcoFlags]; // MCO flags
+        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.mcoFlags];
     }
 
     for(SMFolder *folder in mailbox.folders) {
         NSAssert(folder != nil, @"folder in mailbox.folders is nil");
-        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.mcoFlags]; // MCO flags
+        [[_account database] addDBFolder:folder.fullName delimiter:folder.delimiter flags:folder.mcoFlags];
     }
 }
 

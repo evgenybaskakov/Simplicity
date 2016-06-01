@@ -138,7 +138,7 @@
     if(updateDatabase) {
         SM_LOG_INFO(@"Deleting message thread %llu from the database", messageThread.threadId);
         
-        [[_account database] removeMessageThreadFromDB:messageThread.threadId folder:_localFolder.localName];
+        [[_account database] removeMessageThreadFromDB:messageThread.threadId folder:_localFolder.remoteFolderName];
     }
 }
 
@@ -235,7 +235,7 @@
                     // It will be put in the database on endUpdate if any subsequent updates follow.
                     SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                     
-                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.localName];
+                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.remoteFolderName];
                 }
             }
         }
@@ -303,7 +303,7 @@
             if(updateDatabase) {
                 SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
                 
-                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.localName];
+                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.remoteFolderName];
             }
         }
     }
@@ -405,10 +405,10 @@
 
     if(updateDatabase) {
         if([message isKindOfClass:[SMOutgoingMessage class]]) {
-            [[_account database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:_localFolder.localName];
+            [[_account database] putOutgoingMessageToDBFolder:(SMOutgoingMessage*)message folder:_localFolder.remoteFolderName];
         }
         else {
-            [[_account database] putMessageToDBFolder:message.imapMessage folder:_localFolder.localName];
+            [[_account database] putMessageToDBFolder:message.imapMessage folder:_localFolder.remoteFolderName];
         }
     }
     

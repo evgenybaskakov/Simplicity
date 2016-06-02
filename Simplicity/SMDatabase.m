@@ -720,7 +720,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     NSAssert(encodedOpQueue != nil, @"could not encode op queue");
 
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -791,7 +791,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
@@ -799,7 +800,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_INFO(@"deleting op queue '%@'", queueName);
     
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -811,7 +812,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
@@ -819,7 +821,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     SM_LOG_INFO(@"scheduling load for op queue '%@'", queueName);
 
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -910,7 +912,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getQueueBlock(opQueue);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 
     return dbOp;
@@ -1073,7 +1076,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -1201,7 +1204,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             }
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
@@ -1211,7 +1215,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (void)removeDBFolder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -1298,13 +1302,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (SMDatabaseOp*)loadDBFolders:(void (^)(NSArray*))loadFoldersBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -1362,7 +1367,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             loadFoldersBlock(folders);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
     return dbOp;
@@ -1370,7 +1376,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (SMDatabaseOp*)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(NSUInteger))getMessagesCountBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -1445,7 +1451,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesCountBlock(messagesCount);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
     return dbOp;
@@ -1453,7 +1460,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(NSArray*, NSArray*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -1507,7 +1514,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         NSData *data = [NSData dataWithBytesNoCopy:(void *)sqlite3_column_blob(statement, 0) length:dataSize freeWhenDone:NO];
                         NSData *uncompressedData = [SMCompression gzipInflate:data];
                         
-                        id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
+                        NSObject *messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:uncompressedData];
                         
                         if(messageObject == nil) {
                             SM_LOG_ERROR(@"could not decode message");
@@ -1524,6 +1531,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                             SM_LOG_DEBUG(@"Outgoing message (uid %u, threadId %llu) loaded from folder %@", outgoingMessage.uid, outgoingMessage.threadId, folderName);
                         }
                         else {
+                            NSAssert([messageObject isKindOfClass:[MCOIMAPMessage class]], @"unexpected class of messageObject: %@", [messageObject className]);
+                            
                             [messages addObject:messageObject];
 
                             SM_LOG_DEBUG(@"IMAP message (uid %u, threadId %llu) loaded from folder %@", ((MCOIMAPMessage*)messageObject).uid, ((MCOIMAPMessage*)messageObject).gmailThreadID, folderName);
@@ -1566,7 +1575,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesBlock(outgoingMessages, messages);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 
     return dbOp;
@@ -1574,7 +1584,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (SMDatabaseOp*)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(MCOIMAPMessage*))getMessageBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -1615,7 +1625,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessageBlock(message);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
     return dbOp;
@@ -1623,7 +1634,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uids block:(void (^)(NSArray<MCOIMAPMessage*>*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -1675,7 +1686,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesBlock(messages);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
     return dbOp;
@@ -1810,7 +1822,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
         
-        NSData *messageBody = nil;
         NSString *messageBodyPreview = nil;
         MCOMessageParser *parser = nil;
         NSArray *attachments = nil;
@@ -1818,6 +1829,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
+            NSData *messageBody = nil;
             NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGEBODIES%@ WHERE UID = \"%u\"", folderId, uid];
             
             sqlite3_stmt *statement = NULL;
@@ -1856,6 +1868,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             if(messageBody != nil) {
                 parser = [MCOMessageParser messageParserWithData:messageBody];
                 attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread, not in the main thread
+                
+                // TODO: load the plain text from database to avoid extra heavy work in MCOMessageParser
+                
                 messageBodyPreview = [SMMessage imapMessagePlainTextBody:parser];
             }
         }
@@ -1868,6 +1883,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             
             getMessageBodyBlock(parser, attachments, messageBodyPreview);
         });
+        
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     };
 
     [self dispatchOp:op urgent:urgent];
@@ -1924,7 +1942,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -1944,13 +1962,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -1968,7 +1987,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
@@ -2357,7 +2377,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -2428,13 +2448,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -2545,13 +2566,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data plainTextBody:(NSString*)plainTextBody folderName:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -2717,7 +2739,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             }
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
@@ -2787,7 +2810,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
     
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -2949,13 +2972,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (void)removeMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
@@ -3009,13 +3033,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
 
 - (SMDatabaseOp*)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMMessageThreadDescriptor*))getMessageThreadBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
-    SM_LOG_DEBUG(@"serial queue length: %d", serialQueueLen);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
     
@@ -3113,7 +3138,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessageThreadBlock(messageThreadDesc);
         });
         
-        OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
     return dbOp;
@@ -3148,6 +3174,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         });
     }
     else {
+        const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
+        
         dispatch_async(_serialQueue, op);
     }
 }

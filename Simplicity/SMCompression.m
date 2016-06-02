@@ -47,7 +47,7 @@
     
     compressed.length = strm.total_out;
     
-    return [NSData dataWithData:compressed];
+    return compressed;
 }
 
 + (NSData*)gzipInflate:(NSData*)data {
@@ -61,7 +61,7 @@
     NSMutableData *decompressed = [NSMutableData dataWithLength:full_length + half_length];
     
     z_stream strm;
-
+    
     strm.next_in = (Bytef*)data.bytes;
     strm.avail_in = (uInt)data.length;
     strm.total_out = 0;
@@ -73,7 +73,7 @@
     }
     
     BOOL done = NO;
-
+    
     while(!done) {
         if(strm.total_out >= [decompressed length]) {
             [decompressed increaseLengthBy: half_length];
@@ -83,7 +83,7 @@
         strm.avail_out = (uInt)decompressed.length - (uInt)strm.total_out;
         
         const int status = inflate(&strm, Z_SYNC_FLUSH);
-
+        
         if(status == Z_STREAM_END) {
             done = YES;
         }
@@ -98,8 +98,8 @@
     
     if(done) {
         decompressed.length = strm.total_out;
-
-        return [NSData dataWithData:decompressed];
+        
+        return decompressed;
     }
     else {
         return data;

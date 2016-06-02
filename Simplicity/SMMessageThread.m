@@ -294,7 +294,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         hasData = [ message hasData ];
     } else {
-        SM_LOG_WARNING(@"message for uid %u not found", uid);
+        SM_LOG_DEBUG(@"message for uid %u is not yet contained in thread %lld", uid, _threadId);
     }
     
     return hasData;
@@ -459,7 +459,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         // clear messages update marks for future updates
         message.updateStatus = SMMessageUpdateStatus_Unknown;
 
-        SM_LOG_DEBUG(@"Thread %llu, message labels %@", _threadId, message.labels);
+        SM_LOG_NOISE(@"Thread %llu, message labels %@", _threadId, message.labels);
         [newLabels addObjectsFromArray:message.labels];
     }
     

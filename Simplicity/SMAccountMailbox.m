@@ -80,7 +80,7 @@
         MCOIMAPFolder *folder = imapFolders[i];
         NSString *path = folder.path;
         NSData *pathData = [path dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *pathUtf8 = (__bridge NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
+        NSString *pathUtf8 = (__bridge_transfer NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
         
         [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
     }

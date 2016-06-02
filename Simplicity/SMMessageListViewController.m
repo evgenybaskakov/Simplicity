@@ -212,8 +212,6 @@
     NSAssert([messageThread messagesCount], @"no messages in the thread");
     SMMessage *firstMessage = [messageThread messagesSortedByDate][0];
     
-    SM_LOG_DEBUG(@"from '%@', subject '%@', unseen %u", [SMMessage parseAddress:firstMessage.fromAddress], firstMessage.subject, messageThread.unseen);
-
     SMMessageListCellView *view = [tableView makeViewWithIdentifier:@"MessageCell" owner:self];
     NSAssert(view != nil, @"view is nil");
     

@@ -108,6 +108,8 @@
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
         return;
     }
+    
+    NSAssert(_dbOps.count == 0, @"db ops still pending");
 
     [[_account localFolderRegistry] keepFoldersMemoryLimit];
 
@@ -121,6 +123,8 @@
         [_dbOps addObject:[[_account database] getMessagesCountInDBFolder:_remoteFolderName block:^(SMDatabaseOp *op, NSUInteger messagesCount) {
             SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
+            [_dbOps removeObject:op];
+            
             _totalMessagesCount = messagesCount;
             
             [self syncFetchMessageHeaders];
@@ -177,6 +181,12 @@
     _dbSyncInProgress = NO;
 
     [_fetchedMessageHeaders removeAllObjects];
+    
+    for(SMDatabaseOp *dbOp in _dbOps) {
+        [dbOp cancel];
+    }
+    
+    [_dbOps removeAllObjects];
 
     if(shouldStartRemoteSync) {
         SM_LOG_INFO(@"folder %@ loaded from the local database, starting syncing with server", _localName);
@@ -184,7 +194,7 @@
         [self startLocalFolderSync];
     }
     else if(!_loadingFromDB && _syncedWithRemoteFolder) {
-        SM_LOG_INFO(@"folder %@ not yet loaded from the local database, syncing with server postponed", _localName);
+        SM_LOG_INFO(@"folder %@ already synced with server", _localName);
     }
     else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
         SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);
@@ -207,15 +217,17 @@
     
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
 
+    BOOL updateDatabase = _loadingFromDB? NO : YES;
+    
     if(allMailFolder == nil) {
         SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");
 
-        [self finishHeadersSync:(_loadingFromDB? NO : YES)];
+        [self finishHeadersSync:updateDatabase];
         return;
     }
     
     if(_fetchedMessageHeaders.count == 0) {
-        [self finishHeadersSync:(_loadingFromDB? NO : YES)];
+        [self finishHeadersSync:updateDatabase];
         return;
     }
 
@@ -233,6 +245,8 @@
             [threadIds addObject:threadId];
             
             [_dbOps addObject:[[_account database] loadMessageThreadFromDB:threadIdNum folder:_remoteFolderName block:^(SMDatabaseOp *op, SMMessageThreadDescriptor *threadDesc) {
+                [_dbOps removeObject:op];
+
                 if(threadDesc != nil) {
                     SM_LOG_DEBUG(@"message thread %llu, messages count %lu", threadIdNum, threadDesc.messagesCount);
 
@@ -375,6 +389,8 @@
 
             // ??? entry.folderName -> entry.remoteFolderName
             [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(SMDatabaseOp *op, MCOIMAPMessage *message) {
+                [_dbOps removeObject:op];
+                
                 if(message != nil) {
                     SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
                     SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, entry.folderName);
@@ -483,6 +499,8 @@
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
         [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray *outgoingMessages, NSArray *messages) {
+            [_dbOps removeObject:op];
+            
             SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
             
             for(SMOutgoingMessage *message in outgoingMessages) {

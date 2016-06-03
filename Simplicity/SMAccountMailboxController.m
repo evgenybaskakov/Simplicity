@@ -77,7 +77,7 @@
     SM_LOG_DEBUG(@"initializing folders");
 
     // TODO: use the resulting dbOp
-    [[_account database] loadDBFolders:^(NSArray *folders) {
+    [[_account database] loadDBFolders:^(SMDatabaseOp *op, NSArray *folders) {
         [(SMAccountMailboxController*)_account.mailboxController loadExistingFolders:folders];
     }];
 }

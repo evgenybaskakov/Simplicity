@@ -138,9 +138,9 @@
     [_mailboxController initFolders];
     
     // TODO: use the resulting dbOp
-    [_database loadOpQueue:@"SMTPQueue" block:^(SMOperationQueue *smtpQueue) {
+    [_database loadOpQueue:@"SMTPQueue" block:^(SMDatabaseOp *op, SMOperationQueue *smtpQueue) {
         // TODO: use the resulting dbOp
-        [_database loadOpQueue:@"IMAPQueue" block:^(SMOperationQueue *imapQueue) {
+        [_database loadOpQueue:@"IMAPQueue" block:^(SMDatabaseOp *op, SMOperationQueue *imapQueue) {
             [imapQueue setOperationExecutorForPendingOps:_operationExecutor];
             [smtpQueue setOperationExecutorForPendingOps:_operationExecutor];
             

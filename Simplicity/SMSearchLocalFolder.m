@@ -178,7 +178,7 @@
             _loadMessageHeadersForUIDsFromDBFolderOp = nil;
         }
         
-        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(NSArray<MCOIMAPMessage*> *messages) {
+        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *messages) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;

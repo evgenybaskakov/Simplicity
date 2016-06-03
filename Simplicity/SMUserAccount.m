@@ -230,7 +230,7 @@
             
             // TODO: check if there is a leak if imapPart is accessed in this block!!!
             [op start:^(NSError * error, NSData * data) {
-                if ([error code] == MCOErrorNone) {
+                if (error.code == MCOErrorNone) {
                     NSAssert(data, @"no data");
                     
                     [_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];

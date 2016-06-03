@@ -63,7 +63,7 @@
     [op start:^(NSError * error) {
         NSAssert(self.currentOp != nil, @"current op has disappeared");
         
-        if (error == nil || [error code] == MCOErrorNone) {
+        if (error == nil || error.code == MCOErrorNone) {
             SM_LOG_DEBUG(@"message sent successfully");
         
             if(self.postActionTarget) {

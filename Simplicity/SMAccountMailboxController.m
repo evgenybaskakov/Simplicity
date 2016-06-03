@@ -196,7 +196,7 @@
     [_createFolderOp start:^(NSError * error) {
         _createFolderOp = nil;
         
-        if (error != nil && [error code] != MCOErrorNone) {
+        if (error != nil && error.code != MCOErrorNone) {
             SM_LOG_ERROR(@"Error creating folder %@: %@", fullFolderName, error);
         }
         else {
@@ -227,7 +227,7 @@
     [_renameFolderOp start:^(NSError * error) {
         _renameFolderOp = nil;
 
-        if (error != nil && [error code] != MCOErrorNone) {
+        if (error != nil && error.code != MCOErrorNone) {
             SM_LOG_ERROR(@"Error renaming folder %@ to %@: %@", oldFolderName, newFolderName, error);
         } else {
             SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);

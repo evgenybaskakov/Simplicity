@@ -310,6 +310,8 @@ const char *const mcoOpKinds[] = {
 
     if(searchPattern != nil) {
         [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:searchPattern subject:nil content:nil block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
+            [_dbOps removeObject:op];
+            
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -335,6 +337,8 @@ const char *const mcoOpKinds[] = {
         }]];
         
         [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:searchPattern content:nil block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
+            [_dbOps removeObject:op];
+            
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -353,6 +357,8 @@ const char *const mcoOpKinds[] = {
     }
     
     [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:nil content:searchPattern block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
+        [_dbOps removeObject:op];
+        
         if(searchId != _currentSearchId) {
             SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
             return;

@@ -372,6 +372,14 @@
             [[[appDelegate appController] accountsViewController] changeAccountTo:selectedAccount-1];
         }
     }
+    else if(appDelegate.currentAccountIsUnified) {
+        if(appDelegate.accounts.count == 2) {
+            [[[appDelegate appController] accountsViewController] changeAccountTo:(selectedAccount == 0? 1 : 0)];
+        }
+        else {
+            NSAssert(appDelegate.accounts.count != 1, @"unified account can't be selected if there's just one account total");
+        }
+    }
 
     [appDelegate removeAccount:selectedAccount];
     

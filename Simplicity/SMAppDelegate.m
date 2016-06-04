@@ -167,11 +167,17 @@
         }
 
         _currentAccountIdx = _preferencesController.currentAccount;
+
+        // Sanity checks in case if preferences are corrupted in some way
         if(_currentAccountIdx == UNIFIED_ACCOUNT_IDX) {
-            _currentAccountIsUnified = YES;
+            if(accountsCount > 1 && _preferencesController.shouldUseUnifiedMailbox) {
+                _currentAccountIsUnified = YES;
+            }
+            else {
+                _currentAccountIdx = 0;
+            }
         }
         else if(_currentAccountIdx >= accountsCount) {
-            // Sanity check
             _currentAccountIdx = 0;
         }
         

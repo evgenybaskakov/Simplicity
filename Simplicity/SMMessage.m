@@ -194,7 +194,7 @@ static NSString *unquote(NSString *s) {
     MCOMessageHeader *header = self.imapHeader;
     NSAssert(header, @"no header");
     
-    SM_LOG_DEBUG(@"from: %@, sent date %@, received date %@", [header from], [header date], [header receivedDate]);
+    SM_LOG_DEBUG(@"uid %u, sent date %@, received date %@", [self uid], [header date], [header receivedDate]);
 
     return [header date];
 }

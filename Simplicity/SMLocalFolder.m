@@ -297,7 +297,7 @@
                 [_searchMessageThreadsOps removeObjectForKey:threadId];
                 
                 if(error == nil) {
-                    SM_LOG_DEBUG(@"Search for message '%@' thread %llu finished (%lu searches left)", message.header.subject, message.gmailThreadID, _searchMessageThreadsOps.count);
+                    SM_LOG_DEBUG(@"Search for message uid %u thread %llu finished (%lu searches left)", message.uid, message.gmailThreadID, _searchMessageThreadsOps.count);
 
                     if(searchResults.count > 0) {
                         SM_LOG_DEBUG(@"%u messages found in '%@', threadId %@", [searchResults count], allMailFolder, threadId);

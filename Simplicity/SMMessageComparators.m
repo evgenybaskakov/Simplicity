@@ -77,6 +77,10 @@ static NSComparisonResult compareThreadsByThreadId(SMMessageThread *a, SMMessage
             
             return dateComparisonResult;
         };
+
+        _messagesComparatorBySequenceNumber = ^NSComparisonResult(MCOIMAPMessage *m1, MCOIMAPMessage *m2) {
+            return m1.sequenceNumber < m2.sequenceNumber? NSOrderedDescending : (m1.sequenceNumber == m2.sequenceNumber? NSOrderedSame : NSOrderedAscending);
+        };
         
         _messageThreadsComparatorByDate = ^NSComparisonResult(id a, id b) {
             if([a messagesCount] == 0) {

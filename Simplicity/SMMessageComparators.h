@@ -13,6 +13,7 @@
 @property (readonly) NSComparator messagesComparatorByImapMessage;
 @property (readonly) NSComparator messagesComparatorByUID;
 @property (readonly) NSComparator messagesComparatorByDate;
+@property (readonly) NSComparator messagesComparatorBySequenceNumber;
 @property (readonly) NSComparator messageThreadsComparatorByDate;
 
 @end

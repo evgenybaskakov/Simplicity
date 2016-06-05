@@ -35,6 +35,7 @@
 #import "SMLocalFolderMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 #import "SMSearchLocalFolder.h"
+#import "SMMessageComparators.h"
 
 @implementation SMSearchLocalFolder {
     MCOIndexSet *_allSelectedMessageUIDsToLoad;
@@ -210,9 +211,9 @@
                 // Sort messages asynchronously by sequence number from newest to oldest.
                 // Using date would be less efficient, so keep this rough approach.
                 dispatch_async(queue, ^{
-                    NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:^NSComparisonResult(MCOIMAPMessage *m1, MCOIMAPMessage *m2) {
-                        return m1.sequenceNumber < m2.sequenceNumber? NSOrderedDescending : (m1.sequenceNumber == m2.sequenceNumber? NSOrderedSame : NSOrderedAscending);
-                    }];
+                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    
+                    NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if(searchId != _currentSearchId) {

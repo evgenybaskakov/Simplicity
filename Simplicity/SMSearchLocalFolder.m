@@ -203,24 +203,37 @@
         
         _fetchMessageHeadersOp.urgent = YES;
         
-        [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
-            if(searchId != _currentSearchId) {
-                SM_LOG_INFO(@"stale SERVER search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
-                return;
-            }
-            
-            _fetchMessageHeadersOp = nil;
-            
-            if(error == nil) {
-                [_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
-
-                // Reduce the DB set of messages to load by the set of messages actually loaded from SERVER.
-                for(MCOIMAPMessage *m in messages) {
-                    [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
-                }
+        [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
+            if(error == nil || error.code == MCOErrorNone) {
+                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
                 
-                [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
-            } else {
+                // Sort messages asynchronously by sequence number from newest to oldest.
+                // Using date would be less efficient, so keep this rough approach.
+                dispatch_async(queue, ^{
+                    NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:^NSComparisonResult(MCOIMAPMessage *m1, MCOIMAPMessage *m2) {
+                        return m1.sequenceNumber < m2.sequenceNumber? NSOrderedDescending : (m1.sequenceNumber == m2.sequenceNumber? NSOrderedSame : NSOrderedAscending);
+                    }];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if(searchId != _currentSearchId) {
+                            SM_LOG_INFO(@"stale SERVER search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                            return;
+                        }
+                        
+                        _fetchMessageHeadersOp = nil;
+                        
+                        [_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
+                        
+                        // Reduce the DB set of messages to load by the set of messages actually loaded from SERVER.
+                        for(MCOIMAPMessage *m in sortedMessages) {
+                            [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
+                        }
+                        
+                        [self completeMessagesRegionLoading:sortedMessages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+                    });
+                });
+            }
+            else {
                 SM_LOG_ERROR(@"Error downloading search results: %@", error);
             }
         }];

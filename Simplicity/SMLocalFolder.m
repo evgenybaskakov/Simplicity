@@ -534,14 +534,26 @@
         
         _fetchMessageHeadersOp.urgent = YES;
         
-        [_fetchMessageHeadersOp start:^(NSError *error, NSArray *messages, MCOIndexSet *vanishedMessages) {
+        [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
             [self rescheduleUpdateTimeout];
 
             _fetchMessageHeadersOp = nil;
             
             if(error == nil) {
-                [self updateMessageHeaders:messages updateDatabase:YES];
-                [self syncFetchMessageHeaders];
+                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+                
+                // Sort messages asynchronously by sequence number from newest to oldest.
+                // Using date would be less efficient, so keep this rough approach.
+                dispatch_async(queue, ^{
+                    NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:^NSComparisonResult(MCOIMAPMessage *m1, MCOIMAPMessage *m2) {
+                        return m1.sequenceNumber < m2.sequenceNumber? NSOrderedDescending : (m1.sequenceNumber == m2.sequenceNumber? NSOrderedSame : NSOrderedAscending);
+                    }];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self updateMessageHeaders:sortedMessages updateDatabase:YES];
+                        [self syncFetchMessageHeaders];
+                    });
+                });
             } else {
                 SM_LOG_ERROR(@"Error downloading messages list: %@", error);
             }

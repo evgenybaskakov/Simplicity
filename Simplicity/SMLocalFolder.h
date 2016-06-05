@@ -36,7 +36,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     MCOIMAPMessagesRequestKindSize
 );
 
-@class SMLocalFolderMessageBodyFetchQueue;
+@class SMMessageBodyFetchQueue;
 @class SMMessageStorage;
 @class SMMessage;
 
@@ -60,7 +60,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     @protected BOOL _dbSyncInProgress;
     @protected NSUInteger _dbMessageThreadsLoadsCount;
     @protected NSUInteger _dbMessageThreadHeadersLoadsCount;
-    @protected SMLocalFolderMessageBodyFetchQueue *_messageBodyFetchQueue;
+    @protected SMMessageBodyFetchQueue *_messageBodyFetchQueue;
 }
 
 - (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;

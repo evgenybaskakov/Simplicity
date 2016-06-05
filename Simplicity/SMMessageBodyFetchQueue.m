@@ -1,5 +1,5 @@
 //
-//  SMLocalFolderMessageBodyFetchQueue.m
+//  SMMessageBodyFetchQueue.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 10/23/15.
@@ -18,7 +18,7 @@
 #import "SMDatabase.h"
 #import "SMMessage.h"
 #import "SMLocalFolder.h"
-#import "SMLocalFolderMessageBodyFetchQueue.h"
+#import "SMMessageBodyFetchQueue.h"
 
 static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
@@ -67,7 +67,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
 }
 @end
 
-@implementation SMLocalFolderMessageBodyFetchQueue {
+@implementation SMMessageBodyFetchQueue {
     SMLocalFolder *__weak _localFolder;
     SMFolderUIDDictionary *_fetchMessageBodyOps;
     NSMutableArray<FetchOpDesc*> *_nonUrgentPendingOps;

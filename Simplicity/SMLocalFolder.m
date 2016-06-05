@@ -32,7 +32,7 @@
 #import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMLocalFolderMessageBodyFetchQueue.h"
+#import "SMMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 
 @implementation SMLocalFolder {
@@ -69,7 +69,7 @@
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
-        _messageBodyFetchQueue = [[SMLocalFolderMessageBodyFetchQueue alloc] initWithUserAccount:account localFolder:self];
+        _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:account localFolder:self];
         _dbOps = [NSMutableArray array];
     }
     

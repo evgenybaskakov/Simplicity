@@ -32,7 +32,7 @@
 #import "SMAddress.h"
 #import "SMFolder.h"
 #import "SMLocalFolderRegistry.h"
-#import "SMLocalFolderMessageBodyFetchQueue.h"
+#import "SMMessageBodyFetchQueue.h"
 #import "SMLocalFolder.h"
 #import "SMSearchLocalFolder.h"
 #import "SMMessageComparators.h"

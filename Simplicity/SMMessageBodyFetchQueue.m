@@ -136,10 +136,10 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
             }
         }
         
-        FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
-        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
+        FetchOpDesc *newOpDesc = [[FetchOpDesc alloc] initWithUID:uid folderName:remoteFolderName];
+        [_fetchMessageBodyOps setObject:newOpDesc forUID:uid folder:remoteFolderName];
         
-        FetchOpDesc *__weak blockOpDesc = opDesc;
+        FetchOpDesc *__weak blockOpDesc = newOpDesc;
         
         void (^fullOp)() = ^{
             FetchOpDesc *opDesc = blockOpDesc;
@@ -176,6 +176,8 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
             opDesc.imapOp = imapOp;
             
             SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' started, attempt %lu", uid, remoteFolderName, opDesc.attempt);
+            
+            FetchOpDesc *__weak blockOpDesc = opDesc;
             
             [imapOp start:^(NSError * error, NSData * data) {
                 SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended", uid, remoteFolderName);
@@ -227,13 +229,13 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
             }];
         };
         
-        [opDesc setOp:fullOp];
+        [newOpDesc setOp:fullOp];
 
         if(urgent) {
-            [opDesc startOp];
+            [newOpDesc startOp];
         }
         else {
-            [self scheduleOp:opDesc];
+            [self scheduleOp:newOpDesc];
         }
     }
 }

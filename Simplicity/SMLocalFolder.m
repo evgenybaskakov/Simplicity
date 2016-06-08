@@ -464,6 +464,7 @@
         
         // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp
         // See issue #72.
+        //SM_LOG_INFO(@"Fetching body for message UID %u, subject '%@'", m.uid, [m.header subject]);
         [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
     }
     

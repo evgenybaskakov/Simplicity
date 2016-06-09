@@ -456,7 +456,7 @@
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
-- (void)updateMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessageHeaders:(NSArray*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies updateDatabase:(Boolean)updateDatabase {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
 
@@ -500,21 +500,21 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray *outgoingMessages, NSArray *messages) {
+        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray<SMOutgoingMessage*> *outgoingMessages, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *mcoMessagePlainTextBodies) {
             [_dbOps removeObject:op];
             
-            SM_LOG_INFO(@"outgoing messages loaded: %lu", outgoingMessages.count);
+            SM_LOG_INFO(@"outgoing messages loaded: %lu, messages loaded: %lu", outgoingMessages.count, mcoMessages.count);
             
+            NSAssert(mcoMessages.count == mcoMessagePlainTextBodies.count, @"mcoMessages.count %lu, mcoMessagePlainTextBodies.count %lu", mcoMessages.count, mcoMessagePlainTextBodies.count);
+
             for(SMOutgoingMessage *message in outgoingMessages) {
                 [self addMessage:message externalMessage:NO updateDatabase:NO];
                 
                 _messageHeadersFetched++;
             }
 
-            SM_LOG_INFO(@"messages loaded: %lu", messages.count);
-
             [self rescheduleUpdateTimeout];
-            [self updateMessageHeaders:messages updateDatabase:NO];
+            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies updateDatabase:NO];
             [self syncFetchMessageHeaders];
         }]];
     }
@@ -552,7 +552,7 @@
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self updateMessageHeaders:sortedMessages updateDatabase:YES];
+                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil updateDatabase:YES];
                         [self syncFetchMessageHeaders];
                     });
                 });

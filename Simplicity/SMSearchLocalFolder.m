@@ -247,7 +247,7 @@
     _messageHeadersFetched += [messages count];
     
     [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
-    [self updateMessageHeaders:messages updateDatabase:NO];
+    [self updateMessageHeaders:messages plainTextBodies:nil/*TODO*/ updateDatabase:NO];
     [self loadSelectedMessagesInternal];
 }
 

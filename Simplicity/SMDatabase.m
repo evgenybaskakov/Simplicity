@@ -1458,7 +1458,44 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return dbOp;
 }
 
-- (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(SMDatabaseOp*, NSArray*, NSArray*))getMessagesBlock {
+- (NSString*)loadPlainTextBody:(sqlite3*)database folderId:(NSNumber*)folderId uid:(uint32_t)uid {
+    NSString *plainText = nil;
+    NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT MESSAGEBODY FROM MESSAGETEXT%@ WHERE docid = \"%u\"", folderId, uid];
+    
+    sqlite3_stmt *statement = NULL;
+    const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+    
+    if(sqlPrepareResult == SQLITE_OK) {
+        const int sqlStepResult = sqlite3_step(statement);
+        
+        if(sqlStepResult == SQLITE_ROW) {
+            const unsigned char *text = sqlite3_column_text(statement, 0);
+            
+            if(text != NULL) {
+                plainText = [NSString stringWithUTF8String:(char*)text];
+            }
+            else {
+                SM_LOG_ERROR(@"cannot load plain message body, uid %u, folder id %@", uid, folderId);
+            }
+        }
+        else if(sqlStepResult == SQLITE_DONE) {
+            SM_LOG_DEBUG(@"plain message text (UID %u) not found in the database folder id %@", uid, folderId);
+        }
+        else {
+            SM_LOG_ERROR(@"sqlite3_step error %d", sqlStepResult);
+        }
+
+        const int sqlFinalizeResult = sqlite3_finalize(statement);
+        SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+    }
+    else {
+        SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+    }
+    
+    return plainText;
+}
+
+- (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(SMDatabaseOp*, NSArray<SMOutgoingMessage*>*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
@@ -1472,8 +1509,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             return;
         }
         
-        NSMutableArray *messages = [NSMutableArray array];
-        NSMutableArray *outgoingMessages = [NSMutableArray array];
+        NSMutableArray<SMOutgoingMessage*> *outgoingMessages = [NSMutableArray array];
+        NSMutableArray<MCOIMAPMessage*> *messages = [NSMutableArray array];
+        NSMutableArray<NSString*> *plainTextBodies = [NSMutableArray array];
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1532,10 +1570,19 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                         }
                         else {
                             NSAssert([messageObject isKindOfClass:[MCOIMAPMessage class]], @"unexpected class of messageObject: %@", [messageObject className]);
+                            MCOIMAPMessage *mcoImapMessage = (MCOIMAPMessage*)messageObject;
                             
-                            [messages addObject:messageObject];
+                            [messages addObject:mcoImapMessage];
 
-                            SM_LOG_DEBUG(@"IMAP message (uid %u, threadId %llu) loaded from folder %@", ((MCOIMAPMessage*)messageObject).uid, ((MCOIMAPMessage*)messageObject).gmailThreadID, folderName);
+                            SM_LOG_DEBUG(@"IMAP message (uid %u, threadId %llu) loaded from folder %@", mcoImapMessage.uid, mcoImapMessage.gmailThreadID, folderName);
+
+                            NSString *plainTextBody = [self loadPlainTextBody:database folderId:folderId uid:mcoImapMessage.uid];
+                            if(plainTextBody != nil) {
+                                [plainTextBodies addObject:plainTextBody];
+                            }
+                            else {
+                                [plainTextBodies addObject:(NSString*)[NSNull null]];
+                            }
                         }
                     }
                 }
@@ -1572,7 +1619,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
             
-            getMessagesBlock(dbOp, outgoingMessages, messages);
+            getMessagesBlock(dbOp, outgoingMessages, messages, plainTextBodies);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);

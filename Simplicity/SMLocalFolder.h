@@ -68,7 +68,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 #pragma mark Protected methods
 
 - (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase;
-- (void)updateMessageHeaders:(NSArray*)messages updateDatabase:(Boolean)updateDatabase;
+- (void)updateMessageHeaders:(NSArray*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies updateDatabase:(Boolean)updateDatabase;
 - (void)finishMessageHeadersFetching;
 
 @end

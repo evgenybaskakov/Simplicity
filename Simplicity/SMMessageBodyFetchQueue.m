@@ -182,15 +182,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
 }
 
 - (void)startFetchingRemoteOp:(FetchOpDesc*)op {
-    // If this is a re-trying operation, just schedule it on the regular basis.
-    if([_nonUrgentFailedOps member:op] != nil) {
-        SM_LOG_INFO(@"retrying body downloading for message UID %u from folder '%@'", op.uid, op.folderName);
-
-        [_nonUrgentFailedOps removeObject:op];
-        [self scheduleRemoteOp:op];
-        return;
-    }
-
+    // First check if the message already has its body loaded.
     if([(SMMessageStorage*)_localFolder.messageStorage messageHasData:op.uid threadId:op.threadId]) {
         SM_LOG_DEBUG(@"message body for uid %u already loaded", op.uid);
 
@@ -198,6 +190,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         return;
     }
     
+    // Now check if the operation hass been cancelled.
     if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName] == nil) {
         SM_LOG_DEBUG(@"message body loading for uid %u is cancelled", op.uid);
 
@@ -205,6 +198,16 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         return;
     }
 
+    // If this is a re-trying operation, just schedule it on the regular basis.
+    if([_nonUrgentFailedOps member:op] != nil) {
+        SM_LOG_INFO(@"retrying body downloading for message UID %u from folder '%@'", op.uid, op.folderName);
+        
+        [_nonUrgentFailedOps removeObject:op];
+        [self scheduleRemoteOp:op];
+        return;
+    }
+    
+    // Now, looks like this is an actual operation the user wants to complete. Go for it.
     if(!op.urgent) {
         [_nonUrgentRunningOps addObject:op];
     }

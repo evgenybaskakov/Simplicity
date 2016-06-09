@@ -32,13 +32,14 @@
     }
 }
 
-- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName {
+- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName {
     NSAssert(m, @"imap message is nil");
     
     self = [ super init ];
     
     if(self) {
         _imapMessage = m;
+        _bodyPreview = plainTextBody;
         _remoteFolder = remoteFolderName;
         _labels = m.gmailLabels;
         
@@ -276,13 +277,14 @@ static NSString *unquote(NSString *s) {
     return _msgParser != nil;
 }
 
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
+- (Boolean)updateImapMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody {
     NSAssert(m, @"bad param message");
     
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is set");
 
         _imapMessage = m;
+        _bodyPreview = plainTextBody;
 
         return YES;
     } else if(_imapMessage.originalFlags != m.originalFlags) {

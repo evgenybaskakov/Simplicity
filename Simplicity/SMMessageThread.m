@@ -326,7 +326,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_labels addObjectsFromArray:message.labels];
 }
 
-- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
+- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
@@ -341,7 +341,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             BOOL wasUnseen = message.unseen;
             
             // TODO: can date be changed?
-            Boolean hasUpdates = [message updateImapMessage:imapMessage];
+            Boolean hasUpdates = [message updateImapMessage:imapMessage plainTextBody:plainTextBody];
             
             message.updateStatus = SMMessageUpdateStatus_Persisted;
             
@@ -366,7 +366,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     }
     
     // update the messages list
-    SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage remoteFolder:remoteFolderName];
+    SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage plainTextBody:plainTextBody remoteFolder:remoteFolderName];
 
     message.updateStatus = SMMessageUpdateStatus_New;
     

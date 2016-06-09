@@ -187,10 +187,19 @@
     [self cancelUpdate];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
     
-    for(MCOIMAPMessage *imapMessage in imapMessages) {
+    NSAssert(plainTextBodies == nil || plainTextBodies.count == imapMessages.count, @"plainTextBodies.count %lu, imapMessages.count %lu", plainTextBodies.count, imapMessages.count);
+    
+    for(NSUInteger i = 0; i < imapMessages.count; i++) {
+        MCOIMAPMessage *imapMessage = imapMessages[i];
+        NSString *plainTextBody = nil;
+        
+        if(plainTextBodies != nil && plainTextBodies[i] != (NSString*)[NSNull null]) {
+            plainTextBody = plainTextBodies[i];
+        }
+        
         NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
 
         SM_LOG_DEBUG(@"looking for imap message with uid %u, gmailThreadId %llu", [imapMessage uid], [imapMessage gmailThreadID]);
@@ -219,7 +228,7 @@
             firstMessageDate = [firstMessage date];
         }
 
-        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
+        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
         
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {

@@ -323,10 +323,10 @@
     [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue]];
 }
 
-- (void)updateMessages:(NSArray*)imapMessages remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
-    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
+    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages plainTextBodies:plainTextBodies remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
     [SMNotificationsController localNotifyMessagesUpdated:self updateResult:updateResult account:(SMUserAccount*)_account];
 }
@@ -358,7 +358,7 @@
                 }
             }
 
-            [self updateMessages:filteredMessages remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES)];
+            [self updateMessages:filteredMessages plainTextBodies:nil remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES)];
         } else {
             SM_LOG_ERROR(@"Error fetching message headers for thread %@: %@", threadId, error);
             
@@ -398,7 +398,7 @@
                     
                     [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:entry.folderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
                     
-                    [self updateMessages:[NSArray arrayWithObject:message] remoteFolder:entry.folderName updateDatabase:NO];
+                    [self updateMessages:@[message] plainTextBodies:nil/*TODO*/ remoteFolder:entry.folderName updateDatabase:NO];
                 }
                 else {
                     SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu not found in database", entry.folderName, entry.uid, threadDesc.threadId);
@@ -470,7 +470,7 @@
     
     _messageHeadersFetched += [messages count];
     
-    [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
+    [self updateMessages:messages plainTextBodies:plainTextBodies remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
 }
 
 - (void)syncFetchMessageHeaders {
@@ -505,7 +505,7 @@
             
             SM_LOG_INFO(@"outgoing messages loaded: %lu, messages loaded: %lu", outgoingMessages.count, mcoMessages.count);
             
-            NSAssert(mcoMessages.count == mcoMessagePlainTextBodies.count, @"mcoMessages.count %lu, mcoMessagePlainTextBodies.count %lu", mcoMessages.count, mcoMessagePlainTextBodies.count);
+            NSAssert(mcoMessagePlainTextBodies == nil || mcoMessagePlainTextBodies.count == mcoMessages.count, @"mcoMessagePlainTextBodies.count %lu, mcoMessages.count %lu", mcoMessagePlainTextBodies.count, mcoMessages.count);
 
             for(SMOutgoingMessage *message in outgoingMessages) {
                 [self addMessage:message externalMessage:NO updateDatabase:NO];

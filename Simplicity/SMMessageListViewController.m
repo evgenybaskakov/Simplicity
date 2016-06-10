@@ -278,7 +278,7 @@
         [view hideDraftLabel];
     }
     
-    NSString *bodyPreview = [firstMessage bodyPreview];
+    NSString *bodyPreview = [firstMessage plainTextBody];
     [view.messagePreviewTextField setStringValue:(bodyPreview != nil && bodyPreview.length > 0? bodyPreview : (firstMessage.hasData? @"Message has no content" : @""))];
     
     NSString *fromEmail = [firstMessage.fromAddress mailbox];

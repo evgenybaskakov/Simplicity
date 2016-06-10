@@ -240,7 +240,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         }
         
         if(message == self.messagesSortedByDate.firstObject) {
-            NSString *bodyPreview = message.bodyPreview;
+            NSString *bodyPreview = message.plainTextBody;
             
             if(bodyPreview != nil && ![self hasPreview]) {
                 _threadFlags |= ThreadFlagsHasPreview;
@@ -275,7 +275,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         SM_LOG_DEBUG(@"set message data for uid %u", uid);
         
-        [message setParser:parser attachments:attachments bodyPreview:bodyPreview];
+        [message setParser:parser attachments:attachments plainTextBody:bodyPreview];
     } else {
         SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
     }

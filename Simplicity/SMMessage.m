@@ -17,10 +17,6 @@
 
 @implementation SMMessage
 
-+ (NSUInteger)maxBodyPreviewLength {
-    return 512;
-}
-
 + (NSString*)imapMessagePlainTextBody:(MCOMessageParser*)parser {
     NSString *plainText = [parser plainTextBodyRendering];
     
@@ -39,7 +35,7 @@
     
     if(self) {
         _imapMessage = m;
-        _bodyPreview = plainTextBody;
+        _plainTextBody = plainTextBody;
         _remoteFolder = remoteFolderName;
         _labels = m.gmailLabels;
         
@@ -213,9 +209,9 @@ static NSString *unquote(NSString *s) {
     }
 }
 
-- (NSString*)bodyPreview {
-    if(_bodyPreview != nil) {
-        return _bodyPreview;
+- (NSString*)plainTextBody {
+    if(_plainTextBody != nil) {
+        return _plainTextBody;
     }
     else {
         return @"";
@@ -237,16 +233,16 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setParser:nil attachments:nil bodyPreview:nil];
+    [self setParser:nil attachments:nil plainTextBody:nil];
 }
 
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments bodyPreview:(NSString*)bodyPreview {
+- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
     if(parser != nil) {
         if(_msgParser == nil) {
             _msgParser = parser;
             _attachments = attachments;
             _hasAttachments = attachments.count > 0;
-            _bodyPreview = bodyPreview;
+            _plainTextBody = plainTextBody;
             
             NSAssert(_msgParser, @"no message parser");
         }
@@ -284,7 +280,7 @@ static NSString *unquote(NSString *s) {
         SM_LOG_DEBUG(@"IMAP message is set");
 
         _imapMessage = m;
-        _bodyPreview = plainTextBody;
+        _plainTextBody = plainTextBody;
 
         return YES;
     } else if(_imapMessage.originalFlags != m.originalFlags) {

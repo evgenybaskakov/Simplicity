@@ -162,7 +162,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         [self hideAttachmentButton];
     }
     
-    [_messageBodyPreviewField setStringValue:[_currentMessage bodyPreview]];
+    [_messageBodyPreviewField setStringValue:[_currentMessage plainTextBody]];
 
     NSFont *font = [_messageBodyPreviewField font];
     

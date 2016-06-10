@@ -57,26 +57,14 @@
     return [_messageBuilder.mcoMessageBuilder header];
 }
 
-- (NSString*)bodyPreview {
-    if(_bodyPreview != nil) {
-        return _bodyPreview;
+- (NSString*)plainTextBody {
+    if(_plainTextBody != nil) {
+        return _plainTextBody;
     }
     
-    NSString *plainText = [_messageBuilder.mcoMessageBuilder plainTextBodyRendering];
+    _plainTextBody = [_messageBuilder.mcoMessageBuilder plainTextBodyRendering];
     
-    if(plainText == nil) {
-        return nil;
-    }
-    
-    NSUInteger maxLen = [SMMessage maxBodyPreviewLength];
-    if(plainText.length <= maxLen) {
-        _bodyPreview = plainText;
-    }
-    else {
-        _bodyPreview = [plainText substringToIndex:maxLen];
-    }
-    
-    return _bodyPreview;
+    return _plainTextBody;
 }
 
 - (void)reclaimData {

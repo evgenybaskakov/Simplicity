@@ -17,17 +17,6 @@
 
 @implementation SMMessage
 
-+ (NSString*)imapMessagePlainTextBody:(MCOMessageParser*)parser {
-    NSString *plainText = [parser plainTextBodyRendering];
-    
-    if(plainText == nil) {
-        return @"";
-    }
-    else {
-        return plainText;
-    }
-}
-
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName {
     NSAssert(m, @"imap message is nil");
     
@@ -233,15 +222,19 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setParser:nil attachments:nil];
+    [self setParser:nil attachments:nil plainTextBody:nil];
 }
 
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
+- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
     if(parser != nil) {
         if(_msgParser == nil) {
             _msgParser = parser;
             _attachments = attachments;
             _hasAttachments = attachments.count > 0;
+            
+            if(plainTextBody != nil) {
+                _plainTextBody = plainTextBody;
+            }
             
             NSAssert(_msgParser, @"no message parser");
         }

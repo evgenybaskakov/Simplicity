@@ -128,7 +128,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                     [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
                 }
                 else {
-                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments];
+                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments plainTextBody:nil];
                 }
             }
             else {
@@ -238,20 +238,34 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         
         if(error == nil || error.code == MCOErrorNone) {
             SM_LOG_INFO(@"fetch op finished (message UID %u, folder '%@'), attempts %lu (time %g sec)", op.uid, op.folderName, op.attempt, [[NSDate date] timeIntervalSinceDate:op.startTime]);
-            
-            [_fetchMessageBodyOps removeObjectforUID:op.uid folder:op.folderName];
-            
-            NSAssert(data != nil, @"data != nil");
-            
-            // TODO: do it asynchronously!
-            MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
-            NSString *messageBodyPlainText = [SMMessage imapMessagePlainTextBody:parser];
-            
-            if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
-                [[_account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:messageBodyPlainText folderName:op.folderName];
-            }
-            
-            [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:parser.attachments];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSAssert(data != nil, @"data != nil");
+                
+                // Decoding plain text body can be resource consuming, so do it asynchronously
+                MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
+                NSString *plainTextBody = [parser plainTextBodyRendering];
+                if(plainTextBody == nil) {
+                    plainTextBody = @"";
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName] == nil) {
+                        SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
+                        
+                        [self startNextRemoteOp];
+                        return;
+                    }
+ 
+                    [_fetchMessageBodyOps removeObjectforUID:op.uid folder:op.folderName];
+                    
+                    if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
+                        [[_account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:plainTextBody folderName:op.folderName];
+                    }
+                    
+                    [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:parser.attachments plainTextBody:plainTextBody];
+                });
+            });
         }
         else {
             SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@); trying again (%lu attempts)...", op.uid, op.folderName, error, op.attempt);
@@ -270,9 +284,9 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     }];
 }
 
-- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
+- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
     NSAssert([(NSObject*)_localFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"bad local folder message storage type");
-    SMMessage *message = [(SMMessageStorage*)_localFolder.messageStorage setMessageParser:parser attachments:attachments uid:uid threadId:threadId];
+    SMMessage *message = [(SMMessageStorage*)_localFolder.messageStorage setMessageParser:parser attachments:attachments plainTextBody:plainTextBody uid:uid threadId:threadId];
     
     if(message != nil) {
         [_localFolder increaseLocalFolderFootprint:message.messageSize];

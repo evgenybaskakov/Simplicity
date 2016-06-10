@@ -242,8 +242,9 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSAssert(data != nil, @"data != nil");
                 
-                // Decoding plain text body can be resource consuming, so do it asynchronously
+                // Decoding plain text body and attachments can be resource consuming, so do it asynchronously
                 MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
+                NSArray *attachments = parser.attachments;
                 NSString *plainTextBody = [parser plainTextBodyRendering];
                 if(plainTextBody == nil) {
                     plainTextBody = @"";
@@ -263,7 +264,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                         [[_account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:plainTextBody folderName:op.folderName];
                     }
                     
-                    [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:parser.attachments plainTextBody:plainTextBody];
+                    [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:attachments plainTextBody:plainTextBody];
                 });
             });
         }

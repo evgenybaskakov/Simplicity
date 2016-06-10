@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListViewController">
             <connections>
-                <outlet property="loadMoreMessagesButton" destination="L8V-cN-uTh" id="NV9-c7-Vqf"/>
-                <outlet property="loadingMoreMessagesProgressIndicator" destination="8Od-aj-dKF" id="wZH-rF-vez"/>
                 <outlet property="messageListTableView" destination="4" id="183"/>
-                <outlet property="updateMessagesNowButton" destination="Crp-Ot-AgV" id="Jy5-oy-UaK"/>
-                <outlet property="updatingMessagesProgressIndicator" destination="9e7-R3-3CM" id="OzG-ja-cvY"/>
                 <outlet property="view" destination="1" id="184"/>
             </connections>
         </customObject>
@@ -21,24 +17,14 @@
             <rect key="frame" x="0.0" y="0.0" width="235" height="291"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Crp-Ot-AgV" userLabel="Update now">
-                    <rect key="frame" x="0.0" y="269" width="235" height="23"/>
-                    <buttonCell key="cell" type="smallSquare" title="Update now" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yf8-M1-N6m">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="updateMessagesNow:" target="-2" id="dKY-hg-gSQ"/>
-                    </connections>
-                </button>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="65" horizontalPageScroll="10" verticalLineScroll="65" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3">
-                    <rect key="frame" x="0.0" y="21" width="235" height="249"/>
+                    <rect key="frame" x="0.0" y="0.0" width="235" height="291"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="HA8-Z9-Dlo">
-                        <rect key="frame" x="1" y="1" width="213" height="470"/>
+                        <rect key="frame" x="0.0" y="0.0" width="235" height="291"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="63" rowSizeStyle="automatic" viewBased="YES" id="4" customClass="SMMessageListTableView">
-                                <rect key="frame" x="0.0" y="0.0" width="235" height="0.0"/>
+                                <rect key="frame" x="0.0" y="0.0" width="235" height="291"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -227,37 +213,11 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <button toolTip="Load more messages in the current folder or search" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L8V-cN-uTh">
-                    <rect key="frame" x="0.0" y="-1" width="235" height="23"/>
-                    <buttonCell key="cell" type="smallSquare" title="Load more" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="24f-Jb-6df">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="loadMoreMessages:" target="-2" id="pMc-Uy-mR1"/>
-                    </connections>
-                </button>
-                <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="8Od-aj-dKF">
-                    <rect key="frame" x="219" y="2" width="16" height="16"/>
-                </progressIndicator>
-                <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="9e7-R3-3CM">
-                    <rect key="frame" x="219" y="272" width="16" height="16"/>
-                </progressIndicator>
             </subviews>
             <constraints>
-                <constraint firstItem="L8V-cN-uTh" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="143-1A-tAx"/>
-                <constraint firstItem="Crp-Ot-AgV" firstAttribute="top" secondItem="1" secondAttribute="top" id="3eI-9I-AeS"/>
-                <constraint firstAttribute="trailing" secondItem="L8V-cN-uTh" secondAttribute="trailing" id="5rK-ww-Zon"/>
-                <constraint firstAttribute="bottom" secondItem="L8V-cN-uTh" secondAttribute="bottom" id="Cuu-UW-Rpe"/>
-                <constraint firstAttribute="trailing" secondItem="Crp-Ot-AgV" secondAttribute="trailing" id="DsA-ZP-UAp"/>
-                <constraint firstAttribute="trailing" secondItem="8Od-aj-dKF" secondAttribute="trailing" id="G4d-E6-D1J"/>
+                <constraint firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="Flo-Bg-CUr"/>
                 <constraint firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="InT-hQ-S4M"/>
-                <constraint firstAttribute="bottom" secondItem="8Od-aj-dKF" secondAttribute="bottom" constant="2" id="LJj-Np-hrQ"/>
-                <constraint firstItem="9e7-R3-3CM" firstAttribute="top" secondItem="1" secondAttribute="top" constant="3" id="Tb1-Rw-3z8"/>
-                <constraint firstItem="Crp-Ot-AgV" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="biX-qf-b0i"/>
-                <constraint firstItem="L8V-cN-uTh" firstAttribute="top" secondItem="3" secondAttribute="bottom" id="dXx-vu-McS"/>
-                <constraint firstItem="3" firstAttribute="top" secondItem="Crp-Ot-AgV" secondAttribute="bottom" id="euv-RI-fnt"/>
-                <constraint firstAttribute="trailing" secondItem="9e7-R3-3CM" secondAttribute="trailing" id="mqp-SH-tP9"/>
+                <constraint firstItem="3" firstAttribute="top" secondItem="1" secondAttribute="top" id="PgH-hF-WDT"/>
                 <constraint firstItem="3" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="xMY-F2-sSP"/>
             </constraints>
             <point key="canvasLocation" x="405.5" y="173.5"/>

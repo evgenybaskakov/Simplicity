@@ -12,23 +12,15 @@
 
 @interface SMMessageListViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
-@property IBOutlet NSButton *updateMessagesNowButton;
-@property IBOutlet NSButton *loadMoreMessagesButton;
-@property IBOutlet NSProgressIndicator *updatingMessagesProgressIndicator;
-@property IBOutlet NSProgressIndicator *loadingMoreMessagesProgressIndicator;
-@property IBOutlet NSTableView *messageListTableView;
+@property (weak) IBOutlet NSTableView *messageListTableView;
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
 - (IBAction)toggleStarAction:(id)sender;
 - (IBAction)toggleUnseenAction:(id)sender;
-- (IBAction)updateMessagesNow:(id)sender;
-- (IBAction)loadMoreMessages:(id)sender;
 
 - (void)reloadMessageList:(Boolean)preserveSelection;
 - (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;
-
-- (void)stopProgressIndicators;
-
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolderName;
 
 - (NSMenu*)menuForRow:(NSInteger)row;

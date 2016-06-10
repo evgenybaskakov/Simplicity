@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListViewController">
             <connections>
                 <outlet property="messageListTableView" destination="4" id="183"/>
+                <outlet property="progressIndicator" destination="bwS-ba-uC5" id="6nl-Sy-AJJ"/>
                 <outlet property="view" destination="1" id="184"/>
             </connections>
         </customObject>
@@ -24,7 +25,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" typeSelect="NO" rowHeight="63" rowSizeStyle="automatic" viewBased="YES" id="4" customClass="SMMessageListTableView">
-                                <rect key="frame" x="0.0" y="0.0" width="235" height="291"/>
+                                <rect key="frame" x="0.0" y="0.0" width="235" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -213,11 +214,16 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
+                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="bwS-ba-uC5">
+                    <rect key="frame" x="102" y="130" width="32" height="32"/>
+                </progressIndicator>
             </subviews>
             <constraints>
+                <constraint firstItem="bwS-ba-uC5" firstAttribute="centerY" secondItem="1" secondAttribute="centerY" id="BXO-Xk-28d"/>
                 <constraint firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="Flo-Bg-CUr"/>
                 <constraint firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="InT-hQ-S4M"/>
                 <constraint firstItem="3" firstAttribute="top" secondItem="1" secondAttribute="top" id="PgH-hF-WDT"/>
+                <constraint firstItem="bwS-ba-uC5" firstAttribute="centerX" secondItem="1" secondAttribute="centerX" id="YHc-na-T2u"/>
                 <constraint firstItem="3" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="xMY-F2-sSP"/>
             </constraints>
             <point key="canvasLocation" x="405.5" y="173.5"/>

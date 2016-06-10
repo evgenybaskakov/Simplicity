@@ -495,36 +495,7 @@
     _selectedMessageThread = nil;
 }
 
-- (IBAction)updateMessagesNow:(id)sender {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-
-    [messageListController cancelMessageListUpdate];
-    [messageListController scheduleMessageListUpdate:YES];
-
-    [_updatingMessagesProgressIndicator setHidden:NO];
-    [_updatingMessagesProgressIndicator startAnimation:self];
-}
-
-- (IBAction)loadMoreMessages:(id)sender {
-    SM_LOG_DEBUG(@"sender %@", sender);
-
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-
-    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    if(currentFolder != nil && [currentFolder messageHeadersAreBeingLoaded] == NO) {
-        [currentFolder increaseLocalFolderCapacity];
-        [messageListController scheduleMessageListUpdate:YES];
-
-        [_loadingMoreMessagesProgressIndicator setHidden:NO];
-        [_loadingMoreMessagesProgressIndicator startAnimation:self];
-    }
-}
-
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {
-    [self stopProgressIndicators];
-
     if(hasUpdates) {
         [self reloadMessageList:YES updateScrollPosition:updateScrollPosition];
 
@@ -578,11 +549,6 @@
             SM_LOG_WARNING(@"Message body fetched (uid %u, thread id %llu), but message thread not found", uid, threadId);
         }
     }
-}
-
-- (void)stopProgressIndicators {
-    [_updatingMessagesProgressIndicator stopAnimation:self];
-    [_loadingMoreMessagesProgressIndicator stopAnimation:self];
 }
 
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolder {

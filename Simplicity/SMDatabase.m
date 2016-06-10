@@ -1812,7 +1812,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return message;
 }
 
-- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {
+- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
 
     // Depending on the user requested urgency, we either select the
@@ -1842,7 +1842,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil);
             });
             
             return;
@@ -1858,7 +1858,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil);
             });
             
             return;
@@ -1873,7 +1873,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil);
             });
 
             return;
@@ -1881,7 +1881,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         SM_LOG_NOISE(@"message UID %u has its body in the database", uid);
         
-        NSString *messageBodyPreview = nil;
         MCOMessageParser *parser = nil;
         NSArray *attachments = nil;
         
@@ -1927,10 +1926,6 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             if(messageBody != nil) {
                 parser = [MCOMessageParser messageParserWithData:messageBody];
                 attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread, not in the main thread
-                
-                // TODO: load the plain text from database to avoid extra heavy work in MCOMessageParser
-                
-                messageBodyPreview = [SMMessage imapMessagePlainTextBody:parser];
             }
         }
         
@@ -1940,7 +1935,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
             
-            getMessageBodyBlock(dbOp, parser, attachments, messageBodyPreview);
+            getMessageBodyBlock(dbOp, parser, attachments);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);

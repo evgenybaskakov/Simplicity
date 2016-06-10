@@ -233,16 +233,15 @@ static NSString *unquote(NSString *s) {
 - (void)reclaimData {
     _reclaimed = YES;
     
-    [self setParser:nil attachments:nil plainTextBody:nil];
+    [self setParser:nil attachments:nil];
 }
 
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
+- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
     if(parser != nil) {
         if(_msgParser == nil) {
             _msgParser = parser;
             _attachments = attachments;
             _hasAttachments = attachments.count > 0;
-            _plainTextBody = plainTextBody;
             
             NSAssert(_msgParser, @"no message parser");
         }

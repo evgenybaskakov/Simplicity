@@ -56,7 +56,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 + (NSString*)imapMessagePlainTextBody:(MCOMessageParser*)parser;
 
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName;
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody;
+- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments;
 - (BOOL)hasData;
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody;
 - (NSString*)localizedDate;

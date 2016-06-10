@@ -245,7 +245,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                 // Decoding plain text body and attachments can be resource consuming, so do it asynchronously
                 MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                 NSArray *attachments = parser.attachments;
-                NSString *plainTextBody = [parser plainTextBodyRendering];
+                NSString *plainTextBody = parser.plainTextBodyRendering;
                 if(plainTextBody == nil) {
                     plainTextBody = @"";
                 }

@@ -389,7 +389,7 @@
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
             // ??? entry.folderName -> entry.remoteFolderName
-            [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(SMDatabaseOp *op, MCOIMAPMessage *message) {
+            [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(SMDatabaseOp *op, MCOIMAPMessage *message, NSString *plainTextBody) {
                 [_dbOps removeObject:op];
                 
                 if(message != nil) {
@@ -398,7 +398,7 @@
                     
                     [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:entry.folderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
                     
-                    [self updateMessages:@[message] plainTextBodies:nil/*TODO*/ remoteFolder:entry.folderName updateDatabase:NO];
+                    [self updateMessages:@[message] plainTextBodies:@[plainTextBody] remoteFolder:entry.folderName updateDatabase:NO];
                 }
                 else {
                     SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu not found in database", entry.folderName, entry.uid, threadDesc.threadId);

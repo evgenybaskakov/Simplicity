@@ -179,7 +179,7 @@
             _loadMessageHeadersForUIDsFromDBFolderOp = nil;
         }
         
-        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *messages) {
+        _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *messages, NSArray<NSString*> *plainTextBodies) {
             if(searchId != _currentSearchId) {
                 SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
                 return;
@@ -192,7 +192,7 @@
                 [_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
             }
 
-            [self completeMessagesRegionLoading:messages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies messageUIDsRequestedToLoad:messageUIDsToLoadNow];
         }];
     }
     else {
@@ -230,7 +230,7 @@
                             [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
                         }
                         
-                        [self completeMessagesRegionLoading:sortedMessages messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow];
                     });
                 });
             }
@@ -241,13 +241,12 @@
     }
 }
 
-- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*> *)messages messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
+- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
     SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
     
     _messageHeadersFetched += [messages count];
     
-//TODO: this is wrong, because that's done in updateMessageHeaders     [self updateMessages:messages remoteFolder:_remoteFolderName updateDatabase:NO];
-    [self updateMessageHeaders:messages plainTextBodies:nil/*TODO*/ updateDatabase:NO];
+    [self updateMessageHeaders:messages plainTextBodies:plainTextBodies updateDatabase:NO];
     [self loadSelectedMessagesInternal];
 }
 

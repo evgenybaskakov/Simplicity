@@ -72,6 +72,7 @@
     NSIndexSet *_selectedRowsWithMenu;
     NSMutableDictionary<NSString*, ScrollPosition*> *_folderScrollPositions;
     ScrollPosition *_currentFolderScrollPosition;
+    BOOL _progressIndicatorShown;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -82,6 +83,7 @@
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
         _folderScrollPositions = [NSMutableDictionary dictionary];
+        _progressIndicatorShown = NO;
     }
 
     return self;
@@ -91,6 +93,33 @@
     [_messageListTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_messageListTableView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     [_messageListTableView setDoubleAction:@selector(openMessageInWindow:)];
+    _progressIndicator.hidden = YES;
+}
+
+- (void)showLoadProgress {
+    if(_progressIndicatorShown) {
+        return;
+    }
+
+    _progressIndicator.hidden = NO;
+    _messageListTableView.hidden = YES;
+
+    [_progressIndicator startAnimation:self];
+    
+    _progressIndicatorShown = YES;
+}
+
+- (void)hideLoadProgress {
+    if(!_progressIndicatorShown) {
+        return;
+    }
+    
+    _progressIndicator.hidden = YES;
+    _messageListTableView.hidden = NO;
+
+    [_progressIndicator stopAnimation:self];
+    
+    _progressIndicatorShown = NO;
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -422,7 +451,14 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    
+
+    if(currentFolder.folderStillLoadingInitialState) {
+        [[appDelegate.appController messageListViewController] showLoadProgress];
+    }
+    else {
+        [[appDelegate.appController messageListViewController] hideLoadProgress];
+    }
+
     // if there's a mouse selection is in process, we shouldn't reload the list
     // otherwise it would cancel the current mouse selection which
     // in turn would impact the user experience

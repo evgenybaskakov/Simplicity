@@ -42,6 +42,16 @@
     return self;
 }
 
+- (Boolean)folderStillLoadingInitialState {
+    for(SMLocalFolder *localFolder in _attachedLocalFolders) {
+        if(![localFolder folderStillLoadingInitialState]) {
+            return NO;
+        }
+    }
+           
+    return YES;
+}
+
 - (void)attachLocalFolder:(SMLocalFolder*)localFolder {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 

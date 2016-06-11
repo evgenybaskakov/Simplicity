@@ -22,6 +22,8 @@
 - (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolderName;
+- (void)showLoadProgress;
+- (void)hideLoadProgress;
 
 - (NSMenu*)menuForRow:(NSInteger)row;
 

@@ -37,6 +37,8 @@
 
 @implementation SMLocalFolder {
     NSMutableArray<SMDatabaseOp*> *_dbOps;
+    NSUInteger _serverSyncCount;
+    BOOL _hadMessages;
 }
 
 @synthesize kind = _kind;
@@ -71,9 +73,19 @@
         _dbMessageThreadsLoadsCount = 0;
         _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:account localFolder:self];
         _dbOps = [NSMutableArray array];
+        _serverSyncCount = 0;
     }
     
     return self;
+}
+
+- (Boolean)folderStillLoadingInitialState {
+    if(_kind == SMFolderKindOutbox) {
+        // Outbox is always up-to-date.
+        return NO;
+    }
+    
+    return !_loadingFromDB && !_hadMessages && _serverSyncCount == 0;
 }
 
 - (void)rescheduleMessageListUpdate {
@@ -398,6 +410,10 @@
                     
                     [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:entry.folderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
                     
+                    if(plainTextBody == nil) {
+                        plainTextBody = (NSString*)[NSNull null];
+                    }
+                    
                     [self updateMessages:@[message] plainTextBodies:@[plainTextBody] remoteFolder:entry.folderName updateDatabase:NO];
                 }
                 else {
@@ -449,10 +465,15 @@
         }
     } : nil];
 
-    Boolean hasUpdates = (updateResult != SMMesssageStorageUpdateResultNone);
+    Boolean finishedDbSync = _dbSyncInProgress;
     
     [self finishMessageHeadersFetching];
 
+    // Tell everybody we have updates if we just finished loading from the DB or
+    // updated from the server for the first time.
+    // So the view controllers will have a chance to hide their DB and server sync progress indicators.
+    Boolean hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
+    
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
@@ -476,6 +497,10 @@
 - (void)syncFetchMessageHeaders {
     NSAssert(_messageHeadersFetched <= _totalMessagesCount, @"invalid messageHeadersFetched");
     
+    if(!_loadingFromDB) {
+        _serverSyncCount++;
+    }
+    
     BOOL finishFetch = YES;
     
     if(_totalMessagesCount == _messageHeadersFetched) {
@@ -495,6 +520,10 @@
         [self syncFetchMessageThreadsHeaders];
         
         return;
+    }
+    
+    if(_totalMessagesCount != 0) {
+        _hadMessages = YES;
     }
     
     if(_loadingFromDB) {
@@ -541,7 +570,7 @@
 
             _fetchMessageHeadersOp = nil;
             
-            if(error == nil) {
+            if(error == nil || error.code == MCOErrorNone) {
                 dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
                 
                 // Sort messages asynchronously by sequence number from newest to oldest.

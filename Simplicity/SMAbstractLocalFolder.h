@@ -48,6 +48,10 @@
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;
 
+// tells whether there is still the initial server sync pending
+// and nothing was loaded from the DB
+- (Boolean)folderStillLoadingInitialState;
+
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.
 // Can only happen if there's no update ongoing at the current moment.

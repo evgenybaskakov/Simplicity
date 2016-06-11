@@ -51,6 +51,10 @@
     return self;
 }
 
+- (Boolean)folderStillLoadingInitialState {
+    return NO;
+}
+
 - (void)startLocalFolderSync {
     if(_dbSyncInProgress || _folderInfoOp != nil || _fetchMessageHeadersOp != nil || _searchMessageThreadsOps.count > 0 || _fetchMessageThreadsHeadersOps.count > 0) {
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);

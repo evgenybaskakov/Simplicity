@@ -17,14 +17,15 @@
 
 @implementation SMMessage
 
-- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName {
+@synthesize plainTextBody = _plainTextBody;
+
+- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName {
     NSAssert(m, @"imap message is nil");
     
     self = [ super init ];
     
     if(self) {
         _imapMessage = m;
-        _plainTextBody = plainTextBody;
         _remoteFolder = remoteFolderName;
         _labels = m.gmailLabels;
         
@@ -198,15 +199,6 @@ static NSString *unquote(NSString *s) {
     }
 }
 
-- (NSString*)plainTextBody {
-    if(_plainTextBody != nil) {
-        return _plainTextBody;
-    }
-    else {
-        return @"";
-    }
-}
-
 - (NSArray*)htmlInlineAttachments {
     if(_msgParser == nil) {
         return nil;
@@ -221,36 +213,8 @@ static NSString *unquote(NSString *s) {
 
 - (void)reclaimData {
     _reclaimed = YES;
-    
-    [self setParser:nil attachments:nil plainTextBody:nil];
-}
-
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
-    if(parser != nil) {
-        if(_msgParser == nil) {
-            _msgParser = parser;
-            _attachments = attachments;
-            _hasAttachments = attachments.count > 0;
-            
-            if(plainTextBody != nil) {
-                _plainTextBody = plainTextBody;
-            }
-            
-            NSAssert(_msgParser, @"no message parser");
-        }
-        
-        _reclaimed = NO;
-    } else {
-        _msgParser = nil;
-        _attachments = nil;
-        _htmlBodyRendering = nil;
-        
-        // do not reset the attachment count
-        // because it is important to show the attachments flag
-        // in the messages list
-        
-        // TODO: figure out a nice way
-    }
+    _msgParser = nil;
+    _attachments = nil;
 }
 
 - (NSUInteger)messageSize {
@@ -265,14 +229,13 @@ static NSString *unquote(NSString *s) {
     return _msgParser != nil;
 }
 
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody {
+- (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
     NSAssert(m, @"bad param message");
     
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is set");
 
         _imapMessage = m;
-        _plainTextBody = plainTextBody;
 
         return YES;
     } else if(_imapMessage.originalFlags != m.originalFlags) {

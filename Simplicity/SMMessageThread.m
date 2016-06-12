@@ -275,7 +275,16 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         SM_LOG_DEBUG(@"set message data for uid %u", uid);
         
-        [message setParser:parser attachments:attachments plainTextBody:plainTextBody];
+        message.msgParser = parser;
+        
+        if(attachments != nil) {
+            message.attachments = attachments;
+            message.hasAttachments = (attachments.count != 0? YES : NO);
+        }
+        
+        if(plainTextBody != nil) {
+            message.plainTextBody = plainTextBody;
+        }
     } else {
         SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
     }
@@ -338,10 +347,12 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         SMMessage *message = [_messageCollection.messagesByUID objectAtIndex:messageIndex];
         
         if([message uid] == [imapMessage uid]) {
-            BOOL wasUnseen = message.unseen;
+            if(plainTextBody != nil) {
+                message.plainTextBody = plainTextBody;
+            }
             
-            // TODO: can date be changed?
-            Boolean hasUpdates = [message updateImapMessage:imapMessage plainTextBody:plainTextBody];
+            BOOL wasUnseen = message.unseen;
+            Boolean hasUpdates = [message updateImapMessage:imapMessage];
             
             message.updateStatus = SMMessageUpdateStatus_Persisted;
             
@@ -366,8 +377,9 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     }
     
     // update the messages list
-    SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage plainTextBody:plainTextBody remoteFolder:remoteFolderName];
+    SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage remoteFolder:remoteFolderName];
 
+    message.plainTextBody = plainTextBody;
     message.updateStatus = SMMessageUpdateStatus_New;
     
     [_messageCollection.messagesByUID insertObject:message atIndex:messageIndex];

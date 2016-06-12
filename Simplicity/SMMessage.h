@@ -37,15 +37,17 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) uint32_t uid;
 @property (readonly) uint64_t threadId;
 @property (readonly) NSString *htmlBodyRendering;
-@property (readonly) NSString *plainTextBody;
 @property (readonly) NSArray *htmlInlineAttachments;
 @property (readonly) NSString *remoteFolder;
-@property (readonly) Boolean hasAttachments;
-@property (readonly) NSArray *attachments;
 @property (readonly) NSArray *labels;
 @property (readonly) Boolean reclaimed;
 @property (readonly) NSUInteger messageSize;
 @property (readonly) Boolean draft;
+
+@property (nonatomic) MCOMessageParser *msgParser;
+@property (nonatomic) NSString *plainTextBody;
+@property (nonatomic) NSArray *attachments;
+@property (nonatomic) Boolean hasAttachments;
 
 @property (nonatomic) Boolean unseen;
 @property (nonatomic) Boolean flagged;
@@ -54,11 +56,10 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 
 + (NSString*)parseAddress:(MCOAddress*)address;
 
-- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName;
-- (void)setParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody;
-- (BOOL)hasData;
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m plainTextBody:(NSString*)plainTextBody;
+- (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName;
+- (Boolean)updateImapMessage:(MCOIMAPMessage*)m;
 - (NSString*)localizedDate;
+- (BOOL)hasData;
 - (void)reclaimData;
 
 @end

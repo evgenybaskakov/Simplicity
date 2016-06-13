@@ -1148,7 +1148,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // Step 2: Create a unique folder table containing message UIDs.
                     //
                     {
-                        NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGE BLOB)", folderId];
+                        NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, HASATTACHMENTS INTEGER, MESSAGE BLOB)", folderId];
                         const char *createMessageTableStmt = [createMessageTableSql UTF8String];
                         
                         char *errMsg = NULL;
@@ -1495,7 +1495,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return plainText;
 }
 
-- (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(SMDatabaseOp*, NSArray<SMOutgoingMessage*>*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*))getMessagesBlock {
+- (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(SMDatabaseOp*, NSArray<SMOutgoingMessage*>*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
@@ -1512,6 +1512,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         NSMutableArray<SMOutgoingMessage*> *outgoingMessages = [NSMutableArray array];
         NSMutableArray<MCOIMAPMessage*> *messages = [NSMutableArray array];
         NSMutableArray<NSString*> *plainTextBodies = [NSMutableArray array];
+        NSMutableArray<NSNumber*> *hasAttachmentsFlags = [NSMutableArray array];
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1525,7 +1526,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
+                NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE, HASATTACHMENTS FROM FOLDER%@ ORDER BY UID DESC LIMIT %lu OFFSET %lu", folderId, count, offset];
                 const char *folderSelectStmt = [folderSelectSql UTF8String];
                 
                 sqlite3_stmt *statement = NULL;
@@ -1584,6 +1585,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                                 [plainTextBodies addObject:(NSString*)[NSNull null]];
                             }
                         }
+                        
+                        BOOL hasAttachments = (sqlite3_column_int(statement, 1) != 0);
+                        [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
                     }
                 }
                 else {
@@ -1619,7 +1623,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
             
-            getMessagesBlock(dbOp, outgoingMessages, messages, plainTextBodies);
+            getMessagesBlock(dbOp, outgoingMessages, messages, plainTextBodies, hasAttachmentsFlags);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
@@ -1629,7 +1633,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return dbOp;
 }
 
-- (SMDatabaseOp*)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(SMDatabaseOp*, MCOIMAPMessage*, NSString*))getMessageBlock {
+- (SMDatabaseOp*)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(SMDatabaseOp*, MCOIMAPMessage*, NSString*, BOOL))getMessageBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
@@ -1645,6 +1649,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         MCOIMAPMessage *message = nil;
         NSString *plainTextBody = nil;
+        BOOL hasAttachments = NO;
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1658,7 +1663,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
                 
-                message = [self loadMessageHeader:uid folderName:folderName folderId:folderId database:database];
+                message = [self loadMessageHeader:uid folderName:folderName folderId:folderId database:database hasAttachments:&hasAttachments];
                 plainTextBody = [self loadPlainTextBody:database folderId:folderId uid:uid];
             } while(FALSE);
             
@@ -1671,7 +1676,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
 
-            getMessageBlock(dbOp, message, plainTextBody);
+            getMessageBlock(dbOp, message, plainTextBody, hasAttachments);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
@@ -1681,7 +1686,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return dbOp;
 }
 
-- (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uids block:(void (^)(SMDatabaseOp*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*))getMessagesBlock {
+- (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet*)uids block:(void (^)(SMDatabaseOp*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
@@ -1697,6 +1702,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         NSMutableArray<MCOIMAPMessage*> *messages = [NSMutableArray array];
         NSMutableArray<NSString*> *plainTextBodies = [NSMutableArray array];
+        NSMutableArray<NSNumber*> *hasAttachmentsFlags = [NSMutableArray array];
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1715,10 +1721,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // This way bodies for newer messages will be loaded sooner.
                     NSIndexSet *uidSet = [uids nsIndexSet];
                     for(NSUInteger uid = uidSet.lastIndex, count = 0; count < uidSet.count; uid = [uidSet indexLessThanIndex:uid], count++) {
-                        MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uid folderName:folderName folderId:folderId database:database];
+                        BOOL hasAttachments = NO;
+                        MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uid folderName:folderName folderId:folderId database:database hasAttachments:&hasAttachments];
                         
                         if(message != nil) {
                             [messages addObject:message];
+                            [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
                             
                             NSString *plainTextBody = [self loadPlainTextBody:database folderId:folderId uid:(uint32_t)uid];
                             
@@ -1742,7 +1750,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
             
-            getMessagesBlock(dbOp, messages, plainTextBodies);
+            getMessagesBlock(dbOp, messages, plainTextBodies, hasAttachmentsFlags);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
@@ -1752,13 +1760,13 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return dbOp;
 }
 
-- (MCOIMAPMessage*)loadMessageHeader:(uint32_t)uid folderName:(NSString*)folderName folderId:(NSNumber*)folderId database:(sqlite3*)database {
+- (MCOIMAPMessage*)loadMessageHeader:(uint32_t)uid folderName:(NSString*)folderName folderId:(NSNumber*)folderId database:(sqlite3*)database hasAttachments:(BOOL*)hasAttachments {
     MCOIMAPMessage *message = nil;
     
     BOOL dbQueryFailed = NO;
     int dbQueryError = SQLITE_OK;
     
-    NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE FROM FOLDER%@ WHERE UID = %u", folderId, uid];
+    NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT MESSAGE, HASATTACHMENTS FROM FOLDER%@ WHERE UID = %u", folderId, uid];
     const char *folderSelectStmt = [folderSelectSql UTF8String];
     
     sqlite3_stmt *statement = NULL;
@@ -1777,6 +1785,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 
                 dbQueryFailed = YES;
             }
+
+            *hasAttachments = (sqlite3_column_int(statement, 1) != 0);
         }
         else if(stepResult == SQLITE_DONE) {
             SM_LOG_DEBUG(@"message with uid %u from folder '%@' (%@) not found", uid, folderName, folderId);

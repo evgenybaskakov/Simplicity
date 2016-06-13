@@ -401,7 +401,7 @@
             SM_LOG_DEBUG(@"Loading message with UID %u from folder '%@' in thread %llu from database", entry.uid, entry.folderName, threadDesc.threadId);
 
             // ??? entry.folderName -> entry.remoteFolderName
-            [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(SMDatabaseOp *op, MCOIMAPMessage *message, NSString *plainTextBody) {
+            [_dbOps addObject:[[_account database] loadMessageHeaderForUIDFromDBFolder:entry.folderName uid:entry.uid block:^(SMDatabaseOp *op, MCOIMAPMessage *message, NSString *plainTextBody, BOOL hasAttachments) {
                 [_dbOps removeObject:op];
                 
                 if(message != nil) {
@@ -529,7 +529,7 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
 
-        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray<SMOutgoingMessage*> *outgoingMessages, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *mcoMessagePlainTextBodies) {
+        [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray<SMOutgoingMessage*> *outgoingMessages, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *mcoMessagePlainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
             [_dbOps removeObject:op];
             
             SM_LOG_INFO(@"outgoing messages loaded: %lu, messages loaded: %lu", outgoingMessages.count, mcoMessages.count);

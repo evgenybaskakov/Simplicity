@@ -196,7 +196,7 @@
                 [_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
             }
 
-            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags messageUIDsRequestedToLoad:messageUIDsToLoadNow];
         }];
     }
     else {
@@ -234,7 +234,7 @@
                             [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
                         }
                         
-                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow];
                     });
                 });
             }
@@ -245,12 +245,12 @@
     }
 }
 
-- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
+- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
     SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
     
     _messageHeadersFetched += [messages count];
     
-    [self updateMessageHeaders:messages plainTextBodies:plainTextBodies updateDatabase:NO];
+    [self updateMessageHeaders:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO];
     [self loadSelectedMessagesInternal];
 }
 

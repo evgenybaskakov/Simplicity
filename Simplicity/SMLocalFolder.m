@@ -335,9 +335,10 @@
     [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue]];
 }
 
-- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
+    // TODO: hasAttachmentsFlags
     SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages plainTextBodies:plainTextBodies remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
     
     [SMNotificationsController localNotifyMessagesUpdated:self updateResult:updateResult account:(SMUserAccount*)_account];
@@ -370,7 +371,7 @@
                 }
             }
 
-            [self updateMessages:filteredMessages plainTextBodies:nil remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES)];
+            [self updateMessages:filteredMessages plainTextBodies:nil hasAttachmentsFlags:nil remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES)];
         } else {
             SM_LOG_ERROR(@"Error fetching message headers for thread %@: %@", threadId, error);
             
@@ -414,7 +415,7 @@
                         plainTextBody = (NSString*)[NSNull null];
                     }
                     
-                    [self updateMessages:@[message] plainTextBodies:@[plainTextBody] remoteFolder:entry.folderName updateDatabase:NO];
+                    [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[[NSNumber numberWithBool:hasAttachments]] remoteFolder:entry.folderName updateDatabase:NO];
                 }
                 else {
                     SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu not found in database", entry.folderName, entry.uid, threadDesc.threadId);
@@ -477,7 +478,7 @@
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
-- (void)updateMessageHeaders:(NSArray*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessageHeaders:(NSArray*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(Boolean)updateDatabase {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
 
@@ -491,7 +492,7 @@
     
     _messageHeadersFetched += [messages count];
     
-    [self updateMessages:messages plainTextBodies:plainTextBodies remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
+    [self updateMessages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
 }
 
 - (void)syncFetchMessageHeaders {
@@ -543,7 +544,7 @@
             }
 
             [self rescheduleUpdateTimeout];
-            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies updateDatabase:NO];
+            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO];
             [self syncFetchMessageHeaders];
         }]];
     }
@@ -581,7 +582,7 @@
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil updateDatabase:YES];
+                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil  hasAttachmentsFlags:nil updateDatabase:YES];
                         [self syncFetchMessageHeaders];
                     });
                 });

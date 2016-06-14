@@ -187,17 +187,23 @@
     [self cancelUpdate];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
     
     NSAssert(plainTextBodies == nil || plainTextBodies.count == imapMessages.count, @"plainTextBodies.count %lu, imapMessages.count %lu", plainTextBodies.count, imapMessages.count);
+    NSAssert(plainTextBodies == nil || plainTextBodies.count == hasAttachmentsFlags.count, @"plainTextBodies.count %lu, hasAttachmentsFlags.count %lu", plainTextBodies.count, hasAttachmentsFlags.count);
     
     for(NSUInteger i = 0; i < imapMessages.count; i++) {
         MCOIMAPMessage *imapMessage = imapMessages[i];
         NSString *plainTextBody = nil;
+        BOOL hasAttachments = NO;
         
         if(plainTextBodies != nil && plainTextBodies[i] != (NSString*)[NSNull null]) {
             plainTextBody = plainTextBodies[i];
+        }
+        
+        if(hasAttachmentsFlags != nil && [hasAttachmentsFlags[i] boolValue]) {
+            hasAttachments = YES;
         }
         
         NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
@@ -228,7 +234,7 @@
             firstMessageDate = [firstMessage date];
         }
 
-        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
+        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody hasAttachments:hasAttachments remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
         
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {

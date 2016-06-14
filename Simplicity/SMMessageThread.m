@@ -335,7 +335,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_labels addObjectsFromArray:message.labels];
 }
 
-- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
+- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody hasAttachments:(BOOL)hasAttachments remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
@@ -380,6 +380,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     SMMessage *message = [[SMMessage alloc] initWithMCOIMAPMessage:imapMessage remoteFolder:remoteFolderName];
 
     message.plainTextBody = plainTextBody;
+    message.hasAttachments = hasAttachments;
     message.updateStatus = SMMessageUpdateStatus_New;
     
     [_messageCollection.messagesByUID insertObject:message atIndex:messageIndex];

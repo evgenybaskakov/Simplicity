@@ -245,6 +245,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                 // Decoding plain text body and attachments can be resource consuming, so do it asynchronously
                 MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                 NSArray *attachments = parser.attachments;
+                BOOL hasAttachments = attachments.count != 0;
                 NSString *plainTextBody = parser.plainTextBodyRendering;
                 if(plainTextBody == nil) {
                     plainTextBody = @"";
@@ -262,6 +263,10 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                     
                     if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
                         [[_account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:plainTextBody folderName:op.folderName];
+                        
+                        if(hasAttachments) {
+                            [[_account database] updateMessageAttributesInDBFolder:op.uid hasAttachments:YES folder:op.folderName];
+                        }
                     }
                     
                     [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:attachments plainTextBody:plainTextBody];

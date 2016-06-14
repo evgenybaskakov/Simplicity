@@ -88,6 +88,7 @@
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
+- (void)updateMessageAttributesInDBFolder:(uint32_t)uid hasAttachments:(BOOL)hasAttachments folder:(NSString*)folderName;
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data plainTextBody:(NSString*)plainTextBody folderName:(NSString*)folderName;
 - (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread folder:(NSString*)folderName;

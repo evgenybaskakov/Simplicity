@@ -2497,7 +2497,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 } while(FALSE);
                 
                 const int sqlFinalizeResult = sqlite3_finalize(statement);
-                SM_LOG_NOISE(@"finalize folders insert statement result %d", sqlFinalizeResult);
+                SM_LOG_NOISE(@"finalize folders update statement result %d", sqlFinalizeResult);
                 
                 if(dbQueryFailed) {
                     SM_LOG_ERROR(@"SQL query has failed");
@@ -2507,6 +2507,82 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 }
                 
                 SM_LOG_DEBUG(@"Message with UID %u successfully udpated in folder \"%@\" (id %@)", imapMessage.uid, folderName, folderId);
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
+    });
+}
+
+- (void)updateMessageAttributesInDBFolder:(uint32_t)uid hasAttachments:(BOOL)hasAttachments folder:(NSString*)folderName {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+        
+        if(database != nil) {
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    break;
+                }
+                
+                NSString *updateSql = [NSString stringWithFormat:@"UPDATE FOLDER%@ SET HASATTACHMENTS = ? WHERE UID = %u", folderId, uid];
+                const char *updateStmt = [updateSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, updateStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                    break;
+                }
+                
+                BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
+                
+                do {
+                    const int bindResult = sqlite3_bind_int(statement, 1, hasAttachments);
+                    if(bindResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"message UID %u, could not bind argument 1 (HASATTACHMENTS), error %d", uid, bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+                    
+                    const int sqlResult = sqlite3_step(statement);
+                    
+                    if(sqlResult != SQLITE_DONE) {
+                        SM_LOG_ERROR(@"Failed to upated message with UID %u in folder \"%@\" (id %@), error %d", uid, folderName, folderId, sqlResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = sqlResult;
+                        break;
+                    }
+                } while(FALSE);
+                
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders update statement result %d", sqlFinalizeResult);
+                
+                if(dbQueryFailed) {
+                    SM_LOG_ERROR(@"SQL query has failed");
+                    
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    break;
+                }
+                
+                SM_LOG_DEBUG(@"Message with UID %u successfully udpated in folder \"%@\" (id %@)", uid, folderName, folderId);
             } while(FALSE);
             
             [self closeDatabase:database];

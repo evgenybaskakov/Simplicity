@@ -226,15 +226,22 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     
     op.remoteOp = imapOp;
     
-    SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' started, attempt %lu", op.uid, op.folderName, op.attempt);
+    SM_LOG_INFO(@"Body download for message UID %u from folder '%@' started, attempt %lu (%@)", op.uid, op.folderName, op.attempt, op.urgent? @"urgent" : @"non-urgent");
     
     [imapOp start:^(NSError *error, NSData *data) {
-        SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended", op.uid, op.folderName);
+        SM_LOG_DEBUG(@"Body download for message UID %u from folder '%@' ended", op.uid, op.folderName);
+        
+        if(![_nonUrgentRunningOps containsObject:op]) {
+            SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (cancelled)", op.uid, op.folderName);
+            
+            [self startNextRemoteOp];
+            return;
+        }
         
         [_nonUrgentRunningOps removeObject:op];
         
         if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName] == nil) {
-            SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
+            SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
 
             [self startNextRemoteOp];
             return;
@@ -257,7 +264,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName] == nil) {
-                        SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
+                        SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
                         
                         [self startNextRemoteOp];
                         return;
@@ -334,6 +341,10 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         FetchOpDesc *opDesc = (FetchOpDesc*)obj;
         [opDesc cancel];
     }];
+    
+    for(FetchOpDesc *op in _nonUrgentRunningOps) {
+        SM_LOG_INFO(@"cancelling running body download for uid %u, folder %@", op.uid, op.folderName);
+    }
     
     [_fetchMessageBodyOps removeAllObjects];
     [_nonUrgentPendingOps removeAllObjects];

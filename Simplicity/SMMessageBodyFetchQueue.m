@@ -172,7 +172,9 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                 [self fetchMessageBody:opDesc.uid messageDate:opDesc.messageDate remoteFolder:opDesc.folderName threadId:opDesc.threadId urgent:opDesc.urgent tryLoadFromDatabase:NO];
             }
             else {
-                [self loadMessageBody:opDesc.uid threadId:opDesc.threadId parser:parser attachments:attachments plainTextBody:plainTextBody];
+                BOOL hasAttachments = (attachments.count > 0);
+                
+                [self loadMessageBody:opDesc.uid threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody];
             }
         }
         else {
@@ -271,7 +273,17 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                         }
                     }
                     
-                    [self loadMessageBody:op.uid threadId:op.threadId parser:parser attachments:attachments plainTextBody:plainTextBody];
+                    // For non-urgent operations, just don't propagate the heavy parts, the message parser and attachments.
+                    // They are needed only to decode the HTML part and actually load the files, that is, when the user looks at that message.
+                    MCOMessageParser *loadedMessageParser = nil;
+                    NSArray *loadedAttachments = nil;
+                    
+                    if(op.urgent) {
+                        loadedMessageParser = parser;
+                        loadedAttachments = attachments;
+                    }
+                    
+                    [self loadMessageBody:op.uid threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody];
                 });
             });
         }
@@ -292,9 +304,9 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     }];
 }
 
-- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody {
+- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody {
     NSAssert([(NSObject*)_localFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"bad local folder message storage type");
-    SMMessage *message = [(SMMessageStorage*)_localFolder.messageStorage setMessageParser:parser attachments:attachments plainTextBody:plainTextBody uid:uid threadId:threadId];
+    SMMessage *message = [(SMMessageStorage*)_localFolder.messageStorage setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody uid:uid threadId:threadId];
     
     if(message != nil) {
         [_localFolder increaseLocalFolderFootprint:message.messageSize];

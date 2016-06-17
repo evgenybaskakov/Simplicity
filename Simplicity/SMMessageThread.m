@@ -267,7 +267,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return attributesChanged;
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid {
     SMMessage *message = [self getMessageByUID:uid];
         
     if(message != nil) {
@@ -275,11 +275,16 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         SM_LOG_DEBUG(@"set message data for uid %u", uid);
         
-        message.msgParser = parser;
+        if(parser != nil) {
+            message.msgParser = parser;
+        }
         
         if(attachments != nil) {
             message.attachments = attachments;
             message.hasAttachments = (attachments.count != 0? YES : NO);
+        }
+        else {
+            message.hasAttachments = hasAttachments;
         }
         
         if(plainTextBody != nil) {

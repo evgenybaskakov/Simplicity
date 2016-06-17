@@ -367,10 +367,10 @@
     [messageThread markAsUpdated];
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid threadId:(uint64_t)threadId {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid threadId:(uint64_t)threadId {
     SMMessageThread *thread = [_messageThreadCollection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
     
-    return [thread setMessageParser:parser attachments:attachments plainTextBody:plainTextBody uid:uid];
+    return [thread setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody uid:uid];
 }
 
 - (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId {

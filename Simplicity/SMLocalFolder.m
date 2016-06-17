@@ -570,6 +570,7 @@
         
         _fetchMessageHeadersOp.urgent = YES;
         
+        // TODO: cancellation?
         [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
             [self rescheduleUpdateTimeout];
 

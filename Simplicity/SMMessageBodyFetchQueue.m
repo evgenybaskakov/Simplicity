@@ -112,42 +112,18 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     if(tryLoadFromDatabase) {
         FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
         [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
-        
-        SMDatabaseOp *dbOp = [[_account database] loadMessageBodyForUIDFromDB:uid folderName:remoteFolderName urgent:urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
-            if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolderName] == nil) {
-                SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (cancelled)", uid, remoteFolderName);
-                return;
-            }
-            
-            [_fetchMessageBodyOps removeObjectforUID:uid folder:remoteFolderName];
-            
-            if(![(SMMessageStorage*)_localFolder.messageStorage messageHasData:uid threadId:threadId]) {
-                if(parser == nil) {
-                    SM_LOG_DEBUG(@"Message header with UID %u (remote folder '%@') was found in the database; body will be loaded from server", uid, remoteFolderName);
-                    
-                    // Re-try, this time load from the server.
-                    [self fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:urgent tryLoadFromDatabase:NO];
-                }
-                else {
-                    [self loadMessageBody:uid threadId:threadId parser:parser attachments:attachments plainTextBody:plainTextBody];
-                }
-            }
-            else {
-                SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (already loaded)", uid, remoteFolderName);
-            }
-        }];
-        
-        opDesc.dbOp = dbOp;
+
+        [self startFetchingDBOp:opDesc];
     }
     else {
-        FetchOpDesc *newOpDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
-        [_fetchMessageBodyOps setObject:newOpDesc forUID:uid folder:remoteFolderName];
+        FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
+        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
         
         if(urgent) {
-            [self startFetchingRemoteOp:newOpDesc];
+            [self startFetchingRemoteOp:opDesc];
         }
         else {
-            [self scheduleRemoteOp:newOpDesc];
+            [self scheduleRemoteOp:opDesc];
         }
     }
 }
@@ -180,6 +156,34 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         
         SM_LOG_DEBUG(@"new pending op added (message UID %u, folder '%@'), total %lu pending ops", op.uid, op.folderName, _nonUrgentPendingOps.count);
     }
+}
+
+- (void)startFetchingDBOp:(FetchOpDesc*)opDesc {
+    SMDatabaseOp *dbOp = [[_account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.folderName urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
+        if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:opDesc.uid folder:opDesc.folderName] == nil) {
+            SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (cancelled)", opDesc.uid, opDesc.folderName);
+            return;
+        }
+        
+        [_fetchMessageBodyOps removeObjectforUID:opDesc.uid folder:opDesc.folderName];
+        
+        if(![(SMMessageStorage*)_localFolder.messageStorage messageHasData:opDesc.uid threadId:opDesc.threadId]) {
+            if(parser == nil) {
+                SM_LOG_DEBUG(@"Message header with UID %u (remote folder '%@') was found in the database; body will be loaded from server", opDesc.uid, opDesc.folderName);
+                
+                // Re-try, this time load from the server.
+                [self fetchMessageBody:opDesc.uid messageDate:opDesc.messageDate remoteFolder:opDesc.folderName threadId:opDesc.threadId urgent:opDesc.urgent tryLoadFromDatabase:NO];
+            }
+            else {
+                [self loadMessageBody:opDesc.uid threadId:opDesc.threadId parser:parser attachments:attachments plainTextBody:plainTextBody];
+            }
+        }
+        else {
+            SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (already loaded)", opDesc.uid, opDesc.folderName);
+        }
+    }];
+    
+    opDesc.dbOp = dbOp;
 }
 
 - (void)startFetchingRemoteOp:(FetchOpDesc*)op {
@@ -225,7 +229,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     
     SM_LOG_INFO(@"Downloading body for message UID %u from folder '%@' started, attempt %lu", op.uid, op.folderName, op.attempt);
     
-    [imapOp start:^(NSError * error, NSData * data) {
+    [imapOp start:^(NSError *error, NSData *data) {
         SM_LOG_DEBUG(@"Downloading body for message UID %u from folder '%@' ended", op.uid, op.folderName);
         
         [_nonUrgentRunningOps removeObject:op];

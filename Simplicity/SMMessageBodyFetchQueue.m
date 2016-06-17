@@ -109,16 +109,13 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         return;
     }
     
-    if(tryLoadFromDatabase) {
-        FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
-        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
+    FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
+    [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
 
+    if(tryLoadFromDatabase) {
         [self startFetchingDBOp:opDesc];
     }
     else {
-        FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate folderName:remoteFolderName urgent:urgent];
-        [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolderName];
-        
         if(urgent) {
             [self startFetchingRemoteOp:opDesc];
         }

@@ -33,6 +33,8 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
 @property (readonly) NSDate *startTime;
 @property MCOIMAPFetchContentOperation *remoteOp;
 @property SMDatabaseOp *dbOp;
+@property unsigned int bytesLoaded;
+@property unsigned int bytesTotal;
 - (id)initWithUID:(uint32_t)uid threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate folderName:(NSString*)folderName urgent:(BOOL)urgent;
 - (void)newAttempt;
 - (void)cancel;
@@ -49,6 +51,8 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         _folderName = folderName;
         _urgent = urgent;
         _attempt = 0;
+        _bytesLoaded = 0;
+        _bytesTotal = UINT32_MAX;
     }
     return self;
 }
@@ -227,7 +231,20 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     op.remoteOp = imapOp;
     
     SM_LOG_INFO(@"Body download for message UID %u from folder '%@' started, attempt %lu (%@)", op.uid, op.folderName, op.attempt, op.urgent? @"urgent" : @"non-urgent");
-    
+
+    __weak FetchOpDesc *weakOpDesc = op;
+    imapOp.progress = ^(unsigned int current, unsigned int maximum) {
+        FetchOpDesc *opDesc = weakOpDesc;
+        if(opDesc == nil) {
+            return;
+        }
+        
+        SM_LOG_INFO(@"Message UID %u, folder '%@' progress %u / %u", weakOpDesc.uid, weakOpDesc.folderName, current, maximum);
+
+        opDesc.bytesLoaded = current;
+        opDesc.bytesTotal = maximum;
+    };
+
     [imapOp start:^(NSError *error, NSData *data) {
         SM_LOG_DEBUG(@"Body download for message UID %u from folder '%@' ended", op.uid, op.folderName);
         

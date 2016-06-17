@@ -187,7 +187,7 @@
     [self cancelUpdate];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
     
     NSAssert(plainTextBodies == nil || plainTextBodies.count == imapMessages.count, @"plainTextBodies.count %lu, imapMessages.count %lu", plainTextBodies.count, imapMessages.count);
@@ -234,7 +234,12 @@
             firstMessageDate = [firstMessage date];
         }
 
-        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody hasAttachments:hasAttachments remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount];
+        BOOL messageIsNew;
+        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody hasAttachments:hasAttachments remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount messageIsNew:&messageIsNew];
+        
+        if(messageIsNew) {
+            [newMessages addObject:imapMessage];
+        }
         
         if(updateDatabase) {
             if(threadUpdateResult != SMThreadUpdateResultNone) {

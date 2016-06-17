@@ -245,13 +245,23 @@
     }
 }
 
-- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
-    SM_LOG_DEBUG(@"loaded %lu message headers...", messages.count);
+- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)mcoMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
+    SM_LOG_DEBUG(@"loaded %lu message headers...", mcoMessages.count);
     
-    _messageHeadersFetched += [messages count];
+    _messageHeadersFetched += mcoMessages.count;
     
-    [self updateMessageHeaders:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO];
+    // Store found messages in the DB 
+    [self updateMessageHeaders:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:YES newMessages:nil];
     [self loadSelectedMessagesInternal];
+    
+    for(NSUInteger i = 0; i < mcoMessages.count; i++) {
+        if(plainTextBodies == nil || (NSNull*)plainTextBodies[i] == [NSNull null]) {
+            MCOIMAPMessage *m = mcoMessages[i];
+            
+            // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
+            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
+        }
+    }
 }
 
 - (void)stopLocalFolderSync {

@@ -335,10 +335,10 @@
     [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue]];
 }
 
-- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
-    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount];
+    SMMessageStorageUpdateResult updateResult = [_messageStorage updateIMAPMessages:imapMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:remoteFolderName session:session updateDatabase:updateDatabase unseenMessagesCount:&_unseenMessagesCount newMessages:newMessages];
     
     [SMNotificationsController localNotifyMessagesUpdated:self updateResult:updateResult account:(SMUserAccount*)_account];
 }
@@ -370,7 +370,7 @@
                 }
             }
 
-            [self updateMessages:filteredMessages plainTextBodies:nil hasAttachmentsFlags:nil remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES)];
+            [self updateMessages:filteredMessages plainTextBodies:nil hasAttachmentsFlags:nil remoteFolder:allMailFolder updateDatabase:(_loadingFromDB? NO : YES) newMessages:nil];
         } else {
             SM_LOG_ERROR(@"Error fetching message headers for thread %@: %@", threadId, error);
             
@@ -406,15 +406,17 @@
                 
                 if(message != nil) {
                     SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", entry.folderName, entry.uid, threadDesc.threadId);
-                    SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, entry.folderName);
-                    
-                    [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:entry.folderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
                     
                     if(plainTextBody == nil) {
                         plainTextBody = (NSString*)[NSNull null];
+
+                        SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, entry.folderName);
+
+                        // TODO: revisit urgency; the user may be looking at this thread
+                        [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:entry.folderName threadId:message.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
                     }
                     
-                    [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[[NSNumber numberWithBool:hasAttachments]] remoteFolder:entry.folderName updateDatabase:NO];
+                    [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[[NSNumber numberWithBool:hasAttachments]] remoteFolder:entry.folderName updateDatabase:NO newMessages:nil];
                 }
                 else {
                     SM_LOG_INFO(@"message from folder %@ with uid %u for message thread %llu not found in database", entry.folderName, entry.uid, threadDesc.threadId);
@@ -477,21 +479,14 @@
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
-- (void)updateMessageHeaders:(NSArray*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(Boolean)updateDatabase {
+- (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(Boolean)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
-
-        SM_LOG_DEBUG(@"fetching message body, gmail message id %llu", m.gmailMessageID);
-        
-        // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp
-        // See issue #72.
-        //SM_LOG_INFO(@"Fetching body for message UID %u, subject '%@'", m.uid, [m.header subject]);
-        [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:YES];
     }
-    
+
     _messageHeadersFetched += [messages count];
     
-    [self updateMessages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:_remoteFolderName updateDatabase:updateDatabase];
+    [self updateMessages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:_remoteFolderName updateDatabase:updateDatabase newMessages:newMessages];
 }
 
 - (void)syncFetchMessageHeaders {
@@ -542,9 +537,19 @@
                 _messageHeadersFetched++;
             }
 
-            [self rescheduleUpdateTimeout];
-            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO];
+            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:nil];
             [self syncFetchMessageHeaders];
+
+            for(NSUInteger i = 0; i < mcoMessages.count; i++) {
+                if((NSNull*)mcoMessagePlainTextBodies[i] == [NSNull null]) {
+                    MCOIMAPMessage *m = mcoMessages[i];
+
+                    // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
+                    [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
+                }
+            }
+
+            [self rescheduleUpdateTimeout];
         }]];
     }
     else {
@@ -581,8 +586,15 @@
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil  hasAttachmentsFlags:nil updateDatabase:YES];
+                        NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
+                        
+                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:newMessages];
                         [self syncFetchMessageHeaders];
+                        
+                        for(MCOIMAPMessage *m in newMessages) {
+                            // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
+                            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
+                        }
                     });
                 });
             } else {

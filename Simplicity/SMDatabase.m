@@ -1822,7 +1822,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return message;
 }
 
-- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*))getMessageBodyBlock {
+- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock {
     SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
 
     // Depending on the user requested urgency, we either select the
@@ -1852,7 +1852,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil, nil);
             });
             
             return;
@@ -1868,7 +1868,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil, nil);
             });
             
             return;
@@ -1883,7 +1883,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     return;
                 }
                 
-                getMessageBodyBlock(dbOp, nil, nil);
+                getMessageBodyBlock(dbOp, nil, nil, nil);
             });
 
             return;
@@ -1893,6 +1893,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         MCOMessageParser *parser = nil;
         NSArray *attachments = nil;
+        NSString *plainTextBody = nil;
         
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
@@ -1936,6 +1937,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             if(messageBody != nil) {
                 parser = [MCOMessageParser messageParserWithData:messageBody];
                 attachments = parser.attachments; // note that this is potentially long operation, so do it in the current thread, not in the main thread
+                plainTextBody = parser.plainTextBodyRendering;
             }
         }
         
@@ -1945,7 +1947,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 return;
             }
             
-            getMessageBodyBlock(dbOp, parser, attachments);
+            getMessageBodyBlock(dbOp, parser, attachments, plainTextBody);
         });
         
         const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);

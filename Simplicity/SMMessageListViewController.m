@@ -308,7 +308,16 @@
     }
     
     NSString *bodyPreview = [firstMessage plainTextBody];
-    [view.messagePreviewTextField setStringValue:(bodyPreview != nil && bodyPreview.length > 0? bodyPreview : (firstMessage.hasData? @"Message has no content" : @""))];
+    if(bodyPreview == nil || bodyPreview.length == 0) {
+        if(firstMessage.hasData) {
+            bodyPreview = @"Message has no content";
+        }
+        else {
+            bodyPreview = @"";
+        }
+    }
+        
+    [view.messagePreviewTextField setStringValue:bodyPreview];
     
     NSString *fromEmail = [firstMessage.fromAddress mailbox];
     NSImage *contactImage = [[appDelegate addressBookController] pictureForEmail:fromEmail];

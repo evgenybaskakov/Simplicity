@@ -27,6 +27,19 @@
 #import "SMSuggestionProvider.h"
 #import "SMUserAccount.h"
 
+const char *mcoConnectionTypeName(MCOConnectionLogType type) {
+    switch(type) {
+        case MCOConnectionLogTypeReceived: return "Received";
+        case MCOConnectionLogTypeSent: return "Sent";
+        case MCOConnectionLogTypeSentPrivate: return "SentPrivate";
+        case MCOConnectionLogTypeErrorParse: return "ErrorParse";
+        case MCOConnectionLogTypeErrorReceived: return "ErrorReceived";
+        case MCOConnectionLogTypeErrorSent: return "ErrorSent";
+    }
+    
+    return "unknown";
+}
+
 @implementation SMUserAccount {
     SMPreferencesController __weak *_preferencesController;
     MCOIMAPCapabilityOperation *_capabilitiesOp;
@@ -122,6 +135,10 @@
     [_smtpSession setPort:[_preferencesController smtpPort:accountIdx]];
     [_smtpSession setCheckCertificateEnabled:[_preferencesController smtpNeedCheckCertificate:accountIdx]];
     
+//    _smtpSession.connectionLogger = ^(void *connectionID, MCOConnectionLogType type, NSData *data) {
+//        SM_LOG_NOISE(@"SMTP connection id: %p, bytes: %lu, type: %s", connectionID, data != nil? data.length : 0, mcoConnectionTypeName(type));
+//    };
+    
     MCOAuthType smtpAuthType = [SMPreferencesController smToMCOAuthType:[_preferencesController smtpAuthType:accountIdx]];
     if(smtpAuthType == MCOAuthTypeXOAuth2 || smtpAuthType == MCOAuthTypeXOAuth2Outlook) {
         // TODO: Workaround for not having OAuth2 token input means.
@@ -132,6 +149,10 @@
     [_smtpSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController smtpConnectionType:accountIdx]]];
     [_smtpSession setUsername:[_preferencesController smtpUserName:accountIdx]];
     [_smtpSession setPassword:[_preferencesController smtpPassword:accountIdx]];
+    
+//    _imapSession.connectionLogger = ^(void *connectionID, MCOConnectionLogType type, NSData *data) {
+//        SM_LOG_NOISE(@"IMAP connection id: %p, bytes: %lu, type: %s", connectionID, data != nil? data.length : 0, mcoConnectionTypeName(type));
+//    };
 }
 
 - (void)initOpExecutor {

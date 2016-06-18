@@ -199,7 +199,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
 
 - (void)removeLocalFolder:(NSString*)folderName {
     FolderEntry *folderEntry = [_folders objectForKey:folderName];
-    [folderEntry.folder stopLocalFolderSync];
+    [folderEntry.folder stopLocalFolderSync:YES];
 
     [_folders removeObjectForKey:folderName];
 

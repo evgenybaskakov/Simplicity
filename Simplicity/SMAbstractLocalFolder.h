@@ -40,7 +40,7 @@
 - (void)startLocalFolderSync;
 
 // stops message headers and bodies loading
-- (void)stopLocalFolderSync;
+- (void)stopLocalFolderSync:(BOOL)stopBodyLoading;
 
 // urgently fetches the body of the message specified by its UID
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;

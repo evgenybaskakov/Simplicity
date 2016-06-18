@@ -109,7 +109,9 @@
 - (void)updateTimeout {
     SM_LOG_WARNING(@"operation timeout");
     
-    [self stopLocalFolderSync];
+    // Leave the body load queue alone.
+    // The timeout should not affect length body loading.
+    [self stopLocalFolderSync:NO];
     [self startLocalFolderSync];
     [self rescheduleUpdateTimeout];
 }
@@ -609,7 +611,7 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)stopLocalFolderSync {
+- (void)stopLocalFolderSync:(BOOL)stopBodyLoading {
     [self cancelScheduledUpdateTimeout];
     
     [_fetchedMessageHeaders removeAllObjects];
@@ -634,14 +636,16 @@
     
     [_messageStorage cancelUpdate];
 
-    [_messageBodyFetchQueue stopBodiesLoading];
-    
     for(SMDatabaseOp *dbOp in _dbOps) {
         [dbOp cancel];
     }
     
     [_dbOps removeAllObjects];
 
+    if(stopBodyLoading) {
+        [_messageBodyFetchQueue stopBodiesLoading];
+    }
+    
     _dbSyncInProgress = NO;
 }
 
@@ -760,8 +764,9 @@
     }
 
     // Stop current message loading process.
+    // Note that body loading should continue. Body loading errors for messages that aren't there shall be ignored.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync];
+    [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];
@@ -837,7 +842,7 @@
 
     // Stop current message loading process.
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync];
+    [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
     [self cancelScheduledMessageListUpdate];

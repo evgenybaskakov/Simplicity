@@ -503,11 +503,9 @@ const char *const mcoOpKinds[] = {
     NSAssert(searchDescriptor != nil, @"search descriptor not found");
     
     id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolderByName:searchDescriptor.localFolder];
-    [localFolder stopLocalFolderSync];
+    [localFolder stopLocalFolderSync:YES];
     
     searchDescriptor.searchStopped = true;
-    
-    // TODO: stop message bodies loading?
 }
 
 - (void)stopLatestSearch {

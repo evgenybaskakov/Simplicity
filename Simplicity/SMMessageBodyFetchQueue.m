@@ -420,7 +420,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
         [_nonUrgentPendingOps addObject:op];
     }
 
-    for(NSUInteger i = 0; i < timedOutOps.count && i < _nonUrgentPendingOps.count; i++) {
+    for(NSUInteger i = 0; i < timedOutOps.count; i++) {
         [self startNextRemoteOp];
     }
 }

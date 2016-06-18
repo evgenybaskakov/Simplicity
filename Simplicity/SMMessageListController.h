@@ -29,6 +29,5 @@
 - (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder changeFolder:(BOOL)changeFolder;
 - (void)scheduleMessageListUpdate:(Boolean)now;
 - (void)cancelScheduledMessageListUpdate;
-- (void)cancelMessageListUpdate;
 
 @end

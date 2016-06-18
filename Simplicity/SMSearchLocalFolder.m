@@ -276,7 +276,7 @@
     _restOfSelectedMessageUIDsToLoadFromDB = nil;
     _restOfSelectedMessageUIDsToLoadFromServer = nil;
 
-    [super stopLocalFolderSync];
+    [super stopLocalFolderSync:YES];
 }
 
 @end

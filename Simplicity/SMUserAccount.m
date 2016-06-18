@@ -253,7 +253,7 @@
     NSArray<id<SMAbstractLocalFolder>> *localFolders = _localFolderRegistry.localFolders;
     
     for(id<SMAbstractLocalFolder> localFolder in localFolders) {
-        [localFolder stopLocalFolderSync];
+        [localFolder stopLocalFolderSync:YES];
     }
     
     [_operationExecutor cancelAllOperations];

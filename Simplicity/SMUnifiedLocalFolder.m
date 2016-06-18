@@ -104,9 +104,9 @@
     }
 }
 
-- (void)stopLocalFolderSync {
+- (void)stopLocalFolderSync:(BOOL)stopBodyLoading {
     for(SMLocalFolder *localFolder in _attachedLocalFolders) {
-        [localFolder stopLocalFolderSync];
+        [localFolder stopLocalFolderSync:stopBodyLoading];
     }
 }
 

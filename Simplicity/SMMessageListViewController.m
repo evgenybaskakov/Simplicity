@@ -423,6 +423,10 @@
         return NO;
     }
     
+    if(idx >= _currentFolderScrollPosition.visibleMessageThreads.count) {
+        return NO;
+    }
+    
     SMMessageThread *messageThread = _currentFolderScrollPosition.visibleMessageThreads[idx];
     NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread];
     

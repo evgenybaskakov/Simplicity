@@ -22,6 +22,7 @@
 
 static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
+static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;
@@ -31,10 +32,11 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
 @property (readonly) NSUInteger attempt;
 @property (readonly) BOOL urgent;
 @property (readonly) NSDate *startTime;
+@property (readonly) NSDate *updateTime;
+@property (readonly) unsigned int bytesLoaded;
+@property (readonly) unsigned int bytesTotal;
 @property MCOIMAPFetchContentOperation *remoteOp;
 @property SMDatabaseOp *dbOp;
-@property unsigned int bytesLoaded;
-@property unsigned int bytesTotal;
 - (id)initWithUID:(uint32_t)uid threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate folderName:(NSString*)folderName urgent:(BOOL)urgent;
 - (void)newAttempt;
 - (void)cancel;
@@ -61,6 +63,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     if(_attempt == 0) {
         _startTime = [NSDate date];
     }
+    _updateTime = [NSDate date];
     _attempt++;
 }
 
@@ -71,6 +74,14 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     
     if(_dbOp) {
         [_dbOp cancel];
+    }
+}
+
+- (void)updateProgress:(uint32_t)loaded total:(uint32_t)total {
+    if(loaded != _bytesLoaded && total != _bytesTotal) {
+        _updateTime = [NSDate date];
+        _bytesLoaded = loaded;
+        _bytesTotal = total;
     }
 }
 
@@ -93,9 +104,15 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         _nonUrgentPendingOps = [NSMutableArray array];
         _nonUrgentRunningOps = [NSMutableSet set];
         _nonUrgentFailedOps = [NSMutableSet set];
+        
+        [self scheduleTimeoutCheck];
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [self cancelTimeoutCheck];
 }
 
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase {
@@ -241,8 +258,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
         
         SM_LOG_INFO(@"Message UID %u, folder '%@' progress %u / %u", weakOpDesc.uid, weakOpDesc.folderName, current, maximum);
 
-        opDesc.bytesLoaded = current;
-        opDesc.bytesTotal = maximum;
+        [opDesc updateProgress:current total:maximum];
     };
 
     [imapOp start:^(NSError *error, NSData *data) {
@@ -287,6 +303,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                         return;
                     }
  
+                    FetchOpDesc *pendingOp = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName];
                     [_fetchMessageBodyOps removeObjectforUID:op.uid folder:op.folderName];
                     
                     if(_localFolder.syncedWithRemoteFolder || _localFolder.kind == SMFolderKindSearch) {
@@ -302,7 +319,7 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
                     MCOMessageParser *loadedMessageParser = nil;
                     NSArray *loadedAttachments = nil;
                     
-                    if(op.urgent) {
+                    if(op.urgent || pendingOp.urgent) {
                         loadedMessageParser = parser;
                         loadedAttachments = attachments;
                     }
@@ -367,6 +384,45 @@ static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
     [_nonUrgentPendingOps removeAllObjects];
     [_nonUrgentRunningOps removeAllObjects];
     [_nonUrgentFailedOps removeAllObjects];
+}
+
+- (void)scheduleTimeoutCheck {
+    [self performSelector:@selector(serverOpTimeoutCheck) withObject:nil afterDelay:SERVER_OP_TIMEOUT_SEC];
+}
+
+- (void)cancelTimeoutCheck {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+}
+
+- (void)serverOpTimeoutCheck {
+    [self scheduleTimeoutCheck];
+
+    if(_nonUrgentRunningOps.count == 0) {
+        return;
+    }
+    
+    NSMutableSet *timedOutOps = [NSMutableSet set];
+    NSDate *currentTime = [NSDate date];
+    
+    for(FetchOpDesc *op in _nonUrgentRunningOps) {
+        if([currentTime timeIntervalSinceDate:op.updateTime] >= SERVER_OP_TIMEOUT_SEC) {
+            [timedOutOps addObject:op];
+        }
+    }
+
+    if(timedOutOps.count == 0) {
+        return;
+    }
+
+    // TODO: use op attempt count to decide when to stop trying
+    for(FetchOpDesc *op in timedOutOps) {
+        [_nonUrgentRunningOps removeObject:op];
+        [_nonUrgentPendingOps addObject:op];
+    }
+
+    for(NSUInteger i = 0; i < timedOutOps.count && i < _nonUrgentPendingOps.count; i++) {
+        [self startNextRemoteOp];
+    }
 }
 
 @end

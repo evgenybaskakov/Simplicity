@@ -234,19 +234,19 @@
 
     BOOL updateDatabase = _loadingFromDB? NO : YES;
     
-    if(allMailFolder == nil) {
-        SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");
-
-        [self finishHeadersSync:updateDatabase];
-        return;
-    }
-    
-    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox) {
+    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail) {
         [self finishHeadersSync:updateDatabase];
         return;
     }
     
     if(_fetchedMessageHeaders.count == 0) {
+        [self finishHeadersSync:updateDatabase];
+        return;
+    }
+    
+    if(allMailFolder == nil) {
+        SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");
+        
         [self finishHeadersSync:updateDatabase];
         return;
     }

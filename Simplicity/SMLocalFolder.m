@@ -241,6 +241,11 @@
         return;
     }
     
+    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox) {
+        [self finishHeadersSync:updateDatabase];
+        return;
+    }
+    
     if(_fetchedMessageHeaders.count == 0) {
         [self finishHeadersSync:updateDatabase];
         return;

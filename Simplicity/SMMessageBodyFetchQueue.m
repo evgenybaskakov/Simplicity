@@ -256,7 +256,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
             return;
         }
         
-        SM_LOG_INFO(@"Message UID %u, folder '%@' progress %u / %u", weakOpDesc.uid, weakOpDesc.folderName, current, maximum);
+        SM_LOG_NOISE(@"Message UID %u, folder '%@' progress %u / %u", weakOpDesc.uid, weakOpDesc.folderName, current, maximum);
 
         [opDesc updateProgress:current total:maximum];
     };
@@ -413,6 +413,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
     if(timedOutOps.count == 0) {
         return;
     }
+    
+    SM_LOG_WARNING(@"Folder %@, download timeout for %lu message bodies", _localFolder.remoteFolderName, timedOutOps.count);
 
     // TODO: use op attempt count to decide when to stop trying
     for(FetchOpDesc *op in timedOutOps) {

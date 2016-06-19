@@ -378,6 +378,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
     
     for(FetchOpDesc *op in _nonUrgentRunningOps) {
         SM_LOG_INFO(@"cancelling running body download for uid %u, folder %@", op.uid, op.folderName);
+        [op cancel];
     }
     
     [_fetchMessageBodyOps removeAllObjects];

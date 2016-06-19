@@ -118,7 +118,7 @@
 - (void)startLocalFolderSync {
     [self rescheduleMessageListUpdate];
 
-    if(_dbSyncInProgress || _folderInfoOp != nil || _fetchMessageHeadersOp != nil || _searchMessageThreadsOps.count > 0) {
+    if(_dbSyncInProgress || _folderInfoOp != nil || _fetchMessageHeadersOp != nil || _dbMessageThreadsLoadsCount > 0 || _searchMessageThreadsOps.count > 0) {
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
         return;
     }

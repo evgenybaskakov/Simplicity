@@ -34,7 +34,7 @@
 - (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage;
 
 - (NSArray*)messagesSortedByDate;
-- (SMMessage*)getMessageByUID:(uint32_t)uid;
+- (SMMessage*)getMessageByUID:(uint32_t)uid; // TODO: this is not one-to-one correspondence, fix! (issue #110)
 
 typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
     SMThreadUpdateResultNone,

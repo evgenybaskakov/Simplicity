@@ -59,7 +59,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     @protected BOOL _loadingFromDB;
     @protected BOOL _dbSyncInProgress;
     @protected NSUInteger _dbMessageThreadsLoadsCount;
-    @protected NSUInteger _dbMessageThreadHeadersLoadsCount;
     @protected SMMessageBodyFetchQueue *_messageBodyFetchQueue;
 }
 

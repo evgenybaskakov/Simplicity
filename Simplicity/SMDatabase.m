@@ -1148,7 +1148,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // Step 2: Create a unique folder table containing message UIDs.
                     //
                     {
-                        NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, HASATTACHMENTS INTEGER, MESSAGE BLOB)", folderId];
+                        NSString *createMessageTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS FOLDER%@ (UID INTEGER PRIMARY KEY UNIQUE, THREADID INTEGER, TIMESTAMP INTEGER, HASATTACHMENTS INTEGER, MESSAGE BLOB)", folderId];
                         const char *createMessageTableStmt = [createMessageTableSql UTF8String];
                         
                         char *errMsg = NULL;
@@ -1160,9 +1160,26 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                             break;
                         }
                     }
+
+                    //
+                    // Step 2a: Create an threadId index for the message table.
+                    //
+                    {
+                        NSString *createIndexSql = [NSString stringWithFormat:@"CREATE INDEX IF NOT EXISTS THREADIDS ON FOLDER%@ (THREADID)", folderId];
+                        const char *createIndexStmt = [createIndexSql UTF8String];
+
+                        char *errMsg = NULL;
+                        const int sqlResult = sqlite3_exec(database, createIndexStmt, NULL, NULL, &errMsg);
+                        if(sqlResult != SQLITE_OK) {
+                            SM_LOG_ERROR(@"Failed to create index for folder id %@: %s, error %d", folderId, errMsg, sqlResult);
+                            
+                            [self triggerDBFailureWithSQLiteError:sqlResult];
+                            break;
+                        }
+                    }
                     
                     //
-                    // Step 2: Create a unique folder table containing message bodies.
+                    // Step 3: Create a unique folder table containing message bodies.
                     //
                     {
                         NSString *createBodiesTableSql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS MESSAGEBODIES%@ (UID INTEGER PRIMARY KEY UNIQUE, TIMESTAMP INTEGER, MESSAGEBODY BLOB)", folderId];
@@ -1178,7 +1195,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     }
                     
                     //
-                    // Step 3: Create another unique folder table containing plain message text: bodies, subjects, contacts.
+                    // Step 4: Create another unique folder table containing plain message text: bodies, subjects, contacts.
                     //
                     {
                         NSString *createTextTableSql = [NSString stringWithFormat:@"CREATE VIRTUAL TABLE IF NOT EXISTS MESSAGETEXT%@ USING FTS4 (FROM, TO, CC, SUBJECT, MESSAGEBODY)", folderId];
@@ -1495,6 +1512,29 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return plainText;
 }
 
+- (void)loadMessages:(sqlite3*)database folderName:(NSString*)folderName folderId:(NSNumber*)folderId uids:(NSIndexSet*)uids messages:(NSMutableArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSMutableArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSMutableArray<NSNumber*>*)hasAttachmentsFlags {
+    // Enumerate messages in UID descending order.
+    // This way bodies for newer messages will be loaded sooner.
+    for(NSUInteger uid = uids.lastIndex, count = 0; count < uids.count; uid = [uids indexLessThanIndex:uid], count++) {
+        BOOL hasAttachments = NO;
+        MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uid folderName:folderName folderId:folderId database:database hasAttachments:&hasAttachments];
+        
+        if(message != nil) {
+            [messages addObject:message];
+            [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
+            
+            NSString *plainTextBody = [self loadPlainTextBody:database folderId:folderId uid:(uint32_t)uid];
+            
+            if(plainTextBody != nil) {
+                [plainTextBodies addObject:plainTextBody];
+            }
+            else {
+                [plainTextBodies addObject:(NSString*)[NSNull null]];
+            }
+        }
+    }
+}
+
 - (SMDatabaseOp*)loadMessageHeadersFromDBFolder:(NSString*)folderName offset:(NSUInteger)offset count:(NSUInteger)count getMessagesBlock:(void (^)(SMDatabaseOp*, NSArray<SMOutgoingMessage*>*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
@@ -1716,29 +1756,87 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     break;
                 }
 
-                if(uids.count > 0) {
-                    // Enumerate messages in UID descending order.
-                    // This way bodies for newer messages will be loaded sooner.
-                    NSIndexSet *uidSet = [uids nsIndexSet];
-                    for(NSUInteger uid = uidSet.lastIndex, count = 0; count < uidSet.count; uid = [uidSet indexLessThanIndex:uid], count++) {
-                        BOOL hasAttachments = NO;
-                        MCOIMAPMessage *message = [self loadMessageHeader:(uint32_t)uid folderName:folderName folderId:folderId database:database hasAttachments:&hasAttachments];
+                [self loadMessages:database folderName:folderName folderId:folderId uids:uids.nsIndexSet messages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(dbOp.cancelled) {
+                SM_LOG_DEBUG(@"DB op was cancelled");
+                return;
+            }
+            
+            getMessagesBlock(dbOp, messages, plainTextBodies, hasAttachmentsFlags);
+        });
+        
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
+    });
+    
+    return dbOp;
+}
+
+- (SMDatabaseOp*)loadMessageHeadersForThreadIdFromDBFolder:(NSString*)folderName threadId:(uint64_t)threadId block:(void (^)(SMDatabaseOp*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
+    
+    SMDatabaseOp *dbOp = [[SMDatabaseOp alloc] init];
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        if(dbOp.cancelled) {
+            SM_LOG_DEBUG(@"DB op was cancelled");
+            return;
+        }
+        
+        NSMutableArray<MCOIMAPMessage*> *messages = [NSMutableArray array];
+        NSMutableArray<NSString*> *plainTextBodies = [NSMutableArray array];
+        NSMutableArray<NSNumber*> *hasAttachmentsFlags = [NSMutableArray array];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_Read];
+        
+        if(database != nil) {
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    break;
+                }
+                
+                NSString *getMessageBodySql = [NSString stringWithFormat:@"SELECT UID FROM FOLDER%@ WHERE THREADID = \"%llu\"", folderId, threadId];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, [getMessageBodySql UTF8String], -1, &statement, NULL);
+                
+                NSMutableIndexSet *uids = [NSMutableIndexSet indexSet];
+                if(sqlPrepareResult == SQLITE_OK) {
+                    const int sqlStepResult = sqlite3_step(statement);
+                    
+                    if(sqlStepResult == SQLITE_ROW) {
+                        uint32_t uid = sqlite3_column_int(statement, 0);
+                        [uids addIndex:uid];
+                    }
+                    else if(sqlStepResult == SQLITE_DONE) {
+                        SM_LOG_DEBUG(@"message thread %llu not found in the database folder %@ (id %@)", threadId, folderName, folderId);
+                    }
+                    else {
+                        SM_LOG_ERROR(@"sqlite3_step error %d", sqlStepResult);
                         
-                        if(message != nil) {
-                            [messages addObject:message];
-                            [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
-                            
-                            NSString *plainTextBody = [self loadPlainTextBody:database folderId:folderId uid:(uint32_t)uid];
-                            
-                            if(plainTextBody != nil) {
-                                [plainTextBodies addObject:plainTextBody];
-                            }
-                            else {
-                                [plainTextBodies addObject:(NSString*)[NSNull null]];
-                            }
-                        }
+                        [self triggerDBFailureWithSQLiteError:sqlStepResult];
                     }
                 }
+                else {
+                    SM_LOG_ERROR(@"could not prepare load statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                }
+
+                [self loadMessages:database folderName:folderName folderId:folderId uids:uids messages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
             } while(FALSE);
             
             [self closeDatabase:database];
@@ -2016,7 +2114,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         NSNumber *folderId = [_folderIds objectForKey:folderName];
         if(folderId != nil) {
             NSData *encodedMessage = [self encodeImapMessage:imapMessage];
-            [self storeEncodedMessage:encodedMessage uid:imapMessage.uid date:imapMessage.header.date folderId:folderId];
+            [self storeEncodedMessage:encodedMessage uid:imapMessage.uid threadId:imapMessage.gmailThreadID date:imapMessage.header.date folderId:folderId];
             
             NSString *from, *to, *cc;
             [self getMessageContacts:imapMessage from:&from to:&to cc:&cc];
@@ -2043,7 +2141,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         NSNumber *folderId = [_folderIds objectForKey:folderName];
         if(folderId != nil) {
             NSData *encodedMessageBuilder = [self encodeMessageBuilder:outgoingMessage.messageBuilder];
-            [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid date:outgoingMessage.date folderId:folderId];
+            [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid threadId:outgoingMessage.threadId date:outgoingMessage.date folderId:folderId];
             
             // TODO: contacts/subject/body for search?
         }
@@ -2359,12 +2457,12 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     return filteredAddressList;
 }
 
-- (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid date:(NSDate*)date folderId:(NSNumber*)folderId {
+- (void)storeEncodedMessage:(NSData*)encodedMessage uid:(uint32_t)uid threadId:(uint64_t)threadId date:(NSDate*)date folderId:(NSNumber*)folderId {
     sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
     
     if(database != nil) {
         do {
-            NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?)", folderId];
+            NSString *folderInsertSql = [NSString stringWithFormat:@"INSERT INTO FOLDER%@ (\"UID\", \"THREADID\", \"TIMESTAMP\", \"MESSAGE\") VALUES (?, ?, ?, ?)", folderId];
             const char *folderInsertStmt = [folderInsertSql UTF8String];
             
             sqlite3_stmt *statement = NULL;
@@ -2388,20 +2486,28 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     dbQueryError = bindResult;
                     break;
                 }
-                
+
+                if((bindResult = sqlite3_bind_int64(statement, 2, threadId)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (THREADID), error %d", uid, bindResult);
+                    
+                    dbQueryFailed = YES;
+                    dbQueryError = bindResult;
+                    break;
+                }
+
                 NSTimeInterval messageDateSeconds = [date timeIntervalSince1970];
                 uint64_t timestamp = (uint64_t)messageDateSeconds;
                 
-                if((bindResult = sqlite3_bind_int64(statement, 2, timestamp)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 2 (TIMESTAMP), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_int64(statement, 3, timestamp)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (TIMESTAMP), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;
                     break;
                 }
                 
-                if((bindResult = sqlite3_bind_blob(statement, 3, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
-                    SM_LOG_ERROR(@"message UID %u, could not bind argument 3 (MESSAGE), error %d", uid, bindResult);
+                if((bindResult = sqlite3_bind_blob(statement, 4, encodedMessage.bytes, (int)encodedMessage.length, SQLITE_STATIC)) != SQLITE_OK) {
+                    SM_LOG_ERROR(@"message UID %u, could not bind argument 4 (MESSAGE), error %d", uid, bindResult);
                     
                     dbQueryFailed = YES;
                     dbQueryError = bindResult;

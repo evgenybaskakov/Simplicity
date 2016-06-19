@@ -1836,6 +1836,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
                 }
 
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize message count statement result %d", sqlFinalizeResult);
+
                 [self loadMessages:database folderName:folderName folderId:folderId uids:uids messages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
             } while(FALSE);
             

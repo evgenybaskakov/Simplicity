@@ -21,8 +21,6 @@
 #import "SMMessageListController.h"
 #import "SMAccountSearchController.h"
 #import "SMMessageThread.h"
-#import "SMMessageThreadDescriptor.h"
-#import "SMMessageThreadDescriptorEntry.h"
 #import "SMMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMMailbox.h"

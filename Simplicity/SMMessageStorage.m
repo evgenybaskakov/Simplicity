@@ -15,7 +15,6 @@
 #import "SMMessageStorage.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadCollection.h"
-#import "SMMessageThreadDescriptor.h"
 #import "SMUnifiedMessageStorage.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMAppDelegate.h"
@@ -134,12 +133,6 @@
     
     // Update the unified storage, if any.
     [_unifiedMessageStorage removeMessageThread:messageThread];
-    
-    if(updateDatabase) {
-        SM_LOG_INFO(@"Deleting message thread %llu from the database", messageThread.threadId);
-        
-        [[_account database] removeMessageThreadFromDB:messageThread.threadId folder:_localFolder.remoteFolderName];
-    }
 }
 
 - (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
@@ -249,14 +242,6 @@
                 else if(threadUpdateResult == SMThreadUpdateResultFlagsChanged) {
                     [[_account database] updateMessageInDBFolder:imapMessage folder:remoteFolderName];
                 }
-                
-                if(threadUpdateResult == SMThreadUpdateResultStructureChanged && !newThreadCreated) {
-                    // NOTE: Do not put the new (allocated) message thread to the DB - there's just one message in it.
-                    // It will be put in the database on endUpdate if any subsequent updates follow.
-                    SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
-                    
-                    [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.remoteFolderName];
-                }
             }
         }
         
@@ -317,14 +302,6 @@
         }
         else {
             *unseenMessagesCount += messageThread.unseenMessagesCount;
-        }
-
-        if(updateResult == SMThreadUpdateResultStructureChanged) {
-            if(updateDatabase) {
-                SMMessageThreadDescriptor *messageThreadDesc = [[SMMessageThreadDescriptor alloc] initWithMessageThread:messageThread];
-                
-                [[_account database] updateMessageThreadInDB:messageThreadDesc folder:_localFolder.remoteFolderName];
-            }
         }
     }
 

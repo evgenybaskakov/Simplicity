@@ -92,9 +92,6 @@
 - (void)updateMessageAttributesInDBFolder:(uint32_t)uid hasAttachments:(BOOL)hasAttachments folder:(NSString*)folderName;
 - (void)removeMessageFromDBFolder:(uint32_t)uid folder:(NSString*)folderName;
 - (void)putMessageBodyToDB:(uint32_t)uid messageDate:(NSDate*)messageDate data:(NSData*)data plainTextBody:(NSString*)plainTextBody folderName:(NSString*)folderName;
-- (void)updateMessageThreadInDB:(SMMessageThreadDescriptor*)messageThread folder:(NSString*)folderName;
-- (void)removeMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName;
-- (SMDatabaseOp*)loadMessageThreadFromDB:(uint64_t)messageThreadId folder:(NSString*)folderName block:(void (^)(SMDatabaseOp*, SMMessageThreadDescriptor*))getMessageThreadBlock;
 - (void)saveOpQueue:(SMOperationQueue*)opQueue queueName:(NSString*)queueName;
 - (void)deleteOpQueue:(NSString*)queueName;
 - (SMDatabaseOp*)loadOpQueue:(NSString*)queueName block:(void (^)(SMDatabaseOp*, SMOperationQueue*))getQueueBlock;

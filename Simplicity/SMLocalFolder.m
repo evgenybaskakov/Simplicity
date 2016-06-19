@@ -19,8 +19,6 @@
 #import "SMOpSetMessageFlags.h"
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
-#import "SMMessageThreadDescriptor.h"
-#import "SMMessageThreadDescriptorEntry.h"
 #import "SMMessage.h"
 #import "SMMessageComparators.h"
 #import "SMOutgoingMessage.h"

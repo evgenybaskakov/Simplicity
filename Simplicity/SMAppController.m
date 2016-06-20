@@ -303,13 +303,6 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
             [[account messageListController] changeFolder:inboxFolder.fullName clearSearch:YES];
             [[account mailboxController] changeFolder:inboxFolder];
             
-            for(SMFolder *folder in [[account mailbox] alwaysSyncedFolders]) {
-                if(folder != inboxFolder) {
-                    SMLocalFolder *localFolder = (SMLocalFolder*)[[account localFolderRegistry] getLocalFolderByName:folder.fullName];
-                    [localFolder startLocalFolderSync];
-                }
-            }
-
             if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
                 [[[appDelegate appController] mailboxViewController] updateFolderListView];
             }

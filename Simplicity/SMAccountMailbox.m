@@ -239,7 +239,7 @@
 }
 
 - (NSArray*)alwaysSyncedFolders {
-    return @[_inboxFolder, _draftsFolder];
+    return @[_inboxFolder, _draftsFolder, _sentFolder, _trashFolder, _spamFolder, _starredFolder, _importantFolder, _allMailFolder];
 }
 
 - (SMFolder*)getFolderByName:(NSString*)folderName {

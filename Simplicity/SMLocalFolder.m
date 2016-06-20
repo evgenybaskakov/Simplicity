@@ -85,37 +85,7 @@
     return !_loadingFromDB && !_hadMessages && _serverSyncCount == 0;
 }
 
-- (void)rescheduleMessageListUpdate {
-    [[_account messageListController] scheduleMessageListUpdate:NO];
-}
-
-- (void)cancelScheduledMessageListUpdate {
-    [[_account messageListController] cancelScheduledMessageListUpdate];
-}
-
-- (void)cancelScheduledUpdateTimeout {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateTimeout) object:nil];
-}
-
-- (void)rescheduleUpdateTimeout {
-    [self cancelScheduledUpdateTimeout];
-
-    [self performSelector:@selector(updateTimeout) withObject:nil afterDelay:OPERATION_UPDATE_TIMEOUT_SEC];
-}
-
-- (void)updateTimeout {
-    SM_LOG_WARNING(@"operation timeout");
-    
-    // Leave the body load queue alone.
-    // The timeout should not affect length body loading.
-    [self stopLocalFolderSync:NO];
-    [self startLocalFolderSync];
-    [self rescheduleUpdateTimeout];
-}
-
 - (void)startLocalFolderSync {
-    [self rescheduleMessageListUpdate];
-
     if(_dbSyncInProgress || _folderInfoOp != nil || _fetchMessageHeadersOp != nil || _dbMessageThreadsLoadsCount > 0 || _searchMessageThreadsOps.count > 0) {
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
         return;
@@ -341,8 +311,6 @@
 }
 
 - (void)finishHeadersSync:(Boolean)updateDatabase {
-    [self cancelScheduledUpdateTimeout];
-
     // When the update ends, push a system notification if these conditions are met:
     // 1. It's an update from the server;
     // 2. The folder is the INBOX (TODO: make configurable);
@@ -447,8 +415,6 @@
                     [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
                 }
             }
-
-            [self rescheduleUpdateTimeout];
         }]];
     }
     else {
@@ -471,8 +437,6 @@
         
         // TODO: cancellation?
         [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
-            [self rescheduleUpdateTimeout];
-
             _fetchMessageHeadersOp = nil;
             
             if(error == nil || error.code == MCOErrorNone) {
@@ -509,8 +473,6 @@
 }
 
 - (void)stopLocalFolderSync:(BOOL)stopBodyLoading {
-    [self cancelScheduledUpdateTimeout];
-    
     [_fetchedMessageHeaders removeAllObjects];
     
     [_folderInfoOp cancel];
@@ -656,11 +618,12 @@
 
     // Stop current message loading process.
     // Note that body loading should continue. Body loading errors for messages that aren't there shall be ignored.
+    // TODO: check that!
     // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
     [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
-    [self cancelScheduledMessageListUpdate];
+    [[_account messageListController] cancelScheduledMessageListUpdate];
 
     // Remove the deleted message threads from the message storage.
     [_messageStorage deleteMessageThread:messageThread updateDatabase:YES unseenMessagesCount:&_unseenMessagesCount];
@@ -736,7 +699,7 @@
     [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
-    [self cancelScheduledMessageListUpdate];
+    [[_account messageListController] cancelScheduledMessageListUpdate];
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.

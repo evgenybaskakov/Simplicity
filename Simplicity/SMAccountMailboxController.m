@@ -43,7 +43,7 @@
     self = [super initWithUserAccount:account];
     
     if(self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesSyncedInFolder:) name:@"MessageHeadersSyncFinished" object:nil];
+        // NOP
     }
     
     return self;
@@ -283,27 +283,6 @@
     }
     else {
         return 0;
-    }
-}
-
-- (void)messagesSyncedInFolder:(NSNotification*)notification {
-    SMUserAccount *account;
-    SMLocalFolder *updatedLocalFolder;
-    BOOL hasUpdates;
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&updatedLocalFolder hasUpdates:&hasUpdates account:&account];
-
-    if(_account == account) {
-        //
-        // Keep certain folders always synced.
-        //
-        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
-            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
-            
-            if(localFolder == updatedLocalFolder) {
-                [localFolder startLocalFolderSync];
-                break;
-            }
-        }
     }
 }
 

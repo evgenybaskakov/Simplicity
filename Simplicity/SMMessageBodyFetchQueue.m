@@ -22,7 +22,7 @@
 
 static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
-static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
+static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;
@@ -263,15 +263,17 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
 
     [imapOp start:^(NSError *error, NSData *data) {
         SM_LOG_DEBUG(@"Body download for message UID %u from folder '%@' ended", op.uid, op.folderName);
-        
-        if(![_nonUrgentRunningOps containsObject:op]) {
-            SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (cancelled)", op.uid, op.folderName);
+
+        if(!op.urgent) {
+            if(![_nonUrgentRunningOps containsObject:op]) {
+                SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (cancelled)", op.uid, op.folderName);
+                
+                [self startNextRemoteOp];
+                return;
+            }
             
-            [self startNextRemoteOp];
-            return;
+            [_nonUrgentRunningOps removeObject:op];
         }
-        
-        [_nonUrgentRunningOps removeObject:op];
         
         if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.folderName] == nil) {
             SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.folderName);
@@ -417,6 +419,10 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 10;
     
     SM_LOG_WARNING(@"Folder %@, download timeout for %lu message bodies", _localFolder.remoteFolderName, timedOutOps.count);
 
+    for(FetchOpDesc *op in _nonUrgentRunningOps) {
+        SM_LOG_WARNING(@"Message body stuck for UID %u, folder '%@'", op.uid, op.folderName);
+    }
+    
     // TODO: use op attempt count to decide when to stop trying
     for(FetchOpDesc *op in timedOutOps) {
         [_nonUrgentRunningOps removeObject:op];

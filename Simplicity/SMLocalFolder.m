@@ -57,6 +57,7 @@
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
         _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account localFolder:self];
+        _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] init];
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
         _unseenMessagesCount = 0;
         _totalMessagesCount = 0;
@@ -68,7 +69,6 @@
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
-        _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:account localFolder:self];
         _dbOps = [NSMutableArray array];
         _serverSyncCount = 0;
     }
@@ -187,7 +187,7 @@
 }
 
 - (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-    [_messageBodyFetchQueue fetchMessageBody:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:threadId urgent:YES tryLoadFromDatabase:YES];
+    [_messageBodyFetchQueue fetchMessageBody:uid messageDate:messageDate threadId:threadId urgent:YES tryLoadFromDatabase:YES remoteFolder:remoteFolderName localFolder:self];
 }
 
 - (void)syncFetchMessageThreadsHeaders {
@@ -303,7 +303,7 @@
             SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, remoteFolder);
 
             // TODO: revisit urgency; the user may be looking at this thread
-            [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] remoteFolder:remoteFolder threadId:threadId urgent:NO tryLoadFromDatabase:NO];
+            [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] threadId:threadId urgent:NO tryLoadFromDatabase:NO remoteFolder:remoteFolder localFolder:self];
         }
         
         [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[hasAttachmentsFlag] remoteFolder:remoteFolder updateDatabase:NO newMessages:nil];
@@ -412,7 +412,7 @@
                     MCOIMAPMessage *m = mcoMessages[i];
 
                     // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                    [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
+                    [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                 }
             }
         }]];
@@ -457,7 +457,7 @@
                         
                         for(MCOIMAPMessage *m in newMessages) {
                             // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] remoteFolder:_remoteFolderName threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO];
+                            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                         }
                     });
                 });
@@ -646,7 +646,7 @@
             }
 
             // Cancel message body fetching.
-            [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName];
+            [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName localFolder:self];
 
             // Delete the message from the local database as well.
             [[_account database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
@@ -719,7 +719,7 @@
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];
     
     // Cancel message body fetching.
-    [_messageBodyFetchQueue cancelBodyLoading:uid remoteFolder:_remoteFolderName];
+    [_messageBodyFetchQueue cancelBodyLoading:uid remoteFolder:_remoteFolderName localFolder:self];
 
     // Delete the message from the local database.
     [[_account database] removeMessageFromDBFolder:uid folder:_remoteFolderName];

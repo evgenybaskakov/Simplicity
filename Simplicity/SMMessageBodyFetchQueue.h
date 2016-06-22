@@ -12,11 +12,10 @@
 
 @class SMLocalFolder;
 
-@interface SMMessageBodyFetchQueue : SMUserAccountDataObject
+@interface SMMessageBodyFetchQueue : NSObject
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(SMLocalFolder*)localFolder;
-- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase;
-- (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder;
+- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
+- (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
 - (void)stopBodiesLoading;
 
 @end

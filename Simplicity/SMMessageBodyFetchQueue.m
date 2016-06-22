@@ -22,6 +22,7 @@
 
 static const NSUInteger MAX_BODY_FETCH_OPS = 5;
 static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
+static const NSUInteger MAX_OP_ATTEMPTS = 5;
 static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 @interface FetchOpDesc : NSObject
@@ -359,16 +360,25 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
             });
         }
         else {
-            SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@); trying again (%lu attempts)...", op.uid, op.remoteFolder, error, op.attempt);
+            SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@), %lu attempts made", op.uid, op.remoteFolder, error, op.attempt);
             
-            if(!op.urgent) {
-                [_nonUrgentFailedOps addObject:op];
+            if(op.attempt < MAX_OP_ATTEMPTS) {
+                if(!op.urgent) {
+                    [_nonUrgentFailedOps addObject:op];
+                }
+                
+                // TODO!
+                // - move attempt count and retry delay to advanced prefs;
+                // - detect connectivity loss/restore.
+                [self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:FAILED_OP_RETRY_DELAY];
             }
-            
-            // TODO!
-            // - move attempt count and retry delay to advanced prefs;
-            // - detect connectivity loss/restore.
-            [self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:FAILED_OP_RETRY_DELAY];
+            else {
+                SM_LOG_ERROR(@"Message body for uid %u, remote folder %@ (%@) is cancelling as failed", op.uid, op.remoteFolder, error);
+
+                [self removeFetchOp:op];
+                
+                // TODO: notify the user
+            }
         }
         
         [self startNextRemoteOp];

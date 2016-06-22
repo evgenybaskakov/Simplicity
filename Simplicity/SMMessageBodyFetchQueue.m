@@ -90,7 +90,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 @end
 
 @implementation SMMessageBodyFetchQueue {
-    SMFolderUIDDictionary *_fetchMessageBodyOps;
+    NSMutableDictionary<NSString*, SMFolderUIDDictionary*> *_fetchOps;
     NSMutableArray<FetchOpDesc*> *_nonUrgentPendingOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentRunningOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentFailedOps;
@@ -100,7 +100,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     self = [super init];
     
     if(self) {
-        _fetchMessageBodyOps = [[SMFolderUIDDictionary alloc] init];
+        _fetchOps = [NSMutableDictionary dictionary];
         _nonUrgentPendingOps = [NSMutableArray array];
         _nonUrgentRunningOps = [NSMutableSet set];
         _nonUrgentFailedOps = [NSMutableSet set];
@@ -115,6 +115,33 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     [self cancelTimeoutCheck];
 }
 
+- (FetchOpDesc*)getFetchOp:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
+    return (FetchOpDesc*)[[_fetchOps objectForKey:localFolder.localName] objectForUID:uid folder:remoteFolder];
+}
+
+- (void)setFetchOp:(FetchOpDesc*)op {
+    SMFolderUIDDictionary *dict = [_fetchOps objectForKey:op.localFolder.localName];
+    
+    if(dict == nil) {
+        dict = [[SMFolderUIDDictionary alloc] init];
+        [_fetchOps setObject:dict forKey:op.localFolder.localName];
+    }
+    
+    [dict setObject:op forUID:op.uid folder:op.remoteFolder];
+}
+
+- (void)removeFetchOp:(FetchOpDesc*)op {
+    SMFolderUIDDictionary *dict = [_fetchOps objectForKey:op.localFolder.localName];
+    
+    if(dict != nil) {
+        [dict removeObjectforUID:op.uid folder:op.remoteFolder];
+
+        if(dict.count == 0) {
+            [_fetchOps removeObjectForKey:op.localFolder.localName];
+        }
+    }
+}
+
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
     SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolder, threadId, urgent? "YES" : "NO");
     
@@ -124,14 +151,15 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         return;
     }
     
-    FetchOpDesc *existingOpDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolder];
+    FetchOpDesc *existingOpDesc = [self getFetchOp:uid remoteFolder:remoteFolder localFolder:localFolder];
     if(existingOpDesc != nil && !(urgent && !existingOpDesc.urgent)) {
         SM_LOG_DEBUG(@"message body for uid %u is already being loaded", uid);
         return;
     }
     
     FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate remoteFolder:remoteFolder localFolder:localFolder urgent:urgent];
-    [_fetchMessageBodyOps setObject:opDesc forUID:uid folder:remoteFolder];
+    
+    [self setFetchOp:opDesc];
 
     if(tryLoadFromDatabase) {
         [self startFetchingDBOp:opDesc];
@@ -178,12 +206,12 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)startFetchingDBOp:(FetchOpDesc*)opDesc {
     SMDatabaseOp *dbOp = [[opDesc.localFolder.account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.remoteFolder urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
-        if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:opDesc.uid folder:opDesc.remoteFolder] == nil) {
+        if([self getFetchOp:opDesc.uid remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder] == nil) {
             SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (cancelled)", opDesc.uid, opDesc.remoteFolder);
             return;
         }
         
-        [_fetchMessageBodyOps removeObjectforUID:opDesc.uid folder:opDesc.remoteFolder];
+        [self removeFetchOp:opDesc];
         
         if(![(SMMessageStorage*)opDesc.localFolder.messageStorage messageHasData:opDesc.uid threadId:opDesc.threadId]) {
             if(parser == nil) {
@@ -216,7 +244,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     }
     
     // Now check if the operation hass been cancelled.
-    if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.remoteFolder] == nil) {
+    if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
         SM_LOG_DEBUG(@"message body loading for uid %u is cancelled", op.uid);
 
         [self startNextRemoteOp];
@@ -275,7 +303,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
             [_nonUrgentRunningOps removeObject:op];
         }
         
-        if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.remoteFolder] == nil) {
+        if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
             SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.remoteFolder);
 
             [self startNextRemoteOp];
@@ -298,15 +326,15 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if((FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.remoteFolder] == nil) {
+                    if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
                         SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.remoteFolder);
                         
                         [self startNextRemoteOp];
                         return;
                     }
                     
-                    FetchOpDesc *pendingOp = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:op.uid folder:op.remoteFolder];
-                    [_fetchMessageBodyOps removeObjectforUID:op.uid folder:op.remoteFolder];
+                    FetchOpDesc *pendingOp = [self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder];
+                    [self removeFetchOp:op];
                     
                     if(op.localFolder.syncedWithRemoteFolder || op.localFolder.kind == SMFolderKindSearch) {
                         [[op.localFolder.account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:plainTextBody folderName:op.remoteFolder];
@@ -359,31 +387,36 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 }
 
 - (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder *)localFolder {
-    FetchOpDesc *opDesc = (FetchOpDesc*)[_fetchMessageBodyOps objectForUID:uid folder:remoteFolder];
+    FetchOpDesc *opDesc = [self getFetchOp:uid remoteFolder:remoteFolder localFolder:localFolder];
     if(opDesc) {
         [opDesc cancel];
         
-        [_fetchMessageBodyOps removeObjectforUID:uid folder:remoteFolder];
         [_nonUrgentPendingOps removeObject:opDesc];
         [_nonUrgentRunningOps removeObject:opDesc];
         [_nonUrgentFailedOps removeObject:opDesc];
         
+        [self removeFetchOp:opDesc];
         [self startNextRemoteOp];
     }
 }
 
 - (void)stopBodiesLoading {
-    [_fetchMessageBodyOps enumerateAllObjects:^(NSObject *obj) {
-        FetchOpDesc *opDesc = (FetchOpDesc*)obj;
-        [opDesc cancel];
-    }];
+    for(NSString *localFolderName in _fetchOps.allKeys) {
+        SMFolderUIDDictionary *dict = [_fetchOps objectForKey:localFolderName];
+        
+        [dict enumerateAllObjects:^(NSObject *obj) {
+            FetchOpDesc *opDesc = (FetchOpDesc*)obj;
+            [opDesc cancel];
+        }];
+    }
     
     for(FetchOpDesc *op in _nonUrgentRunningOps) {
         SM_LOG_INFO(@"cancelling running body download for uid %u, folder %@", op.uid, op.remoteFolder);
         [op cancel];
     }
     
-    [_fetchMessageBodyOps removeAllObjects];
+    [_fetchOps removeAllObjects];
+
     [_nonUrgentPendingOps removeAllObjects];
     [_nonUrgentRunningOps removeAllObjects];
     [_nonUrgentFailedOps removeAllObjects];

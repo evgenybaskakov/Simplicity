@@ -96,6 +96,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     NSMutableSet<FetchOpDesc*> *_nonUrgentRunningOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentFailedOps;
     BOOL _emptyNotificationSent;
+    BOOL _queuePaused;
 }
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -106,6 +107,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         _nonUrgentPendingOps = [NSMutableArray array];
         _nonUrgentRunningOps = [NSMutableSet set];
         _nonUrgentFailedOps = [NSMutableSet set];
+        _emptyNotificationSent = NO;
+        _queuePaused = NO;
         
         [self scheduleTimeoutCheck];
     }
@@ -179,7 +182,11 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 }
 
 - (void)startNextRemoteOp {
-    if(_nonUrgentPendingOps.count > 0 && _nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
+    if(_queuePaused) {
+        return;
+    }
+    
+    while(_nonUrgentPendingOps.count > 0 && _nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
         NSUInteger nextOpIndex = 0;
         
         FetchOpDesc *nextOp = _nonUrgentPendingOps[nextOpIndex];
@@ -199,8 +206,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)scheduleRemoteOp:(FetchOpDesc*)op {
     NSAssert([op isKindOfClass:[FetchOpDesc class]], @"unknown op class");
-    
-    if(_nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
+        
+    if(!_queuePaused && _nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
         NSAssert(![_nonUrgentRunningOps containsObject:op], @"op already running");
         
         [self startFetchingRemoteOp:op];
@@ -215,6 +222,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 }
 
 - (void)startFetchingDBOp:(FetchOpDesc*)opDesc {
+    // TODO: Actually, DB ops in a paused queue should not be executed.
+    //       However, they are not pausable right now. We can live with that.
     SMDatabaseOp *dbOp = [[opDesc.localFolder.account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.remoteFolder urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
         if([self getFetchOp:opDesc.uid remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder] == nil) {
             SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (cancelled)", opDesc.uid, opDesc.remoteFolder);
@@ -267,6 +276,13 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         
         [_nonUrgentFailedOps removeObject:op];
         [self scheduleRemoteOp:op];
+        return;
+    }
+    
+    // Finally, check if the queue is active.
+    // If not, with everything in place it will be resumed fully functional.
+    if(_queuePaused) {
+        SM_LOG_DEBUG(@"queue paused");
         return;
     }
     
@@ -420,11 +436,23 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 }
 
 - (void)pauseBodyFetchQueue {
+    if(_queuePaused) {
+        return;
+    }
+    
     // TODO
+    
+    _queuePaused = YES;
 }
 
 - (void)resumeBodyFetchQueue {
-    // TODO
+    if(!_queuePaused) {
+        return;
+    }
+
+    _queuePaused = NO;
+
+    [self startNextRemoteOp];
 }
 
 - (void)stopBodyFetchQueue {
@@ -447,6 +475,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     [_nonUrgentPendingOps removeAllObjects];
     [_nonUrgentRunningOps removeAllObjects];
     [_nonUrgentFailedOps removeAllObjects];
+
+    _queuePaused = NO;
 }
 
 - (void)scheduleTimeoutCheck {

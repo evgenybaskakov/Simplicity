@@ -1472,7 +1472,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 plainText = [NSString stringWithUTF8String:(char*)text];
             }
             else {
-                SM_LOG_ERROR(@"cannot load plain message body, uid %u, folder id %@", uid, folderId);
+                SM_LOG_DEBUG(@"no plain message body, uid %u, folder id %@", uid, folderId);
             }
         }
         else if(sqlStepResult == SQLITE_DONE) {

@@ -405,7 +405,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     }
 }
 
-- (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder *)localFolder {
+- (void)cancelBodyFetch:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder *)localFolder {
     FetchOpDesc *opDesc = [self getFetchOp:uid remoteFolder:remoteFolder localFolder:localFolder];
     if(opDesc) {
         [opDesc cancel];
@@ -419,7 +419,15 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     }
 }
 
-- (void)stopBodiesLoading {
+- (void)pauseBodyFetchQueue {
+    // TODO
+}
+
+- (void)resumeBodyFetchQueue {
+    // TODO
+}
+
+- (void)stopBodyFetchQueue {
     for(NSString *localFolderName in _fetchOps.allKeys) {
         SMFolderUIDDictionary *dict = [_fetchOps objectForKey:localFolderName];
         

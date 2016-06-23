@@ -496,7 +496,7 @@
     [_dbOps removeAllObjects];
 
     if(stopBodyLoading) {
-        [_messageBodyFetchQueue stopBodiesLoading];
+        [_messageBodyFetchQueue stopBodyFetchQueue];
     }
     
     _dbSyncInProgress = NO;
@@ -646,7 +646,7 @@
             }
 
             // Cancel message body fetching.
-            [_messageBodyFetchQueue cancelBodyLoading:message.uid remoteFolder:_remoteFolderName localFolder:self];
+            [_messageBodyFetchQueue cancelBodyFetch:message.uid remoteFolder:_remoteFolderName localFolder:self];
 
             // Delete the message from the local database as well.
             [[_account database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
@@ -719,7 +719,7 @@
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];
     
     // Cancel message body fetching.
-    [_messageBodyFetchQueue cancelBodyLoading:uid remoteFolder:_remoteFolderName localFolder:self];
+    [_messageBodyFetchQueue cancelBodyFetch:uid remoteFolder:_remoteFolderName localFolder:self];
 
     // Delete the message from the local database.
     [[_account database] removeMessageFromDBFolder:uid folder:_remoteFolderName];

@@ -16,7 +16,9 @@
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
-- (void)cancelBodyLoading:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
-- (void)stopBodiesLoading;
+- (void)cancelBodyFetch:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
+- (void)pauseBodyFetchQueue;
+- (void)resumeBodyFetchQueue;
+- (void)stopBodyFetchQueue;
 
 @end

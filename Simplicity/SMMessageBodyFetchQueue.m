@@ -190,7 +190,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         [self startFetchingRemoteOp:nextOp];
     }
     
-    if(_nonUrgentRunningOps.count == 0 && !_emptyNotificationSent) {
+    if(_nonUrgentRunningOps.count == 0 && _nonUrgentFailedOps.count == 0 && !_emptyNotificationSent) {
         [SMNotificationsController localNotifyMessageBodyFetchQueueEmpty:self account:(SMUserAccount*)_account];
 
         _emptyNotificationSent = YES;

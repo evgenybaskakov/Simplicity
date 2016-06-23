@@ -10,7 +10,7 @@
 
 @interface SMSearchLocalFolder : SMLocalFolder
 
-- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName;
 
 // loads the messages specified by their UIDs from the remote folder
 - (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs updateResults:(BOOL)updateResults;

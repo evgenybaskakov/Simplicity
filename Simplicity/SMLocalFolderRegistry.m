@@ -122,7 +122,7 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     id<SMAbstractLocalFolder> newLocalFolder = nil;
     
     if(_account.unified) {
-        SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithAccount:(SMUnifiedAccount*)_account localFolderName:localFolderName kind:kind];
+        SMUnifiedLocalFolder *unifiedLocalFolder = [[SMUnifiedLocalFolder alloc] initWithUserAccount:(SMUnifiedAccount*)_account localFolderName:localFolderName kind:kind];
 
         newLocalFolder = unifiedLocalFolder;
         
@@ -132,10 +132,10 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
         SMLocalFolder *userLocalFolder;
         
         if(kind == SMFolderKindSearch) {
-            userLocalFolder = [[SMSearchLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
+            userLocalFolder = [[SMSearchLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
         }
         else {
-            userLocalFolder = [[SMLocalFolder alloc] initWithAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            userLocalFolder = [[SMLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
         }
         
         newLocalFolder = userLocalFolder;

@@ -95,10 +95,11 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     NSMutableArray<FetchOpDesc*> *_nonUrgentPendingOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentRunningOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentFailedOps;
+    BOOL _emptyNotificationSent;
 }
 
-- (id)init {
-    self = [super init];
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
+    self = [super initWithUserAccount:account];
     
     if(self) {
         _fetchOps = [NSMutableDictionary dictionary];
@@ -120,7 +121,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     return (FetchOpDesc*)[[_fetchOps objectForKey:localFolder.localName] objectForUID:uid folder:remoteFolder];
 }
 
-- (void)setFetchOp:(FetchOpDesc*)op {
+- (void)addFetchOp:(FetchOpDesc*)op {
     SMFolderUIDDictionary *dict = [_fetchOps objectForKey:op.localFolder.localName];
     
     if(dict == nil) {
@@ -160,7 +161,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     
     FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate remoteFolder:remoteFolder localFolder:localFolder urgent:urgent];
     
-    [self setFetchOp:opDesc];
+    [self addFetchOp:opDesc];
 
     if(tryLoadFromDatabase) {
         [self startFetchingDBOp:opDesc];
@@ -173,6 +174,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
             [self scheduleRemoteOp:opDesc];
         }
     }
+    
+    _emptyNotificationSent = NO;
 }
 
 - (void)startNextRemoteOp {
@@ -185,6 +188,12 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         [_nonUrgentPendingOps removeObjectAtIndex:nextOpIndex];
         
         [self startFetchingRemoteOp:nextOp];
+    }
+    
+    if(_nonUrgentRunningOps.count == 0 && !_emptyNotificationSent) {
+        [SMNotificationsController localNotifyMessageBodyFetchQueueEmpty:self account:(SMUserAccount*)_account];
+
+        _emptyNotificationSent = YES;
     }
 }
 
@@ -244,7 +253,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         return;
     }
     
-    // Now check if the operation hass been cancelled.
+    // Now check if the operation has been cancelled.
     if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
         SM_LOG_DEBUG(@"message body loading for uid %u is cancelled", op.uid);
 

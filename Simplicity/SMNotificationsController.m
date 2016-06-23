@@ -57,7 +57,11 @@
 }
 
 + (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:uid], @"UID", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", account, @"Account", nil]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:uid], @"UID", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", nil]];
+}
+
++ (void)localNotifyMessageBodyFetchQueueEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetchQueueEmpty" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:queue, @"Queue", account, @"Account", nil]];
 }
 
 + (void)localNotifyMessageFlagsUpdates:(SMLocalFolder*)localFolder account:(SMUserAccount*)account {
@@ -156,6 +160,18 @@
         *uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
     }
     
+    if(account) {
+        *account = [messageInfo objectForKey:@"Account"];
+    }
+}
+
++ (void)getMessageBodyFetchQueueEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account {
+    NSDictionary *messageInfo = [notification userInfo];
+
+    if(queue) {
+        *queue = [messageInfo objectForKey:@"Queue"];
+    }
+
     if(account) {
         *account = [messageInfo objectForKey:@"Account"];
     }

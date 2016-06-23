@@ -29,7 +29,7 @@
 @synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
 
-- (id)initWithAccount:(SMUnifiedAccount*)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind {
+- (id)initWithUserAccount:(SMUnifiedAccount*)account localFolderName:(NSString*)localFolderName kind:(SMFolderKind)kind {
     self = [super initWithUserAccount:account];
     
     if(self) {

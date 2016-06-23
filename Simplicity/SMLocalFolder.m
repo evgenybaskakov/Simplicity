@@ -49,7 +49,7 @@
 @synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
 
-- (id)initWithAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -57,7 +57,7 @@
         _localName = localFolderName;
         _remoteFolderName = remoteFolderName;
         _messageStorage = [[SMMessageStorage alloc] initWithUserAccount:account localFolder:self];
-        _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] init];
+        _messageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:account];
         _maxMessagesPerThisFolder = DEFAULT_MAX_MESSAGES_PER_FOLDER;
         _unseenMessagesCount = 0;
         _totalMessagesCount = 0;

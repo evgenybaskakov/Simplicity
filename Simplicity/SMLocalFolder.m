@@ -302,11 +302,23 @@
 
             SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, remoteFolder);
 
+            SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
+            
             // TODO: revisit urgency; the user may be looking at this thread
-            [_messageBodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] threadId:threadId urgent:NO tryLoadFromDatabase:NO remoteFolder:remoteFolder localFolder:self];
+            [bodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] threadId:threadId urgent:NO tryLoadFromDatabase:NO remoteFolder:remoteFolder localFolder:self];
         }
         
         [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[hasAttachmentsFlag] remoteFolder:remoteFolder updateDatabase:NO newMessages:nil];
+    }
+}
+
+- (SMMessageBodyFetchQueue*)chooseBackgroundOrForegroundMessageBodyFetchQueue {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if([[appDelegate.currentAccount messageListController] localFolderIsCurrent:self]) {
+        return _messageBodyFetchQueue;
+    }
+    else {
+        return [(SMUserAccount*)_account backgroundMessageBodyFetchQueue];
     }
 }
 
@@ -407,12 +419,14 @@
             [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:nil];
             [self syncFetchMessageHeaders];
 
+            SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
+            
             for(NSUInteger i = 0; i < mcoMessages.count; i++) {
                 if((NSNull*)mcoMessagePlainTextBodies[i] == [NSNull null]) {
                     MCOIMAPMessage *m = mcoMessages[i];
 
                     // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                    [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                    [bodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                 }
             }
         }]];
@@ -455,9 +469,11 @@
                         [self updateMessageHeaders:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:newMessages];
                         [self syncFetchMessageHeaders];
                         
+                        SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
+                        
                         for(MCOIMAPMessage *m in newMessages) {
                             // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                            [bodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                         }
                     });
                 });

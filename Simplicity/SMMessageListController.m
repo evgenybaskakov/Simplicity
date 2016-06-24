@@ -260,4 +260,21 @@
     }
 }
 
+- (BOOL)localFolderIsCurrent:(SMLocalFolder*)localFolder {
+    BOOL result = NO;
+
+    if(_currentFolder != nil) {
+        if(_account.unified) {
+            if([(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder]) {
+                result = YES;
+            }
+        }
+        else if(_currentFolder == localFolder) {
+            result = YES;
+        }
+    }
+    
+    return result;
+}
+
 @end

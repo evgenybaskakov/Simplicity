@@ -14,6 +14,7 @@
 
 @class SMPreferencesController;
 @class SMOperationExecutor;
+@class SMMessageBodyFetchQueue;
 @class SMMessage;
 
 @class MCOIMAPSession;
@@ -26,6 +27,7 @@
 
 @property (readonly) MCOIndexSet *imapServerCapabilities;
 @property (readonly) SMOperationExecutor *operationExecutor;
+@property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 - (void)initSession:(NSUInteger)accountIdx;

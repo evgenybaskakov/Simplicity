@@ -17,6 +17,7 @@
 #import "SMOperationExecutor.h"
 #import "SMAccountMailbox.h"
 #import "SMMessage.h"
+#import "SMMessageBodyFetchQueue.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
@@ -72,6 +73,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         _mailboxController = [[SMAccountMailboxController alloc] initWithUserAccount:self];
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:self];
+        _backgroundMessageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:self];
     }
     
     SM_LOG_DEBUG(@"user account initialized");

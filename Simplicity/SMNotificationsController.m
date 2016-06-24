@@ -64,6 +64,10 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetchQueueEmpty" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:queue, @"Queue", account, @"Account", nil]];
 }
 
++ (void)localNotifyMessageBodyFetchQueueNotEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetchQueueNotEmpty" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:queue, @"Queue", account, @"Account", nil]];
+}
+
 + (void)localNotifyMessageFlagsUpdates:(SMLocalFolder*)localFolder account:(SMUserAccount*)account {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageFlagsUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", account, @"Account", nil]];
 }
@@ -172,6 +176,18 @@
         *queue = [messageInfo objectForKey:@"Queue"];
     }
 
+    if(account) {
+        *account = [messageInfo objectForKey:@"Account"];
+    }
+}
+
++ (void)getMessageBodyFetchQueueNotEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(queue) {
+        *queue = [messageInfo objectForKey:@"Queue"];
+    }
+    
     if(account) {
         *account = [messageInfo objectForKey:@"Account"];
     }

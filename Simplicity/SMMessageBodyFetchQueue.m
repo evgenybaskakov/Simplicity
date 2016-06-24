@@ -95,7 +95,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     NSMutableArray<FetchOpDesc*> *_nonUrgentPendingOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentRunningOps;
     NSMutableSet<FetchOpDesc*> *_nonUrgentFailedOps;
-    BOOL _emptyNotificationSent;
+    BOOL _emptyNotificationSent, _notEmptyNotificationSent;
     BOOL _queuePaused;
 }
 
@@ -108,6 +108,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         _nonUrgentRunningOps = [NSMutableSet set];
         _nonUrgentFailedOps = [NSMutableSet set];
         _emptyNotificationSent = NO;
+        _notEmptyNotificationSent = NO;
         _queuePaused = NO;
         
         [self scheduleTimeoutCheck];
@@ -118,6 +119,24 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)dealloc {
     [self cancelTimeoutCheck];
+}
+
+- (void)sendEmptyNotification {
+    if(!_emptyNotificationSent) {
+        [SMNotificationsController localNotifyMessageBodyFetchQueueEmpty:self account:(SMUserAccount*)_account];
+        
+        _emptyNotificationSent = YES;
+        _notEmptyNotificationSent = NO;
+    }
+}
+
+- (void)sendNotEmptyNotification {
+    if(!_notEmptyNotificationSent) {
+        [SMNotificationsController localNotifyMessageBodyFetchQueueNotEmpty:self account:(SMUserAccount*)_account];
+        
+        _notEmptyNotificationSent = YES;
+        _emptyNotificationSent = NO;
+    }
 }
 
 - (FetchOpDesc*)getFetchOp:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
@@ -177,8 +196,6 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
             [self scheduleRemoteOp:opDesc];
         }
     }
-    
-    _emptyNotificationSent = NO;
 }
 
 - (void)startNextRemoteOp {
@@ -197,10 +214,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         [self startFetchingRemoteOp:nextOp];
     }
     
-    if(_nonUrgentRunningOps.count == 0 && _nonUrgentFailedOps.count == 0 && !_emptyNotificationSent) {
-        [SMNotificationsController localNotifyMessageBodyFetchQueueEmpty:self account:(SMUserAccount*)_account];
-
-        _emptyNotificationSent = YES;
+    if(_nonUrgentRunningOps.count == 0 && _nonUrgentFailedOps.count == 0) {
+        [self sendEmptyNotification];
     }
 }
 
@@ -289,6 +304,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     // Now, looks like this is an actual operation the user wants to complete. Go for it.
     if(!op.urgent) {
         [_nonUrgentRunningOps addObject:op];
+
+        [self sendNotEmptyNotification];
     }
     
     [op newAttempt];

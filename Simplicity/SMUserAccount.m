@@ -19,6 +19,7 @@
 #import "SMMessage.h"
 #import "SMMessageBodyFetchQueue.h"
 #import "SMAbstractLocalFolder.h"
+#import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageListController.h"
 #import "SMAccountSearchController.h"
@@ -26,6 +27,7 @@
 #import "SMOutboxController.h"
 #import "SMOperationQueue.h"
 #import "SMSuggestionProvider.h"
+#import "SMNotificationsController.h"
 #import "SMUserAccount.h"
 
 const char *mcoConnectionTypeName(MCOConnectionLogType type) {
@@ -74,11 +76,46 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:self];
         _backgroundMessageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:self];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
     }
     
     SM_LOG_DEBUG(@"user account initialized");
     
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)messageFetchQueueEmpty:(NSNotification*)notification {
+    SMMessageBodyFetchQueue *queue;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getMessageBodyFetchQueueEmptyParams:(NSNotification*)notification queue:&queue account:&account];
+    
+    if(account == self) {
+        // If the current folder message body fetch queue is empty, background fetch should be activated.
+        if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
+            [_backgroundMessageBodyFetchQueue resumeBodyFetchQueue];
+        }
+    }
+}
+
+- (void)messageFetchQueueNotEmpty:(NSNotification*)notification {
+    SMMessageBodyFetchQueue *queue;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getMessageBodyFetchQueueNotEmptyParams:(NSNotification*)notification queue:&queue account:&account];
+    
+    if(account == self) {
+        // If the current folder message body fetch queue is not empty, background fetch should be paused.
+        if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
+            [_backgroundMessageBodyFetchQueue pauseBodyFetchQueue];
+        }
+    }
 }
 
 - (MCOIndexSet*)imapServerCapabilities {

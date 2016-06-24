@@ -48,6 +48,7 @@
 @synthesize messageHeadersFetched = _messageHeadersFetched;
 @synthesize maxMessagesPerThisFolder = _maxMessagesPerThisFolder;
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
+@synthesize messageBodyFetchQueue = _messageBodyFetchQueue;
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];

@@ -242,7 +242,7 @@
             if(_dbMessageThreadsLoadsCount == 0) {
                 // no more threads are loading, and no messages loaded from threads
                 // so stop loading headers now and start bodies fetching
-                [self finishHeadersSync:NO];
+                [self finishHeadersSync:updateDatabase];
             }
         }]];
         
@@ -252,7 +252,7 @@
     if(_dbMessageThreadsLoadsCount == 0) {
         // no thread loading was started
         // so stop loading headers now and start bodies fetching
-        [self finishHeadersSync:NO];
+        [self finishHeadersSync:updateDatabase];
     }
 }
 

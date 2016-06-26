@@ -11,10 +11,12 @@
 #import "SMMailboxController.h"
 #import "SMUserAccountDataObject.h"
 
+@class SMFolderDesc;
+
 @interface SMAccountMailboxController : SMUserAccountDataObject<SMMailboxController>
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (void)loadExistingFolders:(NSArray*)folderDescs;
+- (void)loadExistingFolders:(NSArray<SMFolderDesc*>*)folderDescs;
 - (void)scheduleFolderListUpdate:(Boolean)now;
 - (void)stopFolderListUpdate;
 

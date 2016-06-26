@@ -11,10 +11,12 @@
 
 @interface SMFolderDesc : NSObject
 
-@property NSString *folderName;
-@property char delimiter;
-@property MCOIMAPFolderFlag flags;
+@property (readonly) NSString *folderName;
+@property (readonly) char delimiter;
+@property (readonly) MCOIMAPFolderFlag flags;
 
-- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
+@property NSUInteger unreadCount;
+
+- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags unreadCount:(NSUInteger)unreadCount;
 
 @end

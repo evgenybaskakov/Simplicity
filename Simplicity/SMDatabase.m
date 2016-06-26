@@ -642,7 +642,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
-        SM_LOG_ERROR(@"Failed to create table FOLDERS: %s, error %d", errMsg, sqlResult);
+        SM_LOG_ERROR(@"Failed to create table OPQUEUES: %s, error %d", errMsg, sqlResult);
         return FALSE;
     }
     
@@ -651,7 +651,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 
 - (BOOL)createFoldersTable:(sqlite3*)database {
     char *errMsg = NULL;
-    const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER)";
+    const char *createStmt = "CREATE TABLE IF NOT EXISTS FOLDERS (ID INTEGER PRIMARY KEY, NAME TEXT UNIQUE, DELIMITER INTEGER, FLAGS INTEGER, UNREADCOUNT INTEGER)";
     
     const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
     if(sqlResult != SQLITE_OK) {
@@ -1080,7 +1080,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // Step 1: Add the folder into the DB.
                     //
                     {
-                        NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS) VALUES (%@, \"%@\", %ld, %ld)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
+                        NSString *insertSql = [NSString stringWithFormat:@"INSERT INTO FOLDERS (ID, NAME, DELIMITER, FLAGS, UNREADCOUNT) VALUES (%@, \"%@\", %ld, %ld, 0)", folderId, folderName, (NSInteger)delimiter, (NSInteger)flags];
                         const char *insertStmt = [insertSql UTF8String];
                         
                         sqlite3_stmt *statement = NULL;
@@ -1304,7 +1304,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
-- (SMDatabaseOp*)loadDBFolders:(void (^)(SMDatabaseOp*, NSArray*))loadFoldersBlock {
+- (SMDatabaseOp*)loadDBFolders:(void (^)(SMDatabaseOp*, NSArray<SMFolderDesc*>*))loadFoldersBlock {
     const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
     SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
     
@@ -1323,16 +1323,16 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         sqlite3 *database = [self openDatabase:DBOpenMode_Read];
         
         if(database != nil) {
-            const char *sqlQuery = "SELECT * FROM FOLDERS";
-            NSDictionary *foldersTable = [self loadDataFromDB:database query:sqlQuery];
+            NSDictionary *foldersTable = [self loadDataFromDB:database query:"SELECT * FROM FOLDERS"];
             NSArray *columns = [foldersTable objectForKey:@"Columns"];
             NSArray *rows = [foldersTable objectForKey:@"Rows"];
             
             const NSInteger nameColumn = [columns indexOfObject:@"NAME"];
             const NSInteger delimiterColumn = [columns indexOfObject:@"DELIMITER"];
             const NSInteger flagsColumn = [columns indexOfObject:@"FLAGS"];
+            const NSInteger unreadCountColumn = [columns indexOfObject:@"UNREADCOUNT"];
             
-            if(nameColumn == NSNotFound || delimiterColumn == NSNotFound || flagsColumn == NSNotFound) {
+            if(nameColumn == NSNotFound || delimiterColumn == NSNotFound || flagsColumn == NSNotFound || unreadCountColumn == NSNotFound) {
                 if(columns.count > 0 && rows.count > 0) {
                     SM_LOG_ERROR(@"database corrupted: folder name/delimiter/flags columns not found: %ld/%ld/%ld", nameColumn, delimiterColumn, flagsColumn);
                     
@@ -1347,8 +1347,9 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     NSString *name = row[nameColumn];
                     char delimiter = [((NSString*)row[delimiterColumn]) integerValue];
                     MCOIMAPFolderFlag flags = [((NSString*)row[flagsColumn]) integerValue];
+                    NSUInteger unreadCount = [((NSString*)row[unreadCountColumn]) integerValue];
                     
-                    folders[i] = [[SMFolderDesc alloc] initWithFolderName:name delimiter:delimiter flags:flags];
+                    folders[i] = [[SMFolderDesc alloc] initWithFolderName:name delimiter:delimiter flags:flags unreadCount:unreadCount];
                 }
             }
             

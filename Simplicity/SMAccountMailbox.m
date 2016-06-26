@@ -57,7 +57,7 @@
     _folders = [NSMutableArray array];
 }
 
-- (BOOL)loadExistingFolders:(NSArray*)existingFolders {
+- (BOOL)loadExistingFolders:(NSArray<SMFolderDesc*>*)existingFolders {
     if(existingFolders.count > 0) {
         SM_LOG_INFO(@"%lu existing folders found", existingFolders.count);
         
@@ -72,17 +72,17 @@
     }
 }
 
-- (Boolean)updateIMAPFolders:(NSArray *)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders {
+- (Boolean)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
     NSAssert(imapFolders.count > 0, @"No IMAP folders provided");
     
-    NSMutableArray *flatFolders = [NSMutableArray arrayWithCapacity:imapFolders.count];
+    NSMutableArray<SMFolderDesc*> *flatFolders = [NSMutableArray arrayWithCapacity:imapFolders.count];
     for(NSUInteger i = 0; i < imapFolders.count; i++) {
         MCOIMAPFolder *folder = imapFolders[i];
         NSString *path = folder.path;
         NSData *pathData = [path dataUsingEncoding:NSUTF8StringEncoding];
         NSString *pathUtf8 = (__bridge_transfer NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
         
-        [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags]];
+        [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags unreadCount:0]];
     }
     
     _foldersLoaded = YES;
@@ -90,7 +90,7 @@
     return [self updateFlatFolders:flatFolders vanishedFolders:vanishedFolders];
 }
 
-- (Boolean)updateFlatFolders:(NSMutableArray *)flatFolders vanishedFolders:(NSMutableArray*)vanishedFolders {
+- (Boolean)updateFlatFolders:(NSMutableArray<SMFolderDesc*>*)flatFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
     NSAssert(flatFolders.count > 0, @"No folders provided");
     
     [flatFolders sortUsingComparator:^NSComparisonResult(SMFolderDesc *fd1, SMFolderDesc *fd2) {
@@ -113,40 +113,62 @@
         }
     }
     
-    if(vanishedFolders != nil) {
-        NSUInteger i = 0, j = 0;
+    NSMutableSet<SMFolderDesc*> *vanishedFoldersLocal = [NSMutableSet set];
+    NSUInteger i = 0, j = 0;
+    
+    // compare the new and old folder lists, filtering out vanished elements
+    while(i < flatFolders.count && j < _sortedFlatFolders.count) {
+        SMFolderDesc *fd1 = flatFolders[i];
+        SMFolderDesc *fd2 = _sortedFlatFolders[j];
         
-        // compare the new and old folder lists, filtering out vanished elements
-        while(i < flatFolders.count && j < _sortedFlatFolders.count) {
-            SMFolderDesc *fd1 = flatFolders[i];
-            SMFolderDesc *fd2 = _sortedFlatFolders[j];
-            
-            NSComparisonResult compareResult = [fd1.folderName compare:fd2.folderName];
-            
-            if(compareResult == NSOrderedAscending) {
-                i++;
-            }
-            else if(compareResult == NSOrderedDescending) {
-                [vanishedFolders addObject:fd2];
-                
-                j++;
-            }
-            else {
-                i++;
-                j++;
-            }
+        NSComparisonResult compareResult = [fd1.folderName compare:fd2.folderName];
+        
+        if(compareResult == NSOrderedAscending) {
+            i++;
         }
-        
-        // store the rest of the vanished folders
-        while(j < _sortedFlatFolders.count) {
-            SMFolderDesc *fd2 = _sortedFlatFolders[j++];
+        else if(compareResult == NSOrderedDescending) {
+            [vanishedFoldersLocal addObject:fd2];
             
-            [vanishedFolders addObject:fd2];
+            j++;
+        }
+        else {
+            i++;
+            j++;
+        }
+    }
+    
+    // store the rest of the vanished folders
+    while(j < _sortedFlatFolders.count) {
+        SMFolderDesc *fd2 = _sortedFlatFolders[j++];
+        
+        [vanishedFoldersLocal addObject:fd2];
+    }
+        
+    if(vanishedFolders != nil) {
+        *vanishedFolders = vanishedFoldersLocal;
+    }
+
+    // transfer known folder attributes to the new folder list
+    for(NSUInteger i = 0, j = 0; i < _sortedFlatFolders.count && j < flatFolders.count;) {
+        SMFolderDesc *fd1 = flatFolders[j];
+        SMFolderDesc *fd2 = _sortedFlatFolders[i];
+        
+        if([vanishedFoldersLocal containsObject:fd2]) {
+            i++;
+        }
+        else if(![fd1.folderName isEqualToString:fd2.folderName]) {
+            j++;
+        }
+        else {
+            fd1.unreadCount = fd2.unreadCount;
+            i++;
+            j++;
         }
     }
     
     _sortedFlatFolders = flatFolders;
     
+    // update the mailbox folder structure
     [self cleanFolders];
     
     for(SMFolderDesc *fd in _sortedFlatFolders) {

@@ -67,6 +67,7 @@
 @class SMOutgoingMessage;
 @class SMTextMessage;
 @class SMSearchToken;
+@class SMFolderDesc;
 
 @interface SMDatabaseOp : NSObject
 @property (readonly) BOOL cancelled;
@@ -76,7 +77,7 @@
 @interface SMDatabase : NSObject
 
 - (id)initWithFilePath:(NSString*)dbFilePath;
-- (SMDatabaseOp*)loadDBFolders:(void (^)(SMDatabaseOp*,NSArray*))loadFoldersBlock;
+- (SMDatabaseOp*)loadDBFolders:(void (^)(SMDatabaseOp*, NSArray<SMFolderDesc*>*))loadFoldersBlock;
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)removeDBFolder:(NSString*)folderName;

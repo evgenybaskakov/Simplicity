@@ -9,11 +9,13 @@
 #import "SMMailbox.h"
 #import "SMUserAccountDataObject.h"
 
+@class SMFolderDesc;
+
 @interface SMAccountMailbox : SMUserAccountDataObject<SMMailbox>
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (BOOL)loadExistingFolders:(NSArray*)existingFolders;
-- (Boolean)updateIMAPFolders:(NSArray*)imapFolders vanishedFolders:(NSMutableArray*)vanishedFolders;
+- (BOOL)loadExistingFolders:(NSArray<SMFolderDesc*>*)existingFolders;
+- (Boolean)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders;
 - (void)removeFolder:(NSString*)folderName;
 
 @end

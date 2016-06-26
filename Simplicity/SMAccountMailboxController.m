@@ -77,7 +77,7 @@
     SM_LOG_DEBUG(@"initializing folders");
 
     // TODO: use the resulting dbOp
-    [[_account database] loadDBFolders:^(SMDatabaseOp *op, NSArray *folders) {
+    [[_account database] loadDBFolders:^(SMDatabaseOp *op, NSArray<SMFolderDesc*> *folders) {
         [(SMAccountMailboxController*)_account.mailboxController loadExistingFolders:folders];
     }];
 }
@@ -103,8 +103,8 @@
             SMAccountMailbox *mailbox = [ _account mailbox ];
             NSAssert(mailbox != nil, @"mailbox is nil");
 
-            NSMutableArray *vanishedFolders = [NSMutableArray array];
-            if([mailbox updateIMAPFolders:folders vanishedFolders:vanishedFolders]) {
+            NSSet<SMFolderDesc*> *vanishedFolders;
+            if([mailbox updateIMAPFolders:folders vanishedFolders:&vanishedFolders]) {
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
                 NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
@@ -150,7 +150,7 @@
     }
 }
 
-- (void)loadExistingFolders:(NSArray*)folderDescs {
+- (void)loadExistingFolders:(NSArray<SMFolderDesc*>*)folderDescs {
     SMAccountMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 

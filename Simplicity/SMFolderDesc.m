@@ -10,13 +10,14 @@
 
 @implementation SMFolderDesc
 
-- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags {
+- (id)initWithFolderName:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags unreadCount:(NSUInteger)unreadCount {
     self = [super init];
     
     if(self) {
         _folderName = folderName;
         _delimiter = delimiter;
         _flags = flags;
+        _unreadCount = unreadCount;
     }
     
     return self;

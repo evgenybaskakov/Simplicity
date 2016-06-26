@@ -594,9 +594,6 @@
                 }
             }
         }
-        else {
-            SM_LOG_WARNING(@"Message body fetched (uid %u, thread id %llu), but message thread not found", uid, threadId);
-        }
     }
 }
 

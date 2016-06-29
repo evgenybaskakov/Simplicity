@@ -79,6 +79,7 @@
 - (id)initWithFilePath:(NSString*)dbFilePath;
 - (SMDatabaseOp*)loadDBFolders:(void (^)(SMDatabaseOp*, NSArray<SMFolderDesc*>*))loadFoldersBlock;
 - (void)addDBFolder:(NSString*)folderName delimiter:(char)delimiter flags:(MCOIMAPFolderFlag)flags;
+- (void)updateDBFolder:(NSString*)folderName unreadCount:(NSUInteger)unreadCount;
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName;
 - (void)removeDBFolder:(NSString*)folderName;
 - (SMDatabaseOp*)getMessagesCountInDBFolder:(NSString*)folderName block:(void (^)(SMDatabaseOp*, NSUInteger))getMessagesCountBlock;

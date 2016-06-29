@@ -31,6 +31,7 @@
 
 @interface SMMailboxViewController()
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+@property (weak) IBOutlet NSTableView *folderListView;
 @end
 
 @implementation SMMailboxViewController {
@@ -573,14 +574,7 @@ typedef enum {
     SM_LOG_DEBUG(@"folderName: %@", folder.fullName);
     
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-
-    NSUInteger unseenCount;
-    if(folder.kind == SMFolderKindDrafts || folder.kind == SMFolderKindOutbox) {
-        unseenCount = [appDelegate.currentMailboxController totalMessagesCount:folder];
-    }
-    else {
-        unseenCount = [appDelegate.currentMailboxController unseenMessagesCount:folder];
-    }
+    NSUInteger unseenCount = [appDelegate.currentMailboxController unseenMessagesCount:folder];
     
     if(unseenCount != 0) {
         textField.stringValue = [NSString stringWithFormat:@"%lu", unseenCount];

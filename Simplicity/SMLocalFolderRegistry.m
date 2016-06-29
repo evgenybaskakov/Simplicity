@@ -114,7 +114,15 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
     return [_accessTimeSortedFolders indexOfObject:folderEntry inSortedRange:NSMakeRange(0, _accessTimeSortedFolders.count) options:NSBinarySearchingInsertionIndex usingComparator:_accessTimeFolderComparator];
 }
 
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+    return [self createLocalFolder:localFolderName remoteFolder:remoteFolderName kind:kind initialUnreadCount:initialUnreadCount initialUnreadCountProvided:YES syncWithRemoteFolder:syncWithRemoteFolder];
+}
+
 - (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+    return [self createLocalFolder:localFolderName remoteFolder:remoteFolderName kind:kind initialUnreadCount:0 initialUnreadCountProvided:NO syncWithRemoteFolder:syncWithRemoteFolder];
+}
+
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount initialUnreadCountProvided:(BOOL)initialUnreadCountProvided syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
     FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
     
     NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
@@ -135,7 +143,12 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
             userLocalFolder = [[SMSearchLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName];
         }
         else {
-            userLocalFolder = [[SMLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            if(initialUnreadCountProvided) {
+                userLocalFolder = [[SMLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind initialUnreadCount:initialUnreadCount syncWithRemoteFolder:syncWithRemoteFolder];
+            }
+            else {
+                userLocalFolder = [[SMLocalFolder alloc] initWithUserAccount:_account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            }
         }
         
         newLocalFolder = userLocalFolder;

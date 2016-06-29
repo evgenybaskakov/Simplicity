@@ -286,6 +286,10 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     if(account == appDelegate.currentAccount) { // TODO: do we need this check?
         [self updateApplicationUnreadCountBadge:localFolder];
     }
+
+    if(localFolder.syncedWithRemoteFolder) {
+        [account.database updateDBFolder:localFolder.remoteFolderName unreadCount:localFolder.unseenMessagesCount];
+    }
 }
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account {

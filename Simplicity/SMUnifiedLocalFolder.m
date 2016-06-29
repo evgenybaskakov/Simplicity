@@ -91,7 +91,7 @@
 }
 
 - (void)increaseLocalFolderCapacity {
-    // Nothing to do
+    // Nothing to do 
 }
 
 - (void)increaseLocalFolderFootprint:(uint64_t)size {

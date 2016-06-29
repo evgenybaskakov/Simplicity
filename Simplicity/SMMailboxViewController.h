@@ -13,8 +13,6 @@
 
 @interface SMMailboxViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate, NSMenuDelegate>
 
-@property (weak) IBOutlet NSTableView *folderListView;
-
 - (void)changeFolder:(SMFolder*)folder;
 - (void)changeToPrevFolder;
 - (void)updateFolderListView;

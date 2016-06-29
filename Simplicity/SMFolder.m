@@ -13,21 +13,18 @@
     NSString *_displayName;
 }
 
-- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags kind:(SMFolderKind)kind {
+- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags initialUnreadCount:(NSUInteger)initialUnreadCount kind:(SMFolderKind)kind {
     self = [ super init ];
     
     if(self) {
         _fullName = fullName;
         _delimiter = delimiter;
         _mcoFlags = mcoFlags;
+        _initialUnreadCount = initialUnreadCount;
         _kind = kind;
     }
     
     return self;
-}
-
-- (id)initWithFullName:(NSString*)fullName delimiter:(char)delimiter mcoFlags:(MCOIMAPFolderFlag)mcoFlags {
-    return [self initWithFullName:fullName delimiter:delimiter mcoFlags:mcoFlags kind:SMFolderKindRegular];
 }
 
 - (void)setDisplayName:(NSString *)displayName {

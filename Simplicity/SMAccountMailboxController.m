@@ -141,10 +141,10 @@
         if([localFolderRegistry getLocalFolderByName:folder.fullName] == nil) {
             if(folder.kind == SMFolderKindOutbox) {
                 // TODO: workaround for possible "Outbox" folder name collision
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind syncWithRemoteFolder:NO];
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:NO];
             }
             else {
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind syncWithRemoteFolder:YES];
+                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:YES];
             }
         }
     }

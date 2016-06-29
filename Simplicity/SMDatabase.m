@@ -1206,6 +1206,82 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     });
 }
 
+- (void)updateDBFolder:(NSString*)folderName unreadCount:(NSUInteger)unreadCount {
+    const int32_t serialQueueLen = OSAtomicAdd32(1, &_serialQueueLength);
+    SM_LOG_NOISE(@"serial queue length increased: %d", serialQueueLen);
+    
+    dispatch_async(_serialQueue, ^{
+        [self runUrgentTasks];
+        
+        sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
+        
+        if(database != nil) {
+            do {
+                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                if(folderId == nil) {
+                    SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
+                    
+                    [self triggerDBFailure:DBFailure_CriticalDataNotFound];
+                    break;
+                }
+                
+                NSString *updateSql = [NSString stringWithFormat:@"UPDATE FOLDERS SET UNREADCOUNT = ? WHERE ID = \"%@\"", folderId];
+                const char *updateStmt = [updateSql UTF8String];
+                
+                sqlite3_stmt *statement = NULL;
+                const int sqlPrepareResult = sqlite3_prepare_v2(database, updateStmt, -1, &statement, NULL);
+                if(sqlPrepareResult != SQLITE_OK) {
+                    SM_LOG_ERROR(@"could not prepare update statement, error %d", sqlPrepareResult);
+                    
+                    [self triggerDBFailureWithSQLiteError:sqlPrepareResult];
+                    break;
+                }
+                
+                BOOL dbQueryFailed = NO;
+                int dbQueryError = SQLITE_OK;
+                
+                do {
+                    const int bindResult = sqlite3_bind_int(statement, 1, (int)unreadCount);
+                    if(bindResult != SQLITE_OK) {
+                        SM_LOG_ERROR(@"could not bind argument 1 (UNREADCOUNT), error %d", bindResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = bindResult;
+                        break;
+                    }
+                    
+                    const int sqlResult = sqlite3_step(statement);
+                    
+                    if(sqlResult != SQLITE_DONE) {
+                        SM_LOG_ERROR(@"Failed to update folder \"%@\" (id %@), error %d", folderName, folderId, sqlResult);
+                        
+                        dbQueryFailed = YES;
+                        dbQueryError = sqlResult;
+                        break;
+                    }
+                } while(FALSE);
+                
+                const int sqlFinalizeResult = sqlite3_finalize(statement);
+                SM_LOG_NOISE(@"finalize folders update statement result %d", sqlFinalizeResult);
+                
+                if(dbQueryFailed) {
+                    SM_LOG_ERROR(@"SQL query has failed");
+                    
+                    [self triggerDBFailureWithSQLiteError:dbQueryError];
+                    break;
+                }
+                
+                SM_LOG_DEBUG(@"Folder %@ (id %@) successfully updated", folderName, folderId);
+            } while(FALSE);
+            
+            [self closeDatabase:database];
+        }
+        
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
+    });
+}
+
 - (void)renameDBFolder:(NSString*)folderName newName:(NSString*)newName {
     NSAssert(nil, @"TODO");
 }

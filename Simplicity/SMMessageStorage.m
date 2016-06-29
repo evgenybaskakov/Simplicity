@@ -279,7 +279,9 @@
     NSMutableArray *vanishedMessages = [NSMutableArray array];
     NSMutableArray *vanishedThreads = [NSMutableArray array];
 
-    *unseenMessagesCount = 0;
+    if(unseenMessagesCount != nil) {
+        *unseenMessagesCount = 0;
+    }
     
     NSMutableArray *newUnseenMessages = [NSMutableArray array];
     for(NSNumber *threadId in _messageThreadCollection.messageThreads) {
@@ -301,7 +303,9 @@
             [vanishedThreads addObject:messageThread];
         }
         else {
-            *unseenMessagesCount += messageThread.unseenMessagesCount;
+            if(unseenMessagesCount != nil) {
+                *unseenMessagesCount += messageThread.unseenMessagesCount;
+            }
         }
     }
 

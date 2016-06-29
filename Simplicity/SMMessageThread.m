@@ -362,7 +362,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             message.updateStatus = SMMessageUpdateStatus_Persisted;
             
             BOOL nowUnseen = message.unseen;
-            if(wasUnseen != nowUnseen) {
+            if(wasUnseen != nowUnseen && unseenCount != nil) {
                 if(nowUnseen) {
                     (*unseenCount)++;
                 }
@@ -399,7 +399,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 
     [self updateThreadFlagsFromMessage:message];
     
-    if(message.unseen) {
+    if(message.unseen && unseenCount != nil) {
         (*unseenCount)++;
     }
     

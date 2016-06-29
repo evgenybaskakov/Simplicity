@@ -32,16 +32,16 @@
     self = [super init];
     
     if(self) {
-        _inboxFolder = [[SMFolder alloc] initWithFullName:@"Inbox" delimiter:'/' mcoFlags:MCOIMAPFolderFlagInbox kind:SMFolderKindInbox];
-        _importantFolder = [[SMFolder alloc] initWithFullName:@"Important" delimiter:'/' mcoFlags:MCOIMAPFolderFlagImportant kind:SMFolderKindImportant];
-        _sentFolder = [[SMFolder alloc] initWithFullName:@"Sent" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSentMail kind:SMFolderKindSent];
-        _draftsFolder = [[SMFolder alloc] initWithFullName:@"Drafts" delimiter:'/' mcoFlags:MCOIMAPFolderFlagDrafts kind:SMFolderKindDrafts];
-        _starredFolder = [[SMFolder alloc] initWithFullName:@"Starred" delimiter:'/' mcoFlags:MCOIMAPFolderFlagStarred kind:SMFolderKindStarred];
-        _spamFolder = [[SMFolder alloc] initWithFullName:@"Spam" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSpam kind:SMFolderKindSpam];
-        _trashFolder = [[SMFolder alloc] initWithFullName:@"Trash" delimiter:'/' mcoFlags:MCOIMAPFolderFlagTrash kind:SMFolderKindTrash];
-        _allMailFolder = [[SMFolder alloc] initWithFullName:@"All Mail" delimiter:'/' mcoFlags:MCOIMAPFolderFlagAllMail kind:SMFolderKindAllMail];
+        _inboxFolder = [[SMFolder alloc] initWithFullName:@"Inbox" delimiter:'/' mcoFlags:MCOIMAPFolderFlagInbox initialUnreadCount:0 kind:SMFolderKindInbox];
+        _importantFolder = [[SMFolder alloc] initWithFullName:@"Important" delimiter:'/' mcoFlags:MCOIMAPFolderFlagImportant initialUnreadCount:0 kind:SMFolderKindImportant];
+        _sentFolder = [[SMFolder alloc] initWithFullName:@"Sent" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSentMail initialUnreadCount:0 kind:SMFolderKindSent];
+        _draftsFolder = [[SMFolder alloc] initWithFullName:@"Drafts" delimiter:'/' mcoFlags:MCOIMAPFolderFlagDrafts initialUnreadCount:0 kind:SMFolderKindDrafts];
+        _starredFolder = [[SMFolder alloc] initWithFullName:@"Starred" delimiter:'/' mcoFlags:MCOIMAPFolderFlagStarred initialUnreadCount:0 kind:SMFolderKindStarred];
+        _spamFolder = [[SMFolder alloc] initWithFullName:@"Spam" delimiter:'/' mcoFlags:MCOIMAPFolderFlagSpam initialUnreadCount:0 kind:SMFolderKindSpam];
+        _trashFolder = [[SMFolder alloc] initWithFullName:@"Trash" delimiter:'/' mcoFlags:MCOIMAPFolderFlagTrash initialUnreadCount:0 kind:SMFolderKindTrash];
+        _allMailFolder = [[SMFolder alloc] initWithFullName:@"All Mail" delimiter:'/' mcoFlags:MCOIMAPFolderFlagAllMail initialUnreadCount:0 kind:SMFolderKindAllMail];
         
-        _outboxFolder = [[SMFolder alloc] initWithFullName:[SMOutboxController outboxFolderName] delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone kind:SMFolderKindOutbox];
+        _outboxFolder = [[SMFolder alloc] initWithFullName:[SMOutboxController outboxFolderName] delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone initialUnreadCount:0 kind:SMFolderKindOutbox];
         
         _mainFolders = @[_inboxFolder, _importantFolder, _outboxFolder, _sentFolder, _draftsFolder, _starredFolder, _spamFolder, _trashFolder, _allMailFolder ];
 

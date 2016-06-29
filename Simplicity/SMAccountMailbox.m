@@ -52,7 +52,7 @@
 }
 
 - (void)cleanFolders {
-    _rootFolder = [[SMFolder alloc] initWithFullName:@"ROOT" delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone];
+    _rootFolder = [[SMFolder alloc] initWithFullName:@"ROOT" delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone initialUnreadCount:0 kind:SMFolderKindRegular];
     _mainFolders = [NSMutableArray array];
     _folders = [NSMutableArray array];
 }
@@ -172,7 +172,7 @@
     [self cleanFolders];
     
     for(SMFolderDesc *fd in _sortedFlatFolders) {
-        SMFolder *folder = [[SMFolder alloc] initWithFullName:fd.folderName delimiter:fd.delimiter mcoFlags:fd.flags];
+        SMFolder *folder = [[SMFolder alloc] initWithFullName:fd.folderName delimiter:fd.delimiter mcoFlags:fd.flags initialUnreadCount:fd.unreadCount kind:SMFolderKindRegular];
         
         [_folders addObject:folder];
     }
@@ -204,7 +204,7 @@
     
     _outboxFolder = [self filterOutFolder:MCOIMAPFolderFlagNone orName:outboxFolderName as:outboxFolderName setKind:SMFolderKindOutbox];
     if(_outboxFolder == nil) {
-        _outboxFolder = [[SMFolder alloc] initWithFullName:outboxFolderName delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone];
+        _outboxFolder = [[SMFolder alloc] initWithFullName:outboxFolderName delimiter:'/' mcoFlags:MCOIMAPFolderFlagNone initialUnreadCount:0 kind:SMFolderKindOutbox];
         _outboxFolder.kind = SMFolderKindOutbox;
     }
     

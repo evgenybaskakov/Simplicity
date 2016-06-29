@@ -40,11 +40,6 @@
 }
 @end
 
-// TODO: put these to the advanced properties (issue #76)
-static NSUInteger FOLDER_MEMORY_GREEN_ZONE_KB = 100 * 1024;
-static NSUInteger FOLDER_MEMORY_YELLOW_ZONE_KB = 200 * 1024;
-static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
-
 @implementation SMLocalFolderRegistry {
     NSMutableDictionary<NSString*, FolderEntry*> *_folders;
     NSMutableOrderedSet<FolderEntry*> *_accessTimeSortedFolders;
@@ -242,48 +237,6 @@ static NSUInteger FOLDER_MEMORY_RED_ZONE_KB = 300 * 1024;
         SM_LOG_INFO(@"detaching local folder %@ from the unified account", localFolder.localName);
         
         [unifiedLocalFolder detachLocalFolder:localFolder];
-    }
-}
-
-- (void)keepFoldersMemoryLimit {
-    uint64_t foldersMemoryKb = 0;
-    for(FolderEntry *folderEntry in _accessTimeSortedFolders)
-        foldersMemoryKb += [folderEntry.folder getTotalMemoryKb];
-
-    // TODO: use the red zone
-    (void)FOLDER_MEMORY_RED_ZONE_KB;
-
-    if(foldersMemoryKb >= FOLDER_MEMORY_YELLOW_ZONE_KB) {
-        id<SMAbstractLocalFolder> currentLocalFolder = [[_account messageListController] currentLocalFolder];
-        
-        const uint64_t totalMemoryToReclaimKb = foldersMemoryKb - FOLDER_MEMORY_YELLOW_ZONE_KB;
-        uint64_t totalMemoryReclaimedKb = 0;
-
-        for(FolderEntry *folderEntry in _accessTimeSortedFolders) {
-            if([folderEntry.folder.localName isEqualToString:currentLocalFolder.localName])
-                continue;
-
-            const uint64_t folderMemoryBeforeKb = [folderEntry.folder getTotalMemoryKb];
-
-            NSAssert(totalMemoryReclaimedKb <= totalMemoryToReclaimKb, @"totalMemoryReclaimedKb %llu, totalMemoryToReclaimKb %llu", totalMemoryReclaimedKb, totalMemoryToReclaimKb);
-
-            [folderEntry.folder reclaimMemory:(totalMemoryToReclaimKb - totalMemoryReclaimedKb)];
-
-            const uint64_t folderMemoryAfterKb = [folderEntry.folder getTotalMemoryKb];
-            
-            NSAssert(folderMemoryAfterKb <= folderMemoryBeforeKb, @"folder memory changed from %llu to %llu", folderMemoryBeforeKb, folderMemoryAfterKb);
-
-            const uint64_t totalFolderMemoryReclaimedKb = folderMemoryBeforeKb - folderMemoryAfterKb;
-
-            SM_LOG_DEBUG(@"%llu Kb reclaimed for folder %@", totalFolderMemoryReclaimedKb, folderEntry.folder.localName);
-
-            totalMemoryReclaimedKb += totalFolderMemoryReclaimedKb;
-            
-            if(totalMemoryReclaimedKb >= totalMemoryToReclaimKb)
-                break;
-        }
-
-        SM_LOG_INFO(@"total %llu Kb reclaimed (%llu Kb was requested to reclaim, %lu Kb is the green zone, %lu Kb is the yellow zone)", totalMemoryReclaimedKb, totalMemoryToReclaimKb, FOLDER_MEMORY_GREEN_ZONE_KB, FOLDER_MEMORY_YELLOW_ZONE_KB);
     }
 }
 

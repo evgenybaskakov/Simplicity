@@ -66,7 +66,6 @@
         _fetchedMessageHeaders = [NSMutableDictionary new];
         _searchMessageThreadsOps = [NSMutableDictionary new];
         _syncedWithRemoteFolder = syncWithRemoteFolder;
-        _totalMemory = 0;
         _loadingFromDB = (syncWithRemoteFolder? YES : NO);
         _dbSyncInProgress = NO;
         _dbMessageThreadsLoadsCount = 0;
@@ -120,8 +119,6 @@
     
     NSAssert(_dbOps.count == 0, @"db ops still pending");
 
-    [[_account localFolderRegistry] keepFoldersMemoryLimit];
-
     _messageHeadersFetched = 0;
     
     [_messageStorage startUpdate];
@@ -173,17 +170,11 @@
     }
 }
 
-- (void)increaseLocalFolderFootprint:(uint64_t)size {
-    _totalMemory += size;
-}
-
 - (Boolean)folderUpdateIsInProgress {
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
 - (void)finishMessageHeadersFetching {
-    [self recalculateTotalMemorySize];
-
     BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
     
     _loadingFromDB = NO;
@@ -780,68 +771,6 @@
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     return needUpdateMessageList;
-}
-
-#pragma mark Memory management
-
-- (void)reclaimMemory:(uint64_t)memoryToReclaimKb {
-    if(memoryToReclaimKb == 0)
-        return;
-
-    uint64_t reclaimedMemory = 0;
-    NSUInteger reclaimedMessagesCount = 0;
-    Boolean stop = NO;
-
-    NSUInteger threadsCount = [_messageStorage messageThreadsCount];
-    for(NSUInteger i = threadsCount; !stop && i > 0; i--) {
-        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:(i-1)];
-        NSArray *messages = [thread messagesSortedByDate];
-        
-        for(NSUInteger j = messages.count; j > 0; j--) {
-            SMMessage *message = messages[j-1];
-            
-            if(![message isKindOfClass:[SMOutgoingMessage class]]) {
-                if([message hasData] && message.messageSize > 0) {
-                    reclaimedMessagesCount++;
-                    reclaimedMemory += message.messageSize;
-
-                    [message reclaimData];
-                    
-                    if(reclaimedMemory / 1024 >= memoryToReclaimKb) {
-                        stop = YES;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    NSAssert(_totalMemory >= reclaimedMemory, @"_totalMemory %llu < reclaimedMemory %llu", _totalMemory, reclaimedMemory);
-    
-    _totalMemory -= reclaimedMemory;
-
-    SM_LOG_DEBUG(@"total reclaimed %llu Kb in %lu messages, %llu Kb left in folder %@", reclaimedMemory / 1024 ,reclaimedMessagesCount, _totalMemory / 1024, _localName);
-}
-
-- (void)recalculateTotalMemorySize {
-    _totalMemory = 0;
-
-    NSUInteger threadsCount = [_messageStorage messageThreadsCount];
-    for(NSUInteger i = 0; i < threadsCount; i++) {
-        SMMessageThread *thread = [_messageStorage messageThreadAtIndexByDate:i];
-
-        for(SMMessage *message in [thread messagesSortedByDate]) {
-            if([message hasData]) {
-                _totalMemory += message.messageSize;
-            }
-        }
-    }
-
-    SM_LOG_DEBUG(@"total memory %llu Kb in folder %@", _totalMemory / 1024, _localName);
-}
-
-- (uint64_t)getTotalMemoryKb {
-    return _totalMemory / 1024;
 }
 
 @end

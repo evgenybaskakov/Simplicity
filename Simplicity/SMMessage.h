@@ -40,7 +40,6 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) NSArray *htmlInlineAttachments;
 @property (readonly) NSString *remoteFolder;
 @property (readonly) NSArray *labels;
-@property (readonly) Boolean reclaimed;
 @property (readonly) NSUInteger messageSize;
 @property (readonly) Boolean draft;
 
@@ -60,6 +59,5 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m;
 - (NSString*)localizedDate;
 - (BOOL)hasData;
-- (void)reclaimData;
 
 @end

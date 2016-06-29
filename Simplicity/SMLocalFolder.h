@@ -54,7 +54,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     @protected MCOIMAPFetchMessagesOperation *_fetchMessageHeadersOp;
     @protected NSMutableDictionary *_searchMessageThreadsOps;
     @protected NSMutableDictionary *_fetchedMessageHeaders;
-    @protected uint64_t _totalMemory;
     @protected BOOL _loadingFromDB;
     @protected BOOL _dbSyncInProgress;
     @protected NSUInteger _dbMessageThreadsLoadsCount;

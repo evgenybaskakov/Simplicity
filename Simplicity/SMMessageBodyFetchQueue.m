@@ -432,8 +432,6 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     SMMessage *message = [(SMMessageStorage*)localFolder.messageStorage setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody uid:uid threadId:threadId];
     
     if(message != nil) {
-        [localFolder increaseLocalFolderFootprint:message.messageSize];
-        
         [SMNotificationsController localNotifyMessageBodyFetched:localFolder uid:uid threadId:threadId account:(SMUserAccount*)localFolder.account];
     }
 }

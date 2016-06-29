@@ -59,14 +59,10 @@
         return;
     }
     
-    [[_account localFolderRegistry] keepFoldersMemoryLimit];
-    
     [self loadSelectedMessagesInternal];
 }
 
 - (void)loadSelectedMessages:(MCOIndexSet*)messageUIDs updateResults:(BOOL)updateResults {
-    [[_account localFolderRegistry] keepFoldersMemoryLimit];
-    
     if(updateResults) {
         BOOL loadingFinished = (_restOfSelectedMessageUIDsToLoadFromDB.count == 0 && _restOfSelectedMessageUIDsToLoadFromServer.count == 0);
 

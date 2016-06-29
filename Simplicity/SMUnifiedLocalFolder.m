@@ -94,10 +94,6 @@
     // Nothing to do 
 }
 
-- (void)increaseLocalFolderFootprint:(uint64_t)size {
-    // Nothing to do
-}
-
 - (void)startLocalFolderSync {
     for(SMLocalFolder *localFolder in _attachedLocalFolders) {
         [localFolder startLocalFolderSync];
@@ -183,15 +179,6 @@
     }
     
     return NO;
-}
-
-- (void)reclaimMemory:(uint64_t)memoryToReclaimKb {
-    // Nothing to do
-}
-
-- (uint64_t)getTotalMemoryKb {
-    // Nothing to do
-    return 0;
 }
 
 @end

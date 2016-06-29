@@ -32,9 +32,6 @@
 // increases local folder capacity and forces update
 - (void)increaseLocalFolderCapacity;
 
-// increases the memory amount implicitly occupied by this folder
-- (void)increaseLocalFolderFootprint:(uint64_t)size;
-
 // these two methods are used to sync the content of this folder
 // with the remote folder with the same name
 - (void)startLocalFolderSync;
@@ -77,13 +74,5 @@
 // starts asynchronous process of moving the messages from the selected message threads
 // to the chosen folder
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;
-
-// frees the occupied memory until the requested amount is reclaimed
-// or there is nothing to reclaim within this folder
-- (void)reclaimMemory:(uint64_t)memoryToReclaimKb;
-
-// returns the memory amount occupied by messages within this folder
-// that can be reclaimed upon request
-- (uint64_t)getTotalMemoryKb;
 
 @end

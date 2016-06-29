@@ -67,10 +67,6 @@
     return _plainTextBody;
 }
 
-- (void)reclaimData {
-    SM_FATAL(@"Cannot reclaim outgoig message");
-}
-
 - (void)setData:(NSData*)data parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments {
     SM_FATAL(@"Cannot set external data for outgoing message");
 }

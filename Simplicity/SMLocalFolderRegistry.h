@@ -23,6 +23,5 @@
 - (id<SMAbstractLocalFolder>)getLocalFolderByName:(NSString*)folderName;
 - (id<SMAbstractLocalFolder>)getLocalFolderByKind:(SMFolderKind)kind;
 - (void)removeLocalFolder:(NSString*)folderName;
-- (void)keepFoldersMemoryLimit;
 
 @end

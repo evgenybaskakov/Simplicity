@@ -211,12 +211,6 @@ static NSString *unquote(NSString *s) {
     return _imapMessage.uid;
 }
 
-- (void)reclaimData {
-    _reclaimed = YES;
-    _msgParser = nil;
-    _attachments = nil;
-}
-
 - (NSUInteger)messageSize {
     if(_msgParser != nil) {
         return _msgParser.data.length * 2;

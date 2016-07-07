@@ -106,7 +106,7 @@
     }
 }
 
-- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
+- (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
@@ -131,7 +131,7 @@
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
-- (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
+- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
     return NO;
 }

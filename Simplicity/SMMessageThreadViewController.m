@@ -40,7 +40,7 @@ static const CGFloat CELL_SPACING = -1;
 
 @interface SMMessageThreadViewController()
 - (void)messageBodyFetched:(NSNotification *)notification;
-- (void)updateMessageView:(uint32_t)uid threadId:(uint64_t)threadId;
+- (void)updateMessageView:(uint64_t)messageId threadId:(uint64_t)threadId;
 @end
 
 @implementation SMMessageThreadViewController {
@@ -125,7 +125,7 @@ static const CGFloat CELL_SPACING = -1;
         [messageListController fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
     }
     else {
-        [messageListController fetchMessageBodyUrgently:message.uid messageDate:message.date remoteFolder:[message remoteFolder] messageThread:_currentMessageThread];
+        [messageListController fetchMessageBodyUrgentlyWithUID:message.uid messageId:message.messageId messageDate:message.date remoteFolder:[message remoteFolder] messageThread:_currentMessageThread];
     }
     
     return messageThreadCellViewController;
@@ -226,7 +226,7 @@ static const CGFloat CELL_SPACING = -1;
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
 
-            [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+            [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
             
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
         }
@@ -481,7 +481,7 @@ static const CGFloat CELL_SPACING = -1;
     [self arrangeVisibleCells];
 }
 
-- (void)updateMessageView:(uint32_t)uid threadId:(uint64_t)threadId {
+- (void)updateMessageView:(uint64_t)messageId threadId:(uint64_t)threadId {
     if(_currentMessageThread == nil || _currentMessageThread.threadId != threadId)
         return;
     
@@ -490,21 +490,21 @@ static const CGFloat CELL_SPACING = -1;
         SMMessageThreadCell *cell = _cells[i];
         SMMessage *message = cell.message;
         
-        if(message.uid == uid) {
+        if(message.messageId == messageId) {
             SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
             [[appDelegate.currentAccount messageListController] fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
             
             [cell.viewController updateMessage];
             
             if(![cell.viewController loadMessageBody]) {
-                NSAssert(FALSE, @"message uid %u (thread id %lld) fetched with no body!!!", uid, threadId);
+                NSAssert(FALSE, @"message id %llu (thread id %lld) fetched with no body!!!", messageId, threadId);
             }
             
             return;
         }
     }
     
-    SM_LOG_DEBUG(@"message uid %u doesn't belong to thread id %lld", uid, threadId);
+    SM_LOG_DEBUG(@"message id %llu doesn't belong to thread id %lld", messageId, threadId);
 }
 
 #pragma mark Cells collapsing / uncollapsing
@@ -532,7 +532,7 @@ static const CGFloat CELL_SPACING = -1;
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
         
-        [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+        [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
         
         [self updateMessageThread];
         
@@ -675,22 +675,22 @@ static const CGFloat CELL_SPACING = -1;
 #pragma mark Processing incoming notifications
 
 - (void)messageBodyFetched:(NSNotification *)notification {
-    uint32_t uid;
+    uint64_t messageId;
     int64_t threadId;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil uid:&uid threadId:&threadId account:&account];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:nil messageId:&messageId threadId:&threadId account:&account];
     
     if(_currentMessageThread.account == account) {
-        [self updateMessageView:uid threadId:threadId];
+        [self updateMessageView:messageId threadId:threadId];
     }
 }
 
 - (void)messageViewFrameLoaded:(NSNotification *)notification {
-    uint32_t uid;
+    uint64_t messageId;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageViewFrameLoadedParams:notification uid:&uid account:&account];
+    [SMNotificationsController getMessageViewFrameLoadedParams:notification messageId:&messageId account:&account];
     
     if(account == _currentMessageThread.account) {
         // TODO: optimize by adding a NSUndexSet with uids
@@ -700,7 +700,7 @@ static const CGFloat CELL_SPACING = -1;
             // Logic: if the message whose html body is just loaded is contained in this
             // message thread, and it is uncollapsed, cell heights may need to be adjusted.
             // TODO: maybe skip real frames update, if this cell is invisible?
-            if(cell.message.uid == uid && !cell.viewController.collapsed) {
+            if(cell.message.messageId == messageId && !cell.viewController.collapsed) {
                 [self updateCellFrames];
                 break;
             }
@@ -927,7 +927,7 @@ static const CGFloat CELL_SPACING = -1;
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:!cell.message.unseen];
 
-    [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+    [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
     
     // If the message is being marked unseen, collapse its cell.
     // Then update the message thread and the message list views to reflect that.
@@ -970,7 +970,7 @@ static const CGFloat CELL_SPACING = -1;
     
     [appDelegate.messageThreadAccountProxy setMessageFlagged:_currentMessageThread message:cell.message flagged:(cell.message.flagged? NO : YES)];
     
-    [_currentMessageThread updateThreadAttributesFromMessageUID:cell.message.uid];
+    [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
     
     [self updateMessageThread];
     

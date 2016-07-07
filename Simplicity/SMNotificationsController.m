@@ -56,8 +56,8 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:uid], @"UID", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", nil]];
++ (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder messageId:(uint64_t)messageId threadId:(int64_t)threadId account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageBodyFetched" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithUnsignedInteger:messageId], @"messageId", [NSNumber numberWithUnsignedLongLong:threadId], @"ThreadId", account, @"Account", nil]];
 }
 
 + (void)localNotifyMessageBodyFetchQueueEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account {
@@ -84,8 +84,8 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageSent" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"MessageEditorViewController", account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageViewFrameLoaded:(uint32_t)uid account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageViewFrameLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:uid], @"UID", account, @"Account", nil]];
++ (void)localNotifyMessageViewFrameLoaded:(uint64_t)messageId account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageViewFrameLoaded" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedLongLong:messageId], @"messageId", account, @"Account", nil]];
 }
 
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController *)messageEditorViewController account:(SMUserAccount*)account {
@@ -149,7 +149,7 @@
     }
 }
 
-+ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId account:(SMUserAccount**)account {
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder messageId:(uint64_t*)messageId threadId:(int64_t*)threadId account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
@@ -160,8 +160,8 @@
         *threadId = [[messageInfo objectForKey:@"ThreadId"] unsignedLongLongValue];
     }
     
-    if(uid) {
-        *uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+    if(messageId) {
+        *messageId = [[messageInfo objectForKey:@"messageId"] unsignedLongLongValue];
     }
     
     if(account) {
@@ -217,11 +217,11 @@
     }
 }
 
-+ (void)getMessageViewFrameLoadedParams:(NSNotification *)notification uid:(uint32_t *)uid account:(SMUserAccount**)account {
++ (void)getMessageViewFrameLoadedParams:(NSNotification *)notification messageId:(uint64_t*)messageId account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
-    if(uid) {
-        *uid = [[messageInfo objectForKey:@"UID"] unsignedIntValue];
+    if(messageId) {
+        *messageId = [[messageInfo objectForKey:@"messageId"] unsignedLongLongValue];
     }
     
     if(account) {

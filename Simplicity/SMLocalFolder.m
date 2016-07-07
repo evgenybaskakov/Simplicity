@@ -205,8 +205,8 @@
     }
 }
 
-- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
-    [_messageBodyFetchQueue fetchMessageBody:uid messageDate:messageDate threadId:threadId urgent:YES tryLoadFromDatabase:YES remoteFolder:remoteFolderName localFolder:self];
+- (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
+    [_messageBodyFetchQueue fetchMessageBodyWithUID:uid messageId:messageId threadId:threadId messageDate:messageDate urgent:YES tryLoadFromDatabase:YES remoteFolder:remoteFolderName localFolder:self];
 }
 
 - (void)syncFetchMessageThreadsHeaders {
@@ -304,31 +304,31 @@
     }
 
     for(NSUInteger i = 0; i < mcoMessages.count; i++) {
-        MCOIMAPMessage *message = mcoMessages[i];
+        MCOIMAPMessage *mcoMessage = mcoMessages[i];
         NSString *plainTextBody = plainTextBodies[i];
         NSNumber *hasAttachmentsFlag = hasAttachmentsFlags[i];
         
-        if([messageThread getMessageByUID:message.uid] != nil) {
+        if([messageThread getMessageByMessageId:mcoMessage.gmailMessageID] != nil) {
             // Skip messages already present in this thread
             // See issue #110 (UID duplications in message threads)
             continue;
         }
         
-        SM_LOG_DEBUG(@"message from folder %@ with uid %u for message thread %llu loaded ok", remoteFolder, message.uid, threadId);
-        NSAssert(threadId == message.gmailThreadID, @"message thread ID %llu doesn't match the message thread ID %llu", threadId, message.gmailThreadID);
+        SM_LOG_DEBUG(@"message from folder %@ with id %llu for message thread %llu loaded ok", remoteFolder, mcoMessage.gmailMessageID, threadId);
+        NSAssert(threadId == mcoMessage.gmailThreadID, @"message thread ID %llu doesn't match the message thread ID %llu", threadId, mcoMessage.gmailThreadID);
         
         if(plainTextBody == nil) {
             plainTextBody = (NSString*)[NSNull null];
 
-            SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", message.uid, message.gmailMessageID, remoteFolder);
+            SM_LOG_DEBUG(@"fetching message body UID %u, gmailId %llu from [%@]", mcoMessage.uid, mcoMessage.gmailMessageID, remoteFolder);
 
             SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
             
             // TODO: revisit urgency; the user may be looking at this thread
-            [bodyFetchQueue fetchMessageBody:message.uid messageDate:[message.header date] threadId:threadId urgent:NO tryLoadFromDatabase:NO remoteFolder:remoteFolder localFolder:self];
+            [bodyFetchQueue fetchMessageBodyWithUID:mcoMessage.uid messageId:mcoMessage.gmailMessageID threadId:threadId messageDate:[mcoMessage.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:remoteFolder localFolder:self];
         }
         
-        [self updateMessages:@[message] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[hasAttachmentsFlag] remoteFolder:remoteFolder updateDatabase:NO newMessages:nil];
+        [self updateMessages:@[mcoMessage] plainTextBodies:@[plainTextBody] hasAttachmentsFlags:@[hasAttachmentsFlag] remoteFolder:remoteFolder updateDatabase:NO newMessages:nil];
     }
 }
 
@@ -447,7 +447,7 @@
                     MCOIMAPMessage *m = mcoMessages[i];
 
                     // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                    [bodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                    [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                 }
             }
         }]];
@@ -494,7 +494,7 @@
                         
                         for(MCOIMAPMessage *m in newMessages) {
                             // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                            [bodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                            [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                         }
                     });
                 });
@@ -684,7 +684,7 @@
             }
 
             // Cancel message body fetching.
-            [_messageBodyFetchQueue cancelBodyFetch:message.uid remoteFolder:_remoteFolderName localFolder:self];
+            [_messageBodyFetchQueue cancelBodyFetchWithUID:message.uid messageId:message.messageId remoteFolder:_remoteFolderName localFolder:self];
 
             // Delete the message from the local database as well.
             [[_account database] removeMessageFromDBFolder:message.uid folder:_remoteFolderName];
@@ -717,19 +717,19 @@
 }
 
 - (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName {
-    return [self moveMessage:message.uid threadId:messageThread.threadId useThreadId:(messageThread? YES : NO) toRemoteFolder:destRemoteFolderName];
+    return [self moveMessage:message.messageId uid:message.uid threadId:messageThread.threadId useThreadId:(messageThread? YES : NO) toRemoteFolder:destRemoteFolderName];
 }
 
-- (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
-    NSNumber *threadIdNum = [_messageStorage messageThreadByMessageUID:uid]; // TODO: use folder name along with UID!
+- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
+    NSNumber *threadIdNum = [_messageStorage messageThreadByMessageId:messageId];
 
     const uint64_t threadId = (threadIdNum != nil? [threadIdNum unsignedLongLongValue] : 0);
     const Boolean useThreadId = (threadIdNum != nil);
 
-    return [self moveMessage:uid threadId:threadId useThreadId:useThreadId toRemoteFolder:destRemoteFolderName];
+    return [self moveMessage:messageId uid:uid threadId:threadId useThreadId:useThreadId toRemoteFolder:destRemoteFolderName];
 }
 
-- (Boolean)moveMessage:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
+- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
 
     // Stop current message loading process.
@@ -759,7 +759,7 @@
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSetWithIndex:uid];
     
     // Cancel message body fetching.
-    [_messageBodyFetchQueue cancelBodyFetch:uid remoteFolder:_remoteFolderName localFolder:self];
+    [_messageBodyFetchQueue cancelBodyFetchWithUID:uid messageId:messageId remoteFolder:_remoteFolderName localFolder:self];
 
     // Delete the message from the local database.
     [[_account database] removeMessageFromDBFolder:uid folder:_remoteFolderName];

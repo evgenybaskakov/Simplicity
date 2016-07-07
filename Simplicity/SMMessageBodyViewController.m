@@ -54,6 +54,7 @@
     Boolean _currentFindStringMatchCase;
     NSString *_htmlText;
     uint32_t _uid;
+    uint64_t _messageId;
     NSString *_folder;
     Boolean _uncollapsed;
 }
@@ -116,14 +117,14 @@
     [[view mainFrame] loadHTMLString:_htmlText baseURL:nil];
 }
 
-- (void)setMessageHtmlText:(NSString*)htmlText uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account {
+- (void)setMessageHtmlText:(NSString*)htmlText messageId:(uint64_t)messageId folder:(NSString*)folder account:(SMUserAccount*)account {
     _account = account;
     
     WebView *view = (WebView*)[self view];
     [view stopLoading:self];
     
     _htmlText = htmlText;
-    _uid = uid;
+    _messageId = messageId;
     _folder = folder;
     
     if(_uncollapsed) {
@@ -241,7 +242,7 @@
         // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
         _contentHeight = [[[frame frameView] documentView] frame].size.height;
 
-        [SMNotificationsController localNotifyMessageViewFrameLoaded:_uid account:_account];
+        [SMNotificationsController localNotifyMessageViewFrameLoaded:_messageId account:_account];
     }
 }
 

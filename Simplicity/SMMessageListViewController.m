@@ -563,11 +563,11 @@
     }
 
     SMLocalFolder *localFolder;
-    uint32_t uid;
+    uint64_t messageId;
     int64_t threadId;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder uid:&uid threadId:&threadId account:&account];
+    [SMNotificationsController getMessageBodyFetchedParams:notification localFolder:&localFolder messageId:&messageId threadId:&threadId account:&account];
     
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         SMMessageThread *messageThread = nil;
@@ -586,7 +586,7 @@
         }
 
         if(messageThread != nil) {
-            if([messageThread updateThreadAttributesFromMessageUID:uid]) {
+            if([messageThread updateThreadAttributesForMessageId:messageId]) {
                 NSUInteger threadIndex = [currentFolder.messageStorage getMessageThreadIndexByDate:messageThread];
                 
                 if(threadIndex != NSNotFound) {
@@ -767,7 +767,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate.messageThreadAccountProxy setMessageFlagged:messageThread message:message flagged:YES];
     
-    [messageThread updateThreadAttributesFromMessageUID:message.uid];
+    [messageThread updateThreadAttributesForMessageId:message.messageId];
 }
 
 - (void)removeStarFromMessageThread:(SMMessageThread*)messageThread {
@@ -781,7 +781,7 @@
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [appDelegate.messageThreadAccountProxy setMessageFlagged:messageThread message:message flagged:NO];
         
-        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        [messageThread updateThreadAttributesForMessageId:message.messageId];
     }
 }
 
@@ -810,7 +810,7 @@
             SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
             [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:NO];
 
-            [messageThread updateThreadAttributesFromMessageUID:message.uid];
+            [messageThread updateThreadAttributesForMessageId:message.messageId];
         }
     }
     else {
@@ -822,7 +822,7 @@
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:!message.unseen];
 
-        [messageThread updateThreadAttributesFromMessageUID:message.uid];
+        [messageThread updateThreadAttributesForMessageId:message.messageId];
     }
     
     [[[appDelegate appController] messageThreadViewController] updateMessageThread];
@@ -974,7 +974,7 @@
                 SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
                 [appDelegate.messageThreadAccountProxy setMessageUnseen:messageThread message:message unseen:unseen];
                 
-                [messageThread updateThreadAttributesFromMessageUID:message.uid];
+                [messageThread updateThreadAttributesForMessageId:message.messageId];
             }
         }
         else {

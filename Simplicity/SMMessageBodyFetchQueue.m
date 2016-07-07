@@ -27,6 +27,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;
+@property (readonly) uint64_t messageId;
 @property (readonly) uint64_t threadId;
 @property (readonly) NSDate *messageDate;
 @property (readonly) NSString *remoteFolder;
@@ -39,17 +40,18 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 @property (readonly) unsigned int bytesTotal;
 @property MCOIMAPFetchContentOperation *remoteOp;
 @property SMDatabaseOp *dbOp;
-- (id)initWithUID:(uint32_t)uid threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder urgent:(BOOL)urgent;
+- (id)initWithUID:(uint32_t)uid messageId:(uint64_t)messageId threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder urgent:(BOOL)urgent;
 - (void)newAttempt;
 - (void)cancel;
 @end
 
 @implementation FetchOpDesc
 
-- (id)initWithUID:(uint32_t)uid threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder urgent:(BOOL)urgent {
+- (id)initWithUID:(uint32_t)uid messageId:(uint64_t)messageId threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder urgent:(BOOL)urgent {
     self = [super init];
     if(self) {
         _uid = uid;
+        _messageId = messageId;
         _threadId = threadId;
         _messageDate = messageDate;
         _remoteFolder = remoteFolder;
@@ -166,7 +168,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     }
 }
 
-- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
+- (void)fetchMessageBodyWithUID:(uint32_t)uid messageId:(uint64_t)messageId threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
     SM_LOG_DEBUG(@"uid %u, remote folder %@, threadId %llu, urgent %s", uid, remoteFolder, threadId, urgent? "YES" : "NO");
     
     NSAssert([(NSObject*)localFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"bad local folder message storage type");
@@ -181,7 +183,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         return;
     }
     
-    FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid threadId:threadId messageDate:messageDate remoteFolder:remoteFolder localFolder:localFolder urgent:urgent];
+    FetchOpDesc *opDesc = [[FetchOpDesc alloc] initWithUID:uid messageId:messageId threadId:threadId messageDate:messageDate remoteFolder:remoteFolder localFolder:localFolder urgent:urgent];
     
     [self addFetchOp:opDesc];
 
@@ -252,12 +254,12 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                 SM_LOG_DEBUG(@"Message header with UID %u (remote folder '%@') was found in the database; body will be loaded from server", opDesc.uid, opDesc.remoteFolder);
                 
                 // Re-try, this time load from the server.
-                [self fetchMessageBody:opDesc.uid messageDate:opDesc.messageDate threadId:opDesc.threadId urgent:opDesc.urgent tryLoadFromDatabase:NO remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder];
+                [self fetchMessageBodyWithUID:opDesc.uid messageId:opDesc.messageId threadId:opDesc.threadId messageDate:opDesc.messageDate urgent:opDesc.urgent tryLoadFromDatabase:NO remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder];
             }
             else {
                 BOOL hasAttachments = (attachments.count > 0);
                 
-                [self loadMessageBody:opDesc.uid threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
+                [self loadMessageBodyWithMessageId:opDesc.messageId threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
             }
         }
         else {
@@ -397,7 +399,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                         loadedAttachments = attachments;
                     }
                     
-                    [self loadMessageBody:op.uid threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
+                    [self loadMessageBodyWithMessageId:op.messageId threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
                 });
             });
         }
@@ -427,16 +429,16 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     }];
 }
 
-- (void)loadMessageBody:(uint32_t)uid threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody localFolder:(SMLocalFolder*)localFolder {
+- (void)loadMessageBodyWithMessageId:(uint64_t)messageId threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody localFolder:(SMLocalFolder*)localFolder {
     NSAssert([(NSObject*)localFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"bad local folder message storage type");
-    SMMessage *message = [(SMMessageStorage*)localFolder.messageStorage setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody uid:uid threadId:threadId];
+    SMMessage *message = [(SMMessageStorage*)localFolder.messageStorage setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId threadId:threadId];
     
     if(message != nil) {
-        [SMNotificationsController localNotifyMessageBodyFetched:localFolder uid:uid threadId:threadId account:(SMUserAccount*)localFolder.account];
+        [SMNotificationsController localNotifyMessageBodyFetched:localFolder messageId:messageId threadId:threadId account:(SMUserAccount*)localFolder.account];
     }
 }
 
-- (void)cancelBodyFetch:(uint32_t)uid remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder *)localFolder {
+- (void)cancelBodyFetchWithUID:(uint32_t)uid messageId:(uint64_t)messageId remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder {
     FetchOpDesc *opDesc = [self getFetchOp:uid remoteFolder:remoteFolder localFolder:localFolder];
     if(opDesc) {
         [opDesc cancel];

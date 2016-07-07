@@ -196,7 +196,9 @@
     
     SMMessageListController *messageListController = [account messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
-    
+
+    SM_FATAL(@"TODO");
+/*
     if([draftsLocalFolder moveMessage:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 
@@ -220,6 +222,7 @@
             }
         }
     }
+*/
     
     _saveDraftUID = 0;
 }

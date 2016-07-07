@@ -15,8 +15,8 @@
 @interface SMMessageBodyFetchQueue : SMUserAccountDataObject
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (void)fetchMessageBody:(uint32_t)uid messageDate:(NSDate*)messageDate threadId:(uint64_t)threadId urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
-- (void)cancelBodyFetch:(uint32_t)uid remoteFolder:(NSString*)remoteFolderName localFolder:(SMLocalFolder*)localFolder;
+- (void)fetchMessageBodyWithUID:(uint32_t)uid messageId:(uint64_t)messageId threadId:(uint64_t)threadId messageDate:(NSDate*)messageDate urgent:(BOOL)urgent tryLoadFromDatabase:(BOOL)tryLoadFromDatabase remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder;
+- (void)cancelBodyFetchWithUID:(uint32_t)uid messageId:(uint64_t)messageId remoteFolder:(NSString*)remoteFolder localFolder:(SMLocalFolder*)localFolder;
 - (void)pauseBodyFetchQueue;
 - (void)resumeBodyFetchQueue;
 - (void)stopBodyFetchQueue;

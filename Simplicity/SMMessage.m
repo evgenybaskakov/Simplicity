@@ -207,6 +207,10 @@ static NSString *unquote(NSString *s) {
     return _msgParser.htmlInlineAttachments;
 }
 
+- (uint64_t)messageId {
+    return _imapMessage.gmailMessageID;
+}
+
 - (uint32_t)uid {
     return _imapMessage.uid;
 }

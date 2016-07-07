@@ -43,16 +43,16 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 - (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase;
 - (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase;
 
-- (void)deleteMessagesFromStorageByUIDs:(NSArray*)messageUIDs;
+- (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds;
 - (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
+- (Boolean)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
 
 // TODO: use folder name along with UID!!! See https://github.com/evgenybaskakov/Simplicity/issues/20.
 // TODO: return SMMessageThread*
-- (NSNumber*)messageThreadByMessageUID:(uint32_t)uid;
+- (NSNumber*)messageThreadByMessageId:(uint64_t)messageId;
 - (SMMessageThread*)messageThreadById:(uint64_t)threadId;
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid threadId:(uint64_t)threadId;
-- (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId;
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId;
+- (BOOL)messageHasData:(uint64_t)messageId threadId:(uint64_t)threadId;
 
 @end

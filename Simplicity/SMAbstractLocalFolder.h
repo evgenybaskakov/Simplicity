@@ -40,7 +40,7 @@
 - (void)stopLocalFolderSync:(BOOL)stopBodyLoading;
 
 // urgently fetches the body of the message specified by its UID
-- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
+- (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
 
 // tells whether there is message headers loading progress underway
 - (Boolean)messageHeadersAreBeingLoaded;
@@ -66,7 +66,7 @@
 - (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
 
 // initiates process of moving the given message to another (remote) folder
-- (Boolean)moveMessage:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName;
+- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName;
 
 // initiates process of moving the selected message to another (remote) folder
 - (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;

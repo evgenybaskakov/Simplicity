@@ -111,12 +111,12 @@
     // Update thread id map.
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:messageThread.threadId];
     for(SMMessage *m in messageThread.messagesSortedByDate) {
-        [_messagesThreadsMap setObject:threadIdNum forKey:[NSNumber numberWithUnsignedInt:m.uid]];
+        [_messagesThreadsMap setObject:threadIdNum forKey:[NSNumber numberWithUnsignedLongLong:m.messageId]];
     }
 }
 
-- (NSNumber*)messageThreadByMessageUID:(uint32_t)uid {
-    return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedInt:uid]];
+- (NSNumber*)messageThreadByMessageId:(uint64_t)messageId {
+    return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedLongLong:messageId]];
 }
 
 - (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
@@ -125,7 +125,7 @@
             (*unseenMessagesCount)--;
         }
 
-        [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:m.uid]];
+        [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedLongLong:m.messageId]];
     }
 
     [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageThread.threadId]];
@@ -135,19 +135,19 @@
     [_unifiedMessageStorage removeMessageThread:messageThread];
 }
 
-- (Boolean)deleteMessageFromStorage:(uint32_t)uid threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
-    [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedInt:uid]];
+- (Boolean)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+    [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageId]];
     
     SMMessageThread *messageThread = [self messageThreadById:threadId];
-    NSAssert(messageThread != nil, @"message thread not found for message uid %u, threadId %llu", uid, threadId);
-    NSAssert([messageThread getMessageByUID:uid] != nil, @"message uid %u not found in thread with threadId %llu", uid, threadId);
+    NSAssert(messageThread != nil, @"message thread not found for message id %llu, threadId %llu", messageId, threadId);
+    NSAssert([messageThread getMessageByMessageId:messageId] != nil, @"message id %llu not found in thread with threadId %llu", messageId, threadId);
 
     if(messageThread.messagesCount == 1) {
         [self deleteMessageThread:messageThread updateDatabase:YES unseenMessagesCount:unseenMessagesCount];
         return true;
     }
     else {
-        SMMessage *message = [messageThread getMessageByUID:uid];
+        SMMessage *message = [messageThread getMessageByMessageId:messageId];
         if(message != nil) {
             if(message.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
                 (*unseenMessagesCount)--;
@@ -158,7 +158,7 @@
         if(firstMessage == message) {
             NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread];
             
-            [messageThread removeMessageFromMessageThread:uid];
+            [messageThread removeMessageFromMessageThread:messageId];
             
             NSAssert(oldIndex != NSNotFound, @"message thread not found");
             [self insertMessageThreadByDate:messageThread oldIndex:oldIndex];
@@ -166,14 +166,14 @@
             return true;
         }
         else {
-            [messageThread removeMessageFromMessageThread:uid];
+            [messageThread removeMessageFromMessageThread:messageId];
             return false;
         }
     }
 }
 
-- (void)deleteMessagesFromStorageByUIDs:(NSArray*)messageUIDs {
-    [_messagesThreadsMap removeObjectsForKeys:messageUIDs];
+- (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds {
+    [_messagesThreadsMap removeObjectsForKeys:messageIds];
 }
 
 - (void)startUpdate {
@@ -201,7 +201,7 @@
         
         NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
 
-        SM_LOG_DEBUG(@"looking for imap message with uid %u, gmailThreadId %llu", [imapMessage uid], [imapMessage gmailThreadID]);
+        SM_LOG_DEBUG(@"looking for imap message with id %llu, gmailThreadId %llu", [imapMessage gmailMessageID], [imapMessage gmailThreadID]);
 
         const uint64_t threadId = [imapMessage gmailThreadID];
         NSNumber *threadIdKey = [NSNumber numberWithUnsignedLongLong:threadId];
@@ -348,20 +348,20 @@
     [messageThread markAsUpdated];
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid threadId:(uint64_t)threadId {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId {
     SMMessageThread *thread = [_messageThreadCollection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
     
-    return [thread setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody uid:uid];
+    return [thread setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId];
 }
 
-- (BOOL)messageHasData:(uint32_t)uid threadId:(uint64_t)threadId {
+- (BOOL)messageHasData:(uint64_t)messageId threadId:(uint64_t)threadId {
     SMMessageThread *thread = [self messageThreadById:threadId];
     if(thread == nil) {
         SM_LOG_DEBUG(@"thread id %lld not found in local folder %@", threadId, _localFolder.localName);
         return NO;
     }
 
-    return [thread messageHasData:uid];
+    return [thread messageHasData:messageId];
 }
 
 - (SMMessageThread*)messageThreadAtIndexByDate:(NSUInteger)index {
@@ -396,7 +396,7 @@
     const SMThreadUpdateResult threadUpdateResult = [messageThread addMessage:message];
     
     if(threadUpdateResult == SMThreadUpdateResultNone) {
-        SM_LOG_INFO(@"Message uid %u, threadId %llu already exists in folder %@", message.uid, message.threadId, _localFolder.localName);
+        SM_LOG_INFO(@"Message id %llu, threadId %llu already exists in folder %@", message.messageId, message.threadId, _localFolder.localName);
         return FALSE;
     }
     
@@ -444,7 +444,7 @@
         }
     }
     else {
-        SM_LOG_ERROR(@"thread %llu not found when attempted to remove message uid %u", message.threadId, message.uid);
+        SM_LOG_ERROR(@"thread %llu not found when attempted to remove message id %llu", message.threadId, message.messageId);
     }
 }
 

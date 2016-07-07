@@ -23,14 +23,14 @@
 + (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSString*)error;
 + (void)localNotifyFolderListUpdated:(SMUserAccount*)account;
 + (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account;
-+ (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder uid:(uint32_t)uid threadId:(int64_t)threadId account:(SMUserAccount*)account;
++ (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder messageId:(uint64_t)messageId threadId:(int64_t)threadId account:(SMUserAccount*)account;
 + (void)localNotifyMessageBodyFetchQueueEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account;
 + (void)localNotifyMessageBodyFetchQueueNotEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account;
 + (void)localNotifyMessageFlagsUpdates:(SMLocalFolder*)localFolder account:(SMUserAccount*)account;
 + (void)localNotifyMessagesUpdated:(SMLocalFolder*)localFolder updateResult:(NSUInteger)updateResult account:(SMUserAccount*)account;
 + (void)localNotifyMessageSent:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account;
-+ (void)localNotifyMessageViewFrameLoaded:(uint32_t)uid account:(SMUserAccount*)account;
++ (void)localNotifyMessageViewFrameLoaded:(uint64_t)messageId account:(SMUserAccount*)account;
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
 
 + (void)localNotifyChangeMessageFlaggedFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
@@ -42,12 +42,12 @@
 
 + (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSString**)error account:(SMUserAccount**)account;
 + (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account;
-+ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder uid:(uint32_t*)uid threadId:(int64_t*)threadId account:(SMUserAccount**)account;
++ (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder messageId:(uint64_t*)messageId threadId:(int64_t*)threadId account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchQueueEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchQueueNotEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account;
 + (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account;
 + (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account;
-+ (void)getMessageViewFrameLoadedParams:(NSNotification*)notification uid:(uint32_t*)uid account:(SMUserAccount**)account;
++ (void)getMessageViewFrameLoadedParams:(NSNotification*)notification messageId:(uint64_t*)messageId account:(SMUserAccount**)account;
 + (void)getFolderListUpdatedParams:(NSNotification*)notification account:(SMUserAccount**)account;
 
 @end

@@ -253,7 +253,7 @@
             MCOIMAPMessage *m = mcoMessages[i];
             
             // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-            [_messageBodyFetchQueue fetchMessageBody:m.uid messageDate:[m.header date] threadId:m.gmailThreadID urgent:NO tryLoadFromDatabase:YES remoteFolder:_remoteFolderName localFolder:self];
+            [_messageBodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:YES remoteFolder:_remoteFolderName localFolder:self];
         }
     }
 }

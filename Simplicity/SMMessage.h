@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) NSString *subject;
 @property (readonly) NSDate *date;
 @property (readonly) uint32_t uid;
+@property (readonly) uint64_t messageId;
 @property (readonly) uint64_t threadId;
 @property (readonly) NSString *htmlBodyRendering;
 @property (readonly) NSArray *htmlInlineAttachments;

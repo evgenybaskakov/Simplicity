@@ -220,15 +220,15 @@
     }
 }
 
-- (void)fetchMessageBodyUrgently:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName messageThread:(SMMessageThread*)messageThread {
+- (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName messageThread:(SMMessageThread*)messageThread {
     SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, messageThread.threadId);
 
     if(_account.unified) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [appDelegate.messageThreadAccountProxy fetchMessageBodyUrgently:messageThread uid:uid messageDate:messageDate remoteFolder:remoteFolderName];
+        [appDelegate.messageThreadAccountProxy fetchMessageBodyUrgently:messageThread uid:uid messageId:messageId messageDate:messageDate remoteFolder:remoteFolderName];
     }
     else {
-        [_currentFolder fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
+        [_currentFolder fetchMessageBodyUrgentlyWithUID:uid messageId:messageId messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
     }
 }
 

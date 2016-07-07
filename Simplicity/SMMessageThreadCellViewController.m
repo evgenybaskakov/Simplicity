@@ -404,7 +404,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     SMMessageThread *messageThread = _messageThreadViewController.currentMessageThread;
     SMUserAccount *account = (SMUserAccount*)messageThread.account;
     
-    [_messageBodyViewController setMessageHtmlText:_htmlText uid:_message.uid folder:_message.remoteFolder account:account];
+    [_messageBodyViewController setMessageHtmlText:_htmlText messageId:_message.messageId folder:_message.remoteFolder account:account];
     
     if(_progressIndicator != nil) {
         [_progressIndicator stopAnimation:self];

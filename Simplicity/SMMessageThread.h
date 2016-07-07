@@ -34,7 +34,7 @@
 - (id)initWithThreadId:(uint64_t)threadId messageStorage:(SMMessageStorage*)messageStorage;
 
 - (NSArray*)messagesSortedByDate;
-- (SMMessage*)getMessageByUID:(uint32_t)uid; // TODO: this is not one-to-one correspondence, fix! (issue #110)
+- (SMMessage*)getMessageByMessageId:(uint64_t)messageId;
 
 typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
     SMThreadUpdateResultNone,
@@ -51,10 +51,9 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 
 - (void)cancelUpdate;
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid;
-- (Boolean)messageHasData:(uint32_t)uid;
-- (Boolean)updateThreadAttributesFromMessageUID:(uint32_t)uid;
-
-- (void)removeMessageFromMessageThread:(uint32_t)uid;
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId;
+- (Boolean)messageHasData:(uint64_t)messageId;
+- (Boolean)updateThreadAttributesForMessageId:(uint64_t)messageId;
+- (void)removeMessageFromMessageThread:(uint64_t)messageId;
 
 @end

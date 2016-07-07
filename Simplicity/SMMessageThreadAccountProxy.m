@@ -30,8 +30,8 @@
     return [[messageThread.account folderColorController] colorsForMessageThread:messageThread folder:folder labels:labels];
 }
 
-- (void)fetchMessageBodyUrgently:(SMMessageThread*)messageThread uid:(uint32_t)uid messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName {
-    [[messageThread.messageStorage localFolder] fetchMessageBodyUrgently:uid messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
+- (void)fetchMessageBodyUrgently:(SMMessageThread*)messageThread uid:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName {
+    [[messageThread.messageStorage localFolder] fetchMessageBodyUrgentlyWithUID:uid messageId:messageId messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
 }
 
 @end

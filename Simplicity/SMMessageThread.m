@@ -18,7 +18,7 @@
 
 @interface MessageCollection : NSObject
 @property NSMutableOrderedSet *messagesByDate;
-@property NSMutableOrderedSet *messagesByUID;
+@property NSMutableOrderedSet *messagesByMessageId;
 @property (readonly) NSUInteger count;
 @end
 
@@ -28,7 +28,7 @@
     self = [ super init ];
     
     if(self) {
-        _messagesByUID = [ NSMutableOrderedSet new ];
+        _messagesByMessageId = [ NSMutableOrderedSet new ];
         _messagesByDate = [ NSMutableOrderedSet new ];
     }
     
@@ -36,7 +36,7 @@
 }
 
 - (NSUInteger)count {
-    return [_messagesByUID count];
+    return [_messagesByMessageId count];
 }
 
 @end
@@ -110,16 +110,16 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
-    NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:message.uid];
-    NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByUID];
+    NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:message.messageId];
+    NSUInteger messageIndex = [_messageCollection.messagesByMessageId indexOfObject:messageIdNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByMessageId];
 
-    SMMessage *existingMessage = messageIndex < _messageCollection.messagesByUID.count? [_messageCollection.messagesByUID objectAtIndex:messageIndex] : nil;
-    if(existingMessage != nil && existingMessage.uid == message.uid && existingMessage.threadId == message.threadId) {
-        SM_LOG_INFO(@"Message storage already contains message uid %u, threadId %llu", message.uid, message.threadId);
+    SMMessage *existingMessage = messageIndex < _messageCollection.messagesByMessageId.count? [_messageCollection.messagesByMessageId objectAtIndex:messageIndex] : nil;
+    if(existingMessage != nil && existingMessage.messageId == message.messageId && existingMessage.threadId == message.threadId) {
+        SM_LOG_INFO(@"Message storage already contains message id %llu, threadId %llu", message.messageId, message.threadId);
         return SMThreadUpdateResultNone;
     }
     
-    [_messageCollection.messagesByUID insertObject:message atIndex:messageIndex];
+    [_messageCollection.messagesByMessageId insertObject:message atIndex:messageIndex];
     
     NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByDate];
     
@@ -133,7 +133,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 - (SMThreadUpdateResult)removeMessage:(SMMessage*)message {
     BOOL firstMessage = (_messageCollection.messagesByDate.firstObject == message);
     
-    [_messageCollection.messagesByUID removeObject:message];
+    [_messageCollection.messagesByMessageId removeObject:message];
     [_messageCollection.messagesByDate removeObject:message];
 
     // TODO: update message thread flags if not first message
@@ -141,14 +141,14 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return firstMessage? SMThreadUpdateResultStructureChanged : SMThreadUpdateResultFlagsChanged;
 }
 
-- (SMMessage*)getMessageByUID:(uint32_t)uid {
+- (SMMessage*)getMessageByMessageId:(uint64_t)messageId {
     SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
-    NSNumber *uidNumber = [NSNumber numberWithUnsignedInt:uid];
-    NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:uidNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:comparators.messagesComparatorByUID];
+    NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:messageId];
+    NSUInteger messageIndex = [_messageCollection.messagesByMessageId indexOfObject:messageIdNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:comparators.messagesComparatorByMessageId];
     
-    return messageIndex != NSNotFound? [_messageCollection.messagesByUID objectAtIndex:messageIndex] : nil;
+    return messageIndex != NSNotFound? [_messageCollection.messagesByMessageId objectAtIndex:messageIndex] : nil;
 }
 
 - (NSInteger)messagesCount {
@@ -159,13 +159,13 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return [[_messageCollection messagesByDate] array];
 }
 
-- (Boolean)updateThreadAttributesFromMessageUID:(uint32_t)uid {
-    SMMessage *message = [self getMessageByUID:uid];
+- (Boolean)updateThreadAttributesForMessageId:(uint64_t)messageId {
+    SMMessage *message = [self getMessageByMessageId:messageId];
     
     Boolean attributesChanged = NO;
     
     if(message != nil) {
-        NSAssert(message.uid == uid, @"bad message found");
+        NSAssert(message.messageId == messageId, @"bad message found");
         
         if(message.hasAttachments && ![self hasAttachments]) {
             _threadFlags |= ThreadFlagsHasAttachment;
@@ -173,7 +173,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         }
         else if(!message.hasAttachments && [self hasAttachments]) {
             Boolean attachmentFound = NO;
-            for(SMMessage *m in _messageCollection.messagesByUID) {
+            for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.hasAttachments) {
                     attachmentFound = YES;
                     break;
@@ -191,7 +191,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         }
         else if(!message.draft && [self hasDraft]) {
             Boolean draftFound = NO;
-            for(SMMessage *m in _messageCollection.messagesByUID) {
+            for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.draft) {
                     draftFound = YES;
                     break;
@@ -209,7 +209,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         }
         else if(!message.unseen && [self unseen]) {
             Boolean unseenFound = NO;
-            for(SMMessage *m in _messageCollection.messagesByUID) {
+            for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.unseen) {
                     unseenFound = YES;
                     break;
@@ -227,7 +227,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         }
         else if(!message.flagged && [self flagged]) {
             Boolean flaggedFound = NO;
-            for(SMMessage *m in _messageCollection.messagesByUID) {
+            for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.flagged) {
                     flaggedFound = YES;
                     break;
@@ -261,19 +261,19 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             }
         }
     } else {
-        SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
+        SM_LOG_DEBUG(@"message for id %llu not found in current threadId %llu", messageId, _threadId);
     }
 
     return attributesChanged;
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody uid:(uint32_t)uid {
-    SMMessage *message = [self getMessageByUID:uid];
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId {
+    SMMessage *message = [self getMessageByMessageId:messageId];
         
     if(message != nil) {
-        NSAssert(message.uid == uid, @"bad message found");
+        NSAssert(message.messageId == messageId, @"bad message found (message.messageId %llu, messageId %llu)", message.messageId, messageId);
         
-        SM_LOG_DEBUG(@"set message data for uid %u", uid);
+        SM_LOG_DEBUG(@"set message data for id %llu", messageId);
         
         if(parser != nil) {
             message.msgParser = parser;
@@ -291,24 +291,25 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             message.plainTextBody = plainTextBody;
         }
     } else {
-        SM_LOG_DEBUG(@"message for uid %u not found in current threadId %llu", uid, _threadId);
+        SM_LOG_DEBUG(@"message for id %llu not found in current threadId %llu", messageId, _threadId);
     }
     
     return message;
 }
 
-- (Boolean)messageHasData:(uint32_t)uid {
+- (Boolean)messageHasData:(uint64_t)messageId {
     Boolean hasData = NO;
-    SMMessage *message = [self getMessageByUID:uid];
+    SMMessage *message = [self getMessageByMessageId:messageId];
 
     if(message != nil) {
-        NSAssert(message.uid == uid, @"bad message found");
+        NSAssert(message.messageId == messageId, @"bad message found");
         
-        SM_LOG_DEBUG(@"set message data for uid %u", uid);
+        SM_LOG_DEBUG(@"set message data for id %llu", messageId);
         
         hasData = [ message hasData ];
-    } else {
-        SM_LOG_DEBUG(@"message for uid %u is not yet contained in thread %lld", uid, _threadId);
+    }
+    else {
+        SM_LOG_DEBUG(@"message for id %llu is not yet contained in thread %lld", messageId, _threadId);
     }
     
     return hasData;
@@ -344,14 +345,14 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
-    SM_LOG_DEBUG(@"looking for imap message with uid %u", [imapMessage uid]);
+    SM_LOG_DEBUG(@"looking for imap message with id %llu", imapMessage.gmailMessageID);
     
-    NSUInteger messageIndex = [_messageCollection.messagesByUID indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByImapMessage];
+    NSUInteger messageIndex = [_messageCollection.messagesByMessageId indexOfObject:imapMessage inSortedRange:NSMakeRange(0, [_messageCollection count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByImapMessage];
     
     if(messageIndex < [_messageCollection count]) {
-        SMMessage *message = [_messageCollection.messagesByUID objectAtIndex:messageIndex];
+        SMMessage *message = [_messageCollection.messagesByMessageId objectAtIndex:messageIndex];
         
-        if([message uid] == [imapMessage uid]) {
+        if(message.messageId == imapMessage.gmailMessageID) {
             if(plainTextBody != nil) {
                 message.plainTextBody = plainTextBody;
             }
@@ -390,7 +391,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     message.hasAttachments = hasAttachments;
     message.updateStatus = SMMessageUpdateStatus_New;
     
-    [_messageCollection.messagesByUID insertObject:message atIndex:messageIndex];
+    [_messageCollection.messagesByMessageId insertObject:message atIndex:messageIndex];
 
     // update the date sorted messages list
     NSUInteger messageIndexByDate = [_messageCollection.messagesByDate indexOfObject:message inSortedRange:NSMakeRange(0, [_messageCollection.messagesByDate count]) options:NSBinarySearchingInsertionIndex usingComparator:comparators.messagesComparatorByDate];
@@ -418,7 +419,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
     
     SMMessage *firstMessage = [_messageCollection.messagesByDate firstObject];
-    NSMutableArray *vanishedMessageUIDs = [NSMutableArray array];
+    NSMutableArray<NSNumber*> *vanishedMessageIds = [NSMutableArray array];
 
     _unseenMessagesCount = 0;
     
@@ -426,20 +427,20 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         NSMutableIndexSet *notUpdatedMessageIndices = [NSMutableIndexSet new];
         
         for(NSUInteger i = 0, count = [_messageCollection count]; i < count; i++) {
-            SMMessage *message = [_messageCollection.messagesByUID objectAtIndex:i];
+            SMMessage *message = [_messageCollection.messagesByMessageId objectAtIndex:i];
             
             if([self messageOutdated:message]) {
-                SM_LOG_DEBUG(@"thread %llu, message with uid %u vanished", _threadId, message.uid);
+                SM_LOG_DEBUG(@"thread %llu, message with id %llu vanished", _threadId, message.messageId);
 
                 [notUpdatedMessageIndices addIndex:i];
 
                 [vanishedMessages addObject:message];
-                [vanishedMessageUIDs addObject:[NSNumber numberWithUnsignedInt:message.uid]];
+                [vanishedMessageIds addObject:[NSNumber numberWithUnsignedLongLong:message.messageId]];
             }
         }
         
         // remove obsolete messages from the storage
-        [_messageCollection.messagesByUID removeObjectsAtIndexes:notUpdatedMessageIndices];
+        [_messageCollection.messagesByMessageId removeObjectsAtIndexes:notUpdatedMessageIndices];
         
         // remove obsolete messages from the date sorted messages list
         [notUpdatedMessageIndices removeAllIndexes];
@@ -461,13 +462,13 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
 
-    [_messageStorage deleteMessagesFromStorageByUIDs:vanishedMessageUIDs];
+    [_messageStorage deleteMessagesFromStorageByMessageIds:vanishedMessageIds];
     
     const ThreadFlags oldThreadFlags = _threadFlags;
     _threadFlags = ThreadFlagsNone;
 
     NSMutableOrderedSet *newLabels = [NSMutableOrderedSet new];
-    for(SMMessage *message in _messageCollection.messagesByUID) {
+    for(SMMessage *message in _messageCollection.messagesByMessageId) {
         [self updateThreadFlagsFromMessage:message];
         
         if(message.unseen) {
@@ -505,39 +506,39 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (void)cancelUpdate {
-    for(SMMessage *message in [_messageCollection messagesByUID]) {
+    for(SMMessage *message in [_messageCollection messagesByMessageId]) {
         message.updateStatus = SMMessageUpdateStatus_Unknown;
     }
 }
 
 - (void)markAsUpdated {
-    for(SMMessage *message in [_messageCollection messagesByUID]) {
+    for(SMMessage *message in [_messageCollection messagesByMessageId]) {
         message.updateStatus = SMMessageUpdateStatus_Persisted;
     }
 }
 
-- (void)removeMessageFromMessageThread:(uint32_t)uid {
-    NSMutableOrderedSet *messages = [_messageCollection messagesByUID];
-    for(NSUInteger i = 0, count = messages.count; i < count; i++) {
-        SMMessage *message = [messages objectAtIndex:i];
-        
-        if(message.uid == uid) {
-            [messages removeObjectAtIndex:i];
-            break;
-        }
-    }
+- (void)removeMessageFromMessageThread:(uint64_t)messageId {
+    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    SMMessageComparators *comparators = [appDelegate messageComparators];
 
-    messages = [_messageCollection messagesByDate];
-    for(NSUInteger i = 0, count = messages.count; i < count; i++) {
-        SMMessage *message = [messages objectAtIndex:i];
+    NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:messageId];
+    NSUInteger messageIndex = [_messageCollection.messagesByMessageId indexOfObject:messageIdNumber inSortedRange:NSMakeRange(0, [_messageCollection count]) options:0 usingComparator:comparators.messagesComparatorByMessageId];
+    
+    if(messageIndex != NSNotFound) {
+        [_messageCollection.messagesByMessageId removeObjectAtIndex:messageIndex];
+    }
+    
+    NSMutableOrderedSet *messagesByDate = [_messageCollection messagesByDate];
+    for(NSUInteger i = 0, count = messagesByDate.count; i < count; i++) {
+        SMMessage *message = [messagesByDate objectAtIndex:i];
         
-        if(message.uid == uid) {
-            [messages removeObjectAtIndex:i];
+        if(message.messageId == messageId) {
+            [messagesByDate removeObjectAtIndex:i];
             break;
         }
     }
     
-    NSAssert([_messageCollection messagesByUID].count == [_messageCollection messagesByDate].count, @"message storage inconsistency after removing a message");
+    NSAssert([_messageCollection messagesByMessageId].count == [_messageCollection messagesByDate].count, @"message storage inconsistency after removing a message");
 }
 
 @end

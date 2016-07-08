@@ -212,15 +212,11 @@
 - (void)syncFetchMessageThreadsHeaders {
     SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
 
-    id<SMMailbox> mailbox = [_account mailbox];
-    NSString *allMailFolder = [mailbox.allMailFolder fullName];
-    // TODO: load from Sent as well
-    
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
 
     BOOL updateDatabase = _loadingFromDB? NO : YES;
     
-    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail) {
+    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail || _kind == SMFolderKindSent) {
         [self finishHeadersSync:updateDatabase];
         return;
     }
@@ -229,6 +225,10 @@
         [self finishHeadersSync:updateDatabase];
         return;
     }
+    
+    id<SMMailbox> mailbox = [_account mailbox];
+    NSString *allMailFolder = [mailbox.allMailFolder fullName];
+    // TODO: load from Sent as well
     
     if(allMailFolder == nil) {
         SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");

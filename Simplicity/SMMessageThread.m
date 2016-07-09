@@ -414,7 +414,11 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return ![message isKindOfClass:[SMOutgoingMessage class]] && message.updateStatus == SMMessageUpdateStatus_Unknown;
 }
 
-- (SMThreadUpdateResult)endUpdate:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
+- (BOOL)messageVanished:(SMMessage*)message remoteFolder:(NSString*)remoteFolder {
+    return [self messageOutdated:message] && [message.remoteFolder isEqualToString:remoteFolder];
+}
+
+- (SMThreadUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
     NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
     
@@ -429,7 +433,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         for(NSUInteger i = 0, count = [_messageCollection count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messagesByMessageId objectAtIndex:i];
             
-            if([self messageOutdated:message]) {
+            if([self messageVanished:message remoteFolder:remoteFolder]) {
                 SM_LOG_DEBUG(@"thread %llu, message with id %llu vanished", _threadId, message.messageId);
 
                 [notUpdatedMessageIndices addIndex:i];
@@ -444,11 +448,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         // remove obsolete messages from the date sorted messages list
         [notUpdatedMessageIndices removeAllIndexes];
-        
         for(NSUInteger i = 0, count = [_messageCollection.messagesByDate count]; i < count; i++) {
             SMMessage *message = [_messageCollection.messagesByDate objectAtIndex:i];
             
-            if([self messageOutdated:message]) {
+            if([self messageVanished:message remoteFolder:remoteFolder]) {
                 [notUpdatedMessageIndices addIndex:i];
             }
         }

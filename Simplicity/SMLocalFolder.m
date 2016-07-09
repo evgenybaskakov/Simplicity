@@ -38,6 +38,7 @@
     NSUInteger _serverSyncCount;
     BOOL _hadMessages;
     BOOL _useProvidedUnseenMessagesCount;
+    BOOL _finishingFetch;
 }
 
 @synthesize kind = _kind;
@@ -177,6 +178,7 @@
 - (void)finishMessageHeadersFetching {
     BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
     
+    _finishingFetch = NO;
     _loadingFromDB = NO;
     _dbSyncInProgress = NO;
     _useProvidedUnseenMessagesCount = NO;
@@ -216,7 +218,7 @@
 
     BOOL updateDatabase = _loadingFromDB? NO : YES;
     
-    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail || _kind == SMFolderKindSent) {
+    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail || _kind == SMFolderKindSent || _kind == SMFolderKindSpam) {
         [self finishHeadersSync:updateDatabase];
         return;
     }
@@ -226,47 +228,6 @@
         return;
     }
     
-    id<SMMailbox> mailbox = [_account mailbox];
-    NSString *allMailFolder = [mailbox.allMailFolder fullName];
-    // TODO: load from Sent as well
-    
-    if(allMailFolder == nil) {
-        SM_LOG_ERROR(@"no all mail folder, no message threads will be constructed!");
-        
-        [self finishHeadersSync:updateDatabase];
-        return;
-    }
-
-    NSMutableSet *threadIds = [[NSMutableSet alloc] init];
-    
-    for(NSNumber *gmailMessageId in _fetchedMessageHeaders) {
-        MCOIMAPMessage *message = [_fetchedMessageHeaders objectForKey:gmailMessageId];
-        uint64_t threadId = message.gmailThreadID;
-        NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:threadId];
-
-        if([threadIds containsObject:threadIdNum])
-            continue;
-        
-        [threadIds addObject:threadIdNum];
-        
-        [_dbOps addObject:[[_account database] loadMessageHeadersForThreadIdFromDBFolder:allMailFolder threadId:threadId block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *plainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
-            [_dbOps removeObject:op];
-
-            [self loadMessageThread:threadId remoteFolder:allMailFolder mcoMessages:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
-            
-            NSAssert(_dbMessageThreadsLoadsCount > 0, @"bad _dbMessageThreadsLoadsCount");
-            _dbMessageThreadsLoadsCount--;
-            
-            if(_dbMessageThreadsLoadsCount == 0) {
-                // no more threads are loading, and no messages loaded from threads
-                // so stop loading headers now and start bodies fetching
-                [self finishHeadersSync:updateDatabase];
-            }
-        }]];
-        
-        _dbMessageThreadsLoadsCount++;
-    }
-
     if(_dbMessageThreadsLoadsCount == 0) {
         // no thread loading was started
         // so stop loading headers now and start bodies fetching
@@ -288,9 +249,8 @@
 }
 
 - (void)loadMessageThread:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder mcoMessages:(NSArray<MCOIMAPMessage*>*)mcoMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags {
-    if(mcoMessages.count <= 1) {
+    if(mcoMessages.count == 0) {
         // 0 means that there's no such thread in this remote folder at all
-        // 1 means that only the "root" message is present, which is already in the current local folder
         return;
     }
     
@@ -298,7 +258,7 @@
     
     SMMessageThread *messageThread = [_messageStorage messageThreadById:threadId];
     if(messageThread == nil) {
-        // It is possible that the user has a chance to delete something in the middle of loading from DB.
+        // It is possible that the user had a chance to delete something in the middle of loading from DB.
         SM_LOG_WARNING(@"message thread %llu not found in folder %@, although the first message is loaded", threadId, _remoteFolderName);
         return;
     }
@@ -310,7 +270,6 @@
         
         if([messageThread getMessageByMessageId:mcoMessage.gmailMessageID] != nil) {
             // Skip messages already present in this thread
-            // See issue #110 (UID duplications in message threads)
             continue;
         }
         
@@ -396,17 +355,17 @@
         _serverSyncCount++;
     }
     
-    BOOL finishFetch = YES;
+    _finishingFetch = YES;
     
     if(_totalMessagesCount == _messageHeadersFetched) {
         SM_LOG_DEBUG(@"all %lu message headers fetched, stopping", _totalMessagesCount);
     } else if(_messageHeadersFetched >= _maxMessagesPerThisFolder) {
         SM_LOG_DEBUG(@"fetched %lu message headers, stopping", _messageHeadersFetched);
     } else {
-        finishFetch = NO;
+        _finishingFetch = NO;
     }
     
-    if(finishFetch) {
+    if(_finishingFetch) {
         if(_fetchMessageHeadersOp != nil) {
             [_fetchMessageHeadersOp cancel];
             _fetchMessageHeadersOp = nil;
@@ -437,7 +396,14 @@
                 _messageHeadersFetched++;
             }
 
-            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:nil];
+            NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
+
+            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:newMessages];
+            
+            for(MCOIMAPMessage *m in newMessages) {
+                [self fetchMessageThreadForMessage:m updateDatabase:YES];
+            }
+
             [self syncFetchMessageHeaders];
 
             SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
@@ -466,7 +432,7 @@
 
         NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
         
-        _fetchMessageHeadersOp = [session fetchMessagesByNumberOperationWithFolder:_localName requestKind:messageHeadersRequestKind numbers:regionToFetch];
+        _fetchMessageHeadersOp = [session fetchMessagesByNumberOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind numbers:regionToFetch];
         
         _fetchMessageHeadersOp.urgent = YES;
         
@@ -488,6 +454,11 @@
                         NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
                         
                         [self updateMessageHeaders:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:newMessages];
+
+                        for(MCOIMAPMessage *m in newMessages) {
+                            [self fetchMessageThreadForMessage:m updateDatabase:YES];
+                        }
+
                         [self syncFetchMessageHeaders];
                         
                         SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
@@ -502,6 +473,36 @@
                 SM_LOG_ERROR(@"Error downloading messages list: %@", error);
             }
         }];
+    }
+}
+
+- (void)fetchMessageThreadForMessage:(MCOIMAPMessage*)mcoMessage updateDatabase:(BOOL)updateDatabase {
+    id<SMMailbox> mailbox = [_account mailbox];
+    
+    NSString *allMailFolder = [mailbox.allMailFolder fullName];
+    NSString *sentFolder = [mailbox.sentFolder fullName];
+    NSAssert(sentFolder != nil, @"no sent folder");
+    
+    NSArray<NSString*> *foldersToScan = (allMailFolder != nil? @[allMailFolder, sentFolder] : @[sentFolder]);
+    uint64_t threadId = mcoMessage.gmailThreadID;
+    
+    for(NSString *folderToScan in foldersToScan) {
+        [_dbOps addObject:[[_account database] loadMessageHeadersForThreadIdFromDBFolder:folderToScan threadId:threadId block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *plainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
+            [_dbOps removeObject:op];
+            
+            [self loadMessageThread:threadId remoteFolder:folderToScan mcoMessages:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
+            
+            NSAssert(_dbMessageThreadsLoadsCount > 0, @"bad _dbMessageThreadsLoadsCount");
+            _dbMessageThreadsLoadsCount--;
+            
+            if(_dbMessageThreadsLoadsCount == 0 && _finishingFetch) {
+                // no more threads are loading, and no messages loaded from threads
+                // so stop loading headers now and start bodies fetching
+                [self finishHeadersSync:updateDatabase];
+            }
+        }]];
+        
+        _dbMessageThreadsLoadsCount++;
     }
 }
 

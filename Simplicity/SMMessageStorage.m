@@ -288,7 +288,7 @@
         SMMessageThread *messageThread = [_messageThreadCollection.messageThreads objectForKey:threadId];
         NSUInteger oldIndex = [self getMessageThreadIndexByDate:messageThread];
 
-        SMThreadUpdateResult threadUpdateResult = [messageThread endUpdate:removeVanishedMessages vanishedMessages:vanishedMessages addNewUnseenMessages:newUnseenMessages];
+        SMThreadUpdateResult threadUpdateResult = [messageThread endUpdateWithRemoteFolder:remoteFolder removeVanishedMessages:removeVanishedMessages vanishedMessages:vanishedMessages addNewUnseenMessages:newUnseenMessages];
         
         if(threadUpdateResult == SMThreadUpdateResultStructureChanged) {
             NSAssert(oldIndex != NSNotFound, @"message thread not found");

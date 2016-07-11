@@ -211,6 +211,119 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     }];
 }
 
+- (void)printImapServerCapabilities:(MCOIndexSet*)capabilities {
+    SM_LOG_INFO(@"IMAP server capabilities:");
+    
+    if([capabilities containsIndex:MCOIMAPCapabilityACL]) {
+        SM_LOG_INFO(@"ACL supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityBinary]) {
+        SM_LOG_INFO(@"Binary supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityCatenate]) {
+        SM_LOG_INFO(@"Catenate supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityChildren]) {
+        SM_LOG_INFO(@"Children supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityCompressDeflate]) {
+        SM_LOG_INFO(@"CompressDeflate supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityCondstore]) {
+        SM_LOG_INFO(@"Condstore supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityEnable]) {
+        SM_LOG_INFO(@"Enable supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityIdle]) {
+        SM_LOG_INFO(@"Idle supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityId]) {
+        SM_LOG_INFO(@"Id supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityLiteralPlus]) {
+        SM_LOG_INFO(@"LiteralPlus supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityMove]) {
+        SM_LOG_INFO(@"Move supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityMultiAppend]) {
+        SM_LOG_INFO(@"MultiAppend supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityNamespace]) {
+        SM_LOG_INFO(@"Namespace supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityQResync]) {
+        SM_LOG_INFO(@"QResync supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityQuota]) {
+        SM_LOG_INFO(@"Quota supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilitySort]) {
+        SM_LOG_INFO(@"Sort supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityStartTLS]) {
+        SM_LOG_INFO(@"StartTLS supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityThreadOrderedSubject]) {
+        SM_LOG_INFO(@"ThreadOrderedSubject supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityThreadReferences]) {
+        SM_LOG_INFO(@"ThreadReferences supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityUIDPlus]) {
+        SM_LOG_INFO(@"UIDPlus supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityUnselect]) {
+        SM_LOG_INFO(@"Unselect supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityXList]) {
+        SM_LOG_INFO(@"XList supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthAnonymous]) {
+        SM_LOG_INFO(@"AuthAnonymous supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthCRAMMD5]) {
+        SM_LOG_INFO(@"AuthCRAMMD5 supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthDigestMD5]) {
+        SM_LOG_INFO(@"AuthDigestMD5 supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthExternal]) {
+        SM_LOG_INFO(@"AuthExternal supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthGSSAPI]) {
+        SM_LOG_INFO(@"AuthGSSAPI supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthKerberosV4]) {
+        SM_LOG_INFO(@"AuthKerberosV4 supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthLogin]) {
+        SM_LOG_INFO(@"AuthLogin supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthNTLM]) {
+        SM_LOG_INFO(@"AuthNTLM supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthOTP]) {
+        SM_LOG_INFO(@"AuthOTP supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthPlain]) {
+        SM_LOG_INFO(@"AuthPlain supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthSKey]) {
+        SM_LOG_INFO(@"AuthSKey supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityAuthSRP]) {
+        SM_LOG_INFO(@"AuthSRP supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityXOAuth2]) {
+        SM_LOG_INFO(@"XOAuth2 supported");
+    }
+    if([capabilities containsIndex:MCOIMAPCapabilityGmail]) {
+        SM_LOG_INFO(@"Gmail supported");
+    }
+}
+
 - (void)getIMAPServerCapabilities {
     NSAssert(_capabilitiesOp == nil, @"_capabilitiesOp is not nil");
     
@@ -224,7 +337,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             
             [_capabilitiesOp start:opBlock];
         } else {
-            SM_LOG_DEBUG(@"IMAP server capabilities: %@", capabilities);
+            [self printImapServerCapabilities:capabilities];
             
             SM_LOG_INFO(@"IMAP server folder concurrent access is %@, maximum %u connections allowed", _imapSession.allowsFolderConcurrentAccessEnabled? @"ENABLED" : @"DISABLED", _imapSession.maximumConnections);
             

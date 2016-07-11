@@ -218,11 +218,6 @@
 
     BOOL updateDatabase = _loadingFromDB? NO : YES;
     
-    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail || _kind == SMFolderKindSent || _kind == SMFolderKindSpam) {
-        [self finishHeadersSync:updateDatabase];
-        return;
-    }
-    
     if(_fetchedMessageHeaders.count == 0) {
         [self finishHeadersSync:updateDatabase];
         return;
@@ -348,6 +343,22 @@
     [self updateMessages:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags remoteFolder:_remoteFolderName updateDatabase:updateDatabase newMessages:newMessages];
 }
 
+- (void)syncNewMessages:(NSArray<MCOIMAPMessage*>*)mcoMessages mcoMessagePlainTextBodies:(NSArray<NSString*>*)mcoMessagePlainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>**)pNewMessages {
+    NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
+
+    [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:updateDatabase newMessages:newMessages];
+    
+    if(_kind == SMFolderKindDrafts || _kind == SMFolderKindOutbox || _kind == SMFolderKindAllMail || _kind == SMFolderKindSent || _kind == SMFolderKindSpam) {
+        for(MCOIMAPMessage *m in newMessages) {
+            [self fetchMessageThreadForMessage:m updateDatabase:updateDatabase];
+        }
+    }
+    
+    [self syncFetchMessageHeaders];
+    
+    *pNewMessages = newMessages;
+}
+
 - (void)syncFetchMessageHeaders {
     NSAssert(_messageHeadersFetched <= _totalMessagesCount, @"invalid messageHeadersFetched");
     
@@ -396,15 +407,8 @@
                 _messageHeadersFetched++;
             }
 
-            NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
-
-            [self updateMessageHeaders:mcoMessages plainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:newMessages];
-            
-            for(MCOIMAPMessage *m in newMessages) {
-                [self fetchMessageThreadForMessage:m updateDatabase:YES];
-            }
-
-            [self syncFetchMessageHeaders];
+            NSArray<MCOIMAPMessage*> *newMessages;
+            [self syncNewMessages:mcoMessages mcoMessagePlainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:&newMessages];
 
             SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
             
@@ -451,15 +455,8 @@
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        NSMutableArray<MCOIMAPMessage*> *newMessages = [NSMutableArray array];
-                        
-                        [self updateMessageHeaders:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:newMessages];
-
-                        for(MCOIMAPMessage *m in newMessages) {
-                            [self fetchMessageThreadForMessage:m updateDatabase:YES];
-                        }
-
-                        [self syncFetchMessageHeaders];
+                        NSArray<MCOIMAPMessage*> *newMessages;
+                        [self syncNewMessages:sortedMessages mcoMessagePlainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:&newMessages];
                         
                         SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
                         

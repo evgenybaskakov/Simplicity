@@ -46,6 +46,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 @implementation SMUserAccount {
     SMPreferencesController __weak *_preferencesController;
     MCOIMAPCapabilityOperation *_capabilitiesOp;
+    MCOIMAPIdleOperation *_idleOp;
 }
 
 @synthesize unified = _unified;
@@ -343,10 +344,33 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             
             _imapServerCapabilities = capabilities;
             _capabilitiesOp = nil;
+
+            [self startIdle];
         }
     };
     
     [_capabilitiesOp start:opBlock];
+}
+
+- (void)startIdle {
+    NSAssert(_idleOp == nil, @"_idleOp is not nil");
+    
+    _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
+    
+    void (^opBlock)(NSError *) = nil;
+    
+    opBlock = ^(NSError *error) {
+        if(error && error.code != MCOErrorNone) {
+            SM_LOG_ERROR(@"IDLE operation error: %@", error);
+        }
+        else {
+            SM_LOG_INFO(@"IDLE operation triggers for INBOX");
+        }
+        
+        [_idleOp start:opBlock];
+    };
+    
+    [_idleOp start:opBlock];
 }
 
 - (void)fetchMessageInlineAttachments:(SMMessage *)message {

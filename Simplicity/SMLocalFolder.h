@@ -17,7 +17,8 @@
 // TODO: move to advanced settings
 static const NSUInteger DEFAULT_MAX_MESSAGES_PER_FOLDER = 500000;
 static const NSUInteger INCREASE_MESSAGES_PER_FOLDER = 50;
-static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE = 200;
+static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_SERVER = 200;
+static const NSUInteger MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_DB = 2000;
 static const NSUInteger OPERATION_UPDATE_TIMEOUT_SEC = 30;
 static const NSUInteger MAX_NEW_MESSAGE_NOTIFICATIONS = 5;
 

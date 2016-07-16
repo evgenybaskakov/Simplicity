@@ -153,7 +153,7 @@
     for(unsigned int i = [restOfMessages rangesCount]; i > 0; i--) {
         const MCORange currentRange = ranges[i-1];
         const NSUInteger len = MCORangeRightBound(currentRange) - MCORangeLeftBound(currentRange) + 1;
-        const NSUInteger maxCountToLoad = MESSAGE_HEADERS_TO_FETCH_AT_ONCE - messageUIDsToLoadNow.count;
+        const NSUInteger maxCountToLoad = (loadFromDB? MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_DB : MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_SERVER) - messageUIDsToLoadNow.count;
         
         if(len < maxCountToLoad) {
             [messageUIDsToLoadNow addRange:currentRange];

@@ -392,12 +392,10 @@
     }
     
     if(_loadingFromDB) {
-        const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
+        const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_DB);
 
         [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray<SMOutgoingMessage*> *outgoingMessages, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *mcoMessagePlainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
             [_dbOps removeObject:op];
-            
-            SM_LOG_INFO(@"outgoing messages loaded: %lu, messages loaded: %lu", outgoingMessages.count, mcoMessages.count);
             
             NSAssert(mcoMessagePlainTextBodies == nil || mcoMessagePlainTextBodies.count == mcoMessages.count, @"mcoMessagePlainTextBodies.count %lu, mcoMessages.count %lu", mcoMessagePlainTextBodies.count, mcoMessages.count);
 
@@ -420,11 +418,14 @@
                     [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
                 }
             }
+
+            SM_LOG_INFO(@"folder %@, outgoing messages loaded: %lu, messages loaded: %lu, headers fetched: %lu", _localName, outgoingMessages.count, mcoMessages.count, _messageHeadersFetched);
+            
         }]];
     }
     else {
         const NSUInteger restOfMessages = _totalMessagesCount - _messageHeadersFetched;
-        const NSUInteger numberOfMessagesToFetch = MIN(restOfMessages, MESSAGE_HEADERS_TO_FETCH_AT_ONCE);
+        const NSUInteger numberOfMessagesToFetch = MIN(restOfMessages, MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_SERVER);
         const NSUInteger fetchMessagesFromIndex = restOfMessages - numberOfMessagesToFetch + 1;
         
         MCOIndexSet *regionToFetch = [MCOIndexSet indexSetWithRange:MCORangeMake(fetchMessagesFromIndex, numberOfMessagesToFetch - 1)];
@@ -474,20 +475,34 @@
 }
 
 - (void)fetchMessageThreadForMessage:(MCOIMAPMessage*)mcoMessage updateDatabase:(BOOL)updateDatabase {
+    uint64_t threadId = mcoMessage.gmailThreadID;
+    uint64_t messageId = mcoMessage.gmailMessageID;
+
     id<SMMailbox> mailbox = [_account mailbox];
     
     NSString *allMailFolder = [mailbox.allMailFolder fullName];
+    SMLocalFolder *allMailLocalFolder = allMailFolder? (SMLocalFolder*)[_account.localFolderRegistry getLocalFolderByName:allMailFolder] : (SMLocalFolder*)[NSNull null];
+    
     NSString *sentFolder = [mailbox.sentFolder fullName];
-    NSAssert(sentFolder != nil, @"no sent folder");
+    SMLocalFolder *sentLocalFolder = sentFolder? (SMLocalFolder*)[_account.localFolderRegistry getLocalFolderByName:sentFolder] : (SMLocalFolder*)[NSNull null];
     
-    NSArray<NSString*> *foldersToScan = (allMailFolder != nil? @[allMailFolder, sentFolder] : @[sentFolder]);
-    uint64_t threadId = mcoMessage.gmailThreadID;
-    
-    for(NSString *folderToScan in foldersToScan) {
-        [_dbOps addObject:[[_account database] loadMessageHeadersForThreadIdFromDBFolder:folderToScan threadId:threadId block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *plainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
+    for(SMLocalFolder *folderToScan in @[allMailLocalFolder, sentLocalFolder]) {
+        if(folderToScan == (SMLocalFolder*)[NSNull null]) {
+            continue;
+        }
+        
+        // TODO: accessing a local folder in process of updating doesn't look safe
+        SMMessageThread *messageThread = [(SMMessageStorage*)folderToScan.messageStorage messageThreadById:threadId];
+        
+        if(messageThread == nil || (messageThread.messagesCount == 1 && [messageThread getMessageByMessageId:messageId] != nil)) {
+            continue;
+        }
+
+        NSString *remoteFolderName = folderToScan.remoteFolderName;
+        [_dbOps addObject:[[_account database] loadMessageHeadersForThreadIdFromDBFolder:remoteFolderName threadId:threadId block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *plainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
             [_dbOps removeObject:op];
             
-            [self loadMessageThread:threadId remoteFolder:folderToScan mcoMessages:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
+            [self loadMessageThread:threadId remoteFolder:remoteFolderName mcoMessages:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags];
             
             NSAssert(_dbMessageThreadsLoadsCount > 0, @"bad _dbMessageThreadsLoadsCount");
             _dbMessageThreadsLoadsCount--;

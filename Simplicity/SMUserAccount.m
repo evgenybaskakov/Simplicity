@@ -355,8 +355,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 - (void)startIdle {
     NSAssert(_idleOp == nil, @"_idleOp is not nil");
     
-    _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
-    
     void (^opBlock)(NSError *) = nil;
     
     opBlock = ^(NSError *error) {
@@ -367,9 +365,11 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             SM_LOG_INFO(@"IDLE operation triggers for INBOX");
         }
         
+        _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
         [_idleOp start:opBlock];
     };
     
+    _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
     [_idleOp start:opBlock];
 }
 

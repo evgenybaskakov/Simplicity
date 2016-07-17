@@ -261,7 +261,10 @@
 }
 
 - (NSArray*)alwaysSyncedFolders {
-    return @[_inboxFolder, _draftsFolder, _sentFolder, _trashFolder, _spamFolder, _starredFolder, _importantFolder, _allMailFolder];
+    // TODO: this is dangerous because it may not fit the available
+    //       connections, which will result in the current folder
+    //       long update times and/or repeating timeouts
+    return @[_inboxFolder/*, _draftsFolder, _sentFolder, _trashFolder, _spamFolder, _starredFolder, _importantFolder, _allMailFolder*/];
 }
 
 - (SMFolder*)getFolderByName:(NSString*)folderName {

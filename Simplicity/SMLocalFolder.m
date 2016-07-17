@@ -117,7 +117,9 @@
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
         return;
     }
-    
+
+    SM_LOG_INFO(@"Local folder %@ is syncing", _localName);
+
     NSAssert(_dbOps.count == 0, @"db ops still pending");
 
     _messageHeadersFetched = 0;
@@ -158,6 +160,8 @@
                 [self syncFetchMessageHeaders];
             } else {
                 SM_LOG_ERROR(@"Error fetching folder %@ info: %@", _localName, error);
+
+                [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error.localizedDescription];
             }
         }];
     }
@@ -212,8 +216,6 @@
 }
 
 - (void)syncFetchMessageThreadsHeaders {
-    SM_LOG_DEBUG(@"fetching %lu threads", _fetchedMessageHeaders.count);
-
     NSAssert(_searchMessageThreadsOps.count == 0, @"_searchMessageThreadsOps not empty");
 
     BOOL updateDatabase = _loadingFromDB? NO : YES;
@@ -227,7 +229,10 @@
         // no thread loading was started
         // so stop loading headers now and start bodies fetching
         [self finishHeadersSync:updateDatabase];
+        return;
     }
+    
+    SM_LOG_INFO(@"folder %@ waiting for message thread headers sync", _localName);
 }
 
 - (void)markMessageThreadAsUpdated:(NSNumber*)threadId {
@@ -297,6 +302,8 @@
 }
 
 - (void)finishHeadersSync:(Boolean)updateDatabase {
+    SM_LOG_INFO(@"folder %@ is finishing syncing", _localName);
+
     // When the update ends, push a system notification if these conditions are met:
     // 1. It's an update from the server;
     // 2. The folder is the INBOX (TODO: make configurable);
@@ -475,7 +482,13 @@
 }
 
 - (void)fetchMessageThreadForMessage:(MCOIMAPMessage*)mcoMessage updateDatabase:(BOOL)updateDatabase {
-    uint64_t threadId = mcoMessage.gmailThreadID;
+/*
+ 
+ 
+ TODO
+ 
+ 
+ uint64_t threadId = mcoMessage.gmailThreadID;
     uint64_t messageId = mcoMessage.gmailMessageID;
 
     id<SMMailbox> mailbox = [_account mailbox];
@@ -516,6 +529,7 @@
         
         _dbMessageThreadsLoadsCount++;
     }
+*/
 }
 
 - (Boolean)messageHeadersAreBeingLoaded {

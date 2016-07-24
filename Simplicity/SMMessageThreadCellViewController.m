@@ -53,6 +53,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         _view.drawTop = YES;
         _view.leftTopInset = 31;
         _view.boxColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
+        _view.fillColor = [NSColor whiteColor];
+        _view.mouseInColor = [NSColor colorWithCalibratedWhite:0.95 alpha:1];
         _view.translatesAutoresizingMaskIntoConstraints = NO;
 
         // init header button
@@ -191,6 +193,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
 //        _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
         _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
+        _view.trackMouse = YES;
         
         [self hideProgressIndicator];
         
@@ -251,6 +254,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         _view.fillColor = [NSColor whiteColor];
         _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
+        _view.trackMouse = NO;
 
         [_messageDetailsViewController uncollapse];
         [_messageBodyViewController uncollapse];

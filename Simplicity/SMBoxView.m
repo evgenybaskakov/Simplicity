@@ -8,10 +8,14 @@
 
 #import "SMBoxView.h"
 
-@implementation SMBoxView
+@implementation SMBoxView {
+    NSTrackingArea *_trackingArea;
+    NSColor *_currentFillColor;
+}
 
 - (void)setFillColor:(NSColor*)fillColor {
     _fillColor = fillColor;
+    _currentFillColor = _fillColor;
     [self setNeedsDisplay:YES];
 }
 
@@ -20,12 +24,12 @@
     [self setNeedsDisplay:YES];
 }
 
-- (void)setDrawTop:(Boolean)drawTop {
+- (void)setDrawTop:(BOOL)drawTop {
     _drawTop = drawTop;
     [self setNeedsDisplay:YES];
 }
 
-- (void)setDrawBotton:(Boolean)drawBottom {
+- (void)setDrawBotton:(BOOL)drawBottom {
     _drawBottom = drawBottom;
     [self setNeedsDisplay:YES];
 }
@@ -40,15 +44,22 @@
     [self setNeedsDisplay:YES];
 }
 
+- (void)setTrackMouse:(BOOL)trackMouse {
+    _trackMouse = trackMouse;
+    
+    [self setNeedsDisplay:YES];
+    [self updateTrackingAreas];
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
-    if(_fillColor != nil) {
-        [_fillColor setFill];
+    if(_currentFillColor != nil) {
+        [_currentFillColor setFill];
         NSRectFill(dirtyRect);
     }
 
-    if(_boxColor != nil) {
+    if(_boxColor != nil && _currentFillColor != _mouseInColor) {
         NSRect b = self.bounds;
     
         if(_drawTop) {
@@ -60,6 +71,39 @@
             [_boxColor set];
             NSRectFill(NSMakeRect(NSMinX(b) + _leftBottomInset, NSMinY(b), NSWidth(b), 1));
         }
+    }
+}
+
+#pragma mark Tracking
+
+- (void)updateTrackingAreas {
+    [super updateTrackingAreas];
+    
+    if(_trackingArea != nil) {
+        [self removeTrackingArea:_trackingArea];
+    }
+    
+    if(_trackMouse) {
+        _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited owner:self userInfo:nil];
+        
+        [self addTrackingArea:_trackingArea];
+    }
+    else {
+        _trackingArea = nil;
+    }
+}
+
+- (void)mouseEntered:(NSEvent *)theEvent {
+    if(_trackMouse) {
+        _currentFillColor = _mouseInColor;
+        [self setNeedsDisplay:YES];
+    }
+}
+
+- (void)mouseExited:(NSEvent *)theEvent {
+    if(_trackMouse) {
+        _currentFillColor = _fillColor;
+        [self setNeedsDisplay:YES];
     }
 }
 

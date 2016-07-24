@@ -12,9 +12,11 @@
 
 @property (nonatomic) NSColor *fillColor;
 @property (nonatomic) NSColor *boxColor;
-@property (nonatomic) Boolean drawTop;
-@property (nonatomic) Boolean drawBottom;
+@property (nonatomic) NSColor *mouseInColor;
+@property (nonatomic) BOOL drawTop;
+@property (nonatomic) BOOL drawBottom;
 @property (nonatomic) NSUInteger leftTopInset;
 @property (nonatomic) NSUInteger leftBottomInset;
+@property (nonatomic) BOOL trackMouse;
 
 @end

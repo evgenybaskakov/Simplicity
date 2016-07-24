@@ -60,16 +60,10 @@
     self = [super init];
     
     if(self) {
-        NSBox *view = [[NSBox alloc] init];
+        NSView *view = [[NSView alloc] init];
         view.translatesAutoresizingMaskIntoConstraints = NO;
-        [view setBoxType:NSBoxCustom];
-        [view setBorderColor:[NSColor lightGrayColor]];
-        [view setBorderType:NSLineBorder];
-        [view setCornerRadius:0];
-        [view setTitlePosition:NSNoTitle];
         
         [self setView:view];
-        
         [self initSubviews];
     }
     

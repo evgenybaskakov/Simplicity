@@ -36,7 +36,7 @@
 
 static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 600;
-static const CGFloat CELL_SPACING = -1;
+static const CGFloat CELL_SPACING = 0;
 
 @interface SMMessageThreadViewController()
 - (void)messageBodyFetched:(NSNotification *)notification;
@@ -210,6 +210,7 @@ static const CGFloat CELL_SPACING = -1;
             SMMessageThreadCellViewController *viewController = [self createMessageThreadCell:messages[i] collapsed:collapsed];
             
             [viewController enableCollapse:(messages.count > 1)];
+            viewController.shouldDrawBottomLineWhenCollapsed = (i != messages.count-1? NO : YES);
             viewController.shouldDrawBottomLineWhenUncollapsed = (i != messages.count-1? YES : NO);
             viewController.cellIndex = i;
             

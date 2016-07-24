@@ -189,7 +189,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         [_messageDetailsViewController collapse];
         
         _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
-        _view.drawBottom = YES;
+        _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
         
         [self hideProgressIndicator];
         
@@ -265,6 +265,14 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
     if(_cellInitialized) {
         [_messageThreadViewController setCellCollapsed:_collapsed cellIndex:_cellIndex];
+    }
+}
+
+- (void)setShouldDrawBottomLineWhenCollapsed:(Boolean)shouldDrawBottomLineWhenCollapsed {
+    _shouldDrawBottomLineWhenCollapsed = shouldDrawBottomLineWhenCollapsed;
+    
+    if(_collapsed) {
+        _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
     }
 }
 

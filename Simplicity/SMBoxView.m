@@ -39,14 +39,16 @@
     }
 
     if(_boxColor != nil) {
+        NSRect b = self.bounds;
+    
         if(_drawTop) {
             [_boxColor set];
-            NSRectFill(NSMakeRect(0, NSHeight(self.bounds) - 1, NSWidth(self.bounds), 1));
+            NSRectFill(NSMakeRect(NSMinX(b), NSMaxY(b) - 1, NSWidth(b), 1));
         }
 
         if(_drawBottom) {
             [_boxColor set];
-            NSRectFill(NSMakeRect(0, 0, NSWidth(self.bounds), 1));
+            NSRectFill(NSMakeRect(NSMinX(b), NSMinY(b), NSWidth(b), 1));
         }
     }
 }

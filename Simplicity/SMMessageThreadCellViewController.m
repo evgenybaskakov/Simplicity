@@ -51,7 +51,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         _view = [[SMBoxView alloc] init];
         _view.drawTop = YES;
-        _view.boxColor = [NSColor lightGrayColor];
+        _view.leftTopInset = 31;
+        _view.boxColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
         _view.translatesAutoresizingMaskIntoConstraints = NO;
 
         // init header button
@@ -188,7 +189,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         [_messageDetailsViewController collapse];
         
-        _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
+//        _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
         _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
         
         [self hideProgressIndicator];

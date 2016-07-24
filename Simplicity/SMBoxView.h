@@ -14,5 +14,7 @@
 @property (nonatomic) NSColor *boxColor;
 @property (nonatomic) Boolean drawTop;
 @property (nonatomic) Boolean drawBottom;
+@property (nonatomic) NSUInteger leftTopInset;
+@property (nonatomic) NSUInteger leftBottomInset;
 
 @end

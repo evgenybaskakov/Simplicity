@@ -30,6 +30,16 @@
     [self setNeedsDisplay:YES];
 }
 
+- (void)setLeftTopInset:(NSUInteger)inset {
+    _leftTopInset = inset;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setLeftBottomInset:(NSUInteger)inset {
+    _leftBottomInset = inset;
+    [self setNeedsDisplay:YES];
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
@@ -43,12 +53,12 @@
     
         if(_drawTop) {
             [_boxColor set];
-            NSRectFill(NSMakeRect(NSMinX(b), NSMaxY(b) - 1, NSWidth(b), 1));
+            NSRectFill(NSMakeRect(NSMinX(b) + _leftTopInset, NSMaxY(b) - 1, NSWidth(b), 1));
         }
 
         if(_drawBottom) {
             [_boxColor set];
-            NSRectFill(NSMakeRect(NSMinX(b), NSMinY(b), NSWidth(b), 1));
+            NSRectFill(NSMakeRect(NSMinX(b) + _leftBottomInset, NSMinY(b), NSWidth(b), 1));
         }
     }
 }

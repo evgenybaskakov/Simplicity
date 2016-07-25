@@ -25,4 +25,13 @@
     return [[appController messageListViewController] menuForRow:row];
 }
 
+- (void)drawGridInClipRect:(NSRect)clipRect
+{
+    // See http://stackoverflow.com/questions/5606796/draw-grid-lines-in-nstableview-only-for-populated-rows
+    NSRect lastRowRect = [self rectOfRow:[self numberOfRows]-1];
+    NSRect myClipRect = NSMakeRect(0, 0, lastRowRect.size.width, NSMaxY(lastRowRect));
+    NSRect finalClipRect = NSIntersectionRect(clipRect, myClipRect);
+    [super drawGridInClipRect:finalClipRect];
+}
+
 @end

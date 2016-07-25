@@ -18,15 +18,40 @@
 
 - (void)drawSelectionInRect:(NSRect)dirtyRect {
     if (self.selectionHighlightStyle != NSTableViewSelectionHighlightStyleNone) {
-        NSColor *color1 = [NSColor colorWithCalibratedRed:0.8 green:0.8 blue:0.8 alpha:1];
-        NSColor *color2 = [NSColor colorWithCalibratedRed:0.9 green:0.9 blue:0.9 alpha:1];
-        NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:color1 endingColor:color2];
+        static NSColor *color1 = nil;
+        static NSColor *color2 = nil;
+        static NSGradient *gradient = nil;
+
+        if(gradient == nil) {
+            color1 = [NSColor colorWithCalibratedRed:0.8 green:0.8 blue:0.8 alpha:1];
+            color2 = [NSColor colorWithCalibratedRed:0.9 green:0.9 blue:0.9 alpha:1];
+            gradient = [[NSGradient alloc] initWithStartingColor:color1 endingColor:color2];
+        }
 
         NSRect selectionRect = NSInsetRect(self.bounds, 0, 0);
         NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:0 yRadius:0];
         
         [gradient drawInBezierPath:selectionPath angle:-90.00];
     }
+}
+
+- (NSRect)separatorRect {
+    NSRect separatorRect = self.bounds;
+    separatorRect.origin.x = NSMinX(separatorRect) + 22;
+    separatorRect.origin.y = NSMaxY(separatorRect) - 1;
+    separatorRect.size.height = 1;
+    return separatorRect;
+}
+
+- (void)drawSeparatorInRect:(NSRect)dirtyRect {
+    static NSColor *separatorColor = nil;
+    if(separatorColor == nil) {
+        separatorColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
+    }
+    
+    [separatorColor set];
+    
+    NSRectFill([self separatorRect]);
 }
 
 @end

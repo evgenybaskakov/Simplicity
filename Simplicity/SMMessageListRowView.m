@@ -21,7 +21,7 @@
         NSColor *color1 = [NSColor colorWithCalibratedRed:0.8 green:0.8 blue:0.8 alpha:1];
         NSColor *color2 = [NSColor colorWithCalibratedRed:0.9 green:0.9 blue:0.9 alpha:1];
         NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:color1 endingColor:color2];
-        
+
         NSRect selectionRect = NSInsetRect(self.bounds, 0, 0);
         NSBezierPath *selectionPath = [NSBezierPath bezierPathWithRoundedRect:selectionRect xRadius:0 yRadius:0];
         

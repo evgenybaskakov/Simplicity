@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -680,6 +680,7 @@
                 <outlet property="composeMessageButton" destination="PxP-a3-Jxq" id="tJ3-Xf-cTx"/>
                 <outlet property="composeMessageMenuItem" destination="i3P-0b-cpV" id="co2-cG-CtP"/>
                 <outlet property="htmlTextFormatMenuItem" destination="vUH-6f-CGy" id="RWK-tG-Hk9"/>
+                <outlet property="messageNavigationControl" destination="QTH-WP-b7k" id="2P0-s9-Zuv"/>
                 <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="4Hc-La-8Ml"/>
                 <outlet property="searchField" destination="w9B-OG-la5" id="Lof-qa-D7m"/>
                 <outlet property="textFormatMenuItem" destination="3QV-S7-VIk" id="cPY-6I-SEi"/>
@@ -700,18 +701,8 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </searchFieldCell>
                 </searchField>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q0Q-AH-U6l">
-                    <rect key="frame" x="220" y="39" width="36" height="20"/>
-                    <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSTrashFull" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="HdO-M8-PfM">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="moveToTrashAction:" target="544" id="gbW-Jo-iSC"/>
-                    </connections>
-                </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PxP-a3-Jxq">
-                    <rect key="frame" x="176" y="39" width="36" height="20"/>
+                    <rect key="frame" x="14" y="38" width="36" height="20"/>
                     <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="new-message" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="0kP-o2-ebZ">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -720,12 +711,46 @@
                         <action selector="composeMessageAction:" target="544" id="9r3-6e-J49"/>
                     </connections>
                 </button>
+                <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QTH-WP-b7k">
+                    <rect key="frame" x="102" y="38" width="130" height="19"/>
+                    <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="fyT-EW-pb3">
+                        <font key="font" metaFont="smallSystem"/>
+                        <segments>
+                            <segment image="Button-Up-128" width="32">
+                                <nil key="label"/>
+                            </segment>
+                            <segment image="Button-Down-128" width="32" tag="1">
+                                <nil key="label"/>
+                            </segment>
+                            <segment image="collapse-all" width="32">
+                                <nil key="label"/>
+                            </segment>
+                            <segment image="uncollapse-all">
+                                <nil key="label"/>
+                            </segment>
+                        </segments>
+                    </segmentedCell>
+                </segmentedControl>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q0Q-AH-U6l">
+                    <rect key="frame" x="58" y="38" width="36" height="20"/>
+                    <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSTrashFull" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="HdO-M8-PfM">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="moveToTrashAction:" target="544" id="gbW-Jo-iSC"/>
+                    </connections>
+                </button>
             </subviews>
             <point key="canvasLocation" x="180" y="0.0"/>
         </customView>
     </objects>
     <resources>
+        <image name="Button-Down-128" width="128" height="128"/>
+        <image name="Button-Up-128" width="128" height="128"/>
         <image name="NSTrashFull" width="32" height="32"/>
+        <image name="collapse-all" width="128" height="128"/>
         <image name="new-message" width="256" height="256"/>
+        <image name="uncollapse-all" width="96" height="96"/>
     </resources>
 </document>

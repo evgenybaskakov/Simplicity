@@ -47,6 +47,7 @@
 static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
 static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
 static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
+static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Item Identifier";
 
 @implementation SMAppController {
     NSButton *button1, *button2;
@@ -366,6 +367,22 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
         _trashButton.action = @selector(moveToTrashAction:);
 
         [toolbarItem setView:_trashButton];
+    } else if([itemIdent isEqual:NavigateMessagesToolbarItemIdentifier]) {
+        toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
+        
+        [toolbarItem setPaletteLabel:@"Navigate messages in current conversation"];
+        [toolbarItem setToolTip: @"Navigate messages"];
+        
+        _messageNavigationControl = [[NSSegmentedControl alloc] initWithFrame:[_messageNavigationControl frame]];
+        _messageNavigationControl.segmentStyle = NSSegmentStyleTexturedSquare;
+        _messageNavigationControl.trackingMode = NSSegmentSwitchTrackingMomentary;
+        _messageNavigationControl.segmentCount = 4;
+        [_messageNavigationControl setWidth:26 forSegment:0];
+        [_messageNavigationControl setWidth:26 forSegment:1];
+        [_messageNavigationControl setWidth:26 forSegment:2];
+        [_messageNavigationControl setWidth:26 forSegment:3];
+        
+        [toolbarItem setView:_messageNavigationControl];
     } else {
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa
         // Returning nil will inform the toolbar this kind of item is not supported
@@ -379,14 +396,14 @@ static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
     // Required delegate method:  Returns the ordered list of items to be shown in the toolbar by default
     // If during the toolbar's initialization, no overriding values are found in the user defaults, or if the
     // user chooses to revert to the default items this set will be used
-    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
+    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, NavigateMessagesToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
 }
 
 - (NSArray *) toolbarAllowedItemIdentifiers: (NSToolbar *) toolbar {
     // Required delegate method:  Returns the list of all allowed items by identifier.  By default, the toolbar
     // does not assume any items are allowed, even the separator.  So, every allowed item must be explicitly listed
     // The set of allowed items is used to construct the customization palette
-    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
+    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, NavigateMessagesToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
 }
 
 - (void) toolbarWillAddItem: (NSNotification *) notif {

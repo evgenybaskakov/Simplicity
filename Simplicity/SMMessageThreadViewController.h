@@ -25,6 +25,9 @@
 - (void)collapseAll;
 - (void)uncollapseAll;
 
+- (void)scrollToPrevMessage;
+- (void)scrollToNextMessage;
+
 - (void)updateCellFrames;
 
 - (void)messageThreadViewWillClose;

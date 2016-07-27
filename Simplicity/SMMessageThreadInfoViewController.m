@@ -160,7 +160,7 @@
     _prevMessageButton.image = [NSImage imageNamed:@"Button-Up-128.png"];
     [_prevMessageButton.cell setImageScaling:NSImageScaleProportionallyDown];
     _prevMessageButton.bordered = NO;
-    _prevMessageButton.action = @selector(uncollapseAllCells:);
+    _prevMessageButton.action = @selector(scrollToPrevMessage:);
 
     // next message
 
@@ -171,7 +171,7 @@
     _nextMessageButton.image = [NSImage imageNamed:@"Button-Down-128.png"];
     [_nextMessageButton.cell setImageScaling:NSImageScaleProportionallyDown];
     _nextMessageButton.bordered = NO;
-    _nextMessageButton.action = @selector(uncollapseAllCells:);
+    _nextMessageButton.action = @selector(scrollToNextMessage:);
     
     // uncollapse all
 
@@ -325,6 +325,16 @@
     _subjectTrailingConstraint.priority = NSLayoutPriorityDefaultLow;
     
     [view addConstraint:_subjectTrailingConstraint];
+}
+
+- (void)scrollToPrevMessage:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] messageThreadViewController] scrollToPrevMessage];
+}
+
+- (void)scrollToNextMessage:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[[appDelegate appController] messageThreadViewController] scrollToNextMessage];
 }
 
 - (void)collapseAllCells:(id)sender {

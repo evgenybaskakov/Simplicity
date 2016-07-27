@@ -569,6 +569,18 @@ static const CGFloat CELL_SPACING = 0;
     [self updateCellFrames];
 }
 
+#pragma mark Scroll to message cells
+
+- (void)scrollToPrevMessage {
+    // TODO
+    NSLog(@"_firstVisibleCell: %lu", _firstVisibleCell);
+}
+
+- (void)scrollToNextMessage {
+    // TODO
+    NSLog(@"_firstVisibleCell: %lu", _firstVisibleCell);
+}
+
 #pragma mark Scrolling notifications
 
 - (void)arrangeVisibleCells {

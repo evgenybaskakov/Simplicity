@@ -30,6 +30,8 @@
     NSTextField *_subject;
     NSMutableArray *_colorLabels;
     NSMutableArray *_colorLabelConstraints;
+    NSButton *_prevMessageButton;
+    NSButton *_nextMessageButton;
     NSButton *_collapseAllButton;
     NSButton *_uncollapseAllButton;
     NSMutableArray *_collapseButtonsConstraints;
@@ -149,6 +151,28 @@
 
     [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_subject attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
 
+    // prev message
+    
+    _prevMessageButton = [[NSButton alloc] init];
+    _prevMessageButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _prevMessageButton.bezelStyle = NSShadowlessSquareBezelStyle;
+    _prevMessageButton.target = self;
+    _prevMessageButton.image = [NSImage imageNamed:@"Button-Up-128.png"];
+    [_prevMessageButton.cell setImageScaling:NSImageScaleProportionallyDown];
+    _prevMessageButton.bordered = NO;
+    _prevMessageButton.action = @selector(uncollapseAllCells:);
+
+    // next message
+
+    _nextMessageButton = [[NSButton alloc] init];
+    _nextMessageButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _nextMessageButton.bezelStyle = NSShadowlessSquareBezelStyle;
+    _nextMessageButton.target = self;
+    _nextMessageButton.image = [NSImage imageNamed:@"Button-Down-128.png"];
+    [_nextMessageButton.cell setImageScaling:NSImageScaleProportionallyDown];
+    _nextMessageButton.bordered = NO;
+    _nextMessageButton.action = @selector(uncollapseAllCells:);
+    
     // uncollapse all
 
     _uncollapseAllButton = [[NSButton alloc] init];
@@ -171,7 +195,7 @@
     _collapseAllButton.bordered = NO;
     _collapseAllButton.action = @selector(collapseAllCells:);
 
-    // constraints
+    // constraints: uncollapse button
 
     _collapseButtonsConstraints = [NSMutableArray array];
     
@@ -183,13 +207,35 @@
     
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_uncollapseAllButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
     
+    // constraints: collapse button
+    
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/2.5]];
     
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_collapseAllButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
 
     [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_collapseAllButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 
-    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_uncollapseAllButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_collapseAllButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_GAP]];
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_collapseAllButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_uncollapseAllButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+    
+    // constraints: next message
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_nextMessageButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/2.5]];
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_nextMessageButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_nextMessageButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_nextMessageButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_nextMessageButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_collapseAllButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+
+    // constraints: prev message
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_prevMessageButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[SMMessageDetailsViewController messageDetaisHeaderHeight]/2.5]];
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_prevMessageButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_prevMessageButton attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_prevMessageButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+
+    [_collapseButtonsConstraints addObject:[NSLayoutConstraint constraintWithItem:_prevMessageButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_nextMessageButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
 }
 
 - (void)updateMessageThread {
@@ -207,10 +253,14 @@
     if(_messageThread.messagesCount == 1) {
         [view removeConstraints:_collapseButtonsConstraints];
         
+        [_prevMessageButton removeFromSuperview];
+        [_nextMessageButton removeFromSuperview];
         [_collapseAllButton removeFromSuperview];
         [_uncollapseAllButton removeFromSuperview];
     }
     else {
+        [view addSubview:_prevMessageButton];
+        [view addSubview:_nextMessageButton];
         [view addSubview:_collapseAllButton];
         [view addSubview:_uncollapseAllButton];
         

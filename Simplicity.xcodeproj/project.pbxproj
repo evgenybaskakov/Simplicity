@@ -109,6 +109,8 @@
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
+		801E8A691D4878D80062E63F /* Button-Down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 801E8A671D4878D80062E63F /* Button-Down-128.png */; };
+		801E8A6A1D4878D80062E63F /* Button-Up-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 801E8A681D4878D80062E63F /* Button-Up-128.png */; };
 		801EDEE81BE9E96800A16E85 /* SMNewAccountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */; };
 		801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */; };
 		801EDEF01BE9EB6700A16E85 /* at_sign.png in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEEF1BE9EB6700A16E85 /* at_sign.png */; };
@@ -486,6 +488,8 @@
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
+		801E8A671D4878D80062E63F /* Button-Down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Down-128.png"; sourceTree = "<group>"; };
+		801E8A681D4878D80062E63F /* Button-Up-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Up-128.png"; sourceTree = "<group>"; };
 		801EDEE51BE9E96800A16E85 /* SMNewAccountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNewAccountWindowController.h; sourceTree = "<group>"; };
 		801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNewAccountWindowController.m; sourceTree = "<group>"; };
 		801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMNewAccountWindowController.xib; sourceTree = "<group>"; };
@@ -1118,6 +1122,8 @@
 				801EDED71BE9E6C400A16E85 /* Logos */,
 				800C67911B499F0700272D60 /* Images.xcassets */,
 				80533AD51B4118B800A0A67F /* TextEditorIcons */,
+				801E8A671D4878D80062E63F /* Button-Down-128.png */,
+				801E8A681D4878D80062E63F /* Button-Up-128.png */,
 				800AB7F51CACF79A00582B57 /* Envelope.png */,
 				00909E741A9ACDE300636C90 /* SearchWebView.js */,
 				00AD52E71AA813FB00627433 /* add-label.png */,
@@ -1483,6 +1489,7 @@
 				803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */,
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
+				801E8A691D4878D80062E63F /* Button-Down-128.png in Resources */,
 				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
 				800AB7ED1CACF64600582B57 /* SMMessagePlaceholderViewController.xib in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
@@ -1500,6 +1507,7 @@
 				801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */,
 				801EDEF21BE9F01800A16E85 /* gmail_logo.png in Resources */,
 				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
+				801E8A6A1D4878D80062E63F /* Button-Up-128.png in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
 				800C67921B499F0700272D60 /* Images.xcassets in Resources */,
 				8011CAF61CA3C66A00697210 /* SMLabeledPopUpListViewController.xib in Resources */,

@@ -572,13 +572,37 @@ static const CGFloat CELL_SPACING = 0;
 #pragma mark Scroll to message cells
 
 - (void)scrollToPrevMessage {
-    // TODO
-    NSLog(@"_firstVisibleCell: %lu", _firstVisibleCell);
+    SMMessageThreadCell *cell = _cells[_firstVisibleCell];
+    CGFloat ypos = (CGFloat)cell.viewController.view.frame.origin.y;
+
+    if(_firstVisibleCell > 0) {
+        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y;
+        
+        if(fabs(curYPos - ypos) < 20) {
+            SMMessageThreadCell *prevCell = _cells[_firstVisibleCell-1];
+            ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
+        }
+    }
+    
+    NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, ypos);
+    [[_messageThreadView documentView] scrollPoint:cellPosition];
 }
 
 - (void)scrollToNextMessage {
-    // TODO
-    NSLog(@"_firstVisibleCell: %lu", _firstVisibleCell);
+    if(_firstVisibleCell + 1 < _cells.count) {
+        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y;
+
+        SMMessageThreadCell *nextCell = _cells[_firstVisibleCell + 1];
+        CGFloat ypos = (CGFloat)nextCell.viewController.view.frame.origin.y;
+        
+        if(curYPos < ypos && ypos - curYPos < 20 && _firstVisibleCell + 2 < _cells.count) {
+            SMMessageThreadCell *prevCell = _cells[_firstVisibleCell + 2];
+            ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
+        }
+        
+        NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, ypos);
+        [[_messageThreadView documentView] scrollPoint:cellPosition];
+    }
 }
 
 #pragma mark Scrolling notifications

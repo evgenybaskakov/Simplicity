@@ -374,13 +374,27 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
         [toolbarItem setToolTip: @"Navigate messages"];
         
         _messageNavigationControl = [[NSSegmentedControl alloc] initWithFrame:[_messageNavigationControl frame]];
-        _messageNavigationControl.segmentStyle = NSSegmentStyleTexturedSquare;
+        _messageNavigationControl.target = self;
+        _messageNavigationControl.action = @selector(messageNavigationAction:);
+        _messageNavigationControl.segmentStyle = NSSegmentStyleTexturedRounded;
         _messageNavigationControl.trackingMode = NSSegmentSwitchTrackingMomentary;
         _messageNavigationControl.segmentCount = 4;
+        
         [_messageNavigationControl setWidth:26 forSegment:0];
+        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Up-128.png"]  forSegment:0];
+        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:0];
+         
         [_messageNavigationControl setWidth:26 forSegment:1];
+        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Down-128.png"] forSegment:1];
+        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:1];
+
         [_messageNavigationControl setWidth:26 forSegment:2];
+        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Collapse.png"] forSegment:2];
+        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:2];
+        
         [_messageNavigationControl setWidth:26 forSegment:3];
+        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Expand.png"] forSegment:3];
+        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:3];
         
         [toolbarItem setView:_messageNavigationControl];
     } else {
@@ -847,6 +861,27 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
         [[[NSApplication sharedApplication] dockTile] setBadgeLabel:messageCountString];
     }
  */
+}
+
+#pragma mark Navigation in message thread
+
+- (void)messageNavigationAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+
+    switch(_messageNavigationControl.selectedSegment) {
+    case 0:
+        [[[appDelegate appController] messageThreadViewController] scrollToPrevMessage];
+        break;
+    case 1:
+        [[[appDelegate appController] messageThreadViewController] scrollToNextMessage];
+        break;
+    case 2:
+        [[[appDelegate appController] messageThreadViewController] collapseAll];
+        break;
+    case 3:
+        [[[appDelegate appController] messageThreadViewController] uncollapseAll];
+        break;
+    }
 }
 
 @end

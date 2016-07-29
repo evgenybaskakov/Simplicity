@@ -7,6 +7,8 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "SMLog.h"
 #import "SMUserAccount.h"
 #import "SMUserAccount.h"
@@ -571,6 +573,18 @@ static const CGFloat CELL_SPACING = 0;
 
 #pragma mark Scroll to message cells
 
+- (void)animatedScrollTo:(CGFloat)ypos {
+    NSRect cellRect = NSMakeRect(_messageThreadView.visibleRect.origin.x, ypos, _messageThreadView.visibleRect.size.width, _messageThreadView.visibleRect.size.height);
+    
+    NSClipView *clipView = [_messageThreadView contentView];
+    NSRect constrainedRect = [clipView constrainBoundsRect:cellRect];
+    [NSAnimationContext beginGrouping];
+    [[clipView animator] setBoundsOrigin:constrainedRect.origin];
+    [NSAnimationContext endGrouping];
+    
+    [_messageThreadView reflectScrolledClipView:clipView];
+}
+
 - (void)scrollToPrevMessage {
     SMMessageThreadCell *cell = _cells[_firstVisibleCell];
     CGFloat ypos = (CGFloat)cell.viewController.view.frame.origin.y;
@@ -583,9 +597,8 @@ static const CGFloat CELL_SPACING = 0;
             ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
         }
     }
-    
-    NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, ypos);
-    [[_messageThreadView documentView] scrollPoint:cellPosition];
+
+    [self animatedScrollTo:ypos];
 }
 
 - (void)scrollToNextMessage {
@@ -600,8 +613,7 @@ static const CGFloat CELL_SPACING = 0;
             ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
         }
         
-        NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, ypos);
-        [[_messageThreadView documentView] scrollPoint:cellPosition];
+        [self animatedScrollTo:ypos];
     }
 }
 

@@ -44,14 +44,8 @@
 #import "SMTokenFieldViewController.h"
 #import "SMSearchRequestInputController.h"
 
-static NSString *SearchDocToolbarItemIdentifier = @"Search Item Identifier";
-static NSString *ComposeMessageToolbarItemIdentifier = @"Compose Message Item Identifier";
-static NSString *TrashToolbarItemIdentifier = @"Trash Item Identifier";
-static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Item Identifier";
-
 @implementation SMAppController {
     NSButton *button1, *button2;
-    NSToolbarItem *__weak _searchToolbarItem;
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     SMFindContentsPanelViewController *_findContentsPanelViewController;
@@ -228,8 +222,7 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
     _searchFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
     NSAssert(_searchFieldViewController.view != nil, @"_searchFieldViewController is nil");
 
-    _searchField = _searchFieldViewController.view;
-    [_searchToolbarItem setView:_searchField];
+    [_searchFieldToolbarItem setView:_searchFieldViewController.view];
 
     _searchFieldViewController.target = self;
     _searchFieldViewController.action = @selector(searchUsingToolbarSearchField:);
@@ -327,115 +320,6 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
     [self updateMailboxFolderListForAccount:account];
 }
 
-- (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted {
-    NSToolbarItem *toolbarItem = nil;
-    
-    if([itemIdent isEqual:SearchDocToolbarItemIdentifier]) {
-        toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
-
-        [toolbarItem setLabel:@"Search"];
-        [toolbarItem setPaletteLabel:@"Search"];
-        [toolbarItem setToolTip:@"Search for messages"];
-        [toolbarItem setView:_searchField];
-        [toolbarItem setMinSize:NSMakeSize(200, NSHeight([_searchField frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(400, NSHeight([_searchField frame]))];
-    } else if([itemIdent isEqual:ComposeMessageToolbarItemIdentifier]) {
-        toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
-        
-        [toolbarItem setPaletteLabel:@"New message"];
-        [toolbarItem setToolTip: @"Compose new message"];
-        
-        _composeMessageButton = [[NSButton alloc] initWithFrame:[_composeMessageButton frame]];
-        [_composeMessageButton setImage:[NSImage imageNamed:@"new-message.png"]];
-        [_composeMessageButton.cell setImageScaling:NSImageScaleProportionallyDown];
-        _composeMessageButton.bezelStyle = NSTexturedSquareBezelStyle;
-        _composeMessageButton.target = self;
-        _composeMessageButton.action = @selector(composeMessageAction:);
-        
-        [toolbarItem setView:_composeMessageButton];
-    } else if([itemIdent isEqual:TrashToolbarItemIdentifier]) {
-        toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
-        
-        [toolbarItem setPaletteLabel:@"Trash"];
-        [toolbarItem setToolTip: @"Put selected messages to trash"];
-
-        _trashButton = [[NSButton alloc] initWithFrame:[_trashButton frame]];
-        [_trashButton setImage:[NSImage imageNamed:@"trash-black.png"]];
-        [_trashButton.cell setImageScaling:NSImageScaleProportionallyDown];
-        _trashButton.bezelStyle = NSTexturedSquareBezelStyle;
-        _trashButton.target = self;
-        _trashButton.action = @selector(moveToTrashAction:);
-
-        [toolbarItem setView:_trashButton];
-    } else if([itemIdent isEqual:NavigateMessagesToolbarItemIdentifier]) {
-        toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier:itemIdent];
-        
-        [toolbarItem setPaletteLabel:@"Navigate messages in current conversation"];
-        [toolbarItem setToolTip: @"Navigate messages"];
-        
-        _messageNavigationControl = [[NSSegmentedControl alloc] initWithFrame:[_messageNavigationControl frame]];
-        _messageNavigationControl.target = self;
-        _messageNavigationControl.action = @selector(messageNavigationAction:);
-        _messageNavigationControl.segmentStyle = NSSegmentStyleTexturedRounded;
-        _messageNavigationControl.trackingMode = NSSegmentSwitchTrackingMomentary;
-        _messageNavigationControl.segmentCount = 4;
-        
-        [_messageNavigationControl setWidth:26 forSegment:0];
-        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Up-128.png"]  forSegment:0];
-        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:0];
-         
-        [_messageNavigationControl setWidth:26 forSegment:1];
-        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Down-128.png"] forSegment:1];
-        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:1];
-
-        [_messageNavigationControl setWidth:26 forSegment:2];
-        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Collapse.png"] forSegment:2];
-        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:2];
-        
-        [_messageNavigationControl setWidth:26 forSegment:3];
-        [_messageNavigationControl setImage:[NSImage imageNamed:@"Button-Expand.png"] forSegment:3];
-        [_messageNavigationControl setImageScaling:NSImageScaleProportionallyDown forSegment:3];
-        
-        [toolbarItem setView:_messageNavigationControl];
-    } else {
-        // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa
-        // Returning nil will inform the toolbar this kind of item is not supported
-        toolbarItem = nil;
-    }
-    
-    return toolbarItem;
-}
-
-- (NSArray *) toolbarDefaultItemIdentifiers: (NSToolbar *) toolbar {
-    // Required delegate method:  Returns the ordered list of items to be shown in the toolbar by default
-    // If during the toolbar's initialization, no overriding values are found in the user defaults, or if the
-    // user chooses to revert to the default items this set will be used
-    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, NavigateMessagesToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
-}
-
-- (NSArray *) toolbarAllowedItemIdentifiers: (NSToolbar *) toolbar {
-    // Required delegate method:  Returns the list of all allowed items by identifier.  By default, the toolbar
-    // does not assume any items are allowed, even the separator.  So, every allowed item must be explicitly listed
-    // The set of allowed items is used to construct the customization palette
-    return [NSArray arrayWithObjects:ComposeMessageToolbarItemIdentifier, TrashToolbarItemIdentifier, NavigateMessagesToolbarItemIdentifier, SearchDocToolbarItemIdentifier, nil];
-}
-
-- (void) toolbarWillAddItem: (NSNotification *) notif {
-    // Optional delegate method:  Before an new item is added to the toolbar, this notification is posted.
-    // This is the best place to notice a new item is going into the toolbar.  For instance, if you need to
-    // cache a reference to the toolbar item or need to set up some initial state, this is the best place
-    // to do it.  The notification object is the toolbar to which the item is being added.  The item being
-    // added is found by referencing the @"item" key in the userInfo
-    NSToolbarItem *addedItem = [[notif userInfo] objectForKey: @"item"];
-
-    if([[addedItem itemIdentifier] isEqual:SearchDocToolbarItemIdentifier]) {
-        _searchToolbarItem = addedItem;
-    } else if([[addedItem itemIdentifier] isEqual:ComposeMessageToolbarItemIdentifier]) {
-    } else if([[addedItem itemIdentifier] isEqual:TrashToolbarItemIdentifier]) {
-//      TODO
-    }
-}
-
 - (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus {
     [_searchFieldViewController deleteAllTokensAndText];
     [_searchFieldViewController stopProgress];
@@ -463,7 +347,7 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
     
     if(cancelFocus) {
         NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
-        [[_searchField window] makeFirstResponder:messageListView];
+        [[_searchFieldViewController.view window] makeFirstResponder:messageListView];
     }
 }
 
@@ -542,9 +426,10 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
     menuHeight = MIN(menuHeight, 400);
     
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
+    NSView *searchFieldView = _searchFieldViewController.view;
 
-    NSPoint pos = [_searchField.superview convertPoint:_searchField.frame.origin toView:nil];
-    [_searchSuggestionsMenu setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchSuggestionsMenu.frame.size.width - _searchField.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchSuggestionsMenu.frame.size.width, menuHeight) display:YES];
+    NSPoint pos = [searchFieldView.superview convertPoint:searchFieldView.frame.origin toView:nil];
+    [_searchSuggestionsMenu setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchSuggestionsMenu.frame.size.width - searchFieldView.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchSuggestionsMenu.frame.size.width, menuHeight) display:YES];
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
@@ -865,7 +750,7 @@ static NSString *NavigateMessagesToolbarItemIdentifier = @"Navigate Messages Ite
 
 #pragma mark Navigation in message thread
 
-- (void)messageNavigationAction:(id)sender {
+- (IBAction)messageNavigationAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
     switch(_messageNavigationControl.selectedSegment) {

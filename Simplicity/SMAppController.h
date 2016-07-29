@@ -36,11 +36,10 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 @property (weak, nonatomic) IBOutlet NSView *view;
 
-@property (nonatomic) IBOutlet NSToolbar *toolbar;
 @property (nonatomic) IBOutlet NSButton *composeMessageButton;
 @property (nonatomic) IBOutlet NSButton *trashButton;
-@property (nonatomic) IBOutlet NSView *searchField;
 @property (nonatomic) IBOutlet NSSegmentedControl *messageNavigationControl;
+@property (weak) IBOutlet NSToolbarItem *searchFieldToolbarItem;
 
 @property (weak) IBOutlet NSMenuItem *composeMessageMenuItem;
 @property (weak) IBOutlet NSMenuItem *textFormatMenuItem;
@@ -49,6 +48,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
+- (IBAction)messageNavigationAction:(id)sender;
 
 @property SMTokenFieldViewController *searchFieldViewController;
 @property SMSectionMenuViewController *searchMenuViewController;

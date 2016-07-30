@@ -701,16 +701,16 @@
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="fyT-EW-pb3">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment image="Button-Up-128" width="32">
+                                    <segment toolTip="Scroll to previous message in the conversation" image="Button-Up-128" width="32">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment image="Button-Down-128" width="32" tag="1">
+                                    <segment toolTip="Scroll to next message in the conversation" image="Button-Down-128" width="32" tag="1">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment image="Button-Collapse" width="32">
+                                    <segment toolTip="Collapse all messages in the conversation" image="Button-Collapse" width="32">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment image="Button-Expand">
+                                    <segment toolTip="Expand all messages in the conversation" image="Button-Expand">
                                         <nil key="label"/>
                                     </segment>
                                 </segments>

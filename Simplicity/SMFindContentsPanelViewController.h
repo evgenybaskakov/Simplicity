@@ -12,7 +12,7 @@
 
 @interface SMFindContentsPanelViewController : NSViewController
 
-@property SMMessageThreadViewController *messageThreadViewController;
+@property SMMessageThreadViewController *__weak messageThreadViewController;
 
 @property IBOutlet NSSearchField *searchField;
 @property IBOutlet NSButton *matchCaseCheckbox;

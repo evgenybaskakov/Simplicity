@@ -478,7 +478,9 @@
 }
 
 - (IBAction)toggleFindContentsPanelAction:(id)sender {
-    NSAssert(nil, @"TODO");
+    // TODO: use the current window thrad view controller
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [[appDelegate.appController messageThreadViewController] showFindContentsPanel];
 }
 
 #pragma mark New label creation

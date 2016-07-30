@@ -478,9 +478,15 @@
 }
 
 - (IBAction)toggleFindContentsPanelAction:(id)sender {
-    // TODO: use the current window thrad view controller
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate.appController messageThreadViewController] showFindContentsPanel];
+    NSWindow *curWindow = [[NSApplication sharedApplication] keyWindow];
+    
+    if([curWindow.delegate isKindOfClass:[SMMessageWindowController class]]) {
+        [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel];
+    }
+    else if(curWindow == [[NSApplication sharedApplication] mainWindow]) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        [[appDelegate.appController messageThreadViewController] showFindContentsPanel];
+    }
 }
 
 #pragma mark New label creation

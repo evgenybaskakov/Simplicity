@@ -11,9 +11,7 @@
 #import "SMMessageThreadViewController.h"
 #import "SMMessageWindowController.h"
 
-@implementation SMMessageWindowController {
-    SMMessageThreadViewController *_messageThreadViewController;
-}
+@implementation SMMessageWindowController
 
 - (void)windowDidLoad {
     [super windowDidLoad];

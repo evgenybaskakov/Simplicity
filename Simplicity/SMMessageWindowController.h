@@ -12,6 +12,8 @@
 
 @interface SMMessageWindowController : NSWindowController<NSWindowDelegate>
 
+@property (readonly) SMMessageThreadViewController *messageThreadViewController;
+
 @property SMMessageThread *currentMessageThread;
 
 @end

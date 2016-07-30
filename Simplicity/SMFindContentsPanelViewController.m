@@ -7,8 +7,6 @@
 //
 
 #import "SMLog.h"
-#import "SMAppDelegate.h"
-#import "SMAppController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMFindContentsPanelViewController.h"
 
@@ -45,14 +43,11 @@
 }
 
 - (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward restart:(Boolean)restart {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-    
     if(restart) {
-        [[appController messageThreadViewController] removeFindContentsResults];
+        [_messageThreadViewController removeFindContentsResults];
     }
     
-    [[appController messageThreadViewController] findContents:stringToFind matchCase:matchCase forward:forward];
+    [_messageThreadViewController findContents:stringToFind matchCase:matchCase forward:forward];
 }
 
 - (IBAction)doneAction:(id)sender {

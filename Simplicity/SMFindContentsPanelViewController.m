@@ -56,10 +56,7 @@
 }
 
 - (IBAction)doneAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMAppController *appController = [appDelegate appController];
-
-    [appController hideFindContentsPanel];
+    [_messageThreadViewController hideFindContentsPanel];
 }
 
 @end

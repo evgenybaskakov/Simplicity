@@ -60,9 +60,6 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account;
 
-- (void)showFindContentsPanel;
-- (void)hideFindContentsPanel;
-
 @property (nonatomic) SMNewLabelWindowController *addNewLabelWindowController;
 
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder;

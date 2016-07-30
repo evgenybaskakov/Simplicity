@@ -8,7 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMMessageThreadViewController;
+
 @interface SMFindContentsPanelViewController : NSViewController
+
+@property SMMessageThreadViewController *messageThreadViewController;
 
 @property IBOutlet NSSearchField *searchField;
 @property IBOutlet NSButton *matchCaseCheckbox;

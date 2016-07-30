@@ -13,6 +13,7 @@
 #import "SMUserAccount.h"
 #import "SMUserAccount.h"
 #import "SMNotificationsController.h"
+#import "SMFindContentsPanelViewController.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadCell.h"
@@ -51,6 +52,8 @@ static const CGFloat CELL_SPACING = 0;
     SMMessageThreadInfoViewController *_messageThreadInfoViewController;
     SMMessageEditorViewController *_messageEditorViewController;
     SMMessageThreadCellViewController *_cellViewControllerToReply;
+    SMFindContentsPanelViewController *_findContentsPanelViewController;
+    NSMutableArray *_findContentsPanelConstraints;
     NSMutableArray *_cells;
     NSView *_contentView;
     Boolean _findContentsActive;
@@ -62,6 +65,7 @@ static const CGFloat CELL_SPACING = 0;
     NSUInteger _firstVisibleCell, _lastVisibleCell;
     Boolean _cellsArranged;
     Boolean _cellsUpdateStarted;
+    Boolean _findContentsPanelShown;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -176,6 +180,7 @@ static const CGFloat CELL_SPACING = 0;
     
     _contentView = [[SMFlippedView alloc] initWithFrame:_messageThreadView.frame];
     _contentView.translatesAutoresizingMaskIntoConstraints = YES;
+    _contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     
     [_messageThreadView setDocumentView:_contentView];
     
@@ -240,8 +245,7 @@ static const CGFloat CELL_SPACING = 0;
     
     // on every message thread switch, we hide the find contents panel
     // because it is presumably needed only when the user means to search the particular message thread
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[appDelegate appController] hideFindContentsPanel];
+    [self hideFindContentsPanel];
 
     [self updateNavigationControls];
 }
@@ -252,7 +256,8 @@ static const CGFloat CELL_SPACING = 0;
     [_messagePlaceHolderViewController.view removeFromSuperview];
 
     [rootView addSubview:_messageThreadView];
-    _messageThreadView.frame = rootView.frame;
+
+    _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height);
 }
 
 - (void)hideCurrentMessageThread:(NSUInteger)selectedThreadsCount {
@@ -263,7 +268,8 @@ static const CGFloat CELL_SPACING = 0;
     _messagePlaceHolderViewController.selectedMessagesLabel.stringValue = (selectedThreadsCount == 0? @"No messages selected" : [NSString stringWithFormat:@"%lu messages selected", selectedThreadsCount]);
     
     [rootView addSubview:_messagePlaceHolderViewController.view];
-    _messagePlaceHolderViewController.view.frame = rootView.frame;
+
+    _messagePlaceHolderViewController.view.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height);
 }
 
 #pragma mark Building visual layout of message threads
@@ -918,8 +924,7 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)keyDown:(NSEvent *)theEvent {
     if([theEvent keyCode] == 53) { // esc
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[appDelegate appController] hideFindContentsPanel];
+        [self hideFindContentsPanel];
     } else {
         [super keyDown:theEvent];
     }
@@ -1198,6 +1203,70 @@ static const CGFloat CELL_SPACING = 0;
             [self updateCellFrames];
         }
     }
+}
+
+#pragma mark Find Contents panel management
+
+- (void)showFindContentsPanel {
+/*
+    if(_findContentsPanelShown)
+        return;
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    if([[appDelegate appController] messageThreadViewController].currentMessageThread == nil)
+        return;
+    
+    NSAssert(_messageThreadViewTopContraint != nil, @"_messageThreadViewTopContraint == nil");
+    [_messageThreadAndFindContentsPanelView removeConstraint:_messageThreadViewTopContraint];
+    
+    if(_findContentsPanelViewController == nil) {
+        _findContentsPanelViewController = [[SMFindContentsPanelViewController alloc] initWithNibName:@"SMFindContentsPanelViewController" bundle:nil];
+        
+        NSAssert(_findContentsPanelConstraints == nil, @"_findContentsPanelConstraints != nil");
+        
+        _findContentsPanelConstraints = [NSMutableArray array];
+        
+        [_findContentsPanelConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageThreadAndFindContentsPanelView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_findContentsPanelViewController.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        
+        [_findContentsPanelConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageThreadAndFindContentsPanelView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_findContentsPanelViewController.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        
+        [_findContentsPanelConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageThreadAndFindContentsPanelView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_findContentsPanelViewController.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        
+        [_findContentsPanelConstraints addObject:[NSLayoutConstraint constraintWithItem:_findContentsPanelViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_messageThreadViewController.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    }
+    
+    [_messageThreadAndFindContentsPanelView addSubview:_findContentsPanelViewController.view];
+    
+    NSAssert(_findContentsPanelConstraints != nil, @"_findContentsPanelConstraints == nil");
+    [_messageThreadAndFindContentsPanelView addConstraints:_findContentsPanelConstraints];
+    
+    NSSearchField *searchField = _findContentsPanelViewController.searchField;
+    NSAssert(searchField != nil, @"searchField == nil");
+    
+    [[searchField window] makeFirstResponder:searchField];
+    
+    _findContentsPanelShown = YES;
+*/
+}
+
+- (void)hideFindContentsPanel {
+/*
+    if(!_findContentsPanelShown)
+        return;
+    
+    NSAssert(_findContentsPanelViewController != nil, @"_findContentsPanelViewController == nil");
+    NSAssert(_findContentsPanelConstraints != nil, @"_findContentsPanelConstraints == nil");
+    
+    [_messageThreadAndFindContentsPanelView removeConstraints:_findContentsPanelConstraints];
+    
+    [_findContentsPanelViewController.view removeFromSuperview];
+    [_messageThreadAndFindContentsPanelView addConstraint:_messageThreadViewTopContraint];
+    
+    [_messageThreadViewController removeFindContentsResults];
+    
+    _findContentsPanelShown = NO;
+*/
 }
 
 @end

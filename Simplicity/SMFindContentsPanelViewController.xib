@@ -54,8 +54,8 @@
                     </connections>
                 </button>
                 <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QOq-jk-Bxe" userLabel="Forward And Backwards">
-                    <rect key="frame" x="360" y="3" width="47" height="25"/>
-                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="momentary" id="qeX-yV-cdS">
+                    <rect key="frame" x="362" y="3" width="47" height="24"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="qeX-yV-cdS">
                         <font key="font" metaFont="system"/>
                         <segments>
                             <segment image="NSLeftFacingTriangleTemplate" width="20"/>
@@ -70,14 +70,14 @@
             <constraints>
                 <constraint firstItem="lXS-2i-rpF" firstAttribute="leading" secondItem="QOq-jk-Bxe" secondAttribute="trailing" constant="8" symbolic="YES" id="4Pd-Ew-5Rt"/>
                 <constraint firstItem="fxh-1y-lXc" firstAttribute="leading" secondItem="gDP-QU-xiS" secondAttribute="trailing" constant="8" symbolic="YES" id="9ek-NV-oVX"/>
-                <constraint firstItem="QOq-jk-Bxe" firstAttribute="leading" secondItem="fxh-1y-lXc" secondAttribute="trailing" constant="4" id="InO-9Q-DGD"/>
+                <constraint firstItem="QOq-jk-Bxe" firstAttribute="leading" secondItem="fxh-1y-lXc" secondAttribute="trailing" constant="8" id="InO-9Q-DGD"/>
                 <constraint firstAttribute="height" constant="31" id="NNr-XO-42A"/>
                 <constraint firstAttribute="bottom" secondItem="gDP-QU-xiS" secondAttribute="bottom" constant="4" id="OYX-6A-OtE"/>
                 <constraint firstItem="fxh-1y-lXc" firstAttribute="baseline" secondItem="gDP-QU-xiS" secondAttribute="baseline" id="RRW-Pd-aMv"/>
                 <constraint firstAttribute="bottom" secondItem="QOq-jk-Bxe" secondAttribute="bottom" constant="5" id="RSk-Fh-xb4"/>
                 <constraint firstItem="lXS-2i-rpF" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="5" id="WEG-nl-XW2"/>
                 <constraint firstAttribute="trailing" secondItem="lXS-2i-rpF" secondAttribute="trailing" constant="5" id="aFu-bv-3UW"/>
-                <constraint firstItem="QOq-jk-Bxe" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="keK-t3-93E"/>
+                <constraint firstItem="QOq-jk-Bxe" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="5" id="keK-t3-93E"/>
                 <constraint firstItem="gDP-QU-xiS" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="5" id="ogZ-Nh-oqG"/>
                 <constraint firstAttribute="bottom" secondItem="lXS-2i-rpF" secondAttribute="bottom" constant="5" id="q1r-W6-bvs"/>
                 <constraint firstItem="gDP-QU-xiS" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="rhD-Gb-rsj"/>

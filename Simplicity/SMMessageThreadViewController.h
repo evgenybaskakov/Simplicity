@@ -32,4 +32,7 @@
 
 - (void)messageThreadViewWillClose;
 
+- (void)showFindContentsPanel;
+- (void)hideFindContentsPanel;
+
 @end

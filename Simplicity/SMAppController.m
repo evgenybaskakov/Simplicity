@@ -241,6 +241,10 @@
 
     //
     
+    _messageNavigationControl.enabled = NO;
+    
+    //
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
@@ -767,6 +771,14 @@
         [[[appDelegate appController] messageThreadViewController] uncollapseAll];
         break;
     }
+}
+
+- (void)enableMessageThreadNavigationControl {
+    _messageNavigationControl.enabled = YES;
+}
+
+- (void)disableMessageThreadNavigationControl {
+    _messageNavigationControl.enabled = NO;
 }
 
 @end

@@ -242,6 +242,8 @@ static const CGFloat CELL_SPACING = 0;
     // because it is presumably needed only when the user means to search the particular message thread
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hideFindContentsPanel];
+
+    [self updateNavigationControls];
 }
 
 - (void)showCurrentMessageThread {
@@ -371,6 +373,19 @@ static const CGFloat CELL_SPACING = 0;
         _currentMessageThread = nil;
         
         [_messageThreadInfoViewController setMessageThread:nil];
+    }
+    
+    [self updateNavigationControls];
+}
+
+- (void)updateNavigationControls {
+    // Update the navigation buttons
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(_currentMessageThread == nil || _cells.count == 1) {
+        [[appDelegate appController] disableMessageThreadNavigationControl];
+    }
+    else {
+        [[appDelegate appController] enableMessageThreadNavigationControl];
     }
 }
 

@@ -97,4 +97,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)finishSearch:(SMSearchOperationKind)searchOperationKind;
 - (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus;
 
+- (void)enableMessageThreadNavigationControl;
+- (void)disableMessageThreadNavigationControl;
+
 @end

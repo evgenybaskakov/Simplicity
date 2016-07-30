@@ -27,6 +27,7 @@
 #import "SMMessageThreadAccountProxy.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMMailbox.h"
+#import "SMMessageWindowController.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWebView.h"
 #import "SMAddressFieldViewController.h"
@@ -923,7 +924,12 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)keyDown:(NSEvent *)theEvent {
     if([theEvent keyCode] == 53) { // esc
-        [self hideFindContentsPanel];
+        // Only close the current message thread if this is not a separate window
+        // TODO: warn if editor is open! (issue #115)
+        if(![self.view.window.delegate isKindOfClass:[SMMessageWindowController class]]) {
+            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            [[appDelegate.appController messageListViewController] deselectCurrentMessageThread];
+        }
     } else {
         [super keyDown:theEvent];
     }
@@ -1207,7 +1213,7 @@ static const CGFloat CELL_SPACING = 0;
 #pragma mark Find Contents panel management
 
 - (void)showFindContentsPanel {
-    if(_findContentsPanelShown && _currentMessageThread == nil)
+    if(_currentMessageThread == nil)
         return;
     
     if(_findContentsPanelViewController == nil) {
@@ -1217,27 +1223,31 @@ static const CGFloat CELL_SPACING = 0;
         _findContentsPanelViewController.messageThreadViewController = self;
     }
   
-    NSView *rootView = self.view;
+    if(!_findContentsPanelShown) {
+        NSView *rootView = self.view;
 
-    [rootView addSubview:_findContentsPanelViewController.view];
+        [rootView addSubview:_findContentsPanelViewController.view];
 
-    _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
-    _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height);
+        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
+        _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height);
+        
+        _findContentsPanelShown = YES;
+    }
     
     NSSearchField *searchField = _findContentsPanelViewController.searchField;
     NSAssert(searchField != nil, @"searchField == nil");
     
     [[searchField window] makeFirstResponder:searchField];
-    
-    _findContentsPanelShown = YES;
 }
 
 - (void)hideFindContentsPanel {
     if(!_findContentsPanelShown)
         return;
-    
+
+    [self removeFindContentsResults];
+
     NSAssert(_findContentsPanelViewController != nil, @"_findContentsPanelViewController == nil");
-    
+
     [_findContentsPanelViewController.view removeFromSuperview];
 
     NSView *rootView = self.view;

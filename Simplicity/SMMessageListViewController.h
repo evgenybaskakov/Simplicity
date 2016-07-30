@@ -18,6 +18,7 @@
 - (IBAction)toggleStarAction:(id)sender;
 - (IBAction)toggleUnseenAction:(id)sender;
 
+- (void)deselectCurrentMessageThread;
 - (void)reloadMessageList:(Boolean)preserveSelection;
 - (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;

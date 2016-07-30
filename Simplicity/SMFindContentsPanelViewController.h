@@ -10,7 +10,7 @@
 
 @class SMMessageThreadViewController;
 
-@interface SMFindContentsPanelViewController : NSViewController
+@interface SMFindContentsPanelViewController : NSViewController<NSSearchFieldDelegate>
 
 @property SMMessageThreadViewController *__weak messageThreadViewController;
 

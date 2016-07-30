@@ -22,6 +22,10 @@
     return self;
 }
 
+- (void)viewDidLoad {
+    _searchField.delegate = self;
+}
+
 - (IBAction)findContentsSearchAction:(id)sender {
     const Boolean matchCase = (_matchCaseCheckbox.state == NSOnState);
     [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:NO];
@@ -52,6 +56,19 @@
 
 - (IBAction)doneAction:(id)sender {
     [_messageThreadViewController hideFindContentsPanel];
+}
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector {
+    if(commandSelector == @selector(cancelOperation:)) {
+        [_messageThreadViewController hideFindContentsPanel];
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end

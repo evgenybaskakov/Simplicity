@@ -94,6 +94,14 @@ function isScrolledIntoView(el) {
 function Simplicity_HighlightAllOccurrencesOfString(keyword, matchCase) {
     Simplicity_RemoveAllHighlights();
     Simplicity_HighlightAllOccurrencesOfStringForElement(document.body, matchCase? keyword : keyword.toLowerCase(), matchCase);
+    Simplicity_SearchResults.sort(function(a, b) {
+                                      if(b.getBoundingClientRect().top != a.getBoundingClientRect().top) {
+                                          return b.getBoundingClientRect().top - a.getBoundingClientRect().top;
+                                      }
+                                      else {
+                                          return b.getBoundingClientRect().left - a.getBoundingClientRect().left;
+                                      }
+                                  });
 }
 
 // the main entry point to mark (with a different color) the next occurrence of the string found before

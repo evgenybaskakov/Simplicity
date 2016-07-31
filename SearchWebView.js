@@ -20,6 +20,10 @@ var Simplicity_MarkColorBackground = "yellow";
 var Simplicity_ElementNode = 1;
 var Simplicity_TextNode = 3;
 
+function isVisible(element) {
+    return element.offsetWidth > 0 || element.offsetHeight > 0;
+}
+
 // helper function, recursively searches in elements and their child nodes
 function Simplicity_HighlightAllOccurrencesOfStringForElement(element, keyword, matchCase) {
     if (element) {
@@ -43,8 +47,10 @@ function Simplicity_HighlightAllOccurrencesOfStringForElement(element, keyword, 
                 element.parentNode.insertBefore(span, next);
                 element.parentNode.insertBefore(text, next);
                 element = text;
-                Simplicity_SearchResultCount++;
-                Simplicity_SearchResults.push(span);
+                if(isVisible(span)) {
+                    Simplicity_SearchResultCount++;
+                    Simplicity_SearchResults.push(span);
+                }
             }
         } else if (element.nodeType == Simplicity_ElementNode) {
             if (element.style.display != "none" && element.nodeName.toLowerCase() != 'select') {
@@ -79,15 +85,6 @@ function Simplicity_RemoveAllHighlightsForElement(element) {
         }
     }
     return false;
-}
-
-// checks whether the given element is visible within the current viewport
-function isScrolledIntoView(el) {
-    var elemTop = el.getBoundingClientRect().top;
-    var elemBottom = el.getBoundingClientRect().bottom;
-    
-    var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
-    return isVisible;
 }
 
 // the main entry point to start the search

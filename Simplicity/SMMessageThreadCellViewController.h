@@ -19,6 +19,7 @@
 @property (nonatomic) NSUInteger cellIndex;
 
 @property (readonly, nonatomic) NSUInteger cellHeight;
+@property (readonly, nonatomic) NSUInteger cellHeaderHeight;
 @property (readonly, nonatomic) NSUInteger stringOccurrencesCount;
 @property (readonly, nonatomic) Boolean mainFrameLoaded;
 
@@ -41,7 +42,7 @@
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;
-- (void)markOccurrenceOfFoundString:(NSUInteger)index;
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;
 

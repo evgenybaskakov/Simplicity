@@ -25,7 +25,7 @@
 - (void)uncollapse;
 - (void)setMessageHtmlText:(NSString*)htmlText messageId:(uint64_t)messageId folder:(NSString*)folder account:(SMUserAccount*)account;
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;
-- (void)markOccurrenceOfFoundString:(NSUInteger)index;
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;
 

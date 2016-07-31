@@ -785,6 +785,7 @@ static const CGFloat CELL_SPACING = 0;
     NSAssert(_cells.count > 0, @"no cells");
     
     SMMessageThreadCell *markedCell = nil;
+    NSInteger markYPos = 0;
     
     if((_currentStringToFind != nil && ![_currentStringToFind isEqualToString:stringToFind]) || !_stringOccurrenceMarked) {
         // this is the case when there is no marked occurrence or the user has lost it
@@ -813,7 +814,7 @@ static const CGFloat CELL_SPACING = 0;
                         _stringOccurrenceMarkedCellIndex = i;
                         _stringOccurrenceMarkedResultIndex = 0;
                         
-                        [cell.viewController markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+                        markYPos = [cell.viewController markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
                         
                         markedCell = cell;
                     }
@@ -835,9 +836,9 @@ static const CGFloat CELL_SPACING = 0;
         NSAssert(!cell.viewController.collapsed, @"cell with marked string is collapsed");
         
         if(forward && _stringOccurrenceMarkedResultIndex+1 < cell.viewController.stringOccurrencesCount) {
-            [cell.viewController markOccurrenceOfFoundString:(++_stringOccurrenceMarkedResultIndex)];
+            markYPos = [cell.viewController markOccurrenceOfFoundString:(++_stringOccurrenceMarkedResultIndex)];
         } else if(!forward && _stringOccurrenceMarkedResultIndex > 0) {
-            [cell.viewController markOccurrenceOfFoundString:(--_stringOccurrenceMarkedResultIndex)];
+            markYPos = [cell.viewController markOccurrenceOfFoundString:(--_stringOccurrenceMarkedResultIndex)];
         } else {
             [cell.viewController removeMarkedOccurrenceOfFoundString];
             
@@ -875,7 +876,7 @@ static const CGFloat CELL_SPACING = 0;
                     _stringOccurrenceMarkedResultIndex = forward? 0 : cell.viewController.stringOccurrencesCount-1;
                     _stringOccurrenceMarkedCellIndex = i;
                     
-                    [cell.viewController markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+                    markYPos = [cell.viewController markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
                     
                     break;
                 }
@@ -892,9 +893,11 @@ static const CGFloat CELL_SPACING = 0;
         NSAssert(markedCell != nil, @"no cell");
         
         NSRect visibleRect = [[_messageThreadView contentView] documentVisibleRect];
-        
-        if(markedCell.viewController.view.frame.origin.y < visibleRect.origin.y || markedCell.viewController.view.frame.origin.y + markedCell.viewController.view.frame.size.height >= visibleRect.origin.y + visibleRect.size.height) {
-            [self animatedScrollTo:markedCell.viewController.view.frame.origin.y];
+        CGFloat markGlobalYpos = markedCell.viewController.view.frame.origin.y + markedCell.viewController.cellHeaderHeight + markYPos;
+
+        const NSUInteger delta = 50;
+        if(markGlobalYpos < visibleRect.origin.y + delta || markGlobalYpos >= visibleRect.origin.y + visibleRect.size.height - delta) {
+            [self animatedScrollTo:(markGlobalYpos >= delta*2? markGlobalYpos - delta : 0)];
         }
     }
     

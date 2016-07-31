@@ -121,6 +121,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSUInteger)cellHeaderHeight {
+    return _messageDetailsViewController.view.frame.size.height;
+}
+
 - (void)attachmentsPanelViewHeightChanged:(NSNotification*)notification {
     SMAttachmentsPanelViewController *attachmentsPanelViewController = [[notification userInfo] objectForKey:@"Object"];
 
@@ -489,8 +493,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     [_messageBodyViewController highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 
-- (void)markOccurrenceOfFoundString:(NSUInteger)index {
-    [_messageBodyViewController markOccurrenceOfFoundString:index];
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+    return [_messageBodyViewController markOccurrenceOfFoundString:index];
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {

@@ -15,6 +15,7 @@
 #import <WebKit/WebFrameLoadDelegate.h>
 #import <WebKit/WebPolicyDelegate.h>
 #import <WebKit/WebPreferences.h>
+#import <WebKit/WebScriptObject.h>
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
@@ -278,21 +279,40 @@
         NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
         
         WebView *view = (WebView*)[self view];
-        [view stringByEvaluatingJavaScriptFromString:jsCode];
-        
-        NSString *startSearch = [NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0];
-        [view stringByEvaluatingJavaScriptFromString:startSearch];
+        WebScriptObject *scriptObject = [view windowScriptObject];
+
+// Uncomment to enable JS logs (TODO: propagate to advanced preferences?)
+//        [scriptObject setValue:self forKey:@"Simplicity"];        
+//        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+
+        [scriptObject evaluateWebScript:jsCode];
+        [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
         
         NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
         _stringOccurrencesCount = [occurrencesCount integerValue];
     }
 }
 
-- (void)markOccurrenceOfFoundString:(NSUInteger)index {
++ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
+    if (aSelector == @selector(consoleLog:) || aSelector == @selector(eventInput:)) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)consoleLog:(NSString *)message {
+    SM_LOG_INFO(@"JSLog: %@", message);
+}
+
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
     WebView *view = (WebView*)[self view];
 
     NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
-    [view stringByEvaluatingJavaScriptFromString:doMark];
+    NSString *highlightYpos = [view stringByEvaluatingJavaScriptFromString:doMark];
+    
+    NSAssert(highlightYpos != nil, @"no highlightYpos returned");
+    return highlightYpos.integerValue;
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {

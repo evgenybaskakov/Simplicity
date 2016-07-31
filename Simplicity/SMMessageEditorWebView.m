@@ -172,7 +172,7 @@
 }
 
 - (void)consoleLog:(NSString *)message {
-    SM_LOG_DEBUG(@"JSLog: %@", message);
+    SM_LOG_INFO(@"JSLog: %@", message);
 }
 
 - (void)eventInput:(NSString *)heightString {

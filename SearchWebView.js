@@ -106,11 +106,14 @@ function Simplicity_MarkOccurrenceOfFoundString(index) {
         span.style.backgroundColor = Simplicity_MarkColorBackground;
         span.style.color = Simplicity_MarkColorText;
         
-        if(!isScrolledIntoView(span))
-            span.scrollIntoView();
+        var rect = span.getBoundingClientRect();
 
         Simplicity_MarkedResultIndex = index;
+        
+        return rect.top;
     }
+    
+    return null;
 }
 
 // the main entry point to remove the previously marked occurrence of the found string

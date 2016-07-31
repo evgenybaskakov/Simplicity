@@ -894,8 +894,7 @@ static const CGFloat CELL_SPACING = 0;
         NSRect visibleRect = [[_messageThreadView contentView] documentVisibleRect];
         
         if(markedCell.viewController.view.frame.origin.y < visibleRect.origin.y || markedCell.viewController.view.frame.origin.y + markedCell.viewController.view.frame.size.height >= visibleRect.origin.y + visibleRect.size.height) {
-            NSPoint cellPosition = NSMakePoint(_messageThreadView.visibleRect.origin.x, markedCell.viewController.view.frame.origin.y);
-            [[_messageThreadView documentView] scrollPoint:cellPosition];
+            [self animatedScrollTo:markedCell.viewController.view.frame.origin.y];
         }
     }
     

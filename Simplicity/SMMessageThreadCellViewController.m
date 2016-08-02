@@ -178,6 +178,14 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)setCollapsed:(Boolean)collapsed {
+    // When the collapse property changes, it also adds/removes subviews and constraints.
+    // The added constraints may conflict with the autoresizing frame
+    // which is set previously, when the message thread cells layout is set.
+    // Therefore, to avoid different heights conflict, just make the height flexible.
+    // After collapsing/uncollapsing, the following message thread cell update
+    // procedure will choose the right frame and the autoresizing mask anyway.
+    _view.autoresizingMask |= NSViewHeightSizable;
+    
     if(collapsed) {
         if(_collapsed)
             return;
@@ -221,6 +229,15 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
             NSView *messageBodyView = [_messageBodyViewController view];
             NSAssert(messageBodyView, @"messageBodyView");
 
+            // The message body web view doesn't have a frame yet, but it's going to load an html body.
+            // If the body is loaded imminently, before the width contraints trigger a new geometry,
+            // the height of the web frame will be calculated based on its current width, which is
+            // by default set to 0. Usually that will result in a huge height which will most likely
+            // ruin the message thread layout.
+            // To prevent that from happening, forcely set the already known web body view width.
+            // Future body height will be calculated based on it.
+            [messageBodyView setFrameSize:_view.frame.size];
+            
             // Add the view to the superview immediately to have the height calculation take effect.
             [_view addSubview:messageBodyView];
 
@@ -298,14 +315,6 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 }
 
 - (void)toggleCollapse {
-    // When the collapse property changes, it also adds/removes subviews and constraints.
-    // The added constraints may conflict with the autoresizing frame
-    // which is set previously, when the message thread cells layout is set.
-    // Therefore, to avoid different heights conflict, just make the height flexible.
-    // After collapsing/uncollapsing, the following message thread cell update
-    // procedure will choose the right frame and the autoresizing mask anyway.
-    _view.autoresizingMask |= NSViewHeightSizable;
-    
     if(!_collapsed) {
         [self setCollapsed:YES];
     } else {

@@ -49,6 +49,10 @@
     _progressIndicator.hidden = YES;
 }
 
+- (BOOL)becomeFirstResponder {
+    return [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
+}
+
 - (IBAction)clearButtonAction:(id)sender {
     if(_target && _clearAction) {
         [_target performSelector:_clearAction withObject:self afterDelay:0];

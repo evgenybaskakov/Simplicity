@@ -161,6 +161,12 @@
                             <menuItem isSeparatorItem="YES" id="214">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
+                            <menuItem title="Mailbox search" keyEquivalent="F" id="mcu-v3-JB3">
+                                <connections>
+                                    <action selector="toggleSearchMailboxPanelAction:" target="544" id="M8I-W8-wjy"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="mug-4z-k2G"/>
                             <menuItem title="Find" id="218">
                                 <menu key="submenu" title="Find" id="220">
                                     <items>

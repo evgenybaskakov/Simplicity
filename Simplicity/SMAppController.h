@@ -48,6 +48,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
+- (IBAction)toggleSearchMailboxPanelAction:(id)sender;
 - (IBAction)messageNavigationAction:(id)sender;
 
 @property SMTokenFieldViewController *searchFieldViewController;

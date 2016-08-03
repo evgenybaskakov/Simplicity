@@ -489,6 +489,10 @@
     }
 }
 
+- (IBAction)toggleSearchMailboxPanelAction:(id)sender {
+    [[self.view window] makeFirstResponder:_searchFieldViewController];
+}
+
 #pragma mark New label creation
 
 - (void)showNewLabelSheet:(NSString*)suggestedParentFolder {

@@ -144,6 +144,8 @@
 		803B10EC1C1025F80057E785 /* SMMailboxLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10EB1C1025F80057E785 /* SMMailboxLabelView.m */; };
 		803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10EE1C1123390057E785 /* SMMailboxRowView.m */; };
 		803B10F21C116DD10057E785 /* SMMessageListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 803B10F11C116DD10057E785 /* SMMessageListRowView.m */; };
+		803F2AF21D53129B002F8212 /* SMLabelWithCloseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 803F2AF01D53129B002F8212 /* SMLabelWithCloseButton.m */; };
+		803F2AF31D53129B002F8212 /* SMLabelWithCloseButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803F2AF11D53129B002F8212 /* SMLabelWithCloseButton.xib */; };
 		804207D21C55F72900EA7641 /* SMWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 804207D11C55F72900EA7641 /* SMWindow.m */; };
 		804373AE1CCF412000C802EC /* SMMessageEditorToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */; };
 		804373AF1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */; };
@@ -544,6 +546,9 @@
 		803B10EE1C1123390057E785 /* SMMailboxRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailboxRowView.m; sourceTree = "<group>"; };
 		803B10F01C116DD10057E785 /* SMMessageListRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListRowView.h; sourceTree = "<group>"; };
 		803B10F11C116DD10057E785 /* SMMessageListRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListRowView.m; sourceTree = "<group>"; };
+		803F2AEF1D53129B002F8212 /* SMLabelWithCloseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabelWithCloseButton.h; sourceTree = "<group>"; };
+		803F2AF01D53129B002F8212 /* SMLabelWithCloseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabelWithCloseButton.m; sourceTree = "<group>"; };
+		803F2AF11D53129B002F8212 /* SMLabelWithCloseButton.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabelWithCloseButton.xib; sourceTree = "<group>"; };
 		804207D01C55F72900EA7641 /* SMWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMWindow.h; sourceTree = "<group>"; };
 		804207D11C55F72900EA7641 /* SMWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMWindow.m; sourceTree = "<group>"; };
 		804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorToolbarViewController.h; sourceTree = "<group>"; };
@@ -961,6 +966,8 @@
 				8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */,
 				8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */,
 				8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */,
+				803F2AEF1D53129B002F8212 /* SMLabelWithCloseButton.h */,
+				803F2AF01D53129B002F8212 /* SMLabelWithCloseButton.m */,
 				8078EABC1CD47CBB00EBF22B /* SMMailboxController.h */,
 				0097426C195686F900620145 /* SMMailboxViewController.h */,
 				0097426D195686F900620145 /* SMMailboxViewController.m */,
@@ -1101,6 +1108,7 @@
 				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */,
 				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
+				803F2AF11D53129B002F8212 /* SMLabelWithCloseButton.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
 				804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
@@ -1449,6 +1457,7 @@
 				8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */,
 				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
 				80A44B191B5A19260049AB88 /* align_center-128.png in Resources */,
+				803F2AF31D53129B002F8212 /* SMLabelWithCloseButton.xib in Resources */,
 				00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */,
 				004A64221AC7A3000079A0C1 /* SMAddressFieldViewController.xib in Resources */,
 				801C49A21D49DC95004EB65B /* Button-Collapse.png in Resources */,
@@ -1656,6 +1665,7 @@
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,
+				803F2AF21D53129B002F8212 /* SMLabelWithCloseButton.m in Sources */,
 				8023F1A11C61D4F700C7AC89 /* SMTextMessage.m in Sources */,
 				00ED318117F88DA700B04F5B /* SMAttachmentStorage.m in Sources */,
 				8062FEF01B54D9B5007D7140 /* SMMessageEditorViewController.m in Sources */,

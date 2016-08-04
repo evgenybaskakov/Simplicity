@@ -10,4 +10,7 @@
 
 @interface SMLabelWithCloseButton : NSViewController
 
+@property (nonatomic) NSString *label;
+@property (nonatomic) NSColor *color;
+
 @end

@@ -8,6 +8,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMLabelWithCloseButton">
             <connections>
+                <outlet property="boxView" destination="0QC-Uc-GcA" id="ecO-xG-eeg"/>
+                <outlet property="closeButton" destination="Jr3-z8-mpc" id="ACa-Je-uun"/>
+                <outlet property="labelView" destination="d67-zp-8yG" id="oks-MV-mPs"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -32,6 +35,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                     <font key="font" metaFont="miniSystem"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="closeAction:" target="-2" id="tvK-uw-fha"/>
+                                </connections>
                             </button>
                             <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="d67-zp-8yG">
                                 <rect key="frame" x="5" y="3" width="37" height="17"/>

@@ -18,17 +18,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    _boxView.cornerRadius = 3;
     // Do view setup here.
 }
 
 - (IBAction)closeAction:(id)sender {
 }
 
-- (void)setLabel:(NSString *)label {
-    _labelView.stringValue = label;
+- (void)setText:(NSString *)text {
+    _text = text;
+    _labelView.stringValue = text;
 }
 
 - (void)setColor:(NSColor *)color {
+    _color = color;
     _boxView.fillColor = color;
 }
 

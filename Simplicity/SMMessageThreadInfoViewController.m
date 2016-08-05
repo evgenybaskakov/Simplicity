@@ -21,6 +21,7 @@
 #import "SMMessageThread.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageThreadInfoViewController.h"
+#import "SMLabelWithCloseButton.h"
 
 @implementation SMMessageThreadInfoViewController {
     SMMessageThread *_messageThread;
@@ -33,24 +34,15 @@
     NSLayoutConstraint *_subjectTrailingConstraint;
 }
 
-+ (NSTextField*)createColorLabel:(NSString*)text color:(NSColor*)color {
-    NSTextField *label = [[NSTextField alloc] init];
++ (NSView*)createColorLabel:(NSString*)text color:(NSColor*)color {
+    SMLabelWithCloseButton *label = [[SMLabelWithCloseButton alloc] initWithNibName:@"SMLabelWithCloseButton" bundle:nil];
+    NSView *labelView = label.view;
+    labelView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [label setStringValue:text];
-    [label setBordered:YES];
-    [label setBezeled:NO];
-    [label setBackgroundColor:color];
-    [label setDrawsBackground:YES];
-    [label setEditable:NO];
-    [label setSelectable:NO];
-    [label setFrameSize:[label fittingSize]];
-    [label setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [label setLineBreakMode:NSLineBreakByTruncatingTail];
+    label.text = text;
+    label.color = color;
     
-    const NSUInteger fontSize = 12;
-    [label setFont:[NSFont systemFontOfSize:fontSize]];
-    
-    return label;
+    return labelView;
 }
 
 - (id)init {

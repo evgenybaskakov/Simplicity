@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _boxView.cornerRadius = 3;
+    _boxView.cornerRadius = 4;
     // Do view setup here.
 }
 

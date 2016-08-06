@@ -12,5 +12,8 @@
 
 @property (nonatomic) NSString *text;
 @property (nonatomic) NSColor *color;
+@property (nonatomic) id target;
+@property (nonatomic) SEL action;
+@property (nonatomic) NSObject *object;
 
 @end

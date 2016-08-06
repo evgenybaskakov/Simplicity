@@ -29,20 +29,23 @@
     NSButton *_starButton;
 */
     NSTextField *_subject;
-    NSMutableArray *_colorLabels;
-    NSMutableArray *_colorLabelConstraints;
+    NSMutableArray<SMLabelWithCloseButton*> *_colorLabels;
+    NSMutableArray<NSLayoutConstraint*> *_colorLabelConstraints;
     NSLayoutConstraint *_subjectTrailingConstraint;
 }
 
-+ (NSView*)createColorLabel:(NSString*)text color:(NSColor*)color {
+- (SMLabelWithCloseButton*)createColorLabel:(NSString*)text color:(NSColor*)color object:(NSObject*)object {
     SMLabelWithCloseButton *label = [[SMLabelWithCloseButton alloc] initWithNibName:@"SMLabelWithCloseButton" bundle:nil];
     NSView *labelView = label.view;
     labelView.translatesAutoresizingMaskIntoConstraints = NO;
     
     label.text = text;
     label.color = color;
+    label.object = object;
+    label.target = self;
+    label.action = @selector(removeLabel:);
     
-    return labelView;
+    return label;
 }
 
 - (id)init {
@@ -164,8 +167,9 @@
 
         [view removeConstraints:_colorLabelConstraints];
         
-        for(NSTextField *label in _colorLabels)
-            [label removeFromSuperview];
+        for(SMLabelWithCloseButton *label in _colorLabels) {
+            [label.view removeFromSuperview];
+        }
         
         [_colorLabels removeAllObjects];
         [_colorLabelConstraints removeAllObjects];
@@ -188,29 +192,38 @@
     NSAssert(labels.count == colors.count, @"labels count %lu != colors count %lu", labels.count, colors.count);
     
     for(NSUInteger i = 0; i < labels.count; i++) {
-        NSTextField *labelView = [SMMessageThreadInfoViewController createColorLabel:labels[i] color:colors[i]];
+        SMLabelWithCloseButton *label = [self createColorLabel:labels[i] color:colors[i] object:labels[i]];
+        NSView *labelView = label.view;
+        
         [labelView setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow-3 forOrientation:NSLayoutConstraintOrientationHorizontal];
-
         [view addSubview:labelView];
 
         if(i == 0) {
             [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:_subject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
         } else {
-            [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:_colorLabels.lastObject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP/2]];
+            SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
+            [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:lastLabel.view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP/2]];
         }
 
         [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 
-        [_colorLabels addObject:labelView];
+        [_colorLabels addObject:label];
     }
 
     [view addConstraints:_colorLabelConstraints];
 
-    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? _colorLabels.lastObject : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN];
+    SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
+    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN];
     
     _subjectTrailingConstraint.priority = NSLayoutPriorityDefaultLow;
     
     [view addConstraint:_subjectTrailingConstraint];
+}
+
+- (void)removeLabel:(id)sender {
+    SMLabelWithCloseButton *label = sender;
+    
+    SM_LOG_INFO(@"removing label %@", label.object);
 }
 
 @end

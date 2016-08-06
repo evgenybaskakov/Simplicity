@@ -24,6 +24,11 @@
 }
 
 - (IBAction)closeAction:(id)sender {
+    id target = _target;
+    
+    if(target != nil) {
+        [target performSelector:_action withObject:self afterDelay:0.0];
+    }
 }
 
 - (void)setText:(NSString *)text {

@@ -163,6 +163,7 @@
 		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */; };
+		8052555A1D55B4EC00CDCBA2 /* SMOpRemoveLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 805255591D55B4EC00CDCBA2 /* SMOpRemoveLabel.m */; };
 		80533ABC1B4114B700A0A67F /* Editing-Text-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB21B4114B700A0A67F /* Editing-Text-icon.png */; };
 		80533ABD1B4114B700A0A67F /* Editing-Border-Color-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */; };
 		80533ABE1B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */; };
@@ -577,6 +578,8 @@
 		8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpExpungeFolder.m; sourceTree = "<group>"; };
 		8051AFFE1C27C53B005E6F7E /* SMOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOutgoingMessage.h; sourceTree = "<group>"; };
 		8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOutgoingMessage.m; sourceTree = "<group>"; };
+		805255581D55B4EC00CDCBA2 /* SMOpRemoveLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpRemoveLabel.h; sourceTree = "<group>"; };
+		805255591D55B4EC00CDCBA2 /* SMOpRemoveLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpRemoveLabel.m; sourceTree = "<group>"; };
 		80533AB21B4114B700A0A67F /* Editing-Text-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Text-icon.png"; sourceTree = "<group>"; };
 		80533AB31B4114B700A0A67F /* Editing-Border-Color-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Border-Color-icon.png"; sourceTree = "<group>"; };
 		80533AB41B4114B700A0A67F /* Editing-Chisel-Tip-Marker-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Editing-Chisel-Tip-Marker-icon.png"; sourceTree = "<group>"; };
@@ -1228,6 +1231,8 @@
 				8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */,
 				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
 				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
+				805255581D55B4EC00CDCBA2 /* SMOpRemoveLabel.h */,
+				805255591D55B4EC00CDCBA2 /* SMOpRemoveLabel.m */,
 				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
 				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
 				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
@@ -1633,6 +1638,7 @@
 				00AD52EF1AA81C7900627433 /* SMNewLabelWindowController.m in Sources */,
 				00CB00EB1A9E886700339E6D /* SMMessageThreadCell.m in Sources */,
 				8011CAF51CA3C66A00697210 /* SMLabeledPopUpListViewController.m in Sources */,
+				8052555A1D55B4EC00CDCBA2 /* SMOpRemoveLabel.m in Sources */,
 				00E9107E17D2F6F50028C679 /* SMMessageListViewController.m in Sources */,
 				803B10F21C116DD10057E785 /* SMMessageListRowView.m in Sources */,
 				80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */,

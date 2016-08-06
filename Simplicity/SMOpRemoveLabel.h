@@ -1,9 +1,9 @@
 //
-//  SMOpAddLabel.h
+//  SMOpRemoveLabel.h
 //  Simplicity
 //
-//  Created by Evgeny Baskakov on 6/1/15.
-//  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
+//  Created by Evgeny Baskakov on 8/5/16.
+//  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -12,7 +12,7 @@
 
 @class MCOIndexSet;
 
-@interface SMOpAddLabel : SMOperation
+@interface SMOpRemoveLabel : SMOperation
 
 - (id)initWithUids:(MCOIndexSet*)uids remoteFolderName:(NSString*)remoteFolderName label:(NSString*)label operationExecutor:(SMOperationExecutor*)operationExecutor;
 

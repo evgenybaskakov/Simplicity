@@ -825,6 +825,7 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				805255501D55B41E00CDCBA2 /* Operations */,
 				80B860111CF97AD400BD0804 /* Search */,
 				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
 				809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */,
@@ -884,28 +885,6 @@
 				803A653D1CEED32E0026B194 /* SMMessageThreadAccountProxy.m */,
 				009217AD1A930019003A0348 /* SMMessageThreadCollection.h */,
 				009217AE1A930019003A0348 /* SMMessageThreadCollection.m */,
-				80E657581B1D6C0600A0AA81 /* SMOpAddLabel.h */,
-				80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */,
-				8081A7891B27F65B0081727C /* SMOpAppendMessage.h */,
-				8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */,
-				805C61D21C42FBBC001365AC /* SMOpDeleteFolder.h */,
-				805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */,
-				80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */,
-				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
-				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
-				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
-				80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */,
-				80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */,
-				80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */,
-				80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */,
-				8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */,
-				8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */,
-				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
-				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
-				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
-				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
-				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
-				806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */,
 				8051AFFE1C27C53B005E6F7E /* SMOutgoingMessage.h */,
 				8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */,
 				803A83181BE59059006520DD /* SMPreferencesController.h */,
@@ -1226,6 +1205,35 @@
 				803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */,
 			);
 			name = Preferences;
+			sourceTree = "<group>";
+		};
+		805255501D55B41E00CDCBA2 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				80E657581B1D6C0600A0AA81 /* SMOpAddLabel.h */,
+				80E657591B1D6C0600A0AA81 /* SMOpAddLabel.m */,
+				8081A7891B27F65B0081727C /* SMOpAppendMessage.h */,
+				8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */,
+				805C61D21C42FBBC001365AC /* SMOpDeleteFolder.h */,
+				805C61D31C42FBBC001365AC /* SMOpDeleteFolder.m */,
+				80E657521B1C210900A0AA81 /* SMOpDeleteMessages.h */,
+				80E657531B1C210900A0AA81 /* SMOpDeleteMessages.m */,
+				80E6575B1B1D763C00A0AA81 /* SMOperation.h */,
+				80E6575C1B1D763C00A0AA81 /* SMOperation.m */,
+				80D8ECCF1B1EC739002C70DA /* SMOperationExecutor.h */,
+				80D8ECD01B1EC739002C70DA /* SMOperationExecutor.m */,
+				80D8ECC51B1EC3F5002C70DA /* SMOperationQueue.h */,
+				80D8ECC61B1EC3F5002C70DA /* SMOperationQueue.m */,
+				8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */,
+				8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */,
+				80E657551B1D681A00A0AA81 /* SMOpMoveMessages.h */,
+				80E657561B1D681A00A0AA81 /* SMOpMoveMessages.m */,
+				80E6575E1B1D79F500A0AA81 /* SMOpSendMessage.h */,
+				80E6575F1B1D79F500A0AA81 /* SMOpSendMessage.m */,
+				806A1B6E1B73353A00A3DC30 /* SMOpSetMessageFlags.h */,
+				806A1B6F1B73353A00A3DC30 /* SMOpSetMessageFlags.m */,
+			);
+			name = Operations;
 			sourceTree = "<group>";
 		};
 		80533AD51B4118B800A0A67F /* TextEditorIcons */ = {

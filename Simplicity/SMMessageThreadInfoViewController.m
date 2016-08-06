@@ -29,6 +29,7 @@
     NSButton *_starButton;
 */
     NSTextField *_subject;
+    NSButton *_addLabelButton;
     NSMutableArray<SMLabelWithCloseButton*> *_colorLabels;
     NSMutableArray<NSLayoutConstraint*> *_colorLabelConstraints;
     NSLayoutConstraint *_subjectTrailingConstraint;
@@ -131,15 +132,38 @@
     
     [view addSubview:_subject];
     
+    
+    // add label button
+
+    _addLabelButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
+    _addLabelButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _addLabelButton.image = [NSImage imageNamed:NSImageNameAddTemplate];
+    _addLabelButton.bezelStyle = NSTexturedRoundedBezelStyle;
+    _addLabelButton.toolTip = @"Add label";
+
+    [view addSubview:_addLabelButton];
+    
+    // subject constraints
+    
 /*
     [view addConstraint:[NSLayoutConstraint constraintWithItem:_starButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_subject attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
 */
 
     [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_subject attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
 
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:_subject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-H_MARGIN]];
-
     [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_subject attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_MARGIN]];
+
+    // add button constaints
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_addLabelButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:24]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_addLabelButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:20]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_addLabelButton attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_addLabelButton attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_subject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_addLabelButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
 }
 
 - (void)updateMessageThread {
@@ -182,7 +206,7 @@
 
     if(_messageThread == nil)
         return;
-
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
     
@@ -213,7 +237,7 @@
     [view addConstraints:_colorLabelConstraints];
 
     SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
-    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-H_MARGIN];
+    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_addLabelButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN];
     
     _subjectTrailingConstraint.priority = NSLayoutPriorityDefaultLow;
     

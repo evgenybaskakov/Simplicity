@@ -140,6 +140,8 @@
     _addLabelButton.image = [NSImage imageNamed:NSImageNameAddTemplate];
     _addLabelButton.bezelStyle = NSTexturedRoundedBezelStyle;
     _addLabelButton.toolTip = @"Add label";
+    _addLabelButton.target = self;
+    _addLabelButton.action = @selector(addLabel:);
 
     [view addSubview:_addLabelButton];
     
@@ -244,10 +246,14 @@
     [view addConstraint:_subjectTrailingConstraint];
 }
 
+- (void)addLabel:(id)sender {
+    SM_LOG_INFO(@"adding label: TODO");
+}
+
 - (void)removeLabel:(id)sender {
     SMLabelWithCloseButton *label = sender;
     
-    SM_LOG_INFO(@"removing label %@", label.object);
+    SM_LOG_INFO(@"removing label %@: TODO", label.object);
 }
 
 @end

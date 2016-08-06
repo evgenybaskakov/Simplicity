@@ -213,7 +213,7 @@
     [view addConstraints:_colorLabelConstraints];
 
     SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
-    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN];
+    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-H_MARGIN];
     
     _subjectTrailingConstraint.priority = NSLayoutPriorityDefaultLow;
     

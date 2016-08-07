@@ -22,6 +22,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageThreadInfoViewController.h"
 #import "SMLabelWithCloseButton.h"
+#import "SMLabelSelectionViewController.h"
 
 @implementation SMMessageThreadInfoViewController {
     SMMessageThread *_messageThread;
@@ -33,6 +34,7 @@
     NSMutableArray<SMLabelWithCloseButton*> *_colorLabels;
     NSMutableArray<NSLayoutConstraint*> *_colorLabelConstraints;
     NSLayoutConstraint *_subjectTrailingConstraint;
+    SMLabelSelectionViewController *_labelSelectionViewController;
 }
 
 - (SMLabelWithCloseButton*)createColorLabel:(NSString*)text color:(NSColor*)color object:(NSObject*)object {
@@ -248,6 +250,21 @@
 
 - (void)addLabel:(id)sender {
     SM_LOG_INFO(@"adding label: TODO");
+    
+    if(_labelSelectionViewController == nil) {
+        _labelSelectionViewController = [[SMLabelSelectionViewController alloc] initWithNibName:@"SMLabelSelectionViewController" bundle:nil];
+        NSAssert(_labelSelectionViewController.view, @"labelSelectionViewController");
+    }
+
+    NSPopover *popover = [[NSPopover alloc] init];
+    popover.contentViewController = _labelSelectionViewController;
+    
+    popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+    popover.animates = YES;
+    popover.behavior = NSPopoverBehaviorTransient;
+
+    NSRectEdge prefEdge = NSRectEdgeMaxY;
+    [popover showRelativeToRect:_addLabelButton.bounds ofView:sender preferredEdge:prefEdge];
 }
 
 - (void)removeLabel:(id)sender {

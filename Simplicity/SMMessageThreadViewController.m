@@ -167,6 +167,7 @@ static const CGFloat CELL_SPACING = 0;
 
     if(_messageThreadInfoViewController == nil) {
         _messageThreadInfoViewController = [[SMMessageThreadInfoViewController alloc] init];
+        _messageThreadInfoViewController.messageThreadViewController = self;
         
         NSView *infoView = [_messageThreadInfoViewController view];
         NSAssert(infoView != nil, @"no info view");
@@ -1256,6 +1257,16 @@ static const CGFloat CELL_SPACING = 0;
     _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height);
     
     _findContentsPanelShown = NO;
+}
+
+#pragma mark label manupilations
+
+- (void)addLabel:(NSString*)label {
+    NSLog(@"%s: TODO: %@", __FUNCTION__, label);
+}
+
+- (void)removeLabel:(NSString*)label {
+    NSLog(@"%s: TODO: %@", __FUNCTION__, label);
 }
 
 @end

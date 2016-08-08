@@ -9,9 +9,12 @@
 #import <Cocoa/Cocoa.h>
 
 @class SMFolder;
+@class SMMessageThreadInfoViewController;
 
 @interface SMLabelSelectionViewController : NSViewController<NSTableViewDelegate, NSTableViewDataSource>
 
-@property NSArray<SMFolder*> *folders;
+@property __weak SMMessageThreadInfoViewController *messageThreadInfoViewController;
+
+@property (nonatomic) NSArray<SMFolder*> *folders;
 
 @end

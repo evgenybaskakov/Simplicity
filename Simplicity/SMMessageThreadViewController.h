@@ -35,4 +35,7 @@
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;
 
+- (void)addLabel:(NSString*)label;
+- (void)removeLabel:(NSString*)label;
+
 @end

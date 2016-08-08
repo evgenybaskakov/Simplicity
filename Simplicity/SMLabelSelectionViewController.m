@@ -13,9 +13,10 @@
 #import "SMColorCircle.h"
 #import "SMLabelSelectionRow.h"
 #import "SMLabelSelectionViewController.h"
+#import "SMMessageThreadInfoViewController.h"
 
 @interface SMLabelSelectionViewController ()
-
+@property (weak) IBOutlet NSTableView *tableView;
 @end
 
 @implementation SMLabelSelectionViewController
@@ -28,7 +29,6 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     return _folders.count;
 }
-
 - (NSView*)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     if(row < 0 || row >= _folders.count)
         return nil;
@@ -44,6 +44,17 @@
     view.textField.stringValue = folder.displayName;
     
     return view;
+}
+
+- (void)setFolders:(NSArray<SMFolder *> *)folders {
+    _folders = folders;
+    [_tableView reloadData];
+}
+
+- (IBAction)clickAction:(id)sender {
+    NSInteger row = [sender selectedRow];
+    
+    [_messageThreadInfoViewController addLabel:_folders[row].fullName];
 }
 
 @end

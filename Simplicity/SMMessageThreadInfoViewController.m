@@ -35,6 +35,7 @@
     NSMutableArray<NSLayoutConstraint*> *_colorLabelConstraints;
     NSLayoutConstraint *_subjectTrailingConstraint;
     SMLabelSelectionViewController *_labelSelectionViewController;
+    NSPopover *_labelSelectionPopover;
 }
 
 - (SMLabelWithCloseButton*)createColorLabel:(NSString*)text color:(NSColor*)color object:(NSObject*)object {
@@ -46,7 +47,7 @@
     label.color = color;
     label.object = object;
     label.target = self;
-    label.action = @selector(removeLabel:);
+    label.action = @selector(removeLabelAction:);
     
     return label;
 }
@@ -143,7 +144,7 @@
     _addLabelButton.bezelStyle = NSTexturedRoundedBezelStyle;
     _addLabelButton.toolTip = @"Add label";
     _addLabelButton.target = self;
-    _addLabelButton.action = @selector(addLabel:);
+    _addLabelButton.action = @selector(addLabelAction:);
 
     [view addSubview:_addLabelButton];
     
@@ -248,7 +249,7 @@
     [view addConstraint:_subjectTrailingConstraint];
 }
 
-- (void)addLabel:(id)sender {
+- (void)addLabelAction:(id)sender {
     SM_LOG_INFO(@"adding label: TODO");
     
     id<SMMailbox> mailbox = _messageThread.account.mailbox;
@@ -257,24 +258,38 @@
         _labelSelectionViewController = [[SMLabelSelectionViewController alloc] initWithNibName:@"SMLabelSelectionViewController" bundle:nil];
         NSAssert(_labelSelectionViewController.view, @"labelSelectionViewController");
     }
-    
+
+    _labelSelectionViewController.messageThreadInfoViewController = self;
     _labelSelectionViewController.folders = mailbox.folders;
     
-    NSPopover *popover = [[NSPopover alloc] init];
-    popover.contentViewController = _labelSelectionViewController;
+    _labelSelectionPopover = [[NSPopover alloc] init];
+    _labelSelectionPopover.contentViewController = _labelSelectionViewController;
     
-    popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
-    popover.animates = YES;
-    popover.behavior = NSPopoverBehaviorTransient;
+    _labelSelectionPopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+    _labelSelectionPopover.animates = YES;
+    _labelSelectionPopover.behavior = NSPopoverBehaviorTransient;
 
     NSRectEdge prefEdge = NSRectEdgeMaxY;
-    [popover showRelativeToRect:_addLabelButton.bounds ofView:sender preferredEdge:prefEdge];
+    [_labelSelectionPopover showRelativeToRect:_addLabelButton.bounds ofView:sender preferredEdge:prefEdge];
 }
 
-- (void)removeLabel:(id)sender {
+- (void)removeLabelAction:(id)sender {
     SMLabelWithCloseButton *label = sender;
     
     SM_LOG_INFO(@"removing label %@: TODO", label.object);
+}
+
+#pragma mark label manupilations
+
+- (void)addLabel:(NSString*)label {
+    [_labelSelectionPopover close];
+    _labelSelectionPopover = nil;
+    
+    [_messageThreadViewController addLabel:label];
+}
+
+- (void)removeLabel:(NSString*)label {
+    [_messageThreadViewController removeLabel:label];
 }
 
 @end

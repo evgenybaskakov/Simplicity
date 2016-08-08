@@ -251,11 +251,15 @@
 - (void)addLabel:(id)sender {
     SM_LOG_INFO(@"adding label: TODO");
     
+    id<SMMailbox> mailbox = _messageThread.account.mailbox;
+    
     if(_labelSelectionViewController == nil) {
         _labelSelectionViewController = [[SMLabelSelectionViewController alloc] initWithNibName:@"SMLabelSelectionViewController" bundle:nil];
         NSAssert(_labelSelectionViewController.view, @"labelSelectionViewController");
     }
-
+    
+    _labelSelectionViewController.folders = mailbox.folders;
+    
     NSPopover *popover = [[NSPopover alloc] init];
     popover.contentViewController = _labelSelectionViewController;
     

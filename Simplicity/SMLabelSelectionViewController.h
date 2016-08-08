@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMFolder;
+
 @interface SMLabelSelectionViewController : NSViewController<NSTableViewDelegate, NSTableViewDataSource>
+
+@property NSArray<SMFolder*> *folders;
 
 @end

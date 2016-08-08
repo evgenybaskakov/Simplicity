@@ -99,6 +99,7 @@
 		800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C67981B49A89B00272D60 /* MKColorSwatchCell.m */; };
 		800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */; };
 		800C67A11B49A89B00272D60 /* MKColorWell.m in Sources */ = {isa = PBXBuildFile; fileRef = 800C679C1B49A89B00272D60 /* MKColorWell.m */; };
+		8011879A1D585D770080505A /* SMLabelSelectionTableRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 801187991D585D770080505A /* SMLabelSelectionTableRowView.m */; };
 		8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011CAE91CA3A91D00697210 /* SMColorView.m */; };
 		8011CAF51CA3C66A00697210 /* SMLabeledPopUpListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */; };
 		8011CAF61CA3C66A00697210 /* SMLabeledPopUpListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */; };
@@ -480,6 +481,8 @@
 		800C679A1B49A89B00272D60 /* MKColorSwatchMatrix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorSwatchMatrix.m; sourceTree = "<group>"; };
 		800C679B1B49A89B00272D60 /* MKColorWell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKColorWell.h; sourceTree = "<group>"; };
 		800C679C1B49A89B00272D60 /* MKColorWell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKColorWell.m; sourceTree = "<group>"; };
+		801187981D585D770080505A /* SMLabelSelectionTableRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabelSelectionTableRowView.h; sourceTree = "<group>"; };
+		801187991D585D770080505A /* SMLabelSelectionTableRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabelSelectionTableRowView.m; sourceTree = "<group>"; };
 		8011CAE81CA3A91D00697210 /* SMColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMColorView.h; sourceTree = "<group>"; };
 		8011CAE91CA3A91D00697210 /* SMColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMColorView.m; sourceTree = "<group>"; };
 		8011CAF21CA3C66A00697210 /* SMLabeledPopUpListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledPopUpListViewController.h; sourceTree = "<group>"; };
@@ -1052,6 +1055,8 @@
 				8048FBCB1C13D0800083954D /* SMInactiveButton.m */,
 				004A642A1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.h */,
 				004A642B1AC7A4360079A0C1 /* SMLabeledTokenFieldBoxView.m */,
+				801187981D585D770080505A /* SMLabelSelectionTableRowView.h */,
+				801187991D585D770080505A /* SMLabelSelectionTableRowView.m */,
 				805255601D570BB700CDCBA2 /* SMLabelSelectionRow.h */,
 				805255611D570BB700CDCBA2 /* SMLabelSelectionRow.m */,
 				803B10EA1C1025F80057E785 /* SMMailboxLabelView.h */,
@@ -1673,6 +1678,7 @@
 				00A25BBA17E10D1400D0FCB1 /* SMMessageListController.m in Sources */,
 				0082F5FE1A0FFAAC0050578A /* SMLocalFolder.m in Sources */,
 				801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */,
+				8011879A1D585D770080505A /* SMLabelSelectionTableRowView.m in Sources */,
 				804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */,
 				80D8ECD11B1EC739002C70DA /* SMOperationExecutor.m in Sources */,
 				80CE25FB1C782E6A00A9837F /* SMTokenView.m in Sources */,

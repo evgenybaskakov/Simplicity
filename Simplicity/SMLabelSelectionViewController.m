@@ -12,6 +12,7 @@
 #import "SMFolder.h"
 #import "SMColorCircle.h"
 #import "SMLabelSelectionRow.h"
+#import "SMLabelSelectionTableRowView.h"
 #import "SMLabelSelectionViewController.h"
 #import "SMMessageThreadInfoViewController.h"
 
@@ -29,6 +30,7 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
     return _folders.count;
 }
+
 - (NSView*)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     if(row < 0 || row >= _folders.count)
         return nil;
@@ -44,6 +46,10 @@
     view.textField.stringValue = folder.displayName;
     
     return view;
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
+    return [[SMLabelSelectionTableRowView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 }
 
 - (void)setFolders:(NSArray<SMFolder *> *)folders {

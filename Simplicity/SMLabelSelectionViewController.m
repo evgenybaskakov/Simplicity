@@ -64,7 +64,13 @@
 }
 
 - (NSSize)preferredContentSize {
-    return NSMakeSize(400, _tableView.rowHeight * _tableView.numberOfRows + _tableView.intercellSpacing.height * (_tableView.numberOfRows + 1));
+    CGFloat w = 0;
+    for(NSUInteger i = 0, n = _tableView.numberOfRows; i < n; i++) {
+        NSSize rowSize = [[self tableView:_tableView viewForTableColumn:nil row:i] fittingSize];
+        w = MAX(w, rowSize.width+6);
+    }
+    
+    return NSMakeSize(w, _tableView.rowHeight * _tableView.numberOfRows + _tableView.intercellSpacing.height * (_tableView.numberOfRows + 1));
 }
 
 @end

@@ -63,4 +63,8 @@
     [_messageThreadInfoViewController addLabel:_folders[row].fullName];
 }
 
+- (NSSize)preferredContentSize {
+    return NSMakeSize(400, _tableView.rowHeight * _tableView.numberOfRows + _tableView.intercellSpacing.height * (_tableView.numberOfRows + 1));
+}
+
 @end

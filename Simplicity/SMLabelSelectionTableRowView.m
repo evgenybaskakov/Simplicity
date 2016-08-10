@@ -58,7 +58,7 @@
 
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
     if(self.mouseInside) {
-        [[NSColor darkGrayColor] set];
+        [[NSColor blackColor] set];
         NSRectFill(self.bounds);
     }
     else {

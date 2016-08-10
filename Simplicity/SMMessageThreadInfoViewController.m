@@ -228,7 +228,9 @@
         [view addSubview:labelView];
 
         if(i == 0) {
-            [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:_subject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+            [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:_subject attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
+            
+            _colorLabelConstraints.lastObject.priority = NSLayoutPriorityDefaultLow;
         } else {
             SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
             [_colorLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:lastLabel.view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:labelView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP/2]];
@@ -242,9 +244,7 @@
     [view addConstraints:_colorLabelConstraints];
 
     SMLabelWithCloseButton *lastLabel = _colorLabels.lastObject;
-    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:_addLabelButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN];
-    
-    _subjectTrailingConstraint.priority = NSLayoutPriorityDefaultLow;
+    _subjectTrailingConstraint = [NSLayoutConstraint constraintWithItem:(_colorLabels.count != 0? lastLabel.view : _subject) attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_addLabelButton attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN];
     
     [view addConstraint:_subjectTrailingConstraint];
 }

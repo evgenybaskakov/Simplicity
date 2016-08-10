@@ -261,7 +261,6 @@
 
     _labelSelectionViewController.messageThreadInfoViewController = self;
     _labelSelectionViewController.folders = mailbox.folders;
-    [_labelSelectionViewController.view setFrameSize:_labelSelectionViewController.preferredContentSize];
     
     _labelSelectionPopover = [[NSPopover alloc] init];
     _labelSelectionPopover.contentViewController = _labelSelectionViewController;

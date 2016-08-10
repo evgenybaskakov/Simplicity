@@ -67,10 +67,13 @@
     CGFloat w = 0;
     for(NSUInteger i = 0, n = _tableView.numberOfRows; i < n; i++) {
         NSSize rowSize = [[self tableView:_tableView viewForTableColumn:nil row:i] fittingSize];
-        w = MAX(w, rowSize.width+6);
+        w = MAX(w, rowSize.width);
     }
     
-    return NSMakeSize(w, _tableView.rowHeight * _tableView.numberOfRows + _tableView.intercellSpacing.height * (_tableView.numberOfRows + 1));
+    NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
+    CGFloat h = MIN(_tableView.rowHeight * _tableView.numberOfRows + _tableView.intercellSpacing.height * (_tableView.numberOfRows + 1), mainWindow.frame.size.height);
+    
+    return NSMakeSize(w + 6, h);
 }
 
 @end

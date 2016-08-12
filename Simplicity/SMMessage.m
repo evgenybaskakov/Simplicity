@@ -242,9 +242,19 @@ static NSString *unquote(NSString *s) {
         SM_LOG_DEBUG(@"IMAP message uid %u original flags have changed", self.uid);
 
         _imapMessage = m;
+        _labels = m.gmailLabels;
 
         return YES;
     } else {
+        NSArray *newLabels = m.gmailLabels;
+        if(newLabels == nil && _labels == nil) {
+            return NO;
+        }
+        else if((newLabels == nil && _labels != nil) || (newLabels != nil && _labels == nil) || ![_labels isEqualToArray:newLabels]) {
+            _labels = newLabels;
+            return YES;
+        }
+        
         return NO;
     }
 }

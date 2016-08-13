@@ -56,4 +56,7 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 - (Boolean)updateThreadAttributesForMessageId:(uint64_t)messageId;
 - (void)removeMessageFromMessageThread:(uint64_t)messageId;
 
+- (void)addLabel:(NSString*)label;
+- (void)removeLabel:(NSString*)label;
+
 @end

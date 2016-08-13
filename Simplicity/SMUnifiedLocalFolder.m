@@ -131,6 +131,14 @@
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
+- (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
+}
+
+- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
+}
+
 - (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
     return NO;

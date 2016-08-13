@@ -544,4 +544,22 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     NSAssert([_messageCollection messagesByMessageId].count == [_messageCollection messagesByDate].count, @"message storage inconsistency after removing a message");
 }
 
+#pragma mark labels
+
+- (void)addLabel:(NSString*)label {
+    for(SMMessage *m in _messageCollection.messagesByMessageId) {
+        [m addLabel:label];
+    }
+
+    [_labels addObject:label];
+}
+
+- (void)removeLabel:(NSString*)label {
+    for(SMMessage *m in _messageCollection.messagesByMessageId) {
+        [m removeLabel:label];
+    }
+
+    [_labels removeObject:label];
+}
+
 @end

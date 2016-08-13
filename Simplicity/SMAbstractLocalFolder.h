@@ -75,4 +75,12 @@
 // to the chosen folder
 - (BOOL)moveMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;
 
+// adds a label for all messages in the message thread
+// initiates a remote server operation
+- (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label;
+
+// removes a label for all messages in the message thread
+// initiates a remote server operation
+- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label;
+
 @end

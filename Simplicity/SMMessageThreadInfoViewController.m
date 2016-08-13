@@ -215,7 +215,7 @@
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
     
-    NSMutableArray *labels = [NSMutableArray array];
+    NSMutableArray<NSString*> *labels = [NSMutableArray array];
     NSArray *colors = [appDelegate.messageThreadAccountProxy colorsForMessageThread:_messageThread folder:currentFolder labels:labels];
 
     NSAssert(labels.count == colors.count, @"labels count %lu != colors count %lu", labels.count, colors.count);
@@ -274,9 +274,9 @@
 }
 
 - (void)removeLabelAction:(id)sender {
-    SMLabelWithCloseButton *label = sender;
+    SMLabelWithCloseButton *labelButton = sender;
     
-    SM_LOG_INFO(@"removing label %@: TODO", label.object);
+    [self removeLabel:(NSString*)labelButton.object];
 }
 
 #pragma mark label manupilations

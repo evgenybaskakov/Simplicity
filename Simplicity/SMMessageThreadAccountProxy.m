@@ -26,6 +26,16 @@
     [localFolder setMessageFlagged:message flagged:flagged];
 }
 
+- (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];
+    [localFolder addMessageThreadLabel:messageThread label:label];
+}
+
+- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];
+    [localFolder removeMessageThreadLabel:messageThread label:label];
+}
+
 - (NSArray*)colorsForMessageThread:(SMMessageThread*)messageThread folder:(SMFolder*)folder labels:(NSMutableArray*)labels {
     return [[messageThread.account folderColorController] colorsForMessageThread:messageThread folder:folder labels:labels];
 }

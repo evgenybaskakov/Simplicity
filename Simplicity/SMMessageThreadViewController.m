@@ -1262,11 +1262,29 @@ static const CGFloat CELL_SPACING = 0;
 #pragma mark label manupilations
 
 - (void)addLabel:(NSString*)label {
-    NSLog(@"%s: TODO: %@", __FUNCTION__, label);
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
+    [appDelegate.messageThreadAccountProxy addMessageThreadLabel:_currentMessageThread label:label];
+    
+    [_messageThreadInfoViewController updateMessageThread];
+    
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 - (void)removeLabel:(NSString*)label {
-    NSLog(@"%s: TODO: %@", __FUNCTION__, label);
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
+    NSAssert(currentFolder != nil, @"no current folder");
+    
+    [appDelegate.messageThreadAccountProxy removeMessageThreadLabel:_currentMessageThread label:label];
+    
+    [_messageThreadInfoViewController updateMessageThread];
+    
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
 @end

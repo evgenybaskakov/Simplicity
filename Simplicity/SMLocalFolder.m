@@ -17,6 +17,8 @@
 #import "SMOpMoveMessages.h"
 #import "SMOpDeleteMessages.h"
 #import "SMOpSetMessageFlags.h"
+#import "SMOpAddLabel.h"
+#import "SMOpRemoveLabel.h"
 #import "SMMessageListController.h"
 #import "SMMessageThread.h"
 #import "SMMessage.h"
@@ -638,6 +640,40 @@
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged operationExecutor:[(SMUserAccount*)_account operationExecutor]];
     
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
+}
+
+#pragma mark Adding and removing message labels
+
+- (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    // modify the local copy of the message thread
+    [messageThread addLabel:label];
+    
+    for(SMMessage *message in messageThread.messagesSortedByDate) {
+        // update the local database
+        [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+        
+        // enqueue the remote folder operation
+        SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+        
+        [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
+    }
+}
+
+- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    // modify the local copy of the message thread
+    [messageThread removeLabel:label];
+    
+    for(SMMessage *message in messageThread.messagesSortedByDate) {
+        // update the local database
+        [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+        
+        // enqueue the remote folder operation
+        SMOpRemoveLabel *op = [[SMOpRemoveLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+        
+        [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
+    }
+    
+    // TODO: remove the message thread from the current folder if the label is the remote folder name
 }
 
 #pragma mark Messages movement to other remote folders

@@ -60,5 +60,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 - (Boolean)updateImapMessage:(MCOIMAPMessage*)m;
 - (NSString*)localizedDate;
 - (BOOL)hasData;
+- (void)addLabel:(NSString*)label;
+- (void)removeLabel:(NSString*)label;
 
 @end

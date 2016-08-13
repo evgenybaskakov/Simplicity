@@ -329,6 +329,32 @@ static NSString *unquote(NSString *s) {
     return _htmlBodyRendering;
 }
 
+- (void)addLabel:(NSString*)label {
+    // TODO: make the changes persistent if the message is being currently updated
+    if(_labels == nil) {
+        _labels = @[label];
+    }
+    else if(![_labels containsObject:label]) {
+        NSMutableArray *newLabels = [NSMutableArray arrayWithArray:_labels];
+        [newLabels addObject:label];
+        _labels = newLabels;
+    }
+}
+
+- (void)removeLabel:(NSString*)label {
+    // TODO: make the changes persistent if the message is being currently updated
+    if(_labels != nil && [_labels containsObject:label]) {
+        if(_labels.count == 1) {
+            _labels = nil;
+        }
+        else {
+            NSMutableArray *newLabels = [NSMutableArray arrayWithArray:_labels];
+            [newLabels removeObject:label];
+            _labels = newLabels;
+        }
+    }
+}
+
 - (BOOL) MCOAbstractMessage:(MCOAbstractMessage *)msg canPreviewPart:(MCOAbstractPart *)part {
     SM_LOG_DEBUG(@"???");
     return YES;

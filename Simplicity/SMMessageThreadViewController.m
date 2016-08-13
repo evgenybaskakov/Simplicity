@@ -1,4 +1,3 @@
-
 //
 //  SMMessageThreadViewController.m
 //  Simplicity
@@ -149,16 +148,19 @@ static const CGFloat CELL_SPACING = 0;
     }
 }
 
-- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount {
+- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount localFolder:(id<SMAbstractLocalFolder>)localFolder {
     if(messageThread == nil) {
         [self hideCurrentMessageThread:selectedThreadsCount];
     }
 
-    if(_currentMessageThread == messageThread)
+    if(_currentMessageThread == messageThread) {
+        NSAssert(_currentLocalFolder == localFolder, @"bad current local folder");
         return;
+    }
     
     [self closeEmbeddedEditor:YES];
     
+    _currentLocalFolder = localFolder;
     _currentMessageThread = messageThread;
 
     if(_currentMessageThread != nil) {
@@ -251,11 +253,7 @@ static const CGFloat CELL_SPACING = 0;
     [self updateNavigationControls];
 
     // reflect the local folder properties to the view of the message thread
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
-    id<SMAbstractLocalFolder> currentLocalFolder = [[appDelegate.currentAccount messageListController] currentLocalFolder];
-    NSAssert(currentLocalFolder != nil, @"no current local folder");
-    
-    if(currentLocalFolder.kind == SMFolderKindOutbox) {
+    if(_currentLocalFolder.kind == SMFolderKindOutbox) {
         _messageThreadInfoViewController.addLabelButtonEnabled = NO;
     }
     else {
@@ -993,10 +991,7 @@ static const CGFloat CELL_SPACING = 0;
     else {
         NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
 
-        id<SMAbstractLocalFolder> currentLocalFolder = [[appDelegate.currentAccount messageListController] currentLocalFolder];
-        NSAssert(currentLocalFolder != nil, @"no current local folder");
-
-        if([currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
+        if([_currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
             [messageListViewController reloadMessageList:YES];
         }
         
@@ -1026,7 +1021,7 @@ static const CGFloat CELL_SPACING = 0;
     
     if(cell.message.unseen) {
         if(_cells.count == 1) {
-            [self setMessageThread:nil selectedThreadsCount:0]; // TODO: why clear the message thread?
+            [self setMessageThread:nil selectedThreadsCount:0 localFolder:nil]; // TODO: why clear the message thread?
             
             preserveMessageListSelection = NO;
         }
@@ -1054,11 +1049,8 @@ static const CGFloat CELL_SPACING = 0;
     }
     
     SMMessageThreadCell *cell = _cells[cellIdx];
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
-    
     [appDelegate.messageThreadAccountProxy setMessageFlagged:_currentMessageThread message:cell.message flagged:(cell.message.flagged? NO : YES)];
     
     [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
@@ -1277,10 +1269,6 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)addLabel:(NSString*)label {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
-    
     [appDelegate.messageThreadAccountProxy addMessageThreadLabel:_currentMessageThread label:label];
     
     [_messageThreadInfoViewController updateMessageThread];
@@ -1290,10 +1278,6 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)removeLabel:(NSString*)label {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
-    id<SMAbstractLocalFolder> currentFolder = [messageListController currentLocalFolder];
-    NSAssert(currentFolder != nil, @"no current folder");
-    
     [appDelegate.messageThreadAccountProxy removeMessageThreadLabel:_currentMessageThread label:label];
     
     [_messageThreadInfoViewController updateMessageThread];

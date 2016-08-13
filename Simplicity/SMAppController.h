@@ -11,6 +11,8 @@
 
 #import "SMAbstractAccount.h"
 
+@protocol SMAbstractLocalFolder;
+
 @class SMTokenFieldViewController;
 @class SMSectionMenuViewController;
 @class SMNewAccountWindowController;
@@ -71,7 +73,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)toggleOperationQueueSheet;
 - (void)hideOperationQueueSheet;
 
-- (void)openMessageWindow:(SMMessageThread*)messageThread;
+- (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
 
 - (void)moveSelectedMessageThreadsToTrash;

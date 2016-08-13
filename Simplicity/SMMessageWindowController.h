@@ -8,12 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 
+@protocol SMAbstractLocalFolder;
+
 @class SMMessageThread;
 
 @interface SMMessageWindowController : NSWindowController<NSWindowDelegate>
 
 @property (readonly) SMMessageThreadViewController *messageThreadViewController;
 
-@property SMMessageThread *currentMessageThread;
+@property id<SMAbstractLocalFolder> localFolder;
+@property SMMessageThread *messageThread;
 
 @end

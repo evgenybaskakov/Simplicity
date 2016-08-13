@@ -8,16 +8,19 @@
 
 #import <Cocoa/Cocoa.h>
 
+@protocol SMAbstractLocalFolder;
+
 @class SMMessageThread;
 
 @interface SMMessageThreadViewController : NSViewController
 
+@property (readonly) id<SMAbstractLocalFolder> currentLocalFolder;
 @property (readonly) SMMessageThread *currentMessageThread;
 
 - (void)findContents:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward;
 - (void)removeFindContentsResults;
 
-- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount;
+- (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)updateMessageThread;
 
 - (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex;

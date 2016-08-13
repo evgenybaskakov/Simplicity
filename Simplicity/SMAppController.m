@@ -578,10 +578,12 @@
 
 #pragma mark Message viewer window
 
-- (void)openMessageWindow:(SMMessageThread*)messageThread {
+- (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {
     SMMessageWindowController *messageWindowController = [[SMMessageWindowController alloc] initWithWindowNibName:@"SMMessageWindowController"];
     
-    [messageWindowController setCurrentMessageThread:messageThread];
+    messageWindowController.messageThread = messageThread;
+    messageWindowController.localFolder = localFolder;
+
     [messageWindowController showWindow:self];
     
     [_messageWindowControllers addObject:messageWindowController];

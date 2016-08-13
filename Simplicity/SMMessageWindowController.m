@@ -37,7 +37,10 @@
     messageThreadView.frame = view.frame;
     messageThreadView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     
-    [_messageThreadViewController setMessageThread:_currentMessageThread selectedThreadsCount:1];
+    NSAssert(_messageThread != nil, @"_messageThread is nil");
+    NSAssert(_localFolder != nil, @"_localFolder is nil");
+    
+    [_messageThreadViewController setMessageThread:_messageThread selectedThreadsCount:1 localFolder:_localFolder];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

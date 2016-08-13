@@ -249,6 +249,18 @@ static const CGFloat CELL_SPACING = 0;
     [self hideFindContentsPanel];
 
     [self updateNavigationControls];
+
+    // reflect the local folder properties to the view of the message thread
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    id<SMAbstractLocalFolder> currentLocalFolder = [[appDelegate.currentAccount messageListController] currentLocalFolder];
+    NSAssert(currentLocalFolder != nil, @"no current local folder");
+    
+    if(currentLocalFolder.kind == SMFolderKindOutbox) {
+        _messageThreadInfoViewController.addLabelButtonEnabled = NO;
+    }
+    else {
+        _messageThreadInfoViewController.addLabelButtonEnabled = YES;
+    }
 }
 
 - (void)showCurrentMessageThread {

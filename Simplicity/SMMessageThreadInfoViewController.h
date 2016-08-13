@@ -15,6 +15,8 @@
 
 @property __weak SMMessageThreadViewController *messageThreadViewController;
 
+@property (nonatomic) BOOL addLabelButtonEnabled;
+
 + (NSUInteger)infoHeaderHeight;
 
 - (void)setMessageThread:(SMMessageThread*)messageThread;

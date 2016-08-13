@@ -292,4 +292,8 @@
     [_messageThreadViewController removeLabel:label];
 }
 
+- (void)setAddLabelButtonEnabled:(BOOL)enabled {
+    _addLabelButton.enabled = enabled;
+}
+
 @end

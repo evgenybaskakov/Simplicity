@@ -339,6 +339,8 @@ static NSString *unquote(NSString *s) {
         [newLabels addObject:label];
         _labels = newLabels;
     }
+    
+    _imapMessage.gmailLabels = _labels;
 }
 
 - (void)removeLabel:(NSString*)label {
@@ -353,6 +355,8 @@ static NSString *unquote(NSString *s) {
             _labels = newLabels;
         }
     }
+    
+    _imapMessage.gmailLabels = _labels;
 }
 
 - (BOOL) MCOAbstractMessage:(MCOAbstractMessage *)msg canPreviewPart:(MCOAbstractPart *)part {

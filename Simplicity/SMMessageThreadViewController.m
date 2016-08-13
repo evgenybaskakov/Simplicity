@@ -301,6 +301,8 @@ static const CGFloat CELL_SPACING = 0;
                     [cell.viewController updateMessage];
                 }
                 
+                [_messageThreadInfoViewController updateMessageThread];
+                
                 return;
             }
         }
@@ -381,7 +383,7 @@ static const CGFloat CELL_SPACING = 0;
         
         [_messageThreadInfoViewController setMessageThread:nil];
     }
-    
+
     [self updateNavigationControls];
 }
 

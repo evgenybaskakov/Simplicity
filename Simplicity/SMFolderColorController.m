@@ -83,19 +83,15 @@
 
     if(mainColor != nil) {
         [bookmarkColors addObject:mainColor];
-        
-        if(mainColor != nil)
-            [labels addObject:folder.fullName];
+        [labels addObject:folder.fullName];
     }
     
     for(NSString *label in messageThread.labels) {
-        if([label characterAtIndex:0] != '\\') {
+        if([label characterAtIndex:0] != '\\' && ![label isEqualToString:folder.fullName]) {
             NSColor *color = [self colorForFolder:label];
             
-            if(color != mainColor) {
-                [bookmarkColors addObject:color];
-                [labels addObject:label];
-            }
+            [bookmarkColors addObject:color];
+            [labels addObject:label];
         }
     }
     

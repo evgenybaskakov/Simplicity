@@ -661,7 +661,7 @@
     }
 }
 
-- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+- (BOOL)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
     NSAssert(_kind != SMFolderKindOutbox, @"cannot remove message labels in the outbox folder");
     
     // modify the local copy of the message thread
@@ -671,10 +671,12 @@
         // update the local database
         [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
         
-        // enqueue the remote folder operation
-        SMOpRemoveLabel *op = [[SMOpRemoveLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
-        
-        [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
+        if([message.labels containsObject:label]) {
+            // enqueue the remote folder operation
+            SMOpRemoveLabel *op = [[SMOpRemoveLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+            
+            [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
+        }
     }
     
     if([_remoteFolderName isEqualToString:label]) {
@@ -688,6 +690,11 @@
         if(![self moveMessageThread:messageThread toRemoteFolder:trashFolder.fullName]) {
             SM_LOG_WARNING(@"Could not move message thread %lld to trash", messageThread.threadId);
         }
+        
+        return YES; // means that the message thread no longer belongs to the current folder
+    }
+    else {
+        return NO; // the message thread is still in this folder
     }
 }
 

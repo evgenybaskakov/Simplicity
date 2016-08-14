@@ -81,6 +81,6 @@
 
 // removes a label for all messages in the message thread
 // initiates a remote server operation
-- (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label;
+- (BOOL)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label;
 
 @end

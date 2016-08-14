@@ -250,8 +250,6 @@
 }
 
 - (void)addLabelAction:(id)sender {
-    SM_LOG_INFO(@"adding label: TODO");
-    
     id<SMMailbox> mailbox = _messageThread.account.mailbox;
     
     if(_labelSelectionViewController == nil) {

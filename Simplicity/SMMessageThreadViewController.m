@@ -1278,9 +1278,13 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)removeLabel:(NSString*)label {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [appDelegate.messageThreadAccountProxy removeMessageThreadLabel:_currentMessageThread label:label];
-    
-    [_messageThreadInfoViewController updateMessageThread];
+    if([appDelegate.messageThreadAccountProxy removeMessageThreadLabel:_currentMessageThread label:label]) {
+        [self setMessageThread:nil selectedThreadsCount:0 localFolder:nil];
+        // TODO: how about open windows with this thread open?
+    }
+    else {
+        [_messageThreadInfoViewController updateMessageThread];
+    }
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }

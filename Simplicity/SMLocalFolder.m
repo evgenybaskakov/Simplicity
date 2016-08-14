@@ -645,6 +645,8 @@
 #pragma mark Adding and removing message labels
 
 - (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    NSAssert(_kind != SMFolderKindOutbox, @"cannot add message labels in the outbox folder");
+
     // modify the local copy of the message thread
     [messageThread addLabel:label];
     
@@ -660,6 +662,8 @@
 }
 
 - (void)removeMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label {
+    NSAssert(_kind != SMFolderKindOutbox, @"cannot remove message labels in the outbox folder");
+    
     // modify the local copy of the message thread
     [messageThread removeLabel:label];
     
@@ -673,7 +677,18 @@
         [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     }
     
-    // TODO: remove the message thread from the current folder if the label is the remote folder name
+    if([_remoteFolderName isEqualToString:label]) {
+        NSAssert(_kind == SMFolderKindRegular, @"label %@ cannot match a regular folder name", label);
+        
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        
+        SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
+        NSAssert(trashFolder != nil, @"no trash folder");
+        
+        if(![self moveMessageThread:messageThread toRemoteFolder:trashFolder.fullName]) {
+            SM_LOG_WARNING(@"Could not move message thread %lld to trash", messageThread.threadId);
+        }
+    }
 }
 
 #pragma mark Messages movement to other remote folders

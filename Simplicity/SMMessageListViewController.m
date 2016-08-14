@@ -645,7 +645,7 @@
 
     for(SMMessageThread *messageThread in messageThreadsToMove) {
         if(![currentLocalFolder moveMessageThread:messageThread toRemoteFolder:remoteFolder.fullName]) {
-            SM_LOG_DEBUG(@"Could not move message thread %lld to %@", messageThread.threadId, remoteFolder.fullName);
+            SM_LOG_WARNING(@"Could not move message thread %lld to %@", messageThread.threadId, remoteFolder.fullName);
             
             [messageThreadsCouldntBeMoved addObject:messageThread];
         }

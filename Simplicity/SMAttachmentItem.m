@@ -92,7 +92,7 @@
     
     NSError *writeError = nil;
     if(![fileData writeToURL:fullUrl options:NSDataWritingAtomic error:&writeError]) {
-        SM_LOG_DEBUG(@"Could not write file %@: %@", fullUrl, writeError);
+        SM_LOG_ERROR(@"Could not write file %@: %@", fullUrl, writeError);
         return FALSE;
     }
     

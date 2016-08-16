@@ -75,9 +75,9 @@
     }]];
 }
 
-- (NSData*)imageDataForEmail:(NSString*)email {
+- (NSData*)imageDataForAddress:(SMAddress*)address {
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-    ABSearchElement *search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:email comparison:kABEqualCaseInsensitive];
+    ABSearchElement *search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
     
     // TODO: get linkedPeople
@@ -98,14 +98,13 @@
 }
 
 - (NSImage*)pictureForAddress:(SMAddress*)address {
-/*
- NSImage *image = [_imageCache objectForKey:email];
+    NSImage *image = [_imageCache objectForKey:address.email];
     
     if(image != nil) {
         return image;
     }
     
-    NSData *imageData = [self imageDataForEmail:email];
+    NSData *imageData = [self imageDataForAddress:address];
     
     if(imageData == nil) {
         return [NSImage imageNamed:NSImageNameUserGuest];
@@ -113,14 +112,9 @@
     
     image = [[NSImage alloc] initWithData:imageData];
     
-    [_imageCache setObject:image forKey:email];
+    [_imageCache setObject:image forKey:address.email];
  
     return image;
-*/
-
-    // TODO
-    
-    return nil;
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {

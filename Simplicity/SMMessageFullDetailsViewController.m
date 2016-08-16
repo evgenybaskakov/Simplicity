@@ -211,7 +211,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 }
 
 - (void)setMessage:(SMMessage*)message {
-    [_fromAddress setObjectValue:@[[[SMAddress alloc] initWithMCOAddress:message.fromAddress]]];
+    [_fromAddress setObjectValue:@[message.fromAddress]];
 
     [_toAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.toAddressList]];
 
@@ -223,7 +223,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForEmail:[message.fromAddress mailbox]];
+    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:message.fromAddress];
     if(contactImage != nil) {
         _contactButton.image = contactImage;
     }

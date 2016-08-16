@@ -32,6 +32,7 @@
 #import "SMPreferencesController.h"
 #import "SMAddressBookController.h"
 #import "SMFolder.h"
+#import "SMAddress.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
@@ -252,7 +253,7 @@
     
     [view initFields];
     
-    [view.fromTextField setStringValue:[SMMessage parseAddress:firstMessage.fromAddress]];
+    [view.fromTextField setStringValue:firstMessage.fromAddress.stringRepresentationShort];
     [view.subjectTextField setStringValue:[firstMessage subject]];
     [view.dateTextField setStringValue:[firstMessage localizedDate]];
 
@@ -325,8 +326,7 @@
         
     [view.messagePreviewTextField setStringValue:bodyPreview];
     
-    NSString *fromEmail = [firstMessage.fromAddress mailbox];
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForEmail:fromEmail];
+    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:firstMessage.fromAddress];
     if(contactImage != nil) {
         view.contactImage.image = contactImage;
     }

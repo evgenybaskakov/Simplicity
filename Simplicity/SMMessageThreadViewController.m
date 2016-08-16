@@ -1154,7 +1154,7 @@ static const CGFloat CELL_SPACING = 0;
         // TODO: remove ourselves (myself) from CC and TO
         
         if(!toAddressIsSet) {
-            MCOAddress *fromAddress = [cell.message fromAddress];
+            MCOAddress *fromAddress = cell.message.fromAddress.mcoAddress;
             NSAssert(fromAddress != nil, @"bad message from address");
             
             [toAddressList addObject:fromAddress];

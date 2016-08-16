@@ -80,6 +80,8 @@
     ABSearchElement *search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:email comparison:kABEqualCaseInsensitive];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
     
+    // TODO: get linkedPeople
+    
     for(NSUInteger i = 0; i < foundRecords.count; i++) {
         ABRecord *record = foundRecords[i];
         
@@ -95,8 +97,9 @@
     return nil;
 }
 
-- (NSImage*)pictureForEmail:(NSString*)email {
-    NSImage *image = [_imageCache objectForKey:email];
+- (NSImage*)pictureForAddress:(SMAddress*)address {
+/*
+ NSImage *image = [_imageCache objectForKey:email];
     
     if(image != nil) {
         return image;
@@ -111,8 +114,13 @@
     image = [[NSImage alloc] initWithData:imageData];
     
     [_imageCache setObject:image forKey:email];
-    
+ 
     return image;
+*/
+
+    // TODO
+    
+    return nil;
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {

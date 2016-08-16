@@ -18,6 +18,7 @@
 #import "SMMessageThreadCellViewController.h"
 #import "SMAddressBookController.h"
 #import "SMRoundedImageView.h"
+#import "SMAddress.h"
 #import "SMMessage.h"
 #import "SMOutgoingMessage.h"
 #import "SMPreferencesController.h"
@@ -110,7 +111,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     if(_currentMessage != message) {
         _currentMessage = message;
         
-        [_fromAddress setStringValue:[SMMessage parseAddress:_currentMessage.fromAddress]];
+        [_fromAddress setStringValue:_currentMessage.fromAddress.stringRepresentationShort];
         [_dateLabel setStringValue:[_currentMessage localizedDate]];
         
         if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
@@ -135,7 +136,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForEmail:[_currentMessage.fromAddress mailbox]];
+    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:_currentMessage.fromAddress];
     if(contactImage != nil) {
         _contactImageView.image = contactImage;
     }

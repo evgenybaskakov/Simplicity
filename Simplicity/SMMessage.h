@@ -10,6 +10,8 @@
 
 #import <MailCore/MailCore.h>
 
+@class SMAddress;
+
 typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
     SMMessageUpdateStatus_Unknown = 0,
     SMMessageUpdateStatus_Persisted,
@@ -27,7 +29,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 
 @property (readonly) MCOMessageHeader *parsedHeader; // TODO: remove
 @property (readonly) MCOIMAPMessage *imapMessage;
-@property (readonly) MCOAddress *fromAddress;
+@property (readonly) SMAddress *fromAddress;
 @property (readonly) NSArray *toAddressList;
 @property (readonly) NSArray *ccAddressList;
 @property (readonly) NSArray *parsedToAddressList;

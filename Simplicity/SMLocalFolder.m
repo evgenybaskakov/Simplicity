@@ -321,8 +321,7 @@
     SMMessageStorageUpdateResult updateResult = [_messageStorage endUpdateWithRemoteFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:unseenMessagesCountPtr processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
         if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
             for(SMMessage *m in newUnseenMessages) {
-                SMAddress *from = [[SMAddress alloc] initWithMCOAddress:m.fromAddress];
-                [SMNotificationsController systemNotifyNewMessage:from.stringRepresentationShort];
+                [SMNotificationsController systemNotifyNewMessage:m.fromAddress.stringRepresentationShort];
             }
         }
         else {

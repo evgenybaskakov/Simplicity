@@ -13,6 +13,7 @@
 #import "SMStringUtils.h"
 #import "SMUserAccount.h"
 #import "SMAttachmentStorage.h"
+#import "SMAddress.h"
 #import "SMMessage.h"
 
 @implementation SMMessage
@@ -40,6 +41,14 @@
                 }
             }
         }
+        
+        MCOMessageHeader *header = _imapMessage.header;
+        NSAssert(header, @"no header");
+        
+        MCOAddress *from = [header from];
+        NSAssert(header, @"no from field");
+
+        _fromAddress = [[SMAddress alloc] initWithMCOAddress:from];
         
         SM_LOG_NOISE(@"uid %u, remoteFolder: %@, draft: %d", m.uid, remoteFolderName, (m.flags & MCOMessageFlagDraft) != 0? 1 : 0);
         SM_LOG_NOISE(@"thread id %llu, subject '%@', labels %@", m.gmailThreadID, m.header.subject, m.gmailLabels);
@@ -113,16 +122,6 @@ static NSString *unquote(NSString *s) {
      */
     
     return @"<unknown>";
-}
-
-- (MCOAddress*)fromAddress {
-    MCOMessageHeader *header = self.imapHeader;
-    NSAssert(header, @"no header");
-    
-    MCOAddress *from = [header from];
-    NSAssert(header, @"no from field");
-
-    return from;
 }
 
 - (NSString*)subject {
@@ -231,8 +230,8 @@ static NSString *unquote(NSString *s) {
     NSAssert(m, @"bad param message");
     
     if(_imapMessage == nil) {
-        SM_LOG_DEBUG(@"IMAP message is set");
-
+        NSAssert(_fromAddress, @"no from address");
+        
         _imapMessage = m;
 
         return YES;

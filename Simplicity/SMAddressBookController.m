@@ -77,10 +77,21 @@
 
 - (NSData*)imageDataForAddress:(SMAddress*)address {
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-    ABSearchElement *search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
-    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
+
+    ABSearchElement *search = nil;
+    if(address.firstName && address.lastName) {
+        ABSearchElement *searchFirstName = [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive];
+        ABSearchElement *searchLastName = [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive];
+
+        search = [ABSearchElement searchElementForConjunction:kABSearchAnd children:@[searchFirstName, searchLastName]];
+    }
+    else {
+        NSAssert(address.email, @"no email address");
+        
+        search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
+    }
     
-    // TODO: get linkedPeople
+    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
     
     for(NSUInteger i = 0; i < foundRecords.count; i++) {
         ABRecord *record = foundRecords[i];
@@ -91,6 +102,14 @@
             if(person.imageData != nil) {
                 return person.imageData;
             }
+/*
+            NSArray *linkedPeople = person.linkedPeople;
+            for(ABPerson *linkedPerson in linkedPeople) {
+                if(linkedPerson.imageData != nil) {
+                    return linkedPerson.imageData;
+                }
+            }
+ */
         }
     }
     
@@ -98,12 +117,12 @@
 }
 
 - (NSImage*)pictureForAddress:(SMAddress*)address {
-    NSImage *image = [_imageCache objectForKey:address.email];
-    
-    if(image != nil) {
-        return image;
-    }
-    
+    NSImage *image;// = [_imageCache objectForKey:address.email];
+//    
+//    if(image != nil) {
+//        return image;
+//    }
+//    
     NSData *imageData = [self imageDataForAddress:address];
     
     if(imageData == nil) {
@@ -112,7 +131,7 @@
     
     image = [[NSImage alloc] initWithData:imageData];
     
-    [_imageCache setObject:image forKey:address.email];
+//    [_imageCache setObject:image forKey:address.email];
  
     return image;
 }

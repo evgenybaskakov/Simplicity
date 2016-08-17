@@ -14,6 +14,7 @@
 
 @implementation SMAddressBookController {
     NSMutableDictionary *_imageCache;
+    NSImage *_defaultImage;
 }
 
 - (id)init {
@@ -21,6 +22,7 @@
     
     if(self) {
         _imageCache = [NSMutableDictionary dictionary];
+        _defaultImage = [NSImage imageNamed:NSImageNameUserGuest];
     }
     
     return self;
@@ -75,22 +77,31 @@
     }]];
 }
 
-- (NSData*)imageDataForAddress:(SMAddress*)address {
-    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-
+- (ABSearchElement*)findAddress:(SMAddress*)address ab:(ABAddressBook*)ab {
     ABSearchElement *search = nil;
     if(address.firstName && address.lastName) {
         ABSearchElement *searchFirstName = [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive];
         ABSearchElement *searchLastName = [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive];
-
+        
         search = [ABSearchElement searchElementForConjunction:kABSearchAnd children:@[searchFirstName, searchLastName]];
     }
+
+    NSAssert(address.email, @"no email address");
+    ABSearchElement *searchEmail = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
+
+    if(search) {
+        search = [ABSearchElement searchElementForConjunction:kABSearchOr children:@[search, searchEmail]];
+    }
     else {
-        NSAssert(address.email, @"no email address");
-        
-        search = [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive];
+        search = searchEmail;
     }
     
+    return search;
+}
+
+- (NSData*)imageDataForAddress:(SMAddress*)address {
+    ABAddressBook *ab = [ABAddressBook sharedAddressBook];
+    ABSearchElement *search = [self findAddress:address ab:ab];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
     
     for(NSUInteger i = 0; i < foundRecords.count; i++) {
@@ -102,14 +113,14 @@
             if(person.imageData != nil) {
                 return person.imageData;
             }
-/*
+
             NSArray *linkedPeople = person.linkedPeople;
             for(ABPerson *linkedPerson in linkedPeople) {
                 if(linkedPerson.imageData != nil) {
+                    SM_LOG_INFO(@"contact: %@, linkedPerson with image: %@", address.stringRepresentationShort, linkedPerson);
                     return linkedPerson.imageData;
                 }
             }
- */
         }
     }
     
@@ -117,21 +128,27 @@
 }
 
 - (NSImage*)pictureForAddress:(SMAddress*)address {
-    NSImage *image;// = [_imageCache objectForKey:address.email];
-//    
-//    if(image != nil) {
-//        return image;
-//    }
-//    
+    NSString *addressString = address.stringRepresentationDetailed;
+    NSImage *image = [_imageCache objectForKey:addressString];
+    
+    if(image == (NSImage*)[NSNull null]) {
+        return _defaultImage;
+    }
+    
+    if(image != nil) {
+        return image;
+    }
+    
     NSData *imageData = [self imageDataForAddress:address];
     
     if(imageData == nil) {
-        return [NSImage imageNamed:NSImageNameUserGuest];
+        [_imageCache setObject:[NSNull null] forKey:addressString];
+        return _defaultImage;
     }
     
     image = [[NSImage alloc] initWithData:imageData];
     
-//    [_imageCache setObject:image forKey:address.email];
+    [_imageCache setObject:image forKey:addressString];
  
     return image;
 }
@@ -140,31 +157,8 @@
     NSAssert(address, @"address is nil");
 
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
-    ABSearchElement *searchFirstName = address.firstName? [ABPerson searchElementForProperty:kABFirstNameProperty label:nil key:nil value:address.firstName comparison:kABEqualCaseInsensitive] : nil;
-    ABSearchElement *searchLastName = address.lastName? [ABPerson searchElementForProperty:kABLastNameProperty label:nil key:nil value:address.lastName comparison:kABEqualCaseInsensitive] : nil;
-    ABSearchElement *searchEmail = address.email? [ABPerson searchElementForProperty:kABEmailProperty label:nil key:nil value:address.email comparison:kABEqualCaseInsensitive] : nil;
-
-    ABSearchElement *fullSearch;
-    
-    if(searchFirstName && searchLastName) {
-        ABSearchElement *searchFullName = [ABSearchElement searchElementForConjunction:kABSearchAnd children:@[searchFirstName, searchLastName]];
-        
-        if(searchEmail) {
-            fullSearch = [ABSearchElement searchElementForConjunction:kABSearchOr children:@[searchFullName, searchEmail]];
-        }
-        else {
-            fullSearch = searchFullName;
-        }
-    }
-    else if(searchEmail) {
-        fullSearch = searchEmail;
-    }
-    else {
-        SM_LOG_INFO(@"Address '%@' too short to look for in address book", address.stringRepresentationDetailed);
-        return NO;
-    }
-
-    NSArray *foundRecords = [ab recordsMatchingSearchElement:fullSearch];
+    ABSearchElement *search = [self findAddress:address ab:ab];
+    NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
 
     if(foundRecords.count > 0) {
         ABRecord *record = foundRecords[0];

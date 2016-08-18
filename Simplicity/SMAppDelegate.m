@@ -17,6 +17,7 @@
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
 #import "SMAddressBookController.h"
+#import "SMRemoteImageLoadController.h"
 #import "SMUnifiedAccount.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
@@ -34,6 +35,7 @@
         _preferencesController = [[SMPreferencesController alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];
+        _remoteImageLoadController = [[SMRemoteImageLoadController alloc] init];
         _unifiedAccount = [[SMUnifiedAccount alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _messageThreadAccountProxy = [[SMMessageThreadAccountProxy alloc] init];

@@ -14,7 +14,6 @@
 
 @implementation SMAddressBookController {
     NSMutableDictionary *_imageCache;
-    NSImage *_defaultImage;
 }
 
 - (id)init {
@@ -22,7 +21,7 @@
     
     if(self) {
         _imageCache = [NSMutableDictionary dictionary];
-        _defaultImage = [NSImage imageNamed:NSImageNameUserGuest];
+        _defaultUserImage = [NSImage imageNamed:NSImageNameUserGuest];
     }
     
     return self;
@@ -132,7 +131,7 @@
     NSImage *image = [_imageCache objectForKey:addressString];
     
     if(image == (NSImage*)[NSNull null]) {
-        return _defaultImage;
+        return nil;
     }
     
     if(image != nil) {
@@ -143,7 +142,7 @@
     
     if(imageData == nil) {
         [_imageCache setObject:[NSNull null] forKey:addressString];
-        return _defaultImage;
+        return nil;
     }
     
     image = [[NSImage alloc] initWithData:imageData];

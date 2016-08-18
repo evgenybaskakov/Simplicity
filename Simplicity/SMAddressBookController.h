@@ -14,6 +14,8 @@
 
 @interface SMAddressBookController : NSObject<SMSuggestionProvider>
 
+@property (readonly) NSImage *defaultUserImage;
+
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix;
 - (NSImage*)pictureForAddress:(SMAddress*)address;
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;

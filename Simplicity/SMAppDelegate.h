@@ -19,6 +19,7 @@
 @class SMUnifiedAccount;
 @class SMUnifiedMailbox;
 @class SMUnifiedMailboxController;
+@class SMRemoteImageLoadController;
 @class SMMessageComparators;
 @class SMAddressBookController;
 @class SMMessageThreadAccountProxy;
@@ -37,6 +38,7 @@
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAddressBookController *addressBookController;
+@property (readonly) SMRemoteImageLoadController *remoteImageLoadController;
 @property (readonly) SMImageRegistry *imageRegistry;
 @property (readonly) SMMessageThreadAccountProxy *messageThreadAccountProxy;
 @property (readonly) SMUnifiedAccount *unifiedAccount;

@@ -334,6 +334,8 @@
     else {
         NSImage *avatar = [[appDelegate remoteImageLoadController] loadAvatar:firstMessage.fromAddress.email completionBlock:^(NSImage *image) {
             if(image != nil) {
+                [[appDelegate addressBookController] setPictureForAddress:firstMessage.fromAddress image:image];
+
                 view.contactImage.image = image;
             }
         }];

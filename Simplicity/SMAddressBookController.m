@@ -152,6 +152,11 @@
     return image;
 }
 
+- (void)setPictureForAddress:(SMAddress*)address image:(NSImage*)image {
+    NSString *addressString = address.stringRepresentationDetailed;
+    [_imageCache setObject:image forKey:addressString];
+}
+
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {
     NSAssert(address, @"address is nil");
 

@@ -223,7 +223,12 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:message.fromAddress];
+    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress completionBlock:^(NSImage *image) {
+        if(image != nil) {
+            _contactButton.image = image;
+        }
+    }];
+    
     if(contactImage != nil) {
         _contactButton.image = contactImage;
     }

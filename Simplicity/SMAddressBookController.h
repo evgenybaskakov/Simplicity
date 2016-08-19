@@ -17,8 +17,7 @@
 @property (readonly) NSImage *defaultUserImage;
 
 - (NSArray<NSString*>*)suggestionsForPrefix:(NSString*)prefix;
-- (NSImage*)pictureForAddress:(SMAddress*)address;
-- (void)setPictureForAddress:(SMAddress*)address image:(NSImage*)image;
+- (NSImage*)loadPictureForAddress:(SMAddress*)address completionBlock:(void (^)(NSImage*))completionBlock;
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
 - (BOOL)addAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId;
 - (void)openAddressInAddressBook:(NSString*)addressUniqueId edit:(BOOL)edit;

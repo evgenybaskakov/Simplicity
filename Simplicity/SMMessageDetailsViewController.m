@@ -136,7 +136,12 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:_currentMessage.fromAddress];
+    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:_currentMessage.fromAddress completionBlock:^(NSImage *image) {
+        if(image != nil) {
+            _contactImageView.image = image;
+        }
+    }];
+
     if(contactImage != nil) {
         _contactImageView.image = contactImage;
     }

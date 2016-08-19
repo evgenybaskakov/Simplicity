@@ -9,7 +9,9 @@
 #import <AddressBook/AddressBook.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
 #import "SMAddress.h"
+#import "SMRemoteImageLoadController.h"
 #import "SMAddressBookController.h"
 
 @implementation SMAddressBookController {
@@ -126,7 +128,7 @@
     return nil;
 }
 
-- (NSImage*)pictureForAddress:(SMAddress*)address {
+- (NSImage*)loadPictureForAddress:(SMAddress*)address completionBlock:(void (^)(NSImage *))completionBlock {
     NSString *addressString = address.stringRepresentationDetailed;
     NSImage *image = [_imageCache objectForKey:addressString];
     
@@ -140,21 +142,23 @@
     
     NSData *imageData = [self imageDataForAddress:address];
     
-    if(imageData == nil) {
-        [_imageCache setObject:[NSNull null] forKey:addressString];
-        return nil;
-    }
-    
-    image = [[NSImage alloc] initWithData:imageData];
-    
-    [_imageCache setObject:image forKey:addressString];
- 
-    return image;
-}
+    if(imageData != nil) {
+        image = [[NSImage alloc] initWithData:imageData];
+        [_imageCache setObject:image forKey:addressString];
 
-- (void)setPictureForAddress:(SMAddress*)address image:(NSImage*)image {
-    NSString *addressString = address.stringRepresentationDetailed;
-    [_imageCache setObject:image forKey:addressString];
+        return image;
+    }
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
+        if(image != nil) {
+            [_imageCache setObject:image forKey:addressString];
+        }
+
+        completionBlock(image);
+    }];
+
+    return nil;
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {

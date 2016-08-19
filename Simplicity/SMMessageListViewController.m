@@ -37,7 +37,6 @@
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
 #import "SMMessageListRowView.h"
-#import "SMRemoteImageLoadController.h"
 
 @interface ScrollPosition : NSObject
 
@@ -327,25 +326,17 @@
         
     [view.messagePreviewTextField setStringValue:bodyPreview];
     
-    NSImage *contactImage = [[appDelegate addressBookController] pictureForAddress:firstMessage.fromAddress];
+    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress completionBlock:^(NSImage *image) {
+        if(image != nil) {
+            view.contactImage.image = image;
+        }
+    }];
+    
     if(contactImage != nil) {
         view.contactImage.image = contactImage;
     }
     else {
-        NSImage *avatar = [[appDelegate remoteImageLoadController] loadAvatar:firstMessage.fromAddress.email completionBlock:^(NSImage *image) {
-            if(image != nil) {
-                [[appDelegate addressBookController] setPictureForAddress:firstMessage.fromAddress image:image];
-
-                view.contactImage.image = image;
-            }
-        }];
-
-        if(avatar != nil) {
-            view.contactImage.image = avatar;
-        }
-        else {
-            view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];
-        }
+        view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];
     }
 
     [_currentFolderScrollPosition.threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];

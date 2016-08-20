@@ -13,6 +13,8 @@
     Boolean _fieldsInitialized;
 }
 
+@synthesize tag;
+
 - (void)initFields {
     if(_fieldsInitialized)
         return;

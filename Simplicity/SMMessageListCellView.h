@@ -32,6 +32,8 @@
 @property IBOutlet NSButton *messagesCountButton;
 @property IBOutlet NSImageView *attachmentImage;
 
+@property (readwrite) NSInteger tag;
+
 - (void)initFields;
 
 - (void)showContactImage;

@@ -128,7 +128,7 @@
     return nil;
 }
 
-- (NSImage*)loadPictureForAddress:(SMAddress*)address completionBlock:(void (^)(NSImage *))completionBlock {
+- (NSImage*)loadPictureForAddress:(SMAddress*)address tag:(NSInteger)tag completionBlock:(void (^)(NSImage*, NSInteger))completionBlock {
     NSString *addressString = address.stringRepresentationDetailed;
     NSImage *image = [_imageCache objectForKey:addressString];
     
@@ -155,7 +155,7 @@
             [_imageCache setObject:image forKey:addressString];
         }
 
-        completionBlock(image);
+        completionBlock(image, tag);
     }];
 
     return nil;

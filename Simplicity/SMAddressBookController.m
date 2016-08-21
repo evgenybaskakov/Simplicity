@@ -153,9 +153,28 @@
     [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
         if(image != nil) {
             [_imageCache setObject:image forKey:addressString];
+            completionBlock(image, tag);
         }
-
-        completionBlock(image, tag);
+        else {
+            NSArray *parts = [address.email componentsSeparatedByString:@"@"];
+            if(parts.count == 2) {
+                NSString *webSite = parts[1];
+                [appDelegate.remoteImageLoadController loadWebSiteImage:(NSString*)webSite completionBlock:^(NSImage *image) {
+                    if(image != nil) {
+                        [_imageCache setObject:image forKey:addressString];
+                    }
+                    else {
+                        [_imageCache setObject:[NSNull null] forKey:addressString];
+                    }
+                    
+                    completionBlock(image, tag);
+                }];
+            }
+            else {
+                [_imageCache setObject:[NSNull null] forKey:addressString];
+                completionBlock(nil, tag);
+            }
+        }
     }];
 
     return nil;

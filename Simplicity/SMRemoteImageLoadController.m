@@ -7,11 +7,35 @@
 //
 
 #import <string.h>
+
+#import <WebKit/WebView.h>
+#import <WebKit/WebFrame.h>
+#import <WebKit/WebScriptObject.h>
+#import <WebKit/WebResourceLoadDelegate.h>
+#import <WebKit/WebFrameLoadDelegate.h>
+#import <WebKit/WebPolicyDelegate.h>
+
 #import <CommonCrypto/CommonDigest.h>
 
+#import "SMLog.h"
 #import "SMRemoteImageLoadController.h"
 
-@implementation SMRemoteImageLoadController
+@interface WebPage : NSObject
+@property NSString *htmlBody;
+@property NSURL *baseURL;
+@property void (^completionBlock)(NSImage*);
+@property NSImage *bestImage;
+@property NSUInteger imageCount;
+@property NSUInteger imagesLoaded;
+@end
+
+@implementation WebPage
+@end
+
+@implementation SMRemoteImageLoadController {
+    WebView *_webView;
+    NSMutableArray<WebPage*> *_htmlPagesToLoad;
+}
 
 - (id)init {
     self = [super init];
@@ -19,6 +43,15 @@
     if(self) {
         // TODO: load cache from disk
         // TODO: start background refresh
+        _webView = [[WebView alloc] init];
+        _webView.resourceLoadDelegate = self;
+        _webView.frameLoadDelegate = self;
+        _webView.policyDelegate = self;
+        
+//        _webView.frameLoadDelegate = self;
+//        _webView.downloadDelegate = self;
+//        _webScript = [_webView windowScriptObject];
+        _htmlPagesToLoad = [NSMutableArray array];
     }
     
     return self;
@@ -47,7 +80,6 @@
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSImage *image = nil;
         
-//        NSLog(@"response: %@", response);
         if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
             image = [[NSImage alloc] initWithData:data];
         }
@@ -60,6 +92,196 @@
     [task resume];
     
     return nil;
+}
+
+- (NSImage*)loadWebSiteImage:(NSString*)webSite completionBlock:(void (^)(NSImage*))completionBlock {
+    NSArray *parts = [webSite componentsSeparatedByString:@"."];
+    if(parts.count > 1) {
+        webSite = [NSString stringWithFormat:@"%@.%@", parts[parts.count-2], parts[parts.count-1]];
+    }
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", webSite]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+            NSString *htmlBody = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if(htmlBody == nil) {
+                htmlBody = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+            }
+
+            NSAssert(htmlBody, @"htmlBody is nil");
+            
+            SM_LOG_INFO(@"downloaded page: %@", webSite);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSAssert(url, @"url is nil");
+                NSAssert(htmlBody, @"htmlPage is nil");
+                
+                WebPage *page = [[WebPage alloc] init];
+                page.baseURL = url;
+                page.htmlBody = htmlBody;
+                page.completionBlock = completionBlock;
+                
+                [_htmlPagesToLoad addObject:page];
+                
+                if(_htmlPagesToLoad.count == 1) {
+                    SM_LOG_INFO(@"loading page: %@", page.baseURL);
+                    [[_webView mainFrame] loadHTMLString:page.htmlBody baseURL:page.baseURL];
+                }
+            });
+        }
+//
+////        dispatch_async(dispatch_get_main_queue(), ^{
+////            completionBlock(image);
+////        });
+    }];
+
+    [task resume];
+    
+    return nil;
+}
+
+//
+
+- (void)consoleLog:(NSString *)aMessage {
+    NSLog(@"JSLog: %@", aMessage);
+}
+
++ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
+    if (aSelector == @selector(consoleLog:)) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    if(frame != sender.mainFrame) {
+        return;
+    }
+    
+    WebPage *webPage = _htmlPagesToLoad[0];
+
+    NSAssert(_htmlPagesToLoad.count > 0, @"no html pages in the queue");
+    NSAssert(webPage.baseURL, @"_htmlPagesToLoad[0].baseURL is nil");
+    NSAssert(webPage.htmlBody, @"_htmlPagesToLoad[0].htmlBody is nil");
+
+    SM_LOG_INFO(@"page loaded: %@", webPage.baseURL);
+    
+    WebScriptObject *webScript = [sender windowScriptObject];
+    [webScript setValue:self forKey:@"MyApp"];
+
+    NSString *functionDefinition =
+    @"function getImageUrls() {"
+    "    var imageUrls = [];"
+    "    var links = document.getElementsByTagName('link');"
+    "    for(l in links) {"
+    "        /*MyApp.consoleLog_('link: ' + links[l].rel);*/"
+    "        if(links[l].rel === 'apple-touch-icon' || links[l].rel === 'apple-touch-icon-precomposed' || links[l].rel === 'icon' || links[l].rel === 'shortcut icon') {"
+    "            if(links[l].href != undefined) {"
+    "                imageUrls.push(links[l].href);"
+    "            }"
+    "        }"
+    "    }"
+    "    var metas = document.getElementsByTagName('meta');"
+    "    for(m in metas) {"
+    "        /*MyApp.consoleLog_('meta: ' + metas[m].name);*/"
+    "        if(metas[m].name === 'msapplication-TileImage') {"
+    "            if(metas[m].content != undefined) {"
+    "                imageUrls.push(metas[m].content);"
+    "            }"
+    "        }"
+    "    }"
+    "    return JSON.stringify(imageUrls);"
+    "}";
+    
+    [webScript evaluateWebScript:functionDefinition];
+    
+    NSString *ret = [sender stringByEvaluatingJavaScriptFromString:@"getImageUrls()"];
+
+    NSError *error = nil;
+    NSArray<NSString*> *imageURLs = [NSJSONSerialization JSONObjectWithData:[ret dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
+
+    if(imageURLs != nil && imageURLs.count != 0) {
+        NSLog(@"json: %@", imageURLs);
+    }
+
+    [_htmlPagesToLoad removeObjectAtIndex:0];
+    
+    if(_htmlPagesToLoad.count > 0) {
+        WebPage *nextPage = _htmlPagesToLoad[0];
+        NSAssert(nextPage.baseURL, @"nextPage.baseURL is nil");
+        NSAssert(nextPage.htmlBody, @"htmlBody is nil");
+
+        SM_LOG_INFO(@"loading page: %@", nextPage.baseURL);
+        [[_webView mainFrame] loadHTMLString:nextPage.htmlBody baseURL:nextPage.baseURL];
+    }
+
+    if(imageURLs == nil || imageURLs.count == 0) {
+        webPage.completionBlock(nil);
+    }
+    else {
+        webPage.imageCount = imageURLs.count;
+        
+        for(NSString *u in imageURLs) {
+            NSURL *url;
+            if(u.length >= 2 && [u characterAtIndex:0] == '/' && [u characterAtIndex:1] == '/') {
+                url = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@", u]];
+            }
+            else if(u.length >= 1 && [u characterAtIndex:0] == '/') {
+                url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", webPage.baseURL, u]];
+            }
+            else {
+                url = [NSURL URLWithString:u];
+            }
+            
+            NSURLRequest *request = [NSURLRequest requestWithURL:url];
+            NSURLSession *session = [NSURLSession sharedSession];
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+                    NSImage *image = [[NSImage alloc] initWithData:data];
+                    if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
+                        webPage.bestImage = image;
+                    }
+                }
+                
+                if(++webPage.imagesLoaded == webPage.imageCount) {
+                    webPage.completionBlock(webPage.bestImage);
+                }
+            }];
+            
+            [task resume];
+        }
+    }
+}
+
+-(BOOL)shouldSkiRequest:(NSURLRequest*)request{
+    NSString *absoluteString = [request.URL.absoluteString lowercaseString];
+    if([absoluteString hasSuffix:@".png"] || [absoluteString hasSuffix:@".jpg"] || [absoluteString hasSuffix:@".jpeg"] || [absoluteString hasSuffix:@".js"]){
+        return YES;
+    }
+    return NO;
+}
+
+- (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
+//    if([self shouldSkiRequest:request]){
+//        return nil;
+//    }
+    return nil;
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id <WebPolicyDecisionListener>)listener {
+//    [listener use];
+    if ([actionInformation objectForKey:WebActionElementKey]) {
+        [listener ignore];
+    } else {
+        [listener use];
+    }
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener {
+    [listener ignore];
 }
 
 @end

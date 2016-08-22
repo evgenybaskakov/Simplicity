@@ -20,6 +20,9 @@
 #import "SMLog.h"
 #import "SMRemoteImageLoadController.h"
 
+#define PERFECT_IMAGE_W 80
+#define PERFECT_IMAGE_H 80
+
 @interface WebPage : NSObject
 @property NSString *htmlBody;
 @property NSURL *baseURL;
@@ -27,6 +30,7 @@
 @property NSImage *bestImage;
 @property NSUInteger imageCount;
 @property NSUInteger imagesLoaded;
+@property NSArray *imageDownloadTasks;
 @end
 
 @implementation WebPage
@@ -227,24 +231,25 @@
                                      @"/touch-icon-iphone-retina.png",
                                      @"/touch-icon-ipad.png",
                                      @"/touch-icon-ipad-retina.png",
-                                     @"/apple-touch-icon-60x60.png",
-                                     @"/apple-touch-icon-57x57.png",
-                                     @"/apple-touch-icon-72x72.png",
-                                     @"/apple-touch-icon-76x76.png",
                                      @"/apple-touch-icon-114x114.png",
                                      @"/apple-touch-icon-120x120.png",
                                      @"/apple-touch-icon-144x144.png",
                                      @"/apple-touch-icon-152x152.png",
-                                     @"/favicon-196x196.png",
+                                     @"/apple-touch-icon-76x76.png",
+                                     @"/apple-touch-icon-72x72.png",
+                                     @"/apple-touch-icon-57x57.png",
+                                     @"/apple-touch-icon-60x60.png",
                                      @"/favicon-96x96.png",
+                                     @"/favicon-128.png",
+                                     @"/favicon-196x196.png",
                                      @"/favicon-32x32.png",
                                      @"/favicon-16x16.png",
-                                     @"/favicon-128.png",
                                      @"/favicon.png",
                                      @"/favicon.ico"]];
 
     webPage.imageCount = imageURLs.count;
-    
+ 
+    NSMutableArray *tasks = [NSMutableArray array];
     for(NSString *u in imageURLs) {
         NSURL *url;
         if(u.length >= 2 && [u characterAtIndex:0] == '/' && [u characterAtIndex:1] == '/') {
@@ -260,20 +265,41 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
-                NSImage *image = [[NSImage alloc] initWithData:data];
-                if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
-                    webPage.bestImage = image;
+            // Check if this download is still needed
+            if(webPage.completionBlock != nil) {
+                if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+                    NSImage *image = [[NSImage alloc] initWithData:data];
+                    if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
+                        webPage.bestImage = image;
+                    }
                 }
-            }
-            
-            if(++webPage.imagesLoaded == webPage.imageCount) {
-                webPage.completionBlock(webPage.bestImage);
+                
+                BOOL lastImage = ++webPage.imagesLoaded == webPage.imageCount;
+                BOOL perfectImageSize = (webPage.bestImage != nil && webPage.bestImage.size.width >= PERFECT_IMAGE_W && webPage.bestImage.size.height >= PERFECT_IMAGE_H);
+                
+                if(lastImage || perfectImageSize) {
+                    SM_LOG_INFO(@"web page: %@, found %@ image (size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", webPage.bestImage.size.width, webPage.bestImage.size.height);
+                    
+                    for(NSURLSessionDataTask *t in webPage.imageDownloadTasks) {
+                        [t cancel];
+                    }
+                    
+                    void (^capturedCompletionBlock)(NSImage*) = webPage.completionBlock;
+                    webPage.completionBlock = nil;
+
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        capturedCompletionBlock(webPage.bestImage);
+                    });
+                }
             }
         }];
         
         [task resume];
+        
+        [tasks addObject:task];
     }
+    
+    webPage.imageDownloadTasks = tasks;
 }
 
 -(BOOL)shouldSkiRequest:(NSURLRequest*)request{

@@ -172,7 +172,7 @@
     NSAssert(webPage.htmlBody, @"_htmlPagesToLoad[0].htmlBody is nil");
 
     SM_LOG_INFO(@"page loaded: %@", webPage.baseURL);
-//    if([webPage.baseURL.absoluteString isEqualToString:@"http://amazon.com"]) {
+//    if([webPage.baseURL.absoluteString isEqualToString:@"http://facebookmail.com"]) {
 //        SM_LOG_INFO(@"page loaded: %@", webPage.htmlBody);
 //    }
     
@@ -278,7 +278,7 @@
                 BOOL perfectImageSize = (webPage.bestImage != nil && webPage.bestImage.size.width >= PERFECT_IMAGE_W && webPage.bestImage.size.height >= PERFECT_IMAGE_H);
                 
                 if(lastImage || perfectImageSize) {
-                    SM_LOG_INFO(@"web page: %@, found %@ image (size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", webPage.bestImage.size.width, webPage.bestImage.size.height);
+                    SM_LOG_INFO(@"web page: %@, found %@ image (%@, size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", response.URL, webPage.bestImage.size.width, webPage.bestImage.size.height);
                     
                     for(NSURLSessionDataTask *t in webPage.imageDownloadTasks) {
                         [t cancel];

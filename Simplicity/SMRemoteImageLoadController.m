@@ -168,6 +168,9 @@
     NSAssert(webPage.htmlBody, @"_htmlPagesToLoad[0].htmlBody is nil");
 
     SM_LOG_INFO(@"page loaded: %@", webPage.baseURL);
+//    if([webPage.baseURL.absoluteString isEqualToString:@"http://amazon.com"]) {
+//        SM_LOG_INFO(@"page loaded: %@", webPage.htmlBody);
+//    }
     
     WebScriptObject *webScript = [sender windowScriptObject];
     [webScript setValue:self forKey:@"MyApp"];
@@ -201,11 +204,11 @@
     NSString *ret = [sender stringByEvaluatingJavaScriptFromString:@"getImageUrls()"];
 
     NSError *error = nil;
-    NSArray<NSString*> *imageURLs = [NSJSONSerialization JSONObjectWithData:[ret dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
+    NSArray<NSString*> *parsedImageURLs = [NSJSONSerialization JSONObjectWithData:[ret dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
 
-    if(imageURLs != nil && imageURLs.count != 0) {
-        NSLog(@"json: %@", imageURLs);
-    }
+//    if(parsedImageURLs != nil && parsedImageURLs.count != 0) {
+//        NSLog(@"json: %@", parsedImageURLs);
+//    }
 
     [_htmlPagesToLoad removeObjectAtIndex:0];
     
@@ -217,42 +220,59 @@
         SM_LOG_INFO(@"loading page: %@", nextPage.baseURL);
         [[_webView mainFrame] loadHTMLString:nextPage.htmlBody baseURL:nextPage.baseURL];
     }
+    
+    NSMutableArray *imageURLs = [NSMutableArray arrayWithArray:parsedImageURLs];
+    
+    [imageURLs addObjectsFromArray:@[@"/touch-icon-iphone.png",
+                                     @"/touch-icon-iphone-retina.png",
+                                     @"/touch-icon-ipad.png",
+                                     @"/touch-icon-ipad-retina.png",
+                                     @"/apple-touch-icon-60x60.png",
+                                     @"/apple-touch-icon-57x57.png",
+                                     @"/apple-touch-icon-72x72.png",
+                                     @"/apple-touch-icon-76x76.png",
+                                     @"/apple-touch-icon-114x114.png",
+                                     @"/apple-touch-icon-120x120.png",
+                                     @"/apple-touch-icon-144x144.png",
+                                     @"/apple-touch-icon-152x152.png",
+                                     @"/favicon-196x196.png",
+                                     @"/favicon-96x96.png",
+                                     @"/favicon-32x32.png",
+                                     @"/favicon-16x16.png",
+                                     @"/favicon-128.png",
+                                     @"/favicon.png",
+                                     @"/favicon.ico"]];
 
-    if(imageURLs == nil || imageURLs.count == 0) {
-        webPage.completionBlock(nil);
-    }
-    else {
-        webPage.imageCount = imageURLs.count;
-        
-        for(NSString *u in imageURLs) {
-            NSURL *url;
-            if(u.length >= 2 && [u characterAtIndex:0] == '/' && [u characterAtIndex:1] == '/') {
-                url = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@", u]];
-            }
-            else if(u.length >= 1 && [u characterAtIndex:0] == '/') {
-                url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", webPage.baseURL, u]];
-            }
-            else {
-                url = [NSURL URLWithString:u];
-            }
-            
-            NSURLRequest *request = [NSURLRequest requestWithURL:url];
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
-                    NSImage *image = [[NSImage alloc] initWithData:data];
-                    if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
-                        webPage.bestImage = image;
-                    }
-                }
-                
-                if(++webPage.imagesLoaded == webPage.imageCount) {
-                    webPage.completionBlock(webPage.bestImage);
-                }
-            }];
-            
-            [task resume];
+    webPage.imageCount = imageURLs.count;
+    
+    for(NSString *u in imageURLs) {
+        NSURL *url;
+        if(u.length >= 2 && [u characterAtIndex:0] == '/' && [u characterAtIndex:1] == '/') {
+            url = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@", u]];
         }
+        else if(u.length >= 1 && [u characterAtIndex:0] == '/') {
+            url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", webPage.baseURL, u]];
+        }
+        else {
+            url = [NSURL URLWithString:u];
+        }
+        
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+                NSImage *image = [[NSImage alloc] initWithData:data];
+                if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
+                    webPage.bestImage = image;
+                }
+            }
+            
+            if(++webPage.imagesLoaded == webPage.imageCount) {
+                webPage.completionBlock(webPage.bestImage);
+            }
+        }];
+        
+        [task resume];
     }
 }
 

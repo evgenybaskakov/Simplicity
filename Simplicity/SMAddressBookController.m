@@ -115,7 +115,7 @@
             NSArray *linkedPeople = person.linkedPeople;
             for(ABPerson *linkedPerson in linkedPeople) {
                 if(linkedPerson.imageData != nil) {
-                    SM_LOG_INFO(@"contact: %@, linkedPerson with image: %@", address.stringRepresentationShort, linkedPerson);
+                    //SM_LOG_INFO(@"contact: %@, linkedPerson with image: %@", address.stringRepresentationShort, linkedPerson);
                     return linkedPerson.imageData;
                 }
             }

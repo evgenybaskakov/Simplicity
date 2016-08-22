@@ -18,6 +18,7 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "SMLog.h"
+#import "SMAppDelegate.h"
 #import "SMRemoteImageLoadController.h"
 
 #define PERFECT_IMAGE_W 80
@@ -55,10 +56,54 @@
         _webView.policyDelegate = self;
         _htmlPagesToLoad = [NSMutableArray array];
         _imageCache = [NSMutableDictionary dictionary];
-//        NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Cache"] isDirectory:YES];
     }
     
     return self;
+}
+
+- (NSURL*)imageCacheDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"ImageCache"] isDirectory:YES];
+}
+
+- (void)saveImageToDisk:(NSString*)imageName image:(NSImage*)image {
+    NSURL *dirUrl = [self imageCacheDir];
+    
+    NSString *dirPath = [dirUrl path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
+    
+    NSError *error = nil;
+    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
+        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
+        return;
+    }
+    
+    NSURL *imageFileUrl = [dirUrl URLByAppendingPathComponent:imageName];
+    NSString *imageFilePath = [imageFileUrl path];
+    
+    NSBitmapImageRep *imageRep = (NSBitmapImageRep*)[[image representations] objectAtIndex: 0];
+    NSData *imageData = [imageRep representationUsingType:NSPNGFileType properties:[NSDictionary dictionary]];
+    
+    if([imageData writeToFile:imageFilePath atomically:YES]) {
+        SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", imageFilePath, (unsigned long)[imageData length]);
+    } else {
+        SM_LOG_ERROR(@"cannot write file '%@' (%lu bytes)", imageFilePath, (unsigned long)[imageData length]);
+    }
+}
+
+- (NSImage*)loadImageFromDisk:(NSString*)imageName {
+    NSURL *dirUrl = [self imageCacheDir];
+    
+    NSString *dirPath = [dirUrl path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
+    
+    NSURL *imageFileUrl = [dirUrl URLByAppendingPathComponent:imageName];
+    NSString *imageFilePath = [imageFileUrl path];
+
+    NSImage *image = [[NSImage alloc] initWithContentsOfFile:imageFilePath];
+    return image;
 }
 
 - (NSString*)webSiteFromEmail:(NSString*)email {
@@ -94,39 +139,59 @@
         return image;
     }
     
-    NSString *emailMD5 = [self md5:email];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    NSURLSession *session = [NSURLSession sharedSession];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSImage *image = nil;
-        if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
-            image = [[NSImage alloc] initWithData:data];
-        }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(image != nil) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSImage *image = [self loadImageFromDisk:email];
+        if(image != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [_imageCache setObject:image forKey:email];
                 completionBlock(image);
-            }
-            else {
-                NSString *webSite = [self webSiteFromEmail:email];
-                [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
-                    if(image == nil) {
-                        [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+            });
+        }
+        else {
+            NSString *emailMD5 = [self md5:email];
+            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
+            NSURLRequest *request = [NSURLRequest requestWithURL:url];
+            NSURLSession *session = [NSURLSession sharedSession];
+            
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                NSImage *image = nil;
+                if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+                    image = [[NSImage alloc] initWithData:data];
+                }
+                
+                if(image != nil) {
+                    [self saveImageToDisk:email image:image];
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(image != nil) {
+                        [_imageCache setObject:image forKey:email];
+                        completionBlock(image);
                     }
                     else {
-                        [_imageCache setObject:image forKey:email];
+                        NSString *webSite = [self webSiteFromEmail:email];
+                        [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
+                            if(image == nil) {
+                                [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+                            }
+                            else {
+                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                    [self saveImageToDisk:email image:image];
+                                });
+
+                                [_imageCache setObject:image forKey:email];
+                            }
+                            
+                            completionBlock(image);
+                        }];
                     }
-                    
-                    completionBlock(image);
-                }];
-            }
-        });
-    }];
-    
-    [task resume];
-    
+                });
+            }];
+            
+            [task resume];
+        }
+    });
+
     return nil;
 }
 
@@ -316,7 +381,7 @@
                 
                 if(lastImage || perfectImageSize) {
                     SM_LOG_INFO(@"web page: %@, found %@ image (%@, size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", response.URL, webPage.bestImage.size.width, webPage.bestImage.size.height);
-                    
+
                     for(NSURLSessionDataTask *t in webPage.imageDownloadTasks) {
                         [t cancel];
                     }
@@ -334,6 +399,11 @@
                         
                         capturedCompletionBlock(webPage.bestImage);
                     });
+                    
+                    if(webPage.bestImage != nil) {
+                        [self saveImageToDisk:webPage.webSite image:webPage.bestImage];
+                    }
+                    
                 }
             }
         }];

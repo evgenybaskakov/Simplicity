@@ -24,6 +24,7 @@
 #define PERFECT_IMAGE_H 80
 
 @interface WebPage : NSObject
+@property NSString *webSite;
 @property NSString *htmlBody;
 @property NSURL *baseURL;
 @property void (^completionBlock)(NSImage*);
@@ -39,6 +40,7 @@
 @implementation SMRemoteImageLoadController {
     WebView *_webView;
     NSMutableArray<WebPage*> *_htmlPagesToLoad;
+    NSMutableDictionary<NSString*,NSImage*> *_imageCache;
 }
 
 - (id)init {
@@ -51,14 +53,23 @@
         _webView.resourceLoadDelegate = self;
         _webView.frameLoadDelegate = self;
         _webView.policyDelegate = self;
-        
-//        _webView.frameLoadDelegate = self;
-//        _webView.downloadDelegate = self;
-//        _webScript = [_webView windowScriptObject];
         _htmlPagesToLoad = [NSMutableArray array];
+        _imageCache = [NSMutableDictionary dictionary];
+//        NSURL *url = [accountUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"Cache"] isDirectory:YES];
     }
     
     return self;
+}
+
+- (NSString*)webSiteFromEmail:(NSString*)email {
+    NSArray *parts = [email componentsSeparatedByString:@"@"];
+    if(parts.count == 2) {
+        NSString *webSite = parts[1];
+        return webSite;
+    }
+    else {
+        return email;
+    }
 }
 
 - (NSString*)md5:(NSString*)str {
@@ -75,21 +86,33 @@
 }
 
 - (NSImage*)loadAvatar:(NSString*)email completionBlock:(void (^)(NSImage*))completionBlock {
-    // TODO: load from cache, return immediately
-
+    NSImage *image = [_imageCache objectForKey:email];
+    if(image != nil) {
+        return image;
+    }
+    
     NSString *emailMD5 = [self md5:email];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSImage *image = nil;
-        
         if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
             image = [[NSImage alloc] initWithData:data];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            completionBlock(image);
+            if(image != nil) {
+                [_imageCache setObject:image forKey:email];
+                completionBlock(image);
+            }
+            else {
+                NSString *webSite = [self webSiteFromEmail:email];
+                [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
+                    [_imageCache setObject:image forKey:email];
+                    completionBlock(image);
+                }];
+            }
         });
     }];
     
@@ -98,10 +121,20 @@
     return nil;
 }
 
-- (NSImage*)loadWebSiteImage:(NSString*)webSite completionBlock:(void (^)(NSImage*))completionBlock {
+- (void)loadWebSiteImage:(NSString*)webSite completionBlock:(void (^)(NSImage*))completionBlock {
     NSArray *parts = [webSite componentsSeparatedByString:@"."];
     if(parts.count > 1) {
         webSite = [NSString stringWithFormat:@"%@.%@", parts[parts.count-2], parts[parts.count-1]];
+    }
+    
+    NSImage *image = [_imageCache objectForKey:webSite];
+    if(image == (NSImage*)[NSNull null]) {
+        completionBlock(nil);
+        return;
+    }
+    else if(image != nil) {
+        completionBlock(image);
+        return;
     }
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", webSite]];
@@ -123,6 +156,7 @@
                 NSAssert(htmlBody, @"htmlPage is nil");
                 
                 WebPage *page = [[WebPage alloc] init];
+                page.webSite = webSite;
                 page.baseURL = url;
                 page.htmlBody = htmlBody;
                 page.completionBlock = completionBlock;
@@ -135,15 +169,9 @@
                 }
             });
         }
-//
-////        dispatch_async(dispatch_get_main_queue(), ^{
-////            completionBlock(image);
-////        });
     }];
 
     [task resume];
-    
-    return nil;
 }
 
 //
@@ -288,6 +316,13 @@
                     webPage.completionBlock = nil;
 
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        if(webPage.bestImage != nil) {
+                            [_imageCache setObject:webPage.bestImage forKey:webPage.webSite];
+                        }
+                        else {
+                            [_imageCache setObject:(NSImage*)[NSNull null] forKey:webPage.webSite];
+                        }
+                        
                         capturedCompletionBlock(webPage.bestImage);
                     });
                 }

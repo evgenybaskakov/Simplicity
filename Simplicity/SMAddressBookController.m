@@ -14,15 +14,12 @@
 #import "SMRemoteImageLoadController.h"
 #import "SMAddressBookController.h"
 
-@implementation SMAddressBookController {
-    NSMutableDictionary *_imageCache;
-}
+@implementation SMAddressBookController
 
 - (id)init {
     self = [super init];
     
     if(self) {
-        _imageCache = [NSMutableDictionary dictionary];
         _defaultUserImage = [NSImage imageNamed:NSImageNameUserGuest];
     }
     
@@ -100,7 +97,7 @@
     return search;
 }
 
-- (NSData*)imageDataForAddress:(SMAddress*)address {
+- (NSData*)loadContactImageDataFromAddressBook:(SMAddress*)address {
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
     ABSearchElement *search = [self findAddress:address ab:ab];
     NSArray *foundRecords = [ab recordsMatchingSearchElement:search];
@@ -129,55 +126,16 @@
 }
 
 - (NSImage*)loadPictureForAddress:(SMAddress*)address tag:(NSInteger)tag completionBlock:(void (^)(NSImage*, NSInteger))completionBlock {
-    NSString *addressString = address.stringRepresentationDetailed;
-    NSImage *image = [_imageCache objectForKey:addressString];
-    
-    if(image == (NSImage*)[NSNull null]) {
-        return nil;
-    }
-    
-    if(image != nil) {
-        return image;
-    }
-    
-    NSData *imageData = [self imageDataForAddress:address];
+    NSData *imageData = [self loadContactImageDataFromAddressBook:address];
     
     if(imageData != nil) {
-        image = [[NSImage alloc] initWithData:imageData];
-        [_imageCache setObject:image forKey:addressString];
-
-        return image;
+        return [[NSImage alloc] initWithData:imageData];
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
-        if(image != nil) {
-            [_imageCache setObject:image forKey:addressString];
-            completionBlock(image, tag);
-        }
-        else {
-            NSArray *parts = [address.email componentsSeparatedByString:@"@"];
-            if(parts.count == 2) {
-                NSString *webSite = parts[1];
-                [appDelegate.remoteImageLoadController loadWebSiteImage:(NSString*)webSite completionBlock:^(NSImage *image) {
-                    if(image != nil) {
-                        [_imageCache setObject:image forKey:addressString];
-                    }
-                    else {
-                        [_imageCache setObject:[NSNull null] forKey:addressString];
-                    }
-                    
-                    completionBlock(image, tag);
-                }];
-            }
-            else {
-                [_imageCache setObject:[NSNull null] forKey:addressString];
-                completionBlock(nil, tag);
-            }
-        }
+    return [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
+        completionBlock(image, tag);
     }];
-
-    return nil;
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {

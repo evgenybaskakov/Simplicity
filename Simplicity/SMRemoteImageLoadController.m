@@ -87,7 +87,10 @@
 
 - (NSImage*)loadAvatar:(NSString*)email completionBlock:(void (^)(NSImage*))completionBlock {
     NSImage *image = [_imageCache objectForKey:email];
-    if(image != nil) {
+    if(image == (NSImage*)[NSNull null]) {
+        return nil;
+    }
+    else if(image != nil) {
         return image;
     }
     
@@ -109,7 +112,13 @@
             else {
                 NSString *webSite = [self webSiteFromEmail:email];
                 [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
-                    [_imageCache setObject:image forKey:email];
+                    if(image == nil) {
+                        [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+                    }
+                    else {
+                        [_imageCache setObject:image forKey:email];
+                    }
+                    
                     completionBlock(image);
                 }];
             }

@@ -19,6 +19,7 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMPreferencesController.h"
 #import "SMRemoteImageLoadController.h"
 
 #define PERFECT_IMAGE_W 80
@@ -130,12 +131,26 @@
             result[12], result[13], result[14], result[15]];
 }
 
+- (BOOL)shouldUseWebSiteImage {
+    return [[[[NSApplication sharedApplication] delegate] preferencesController] shouldUseServerContactImages];
+}
+
 - (NSImage*)loadAvatar:(NSString*)email completionBlock:(void (^)(NSImage*))completionBlock {
+    NSString *webSite = [self webSiteFromEmail:email];
+
     NSImage *image = [_imageCache objectForKey:email];
     if(image == (NSImage*)[NSNull null]) {
-        return nil;
+        if(![self shouldUseWebSiteImage]) {
+            return nil;
+        }
+        
+        image = [_imageCache objectForKey:webSite];
+        if(image == (NSImage*)[NSNull null]) {
+            return nil;
+        }
     }
-    else if(image != nil) {
+    
+    if(image != nil) {
         return image;
     }
     
@@ -169,17 +184,23 @@
                         completionBlock(image);
                     }
                     else {
-                        NSString *webSite = [self webSiteFromEmail:email];
+                        [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+
+                        if(![self shouldUseWebSiteImage]) {
+                            completionBlock(nil);
+                            return;
+                        }
+
                         [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
                             if(image == nil) {
-                                [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+                                [_imageCache setObject:(NSImage*)[NSNull null] forKey:webSite];
                             }
                             else {
                                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    [self saveImageToDisk:email image:image];
+                                    [self saveImageToDisk:webSite image:image];
                                 });
 
-                                [_imageCache setObject:image forKey:email];
+                                [_imageCache setObject:image forKey:webSite];
                             }
                             
                             completionBlock(image);
@@ -207,6 +228,12 @@
         return;
     }
     else if(image != nil) {
+        completionBlock(image);
+        return;
+    }
+    
+    image = [self loadImageFromDisk:webSite];
+    if(image != nil) {
         completionBlock(image);
         return;
     }

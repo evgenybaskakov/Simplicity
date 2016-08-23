@@ -111,6 +111,14 @@
     NSArray *parts = [email componentsSeparatedByString:@"@"];
     if(parts.count == 2) {
         NSString *webSite = parts[1];
+        NSArray *parts = [webSite componentsSeparatedByString:@"."];
+        if(parts.count > 2) {
+            NSMutableString *shortName = [NSMutableString stringWithString:parts[parts.count-2]];
+            [shortName appendString:@"."];
+            [shortName appendString:parts[parts.count-1]];
+            webSite = shortName;
+        }
+        
         return webSite;
     }
     else {
@@ -217,11 +225,6 @@
 }
 
 - (void)loadWebSiteImage:(NSString*)webSite completionBlock:(void (^)(NSImage*))completionBlock {
-    NSArray *parts = [webSite componentsSeparatedByString:@"."];
-    if(parts.count > 1) {
-        webSite = [NSString stringWithFormat:@"%@.%@", parts[parts.count-2], parts[parts.count-1]];
-    }
-    
     NSImage *image = [_imageCache objectForKey:webSite];
     if(image == (NSImage*)[NSNull null]) {
         completionBlock(nil);

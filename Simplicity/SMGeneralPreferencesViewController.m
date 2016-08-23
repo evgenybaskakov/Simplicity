@@ -158,24 +158,50 @@
             [_preferableMessageFormatList selectItemAtIndex:1];
             break;
     }
+    
+    //
+    
+    [self checkControlsEnabled];
+}
+
+- (void)checkControlsEnabled {
+    if(_showContactImagesInMessageListCheckBox.state == NSOnState) {
+        _useServerImagesInMessageListCheckBox.enabled = YES;
+        _useServerImagesInMessageListLabel.enabled = YES;
+        
+        if(_useServerImagesInMessageListCheckBox.state == NSOnState) {
+            _allowLowQualityContactImagesInMessageListCheckBox.enabled = YES;
+        }
+        else {
+            _allowLowQualityContactImagesInMessageListCheckBox.enabled = NO;
+        }
+    }
+    else {
+        _useServerImagesInMessageListCheckBox.enabled = NO;
+        _useServerImagesInMessageListLabel.enabled = NO;
+        _allowLowQualityContactImagesInMessageListCheckBox.enabled = NO;
+    }
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [self checkControlsEnabled];
 }
 
 - (IBAction)useServerImagesInMessageListAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldUseServerContactImages = (_useServerImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [self checkControlsEnabled];
 }
 
 - (IBAction)allowLowQualityImagesInMessageListAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldAllowLowQualityContactImages = (_allowLowQualityContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [self checkControlsEnabled];
 }
 
 - (IBAction)showEmailAddressesInMailboxesAction:(id)sender {

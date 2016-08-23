@@ -36,6 +36,8 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @property (nonatomic) NSInteger currentAccount;
 @property (nonatomic) BOOL useFixedSizeFontForPlainTextMessages;
 @property (nonatomic) BOOL shouldShowContactImages;
+@property (nonatomic) BOOL shouldUseServerContactImages;
+@property (nonatomic) BOOL shouldAllowLowQualityContactImages;
 @property (nonatomic) BOOL shouldShowEmailAddressesInMailboxes;
 @property (nonatomic) BOOL shouldShowNotifications;
 @property (nonatomic) BOOL shouldUseSingleSignature;

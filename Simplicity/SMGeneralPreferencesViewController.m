@@ -21,6 +21,9 @@
 @interface SMGeneralPreferencesViewController ()
 
 @property (weak) IBOutlet NSButton *showContactImagesInMessageListCheckBox;
+@property (weak) IBOutlet NSButton *useServerImagesInMessageListCheckBox;
+@property (weak) IBOutlet NSTextField *useServerImagesInMessageListLabel;
+@property (weak) IBOutlet NSButton *allowLowQualityContactImagesInMessageListCheckBox;
 @property (weak) IBOutlet NSButton *showEmailAddressesInMailboxes;
 @property (weak) IBOutlet NSButton *showNotificationsCheckBox;
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
@@ -89,6 +92,14 @@
     //
     
     _showContactImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldShowContactImages]? NSOnState : NSOffState);
+    
+    //
+    
+    _useServerImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldUseServerContactImages]? NSOnState : NSOffState);
+    
+    //
+    
+    _allowLowQualityContactImagesInMessageListCheckBox.state = ([[appDelegate preferencesController] shouldAllowLowQualityContactImages]? NSOnState : NSOffState);
 
     //
     
@@ -152,6 +163,18 @@
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (IBAction)useServerImagesInMessageListAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].shouldUseServerContactImages = (_useServerImagesInMessageListCheckBox.state == NSOnState);
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+- (IBAction)allowLowQualityImagesInMessageListAction:(id)sender {
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].shouldAllowLowQualityContactImages = (_allowLowQualityContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 

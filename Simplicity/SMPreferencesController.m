@@ -25,6 +25,8 @@
 #define kCurrentAccount                 @"CurrentAccount"
 #define kAccountsCount                  @"AccountsCount"
 #define kShouldShowContactImages        @"ShouldShowContactImages"
+#define kShouldUseServerContactImages   @"ShouldUseServerContactImages"
+#define kShouldAllowLowQualityContactImages @"ShouldAllowLowQualityContactImages"
 #define kShouldShowEmailAddressesInMailboxes @"ShouldShowEmailAddressesInMailboxes"
 #define kMessageListPreviewLineCount    @"MessageListPreviewLineCount"
 #define kMessageCheckPeriodSec          @"MessageCheckPeriodSec"
@@ -67,6 +69,8 @@
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
     BOOL _shouldShowContactImagesCached;
+    BOOL _shouldUseServerContactImagesCached;
+    BOOL _shouldAllowLowQualityContactImagesCached;
     BOOL _shouldShowEmailAddressesInMailboxesCached;
     BOOL _shouldUseSingleSignatureCached;
     BOOL _shouldUseUnifiedMailboxCached;
@@ -697,6 +701,64 @@
     [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowContactImages];
 
     _shouldShowContactImagesCached = flag;
+}
+
+#pragma mark Should use sender's server image in message list
+
+- (BOOL)shouldUseServerContactImages {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseServerContactImages] == nil) {
+            _shouldUseServerContactImagesCached = YES;
+            
+            SM_LOG_INFO(@"Using default kShouldUseServerContactImages: %@", _shouldUseServerContactImagesCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldUseServerContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseServerContactImages]);
+            
+            SM_LOG_INFO(@"Loaded kShouldUseServerContactImages: %@", _shouldUseServerContactImagesCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldUseServerContactImagesCached;
+}
+
+- (void)setShouldUseContactImages:(BOOL)flag {
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldUseServerContactImages];
+    
+    _shouldUseServerContactImagesCached = flag;
+}
+
+#pragma mark Should allow low-res images in message list
+
+- (BOOL)shouldAllowLowQualityContactImages {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldAllowLowQualityContactImages] == nil) {
+            _shouldAllowLowQualityContactImagesCached = NO;
+            
+            SM_LOG_INFO(@"Using default kShouldAllowLowQualityContactImages: %@", _shouldAllowLowQualityContactImagesCached? @"YES" : @"NO");
+        }
+        else {
+            _shouldAllowLowQualityContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldAllowLowQualityContactImages]);
+            
+            SM_LOG_INFO(@"Loaded kShouldAllowLowQualityContactImages: %@", _shouldAllowLowQualityContactImagesCached? @"YES" : @"NO");
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _shouldAllowLowQualityContactImagesCached;
+}
+
+- (void)setAllowLowQualityContactImages:(BOOL)flag {
+    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldAllowLowQualityContactImages];
+    
+    _shouldAllowLowQualityContactImagesCached = flag;
 }
 
 #pragma mark Should show email addresses in mailboxes

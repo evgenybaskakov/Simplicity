@@ -330,8 +330,13 @@
     view.tag = _nextCellViewTag++;
     
     NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress tag:view.tag completionBlock:^(NSImage *image, NSInteger tag) {
-        if(image != nil && view.tag == tag) {
-            view.contactImage.image = image;
+        if(view.tag == tag) {
+            if(image != nil) {
+                view.contactImage.image = image;
+            }
+            else {
+                view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];                
+            }
         }
     }];
     

@@ -726,7 +726,7 @@
     return _shouldUseServerContactImagesCached;
 }
 
-- (void)setShouldUseContactImages:(BOOL)flag {
+- (void)setShouldUseServerContactImages:(BOOL)flag {
     [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldUseServerContactImages];
     
     _shouldUseServerContactImagesCached = flag;
@@ -755,7 +755,7 @@
     return _shouldAllowLowQualityContactImagesCached;
 }
 
-- (void)setAllowLowQualityContactImages:(BOOL)flag {
+- (void)setShouldAllowLowQualityContactImages:(BOOL)flag {
     [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldAllowLowQualityContactImages];
     
     _shouldAllowLowQualityContactImagesCached = flag;

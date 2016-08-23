@@ -12,7 +12,11 @@
 #import "SMAppDelegate.h"
 #import "SMAddress.h"
 #import "SMRemoteImageLoadController.h"
+#import "SMPreferencesController.h"
 #import "SMAddressBookController.h"
+
+#define QUALITY_CONTACT_IMAGE_W 64
+#define QUALITY_CONTACT_IMAGE_H 64
 
 @implementation SMAddressBookController
 
@@ -133,9 +137,22 @@
     }
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    return [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
-        completionBlock(image, tag);
+    NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
+        BOOL allowImage = [self allowImage:image];
+        completionBlock(allowImage? image : nil, tag);
     }];
+    
+    BOOL allowImage = [self allowImage:image];
+    return allowImage? image : nil;
+}
+
+- (BOOL)allowImage:(NSImage*)image {
+    if((image.size.width < QUALITY_CONTACT_IMAGE_W || image.size.height < QUALITY_CONTACT_IMAGE_H) && ![[[[NSApplication sharedApplication] delegate] preferencesController] shouldAllowLowQualityContactImages]) {
+        return NO;
+    }
+    else {
+        return YES;
+    }
 }
 
 - (BOOL)findAddress:(SMAddress*)address uniqueId:(NSString**)uniqueId {

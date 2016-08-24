@@ -22,6 +22,8 @@
 #import "SMPreferencesController.h"
 #import "SMRemoteImageLoadController.h"
 
+#define IMAGE_FILE_CACHE_EXPIRATION_TIME_SEC (60 * 60 * 24 * 28) // four weeks
+
 #define PERFECT_IMAGE_W 80
 #define PERFECT_IMAGE_H 80
 
@@ -103,6 +105,25 @@
     NSURL *imageFileUrl = [dirUrl URLByAppendingPathComponent:imageName];
     NSString *imageFilePath = [imageFileUrl path];
 
+    BOOL imageFileValid = NO;
+    NSDictionary *fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:imageFilePath error:nil];
+    if(fileAttribs) {
+        NSDate *creationTime = [fileAttribs objectForKey:NSFileCreationDate];
+        
+        if(creationTime) {
+            NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:creationTime];
+            
+            if(timeDiff < IMAGE_FILE_CACHE_EXPIRATION_TIME_SEC) {
+                imageFileValid = YES;
+            }
+        }
+    }
+    
+    if(!imageFileValid) {
+        [[NSFileManager defaultManager] removeItemAtPath:imageFilePath error:nil];
+        return nil;
+    }
+    
     NSImage *image = [[NSImage alloc] initWithContentsOfFile:imageFilePath];
     return image;
 }

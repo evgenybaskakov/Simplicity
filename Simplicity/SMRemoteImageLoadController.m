@@ -96,7 +96,7 @@
     }
 }
 
-- (NSImage*)loadImageFromDisk:(NSString*)imageName {
+- (NSImage*)loadImageFromDisk:(NSString*)imageName fileNeedsReload:(BOOL*)fileNeedsReload {
     NSURL *dirUrl = [self imageCacheDir];
     
     NSString *dirPath = [dirUrl path];
@@ -105,7 +105,8 @@
     NSURL *imageFileUrl = [dirUrl URLByAppendingPathComponent:imageName];
     NSString *imageFilePath = [imageFileUrl path];
 
-    BOOL imageFileValid = NO;
+    *fileNeedsReload = YES;
+    
     NSDictionary *fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:imageFilePath error:nil];
     if(fileAttribs) {
         NSDate *creationTime = [fileAttribs objectForKey:NSFileCreationDate];
@@ -114,14 +115,12 @@
             NSTimeInterval timeDiff = [[NSDate date] timeIntervalSinceDate:creationTime];
             
             if(timeDiff < IMAGE_FILE_CACHE_EXPIRATION_TIME_SEC) {
-                imageFileValid = YES;
+                *fileNeedsReload = NO;
+            }
+            else {
+                SM_LOG_INFO(@"image file %@ expired", imageFilePath);
             }
         }
-    }
-    
-    if(!imageFileValid) {
-        [[NSFileManager defaultManager] removeItemAtPath:imageFilePath error:nil];
-        return nil;
     }
     
     NSImage *image = [[NSImage alloc] initWithContentsOfFile:imageFilePath];
@@ -184,14 +183,16 @@
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSImage *image = [self loadImageFromDisk:email];
+        BOOL fileNeedsReload;
+        NSImage *image = [self loadImageFromDisk:email fileNeedsReload:&fileNeedsReload];
         if(image != nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_imageCache setObject:image forKey:email];
                 completionBlock(image);
             });
         }
-        else {
+        
+        if(image == nil || fileNeedsReload) {
             NSString *emailMD5 = [self md5:email];
             NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
             NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -256,10 +257,16 @@
         return;
     }
     
-    image = [self loadImageFromDisk:webSite];
+    BOOL fileNeedsReload;
+    image = [self loadImageFromDisk:webSite fileNeedsReload:&fileNeedsReload];
     if(image != nil) {
         completionBlock(image);
-        return;
+        
+        if(!fileNeedsReload) {
+            // No further actions needed.
+            // Otherwise, the file will be loaded from the network anyway.
+            return;
+        }
     }
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", webSite]];

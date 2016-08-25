@@ -26,6 +26,9 @@
 
 //#define CHECK_DATABASE
 
+static const int MAJOR_VERSION = 1;
+static const int MINOR_VERSION = 0;
+
 static const NSUInteger HEADERS_BODIES_RECLAIM_RATIO = 30; // TODO: too small for large databases!!!
 static const NSUInteger BODIES_COUNT_RECLAIM_STEP = 50; // TODO: too small for large databases!!!
 static const NSUInteger HEADERS_COUNT_RECLAIM_STEP = BODIES_COUNT_RECLAIM_STEP * HEADERS_BODIES_RECLAIM_RATIO;
@@ -103,11 +106,11 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 #ifdef CHECK_DATABASE
         [self checkDatabase:_dbFilePath];
 #endif
-        [self initDatabase:_dbFilePath];
+        [self initDatabase:_dbFilePath checkVersion:YES];
         
         if(_dbInvalid) {
             [self resetDatabase:_dbFilePath];
-            [self initDatabase:_dbFilePath];
+            [self initDatabase:_dbFilePath checkVersion:YES];
         }
     }
     
@@ -595,13 +598,18 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     _dbMustBeReset = NO;
 }
 
-- (void)initDatabase:(NSString*)dbFilename {
+- (void)initDatabase:(NSString*)dbFilename checkVersion:(BOOL)checkVersion {
     BOOL initSuccessful = NO;
     
     sqlite3 *const database = [self openDatabaseInternal:dbFilename];
     
     if(database != nil) {
         do {
+            if(![self initVersion:database check:checkVersion]) {
+                SM_LOG_ERROR(@"Failed to init database version");
+                break;
+            }
+
             if(![self createOpQueuesTable:database]) {
                 SM_LOG_ERROR(@"Failed to init op queues table");
                 break;
@@ -634,6 +642,111 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     else {
         _dbInvalid = YES;
     }
+}
+
+- (BOOL)initVersion:(sqlite3*)database check:(BOOL)check {
+    int major = -1, minor = -1;
+    
+    do {
+        char *errMsg = NULL;
+        const char *createStmt = "CREATE TABLE IF NOT EXISTS VERSION (ID INTEGER PRIMARY KEY, MAJOR INTEGER, MINOR INTEGER)";
+        
+        const int sqlResult = sqlite3_exec(database, createStmt, NULL, NULL, &errMsg);
+        if(sqlResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"Failed to create table VERSION: %s, error %d", errMsg, sqlResult);
+            return FALSE;
+        }
+
+        BOOL dbQueryFailed = NO;
+        int dbQueryError = SQLITE_OK;
+        
+        NSString *folderSelectSql = [NSString stringWithFormat:@"SELECT * FROM VERSION WHERE ID = \"0\""];
+        const char *folderSelectStmt = [folderSelectSql UTF8String];
+        
+        sqlite3_stmt *statement = NULL;
+        const int sqlSelectPrepareResult = sqlite3_prepare_v2(database, folderSelectStmt, -1, &statement, NULL);
+        
+        if(sqlSelectPrepareResult == SQLITE_OK) {
+            const int stepResult = sqlite3_step(statement);
+            if(stepResult == SQLITE_ROW) {
+                major = sqlite3_column_int(statement, 1);
+                minor = sqlite3_column_int(statement, 2);
+            }
+            else if(stepResult == SQLITE_DONE) {
+                SM_LOG_INFO(@"version not found");
+            }
+            else {
+                SM_LOG_ERROR(@"could not load version, error %d", sqlSelectPrepareResult);
+                
+                dbQueryFailed = YES;
+                dbQueryError = stepResult;
+            }
+        }
+        else {
+            SM_LOG_ERROR(@"could not prepare select statement for version, error %d", sqlSelectPrepareResult);
+            
+            dbQueryFailed = YES;
+            dbQueryError = sqlSelectPrepareResult;
+        }
+        
+        const int sqlFinalizeResult = sqlite3_finalize(statement);
+        SM_LOG_NOISE(@"finalize version load statement result %d", sqlFinalizeResult);
+    } while(FALSE);
+    
+    SM_LOG_DEBUG(@"loaded database version %d.%d", major, minor);
+    
+    BOOL updateVersion = NO;
+    
+    if(major == -1 && minor == -1) {
+        SM_LOG_INFO(@"database version is not yet set");
+        updateVersion = YES;
+    }
+    else if(major != MAJOR_VERSION) {
+        SM_LOG_ERROR(@"database version %d.%d is incompatible with current version %d.%d", major, minor, MAJOR_VERSION, MINOR_VERSION);
+        return FALSE;
+    }
+    else if(minor != MINOR_VERSION) {
+        SM_LOG_INFO(@"database version %d.%d is outdated from current version %d.%d and will be fixed", major, minor, MAJOR_VERSION, MINOR_VERSION);
+        updateVersion = YES;
+    }
+    else {
+        SM_LOG_INFO(@"database version %d.%d is up to date", major, minor);
+    }
+    
+    if(updateVersion) {
+        NSString *insertSql = [NSString stringWithFormat:@"INSERT OR REPLACE INTO VERSION (ID, MAJOR, MINOR) VALUES (0, %d, %d)", MAJOR_VERSION, MINOR_VERSION];
+        const char *insertStmt = [insertSql UTF8String];
+        
+        sqlite3_stmt *statement = NULL;
+        const int sqlPrepareResult = sqlite3_prepare_v2(database, insertStmt, -1, &statement, NULL);
+        if(sqlPrepareResult != SQLITE_OK) {
+            SM_LOG_ERROR(@"could not prepare version insert statement, error %d", sqlPrepareResult);
+            return FALSE;
+        }
+        
+        BOOL dbQueryFailed = NO;
+        int dbQueryError = SQLITE_OK;
+        
+        do {
+            const int sqlResult = sqlite3_step(statement);
+            
+            if(sqlResult == SQLITE_DONE) {
+                SM_LOG_INFO(@"Version successfully updated: %d.%d", MAJOR_VERSION, MINOR_VERSION);
+            }
+            else {
+                SM_LOG_ERROR(@"Failed to insert version, error %d", sqlResult);
+                
+                dbQueryError = sqlResult;
+                dbQueryFailed = YES;
+                break;
+            }
+        } while(FALSE);
+        
+        const int sqlFinalizeResult = sqlite3_finalize(statement);
+        SM_LOG_NOISE(@"finalize version insert statement result %d", sqlFinalizeResult);
+    }
+    
+    return TRUE;
 }
 
 - (BOOL)createOpQueuesTable:(sqlite3*)database {

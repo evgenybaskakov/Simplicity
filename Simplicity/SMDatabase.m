@@ -106,11 +106,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 #ifdef CHECK_DATABASE
         [self checkDatabase:_dbFilePath];
 #endif
-        [self initDatabase:_dbFilePath checkVersion:YES];
+        [self initDatabase:_dbFilePath];
         
         if(_dbInvalid) {
             [self resetDatabase:_dbFilePath];
-            [self initDatabase:_dbFilePath checkVersion:YES];
         }
     }
     
@@ -131,6 +130,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)triggerDBFailure:(DBFailureKind)dbFailureKind {
+    if(_dbInvalid) {
+        return;
+    }
+    
     switch(dbFailureKind) {
         case DBFailure_NonCriticalDataNotFound:
             SM_LOG_ERROR(@"Database '%@': some data not found, considering DB consisteny not compromised. Application will continue working normally.", _dbFilePath);
@@ -581,31 +584,43 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 }
 
 - (void)resetDatabase:(NSString*)dbFilename {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        alert.messageText = @"Local database file seems to be corrupted. It cannot be restored and needs to be re-created upon application restart.";
+        alert.informativeText = @"Please choose to continue work without keeping your messages locally, or to restart immediately.";
+        
+        [alert addButtonWithTitle:@"Restart"];
+        [alert addButtonWithTitle:@"Continue"];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        
+        if([alert runModal] == NSAlertFirstButtonReturn) {
+            exit(1);
+        }
+        else {
+            SM_LOG_INFO(@"User opted to continue work");
+        }
+    });
+    
     NSError *error = nil;
     [[NSFileManager defaultManager] removeItemAtPath:dbFilename error:&error];
     
     if(error != nil && error.code != NSFileNoSuchFileError) {
-        SM_LOG_ERROR(@"Cannot remove database file '%@': %@", dbFilename, error);
-        
-        _dbInvalid = YES;
-    }
-    else {
-        SM_LOG_INFO(@"Database '%@' has been erased as inconsistent.", dbFilename);
-        
-        _dbInvalid = NO;
+        SM_LOG_ERROR(@"Error removing database file '%@': %@", dbFilename, error);
     }
     
+    _dbInvalid = YES;
     _dbMustBeReset = NO;
 }
 
-- (void)initDatabase:(NSString*)dbFilename checkVersion:(BOOL)checkVersion {
+- (void)initDatabase:(NSString*)dbFilename {
     BOOL initSuccessful = NO;
     
     sqlite3 *const database = [self openDatabaseInternal:dbFilename];
     
     if(database != nil) {
         do {
-            if(![self initVersion:database check:checkVersion]) {
+            if(![self initVersion:database]) {
                 SM_LOG_ERROR(@"Failed to init database version");
                 break;
             }
@@ -644,7 +659,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     }
 }
 
-- (BOOL)initVersion:(sqlite3*)database check:(BOOL)check {
+- (BOOL)initVersion:(sqlite3*)database {
     int major = -1, minor = -1;
     
     do {

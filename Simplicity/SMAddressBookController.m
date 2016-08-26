@@ -15,8 +15,8 @@
 #import "SMPreferencesController.h"
 #import "SMAddressBookController.h"
 
-#define QUALITY_CONTACT_IMAGE_W 64
-#define QUALITY_CONTACT_IMAGE_H 64
+#define QUALITY_CONTACT_IMAGE_W 48
+#define QUALITY_CONTACT_IMAGE_H 48
 
 @implementation SMAddressBookController
 

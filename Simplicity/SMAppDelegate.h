@@ -51,6 +51,8 @@
 @property (readonly, nonatomic) BOOL currentAccountIsUnified;
 @property (readonly, nonatomic) BOOL accountsExist;
 
++ (void)restartApplication;
+
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account;

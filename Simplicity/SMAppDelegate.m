@@ -28,6 +28,15 @@
     NSMutableArray<SMUserAccount*> *_accounts;
 }
 
++ (void)restartApplication {
+    NSString *path = [[NSBundle mainBundle] executablePath];
+    NSString *processID = [NSString stringWithFormat:@"%d", [[NSProcessInfo processInfo] processIdentifier]];
+    SM_LOG_INFO(@"New instance process identifier: %@", processID);
+    
+    [NSTask launchedTaskWithLaunchPath:path arguments:[NSArray arrayWithObjects:path, processID, nil]];
+    [NSApp terminate: nil];
+}
+
 - (id)init {
     self = [ super init ];
 
@@ -154,6 +163,10 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    // This is necessary to keep the main window open when the application
+    // is self relaunched.
+    [NSApp activateIgnoringOtherApps:YES];
+    
     NSUInteger accountsCount = [_preferencesController accountsCount];
 
     _appController.composeMessageMenuItem.enabled = accountsCount != 0? YES : NO;

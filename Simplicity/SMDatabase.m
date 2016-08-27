@@ -587,7 +587,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSAlert *alert = [[NSAlert alloc] init];
         
-        alert.messageText = @"Local database file seems to be corrupted. It cannot be restored and needs to be re-created upon application restart.";
+        alert.messageText = @"Local database file appears to be corrupted. It cannot be restored and needs to be re-created upon application restart.";
         alert.informativeText = @"Please choose to continue work without keeping your messages locally, or to restart immediately.";
         
         [alert addButtonWithTitle:@"Restart"];
@@ -595,7 +595,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         [alert setAlertStyle:NSCriticalAlertStyle];
         
         if([alert runModal] == NSAlertFirstButtonReturn) {
-            exit(1);
+            [SMAppDelegate restartApplication];
         }
         else {
             SM_LOG_INFO(@"User opted to continue work");

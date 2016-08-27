@@ -1121,7 +1121,7 @@
     
     if(!skipUserDefaults) {
         if([[NSUserDefaults standardUserDefaults] objectForKey:kLogLevel] == nil) {
-            SMLogLevel = SM_LOG_LEVEL_INFO;
+            SMLogLevel = SM_LOG_LEVEL_WARNING;
             
             SM_LOG_INFO(@"Using default SMLogLevel: %lu", SMLogLevel);
         }

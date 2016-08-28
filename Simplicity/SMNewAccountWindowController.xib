@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMNewAccountWindowController">
             <connections>
-                <outlet property="accountImageButton" destination="bEp-M7-nCy" id="VfN-CC-1K9"/>
-                <outlet property="accountNameField" destination="kKd-jf-W9F" id="taY-RV-N9b"/>
-                <outlet property="accountNameInvalidMarker" destination="IlH-pY-YaW" id="4tt-Nn-jQh"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
                 <outlet property="customServerImageButton" destination="yg6-6V-3b9" id="Mgd-rA-P3o"/>
                 <outlet property="customServerRadioButton" destination="Eau-SN-Ure" id="F4i-30-crO"/>
-                <outlet property="emailAddressField" destination="3Y9-pv-HRt" id="EhQ-8q-1TP"/>
-                <outlet property="emailInvalidMarker" destination="wVU-Sg-Zra" id="PfV-yU-cKb"/>
+                <outlet property="emailAddressField" destination="S8u-aK-Ni6" id="YQE-BX-Rxd"/>
+                <outlet property="emailInvalidMarker" destination="ec3-CE-BSp" id="ojD-xK-Oum"/>
                 <outlet property="fullNameField" destination="gnT-qd-R3y" id="kH9-KB-RA3"/>
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
                 <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
@@ -25,7 +22,7 @@
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
-                <outlet property="passwordField" destination="aGg-6X-E3Q" id="Duz-97-mcH"/>
+                <outlet property="passwordField" destination="BvP-6V-K1H" id="wDM-nF-tyu"/>
                 <outlet property="step1PanelView" destination="2aQ-49-ULg" id="rKo-ru-j11"/>
                 <outlet property="step2PanelView" destination="sT1-xN-fty" id="Bhg-O1-5bk"/>
                 <outlet property="step3PanelView" destination="b8y-vJ-qkK" id="eHf-47-g6C"/>
@@ -89,7 +86,7 @@ Gw
             </connections>
             <point key="canvasLocation" x="421" y="396"/>
         </window>
-        <customView id="2aQ-49-ULg" userLabel="First step">
+        <customView id="2aQ-49-ULg" userLabel="Step1 Panel View">
             <rect key="frame" x="0.0" y="0.0" width="474" height="311"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
@@ -102,8 +99,8 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tcV-oI-iva">
-                    <rect key="frame" x="173" y="182" width="283" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Enter your name, email address and password" id="S5a-TN-4De">
+                    <rect key="frame" x="173" y="161" width="283" height="38"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Please enter your full name" id="S5a-TN-4De">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -111,23 +108,7 @@ Gw
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0vq-cr-Stp">
                     <rect key="frame" x="18" y="111" width="152" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Your full name:" id="pTJ-T8-aLk">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNi-3p-7Qi">
-                    <rect key="frame" x="18" y="86" width="152" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Email address:" id="HwX-Hj-aeR">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sfw-Eh-ydT">
-                    <rect key="frame" x="18" y="61" width="152" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="zZD-Nr-HLq">
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Your name:" id="pTJ-T8-aLk">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -145,39 +126,9 @@ Gw
                         <outlet property="delegate" destination="-2" id="T5R-Ob-U5m"/>
                     </connections>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Y9-pv-HRt">
-                    <rect key="frame" x="175" y="83" width="246" height="22"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="Cwj-Jb-xFd">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                    <connections>
-                        <action selector="emailAddressEnterAction:" target="-2" id="IlN-8T-5vG"/>
-                        <outlet property="delegate" destination="-2" id="wvK-ZK-W0R"/>
-                    </connections>
-                </textField>
-                <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aGg-6X-E3Q">
-                    <rect key="frame" x="175" y="58" width="246" height="22"/>
-                    <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="vdm-t6-Mpg">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        <allowedInputSourceLocales>
-                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
-                        </allowedInputSourceLocales>
-                    </secureTextFieldCell>
-                    <connections>
-                        <action selector="passwordEnterAction:" target="-2" id="JVt-vp-Wbp"/>
-                    </connections>
-                </secureTextField>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CcN-nw-fD2">
                     <rect key="frame" x="422" y="107" width="23" height="23"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="Oe5-95-LgU"/>
-                </imageView>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wVU-Sg-Zra">
-                    <rect key="frame" x="422" y="82" width="23" height="23"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="WZr-Nw-EEk"/>
                 </imageView>
                 <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="AHE-By-nDQ">
                     <rect key="frame" x="0.0" y="161" width="161" height="150"/>
@@ -201,7 +152,7 @@ Gw
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="Q2r-Mp-aPs"/>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WRC-Tx-7xr">
-                    <rect key="frame" x="18" y="136" width="226" height="17"/>
+                    <rect key="frame" x="18" y="111" width="226" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Select your mail service provider" id="VzV-2p-BuB">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -354,63 +305,75 @@ Gw
                     </shadow>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="hap-fn-D0w"/>
                 </imageView>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PsN-oe-VGb">
-                    <rect key="frame" x="167" y="182" width="268" height="40"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Enter a name for the new account and select an image" id="cjh-YI-tH8">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HoL-0j-oo6">
+                    <rect key="frame" x="20" y="124" width="152" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Email login or address:" id="Zx7-Dh-zYt">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kKd-jf-W9F">
-                    <rect key="frame" x="175" y="108" width="246" height="22"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="q03-63-9Yj">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YQK-MY-UjJ">
+                    <rect key="frame" x="20" y="99" width="152" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Password:" id="t5w-RV-kyG">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S8u-aK-Ni6">
+                    <rect key="frame" x="177" y="121" width="246" height="22"/>
+                    <string key="toolTip">You can use your email login (e.g. john.smith) instead of the full email address (john.smith@gmail.com). In that case, the email address will be deduced from the email service provider you have selected on the previous step.</string>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="9vM-1a-pXO">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <action selector="accountNameEnterAction:" target="-2" id="d38-Xq-9og"/>
-                        <outlet property="delegate" destination="-2" id="KUY-Pm-ekS"/>
+                        <action selector="emailAddressEnterAction:" target="-2" id="0nT-M0-BqW"/>
+                        <outlet property="delegate" destination="-2" id="r9w-PZ-8LO"/>
                     </connections>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jG2-gd-lVh">
-                    <rect key="frame" x="18" y="111" width="152" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="7p8-4j-hCH">
+                <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BvP-6V-K1H">
+                    <rect key="frame" x="177" y="96" width="246" height="22"/>
+                    <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="ieF-Mk-jR6">
                         <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a6q-eX-NXD">
-                    <rect key="frame" x="18" y="47" width="152" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account image:" id="Lkq-Cz-h2P">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IlH-pY-YaW">
-                    <rect key="frame" x="424" y="107" width="23" height="23"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="OCs-5c-RMw"/>
-                </imageView>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bEp-M7-nCy">
-                    <rect key="frame" x="175" y="17" width="75" height="75"/>
-                    <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSUserGuest" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="BPk-MR-uKF">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        <allowedInputSourceLocales>
+                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                        </allowedInputSourceLocales>
+                    </secureTextFieldCell>
                     <connections>
-                        <action selector="accountImageSelectAction:" target="-2" id="Qsm-er-wAw"/>
+                        <action selector="passwordEnterAction:" target="-2" id="99J-Zu-h3o"/>
                     </connections>
-                </button>
+                </secureTextField>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ec3-CE-BSp">
+                    <rect key="frame" x="424" y="120" width="23" height="23"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="FHM-MZ-y02"/>
+                </imageView>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PsN-oe-VGb">
+                    <rect key="frame" x="173" y="220" width="268" height="40"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Enter your email login name or full email address, and the password" id="cjh-YI-tH8">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2tG-lE-eG5">
+                    <rect key="frame" x="173" y="170" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" title="After the account is created, you can always change these and other parameters in the account preferences window" id="uOq-mD-5VL">
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
-            <point key="canvasLocation" x="421" y="-394.5"/>
+            <point key="canvasLocation" x="971" y="332.5"/>
         </customView>
     </objects>
     <resources>
         <image name="NSStatusUnavailable" width="16" height="16"/>
-        <image name="NSUserGuest" width="32" height="32"/>
         <image name="at_sign" width="2000" height="2000"/>
         <image name="gmail_logo" width="3600" height="1485"/>
         <image name="icloud_logo" width="596" height="382"/>

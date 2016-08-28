@@ -38,10 +38,7 @@ static const NSUInteger LAST_STEP = 2;
 
 @property (strong) IBOutlet NSView *step1PanelView;
 @property (weak) IBOutlet NSTextField *fullNameField;
-@property (weak) IBOutlet NSTextField *emailAddressField;
-@property (weak) IBOutlet NSSecureTextField *passwordField;
 @property (weak) IBOutlet NSImageView *fullNameInvalidMarker;
-@property (weak) IBOutlet NSImageView *emailInvalidMarker;
 
 #pragma mark Step 2
 
@@ -62,22 +59,22 @@ static const NSUInteger LAST_STEP = 2;
 #pragma mark Step 3
 
 @property (strong) IBOutlet NSView *step3PanelView;
-@property (weak) IBOutlet NSTextField *accountNameField;
-@property (weak) IBOutlet NSButton *accountImageButton;
-@property (weak) IBOutlet NSImageView *accountNameInvalidMarker;
+@property (weak) IBOutlet NSTextField *emailAddressField;
+@property (weak) IBOutlet NSSecureTextField *passwordField;
+@property (weak) IBOutlet NSImageView *emailInvalidMarker;
 
 @end
 
 @implementation SMNewAccountWindowController {
     BOOL _fullNameEntered;
     BOOL _emailAddressEntered;
-    BOOL _accountNameEntered;
     BOOL _fullNameValid;
     BOOL _emailAddressValid;
     BOOL _accountNameValid;
     NSUInteger _curStep;
     NSArray *_mailServiceProviderButtons;
     NSArray *_mailServiceProviderImageButtons;
+    NSArray *_mailServiceProviderDomains;
     NSArray *_mailServiceProviderTypes;
     NSUInteger _mailServiceProvierIdx;
     BOOL _skipProviderSelection;
@@ -90,6 +87,7 @@ static const NSUInteger LAST_STEP = 2;
     
     _mailServiceProviderButtons = @[ _gmailRadioButton, _icloudRadioButton, _yahooRadioButton, _outlookRadioButton, _customServerRadioButton ];
     _mailServiceProviderImageButtons = @[ _gmailImageButton, _icloudImageButton, _yahooImageButton, _outlookImageButton, _customServerImageButton ];
+    _mailServiceProviderDomains = @[ @"gmail.com", @"icloud.com", @"yahoo.com", @"outlook.com", @"" ];
     
     [self resetState];
 }
@@ -102,7 +100,6 @@ static const NSUInteger LAST_STEP = 2;
 - (void)resetState {
     _fullNameEntered = NO;
     _emailAddressEntered = NO;
-    _accountNameEntered = NO;
     _fullNameValid = NO;
     _emailAddressValid = NO;
     _accountNameValid = NO;
@@ -113,11 +110,9 @@ static const NSUInteger LAST_STEP = 2;
     _fullNameField.stringValue = @"";
     _emailAddressField.stringValue = @"";
     _passwordField.stringValue = @"";
-    _accountNameField.stringValue = @"";
     
     _fullNameInvalidMarker.hidden = YES;
     _emailInvalidMarker.hidden = YES;
-    _accountNameInvalidMarker.hidden = YES;
 }
 
 - (IBAction)cancelAction:(id)sender {
@@ -171,27 +166,6 @@ static const NSUInteger LAST_STEP = 2;
     }
 }
 
-- (IBAction)accountNameEnterAction:(id)sender {
-    [self validateAccountName:NO];
-
-    _accountNameEntered = YES;
-
-    if(_accountNameValid) {
-        [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
-    }
-}
-
-- (IBAction)accountImageSelectAction:(id)sender {
-    NSImage *accountImage = [SMAccountImageSelection promptForImage];
-
-    if(accountImage == nil) {
-        accountImage = [SMAccountImageSelection defaultImage];
-    }
-
-    _accountImage = accountImage;
-    _accountImageButton.image = accountImage;
-}
-
 - (void)validateUserName:(BOOL)checkFirst {
     _fullNameValid = (_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0)? YES : NO;
 
@@ -199,29 +173,24 @@ static const NSUInteger LAST_STEP = 2;
         _fullNameInvalidMarker.hidden = (_fullNameValid? YES : NO);
     }
     
-    _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
+    _nextButton.enabled = (_fullNameValid? YES : NO);
 }
 
 - (void)validateEmailAddress:(BOOL)checkFirst {
-    _emailAddressValid = [SMStringUtils emailAddressValid:_emailAddressField.stringValue];
+    NSString *addr = _emailAddressField.stringValue;
+    
+    if([addr rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"]].location != NSNotFound) {
+        _emailAddressValid = [SMStringUtils emailAddressValid:addr];
+    }
+    else {
+        _emailAddressValid = addr.length > 0;
+    }
 
     if(checkFirst || !_emailAddressEntered) {
         _emailInvalidMarker.hidden = (_emailAddressValid? YES : NO);
     }
 
-    _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
-}
-
-- (void)validateAccountName:(BOOL)checkFirst {
-    NSString *accountName = _accountNameField.stringValue;
-
-    _accountNameValid = [SMPreferencesController accountNameValid:accountName]? YES : NO;
-    
-    if(checkFirst || !_accountNameEntered) {
-        _accountNameInvalidMarker.hidden = (_accountNameValid? YES : NO);
-    }
-    
-    _nextButton.enabled = (_accountNameValid? YES : NO);
+    _nextButton.enabled = (_emailAddressValid? YES : NO);
 }
 
 - (void)resetSelectedProvider {
@@ -332,14 +301,12 @@ static const NSUInteger LAST_STEP = 2;
         [self.window setInitialFirstResponder:_fullNameField];
         [self.window makeFirstResponder:_fullNameField];
 
-        [_fullNameField setNextKeyView:_emailAddressField];
-        [_emailAddressField setNextKeyView:_passwordField];
-        [_passwordField setNextKeyView:_nextButton];
+        [_fullNameField setNextKeyView:_nextButton];
         [_nextButton setNextKeyView:_cancelButton];
         [_cancelButton setNextKeyView:_fullNameField];
     }
     else if(_curStep == 1) {
-        [self.window makeFirstResponder:_customServerRadioButton];
+        [self.window makeFirstResponder:_gmailRadioButton];
 
         [_gmailRadioButton setNextKeyView:_icloudRadioButton];
         [_icloudRadioButton setNextKeyView:_outlookRadioButton];
@@ -351,13 +318,13 @@ static const NSUInteger LAST_STEP = 2;
         [_cancelButton setNextKeyView:_gmailRadioButton];
     }
     else if(_curStep == 2) {
-        [self.window makeFirstResponder:_accountNameField];
+        [self.window makeFirstResponder:_emailAddressField];
 
-        [_accountNameField setNextKeyView:_accountImageButton];
-        [_accountImageButton setNextKeyView:_nextButton];
+        [_emailAddressField setNextKeyView:_passwordField];
+        [_passwordField setNextKeyView:_nextButton];
         [_nextButton setNextKeyView:_backButton];
         [_backButton setNextKeyView:_cancelButton];
-        [_cancelButton setNextKeyView:_accountNameField];
+        [_cancelButton setNextKeyView:_emailAddressField];
     }
 }
 
@@ -389,9 +356,6 @@ static const NSUInteger LAST_STEP = 2;
 
         [self validateEmailAddress:YES];
     }
-    else if([obj object] == _accountNameField) {
-        [self validateAccountName:YES];
-    }
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj {
@@ -401,10 +365,8 @@ static const NSUInteger LAST_STEP = 2;
 }
 
 - (void)finishAccountCreation {
-    NSAssert(_accountNameField.stringValue != nil && _accountNameField.stringValue.length > 0, @"no account name");
     NSAssert(_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0, @"no user name");
     NSAssert(_emailAddressField.stringValue != nil && _emailAddressField.stringValue.length > 0, @"no email address");
-    NSAssert(_accountImageButton.image != nil, @"no account image");
     
     SMMailServiceProvider *provider = nil;
     id selectedMailProviderButton = _mailServiceProviderButtons[_mailServiceProvierIdx];
@@ -435,7 +397,7 @@ static const NSUInteger LAST_STEP = 2;
 
     NSAssert(provider != nil, @"no mail provider");
     
-    NSString *accountName = _accountNameField.stringValue;
+    NSString *accountName = _fullNameField.stringValue;
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] accountExists:accountName]) {

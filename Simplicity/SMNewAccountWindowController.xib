@@ -7,18 +7,22 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMNewAccountWindowController">
             <connections>
+                <outlet property="accountImageButton" destination="ZRR-5d-hw0" id="VGc-x8-06G"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
                 <outlet property="customServerImageButton" destination="yg6-6V-3b9" id="Mgd-rA-P3o"/>
                 <outlet property="customServerRadioButton" destination="Eau-SN-Ure" id="F4i-30-crO"/>
                 <outlet property="emailAddressField" destination="S8u-aK-Ni6" id="YQE-BX-Rxd"/>
                 <outlet property="emailInvalidMarker" destination="ec3-CE-BSp" id="ojD-xK-Oum"/>
+                <outlet property="existingImageFoundLabel" destination="rV5-Os-fVZ" id="V0Z-oV-ynt"/>
+                <outlet property="existingImageNotFoundLabel" destination="u6p-ni-mle" id="PNS-QP-eMi"/>
                 <outlet property="fullNameField" destination="gnT-qd-R3y" id="kH9-KB-RA3"/>
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
                 <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
                 <outlet property="gmailRadioButton" destination="8UA-AN-Msr" id="UoO-Lz-vA1"/>
                 <outlet property="icloudImageButton" destination="Amy-Co-tEB" id="A7N-6R-1dj"/>
                 <outlet property="icloudRadioButton" destination="g0i-Se-Q2u" id="OXa-lZ-wiU"/>
+                <outlet property="imageNotFoundMessage" destination="u6p-ni-mle" id="cvV-Jc-E9L"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
@@ -26,6 +30,7 @@
                 <outlet property="step1PanelView" destination="2aQ-49-ULg" id="rKo-ru-j11"/>
                 <outlet property="step2PanelView" destination="sT1-xN-fty" id="Bhg-O1-5bk"/>
                 <outlet property="step3PanelView" destination="b8y-vJ-qkK" id="eHf-47-g6C"/>
+                <outlet property="step4PanelView" destination="6uF-er-nYz" id="bar-Tm-qNQ"/>
                 <outlet property="stepPanelView" destination="Ng8-gI-fXx" id="hQ2-rs-meJ"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
                 <outlet property="yahooImageButton" destination="KLO-OC-1KQ" id="Nxt-BJ-11s"/>
@@ -370,6 +375,54 @@ Gw
                 </textField>
             </subviews>
             <point key="canvasLocation" x="971" y="332.5"/>
+        </customView>
+        <customView id="6uF-er-nYz" userLabel="Step4 Panel View">
+            <rect key="frame" x="0.0" y="0.0" width="474" height="311"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="7XA-NF-nx0">
+                    <rect key="frame" x="0.0" y="161" width="161" height="150"/>
+                    <shadow key="shadow">
+                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </shadow>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="at_sign" id="rGX-cl-sFq"/>
+                </imageView>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y5A-E2-6U1">
+                    <rect key="frame" x="173" y="220" width="268" height="40"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Finish account creation" id="0ay-6l-0mL">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rV5-Os-fVZ">
+                    <rect key="frame" x="173" y="67" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We have found an existing image for your account. Click the button to choose a different image from disk or a URL." id="pN1-Kb-D0m">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6p-ni-mle">
+                    <rect key="frame" x="173" y="131" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We couldn't find any existing image for your account. Click the button to choose it from disk or a URL." id="sdf-hB-REE">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZRR-5d-hw0">
+                    <rect key="frame" x="48" y="56" width="64" height="64"/>
+                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="left" alignment="center" borderStyle="border" inset="2" id="Nzy-4w-tx9">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="accountImageButtonAction:" target="-2" id="1V7-mD-vP6"/>
+                    </connections>
+                </button>
+            </subviews>
+            <point key="canvasLocation" x="971" y="686.5"/>
         </customView>
     </objects>
     <resources>

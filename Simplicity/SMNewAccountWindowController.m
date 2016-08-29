@@ -23,7 +23,7 @@
 #import "SMAccountsViewController.h"
 #import "SMNewAccountWindowController.h"
 
-static const NSUInteger LAST_STEP = 2;
+static const NSUInteger LAST_STEP = 3;
 
 @interface SMNewAccountWindowController ()
 
@@ -63,6 +63,12 @@ static const NSUInteger LAST_STEP = 2;
 @property (weak) IBOutlet NSSecureTextField *passwordField;
 @property (weak) IBOutlet NSImageView *emailInvalidMarker;
 
+#pragma mark Step 3
+
+@property (strong) IBOutlet NSView *step4PanelView;
+@property (weak) IBOutlet NSButton *accountImageButton;
+@property (weak) IBOutlet NSTextField *existingImageFoundLabel;
+@property (weak) IBOutlet NSTextField *existingImageNotFoundLabel;
 @end
 
 @implementation SMNewAccountWindowController {
@@ -260,6 +266,9 @@ static const NSUInteger LAST_STEP = 2;
     else if(step == 2) {
         subview = _step3PanelView;
     }
+    else if(step == 3) {
+        subview = _step4PanelView;
+    }
     else {
         NSAssert(nil, @"unknown step %lu", step);
     }
@@ -272,23 +281,28 @@ static const NSUInteger LAST_STEP = 2;
     
     subview.frame = NSMakeRect(0, 0, _stepPanelView.frame.size.width, _stepPanelView.frame.size.height);
 
+    _nextButton.title = @"Next";
+
     if(step == 0) {
         _backButton.hidden = YES;
         _nextButton.hidden = NO;
-        _nextButton.title = @"Next";
         _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
     }
     else if(step == 1) {
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
-        _nextButton.title = @"Next";
         _nextButton.enabled = (_mailServiceProvierIdx != NSUIntegerMax);
+    }
+    else if(step == 2) {
+        _backButton.hidden = NO;
+        _nextButton.hidden = NO;
+        _nextButton.enabled = (_accountNameValid? YES : NO);
     }
     else if(step == LAST_STEP) {
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
         _nextButton.title = @"Finish";
-        _nextButton.enabled = (_accountNameValid? YES : NO);
+        _nextButton.enabled = YES;
     }
 
     _curStep = step;
@@ -362,6 +376,9 @@ static const NSUInteger LAST_STEP = 2;
     if([[[obj userInfo] objectForKey:@"NSTextMovement"] intValue] == NSReturnTextMovement) {
         SM_LOG_INFO(@"enter key pressed");
     }
+}
+
+- (IBAction)accountImageButtonAction:(id)sender {
 }
 
 - (void)finishAccountCreation {

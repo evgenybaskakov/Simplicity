@@ -397,7 +397,7 @@ Gw
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rV5-Os-fVZ">
                     <rect key="frame" x="173" y="67" width="268" height="42"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We have found an existing image for your account. Click the button to choose a different image from disk or a URL." id="pN1-Kb-D0m">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We have found an existing image for your account. Click the button on the left to choose a different image from disk or a URL." id="pN1-Kb-D0m">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -405,15 +405,16 @@ Gw
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6p-ni-mle">
                     <rect key="frame" x="173" y="131" width="268" height="42"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We couldn't find any existing image for your account. Click the button to choose it from disk or a URL." id="sdf-hB-REE">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="sdf-hB-REE">
                         <font key="font" metaFont="smallSystem"/>
+                        <string key="title">We couldn't find any existing image for your account. Click the button on the left to choose it from disk or a URL, or leave it as is.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZRR-5d-hw0">
-                    <rect key="frame" x="48" y="56" width="64" height="64"/>
-                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="left" alignment="center" borderStyle="border" inset="2" id="Nzy-4w-tx9">
+                    <rect key="frame" x="40" y="48" width="80" height="80"/>
+                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSUserGuest" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="Nzy-4w-tx9">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -427,6 +428,7 @@ Gw
     </objects>
     <resources>
         <image name="NSStatusUnavailable" width="16" height="16"/>
+        <image name="NSUserGuest" width="32" height="32"/>
         <image name="at_sign" width="2000" height="2000"/>
         <image name="gmail_logo" width="3600" height="1485"/>
         <image name="icloud_logo" width="596" height="382"/>

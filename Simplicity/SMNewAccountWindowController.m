@@ -379,6 +379,29 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (IBAction)accountImageButtonAction:(id)sender {
+    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+    [openDlg setCanChooseFiles:YES];
+    [openDlg setCanChooseDirectories:NO];
+    [openDlg setPrompt:@"Select"];
+    
+    NSArray* imageTypes = [NSImage imageTypes];
+    [openDlg setAllowedFileTypes:imageTypes];
+    [openDlg setAllowsOtherFileTypes:NO];
+    
+    [openDlg beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        NSArray<NSURL*>* files = [openDlg URLs];
+        for(NSURL* url in files) {
+            NSImage *img = nil;
+            if(url) {
+                img = [[NSImage alloc]initWithContentsOfURL:url];
+            }
+
+            if(img) {
+                _accountImageButton.image = img;
+                _accountImage = img;
+            }
+        }
+    }];
 }
 
 - (void)finishAccountCreation {

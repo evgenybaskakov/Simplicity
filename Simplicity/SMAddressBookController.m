@@ -139,8 +139,10 @@
     if(searchNetwork) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email allowWebSiteImage:allowWebSiteImage completionBlock:^(NSImage *image) {
-            BOOL allowImage = [self allowImage:image];
-            completionBlock(allowImage? image : nil, tag);
+            if(completionBlock) {
+                BOOL allowImage = [self allowImage:image];
+                completionBlock(allowImage? image : nil, tag);
+            }
         }];
         
         BOOL allowImage = [self allowImage:image];

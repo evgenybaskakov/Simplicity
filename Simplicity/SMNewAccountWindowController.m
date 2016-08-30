@@ -9,8 +9,10 @@
 #import "SMLog.h"
 #import "SMAppController.h"
 #import "SMAppDelegate.h"
+#import "SMAddress.h"
 #import "SMStringUtils.h"
 #import "SMAccountImageSelection.h"
+#import "SMAddressBookController.h"
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMMailServiceProvider.h"
@@ -69,6 +71,7 @@ static const NSUInteger LAST_STEP = 3;
 @property (weak) IBOutlet NSButton *accountImageButton;
 @property (weak) IBOutlet NSTextField *existingImageFoundLabel;
 @property (weak) IBOutlet NSTextField *existingImageNotFoundLabel;
+@property (weak) IBOutlet NSButton *syncImageCheckbox;
 @end
 
 @implementation SMNewAccountWindowController {
@@ -76,7 +79,6 @@ static const NSUInteger LAST_STEP = 3;
     BOOL _emailAddressEntered;
     BOOL _fullNameValid;
     BOOL _emailAddressValid;
-    BOOL _accountNameValid;
     NSUInteger _curStep;
     NSArray *_mailServiceProviderButtons;
     NSArray *_mailServiceProviderImageButtons;
@@ -108,7 +110,6 @@ static const NSUInteger LAST_STEP = 3;
     _emailAddressEntered = NO;
     _fullNameValid = NO;
     _emailAddressValid = NO;
-    _accountNameValid = NO;
     
     [self resetSelectedProvider];
     [self showStep:0];
@@ -170,6 +171,56 @@ static const NSUInteger LAST_STEP = 3;
     if(_nextButton.enabled) {
         [self nextAction:self];
     }
+}
+
+- (IBAction)syncImageButtonAction:(id)sender {
+    // TODO
+}
+
+- (IBAction)serviceProviderSelectAction:(id)sender {
+    NSUInteger i = 0;
+    
+    for(NSButton *b in _mailServiceProviderButtons) {
+        if(sender == b || sender == _mailServiceProviderImageButtons[i]) {
+            _mailServiceProvierIdx = i;
+            
+            b.state = NSOnState;
+        }
+        else {
+            b.state = NSOffState;
+        }
+        
+        i++;
+    }
+    
+    _nextButton.enabled = YES;
+}
+
+- (IBAction)accountImageButtonAction:(id)sender {
+    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+    [openDlg setCanChooseFiles:YES];
+    [openDlg setCanChooseDirectories:NO];
+    [openDlg setPrompt:@"Select"];
+    
+    NSArray* imageTypes = [NSImage imageTypes];
+    [openDlg setAllowedFileTypes:imageTypes];
+    [openDlg setAllowsOtherFileTypes:NO];
+    [openDlg setAllowsMultipleSelection:NO];
+    
+    [openDlg beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        NSArray<NSURL*>* files = [openDlg URLs];
+        for(NSURL* url in files) {
+            NSImage *img = nil;
+            if(url) {
+                img = [[NSImage alloc]initWithContentsOfURL:url];
+            }
+            
+            if(img) {
+                _accountImageButton.image = img;
+                _accountImage = img;
+            }
+        }
+    }];
 }
 
 - (void)validateUserName:(BOOL)checkFirst {
@@ -256,7 +307,7 @@ static const NSUInteger LAST_STEP = 3;
     if(step == 0) {
         _backButton.hidden = YES;
         _nextButton.hidden = NO;
-        _nextButton.enabled = (_fullNameValid && _emailAddressValid? YES : NO);
+        _nextButton.enabled = (_fullNameValid? YES : NO);
     }
     else if(step == 1) {
         _backButton.hidden = NO;
@@ -266,13 +317,15 @@ static const NSUInteger LAST_STEP = 3;
     else if(step == 2) {
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
-        _nextButton.enabled = (_accountNameValid? YES : NO);
+        _nextButton.enabled = (_emailAddressValid? YES : NO);
     }
     else if(step == LAST_STEP) {
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
         _nextButton.title = @"Finish";
         _nextButton.enabled = YES;
+        
+        [self reloadAccountImage];
     }
 
     _curStep = step;
@@ -312,25 +365,6 @@ static const NSUInteger LAST_STEP = 3;
     }
 }
 
-- (IBAction)serviceProviderSelectAction:(id)sender {
-    NSUInteger i = 0;
-    
-    for(NSButton *b in _mailServiceProviderButtons) {
-        if(sender == b || sender == _mailServiceProviderImageButtons[i]) {
-            _mailServiceProvierIdx = i;
-
-            b.state = NSOnState;
-        }
-        else {
-            b.state = NSOffState;
-        }
-        
-        i++;
-    }
-    
-    _nextButton.enabled = YES;
-}
-
 - (void)controlTextDidChange:(NSNotification *)obj {
     if([obj object] == _fullNameField) {
         [self validateUserName:YES];
@@ -348,33 +382,6 @@ static const NSUInteger LAST_STEP = 3;
     }
 }
 
-- (IBAction)accountImageButtonAction:(id)sender {
-    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
-    [openDlg setCanChooseFiles:YES];
-    [openDlg setCanChooseDirectories:NO];
-    [openDlg setPrompt:@"Select"];
-    
-    NSArray* imageTypes = [NSImage imageTypes];
-    [openDlg setAllowedFileTypes:imageTypes];
-    [openDlg setAllowsOtherFileTypes:NO];
-    [openDlg setAllowsMultipleSelection:NO];
-    
-    [openDlg beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        NSArray<NSURL*>* files = [openDlg URLs];
-        for(NSURL* url in files) {
-            NSImage *img = nil;
-            if(url) {
-                img = [[NSImage alloc]initWithContentsOfURL:url];
-            }
-
-            if(img) {
-                _accountImageButton.image = img;
-                _accountImage = img;
-            }
-        }
-    }];
-}
-
 - (NSString*)getEmailAddress {
     NSString *email = _emailAddressField.stringValue;
     
@@ -387,6 +394,24 @@ static const NSUInteger LAST_STEP = 3;
     }
     
     return email;
+}
+
+- (void)reloadAccountImage {
+    SMAddress *address = [[SMAddress alloc] initWithFullName:_fullNameField.stringValue email:_emailAddressField.stringValue representationMode:SMAddressRepresentation_FirstNameFirst];
+    
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    NSImage *accountImage = [appDelegate.addressBookController loadPictureForAddress:address searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
+    
+    if(accountImage) {
+        _accountImageButton.image = accountImage;
+        _existingImageFoundLabel.hidden = NO;
+        _existingImageNotFoundLabel.hidden = YES;
+    }
+    else {
+        _accountImageButton.image = [NSImage imageNamed:@"NSUserGuest"];
+        _existingImageFoundLabel.hidden = YES;
+        _existingImageNotFoundLabel.hidden = NO;
+    }
 }
 
 - (void)finishAccountCreation {

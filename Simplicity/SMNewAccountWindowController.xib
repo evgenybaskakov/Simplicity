@@ -15,14 +15,13 @@
                 <outlet property="emailAddressField" destination="S8u-aK-Ni6" id="YQE-BX-Rxd"/>
                 <outlet property="emailInvalidMarker" destination="ec3-CE-BSp" id="ojD-xK-Oum"/>
                 <outlet property="existingImageFoundLabel" destination="rV5-Os-fVZ" id="V0Z-oV-ynt"/>
-                <outlet property="existingImageNotFoundLabel" destination="u6p-ni-mle" id="PNS-QP-eMi"/>
+                <outlet property="existingImageNotFoundLabel" destination="u6p-ni-mle" id="2Mu-wQ-SPG"/>
                 <outlet property="fullNameField" destination="gnT-qd-R3y" id="kH9-KB-RA3"/>
                 <outlet property="fullNameInvalidMarker" destination="CcN-nw-fD2" id="nkQ-TK-b77"/>
                 <outlet property="gmailImageButton" destination="CZm-9p-tYu" id="8Zz-62-nLG"/>
                 <outlet property="gmailRadioButton" destination="8UA-AN-Msr" id="UoO-Lz-vA1"/>
                 <outlet property="icloudImageButton" destination="Amy-Co-tEB" id="A7N-6R-1dj"/>
                 <outlet property="icloudRadioButton" destination="g0i-Se-Q2u" id="OXa-lZ-wiU"/>
-                <outlet property="imageNotFoundMessage" destination="u6p-ni-mle" id="cvV-Jc-E9L"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
@@ -32,6 +31,7 @@
                 <outlet property="step3PanelView" destination="b8y-vJ-qkK" id="eHf-47-g6C"/>
                 <outlet property="step4PanelView" destination="6uF-er-nYz" id="bar-Tm-qNQ"/>
                 <outlet property="stepPanelView" destination="Ng8-gI-fXx" id="hQ2-rs-meJ"/>
+                <outlet property="syncImageCheckbox" destination="HPA-vt-r5M" id="XTf-cx-hMS"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
                 <outlet property="yahooImageButton" destination="KLO-OC-1KQ" id="Nxt-BJ-11s"/>
                 <outlet property="yahooRadioButton" destination="gFK-cw-Gwg" id="NDI-e5-1gq"/>
@@ -396,18 +396,10 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rV5-Os-fVZ">
-                    <rect key="frame" x="173" y="67" width="268" height="42"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="We have found an existing image for your account. Click the button on the left to choose a different image from disk or a URL." id="pN1-Kb-D0m">
+                    <rect key="frame" x="173" y="81" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="pN1-Kb-D0m">
                         <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6p-ni-mle">
-                    <rect key="frame" x="173" y="131" width="268" height="42"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="sdf-hB-REE">
-                        <font key="font" metaFont="smallSystem"/>
-                        <string key="title">We couldn't find any existing image for your account. Click the button on the left to choose it from disk or a URL, or leave it as is.</string>
+                        <string key="title">Simplicity has found an existing image for your account. Click the button on the left to choose a different image from disk or a URL.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -422,6 +414,25 @@ Gw
                         <action selector="accountImageButtonAction:" target="-2" id="1V7-mD-vP6"/>
                     </connections>
                 </button>
+                <button toolTip="When checked, Simplicity will sync the image with your computer's address book or your Internet accounts" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HPA-vt-r5M">
+                    <rect key="frame" x="172" y="56" width="284" height="20"/>
+                    <buttonCell key="cell" type="check" title="Always try to sync with the most recent image" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="54g-zW-NIE">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="syncImageButtonAction:" target="-2" id="ni7-i9-ej4"/>
+                    </connections>
+                </button>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6p-ni-mle">
+                    <rect key="frame" x="173" y="81" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="sdf-hB-REE">
+                        <font key="font" metaFont="smallSystem"/>
+                        <string key="title">Simplicity couldn't find any existing image for your account. Click the button on the left to choose it from disk or a URL, or leave it as is.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <point key="canvasLocation" x="971" y="686.5"/>
         </customView>

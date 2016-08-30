@@ -83,6 +83,10 @@
     return self;
 }
 
+- (id)initWithFullName:(NSString*)fullName email:(NSString*)email representationMode:(SMAddressMenuRepresentation)representationMode {
+    return [self initWithStringRepresentation:[NSString stringWithFormat:@"%@ <%@>", fullName, email]];
+}
+
 - (id)initWithStringRepresentation:(NSString*)string {
     self = [super init];
     

@@ -206,29 +206,6 @@ static const NSUInteger LAST_STEP = 3;
     }
 }
 
-- (BOOL)autoSelectServiceProvider {
-    NSString *userEmail = [_emailAddressField.stringValue lowercaseString];
-    NSAssert(userEmail != nil, @"no user email");
-
-    if([userEmail hasSuffix:@"@gmail.com"]) {
-        [self serviceProviderSelectAction:_gmailRadioButton];
-    }
-    else if([userEmail hasSuffix:@"@icloud.com"]) {
-        [self serviceProviderSelectAction:_icloudRadioButton];
-    }
-    else if([userEmail hasSuffix:@"@outlook.com"] || [userEmail hasSuffix:@"@hotmail.com"]) {
-        [self serviceProviderSelectAction:_outlookRadioButton];
-    }
-    else if([userEmail hasSuffix:@"@yahoo.com"]) {
-        [self serviceProviderSelectAction:_yahooRadioButton];
-    }
-    else {
-        return FALSE;
-    }
-    
-    return TRUE;
-}
-
 - (void)showStep:(NSUInteger)step {
     NSView *subview = nil;
     
@@ -243,13 +220,6 @@ static const NSUInteger LAST_STEP = 3;
                 _shouldResetSelectedProvier = NO;
 
                 [self resetSelectedProvider];
-            }
-            
-            if([self autoSelectServiceProvider]) {
-                _skipProviderSelection = YES;
-                
-                [self showStep:step + 1];
-                return;
             }
         }
         else if(_curStep == step + 1) {
@@ -387,6 +357,7 @@ static const NSUInteger LAST_STEP = 3;
     NSArray* imageTypes = [NSImage imageTypes];
     [openDlg setAllowedFileTypes:imageTypes];
     [openDlg setAllowsOtherFileTypes:NO];
+    [openDlg setAllowsMultipleSelection:NO];
     
     [openDlg beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         NSArray<NSURL*>* files = [openDlg URLs];
@@ -404,15 +375,26 @@ static const NSUInteger LAST_STEP = 3;
     }];
 }
 
+- (NSString*)getEmailAddress {
+    NSString *email = _emailAddressField.stringValue;
+    
+    if([email rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"]].location == NSNotFound) {
+        NSString *emailServer = _mailServiceProviderDomains[_mailServiceProvierIdx];
+        
+        if(emailServer.length != 0) {
+            email = [NSString stringWithFormat:@"%@@%@", email, emailServer];
+        }
+    }
+    
+    return email;
+}
+
 - (void)finishAccountCreation {
-    NSAssert(_fullNameField.stringValue != nil && _fullNameField.stringValue.length > 0, @"no user name");
-    NSAssert(_emailAddressField.stringValue != nil && _emailAddressField.stringValue.length > 0, @"no email address");
+    NSString *emailAddress = [self getEmailAddress];
+    NSAssert(emailAddress != nil && emailAddress.length > 0, @"no email address");
     
     SMMailServiceProvider *provider = nil;
     id selectedMailProviderButton = _mailServiceProviderButtons[_mailServiceProvierIdx];
-    
-    NSString *emailAddress = _emailAddressField.stringValue;
-    NSAssert(emailAddress != nil, @"emailAddress is nil");
     
     NSString *password = (_passwordField.stringValue != nil? _passwordField.stringValue : nil);
     
@@ -438,7 +420,8 @@ static const NSUInteger LAST_STEP = 3;
     NSAssert(provider != nil, @"no mail provider");
     
     NSString *accountName = _fullNameField.stringValue;
-
+    NSAssert(accountName != nil && accountName.length > 0, @"no user name");
+    
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] accountExists:accountName]) {
         SM_LOG_WARNING(@"Account '%@' already exists", accountName);
@@ -460,7 +443,7 @@ static const NSUInteger LAST_STEP = 3;
             _accountImage = [SMAccountImageSelection defaultImage];
         }
         
-        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:_emailAddressField.stringValue provider:provider];
+        [[appDelegate preferencesController] addAccountWithName:accountName image:_accountImage userName:_fullNameField.stringValue emailAddress:emailAddress provider:provider];
         
         [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 

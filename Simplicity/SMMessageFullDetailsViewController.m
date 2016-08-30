@@ -223,7 +223,8 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+    BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
         if(image != nil) {
             _contactButton.image = image;
         }

@@ -329,7 +329,8 @@
     
     view.tag = _nextCellViewTag++;
     
-    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress tag:view.tag completionBlock:^(NSImage *image, NSInteger tag) {
+    BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:view.tag completionBlock:^(NSImage *image, NSInteger tag) {
         if(view.tag == tag) {
             if(image != nil) {
                 view.contactImage.image = image;

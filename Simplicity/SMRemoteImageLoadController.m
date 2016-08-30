@@ -159,16 +159,12 @@
             result[12], result[13], result[14], result[15]];
 }
 
-- (BOOL)shouldUseWebSiteImage {
-    return [[[[NSApplication sharedApplication] delegate] preferencesController] shouldUseServerContactImages];
-}
-
-- (NSImage*)loadAvatar:(NSString*)email completionBlock:(void (^)(NSImage*))completionBlock {
+- (NSImage*)loadAvatar:(NSString*)email allowWebSiteImage:(BOOL)allowWebSiteImage completionBlock:(void (^)(NSImage*))completionBlock {
     NSString *webSite = [self webSiteFromEmail:email];
 
     NSImage *image = [_imageCache objectForKey:email];
     if(image == (NSImage*)[NSNull null]) {
-        if(![self shouldUseWebSiteImage]) {
+        if(!allowWebSiteImage) {
             return nil;
         }
         
@@ -216,7 +212,7 @@
                     else {
                         [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
 
-                        if(![self shouldUseWebSiteImage]) {
+                        if(!allowWebSiteImage) {
                             completionBlock(nil);
                             return;
                         }

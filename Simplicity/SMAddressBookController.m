@@ -129,21 +129,26 @@
     return nil;
 }
 
-- (NSImage*)loadPictureForAddress:(SMAddress*)address tag:(NSInteger)tag completionBlock:(void (^)(NSImage*, NSInteger))completionBlock {
+- (NSImage*)loadPictureForAddress:(SMAddress*)address searchNetwork:(BOOL)searchNetwork allowWebSiteImage:(BOOL)allowWebSiteImage tag:(NSInteger)tag completionBlock:(void (^)(NSImage*, NSInteger))completionBlock {
     NSData *imageData = [self loadContactImageDataFromAddressBook:address];
     
     if(imageData != nil) {
         return [[NSImage alloc] initWithData:imageData];
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email completionBlock:^(NSImage *image) {
+    if(searchNetwork) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email allowWebSiteImage:allowWebSiteImage completionBlock:^(NSImage *image) {
+            BOOL allowImage = [self allowImage:image];
+            completionBlock(allowImage? image : nil, tag);
+        }];
+        
         BOOL allowImage = [self allowImage:image];
-        completionBlock(allowImage? image : nil, tag);
-    }];
-    
-    BOOL allowImage = [self allowImage:image];
-    return allowImage? image : nil;
+        return allowImage? image : nil;
+    }
+    else {
+        return nil;
+    }
 }
 
 - (BOOL)allowImage:(NSImage*)image {

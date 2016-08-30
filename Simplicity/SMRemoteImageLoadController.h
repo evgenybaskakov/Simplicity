@@ -14,6 +14,6 @@
 
 @interface SMRemoteImageLoadController : NSObject<WebResourceLoadDelegate, WebFrameLoadDelegate, WebPolicyDelegate>
 
-- (NSImage*)loadAvatar:(NSString*)email completionBlock:(void (^)(NSImage*))completionBlock;
+- (NSImage*)loadAvatar:(NSString*)email allowWebSiteImage:(BOOL)allowWebSiteImage completionBlock:(void (^)(NSImage*))completionBlock;
 
 @end

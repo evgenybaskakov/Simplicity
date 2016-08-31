@@ -103,6 +103,8 @@
 		8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011CAE91CA3A91D00697210 /* SMColorView.m */; };
 		8011CAF51CA3C66A00697210 /* SMLabeledPopUpListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */; };
 		8011CAF61CA3C66A00697210 /* SMLabeledPopUpListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */; };
+		801748E91D76AD0D00F7507F /* SMURLChooserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801748E71D76AD0D00F7507F /* SMURLChooserViewController.m */; };
+		801748EA1D76AD0D00F7507F /* SMURLChooserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801748E81D76AD0D00F7507F /* SMURLChooserViewController.xib */; };
 		801B8E811B23AA5200B144C0 /* SMOperationQueueWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */; };
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
@@ -489,6 +491,9 @@
 		8011CAF21CA3C66A00697210 /* SMLabeledPopUpListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledPopUpListViewController.h; sourceTree = "<group>"; };
 		8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledPopUpListViewController.m; sourceTree = "<group>"; };
 		8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledPopUpListViewController.xib; sourceTree = "<group>"; };
+		801748E61D76AD0D00F7507F /* SMURLChooserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMURLChooserViewController.h; sourceTree = "<group>"; };
+		801748E71D76AD0D00F7507F /* SMURLChooserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMURLChooserViewController.m; sourceTree = "<group>"; };
+		801748E81D76AD0D00F7507F /* SMURLChooserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMURLChooserViewController.xib; sourceTree = "<group>"; };
 		801B8E7E1B23AA5200B144C0 /* SMOperationQueueWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueWindowController.h; sourceTree = "<group>"; };
 		801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueWindowController.m; sourceTree = "<group>"; };
 		801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueWindowController.xib; sourceTree = "<group>"; };
@@ -1019,6 +1024,8 @@
 				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
 				808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */,
 				808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */,
+				801748E61D76AD0D00F7507F /* SMURLChooserViewController.h */,
+				801748E71D76AD0D00F7507F /* SMURLChooserViewController.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1125,6 +1132,7 @@
 				801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */,
 				801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */,
 				80BD0A211C4DFF0600F43EA2 /* SMSectionMenuViewController.xib */,
+				801748E81D76AD0D00F7507F /* SMURLChooserViewController.xib */,
 			);
 			name = Forms;
 			sourceTree = "<group>";
@@ -1534,6 +1542,7 @@
 				80A44B101B5A16A60049AB88 /* shift-right.png in Resources */,
 				002057D51A85D2DA00D5FE8A /* inbox-white.png in Resources */,
 				801E8A691D4878D80062E63F /* Button-Down-128.png in Resources */,
+				801748EA1D76AD0D00F7507F /* SMURLChooserViewController.xib in Resources */,
 				8043D7D31B5180E400B07469 /* iconsineed-icon-reply-all-128.png in Resources */,
 				800AB7ED1CACF64600582B57 /* SMMessagePlaceholderViewController.xib in Resources */,
 				002556FE1A5A5C6600C864D0 /* star-gray-icon.png in Resources */,
@@ -1598,6 +1607,7 @@
 				80238AE61BE32BA5009E090C /* SMAccountPreferencesViewController.m in Sources */,
 				80240E981D658B2C006998B6 /* SMRemoteImageLoadController.m in Sources */,
 				806A1B701B73353A00A3DC30 /* SMOpSetMessageFlags.m in Sources */,
+				801748E91D76AD0D00F7507F /* SMURLChooserViewController.m in Sources */,
 				8078EAB41CD470D000EBF22B /* SMAccountMailbox.m in Sources */,
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */,

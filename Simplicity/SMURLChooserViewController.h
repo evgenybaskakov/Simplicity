@@ -8,14 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMURLChooserViewController : NSViewController
+@interface SMURLChooserViewController : NSViewController<NSTextFieldDelegate>
 
-@property (weak) IBOutlet NSTextField *promptLabel;
 @property (weak) IBOutlet NSTextField *urlTextField;
 
-@property NSArray<NSString*> *allowedFileTypes;
+@property (readonly) NSImage *chosenImage;
+
 @property id target;
 @property SEL actionOk;
 @property SEL actionCancel;
+@property SEL actionProbe;
 
 @end

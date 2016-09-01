@@ -23,6 +23,7 @@
 #import "SMMailServiceProviderYandex.h"
 #import "SMMailServiceProviderCustom.h"
 #import "SMAccountsViewController.h"
+#import "SMURLChooserViewController.h"
 #import "SMNewAccountWindowController.h"
 
 static const NSUInteger LAST_STEP = 3;
@@ -71,7 +72,6 @@ static const NSUInteger LAST_STEP = 3;
 @property (weak) IBOutlet NSButton *accountImageButton;
 @property (weak) IBOutlet NSTextField *existingImageFoundLabel;
 @property (weak) IBOutlet NSTextField *existingImageNotFoundLabel;
-@property (weak) IBOutlet NSButton *syncImageCheckbox;
 @end
 
 @implementation SMNewAccountWindowController {
@@ -88,6 +88,8 @@ static const NSUInteger LAST_STEP = 3;
     BOOL _skipProviderSelection;
     BOOL _shouldResetSelectedProvier;
     NSImage *_accountImage;
+    NSWindow *_urlChooserWindow;
+    SMURLChooserViewController *_urlChooserViewController;
 }
 
 - (void)windowDidLoad {
@@ -197,30 +199,36 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (IBAction)accountImageButtonAction:(id)sender {
-    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
-    [openDlg setCanChooseFiles:YES];
-    [openDlg setCanChooseDirectories:NO];
-    [openDlg setPrompt:@"Select"];
+    if(_urlChooserViewController == nil) {
+        _urlChooserViewController = [[SMURLChooserViewController alloc] initWithNibName:@"SMURLChooserViewController" bundle:nil];
+        _urlChooserViewController.target = self;
+        _urlChooserViewController.actionCancel = @selector(cancelImageUrlSelection:);
+        _urlChooserViewController.actionOk = @selector(acceptImageUrlSelection:);
+        _urlChooserViewController.actionProbe = @selector(probeImageUrlSelection:);
+    }
     
-    NSArray* imageTypes = [NSImage imageTypes];
-    [openDlg setAllowedFileTypes:imageTypes];
-    [openDlg setAllowsOtherFileTypes:NO];
-    [openDlg setAllowsMultipleSelection:NO];
-    
-    [openDlg beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        NSArray<NSURL*>* files = [openDlg URLs];
-        for(NSURL* url in files) {
-            NSImage *img = nil;
-            if(url) {
-                img = [[NSImage alloc]initWithContentsOfURL:url];
-            }
-            
-            if(img) {
-                _accountImageButton.image = img;
-                _accountImage = img;
-            }
-        }
-    }];
+    _urlChooserWindow = [[NSWindow alloc] init];
+    [_urlChooserWindow setContentViewController:_urlChooserViewController];
+
+//    [_urlChooserWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+//        ;
+//    }];
+
+    [NSApp beginSheet:_urlChooserWindow modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+}
+
+- (void)cancelImageUrlSelection:(id)sender {
+    [_urlChooserWindow close];
+}
+
+- (void)acceptImageUrlSelection:(id)sender {
+    [_urlChooserWindow performClose:self];
+}
+
+- (void)probeImageUrlSelection:(id)sender {
+    if(_urlChooserViewController.chosenImage != nil) {
+        _accountImageButton.image = _urlChooserViewController.chosenImage;
+    }
 }
 
 - (void)validateUserName:(BOOL)checkFirst {

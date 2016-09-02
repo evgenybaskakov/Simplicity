@@ -371,14 +371,21 @@
                             <action selector="selectAccountImageAction:" target="-2" id="eue-jF-Ibb"/>
                         </connections>
                     </button>
+                    <button toolTip="When checked, account image is synchronized with your address book or Internel" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e41-Pd-GfB">
+                        <rect key="frame" x="18" y="187" width="371" height="18"/>
+                        <buttonCell key="cell" type="check" title="Prefer image from address book" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CfL-A6-LVy">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="955-Oi-nIC">
-                        <rect key="frame" x="5" y="186" width="396" height="5"/>
+                        <rect key="frame" x="5" y="178" width="396" height="5"/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>
                     </box>
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zQh-BX-2Oo">
-                        <rect key="frame" x="18" y="164" width="371" height="18"/>
+                        <rect key="frame" x="18" y="156" width="371" height="18"/>
                         <buttonCell key="cell" type="check" title="Enable unified mailbox" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bvc-sv-Rtp">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
@@ -464,7 +471,7 @@
                         <rect key="frame" x="205" y="261" width="185" height="26"/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="FXu-nU-yje" id="zfv-FH-RYv">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="roo-mF-Hoq">
                                 <items>
                                     <menuItem title="Item 1" state="on" id="FXu-nU-yje"/>
@@ -481,7 +488,7 @@
                         <rect key="frame" x="205" y="91" width="185" height="26"/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="xED-vJ-me5">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="L1h-uf-41R">
                                 <items>
                                     <menuItem title="Item 1" id="ahe-Yl-Lge"/>
@@ -498,7 +505,7 @@
                         <rect key="frame" x="205" y="146" width="185" height="26"/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="275-4U-lcm" id="17C-ot-UyF">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="SRN-5p-nIV">
                                 <items>
                                     <menuItem title="Item 1" state="on" id="275-4U-lcm"/>
@@ -523,7 +530,7 @@
                         <rect key="frame" x="205" y="207" width="185" height="26"/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="6nI-OG-VSX">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="QZD-D2-LBM">
                                 <items>
                                     <menuItem title="Item 1" id="21D-wq-bhs"/>

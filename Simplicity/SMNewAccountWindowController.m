@@ -204,7 +204,6 @@ static const NSUInteger LAST_STEP = 3;
         _urlChooserViewController.target = self;
         _urlChooserViewController.actionCancel = @selector(cancelImageUrlSelection:);
         _urlChooserViewController.actionOk = @selector(acceptImageUrlSelection:);
-        _urlChooserViewController.actionProbe = @selector(probeImageUrlSelection:);
     }
     
     _urlChooserWindow = [[NSWindow alloc] init];
@@ -223,12 +222,6 @@ static const NSUInteger LAST_STEP = 3;
 
 - (void)acceptImageUrlSelection:(id)sender {
     [_urlChooserWindow performClose:self];
-}
-
-- (void)probeImageUrlSelection:(id)sender {
-    if(_urlChooserViewController.chosenImage != nil) {
-        _accountImageButton.image = _urlChooserViewController.chosenImage;
-    }
 }
 
 - (void)validateUserName:(BOOL)checkFirst {

@@ -14,6 +14,7 @@
 @property (weak) IBOutlet NSButton *okButton;
 @property (weak) IBOutlet NSButton *cancelButton;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+@property (weak) IBOutlet NSImageView *imageView;
 @end
 
 @implementation SMURLChooserViewController {
@@ -31,30 +32,58 @@
 }
 
 - (void)chooseImage:(NSImage*)image url:(NSURL*)url {
-    [_progressIndicator stopAnimation:self];
+    [self stopProgress];
 
     _chosenImage = image? image : [NSImage imageNamed:NSImageNameUserGuest];
-    _urlTextField.stringValue = url.absoluteString;
+    _imageView.image = _chosenImage;
     _okButton.enabled = YES;
-    
-    if(_target && _actionProbe) {
-        [_target performSelectorOnMainThread:_actionProbe withObject:self waitUntilDone:NO];
-    }
 }
 
-- (IBAction)urlTextFieldAction:(id)sender {
-    NSLog(@"urlTextFieldAction");
+- (void)startProgress {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_progressIndicator startAnimation:self];
+    });
+}
 
+- (void)stopProgress {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_progressIndicator stopAnimation:self];
+    });
+}
+
+- (BOOL)loadLocalImageFileFromUrl:(NSURL*)url {
+    if([url checkResourceIsReachableAndReturnError:nil]) {
+        NSImage *img = [[NSImage alloc]initWithContentsOfURL:url];
+        
+        if(img) {
+            [self chooseImage:img url:url];
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj {
     [_downloadTask cancel];
     _downloadTask = nil;
     
+    NSURL *localPathUrl = [NSURL fileURLWithPath:_urlTextField.stringValue isDirectory:NO];
+    if([self loadLocalImageFileFromUrl:localPathUrl]) {
+        return;
+    }
+
     NSURL *url = [NSURL URLWithString:_urlTextField.stringValue];
     if(url == nil) {
         return;
     }
-
-    [_progressIndicator startAnimation:self];
-
+    
+    if([self loadLocalImageFileFromUrl:url]) {
+        return;
+    }
+    
+    [self startProgress];
+    
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSURLSession *session = [NSURLSession sharedSession];
     
@@ -72,13 +101,17 @@
     [_downloadTask resume];
 }
 
+- (IBAction)urlTextFieldAction:(id)sender {
+    NSLog(@"urlTextFieldAction");
+}
+
 - (IBAction)browseFileButtonAction:(id)sender {
     if(_fileDlg == nil) {
         _fileDlg = [NSOpenPanel openPanel];
         
         [_fileDlg setCanChooseFiles:YES];
         [_fileDlg setCanChooseDirectories:NO];
-        [_fileDlg setPrompt:@"Choose image file"];
+        [_fileDlg setPrompt:@"Choose image"];
         [_fileDlg setAllowedFileTypes:[NSImage imageTypes]];
         [_fileDlg setAllowsOtherFileTypes:NO];
         [_fileDlg setAllowsMultipleSelection:NO];
@@ -93,6 +126,8 @@
             }
             
             if(img) {
+                _urlTextField.stringValue = url.path;
+
                 [self chooseImage:img url:url];
                 break;
             }
@@ -100,12 +135,10 @@
         
         [_fileDlg close];
     }];
- 
-//    [_fileDlg makeKeyAndOrderFront:self];
 }
 
 - (IBAction)okButtonAction:(id)sender {
-    [_progressIndicator stopAnimation:self];
+    [self stopProgress];
 
     if(_target && _actionOk) {
         [_target performSelectorOnMainThread:_actionOk withObject:self waitUntilDone:NO];
@@ -113,7 +146,7 @@
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
-    [_progressIndicator stopAnimation:self];
+    [self stopProgress];
 
     if(_target && _actionCancel) {
         [_target performSelectorOnMainThread:_actionCancel withObject:self waitUntilDone:NO];

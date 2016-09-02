@@ -17,6 +17,5 @@
 @property id target;
 @property SEL actionOk;
 @property SEL actionCancel;
-@property SEL actionProbe;
 
 @end

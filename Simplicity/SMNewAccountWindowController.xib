@@ -22,6 +22,7 @@
                 <outlet property="gmailRadioButton" destination="8UA-AN-Msr" id="UoO-Lz-vA1"/>
                 <outlet property="icloudImageButton" destination="Amy-Co-tEB" id="A7N-6R-1dj"/>
                 <outlet property="icloudRadioButton" destination="g0i-Se-Q2u" id="OXa-lZ-wiU"/>
+                <outlet property="localImageSelectedLabel" destination="TAe-UK-caY" id="Jbx-AT-a9b"/>
                 <outlet property="nextButton" destination="bhS-TH-Pbi" id="5oO-fy-Qc4"/>
                 <outlet property="outlookImageButton" destination="Bmw-Nr-vkt" id="5hT-LR-wbD"/>
                 <outlet property="outlookRadioButton" destination="lnO-nl-8UL" id="TQK-hj-83J"/>
@@ -417,7 +418,15 @@ Gw
                     <rect key="frame" x="173" y="67" width="268" height="42"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="sdf-hB-REE">
                         <font key="font" metaFont="smallSystem"/>
-                        <string key="title">Simplicity couldn't find any existing image for your account. Click the button on the left to choose it from disk or a URL, or leave it as is.</string>
+                        <string key="title">Simplicity couldn't find any existing image for your account. Click the button on the left to choose it from disk or Internel, or just leave it empty.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TAe-UK-caY">
+                    <rect key="frame" x="173" y="67" width="268" height="42"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="A local or Internet image is set for your account. You can always change it in the account preferences." id="EAv-Xs-x4Y">
+                        <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>

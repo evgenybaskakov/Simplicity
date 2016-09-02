@@ -34,9 +34,9 @@
 - (void)chooseImage:(NSImage*)image url:(NSURL*)url {
     [self stopProgress];
 
+    _okButton.enabled = image? YES : NO;
     _chosenImage = image? image : [NSImage imageNamed:NSImageNameUserGuest];
     _imageView.image = _chosenImage;
-    _okButton.enabled = YES;
 }
 
 - (void)startProgress {
@@ -102,7 +102,7 @@
 }
 
 - (IBAction)urlTextFieldAction:(id)sender {
-    NSLog(@"urlTextFieldAction");
+    // nothing so far
 }
 
 - (IBAction)browseFileButtonAction:(id)sender {

@@ -72,6 +72,7 @@ static const NSUInteger LAST_STEP = 3;
 @property (weak) IBOutlet NSButton *accountImageButton;
 @property (weak) IBOutlet NSTextField *existingImageFoundLabel;
 @property (weak) IBOutlet NSTextField *existingImageNotFoundLabel;
+@property (weak) IBOutlet NSTextField *localImageSelectedLabel;
 @end
 
 @implementation SMNewAccountWindowController {
@@ -88,6 +89,7 @@ static const NSUInteger LAST_STEP = 3;
     BOOL _skipProviderSelection;
     BOOL _shouldResetSelectedProvier;
     NSImage *_accountImage;
+    NSImage *_userSelectedAccountImage;
     NSWindow *_urlChooserWindow;
     SMURLChooserViewController *_urlChooserViewController;
 }
@@ -175,10 +177,6 @@ static const NSUInteger LAST_STEP = 3;
     }
 }
 
-- (IBAction)syncImageButtonAction:(id)sender {
-    // TODO
-}
-
 - (IBAction)serviceProviderSelectAction:(id)sender {
     NSUInteger i = 0;
     
@@ -209,11 +207,8 @@ static const NSUInteger LAST_STEP = 3;
     _urlChooserWindow = [[NSWindow alloc] init];
     [_urlChooserWindow setContentViewController:_urlChooserViewController];
 
-//    [_urlChooserWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
-//        ;
-//    }];
-
-    [NSApp beginSheet:_urlChooserWindow modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    [self.window beginSheet:_urlChooserWindow completionHandler:nil];
+    [self.window.sheetParent endSheet:_urlChooserWindow returnCode:NSModalResponseOK];
 }
 
 - (void)cancelImageUrlSelection:(id)sender {
@@ -221,7 +216,11 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (void)acceptImageUrlSelection:(id)sender {
-    [_urlChooserWindow performClose:self];
+    [_urlChooserWindow close];
+    
+    _userSelectedAccountImage = _urlChooserViewController.chosenImage;
+
+    [self reloadAccountImage];
 }
 
 - (void)validateUserName:(BOOL)checkFirst {
@@ -398,20 +397,30 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (void)reloadAccountImage {
-    SMAddress *address = [[SMAddress alloc] initWithFullName:_fullNameField.stringValue email:_emailAddressField.stringValue representationMode:SMAddressRepresentation_FirstNameFirst];
-    
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    NSImage *accountImage = [appDelegate.addressBookController loadPictureForAddress:address searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
-    
-    if(accountImage) {
-        _accountImageButton.image = accountImage;
-        _existingImageFoundLabel.hidden = NO;
+    if(_userSelectedAccountImage != nil) {
+        _accountImageButton.image = _userSelectedAccountImage;
+        _existingImageFoundLabel.hidden = YES;
         _existingImageNotFoundLabel.hidden = YES;
+        _localImageSelectedLabel.hidden = NO;
     }
     else {
-        _accountImageButton.image = [NSImage imageNamed:@"NSUserGuest"];
-        _existingImageFoundLabel.hidden = YES;
-        _existingImageNotFoundLabel.hidden = NO;
+        SMAddress *address = [[SMAddress alloc] initWithFullName:_fullNameField.stringValue email:_emailAddressField.stringValue representationMode:SMAddressRepresentation_FirstNameFirst];
+        
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        NSImage *accountImage = [appDelegate.addressBookController loadPictureForAddress:address searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
+        
+        if(accountImage) {
+            _accountImageButton.image = accountImage;
+            _existingImageFoundLabel.hidden = NO;
+            _existingImageNotFoundLabel.hidden = YES;
+        }
+        else {
+            _accountImageButton.image = [NSImage imageNamed:@"NSUserGuest"];
+            _existingImageFoundLabel.hidden = YES;
+            _existingImageNotFoundLabel.hidden = NO;
+        }
+
+        _localImageSelectedLabel.hidden = YES;
     }
 }
 

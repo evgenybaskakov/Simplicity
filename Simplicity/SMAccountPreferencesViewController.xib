@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
@@ -373,13 +373,13 @@
                     </button>
                     <button toolTip="When checked, account image is synchronized with your address book or Internel" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e41-Pd-GfB">
                         <rect key="frame" x="18" y="187" width="371" height="18"/>
-                        <buttonCell key="cell" type="check" title="Prefer image from address book" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CfL-A6-LVy">
+                        <buttonCell key="cell" type="check" title="Use address book image" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CfL-A6-LVy">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="955-Oi-nIC">
-                        <rect key="frame" x="5" y="178" width="396" height="5"/>
+                        <rect key="frame" x="5" y="178" width="396" height="4"/>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <font key="titleFont" metaFont="system"/>

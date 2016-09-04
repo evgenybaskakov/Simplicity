@@ -65,6 +65,7 @@
 #define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
 #define kAccountSignature               @"AccountSignature"
 #define kAccountLabels                  @"AccountLabels"
+#define kUsePresetAccountImage          @"kUsePresetAccountImage"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
@@ -179,8 +180,7 @@
     return self;
 }
 
-- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider {
-    
+- (void)addAccountWithName:(NSString*)accountName userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider accountImage:(NSImage*)accountImage {
     SM_LOG_INFO(@"New account '%@', userName '%@', emailAddress '%@'", accountName, userName, emailAddress);
     
     NSUInteger prevAccountCount = [self accountsCount];
@@ -218,14 +218,16 @@
     if(![[NSFileManager defaultManager] createDirectoryAtPath:cacheDirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
         SM_LOG_ERROR(@"failed to create cache directory '%@', error: %@", cacheDirPath, error);
     }
-
+    
     // Save the account image;
-    if(image != nil) {
+    if(accountImage != nil) {
         NSString *accountImagePath = [self accountImagePath:newAccountIdx];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-    
-        [SMAccountImageSelection saveImageFile:accountImagePath image:image];
+        
+        [SMAccountImageSelection saveImageFile:accountImagePath image:accountImage];
     }
+
+    [self setUsePresetAccountImage:newAccountIdx usePresetImage:(accountImage != nil? YES : NO)];
 }
 
 - (void)removeAccount:(NSInteger)accountIdx {
@@ -376,6 +378,10 @@
 
 #pragma mark Property setters
 
+- (void)setUsePresetAccountImage:(NSInteger)accountIdx usePresetImage:(BOOL)usePresetImage {
+    [self setProperty:kUsePresetAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:usePresetImage]];
+}
+
 - (void)setAccountName:(NSInteger)accountIdx name:(NSString*)name {
     [self setProperty:kAccountName accountIdx:accountIdx obj:name];
 }
@@ -444,6 +450,11 @@
 }
 
 #pragma mark Property getters
+
+- (BOOL)usePresetAccountImage:(NSInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kUsePresetAccountImage accountIdx:accountIdx];
+    return [number boolValue];
+}
 
 - (NSString*)accountName:(NSInteger)accountIdx {
     NSString *str = (NSString*)[self loadProperty:kAccountName accountIdx:accountIdx];

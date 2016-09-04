@@ -220,20 +220,10 @@
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
     NSUInteger accountsCount = [preferencesController accountsCount];
-    
     _accountImages = [NSMutableArray arrayWithCapacity:accountsCount];
     
     for(NSUInteger i = 0; i < accountsCount; i++) {
-        NSString *accountImagePath = [preferencesController accountImagePath:i];
-        NSImage *accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-        
-        if(accountImage == nil) {
-            SM_LOG_INFO(@"Using default image for account %lu", i);
-            
-            accountImage = [SMAccountImageSelection defaultImage];
-        }
-        
-        _accountImages[i] = accountImage;
+        _accountImages[i] = [appDelegate.accounts[i] accountImage];
     }
 }
 

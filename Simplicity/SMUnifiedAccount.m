@@ -29,6 +29,9 @@
 @synthesize mailbox = _mailbox;
 @synthesize localFolderRegistry = _localFolderRegistry;
 @synthesize foldersInitialized = _foldersInitialized;
+@synthesize accountAddress = _accountAddress;
+@synthesize accountImage = _accountImage;
+@synthesize accountName = _accountName;
 
 - (id)init {
     self = [super init];

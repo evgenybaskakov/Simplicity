@@ -10,6 +10,9 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAddress.h"
+#import "SMAddressBookController.h"
+#import "SMAccountImageSelection.h"
 #import "SMAttachmentStorage.h"
 #import "SMPreferencesController.h"
 #import "SMDatabase.h"
@@ -61,6 +64,9 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 @synthesize localFolderRegistry = _localFolderRegistry;
 @synthesize imapServerCapabilities = _imapServerCapabilities;
 @synthesize foldersInitialized = _foldersInitialized;
+@synthesize accountAddress = _accountAddress;
+@synthesize accountImage = _accountImage;
+@synthesize accountName = _accountName;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController {
     self = [super init];
@@ -193,6 +199,30 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 //    _imapSession.connectionLogger = ^(void *connectionID, MCOConnectionLogType type, NSData *data) {
 //        SM_LOG_NOISE(@"IMAP connection id: %p, bytes: %lu, type: %s", connectionID, data != nil? data.length : 0, mcoConnectionTypeName(type));
 //    };
+    
+    _accountName = [_preferencesController accountName:accountIdx];
+    
+    NSString *fullUserName = [_preferencesController fullUserName:accountIdx];
+    NSString *userEmail = [_preferencesController userEmail:accountIdx];
+
+    _accountAddress = [[SMAddress alloc] initWithFullName:fullUserName email:userEmail representationMode:SMAddressRepresentation_FirstNameFirst];
+    
+    [self initAccountImage:accountIdx];
+}
+
+- (void)initAccountImage:(NSUInteger)accountIdx {
+    if([_preferencesController usePresetAccountImage:accountIdx]) {
+        NSString *accountImagePath = [_preferencesController accountImagePath:accountIdx];
+        _accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+    }
+    else {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        _accountImage = [appDelegate.addressBookController loadPictureForAddress:_accountAddress searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
+    }
+    
+    if(_accountImage == nil) {
+        _accountImage = [SMAccountImageSelection defaultImage];
+    }
 }
 
 - (void)initOpExecutor {

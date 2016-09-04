@@ -16,6 +16,7 @@
 #import "SMAppearancePreferencesViewController.h"
 
 @interface SMAppearancePreferencesViewController ()
+@property (weak) IBOutlet NSButton *useAddressBookImageButton;
 @property (weak) IBOutlet NSButton *fixedFontButton;
 @property (weak) IBOutlet NSButton *regularFontButton;
 @property (weak) IBOutlet NSButton *fixedSizeFontForPlainMessagesCheckBox;

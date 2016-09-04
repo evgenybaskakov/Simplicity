@@ -66,7 +66,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (NSUInteger)accountsCount;
 - (NSURL*)accountDirURL:(NSInteger)accountIdx;
 
-- (void)addAccountWithName:(NSString*)accountName image:(NSImage*)image userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider;
+- (void)addAccountWithName:(NSString*)accountName userName:(NSString*)userName emailAddress:(NSString*)emailAddress provider:(SMMailServiceProvider*)provider accountImage:(NSImage*)accountImage;
 - (void)removeAccount:(NSInteger)accountIdx;
 - (BOOL)renameAccount:(NSInteger)accountIdx newName:(NSString*)newName;
 - (BOOL)accountExists:(NSString*)accountName;
@@ -96,6 +96,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (NSString*)fullUserName:(NSInteger)accountIdx;
 - (NSString*)userEmail:(NSInteger)accountIdx;
 - (NSString*)accountImagePath:(NSInteger)accountIdx;
+- (BOOL)usePresetAccountImage:(NSInteger)accountIdx;
 - (NSString*)databaseFilePath:(NSInteger)accountIdx;
 - (NSString*)cacheDirPath:(NSInteger)accountIdx;
 - (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSInteger)accountIdx;

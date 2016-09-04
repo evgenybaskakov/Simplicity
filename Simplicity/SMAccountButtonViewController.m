@@ -7,6 +7,7 @@
 //
 
 #import "SMAppDelegate.h"
+#import "SMAddress.h"
 #import "SMColorView.h"
 #import "SMPreferencesController.h"
 #import "SMAccountButtonViewController.h"
@@ -78,16 +79,15 @@
 }
 
 - (void)reloadAccountInfo {
-    NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:_accountIdx];
-    NSAssert(accountImagePath != nil, @"accountImagePath is nil");
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    _accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+    _accountImage.image = [appDelegate.accounts[_accountIdx] accountImage];
     
     if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] userEmail:_accountIdx];
+        _accountName.stringValue = [[appDelegate.accounts[_accountIdx] accountAddress] email];
     }
     else {
-        _accountName.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:_accountIdx];
+        _accountName.stringValue = [appDelegate.accounts[_accountIdx] accountName];
     }
 }
 

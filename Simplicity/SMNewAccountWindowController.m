@@ -92,6 +92,7 @@ static const NSUInteger LAST_STEP = 3;
     NSImage *_userSelectedAccountImage;
     NSWindow *_urlChooserWindow;
     SMURLChooserViewController *_urlChooserViewController;
+    NSString *_prevFullName;
 }
 
 - (void)windowDidLoad {
@@ -124,6 +125,9 @@ static const NSUInteger LAST_STEP = 3;
     
     _fullNameInvalidMarker.hidden = YES;
     _emailInvalidMarker.hidden = YES;
+    
+    _userSelectedAccountImage = nil;
+    _accountImage = nil;
 }
 
 - (IBAction)cancelAction:(id)sender {
@@ -157,6 +161,12 @@ static const NSUInteger LAST_STEP = 3;
     _fullNameEntered = YES;
     
     if(_fullNameValid) {
+        if(_prevFullName != nil && ![_prevFullName isEqualToString:_fullNameField.stringValue]) {
+            _userSelectedAccountImage = nil;
+        }
+        
+        _prevFullName = _fullNameField.stringValue;
+
         [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
     }
 }
@@ -474,11 +484,7 @@ static const NSUInteger LAST_STEP = 3;
 
         [[appDelegate appController] closeNewAccountWindow];
         
-        if(_accountImage == nil) {
-            _accountImage = [SMAccountImageSelection defaultImage];
-        }
-        
-        [[appDelegate preferencesController] addAccountWithName:fullUserName image:_accountImage userName:fullUserName emailAddress:emailAddress provider:provider];
+        [[appDelegate preferencesController] addAccountWithName:fullUserName userName:fullUserName emailAddress:emailAddress provider:provider accountImage:_userSelectedAccountImage];
         
         [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 

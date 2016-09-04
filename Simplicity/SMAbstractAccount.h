@@ -12,6 +12,7 @@
 @protocol SMMailboxController;
 @protocol SMAbstractSearchController;
 
+@class SMAddress;
 @class SMAttachmentStorage;
 @class SMFolderColorController;
 @class SMMessageListController;
@@ -22,6 +23,10 @@
 @class SMMessage;
 
 @protocol SMAbstractAccount
+
+@property NSString *accountName;
+@property SMAddress *accountAddress;
+@property NSImage *accountImage;
 
 @property (readonly) BOOL unified;
 @property (readonly) SMFolderColorController *folderColorController;

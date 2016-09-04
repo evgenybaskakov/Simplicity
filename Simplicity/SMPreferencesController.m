@@ -65,7 +65,7 @@
 #define kSmtpNeedCheckCertificate       @"SmtpNeedCheckCertificate"
 #define kAccountSignature               @"AccountSignature"
 #define kAccountLabels                  @"AccountLabels"
-#define kUsePresetAccountImage          @"kUsePresetAccountImage"
+#define kUseAddressBookAccountImage     @"kUseAddressBookAccountImage"
 
 @implementation SMPreferencesController {
     BOOL _shouldShowNotificationsCached;
@@ -227,7 +227,7 @@
         [SMAccountImageSelection saveImageFile:accountImagePath image:accountImage];
     }
 
-    [self setUsePresetAccountImage:newAccountIdx usePresetImage:(accountImage != nil? YES : NO)];
+    [self setUseAddressBookAccountImage:newAccountIdx useAddressBookImage:(accountImage != nil? NO : YES)];
 }
 
 - (void)removeAccount:(NSInteger)accountIdx {
@@ -378,8 +378,8 @@
 
 #pragma mark Property setters
 
-- (void)setUsePresetAccountImage:(NSInteger)accountIdx usePresetImage:(BOOL)usePresetImage {
-    [self setProperty:kUsePresetAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:usePresetImage]];
+- (void)setUseAddressBookAccountImage:(NSInteger)accountIdx useAddressBookImage:(BOOL)useAddressBookImage {
+    [self setProperty:kUseAddressBookAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:useAddressBookImage]];
 }
 
 - (void)setAccountName:(NSInteger)accountIdx name:(NSString*)name {
@@ -449,14 +449,14 @@
     [self setProperty:kSmtpNeedCheckCertificate accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
 }
 
-- (void)setShouldUsePresetAccountImage:(NSInteger)accountIdx usePresetAccountImage:(BOOL)usePresetAccountImage {
-    [self setProperty:kUsePresetAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:usePresetAccountImage]];
+- (void)setShouldUseAddressBookAccountImage:(NSInteger)accountIdx useAddressBookAccountImage:(BOOL)useAddressBookAccountImage {
+    [self setProperty:kUseAddressBookAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:useAddressBookAccountImage]];
 }
 
 #pragma mark Property getters
 
-- (BOOL)usePresetAccountImage:(NSInteger)accountIdx {
-    NSNumber *number = (NSNumber*)[self loadProperty:kUsePresetAccountImage accountIdx:accountIdx];
+- (BOOL)useAddressBookAccountImage:(NSInteger)accountIdx {
+    NSNumber *number = (NSNumber*)[self loadProperty:kUseAddressBookAccountImage accountIdx:accountIdx];
     return [number boolValue];
 }
 

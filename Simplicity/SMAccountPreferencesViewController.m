@@ -195,7 +195,7 @@
         
         _accountImageButton.image = _accountImages[accountIdx];
 
-        _useImageFromAddressBook.state = ([[appDelegate preferencesController] usePresetAccountImage:accountIdx]? NSOffState : NSOnState);
+        _useImageFromAddressBook.state = ([[appDelegate preferencesController] useAddressBookAccountImage:accountIdx]? NSOnState : NSOffState);
         _useImageFromAddressBook.enabled = YES;
     }
     else {
@@ -446,7 +446,7 @@
         [SMAccountImageSelection saveImageFile:accountImagePath image:newAccountImage];
         
         [_useImageFromAddressBook setState:NSOffState];
-        [appDelegate.preferencesController setShouldUsePresetAccountImage:selectedAccount usePresetAccountImage:YES];
+        [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:NO];
 
         [self reloadAccounts];
     }
@@ -518,7 +518,7 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [appDelegate.preferencesController setShouldUsePresetAccountImage:selectedAccount usePresetAccountImage:(_useImageFromAddressBook.state == NO)];
+    [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:(_useImageFromAddressBook.state == NSOnState)];
 
     [self reloadAccounts];
 }

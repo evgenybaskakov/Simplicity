@@ -75,7 +75,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (void)setFullUserName:(NSInteger)accountIdx userName:(NSString*)fullUserName;
 - (void)setUserEmail:(NSInteger)accountIdx email:(NSString*)userEmail;
 - (void)setLabels:(NSInteger)accountIdx labels:(NSDictionary<NSString*, SMFolderLabel*>*)labels;
-- (void)setShouldUsePresetAccountImage:(NSInteger)accountIdx usePresetAccountImage:(BOOL)usePresetAccountImage;
+- (void)setShouldUseAddressBookAccountImage:(NSInteger)accountIdx useAddressBookAccountImage:(BOOL)useAddressBookAccountImage;
 
 - (void)setImapServer:(NSInteger)accountIdx server:(NSString*)server;
 - (void)setImapPort:(NSInteger)accountIdx port:(unsigned int)port;
@@ -97,7 +97,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 - (NSString*)fullUserName:(NSInteger)accountIdx;
 - (NSString*)userEmail:(NSInteger)accountIdx;
 - (NSString*)accountImagePath:(NSInteger)accountIdx;
-- (BOOL)usePresetAccountImage:(NSInteger)accountIdx;
+- (BOOL)useAddressBookAccountImage:(NSInteger)accountIdx;
 - (NSString*)databaseFilePath:(NSInteger)accountIdx;
 - (NSString*)cacheDirPath:(NSInteger)accountIdx;
 - (NSDictionary<NSString*, SMFolderLabel*>*)labels:(NSInteger)accountIdx;

@@ -211,13 +211,13 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 - (void)initAccountImage:(NSUInteger)accountIdx {
-    if([_preferencesController usePresetAccountImage:accountIdx]) {
-        NSString *accountImagePath = [_preferencesController accountImagePath:accountIdx];
-        _accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
-    }
-    else {
+    if([_preferencesController useAddressBookAccountImage:accountIdx]) {
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         _accountImage = [appDelegate.addressBookController loadPictureForAddress:_accountAddress searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
+    }
+    else {
+        NSString *accountImagePath = [_preferencesController accountImagePath:accountIdx];
+        _accountImage = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
     }
     
     if(_accountImage == nil) {

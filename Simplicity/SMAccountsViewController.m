@@ -14,6 +14,7 @@
 #import "SMAccountMailbox.h"
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
+#import "SMAddress.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMAccountImageSelection.h"
@@ -102,9 +103,9 @@
 - (void)reloadAccountViews:(BOOL)reloadControllers {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    const NSInteger accountsCount = appDelegate.accounts.count;
+    const NSInteger accountCount = appDelegate.accounts.count;
     
-    if(accountsCount == 0) {
+    if(accountCount == 0) {
         SM_LOG_INFO(@"no accounts in the account properties");
 
         [_scrollView removeFromSuperview];
@@ -120,7 +121,7 @@
     if(reloadControllers) {
         [_accountButtonViewControllers removeAllObjects];
 
-        for(NSInteger beginIdx = (unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountsCount; i++) {
+        for(NSInteger beginIdx = (unifiedMailboxButtonShown? -1 : 0), i = beginIdx; i < accountCount; i++) {
             SMAccountButtonViewController *accountButtonViewController = [[SMAccountButtonViewController alloc] initWithNibName:nil bundle:nil];
             NSAssert(accountButtonViewController.view, @"button.view");
 
@@ -132,18 +133,13 @@
             }
             else {
                 if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
-                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] userEmail:i];
+                    accountButtonViewController.accountName.stringValue = [appDelegate.accounts[i].accountAddress email];
                 }
                 else {
-                    accountButtonViewController.accountName.stringValue = [[appDelegate preferencesController] accountName:i];
+                    accountButtonViewController.accountName.stringValue = appDelegate.accounts[i].accountName;
                 }
 
-                NSString *accountImagePath = nil;
-                
-                accountImagePath = [[appDelegate preferencesController] accountImagePath:i];
-                NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-                
-                accountButtonViewController.accountImage.image = [[NSImage alloc] initWithContentsOfFile:accountImagePath];
+                accountButtonViewController.accountImage.image = appDelegate.accounts[i].accountImage;
             }
             
             NSColor *color = [NSColor whiteColor];
@@ -297,7 +293,7 @@
     
     [_contentView addConstraint:[NSLayoutConstraint constraintWithItem:_contentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:prevView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     
-    for(NSInteger i = 0; i < accountsCount; i++) {
+    for(NSInteger i = 0; i < accountCount; i++) {
         [self updateAccountButtonInfo:i];
     }
     

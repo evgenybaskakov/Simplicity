@@ -449,6 +449,10 @@
     [self setProperty:kSmtpNeedCheckCertificate accountIdx:accountIdx obj:[NSNumber numberWithUnsignedInteger:checkCertificate]];
 }
 
+- (void)setShouldUsePresetAccountImage:(NSInteger)accountIdx usePresetAccountImage:(BOOL)usePresetAccountImage {
+    [self setProperty:kUsePresetAccountImage accountIdx:accountIdx obj:[NSNumber numberWithBool:usePresetAccountImage]];
+}
+
 #pragma mark Property getters
 
 - (BOOL)usePresetAccountImage:(NSInteger)accountIdx {

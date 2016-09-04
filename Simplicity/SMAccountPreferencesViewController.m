@@ -17,6 +17,7 @@
 #import "SMMailboxViewController.h"
 #import "SMAccountImageSelection.h"
 #import "SMAccountPreferencesViewController.h"
+#import "SMURLChooserViewController.h"
 
 @interface SMAccountPreferencesViewController ()
 
@@ -40,6 +41,7 @@
 @property (weak) IBOutlet NSTextField *accountNameField;
 @property (weak) IBOutlet NSTextField *fullUserNameField;
 @property (weak) IBOutlet NSTextField *emailAddressField;
+@property (weak) IBOutlet NSButton *useImageFromAddressBook;
 @property (weak) IBOutlet NSButton *useUnifiedMailboxButton;
 
 #pragma mark Servers panel
@@ -78,6 +80,8 @@
     NSArray *_authTypeConstants;
     NSMutableArray *_accountImages;
     SMConnectionCheck *_connectionCheck;
+    SMURLChooserViewController *_urlChooserViewController;
+    NSWindow *_urlChooserWindow;
 }
 
 - (void)viewDidLoad {
@@ -190,6 +194,9 @@
         [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
         
         _accountImageButton.image = _accountImages[accountIdx];
+
+        _useImageFromAddressBook.state = ([[appDelegate preferencesController] usePresetAccountImage:accountIdx]? NSOffState : NSOnState);
+        _useImageFromAddressBook.enabled = YES;
     }
     else {
         _accountNameField.stringValue = @"";
@@ -212,6 +219,7 @@
         [_smtpAuthTypeList selectItemAtIndex:-1];
         
         _accountImageButton.image = [SMAccountImageSelection defaultImage];
+        _useImageFromAddressBook.enabled = NO;
     }
 }
 
@@ -224,6 +232,10 @@
     
     for(NSUInteger i = 0; i < accountsCount; i++) {
         _accountImages[i] = [appDelegate.accounts[i] accountImage];
+
+        if(i == [self selectedAccount]) {
+            _accountImageButton.image = _accountImages[i];
+        }
     }
 }
 
@@ -399,20 +411,43 @@
 #pragma mark Account settings actions
 
 - (IBAction)selectAccountImageAction:(id)sender {
-    NSImage *newAccountImage = [SMAccountImageSelection promptForImage];
+    if(_urlChooserViewController == nil) {
+        _urlChooserViewController = [[SMURLChooserViewController alloc] initWithNibName:@"SMURLChooserViewController" bundle:nil];
+        _urlChooserViewController.target = self;
+        _urlChooserViewController.actionCancel = @selector(cancelImageUrlSelection:);
+        _urlChooserViewController.actionOk = @selector(acceptImageUrlSelection:);
+    }
+    
+    _urlChooserWindow = [[NSWindow alloc] init];
+    [_urlChooserWindow setContentViewController:_urlChooserViewController];
+    
+    [self.view.window beginSheet:_urlChooserWindow completionHandler:nil];
+    [self.view.window.sheetParent endSheet:_urlChooserWindow returnCode:NSModalResponseOK];
+}
+
+- (void)cancelImageUrlSelection:(id)sender {
+    [_urlChooserWindow close];
+}
+
+- (void)acceptImageUrlSelection:(id)sender {
+    [_urlChooserWindow close];
+    
+    NSImage *newAccountImage = _urlChooserViewController.chosenImage;
     
     if(newAccountImage != nil) {
+        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+         
         NSInteger selectedAccount = [self selectedAccount];
         NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
-
-        NSString *accountImagePath = [[[[NSApplication sharedApplication] delegate] preferencesController] accountImagePath:selectedAccount];
+        
+        NSString *accountImagePath = [appDelegate.preferencesController accountImagePath:selectedAccount];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
-
+        
         [SMAccountImageSelection saveImageFile:accountImagePath image:newAccountImage];
         
-        _accountImages[selectedAccount] = newAccountImage;
-        _accountImageButton.image = newAccountImage;
-        
+        [_useImageFromAddressBook setState:NSOffState];
+        [appDelegate.preferencesController setShouldUsePresetAccountImage:selectedAccount usePresetAccountImage:YES];
+
         [self reloadAccounts];
     }
 }
@@ -476,6 +511,16 @@
     
     // TODO: validate value
     [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
+}
+
+- (IBAction)useImageFromAddressBookAction:(id)sender {
+    NSInteger selectedAccount = [self selectedAccount];
+    NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate.preferencesController setShouldUsePresetAccountImage:selectedAccount usePresetAccountImage:(_useImageFromAddressBook.state == NO)];
+
+    [self reloadAccounts];
 }
 
 - (IBAction)checkUnifiedMailboxAction:(id)sender {
@@ -738,6 +783,8 @@
     [self setAccountPanelEnabled:(accountsCount > 0? YES : NO)];
     
     _useUnifiedMailboxButton.enabled = (accountsCount > 1? YES : NO);
+
+    // TODO: refresh account images [appDelegate reloadAccounts];
 }
 
 - (void)showAccount:(NSString*)accountName {

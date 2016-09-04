@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
@@ -40,6 +39,7 @@
                 <outlet property="smtpServerField" destination="kTr-WN-zmg" id="fC4-YP-Sn3"/>
                 <outlet property="smtpUserNameField" destination="XCF-NV-29U" id="HeH-bc-tJu"/>
                 <outlet property="toggleAccountSettingsPanelButton" destination="A8X-Bf-nYO" id="BtZ-fz-aSc"/>
+                <outlet property="useImageFromAddressBook" destination="e41-Pd-GfB" id="gWa-9M-ory"/>
                 <outlet property="useUnifiedMailboxButton" destination="zQh-BX-2Oo" id="3Nh-Sg-805"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -60,7 +60,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" alternatingRowBackgroundColors="YES" columnSelection="YES" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="31" rowSizeStyle="automatic" viewBased="YES" id="qrn-8h-9Eb">
-                                <rect key="frame" x="0.0" y="0.0" width="132" height="316"/>
+                                <rect key="frame" x="0.0" y="0.0" width="132" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -377,6 +377,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="useImageFromAddressBookAction:" target="-2" id="2C3-OK-pn9"/>
+                        </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="955-Oi-nIC">
                         <rect key="frame" x="5" y="177" width="396" height="4"/>

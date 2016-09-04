@@ -66,13 +66,15 @@ static const NSUInteger LAST_STEP = 3;
 @property (weak) IBOutlet NSSecureTextField *passwordField;
 @property (weak) IBOutlet NSImageView *emailInvalidMarker;
 
-#pragma mark Step 3
+#pragma mark Step 4
 
 @property (strong) IBOutlet NSView *step4PanelView;
 @property (weak) IBOutlet NSButton *accountImageButton;
 @property (weak) IBOutlet NSTextField *existingImageFoundLabel;
 @property (weak) IBOutlet NSTextField *existingImageNotFoundLabel;
 @property (weak) IBOutlet NSTextField *localImageSelectedLabel;
+@property (weak) IBOutlet NSTextField *accountNameField;
+@property (weak) IBOutlet NSImageView *accountNameValidMarker;
 @end
 
 @implementation SMNewAccountWindowController {
@@ -80,6 +82,8 @@ static const NSUInteger LAST_STEP = 3;
     BOOL _emailAddressEntered;
     BOOL _fullNameValid;
     BOOL _emailAddressValid;
+    BOOL _accountNameEntered;
+    BOOL _accountNameValid;
     NSUInteger _curStep;
     NSArray *_mailServiceProviderButtons;
     NSArray *_mailServiceProviderImageButtons;
@@ -115,6 +119,7 @@ static const NSUInteger LAST_STEP = 3;
     _emailAddressEntered = NO;
     _fullNameValid = NO;
     _emailAddressValid = NO;
+    _accountNameEntered = NO;
     
     [self resetSelectedProvider];
     [self showStep:0];
@@ -122,9 +127,11 @@ static const NSUInteger LAST_STEP = 3;
     _fullNameField.stringValue = @"";
     _emailAddressField.stringValue = @"";
     _passwordField.stringValue = @"";
+    _accountNameField.stringValue = @"";
     
     _fullNameInvalidMarker.hidden = YES;
     _emailInvalidMarker.hidden = YES;
+    _accountNameValidMarker.hidden = YES;
     
     _userSelectedAccountImage = nil;
     _accountImage = nil;
@@ -177,6 +184,16 @@ static const NSUInteger LAST_STEP = 3;
     _emailAddressEntered = YES;
     
     if(_emailAddressValid) {
+        [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
+    }
+}
+
+- (IBAction)accountNameEnterAction:(id)sender {
+    [self validateAccountName:NO];
+    
+    _accountNameEntered = YES;
+    
+    if(_accountNameValid) {
         [self.window makeFirstResponder:[(NSView*)sender nextKeyView]];
     }
 }
@@ -260,6 +277,19 @@ static const NSUInteger LAST_STEP = 3;
     _nextButton.enabled = (_emailAddressValid? YES : NO);
 }
 
+- (void)validateAccountName:(BOOL)checkFirst {
+    NSString *accountName = [SMStringUtils trimString:_accountNameField.stringValue];
+
+    NSCharacterSet* illegalAccountNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>"];
+    _accountNameValid = (accountName.length > 0) && ([accountName rangeOfCharacterFromSet:illegalAccountNameCharacters].location == NSNotFound);
+    
+    if(checkFirst || !_accountNameEntered) {
+        _accountNameValidMarker.hidden = (_accountNameValid? YES : NO);
+    }
+    
+    _nextButton.enabled = (_accountNameValid? YES : NO);
+}
+
 - (void)resetSelectedProvider {
     if(_mailServiceProvierIdx != NSUIntegerMax) {
         ((NSButton*)_mailServiceProviderButtons[_mailServiceProvierIdx]).state = NSOffState;
@@ -333,7 +363,7 @@ static const NSUInteger LAST_STEP = 3;
         _backButton.hidden = NO;
         _nextButton.hidden = NO;
         _nextButton.title = @"Finish";
-        _nextButton.enabled = YES;
+        _nextButton.enabled = (_accountNameValid? YES : NO);
         
         [self reloadAccountImage];
     }
@@ -373,6 +403,14 @@ static const NSUInteger LAST_STEP = 3;
         [_backButton setNextKeyView:_cancelButton];
         [_cancelButton setNextKeyView:_emailAddressField];
     }
+    else if(_curStep == 3) {
+        [self.window makeFirstResponder:_accountNameField];
+        
+        [_accountNameField setNextKeyView:_nextButton];
+        [_nextButton setNextKeyView:_backButton];
+        [_backButton setNextKeyView:_cancelButton];
+        [_cancelButton setNextKeyView:_accountNameField];
+    }
 }
 
 - (void)controlTextDidChange:(NSNotification *)obj {
@@ -383,6 +421,9 @@ static const NSUInteger LAST_STEP = 3;
         _shouldResetSelectedProvier = YES;
 
         [self validateEmailAddress:YES];
+    }
+    else if([obj object] == _accountNameField) {
+        [self validateAccountName:YES];
     }
 }
 
@@ -464,32 +505,35 @@ static const NSUInteger LAST_STEP = 3;
 
     NSAssert(provider != nil, @"no mail provider");
     
-    NSString *fullUserName = [SMStringUtils trimString:_fullNameField.stringValue];
-    NSAssert(fullUserName != nil && fullUserName.length > 0, @"no user name");
+    NSString *accountName = [SMStringUtils trimString:_accountNameField.stringValue];
+    NSAssert(accountName != nil && accountName.length > 0, @"no account name");
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    if([[appDelegate preferencesController] accountExists:fullUserName]) {
-        SM_LOG_WARNING(@"Account '%@' already exists", fullUserName);
+    if([[appDelegate preferencesController] accountExists:accountName]) {
+        SM_LOG_WARNING(@"Account '%@' already exists", accountName);
         
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"OK"];
-        [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", fullUserName]];
+        [alert setMessageText:[NSString stringWithFormat:@"Account '%@' already exists, please choose another name", accountName]];
         [alert setAlertStyle:NSWarningAlertStyle];
         
         [alert runModal];
     }
     else {
-        SM_LOG_INFO(@"Account '%@' does not yet exist, creating it", fullUserName);
+        SM_LOG_INFO(@"Account '%@' does not yet exist, creating it", accountName);
 
         [[appDelegate appController] closeNewAccountWindow];
         
-        [[appDelegate preferencesController] addAccountWithName:fullUserName userName:fullUserName emailAddress:emailAddress provider:provider accountImage:_userSelectedAccountImage];
+        NSString *fullUserName = [SMStringUtils trimString:_fullNameField.stringValue];
+        NSAssert(fullUserName != nil && fullUserName.length > 0, @"no user name");
+        
+        [[appDelegate preferencesController] addAccountWithName:accountName userName:fullUserName emailAddress:emailAddress provider:provider accountImage:_userSelectedAccountImage];
         
         [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 
         if(![[appDelegate appController] preferencesWindowShown]) {
-            [[[appDelegate appController] preferencesWindowController] showAccount:fullUserName];
+            [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
         }
 
         [appDelegate addAccount];

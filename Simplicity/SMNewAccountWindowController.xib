@@ -8,6 +8,8 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMNewAccountWindowController">
             <connections>
                 <outlet property="accountImageButton" destination="ZRR-5d-hw0" id="VGc-x8-06G"/>
+                <outlet property="accountNameField" destination="xDi-0Y-NHT" id="Clm-xg-1H5"/>
+                <outlet property="accountNameValidMarker" destination="fsl-UK-j6M" id="Bje-yK-EIa"/>
                 <outlet property="backButton" destination="Ftk-UO-xME" id="V44-Zx-Jgl"/>
                 <outlet property="cancelButton" destination="wJe-Hr-tq3" id="XSV-my-BCb"/>
                 <outlet property="customServerImageButton" destination="yg6-6V-3b9" id="Mgd-rA-P3o"/>
@@ -390,13 +392,13 @@ Gw
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y5A-E2-6U1">
                     <rect key="frame" x="173" y="220" width="268" height="40"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Finish account creation" id="0ay-6l-0mL">
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="systemBold"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZRR-5d-hw0">
-                    <rect key="frame" x="40" y="48" width="80" height="80"/>
+                    <rect key="frame" x="37" y="72" width="80" height="80"/>
                     <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSUserGuest" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="Nzy-4w-tx9">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -405,8 +407,32 @@ Gw
                         <action selector="accountImageButtonAction:" target="-2" id="1V7-mD-vP6"/>
                     </connections>
                 </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="md2-cb-uJs">
+                    <rect key="frame" x="20" y="36" width="152" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Account name:" id="KKI-yd-jGb">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="Use a simple identifier, e.g. &quot;Work&quot;, or just set it to match your full name." verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xDi-0Y-NHT">
+                    <rect key="frame" x="177" y="33" width="246" height="22"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="bir-3r-j5k">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="accountNameEnterAction:" target="-2" id="0QE-Kz-glN"/>
+                        <outlet property="delegate" destination="-2" id="h3X-a8-trm"/>
+                    </connections>
+                </textField>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fsl-UK-j6M">
+                    <rect key="frame" x="424" y="32" width="23" height="23"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSStatusUnavailable" id="h9g-zN-GJR"/>
+                </imageView>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rV5-Os-fVZ">
-                    <rect key="frame" x="173" y="67" width="268" height="42"/>
+                    <rect key="frame" x="175" y="82" width="255" height="61"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="pN1-Kb-D0m">
                         <font key="font" metaFont="smallSystem"/>
                         <string key="title">Simplicity has found an existing image for your account. Click the button on the left to choose a different image from disk or a URL.</string>
@@ -415,7 +441,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6p-ni-mle">
-                    <rect key="frame" x="173" y="67" width="268" height="42"/>
+                    <rect key="frame" x="175" y="82" width="255" height="61"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="sdf-hB-REE">
                         <font key="font" metaFont="smallSystem"/>
                         <string key="title">Simplicity couldn't find any existing image for your account. Click the button on the left to choose it from disk or Internel, or just leave it empty.</string>
@@ -424,7 +450,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TAe-UK-caY">
-                    <rect key="frame" x="173" y="67" width="268" height="42"/>
+                    <rect key="frame" x="175" y="82" width="255" height="61"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="A local or Internet image is set for your account. You can always change it in the account preferences." id="EAv-Xs-x4Y">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>

@@ -10,6 +10,7 @@
 #import "SMAddress.h"
 #import "SMColorView.h"
 #import "SMPreferencesController.h"
+#import "SMNotificationsController.h"
 #import "SMAccountButtonViewController.h"
 
 @interface SMAccountButtonViewController ()
@@ -40,6 +41,12 @@
     _trackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect options:(NSTrackingInVisibleRect | NSTrackingActiveAlways | NSTrackingMouseEnteredAndExited) owner:self userInfo:nil];
     
     [self.view addTrackingArea:_trackingArea];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountPreferencesChanged:) name:@"AccountPreferencesChanged" object:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)showAttention:(NSString*)attentionText {
@@ -78,9 +85,20 @@
     _attentionButtonShown = NO;
 }
 
+- (void)accountPreferencesChanged:(NSNotification*)notification {
+    SMUserAccount *account;
+    [SMNotificationsController getAccountPreferencesChangedParams:notification account:&account];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    if(_accountIdx >= 0 && appDelegate.accounts[_accountIdx] == account) {
+        [self reloadAccountInfo];
+    }
+}
+
 - (void)reloadAccountInfo {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
+    NSAssert(_accountIdx >= 0 && _accountIdx < appDelegate.accounts.count, @"bad _accountIdx %ld", _accountIdx);
+
     _accountImage.image = [appDelegate.accounts[_accountIdx] accountImage];
     
     if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {

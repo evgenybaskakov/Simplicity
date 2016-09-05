@@ -124,6 +124,14 @@
 
 #pragma mark Notification parameter getters
 
++ (void)getAccountPreferencesChangedParams:(NSNotification*)notification account:(SMUserAccount**)account {
+    NSDictionary *messageInfo = [notification userInfo];
+    
+    if(account) {
+        *account = [messageInfo objectForKey:@"Account"];
+    }
+}
+
 + (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSString**)error account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     

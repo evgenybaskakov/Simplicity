@@ -14,6 +14,7 @@
 #import "SMMessageStorage.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageBodyViewController.h"
+#import "SMNotificationsController.h"
 #import "SMAttachmentsPanelViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageThreadCellViewController.h"
@@ -112,6 +113,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         // Register observed events
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(attachmentsPanelViewHeightChanged:) name:@"SMAttachmentsPanelViewHeightChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountPreferencesChanged:) name:@"AccountPreferencesChanged" object:nil];
     }
     
     return self;
@@ -140,6 +142,16 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
             [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageThreadCellHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"ThreadCell", nil]];
         }
+    }
+}
+
+- (void)accountPreferencesChanged:(NSNotification*)notification {
+    SMUserAccount *account;
+    [SMNotificationsController getAccountPreferencesChangedParams:notification account:&account];
+    
+    SMMessageThread *messageThread = _messageThreadViewController.currentMessageThread;
+    if((SMUserAccount*)messageThread.account == account) {
+        [_messageDetailsViewController updateMessage];
     }
 }
 

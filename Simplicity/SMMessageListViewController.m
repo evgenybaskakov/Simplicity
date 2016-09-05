@@ -82,6 +82,7 @@
 
     if(self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountPreferencesChanged:) name:@"AccountPreferencesChanged" object:nil];
         
         _multipleSelectedMessageThreads = [NSMutableArray array];
         _folderScrollPositions = [NSMutableDictionary dictionary];
@@ -89,6 +90,10 @@
     }
 
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -618,6 +623,10 @@
             }
         }
     }
+}
+
+- (void)accountPreferencesChanged:(NSNotification*)notification {
+    [self reloadMessageList:YES];
 }
 
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolder {

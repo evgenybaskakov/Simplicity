@@ -19,7 +19,7 @@
 @property (nonatomic) NSColor *backgroundColor;
 
 @property BOOL trackMouse;
-@property NSUInteger accountIdx;
+@property NSInteger accountIdx;
 
 - (void)showAttention:(NSString*)attentionText;
 - (void)hideAttention;

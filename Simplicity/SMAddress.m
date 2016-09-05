@@ -235,4 +235,8 @@
     }
 }
 
+- (BOOL)matchEmail:(SMAddress*)address {
+    return [_email caseInsensitiveCompare:address.email] == NSOrderedSame;
+}
+
 @end

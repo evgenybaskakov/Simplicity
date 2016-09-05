@@ -16,7 +16,9 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsViewController.h"
 #import "SMMessageThreadCellViewController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMAddressBookController.h"
+#import "SMMessageThread.h"
 #import "SMRoundedImageView.h"
 #import "SMAddress.h"
 #import "SMMessage.h"
@@ -66,6 +68,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         [self createSubviews];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setReplyButtonImage) name:@"DefaultReplyActionChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountPreferencesChanged:) name:@"AccountPreferencesChanged" object:nil];
     }
     
     return self;
@@ -133,18 +136,24 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 - (void)updateMessage {
     NSAssert(_currentMessage != nil, @"nil message");
-    
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
 
-    BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
-    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:_currentMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
-        if(image != nil) {
-            _contactImageView.image = image;
+    SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
+    if([account.accountAddress matchEmail:_currentMessage.fromAddress]) {
+        _contactImageView.image = account.accountImage;
+    }
+    else {
+        BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+        NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:_currentMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+            if(image != nil) {
+                _contactImageView.image = image;
+            }
+        }];
+        
+        if(contactImage != nil) {
+            _contactImageView.image = contactImage;
         }
-    }];
-
-    if(contactImage != nil) {
-        _contactImageView.image = contactImage;
     }
 
     if(_currentMessage.flagged) {
@@ -708,6 +717,21 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 - (void)invalidateIntrinsicContentViewSize {
     [[self view] setNeedsUpdateConstraints:YES];
+}
+
+#pragma mark Misc notifications
+
+- (void)accountPreferencesChanged:(NSNotification*)notification {
+    SMUserAccount *account;
+    [SMNotificationsController getAccountPreferencesChangedParams:notification account:&account];
+    
+    SMMessageThread *messageThread = _enclosingThreadCell.messageThreadViewController.currentMessageThread;
+    if((SMUserAccount*)messageThread.account == account) {
+        [self updateMessage];
+
+        // Refresh the full message details view, just re-set the message as it doesn't keep it.
+        [_fullDetailsViewController setMessage:_currentMessage];
+    }
 }
 
 @end

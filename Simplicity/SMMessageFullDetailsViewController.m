@@ -16,9 +16,12 @@
 #import "SMTokenField.h"
 #import "SMAddress.h"
 #import "SMMessage.h"
+#import "SMMessageThread.h"
+#import "SMMessageThreadViewController.h"
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
+#import "SMMessageThreadCellViewController.h"
 
 static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
@@ -223,17 +226,23 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
-    BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
-    NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
-        if(image != nil) {
-            _contactButton.image = image;
-        }
-    }];
-    
-    if(contactImage != nil) {
-        _contactButton.image = contactImage;
+    SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
+    if([account.accountAddress matchEmail:message.fromAddress]) {
+        _contactButton.image = account.accountImage;
     }
-
+    else {
+        BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+        NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+            if(image != nil) {
+                _contactButton.image = image;
+            }
+        }];
+        
+        if(contactImage != nil) {
+            _contactButton.image = contactImage;
+        }
+    }
+    
     _addressListsFramesValid = NO;
 }
 

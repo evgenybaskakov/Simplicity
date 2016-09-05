@@ -38,4 +38,6 @@ typedef NS_ENUM(NSUInteger, SMAddressMenuRepresentation) {
 
 - (MCOAddress*)mcoAddress;
 
+- (BOOL)matchEmail:(SMAddress*)address;
+
 @end

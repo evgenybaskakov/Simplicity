@@ -44,6 +44,10 @@
 
 #pragma mark Local notifications
 
++ (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AccountPreferencesChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", nil]];
+}
+
 + (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSString*)error {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"AccountSyncError" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", error, @"Error", nil]];
 }

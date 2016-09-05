@@ -19,6 +19,7 @@
 #import "SMAddressBookController.h"
 #import "SMRemoteImageLoadController.h"
 #import "SMUnifiedAccount.h"
+#import "SMNotificationsController.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
 #import "SMAppController.h"
@@ -120,6 +121,15 @@
     [_accounts removeObjectAtIndex:accountIdx];
     
     [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
+}
+
+- (void)reloadAccount:(NSUInteger)accountIdx {
+    NSAssert(accountIdx < _accounts.count, @"accountIdx %lu is out of bounds %lu", accountIdx, _accounts.count);
+    
+    SMUserAccount *account = (SMUserAccount*)_accounts[accountIdx];
+    [account reloadAccount:accountIdx];
+    
+    [SMNotificationsController localNotifyAccountPreferencesChanged:account];
 }
 
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account {

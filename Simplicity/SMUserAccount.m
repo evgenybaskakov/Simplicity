@@ -200,11 +200,15 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 //        SM_LOG_NOISE(@"IMAP connection id: %p, bytes: %lu, type: %s", connectionID, data != nil? data.length : 0, mcoConnectionTypeName(type));
 //    };
     
+    [self reloadAccount:accountIdx];
+}
+
+- (void)reloadAccount:(NSUInteger)accountIdx {
     _accountName = [_preferencesController accountName:accountIdx];
     
     NSString *fullUserName = [_preferencesController fullUserName:accountIdx];
     NSString *userEmail = [_preferencesController userEmail:accountIdx];
-
+    
     _accountAddress = [[SMAddress alloc] initWithFullName:fullUserName email:userEmail representationMode:SMAddressRepresentation_FirstNameFirst];
     
     [self initAccountImage:accountIdx];

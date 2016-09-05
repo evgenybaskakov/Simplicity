@@ -447,7 +447,9 @@
         
         [_useImageFromAddressBook setState:NSOffState];
         [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:NO];
-
+        
+        [appDelegate reloadAccount:selectedAccount];
+        
         [self reloadAccounts];
     }
 }
@@ -494,6 +496,8 @@
         return;
     }
     
+    [appDelegate reloadAccount:selectedAccount];
+    
     [self reloadAccounts];
 }
 
@@ -503,6 +507,9 @@
     
     // TODO: validate value
     [[[[NSApplication sharedApplication] delegate] preferencesController] setFullUserName:selectedAccount userName:_fullUserNameField.stringValue];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate reloadAccount:selectedAccount];
 }
 
 - (IBAction)enterEmailAddressAction:(id)sender {
@@ -511,6 +518,9 @@
     
     // TODO: validate value
     [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    [appDelegate reloadAccount:selectedAccount];
 }
 
 - (IBAction)useImageFromAddressBookAction:(id)sender {
@@ -519,6 +529,8 @@
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:(_useImageFromAddressBook.state == NSOnState)];
+
+    [appDelegate reloadAccount:selectedAccount];
 
     [self reloadAccounts];
 }

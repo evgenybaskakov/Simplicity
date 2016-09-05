@@ -20,6 +20,7 @@
 + (void)systemNotifyNewMessage:(NSString*)from;
 + (void)systemNotifyNewMessages:(NSUInteger)count;
 
++ (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account;
 + (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSString*)error;
 + (void)localNotifyFolderListUpdated:(SMUserAccount*)account;
 + (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account;
@@ -32,7 +33,6 @@
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account;
 + (void)localNotifyMessageViewFrameLoaded:(uint64_t)messageId account:(SMUserAccount*)account;
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
-
 + (void)localNotifyChangeMessageFlaggedFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyChangeMessageUnreadFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyDeleteMessage:(SMMessageThreadCellViewController*)messageThreadCellViewController;

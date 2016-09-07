@@ -774,8 +774,6 @@
 }
 
 - (void)reloadAccounts {
-    [self reloadAccountImages];
-
     NSInteger selectedRow = [_accountTableView selectedRow];
 
     [_accountTableView reloadData];
@@ -796,7 +794,7 @@
     
     _useUnifiedMailboxButton.enabled = (accountsCount > 1? YES : NO);
 
-    // TODO: refresh account images [appDelegate reloadAccounts];
+    [self reloadAccountImages];
 }
 
 - (void)showAccount:(NSString*)accountName {

@@ -14,15 +14,16 @@
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorWebView;
 @class SMInlineButtonPanelViewController;
+@class SMMessageThreadViewController;
 
 @interface SMMessageEditorViewController : NSViewController
 
-@property (readonly) Boolean embedded;
+@property (readonly) __weak SMMessageThreadViewController *messageThreadViewController;
 @property (readonly) CGFloat editorFullHeight;
 @property (readonly) Boolean hasUnsavedContents;
 @property (readonly) Boolean plainText;
 
-- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
+- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
 - (void)setEditorFrame:(NSRect)frame;
 - (void)setResponders:(BOOL)force;
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;

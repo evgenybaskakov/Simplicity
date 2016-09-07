@@ -20,6 +20,7 @@
 #import "SMUserAccount.h"
 #import "SMSuggestionProvider.h"
 #import "SMAddressBookController.h"
+#import "SMMessageThreadViewController.h"
 #import "SMFlippedView.h"
 #import "SMTokenField.h"
 #import "SMColorWellWithIcon.h"
@@ -53,6 +54,7 @@ typedef NS_ENUM(NSUInteger, EditorConversion) {
 static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 @interface SMMessageEditorViewController ()
+@property (readonly, nonatomic) BOOL embedded;
 @property (readonly) SMLabeledPopUpListViewController *fromBoxViewController;
 @property (readonly) SMAddressFieldViewController *toBoxViewController;
 @property (readonly) SMAddressFieldViewController *ccBoxViewController;
@@ -86,7 +88,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean _adjustingFrames;
 }
 
-- (id)initWithFrame:(NSRect)frame embedded:(Boolean)embedded draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {
+- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
@@ -102,7 +104,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         view.translatesAutoresizingMaskIntoConstraints = YES;
         [self setView:view];
         
-        _embedded = embedded;
+        _messageThreadViewController = messageThreadViewController;
         
         _messageEditorBase = [[SMMessageEditorBase alloc] init];
         _messageEditorController = [[SMMessageEditorController alloc] initWithDraftUID:draftUid];
@@ -153,7 +155,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         // unfold panel
         
-        if(embedded) {
+        if(self.embedded) {
             _foldPanelViewController = [[SMInlineButtonPanelViewController alloc] initWithNibName:@"SMInlineButtonPanelViewController" bundle:nil];
             [_foldPanelViewController setButtonTarget:self action:@selector(unfoldHiddenText:)];
             _foldPanelViewController.view.autoresizingMask = NSViewWidthSizable;
@@ -170,7 +172,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)initView {
-    if(_embedded) {
+    if(self.embedded) {
         _innerView = [[SMFlippedView alloc] init];
         _innerView.autoresizingMask = NSViewWidthSizable;
         _innerView.translatesAutoresizingMaskIntoConstraints = YES;
@@ -185,7 +187,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _innerView = self.view;
     }
     
-    [_toBoxViewController addControlSwitch:(_embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
+    [_toBoxViewController addControlSwitch:(self.embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
     
     _textAndAttachmentsSplitView = [[NSSplitView alloc] init];
     _textAndAttachmentsSplitView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
@@ -209,11 +211,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_innerView addSubview:_foldPanelViewController.view];
     }
     
-    if(!_embedded) {
+    if(!self.embedded) {
         [_innerView addSubview:_subjectBoxViewController.view];
     }
     
-    if(!_embedded) {
+    if(!self.embedded) {
         [self showFullAddressPanel:YES];
     }
     else {
@@ -249,6 +251,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (BOOL)embedded {
+    return _messageThreadViewController != nil;
 }
 
 - (void)ensureAttachmentsPanelCreated {
@@ -303,7 +309,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_subjectBoxViewController.textField setNextKeyView:editorView];
     }
     else {
-        if(!_embedded) {
+        if(!self.embedded) {
             if(!messageEditorFocus) {
                 if(force) {
                     [window makeFirstResponder:_subjectBoxViewController.textField];
@@ -425,11 +431,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
     [_messageEditorController sendMessage:messageText plainText:_plainText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account];
     
-    if(!_embedded) {
+    if(!self.embedded) {
         [[[self view] window] close];
     }
-    
-    [SMNotificationsController localNotifyMessageSent:self account:account];
+    else {
+        [_messageThreadViewController closeEmbeddedEditorWithoutSavingDraft];
+    }
 }
 
 - (void)deleteEditedDraft {
@@ -451,7 +458,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     _doNotSaveDraftOnClose = YES;
     
-    if(_embedded) {
+    if(self.embedded) {
         [SMNotificationsController localNotifyDeleteEditedMessageDraft:self account:_lastAccount];
     }
     else {
@@ -921,7 +928,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_innerView addSubview:_ccBoxViewController.view];
     [_innerView addSubview:_bccBoxViewController.view];
     
-    if(_embedded) {
+    if(self.embedded) {
         [_innerView addSubview:_subjectBoxViewController.view];
     }
     
@@ -935,7 +942,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_ccBoxViewController.view removeFromSuperview];
     [_bccBoxViewController.view removeFromSuperview];
     
-    if(_embedded) {
+    if(self.embedded) {
         [_subjectBoxViewController.view removeFromSuperview];
     }
     
@@ -961,7 +968,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [_innerView removeConstraints:_innerView.constraints];
     
-    if(_embedded) {
+    if(self.embedded) {
         _innerView.frame = NSMakeRect(EMBEDDED_MARGIN_W, EMBEDDED_MARGIN_H, self.view.frame.size.width - EMBEDDED_MARGIN_W * 2 - 2, self.view.frame.size.height - EMBEDDED_MARGIN_H * 2 - 1);
     }
     
@@ -997,13 +1004,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         yPos += _bccBoxViewController.view.frame.size.height - 1;
     }
     
-    if(!_embedded || _fullAddressPanelShown) {
+    if(!self.embedded || _fullAddressPanelShown) {
         _subjectBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _subjectBoxViewController.view.frame.size.height);
         
         yPos += _subjectBoxViewController.view.frame.size.height - 1;
     }
     
-    if(_embedded) {
+    if(self.embedded) {
         fullAddressPanelHeight += _subjectBoxViewController.view.frame.size.height - 1;
     }
     
@@ -1018,7 +1025,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     const CGFloat foldButtonHeight = (_foldPanelViewController != nil? _foldPanelViewController.view.frame.size.height : 0);
     
     CGFloat fullPanelHeightAdjustment = 0;
-    if(_embedded) {
+    if(self.embedded) {
         if(frameAdjustment == FrameAdjustment_ShowFullPanel) {
             fullPanelHeightAdjustment = fullAddressPanelHeight;
         }

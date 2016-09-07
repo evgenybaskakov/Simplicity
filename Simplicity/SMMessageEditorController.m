@@ -197,32 +197,9 @@
     SMMessageListController *messageListController = [account messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
 
-    SM_FATAL(@"TODO");
-/*
-    if([draftsLocalFolder moveMessage:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
+    if([draftsLocalFolder moveMessage:0 uid:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
-
-        SMMessageThread *currentMessageThread = [[[appDelegate appController] messageThreadViewController] currentMessageThread];
-        
-        if(currentMessageThread != nil) {
-            if(currentMessageThread.messagesCount == 1) {
-                SMMessage *firstMessage = currentMessageThread.messagesSortedByDate[0];
-                
-                if(firstMessage.uid == _saveDraftUID) {
-                    [[[appDelegate appController] messageThreadViewController] setMessageThread:nil selectedThreadsCount:0];
-                }
-            }
-            else {
-                for(SMMessage *m in currentMessageThread.messagesSortedByDate) {
-                    if(m.uid == _saveDraftUID) {
-                        [[[appDelegate appController] messageThreadViewController] updateMessageThread];
-                        break;
-                    }
-                }
-            }
-        }
     }
-*/
     
     _saveDraftUID = 0;
 }

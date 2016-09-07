@@ -41,4 +41,6 @@
 - (void)addLabel:(NSString*)label;
 - (void)removeLabel:(NSString*)label;
 
+- (void)closeEmbeddedEditorWithoutSavingDraft;
+
 @end

@@ -97,7 +97,6 @@ static const CGFloat CELL_SPACING = 0;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageViewFrameLoaded:) name:@"MessageViewFrameLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteEditedMessageDraft:) name:@"DeleteEditedMessageDraft" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageSent:) name:@"MessageSent" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteMessage:) name:@"DeleteMessage" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellUnreadFlag:) name:@"ChangeMessageUnreadFlag" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMessageCellFlaggedFlag:) name:@"ChangeMessageFlaggedFlag" object:nil];
@@ -1111,7 +1110,7 @@ static const CGFloat CELL_SPACING = 0;
     _cellViewControllerToReply = cell.viewController;
     
     Boolean plainText = NO; // TODO: detect if the message being replied is plain text, see issue #88
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) embedded:YES draftUid:0 plainText:plainText];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) messageThreadViewController:self draftUid:0 plainText:plainText];
     
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
@@ -1182,23 +1181,17 @@ static const CGFloat CELL_SPACING = 0;
     }
 }
 
+- (void)closeEmbeddedEditorWithoutSavingDraft {
+    [self closeEmbeddedEditor:NO];
+    [self updateCellFrames];
+}
+
 - (void)deleteEditedMessageDraft:(NSNotification *)notification {
     NSDictionary *messageInfo = [notification userInfo];
     SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
     
     if(_messageEditorViewController != nil && _messageEditorViewController == messageEditorViewController) {
-        [self closeEmbeddedEditor:NO];
-        [self updateCellFrames];
-    }
-}
-
-- (void)messageSent:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
-    SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
-    
-    if(_messageEditorViewController != nil && _messageEditorViewController == messageEditorViewController) {
-        [self closeEmbeddedEditor:NO];
-        [self updateCellFrames];
+        [self closeEmbeddedEditorWithoutSavingDraft];
     }
 }
 

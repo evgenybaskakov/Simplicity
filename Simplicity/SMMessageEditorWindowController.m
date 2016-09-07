@@ -53,7 +53,7 @@
     
     // View setup
 
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] embedded:NO draftUid:_draftUid plainText:_initialPlainText];
+    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] messageThreadViewController:nil draftUid:_draftUid plainText:_initialPlainText];
     NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
 
     [[self window] setContentView:_messageEditorViewController.view];

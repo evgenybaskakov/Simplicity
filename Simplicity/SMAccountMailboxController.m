@@ -128,7 +128,7 @@
         else {
             SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
 
-            [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error.localizedDescription];
+            [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error];
         }
     }];
 }

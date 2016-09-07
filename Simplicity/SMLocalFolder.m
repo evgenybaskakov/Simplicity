@@ -163,7 +163,7 @@
             } else {
                 SM_LOG_ERROR(@"Error fetching folder %@ info: %@", _localName, error);
 
-                [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error.localizedDescription];
+                [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error];
             }
         }];
     }

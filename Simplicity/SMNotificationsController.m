@@ -48,7 +48,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"AccountPreferencesChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", nil]];
 }
 
-+ (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSString*)error {
++ (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSError*)error {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"AccountSyncError" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", error, @"Error", nil]];
 }
 
@@ -128,7 +128,7 @@
     }
 }
 
-+ (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSString**)error account:(SMUserAccount**)account {
++ (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSError**)error account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(error) {

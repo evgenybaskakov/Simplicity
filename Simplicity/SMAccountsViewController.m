@@ -350,7 +350,7 @@
 }
 
 - (void)accountSyncError:(NSNotification*)notification {
-    NSString *error;
+    NSError *error;
     SMUserAccount *account;
     
     [SMNotificationsController getAccountSyncErrorParams:notification error:&error account:&account];
@@ -363,7 +363,7 @@
     
     if(accountIdx != NSNotFound) {
         NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
-        [_accountButtonViewControllers[buttonIdx] showAttention:error];
+        [_accountButtonViewControllers[buttonIdx] showAttention:error.localizedDescription];
     }
     else {
         SM_LOG_ERROR(@"account %@ not found", account);

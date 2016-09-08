@@ -278,8 +278,8 @@
         [alert addButtonWithTitle:@"Dismiss"];
         [alert addButtonWithTitle:@"Properties"];
         [alert setMessageText:[NSString stringWithFormat:@"There was a problem accessing your accout \"%@\"", account.accountName]];
-        [alert setInformativeText:[NSString stringWithFormat:@"%@ Error code %ld. Please choose either to open account preferences, or dismiss this message.", errorDesc, error.code]];
-        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert setInformativeText:[NSString stringWithFormat:@"%@ Error code %ld.\n\nPlease choose either to open account preferences, or dismiss this message.", errorDesc, error.code]];
+        [alert setAlertStyle:NSCriticalAlertStyle];
         
         if([alert runModal] == NSAlertSecondButtonReturn) {
             // Exit the alert modal loop first.

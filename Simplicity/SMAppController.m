@@ -225,6 +225,67 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
+}
+
+- (void)accountSyncError:(NSNotification*)notification {
+    NSError *error;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getAccountSyncErrorParams:notification error:&error account:&account];
+    
+    NSAssert(account != nil, @"account is nil");
+    NSAssert(error != nil, @"error is nil");
+    
+    BOOL showError;
+    switch(error.code) {
+        case MCOErrorTLSNotAvailable:
+        case MCOErrorParse:
+        case MCOErrorCertificate:
+        case MCOErrorAuthentication:
+        case MCOErrorGmailIMAPNotEnabled:
+        case MCOErrorGmailExceededBandwidthLimit:
+        case MCOErrorGmailTooManySimultaneousConnections:
+        case MCOErrorMobileMeMoved:
+        case MCOErrorYahooUnavailable:
+        case MCOErrorStartTLSNotAvailable:
+        case MCOErrorNeedsConnectToWebmail:
+        case MCOErrorAuthenticationRequired:
+        case MCOErrorInvalidAccount:
+        case MCOErrorCompression:
+        case MCOErrorGmailApplicationSpecificPasswordRequired:
+        case MCOErrorServerDate:
+        case MCOErrorNoValidServerFound:
+            showError = YES;
+            break;
+            
+        default:
+            showError = NO;
+            break;
+    }
+    
+    if(showError) {
+        NSString *errorDesc = [SMStringUtils trimString:error.localizedDescription];
+        if(errorDesc.length == 0) {
+            errorDesc = @"Unknown server error occurred.";
+        }
+        else if([errorDesc characterAtIndex:errorDesc.length-1] != '.') {
+            errorDesc = [errorDesc stringByAppendingString:@"."];
+        }
+        
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"Dismiss"];
+        [alert addButtonWithTitle:@"Properties"];
+        [alert setMessageText:[NSString stringWithFormat:@"There was a problem accessing your accout \"%@\"", account.accountName]];
+        [alert setInformativeText:[NSString stringWithFormat:@"%@ Please choose either to open account preferences, or dismiss this message.", errorDesc]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        
+        if([alert runModal] != NSAlertSecondButtonReturn) {
+            // TODO: open properties for that account
+            return;
+        }
+    }
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification*)notification {

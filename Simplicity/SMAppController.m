@@ -281,9 +281,12 @@
         [alert setInformativeText:[NSString stringWithFormat:@"%@ Error code %ld. Please choose either to open account preferences, or dismiss this message.", errorDesc, error.code]];
         [alert setAlertStyle:NSWarningAlertStyle];
         
-        if([alert runModal] != NSAlertSecondButtonReturn) {
-            // TODO: open properties for that account
-            return;
+        if([alert runModal] == NSAlertSecondButtonReturn) {
+            // Exit the alert modal loop first.
+            // Easiest way is to dispatch the request to the main thread queue.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showPreferencesWindowAction:YES accountName:account.accountName];
+            });
         }
     }
 }
@@ -681,7 +684,7 @@
     [NSApp endSheet:newAccountSheet];
 }
 
-- (IBAction)showPreferencesWindowAction:(id)sender {
+- (void)showPreferencesWindowAction:(BOOL)showAccount accountName:(NSString*)accountName {
     _preferencesWindowShown = YES;
     
     if(_preferencesWindowController == nil) {
@@ -691,7 +694,15 @@
     NSWindow *preferencesSheet = _preferencesWindowController.window;
     NSAssert(preferencesSheet != nil, @"preferencesSheet is nil");
     
+    if(showAccount) {
+        [_preferencesWindowController showAccount:accountName];
+    }
+    
     [NSApp runModalForWindow:preferencesSheet];
+}
+
+- (IBAction)showPreferencesWindowAction:(id)sender {
+    [self showPreferencesWindowAction:NO accountName:nil];
 }
 
 - (BOOL)preferencesWindowShown {

@@ -133,6 +133,7 @@
 }
 
 - (void)showAccount:(NSString*)accountName {
+    [self selectTab:0];
     [_accountPreferencesViewController showAccount:accountName];
 }
 

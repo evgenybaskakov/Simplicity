@@ -236,8 +236,12 @@
 
 - (IBAction)downloadsFolderPopupAction:(id)sender {
     if(_downloadsFolderPopup.stringValue != nil) {
+        NSURL *url = _downloadsFolderPopup.clickedPathItem.URL;
+        
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-        [[appDelegate preferencesController] setDownloadsFolder:[_downloadsFolderPopup.URL path]];
+        [[appDelegate preferencesController] setDownloadsFolder:url.path];
+        
+        _downloadsFolderPopup.URL = url;
     }
 }
 

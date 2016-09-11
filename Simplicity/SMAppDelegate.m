@@ -172,11 +172,23 @@
     [_window setFrameAutosaveName:@"MainWindow"];
 }
 
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)hasVisibleWindows {
+    if(hasVisibleWindows) {
+        [_window orderFront:self];
+        [[[NSApplication sharedApplication] keyWindow] orderFront:self];
+    }
+    else {
+        [_window makeKeyAndOrderFront:self];
+    }
+    
+    return YES;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
     // This is necessary to keep the main window open when the application
     // is self relaunched.
     [NSApp activateIgnoringOtherApps:YES];
-    
+
     NSUInteger accountsCount = [_preferencesController accountsCount];
 
     _appController.composeMessageMenuItem.enabled = accountsCount != 0? YES : NO;

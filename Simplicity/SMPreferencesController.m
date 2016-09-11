@@ -991,7 +991,7 @@
 #pragma mark Default reply action
 
 - (SMDefaultReplyAction)defaultReplyAction {
-    SMDefaultReplyAction result = SMDefaultReplyAction_ReplyAll;
+    SMDefaultReplyAction result = SMDefaultReplyAction_Reply;
     
     if([[NSUserDefaults standardUserDefaults] objectForKey:kDefaultReplyAction] == nil) {
         SM_LOG_INFO(@"Value for %@ not found, using defaults", kDefaultReplyAction);

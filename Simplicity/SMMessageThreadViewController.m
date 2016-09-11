@@ -153,7 +153,7 @@ static const CGFloat CELL_SPACING = 0;
     }
 
     if(_currentMessageThread == messageThread) {
-        NSAssert(_currentLocalFolder == localFolder, @"bad current local folder");
+        // Note that the local folder may be different (e.g. an account folder vs a unified folder)
         return;
     }
     

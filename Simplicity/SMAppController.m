@@ -640,6 +640,10 @@
     [_messageEditorWindowControllers addObject:messageEditorWindowController];
 }
 
+- (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController {
+    [_messageEditorWindowControllers removeObject:messageEditorWindowController];
+}
+
 #pragma mark Message viewer window
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {

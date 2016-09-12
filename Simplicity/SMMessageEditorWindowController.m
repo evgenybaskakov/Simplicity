@@ -43,9 +43,9 @@
     
     [self setShouldCascadeWindows:YES];
 
-    NSString *windowName = @"EditorWindow";
-    [self.window setFrameUsingName:windowName];
-    [self.window setFrameAutosaveName:windowName];
+//    NSString *windowName = @"EditorWindow";
+//    [self.window setFrameUsingName:windowName];
+//    [self.window setFrameAutosaveName:windowName];
     
     // Delegate setup
 
@@ -74,6 +74,13 @@
     }
     
     [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppController *appController = [appDelegate appController];
+
+    [appController closeMessageEditorWindow:self];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
@@ -122,9 +129,5 @@
 //    SM_LOG_DEBUG(@"???");
 //    return YES;
 //}
-
-- (void)windowWillClose:(NSNotification *)notification {
-    [_messageEditorViewController closeEditor:YES];
-}
 
 @end

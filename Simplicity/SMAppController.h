@@ -77,6 +77,8 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
 
+- (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
+
 - (void)moveSelectedMessageThreadsToTrash;
 
 @property (nonatomic) SMPreferencesWindowController *preferencesWindowController;

@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMFlippedView.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadViewController.h"
@@ -13,11 +15,17 @@
 
 @implementation SMMessageWindowController
 
+- (void)windowWillLoad {
+    [super windowWillLoad];
+    
+    [self setShouldCascadeWindows:YES];
+}
+
 - (void)windowDidLoad {
     [super windowDidLoad];
-    
+
     // Delegate setup
-    
+
     [[self window] setDelegate:self];
     
     NSView *view = [[SMFlippedView alloc] initWithFrame:[[self window] frame]];
@@ -45,6 +53,11 @@
 
 - (void)windowWillClose:(NSNotification *)notification {
     [_messageThreadViewController messageThreadViewWillClose];
+
+    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppController *appController = appDelegate.appController;
+    
+    [appController closeMessageWindow:self];
 }
 
 @end

@@ -653,6 +653,14 @@
     [_messageWindowControllers addObject:messageWindowController];
 }
 
+- (void)closeMessageWindow:(SMMessageWindowController*)messageWindowController {
+    [_messageWindowControllers removeObject:messageWindowController];
+}
+
+- (BOOL)messageWindowsOpened {
+    return _messageWindowControllers.count != 0;
+}
+
 #pragma mark Menu actions
 
 - (IBAction)showNewAccountWindowAction:(id)sender {

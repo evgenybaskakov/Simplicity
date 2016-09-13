@@ -15,6 +15,8 @@
 #import "SMLabelSelectionTableRowView.h"
 #import "SMLabelSelectionViewController.h"
 #import "SMMessageThreadInfoViewController.h"
+#import "SMMessageThreadViewController.h"
+#import "SMMessageThread.h"
 
 @interface SMLabelSelectionViewController ()
 @property (weak) IBOutlet NSTableView *tableView;
@@ -40,9 +42,8 @@
     SMLabelSelectionRow *view = [tableView makeViewWithIdentifier:@"LabelSelectionRow" owner:self];
     NSAssert(view != nil, @"view is nil");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    
-    view.circle.color = [[appDelegate.currentAccount folderColorController] colorForFolder:folder.fullName];
+    SMUserAccount *account = _messageThreadInfoViewController.messageThreadViewController.currentMessageThread.account;
+    view.circle.color = [[account folderColorController] colorForFolder:folder.fullName];
     view.textField.stringValue = folder.displayName;
     
     return view;

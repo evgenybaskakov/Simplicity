@@ -26,6 +26,10 @@
     NSUInteger _selectedAccount;
 }
 
+- (void)dealloc {
+    [_signatureEditor stopLoading:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 

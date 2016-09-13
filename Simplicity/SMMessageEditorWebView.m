@@ -40,6 +40,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [self stopLoading:self];
+}
+
 - (void)initWebView {
     [self setFrameLoadDelegate:self];
     [self setPolicyDelegate:self];

@@ -89,6 +89,7 @@
 }
 
 - (void)dealloc {
+    [(WebView*)self.view stopLoading:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

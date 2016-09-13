@@ -64,6 +64,10 @@
     return self;
 }
 
+- (void)dealloc {
+    [_webView stopLoading:self];
+}
+
 - (NSURL*)imageCacheDir {
     NSURL *appDataDir = [SMAppDelegate appDataDir];
     NSAssert(appDataDir, @"no app data dir");

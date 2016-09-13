@@ -82,7 +82,9 @@
         NSData *pathData = [path dataUsingEncoding:NSUTF8StringEncoding];
         NSString *pathUtf8 = (__bridge_transfer NSString *)CFStringCreateWithBytes(NULL, [pathData bytes], [pathData length], kCFStringEncodingUTF7_IMAP, YES);
         
-        [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags unreadCount:0]];
+        if(!(folder.flags & MCOIMAPFolderFlagNoSelect)) {
+            [flatFolders addObject:[[SMFolderDesc alloc] initWithFolderName:pathUtf8 delimiter:folder.delimiter flags:folder.flags unreadCount:0]];
+        }
     }
     
     _foldersLoaded = YES;

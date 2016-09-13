@@ -223,6 +223,8 @@
     
     NSString *nestingLabel = nil;
     if(_labelTable.selectedRow >= 0) {
+        NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
+        
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
         id<SMMailbox> mailbox = [account mailbox];
         SMFolder *folder = mailbox.folders[_labelTable.selectedRow];
@@ -238,6 +240,8 @@
     [self saveLabels];
 
     if(_labelTable.selectedRow >= 0) {
+        NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
+
         SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
         SMFolder *folder = [account mailbox].folders[_labelTable.selectedRow];
@@ -266,6 +270,8 @@
     NSTextField *editedLabelField = (NSTextField*)sender;
     NSInteger labelIndex = editedLabelField.tag;
     
+    NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     if(labelIndex < 0 || labelIndex >= [account mailbox].folders.count) {
@@ -284,6 +290,8 @@
     [self hideColorPanel];
     [self saveLabels];
     [self showProgress];
+
+    NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
 
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
@@ -308,6 +316,10 @@
         return 0;
     }
     
+    if(_selectedAccount < 0) {
+        return 0;
+    }
+    
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     id<SMMailbox> mailbox = [account mailbox];
     
@@ -315,6 +327,8 @@
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
+
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     id<SMMailbox> mailbox = [account mailbox];

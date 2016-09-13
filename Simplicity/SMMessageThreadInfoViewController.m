@@ -23,6 +23,7 @@
 #import "SMMessageThreadInfoViewController.h"
 #import "SMLabelWithCloseButton.h"
 #import "SMLabelSelectionViewController.h"
+#import "SMNoLabelsMessageViewController.h"
 
 @implementation SMMessageThreadInfoViewController {
     SMMessageThread *_messageThread;
@@ -35,6 +36,7 @@
     NSMutableArray<NSLayoutConstraint*> *_colorLabelConstraints;
     NSLayoutConstraint *_subjectTrailingConstraint;
     SMLabelSelectionViewController *_labelSelectionViewController;
+    SMNoLabelsMessageViewController *_noLabelsMessageViewController;
     NSPopover *_labelSelectionPopover;
 }
 
@@ -250,23 +252,34 @@
 }
 
 - (void)addLabelAction:(id)sender {
-    id<SMMailbox> mailbox = _messageThread.account.mailbox;
-    
-    if(_labelSelectionViewController == nil) {
-        _labelSelectionViewController = [[SMLabelSelectionViewController alloc] initWithNibName:@"SMLabelSelectionViewController" bundle:nil];
-        NSAssert(_labelSelectionViewController.view, @"labelSelectionViewController");
-    }
-
-    _labelSelectionViewController.messageThreadInfoViewController = self;
-    _labelSelectionViewController.folders = mailbox.folders;
-    
     _labelSelectionPopover = [[NSPopover alloc] init];
-    _labelSelectionPopover.contentViewController = _labelSelectionViewController;
     
     _labelSelectionPopover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
     _labelSelectionPopover.animates = YES;
     _labelSelectionPopover.behavior = NSPopoverBehaviorTransient;
+    
+    id<SMMailbox> mailbox = _messageThread.account.mailbox;
+    
+    if(mailbox.folders.count == 0) {
+        if(_noLabelsMessageViewController == nil) {
+            _noLabelsMessageViewController = [[SMNoLabelsMessageViewController alloc] initWithNibName:@"SMNoLabelsMessageViewController" bundle:nil];
+            NSAssert(_noLabelsMessageViewController.view, @"noLabelsMessageViewController");
+        }
+        
+        _labelSelectionPopover.contentViewController = _noLabelsMessageViewController;
+    }
+    else {
+        if(_labelSelectionViewController == nil) {
+            _labelSelectionViewController = [[SMLabelSelectionViewController alloc] initWithNibName:@"SMLabelSelectionViewController" bundle:nil];
+            NSAssert(_labelSelectionViewController.view, @"labelSelectionViewController");
+        }
 
+        _labelSelectionViewController.messageThreadInfoViewController = self;
+        _labelSelectionViewController.folders = mailbox.folders;
+
+        _labelSelectionPopover.contentViewController = _labelSelectionViewController;
+    }
+    
     NSRectEdge prefEdge = NSRectEdgeMaxY;
     [_labelSelectionPopover showRelativeToRect:_addLabelButton.bounds ofView:sender preferredEdge:prefEdge];
 }

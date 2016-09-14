@@ -651,6 +651,7 @@
     
     messageWindowController.messageThread = messageThread;
     messageWindowController.localFolder = localFolder;
+    messageWindowController.window.title = [messageThread.messagesSortedByDate[0] subject];
 
     [messageWindowController showWindow:self];
     

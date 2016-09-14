@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Evgeny Baskakov. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
@@ -48,7 +49,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSButton *_replyOrEditButton;
     NSButton *_messageActionsButton;
     Boolean _fullDetailsShown;
-    NSMutableArray *_fullDetailsViewConstraints;
+    NSMutableArray<NSLayoutConstraint*> *_fullDetailsViewConstraints;
     NSLayoutConstraint *_bottomConstraint;
     Boolean _fullHeaderShown;
     NSMutableArray *_uncollapsedHeaderConstraints;
@@ -64,6 +65,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     if(self) {
         NSView *view = [[NSView alloc] init];
         view.translatesAutoresizingMaskIntoConstraints = NO;
+        view.wantsLayer = YES;
         [self setView:view];
         [self createSubviews];
 
@@ -473,10 +475,18 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         
         [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP]];
         
-        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeBottom multiplier:1.0 constant:V_MARGIN]];
+        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     }
+    
+    CABasicAnimation *anim = [CABasicAnimation animation];
+    anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+    anim.duration = 0.1;
+    
+    _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
+    _fullDetailsViewConstraints.lastObject.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
+    _fullDetailsViewConstraints.lastObject.animator.constant = V_MARGIN;
 
-    [view addConstraints:_fullDetailsViewConstraints];
+    [view.animator addConstraints:_fullDetailsViewConstraints];
     
     _fullDetailsShown = YES;
 }

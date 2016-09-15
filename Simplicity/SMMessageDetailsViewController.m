@@ -482,6 +482,9 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
     anim.duration = 0.1;
     
+    // animate the panel sliding out from the bottom line of the message details view
+    // to do that, animate the bottom constaint constant so that it completely hides the panel at the beginning
+    // (the static constaint constant) to the vertical margin, which implies that the pannel is fully shown
     _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
     _fullDetailsViewConstraints.lastObject.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
     _fullDetailsViewConstraints.lastObject.animator.constant = V_MARGIN;
@@ -498,14 +501,28 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSView *view = [self view];
     NSAssert(view != nil, @"no view");
 
-    NSAssert(_fullDetailsViewConstraints != nil, @"no full details view constraint");
-    [view removeConstraints:_fullDetailsViewConstraints];
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
+        NSAssert(_fullDetailsViewConstraints != nil, @"no full details view constraint");
+        [view.animator removeConstraints:_fullDetailsViewConstraints];
+        
+        CABasicAnimation *anim = [CABasicAnimation animation];
+        anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+        anim.duration = 0.1;
 
-    NSAssert(_fullDetailsViewController != nil, @"no full details view controller");
-    [[_fullDetailsViewController view] removeFromSuperview];
+        _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
+        _fullDetailsViewConstraints.lastObject.constant = V_MARGIN;
+        _fullDetailsViewConstraints.lastObject.animator.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
+
+        [view.animator addConstraints:_fullDetailsViewConstraints];
+    } completionHandler:^(void) {
+        [view removeConstraints:_fullDetailsViewConstraints];
     
-    [view addConstraint:_bottomConstraint];
+        NSAssert(_fullDetailsViewController != nil, @"no full details view controller");
+        [[_fullDetailsViewController view] removeFromSuperview];
     
+        [view addConstraint:_bottomConstraint];
+    }];
+
     _fullDetailsShown = NO;
 }
 

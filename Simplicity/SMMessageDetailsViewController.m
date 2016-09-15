@@ -501,25 +501,27 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSView *view = [self view];
     NSAssert(view != nil, @"no view");
 
+    NSView *subview = [_fullDetailsViewController view];
+    NSAssert(subview != nil, @"no full details view");
+
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
-        NSAssert(_fullDetailsViewConstraints != nil, @"no full details view constraint");
-        [view.animator removeConstraints:_fullDetailsViewConstraints];
-        
-        CABasicAnimation *anim = [CABasicAnimation animation];
-        anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-        anim.duration = 0.1;
+        if(subview.superview == view) {
+            NSAssert(_fullDetailsViewConstraints != nil, @"no full details view constraint");
+            [view.animator removeConstraints:_fullDetailsViewConstraints];
+            
+            CABasicAnimation *anim = [CABasicAnimation animation];
+            anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+            anim.duration = 0.1;
 
-        _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
-        _fullDetailsViewConstraints.lastObject.constant = V_MARGIN;
-        _fullDetailsViewConstraints.lastObject.animator.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
+            _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
+            _fullDetailsViewConstraints.lastObject.constant = V_MARGIN;
+            _fullDetailsViewConstraints.lastObject.animator.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
 
-        [view.animator addConstraints:_fullDetailsViewConstraints];
+            [view.animator addConstraints:_fullDetailsViewConstraints];
+        }
     } completionHandler:^(void) {
         [view removeConstraints:_fullDetailsViewConstraints];
-    
-        NSAssert(_fullDetailsViewController != nil, @"no full details view controller");
-        [[_fullDetailsViewController view] removeFromSuperview];
-    
+        [subview removeFromSuperview];
         [view addConstraint:_bottomConstraint];
     }];
 

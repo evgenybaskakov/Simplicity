@@ -429,16 +429,18 @@
             if(webPage.completionBlock != nil) {
                 if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
                     NSImage *image = [[NSImage alloc] initWithData:data];
-                    if(webPage.bestImage == nil || image.size.width > webPage.bestImage.size.width) {
+                    if(webPage.bestImage == nil || (image.size.width > 0 && image.size.width > webPage.bestImage.size.width)) {
                         webPage.bestImage = image;
                     }
                 }
                 
-                BOOL lastImage = ++webPage.imagesLoaded == webPage.imageCount;
+                BOOL lastImage = (++webPage.imagesLoaded == webPage.imageCount);
                 BOOL perfectImageSize = (webPage.bestImage != nil && webPage.bestImage.size.width >= PERFECT_IMAGE_W && webPage.bestImage.size.height >= PERFECT_IMAGE_H);
                 
                 if(lastImage || perfectImageSize) {
-                    SM_LOG_INFO(@"web page: %@, found %@ image (%@, size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", response.URL, webPage.bestImage.size.width, webPage.bestImage.size.height);
+                    if(webPage.bestImage != nil) {
+                        SM_LOG_INFO(@"web page: %@, found %@ image (%@, size %g x %g)", webPage.baseURL, perfectImageSize? @"perfect size" : @"largest available", response.URL, webPage.bestImage.size.width, webPage.bestImage.size.height);
+                    }
 
                     for(NSURLSessionDataTask *t in webPage.imageDownloadTasks) {
                         [t cancel];

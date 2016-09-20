@@ -33,25 +33,29 @@
         
         [gradient drawInBezierPath:selectionPath angle:-90.00];
     }
-}
-
-- (NSRect)separatorRect {
-    NSRect separatorRect = self.bounds;
-    separatorRect.origin.x = NSMinX(separatorRect) + 22;
-    separatorRect.origin.y = NSMaxY(separatorRect) - 1;
-    separatorRect.size.height = 1;
-    return separatorRect;
+    
+    if (self.selected && (self.row > 0)) {
+        NSTableView *tableView = (NSTableView*)[self superview];
+        [[tableView rowViewAtRow:self.row-1 makeIfNecessary:NO] setNeedsDisplay:YES];
+    }
 }
 
 - (void)drawSeparatorInRect:(NSRect)dirtyRect {
-    static NSColor *separatorColor = nil;
-    if(separatorColor == nil) {
-        separatorColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
+    if(!self.selected && !self.nextRowSelected) {
+        static NSColor *separatorColor = nil;
+        if(separatorColor == nil) {
+            separatorColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
+        }
+
+        [separatorColor set];
+        
+        NSRect separatorRect = self.bounds;
+        separatorRect.origin.x = NSMinX(separatorRect) + 22;
+        separatorRect.origin.y = NSMaxY(separatorRect) - 1;
+        separatorRect.size.height = 1;
+
+        NSRectFill(separatorRect);
     }
-    
-    [separatorColor set];
-    
-    NSRectFill([self separatorRect]);
 }
 
 @end

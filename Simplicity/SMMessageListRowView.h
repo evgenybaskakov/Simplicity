@@ -10,4 +10,6 @@
 
 @interface SMMessageListRowView : NSTableRowView
 
+@property NSInteger row;
+
 @end

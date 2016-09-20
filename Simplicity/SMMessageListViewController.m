@@ -166,6 +166,24 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(changeSelectedMessageThread) object:nil];
 }
 
+- (BOOL)selectionShouldChangeInTableView:(NSTableView *)tableView {
+    NSAssert(tableView == _messageListTableView, @"unknown tableView instance");
+    
+    NSIndexSet *selectedRows = [tableView selectedRowIndexes];
+    NSUInteger selectedRow = [selectedRows firstIndex];
+    
+    // Force redraw for rows above disappearing ones as well.
+    while(selectedRow != NSNotFound) {
+        if(selectedRow > 0) {
+            [[tableView rowViewAtRow:selectedRow-1 makeIfNecessary:NO] setNeedsDisplay:YES];
+        }
+        [[tableView rowViewAtRow:selectedRow makeIfNecessary:NO] setNeedsDisplay:YES];
+        selectedRow = [selectedRows indexGreaterThanIndex:selectedRow];
+    }
+    
+    return YES;
+}
+
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     [self cancelChangeSelectedMessageThread];
 
@@ -1098,7 +1116,16 @@
 #pragma mark Cell selection
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
-    return [[SMMessageListRowView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+    static NSString* const kRowIdentifier = @"MessageListRowView";
+    SMMessageListRowView* rowView = [tableView makeViewWithIdentifier:kRowIdentifier owner:self];
+    if (!rowView) {
+        rowView = [[SMMessageListRowView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+        rowView.identifier = kRowIdentifier;
+    }
+    
+    rowView.row = row;
+
+    return rowView;
 }
 
 @end

@@ -260,6 +260,8 @@
 		80F7EA731B8009290000992E /* SMMessageWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageWindowController.m */; };
 		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
+		80FAC6E41D939CE5007EEB91 /* SMMessageListToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */; };
+		80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */; };
 		80FBF54C1CDDB8B30041E230 /* SMUnifiedLocalFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */; };
 		80FBF5621CE057D70041E230 /* SMUnifiedMessageStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FBF5611CE057D70041E230 /* SMUnifiedMessageStorage.m */; };
 /* End PBXBuildFile section */
@@ -750,6 +752,9 @@
 		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
 		80F7EA7C1B81B0C80000992E /* SMStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMStringUtils.h; sourceTree = "<group>"; };
 		80F7EA7D1B81B0C80000992E /* SMStringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMStringUtils.m; sourceTree = "<group>"; };
+		80FAC6E11D939CE5007EEB91 /* SMMessageListToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListToolbarViewController.h; sourceTree = "<group>"; };
+		80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListToolbarViewController.m; sourceTree = "<group>"; };
+		80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageListToolbarViewController.xib; sourceTree = "<group>"; };
 		80FBF54A1CDDB8B30041E230 /* SMUnifiedLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedLocalFolder.h; sourceTree = "<group>"; };
 		80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedLocalFolder.m; sourceTree = "<group>"; };
 		80FBF5561CE052AE0041E230 /* SMAbstractMessageStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAbstractMessageStorage.h; sourceTree = "<group>"; };
@@ -999,6 +1004,8 @@
 				00A25BB917E10D1400D0FCB1 /* SMMessageListController.m */,
 				00E9107B17D2F6F50028C679 /* SMMessageListViewController.h */,
 				00E9107C17D2F6F50028C679 /* SMMessageListViewController.m */,
+				80FAC6E11D939CE5007EEB91 /* SMMessageListToolbarViewController.h */,
+				80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */,
 				800AB7E91CACF64600582B57 /* SMMessagePlaceholderViewController.h */,
 				800AB7EA1CACF64600582B57 /* SMMessagePlaceholderViewController.m */,
 				00CB00E91A9E886700339E6D /* SMMessageThreadCell.h */,
@@ -1132,6 +1139,7 @@
 				804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
+				80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */,
 				800AB7EB1CACF64600582B57 /* SMMessagePlaceholderViewController.xib */,
 				80F7EA721B8009290000992E /* SMMessageWindowController.xib */,
 				80C9D0051D87C706001155EC /* SMNoLabelsMessageViewController.xib */,
@@ -1530,6 +1538,7 @@
 				80A44B051B5A10BC0049AB88 /* Italic-128.png in Resources */,
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */,
+				80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */,
 				80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */,
 				80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */,
 				80B9DF231CE9919D00C9058C /* trash-black.png in Resources */,
@@ -1621,6 +1630,7 @@
 				0039B8521A67948500C03C3C /* SMFlippedView.m in Sources */,
 				8011CAEA1CA3A91D00697210 /* SMColorView.m in Sources */,
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
+				80FAC6E41D939CE5007EEB91 /* SMMessageListToolbarViewController.m in Sources */,
 				805255621D570BB700CDCBA2 /* SMLabelSelectionRow.m in Sources */,
 				80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */,
 				80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */,

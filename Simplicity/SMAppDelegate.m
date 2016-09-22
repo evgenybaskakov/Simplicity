@@ -13,6 +13,7 @@
 #import "SMAccountMailbox.h"
 #import "SMAccountMailboxController.h"
 #import "SMAccountsViewController.h"
+#import "SMMessageListToolbarViewController.h"
 #import "SMMessageThreadAccountProxy.h"
 #import "SMMailboxViewController.h"
 #import "SMMessageListController.h"
@@ -159,15 +160,19 @@
     BOOL enableElements = (_accounts.count != 0);
 
     _appController.composeMessageMenuItem.enabled = NO;
-    _appController.composeMessageButton.enabled = enableElements;
-    _appController.trashButton.enabled = enableElements;
+
+    _appController.messageListToolbarViewController.composeMessageButton.enabled = enableElements;
+    _appController.messageListToolbarViewController.trashButton.enabled = enableElements;
 //TODO        _appController.searchField.enabled = enableElements;
     _appController.composeMessageMenuItem.enabled = enableElements;
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
     _window.titleVisibility = NSWindowTitleHidden;
-    
+    _window.titlebarAppearsTransparent = YES;
+    _window.styleMask |= NSFullSizeContentViewWindowMask;
+    _window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantLight];
+
     [[_window windowController] setShouldCascadeWindows:NO];
     [_window setFrameAutosaveName:@"MainWindow"];
 }

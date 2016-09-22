@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListToolbarViewController">
+            <connections>
+                <outlet property="composeMessageButton" destination="X6C-yd-E2Q" id="HzA-kD-83r"/>
+                <outlet property="trashButton" destination="SIZ-9V-M6Z" id="1AZ-zC-EJe"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="380" height="40"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="ghj-kS-CBd">
+                    <rect key="frame" x="0.0" y="0.0" width="380" height="40"/>
+                    <subviews>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
+                            <rect key="frame" x="288" y="7" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
+                                <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="new-message" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ijl-Tg-Zxp">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="composeMessageAction:" target="-2" id="4Jy-b2-CGw"/>
+                            </connections>
+                        </button>
+                        <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SIZ-9V-M6Z">
+                            <rect key="frame" x="328" y="7" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="32" id="YaO-HG-dop"/>
+                                <constraint firstAttribute="height" constant="22" id="rHh-Vl-owZ"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="trash-black" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="T6y-a0-vcK">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="moveToTrashAction:" target="-2" id="eQb-Yi-Ffc"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="I6w-xx-Ddd"/>
+                        <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="20" id="QrZ-Ga-h2K"/>
+                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="leading" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="8" id="fPN-D4-XkG"/>
+                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="uHT-YB-2L9"/>
+                    </constraints>
+                </visualEffectView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="ghj-kS-CBd" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Ccp-6c-Sru"/>
+                <constraint firstAttribute="trailing" secondItem="ghj-kS-CBd" secondAttribute="trailing" id="dEw-2u-jfH"/>
+                <constraint firstAttribute="bottom" secondItem="ghj-kS-CBd" secondAttribute="bottom" id="lUg-7r-eJ2"/>
+                <constraint firstItem="ghj-kS-CBd" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="njv-K1-qVp"/>
+            </constraints>
+            <point key="canvasLocation" x="394" y="217"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="new-message" width="128" height="128"/>
+        <image name="trash-black" width="128" height="128"/>
+    </resources>
+</document>

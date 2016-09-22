@@ -42,9 +42,10 @@
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
 #import "SMSearchRequestInputController.h"
+#import "SMMessageListToolbarViewController.h"
 
 @implementation SMAppController {
-    NSButton *button1, *button2;
+    NSSplitView *_messageListSplitView;
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     NSMutableArray *_messageEditorWindowControllers;
@@ -70,33 +71,41 @@
     _plainTextFormatMenuItem.enabled = NO;
     
     //
+    
+    _messageListToolbarViewController = [[SMMessageListToolbarViewController alloc] initWithNibName:@"SMMessageListToolbarViewController" bundle:nil];
+    
+    NSView *messageListToolbarView = [ _messageListToolbarViewController view ];
+    NSAssert(messageListToolbarView, @"messageListToolbarView");
+    
+    //
+
+// TODO: this crap doesn't work
+//    NSWindow *window = _view.window;
+//    NSRect windowFrame = [NSWindow contentRectForFrameRect:window.frame styleMask:window.styleMask];
+//    CGFloat toolbarHeight = NSHeight(windowFrame) - NSHeight(window.contentLayoutRect);
+    CGFloat toolbarHeight = 16;
+    
+    [messageListToolbarView setFrameSize:NSMakeSize(messageListToolbarView.frame.size.width, toolbarHeight)];
+    
+    //
 
     _instrumentPanelViewController = [ [ SMInstrumentPanelViewController alloc ] initWithNibName:@"SMInstrumentPanelViewController" bundle:nil ];
     
-    NSAssert(_instrumentPanelViewController, @"_instrumentPanelViewController");
-    
     NSView *instrumentPanelView = [ _instrumentPanelViewController view ];
-    
     NSAssert(instrumentPanelView, @"instrumentPanelView");
     
     //
 
     _mailboxViewController = [ [ SMMailboxViewController alloc ] initWithNibName:@"SMMailboxViewController" bundle:nil ];
 
-    NSAssert(_mailboxViewController, @"_mailboxViewController");
-    
     NSView *mailboxView = [ _mailboxViewController view ];
-
     NSAssert(mailboxView, @"mailboxView");
 
     //
     
     _accountsViewController = [ [ SMAccountsViewController alloc ] initWithNibName:nil bundle:nil ];
     
-    NSAssert(_accountsViewController, @"_accountsViewController");
-    
     NSView *accountsView = [ _accountsViewController view ];
-    
     NSAssert(accountsView, @"accountsView");
     
     accountsView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -105,20 +114,14 @@
 
     _messageListViewController = [ [ SMMessageListViewController alloc ] initWithNibName:@"SMMessageListViewController" bundle:nil ];
     
-    NSAssert(_messageListViewController, @"_messageListViewController");
-        
     NSView *messageListView = [ _messageListViewController view ];
-
     NSAssert(messageListView, @"messageListView");
     
     //
     
     _messageThreadViewController = [ [ SMMessageThreadViewController alloc ] initWithNibName:nil bundle:nil ];
     
-    NSAssert(_messageThreadViewController, @"_messageThreadViewController");
-    
     NSView *messageThreadView = [ _messageThreadViewController view ];
-    
     NSAssert(messageThreadView, @"messageThreadView");
 
     [messageThreadView setContentCompressionResistancePriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
@@ -136,6 +139,20 @@
     [_instrumentPanelViewController.workView addConstraint:[NSLayoutConstraint constraintWithItem:_instrumentPanelViewController.workView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:accountsView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
 
     //
+
+    _messageListSplitView = [[NSSplitView alloc] init];
+    _messageListSplitView.delegate = self;
+    _messageListSplitView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [_messageListSplitView setVertical:NO];
+    [_messageListSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+
+    [_messageListSplitView addSubview:messageListToolbarView];
+    [_messageListSplitView addSubview:messageListView];
+
+    [_messageListSplitView adjustSubviews];
+
+    //
     
     NSSplitView *mainSplitView = [[NSSplitView alloc] init];
     mainSplitView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -144,7 +161,7 @@
     [mainSplitView setDividerStyle:NSSplitViewDividerStyleThin];
     
     [mainSplitView addSubview:instrumentPanelView];
-    [mainSplitView addSubview:messageListView];
+    [mainSplitView addSubview:_messageListSplitView];
     [mainSplitView addSubview:messageThreadView];
     
     [mainSplitView adjustSubviews];
@@ -522,6 +539,9 @@
 
 - (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex
 {
+    if(splitView == _messageListSplitView)
+        return NSZeroRect;
+    
     if([self isSearchResultsViewHidden])
         return NSZeroRect;
     

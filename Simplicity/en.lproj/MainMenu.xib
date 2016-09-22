@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
@@ -654,7 +654,7 @@
             </items>
         </menu>
         <window title="Simplicity" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371" customClass="SMWindow">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="810" height="410"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
@@ -665,38 +665,6 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="83538546-71C0-4D39-B8D0-92509879B6AB" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="sMZ-Us-mwO">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="00A81A7A-ADD0-4811-8BD2-931B9A6FFE8F" label="Custom View" paletteLabel="Custom View" image="new-message" id="cKc-Cu-AzD">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="28" height="20"/>
-                        <size key="maxSize" width="28" height="32"/>
-                        <button key="view" verticalHuggingPriority="750" id="PxP-a3-Jxq">
-                            <rect key="frame" x="24" y="14" width="28" height="23"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="new-message" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0kP-o2-ebZ">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="composeMessageAction:" target="544" id="9r3-6e-J49"/>
-                            </connections>
-                        </button>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="EB65ACD2-AC01-434E-967D-B51BE303AA15" label="Custom View" paletteLabel="Custom View" image="trash-black" id="qHc-Ca-x1e">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="28" height="20"/>
-                        <size key="maxSize" width="30" height="23"/>
-                        <button key="view" verticalHuggingPriority="750" id="Q0Q-AH-U6l">
-                            <rect key="frame" x="23" y="14" width="30" height="23"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="trash-black" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HdO-M8-PfM">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="moveToTrashAction:" target="544" id="gbW-Jo-iSC"/>
-                            </connections>
-                        </button>
-                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="5A5D285E-3B4D-4BCA-BAEF-C9552A8C8F52" label="Custom View" paletteLabel="Custom View" id="njw-vQ-slt">
                         <nil key="toolTip"/>
                         <size key="minSize" width="130" height="19"/>
@@ -752,8 +720,6 @@
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="tuv-Ha-CER"/>
-                    <toolbarItem reference="cKc-Cu-AzD"/>
-                    <toolbarItem reference="qHc-Ca-x1e"/>
                     <toolbarItem reference="AqB-n2-Iv9"/>
                     <toolbarItem reference="njw-vQ-slt"/>
                     <toolbarItem reference="tuv-Ha-CER"/>
@@ -773,14 +739,12 @@
         <customObject id="420" customClass="NSFontManager"/>
         <customObject id="544" customClass="SMAppController">
             <connections>
-                <outlet property="composeMessageButton" destination="PxP-a3-Jxq" id="tJ3-Xf-cTx"/>
                 <outlet property="composeMessageMenuItem" destination="i3P-0b-cpV" id="co2-cG-CtP"/>
                 <outlet property="htmlTextFormatMenuItem" destination="vUH-6f-CGy" id="RWK-tG-Hk9"/>
                 <outlet property="messageNavigationControl" destination="QTH-WP-b7k" id="2P0-s9-Zuv"/>
                 <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="4Hc-La-8Ml"/>
                 <outlet property="searchFieldToolbarItem" destination="s3H-kK-twf" id="aYd-WE-4ex"/>
                 <outlet property="textFormatMenuItem" destination="3QV-S7-VIk" id="cPY-6I-SEi"/>
-                <outlet property="trashButton" destination="Q0Q-AH-U6l" id="LXG-FO-qVB"/>
                 <outlet property="view" destination="372" id="OSt-G0-4ik"/>
             </connections>
         </customObject>
@@ -790,7 +754,5 @@
         <image name="Button-Down-128" width="128" height="128"/>
         <image name="Button-Expand" width="128" height="128"/>
         <image name="Button-Up-128" width="128" height="128"/>
-        <image name="new-message" width="128" height="128"/>
-        <image name="trash-black" width="128" height="128"/>
     </resources>
 </document>

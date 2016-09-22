@@ -13,6 +13,7 @@
 
 @protocol SMAbstractLocalFolder;
 
+@class SMMessageListToolbarViewController;
 @class SMTokenFieldViewController;
 @class SMSectionMenuViewController;
 @class SMNewAccountWindowController;
@@ -39,8 +40,6 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 @property (weak, nonatomic) IBOutlet NSView *view;
 
-@property (nonatomic) IBOutlet NSButton *composeMessageButton;
-@property (nonatomic) IBOutlet NSButton *trashButton;
 @property (nonatomic) IBOutlet NSSegmentedControl *messageNavigationControl;
 @property (weak) IBOutlet NSToolbarItem *searchFieldToolbarItem;
 
@@ -49,6 +48,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 @property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
 @property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
 
+- (IBAction)composeMessageAction:(id)sender;
 - (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 - (IBAction)toggleSearchMailboxPanelAction:(id)sender;
@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 @property SMMessageListViewController *messageListViewController;
 @property SMMessageThreadViewController *messageThreadViewController;
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
+@property SMMessageListToolbarViewController *messageListToolbarViewController;
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account;
 

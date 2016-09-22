@@ -262,6 +262,8 @@
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
 		80FAC6E41D939CE5007EEB91 /* SMMessageListToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */; };
 		80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */; };
+		80FAC6F01D93B18E007EEB91 /* SMMessageThreadToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FAC6EE1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.m */; };
+		80FAC6F11D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80FAC6EF1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib */; };
 		80FBF54C1CDDB8B30041E230 /* SMUnifiedLocalFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */; };
 		80FBF5621CE057D70041E230 /* SMUnifiedMessageStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FBF5611CE057D70041E230 /* SMUnifiedMessageStorage.m */; };
 /* End PBXBuildFile section */
@@ -755,6 +757,9 @@
 		80FAC6E11D939CE5007EEB91 /* SMMessageListToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListToolbarViewController.h; sourceTree = "<group>"; };
 		80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListToolbarViewController.m; sourceTree = "<group>"; };
 		80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageListToolbarViewController.xib; sourceTree = "<group>"; };
+		80FAC6ED1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadToolbarViewController.h; sourceTree = "<group>"; };
+		80FAC6EE1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadToolbarViewController.m; sourceTree = "<group>"; };
+		80FAC6EF1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageThreadToolbarViewController.xib; sourceTree = "<group>"; };
 		80FBF54A1CDDB8B30041E230 /* SMUnifiedLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedLocalFolder.h; sourceTree = "<group>"; };
 		80FBF54B1CDDB8B30041E230 /* SMUnifiedLocalFolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedLocalFolder.m; sourceTree = "<group>"; };
 		80FBF5561CE052AE0041E230 /* SMAbstractMessageStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAbstractMessageStorage.h; sourceTree = "<group>"; };
@@ -1014,6 +1019,8 @@
 				00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */,
 				004741631AA3AAF0002566E8 /* SMMessageThreadInfoViewController.h */,
 				004741641AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m */,
+				80FAC6ED1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.h */,
+				80FAC6EE1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.m */,
 				00172FF2198D5C6100DB975E /* SMMessageThreadViewController.h */,
 				00172FF3198D5C6100DB975E /* SMMessageThreadViewController.m */,
 				80F7EA701B8009290000992E /* SMMessageWindowController.h */,
@@ -1141,6 +1148,7 @@
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
 				80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */,
 				800AB7EB1CACF64600582B57 /* SMMessagePlaceholderViewController.xib */,
+				80FAC6EF1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib */,
 				80F7EA721B8009290000992E /* SMMessageWindowController.xib */,
 				80C9D0051D87C706001155EC /* SMNoLabelsMessageViewController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
@@ -1539,6 +1547,7 @@
 				002057CF1A85D2DA00D5FE8A /* important-white.png in Resources */,
 				80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */,
 				80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */,
+				80FAC6F11D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib in Resources */,
 				80533AD21B41180D00A0A67F /* Numbered List Filled-50.png in Resources */,
 				80238AE71BE32BA5009E090C /* SMAccountPreferencesViewController.xib in Resources */,
 				80B9DF231CE9919D00C9058C /* trash-black.png in Resources */,
@@ -1736,6 +1745,7 @@
 				00172FF5198D5C6100DB975E /* SMMessageThreadViewController.m in Sources */,
 				80E6575A1B1D6C0600A0AA81 /* SMOpAddLabel.m in Sources */,
 				00ED318017F88DA700B04F5B /* SMMessage.m in Sources */,
+				80FAC6F01D93B18E007EEB91 /* SMMessageThreadToolbarViewController.m in Sources */,
 				803F2AF21D53129B002F8212 /* SMLabelWithCloseButton.m in Sources */,
 				8023F1A11C61D4F700C7AC89 /* SMTextMessage.m in Sources */,
 				00ED318117F88DA700B04F5B /* SMAttachmentStorage.m in Sources */,

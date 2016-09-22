@@ -13,6 +13,7 @@
 
 @protocol SMAbstractLocalFolder;
 
+@class SMMessageThreadToolbarViewController;
 @class SMMessageListToolbarViewController;
 @class SMTokenFieldViewController;
 @class SMSectionMenuViewController;
@@ -62,6 +63,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 @property SMMessageThreadViewController *messageThreadViewController;
 @property SMInstrumentPanelViewController *instrumentPanelViewController;
 @property SMMessageListToolbarViewController *messageListToolbarViewController;
+@property SMMessageThreadToolbarViewController *messageThreadToolbarViewController;
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account;
 

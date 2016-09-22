@@ -43,9 +43,11 @@
 #import "SMTokenFieldViewController.h"
 #import "SMSearchRequestInputController.h"
 #import "SMMessageListToolbarViewController.h"
+#import "SMMessageThreadToolbarViewController.h"
 
 @implementation SMAppController {
     NSSplitView *_messageListSplitView;
+    NSSplitView *_messageThreadSplitView;
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     NSMutableArray *_messageEditorWindowControllers;
@@ -78,14 +80,22 @@
     NSAssert(messageListToolbarView, @"messageListToolbarView");
     
     //
+    
+    _messageThreadToolbarViewController = [[SMMessageThreadToolbarViewController alloc] initWithNibName:@"SMMessageThreadToolbarViewController" bundle:nil];
+    
+    NSView *messageThreadToolbarView = [ _messageThreadToolbarViewController view ];
+    NSAssert(messageThreadToolbarView, @"messageThreadToolbarView");
+    
+    //
 
 // TODO: this crap doesn't work
 //    NSWindow *window = _view.window;
 //    NSRect windowFrame = [NSWindow contentRectForFrameRect:window.frame styleMask:window.styleMask];
 //    CGFloat toolbarHeight = NSHeight(windowFrame) - NSHeight(window.contentLayoutRect);
-    CGFloat toolbarHeight = 16;
+//    CGFloat toolbarHeight = 16;
     
-    [messageListToolbarView setFrameSize:NSMakeSize(messageListToolbarView.frame.size.width, toolbarHeight)];
+//[messageListToolbarView setFrameSize:NSMakeSize(messageListToolbarView.frame.size.width, toolbarHeight)];
+    //[messageThreadToolbarView setFrameSize:NSMakeSize(messageThreadToolbarView.frame.size.width, toolbarHeight)];
     
     //
 
@@ -154,6 +164,20 @@
 
     //
     
+    _messageThreadSplitView = [[NSSplitView alloc] init];
+    _messageThreadSplitView.delegate = self;
+    _messageThreadSplitView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [_messageThreadSplitView setVertical:NO];
+    [_messageThreadSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    
+    [_messageThreadSplitView addSubview:messageThreadToolbarView];
+    [_messageThreadSplitView addSubview:messageThreadView];
+    
+    [_messageThreadSplitView adjustSubviews];
+    
+    //
+    
     NSSplitView *mainSplitView = [[NSSplitView alloc] init];
     mainSplitView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -162,7 +186,7 @@
     
     [mainSplitView addSubview:instrumentPanelView];
     [mainSplitView addSubview:_messageListSplitView];
-    [mainSplitView addSubview:messageThreadView];
+    [mainSplitView addSubview:_messageThreadSplitView];
     
     [mainSplitView adjustSubviews];
 
@@ -539,7 +563,7 @@
 
 - (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex
 {
-    if(splitView == _messageListSplitView)
+    if(splitView == _messageListSplitView || splitView == _messageThreadSplitView)
         return NSZeroRect;
     
     if([self isSearchResultsViewHidden])

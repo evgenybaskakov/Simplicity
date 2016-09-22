@@ -41,21 +41,15 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 @property (weak, nonatomic) IBOutlet NSView *view;
 
-@property (nonatomic) IBOutlet NSSegmentedControl *messageNavigationControl;
-@property (weak) IBOutlet NSToolbarItem *searchFieldToolbarItem;
-
 @property (weak) IBOutlet NSMenuItem *composeMessageMenuItem;
 @property (weak) IBOutlet NSMenuItem *textFormatMenuItem;
 @property (weak) IBOutlet NSMenuItem *htmlTextFormatMenuItem;
 @property (weak) IBOutlet NSMenuItem *plainTextFormatMenuItem;
 
 - (IBAction)composeMessageAction:(id)sender;
-- (IBAction)moveToTrashAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
 - (IBAction)toggleSearchMailboxPanelAction:(id)sender;
-- (IBAction)messageNavigationAction:(id)sender;
 
-@property SMTokenFieldViewController *searchFieldViewController;
 @property SMSectionMenuViewController *searchMenuViewController;
 @property SMAccountsViewController *accountsViewController;
 @property SMMailboxViewController *mailboxViewController;

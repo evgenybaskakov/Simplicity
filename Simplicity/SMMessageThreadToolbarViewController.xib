@@ -7,6 +7,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageThreadToolbarViewController">
             <connections>
+                <outlet property="messageNavigationControl" destination="qaN-Wg-fQb" id="MvS-TF-gAB"/>
+                <outlet property="searchFieldView" destination="3Wz-7W-LHx" id="4iE-8A-tbb"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -49,6 +51,9 @@
                                     </segment>
                                 </segments>
                             </segmentedCell>
+                            <connections>
+                                <action selector="messageNavigationAction:" target="-2" id="Zam-0M-Iox"/>
+                            </connections>
                         </segmentedControl>
                     </subviews>
                     <constraints>

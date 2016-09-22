@@ -237,29 +237,13 @@
     
     //
     
-    _searchFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
-    NSAssert(_searchFieldViewController.view != nil, @"_searchFieldViewController is nil");
-
-    [_searchFieldToolbarItem setView:_searchFieldViewController.view];
-
-    _searchFieldViewController.target = self;
-    _searchFieldViewController.action = @selector(searchUsingToolbarSearchField:);
-    _searchFieldViewController.actionDelay = 0.2;
-    _searchFieldViewController.cancelAction = @selector(cancelSearchUsingToolbarSearchField:);
-    _searchFieldViewController.clearAction = @selector(clearSearchUsingToolbarSearchField:);
-    _searchFieldViewController.enterAction = @selector(enterSearchUsingToolbarSearchField:);
-    _searchFieldViewController.arrowUpAction = @selector(searchMenuCursorUp:);
-    _searchFieldViewController.arrowDownAction = @selector(searchMenuCursorDown:);
-    
-    //
-    
     SMMailboxTheme mailboxTheme = [[appDelegate preferencesController] mailboxTheme];
 
     [_accountsViewController setMailboxTheme:mailboxTheme];
 
     //
     
-    _messageNavigationControl.enabled = NO;
+    _messageThreadToolbarViewController.messageNavigationControl.enabled = NO;
     
     //
     
@@ -407,8 +391,8 @@
 }
 
 - (void)clearSearch:(BOOL)changeToPrevFolder cancelFocus:(BOOL)cancelFocus {
-    [_searchFieldViewController deleteAllTokensAndText];
-    [_searchFieldViewController stopProgress];
+    [_messageThreadToolbarViewController.searchFieldViewController deleteAllTokensAndText];
+    [_messageThreadToolbarViewController.searchFieldViewController stopProgress];
     
     _searchingForSuggestions = NO;
     _searchingForContent = NO;
@@ -433,7 +417,7 @@
     
     if(cancelFocus) {
         NSView *messageListView = [[[appDelegate appController] messageListViewController] view];
-        [[_searchFieldViewController.view window] makeFirstResponder:messageListView];
+        [[_messageThreadToolbarViewController.searchFieldViewController.view window] makeFirstResponder:messageListView];
     }
 }
 
@@ -452,7 +436,7 @@
     }
 
     if(!_searchingForSuggestions && !_searchingForContent) {
-        [_searchFieldViewController stopProgress];
+        [_messageThreadToolbarViewController.searchFieldViewController stopProgress];
     }
 }
 
@@ -512,7 +496,7 @@
     menuHeight = MIN(menuHeight, 400);
     
     NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
-    NSView *searchFieldView = _searchFieldViewController.view;
+    NSView *searchFieldView = _messageThreadToolbarViewController.searchFieldViewController.view;
 
     NSPoint pos = [searchFieldView.superview convertPoint:searchFieldView.frame.origin toView:nil];
     [_searchSuggestionsMenu setFrame:CGRectMake(mainWindow.frame.origin.x + pos.x - (_searchSuggestionsMenu.frame.size.width - searchFieldView.frame.size.width)/2, mainWindow.frame.origin.y + pos.y - menuHeight - 3, _searchSuggestionsMenu.frame.size.width, menuHeight) display:YES];
@@ -531,9 +515,9 @@
 }
 
 - (void)startNewSearch:(BOOL)showSuggestionsMenu {
-    NSString *searchString = [SMStringUtils trimString:_searchFieldViewController.stringValue];
+    NSString *searchString = [SMStringUtils trimString:_messageThreadToolbarViewController.searchFieldViewController.stringValue];
     
-    if(searchString.length == 0 && _searchFieldViewController.tokenCount == 0) {
+    if(searchString.length == 0 && _messageThreadToolbarViewController.searchFieldViewController.tokenCount == 0) {
         [self closeSearchSuggestionsMenu];
         [self clearSearch:YES cancelFocus:NO];
         return;
@@ -543,7 +527,7 @@
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     if([[appDelegate.appController searchRequestInputController] startNewSearchWithPattern:searchString]) {
-        [_searchFieldViewController startProgress];
+        [_messageThreadToolbarViewController.searchFieldViewController startProgress];
 
         _searchingForSuggestions = YES;
         _searchingForContent = YES;
@@ -572,10 +556,6 @@
     return proposedEffectiveRect;
 }
 
-- (IBAction)moveToTrashAction:(id)sender {
-    [self moveSelectedMessageThreadsToTrash];
-}
-
 - (void)moveSelectedMessageThreadsToTrash {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     
@@ -598,7 +578,7 @@
 }
 
 - (IBAction)toggleSearchMailboxPanelAction:(id)sender {
-    [[self.view window] makeFirstResponder:_searchFieldViewController];
+    [[self.view window] makeFirstResponder:_messageThreadToolbarViewController.searchFieldViewController];
 }
 
 #pragma mark New label creation
@@ -814,31 +794,12 @@
 
 #pragma mark Navigation in message thread
 
-- (IBAction)messageNavigationAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
-    switch(_messageNavigationControl.selectedSegment) {
-    case 0:
-        [[[appDelegate appController] messageThreadViewController] scrollToPrevMessage];
-        break;
-    case 1:
-        [[[appDelegate appController] messageThreadViewController] scrollToNextMessage];
-        break;
-    case 2:
-        [[[appDelegate appController] messageThreadViewController] collapseAll];
-        break;
-    case 3:
-        [[[appDelegate appController] messageThreadViewController] uncollapseAll];
-        break;
-    }
-}
-
 - (void)enableMessageThreadNavigationControl {
-    _messageNavigationControl.enabled = YES;
+    _messageThreadToolbarViewController.messageNavigationControl.enabled = YES;
 }
 
 - (void)disableMessageThreadNavigationControl {
-    _messageNavigationControl.enabled = NO;
+    _messageThreadToolbarViewController.messageNavigationControl.enabled = NO;
 }
 
 @end

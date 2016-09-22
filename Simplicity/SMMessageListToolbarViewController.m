@@ -32,7 +32,7 @@
     SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
     SMAppController *appController = [appDelegate appController];
     
-    [appController moveToTrashAction:self];
+    [appController moveSelectedMessageThreadsToTrash];
 }
 
 @end

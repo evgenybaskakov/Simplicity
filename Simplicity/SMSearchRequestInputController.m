@@ -12,6 +12,7 @@
 #import "SMStringUtils.h"
 #import "SMMessageListViewController.h"
 #import "SMSectionMenuViewController.h"
+#import "SMMessageThreadToolbarViewController.h"
 #import "SMSearchToken.h"
 #import "SMAbstractSearchController.h"
 #import "SMTokenFieldViewController.h"
@@ -68,7 +69,7 @@
     SM_LOG_INFO(@"searching for string '%@'", searchPattern);
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    _searchTokens = [[[appDelegate.appController searchFieldViewController] representedTokenObjects] mutableCopy];
+    _searchTokens = [[[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] representedTokenObjects] mutableCopy];
     
     if(searchPattern.length != 0) {
         _searchPattern = searchPattern;
@@ -101,14 +102,14 @@
         return;
     }
     
-    [[[appDelegate appController] searchFieldViewController] deleteAllTokensAndText];
+    [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] deleteAllTokensAndText];
     
     [_searchTokens addObject:[[SMSearchToken alloc] initWithKind:kind string:searchItem]];
     
     for(SMSearchToken *token in _searchTokens) {
         NSString *tokenName = [self tokenKindToName:token.kind];
         
-        [[[appDelegate appController] searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(editedTokenAction:) deletedAction:@selector(deletedTokenAction:)];
+        [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] addToken:tokenName contentsText:token.string representedObject:token target:self action:@selector(tokenSearchMenuAction:) editedAction:@selector(editedTokenAction:) deletedAction:@selector(deletedTokenAction:)];
     }
     
     [[appDelegate appController] startNewSearch:YES];
@@ -273,21 +274,21 @@
     NSString *newTokenName = [self tokenKindToName:newToken.kind];
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction deletedAction:_tokenViewWithMenu.deletedAction];
+    [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction deletedAction:_tokenViewWithMenu.deletedAction];
     
     [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)editTokenInSearchField:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] editToken:_tokenViewWithMenu];
+    [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] editToken:_tokenViewWithMenu];
     
     // Note: no other actions is to trigger here. It'll be triggered by the token itself.
 }
 
 - (void)deleteTokenFromSearchField:(id)sender {
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-    [[[appDelegate appController] searchFieldViewController] deleteToken:_tokenViewWithMenu];
+    [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] deleteToken:_tokenViewWithMenu];
     
     // Note: no other actions is to trigger here. It'll be triggered by the token itself.
 }

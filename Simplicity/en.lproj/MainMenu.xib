@@ -664,67 +664,8 @@
                 <autoresizingMask key="autoresizingMask"/>
             </view>
             <toolbar key="toolbar" implicitIdentifier="83538546-71C0-4D39-B8D0-92509879B6AB" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="sMZ-Us-mwO">
-                <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="5A5D285E-3B4D-4BCA-BAEF-C9552A8C8F52" label="Custom View" paletteLabel="Custom View" id="njw-vQ-slt">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="130" height="19"/>
-                        <size key="maxSize" width="140" height="21"/>
-                        <segmentedControl key="view" verticalHuggingPriority="750" id="QTH-WP-b7k">
-                            <rect key="frame" x="0.0" y="14" width="130" height="21"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="fyT-EW-pb3">
-                                <font key="font" metaFont="system"/>
-                                <segments>
-                                    <segment toolTip="Scroll to previous message in the conversation" image="Button-Up-128" width="32">
-                                        <nil key="label"/>
-                                    </segment>
-                                    <segment toolTip="Scroll to next message in the conversation" image="Button-Down-128" width="32" tag="1">
-                                        <nil key="label"/>
-                                    </segment>
-                                    <segment toolTip="Collapse all messages in the conversation" image="Button-Collapse" width="32">
-                                        <nil key="label"/>
-                                    </segment>
-                                    <segment toolTip="Expand all messages in the conversation" image="Button-Expand">
-                                        <nil key="label"/>
-                                    </segment>
-                                </segments>
-                            </segmentedCell>
-                            <connections>
-                                <action selector="messageNavigationAction:" target="544" id="idf-69-a8h"/>
-                            </connections>
-                        </segmentedControl>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="1D6334A0-17E5-4DAF-9093-F3685BAA74E4" label="Custom View" paletteLabel="Custom View" tag="-1" id="s3H-kK-twf">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="350" height="22"/>
-                        <size key="maxSize" width="350" height="46"/>
-                        <customView key="view" id="ec4-Kv-ay3">
-                            <rect key="frame" x="0.0" y="14" width="350" height="24"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        </customView>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="6OE-Y4-Rzq"/>
-                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" explicitItemIdentifier="NSToolbarFlexibleSpaceItem1" id="tuv-Ha-CER"/>
-                    <toolbarItem implicitItemIdentifier="7A77BDB0-47E0-4AD5-BEB6-560C548DDDDA" label="Custom View" paletteLabel="Custom View" tag="-1" id="AqB-n2-Iv9">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="5" height="33"/>
-                        <size key="maxSize" width="5" height="105"/>
-                        <box key="view" horizontalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="kqg-Fi-fRW">
-                            <rect key="frame" x="36" y="14" width="5" height="40"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <font key="titleFont" metaFont="system"/>
-                        </box>
-                    </toolbarItem>
-                </allowedToolbarItems>
-                <defaultToolbarItems>
-                    <toolbarItem reference="tuv-Ha-CER"/>
-                    <toolbarItem reference="AqB-n2-Iv9"/>
-                    <toolbarItem reference="njw-vQ-slt"/>
-                    <toolbarItem reference="tuv-Ha-CER"/>
-                    <toolbarItem reference="s3H-kK-twf"/>
-                </defaultToolbarItems>
+                <allowedToolbarItems/>
+                <defaultToolbarItems/>
             </toolbar>
             <connections>
                 <outlet property="delegate" destination="494" id="fza-e2-WWs"/>
@@ -741,18 +682,10 @@
             <connections>
                 <outlet property="composeMessageMenuItem" destination="i3P-0b-cpV" id="co2-cG-CtP"/>
                 <outlet property="htmlTextFormatMenuItem" destination="vUH-6f-CGy" id="RWK-tG-Hk9"/>
-                <outlet property="messageNavigationControl" destination="QTH-WP-b7k" id="2P0-s9-Zuv"/>
                 <outlet property="plainTextFormatMenuItem" destination="lK6-yH-B4s" id="4Hc-La-8Ml"/>
-                <outlet property="searchFieldToolbarItem" destination="s3H-kK-twf" id="aYd-WE-4ex"/>
                 <outlet property="textFormatMenuItem" destination="3QV-S7-VIk" id="cPY-6I-SEi"/>
                 <outlet property="view" destination="372" id="OSt-G0-4ik"/>
             </connections>
         </customObject>
     </objects>
-    <resources>
-        <image name="Button-Collapse" width="128" height="128"/>
-        <image name="Button-Down-128" width="128" height="128"/>
-        <image name="Button-Expand" width="128" height="128"/>
-        <image name="Button-Up-128" width="128" height="128"/>
-    </resources>
 </document>

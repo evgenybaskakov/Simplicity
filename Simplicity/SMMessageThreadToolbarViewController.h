@@ -8,6 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMTokenFieldViewController;
+
 @interface SMMessageThreadToolbarViewController : NSViewController
+
+@property (weak) IBOutlet NSSegmentedControl *messageNavigationControl;
+@property (weak) IBOutlet NSView *searchFieldView;
+
+@property SMTokenFieldViewController *searchFieldViewController;
 
 @end

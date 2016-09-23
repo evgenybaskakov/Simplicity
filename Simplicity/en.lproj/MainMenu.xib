@@ -663,7 +663,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="810" height="410"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>
-            <toolbar key="toolbar" implicitIdentifier="83538546-71C0-4D39-B8D0-92509879B6AB" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="sMZ-Us-mwO">
+            <toolbar key="toolbar" implicitIdentifier="83538546-71C0-4D39-B8D0-92509879B6AB" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" prefersToBeShown="NO" displayMode="iconAndLabel" sizeMode="regular" id="sMZ-Us-mwO">
                 <allowedToolbarItems/>
                 <defaultToolbarItems/>
             </toolbar>

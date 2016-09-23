@@ -64,6 +64,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         _headerButton.bezelStyle = NSShadowlessSquareBezelStyle;
         _headerButton.target = self;
         _headerButton.action = @selector(headerButtonClicked:);
+        _headerButton.title = @"";
 
         [_headerButton setTransparent:YES];
         [_headerButton setEnabled:NO];

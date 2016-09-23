@@ -656,11 +656,11 @@
         <window title="Simplicity" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371" customClass="SMWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="810" height="410"/>
+            <rect key="contentRect" x="335" y="390" width="810" height="542"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="800" height="400"/>
             <view key="contentView" id="372">
-                <rect key="frame" x="0.0" y="0.0" width="810" height="410"/>
+                <rect key="frame" x="0.0" y="0.0" width="810" height="542"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>
             <toolbar key="toolbar" implicitIdentifier="83538546-71C0-4D39-B8D0-92509879B6AB" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" prefersToBeShown="NO" displayMode="iconAndLabel" sizeMode="regular" id="sMZ-Us-mwO">
@@ -670,7 +670,7 @@
             <connections>
                 <outlet property="delegate" destination="494" id="fza-e2-WWs"/>
             </connections>
-            <point key="canvasLocation" x="250" y="362"/>
+            <point key="canvasLocation" x="250" y="428"/>
         </window>
         <customObject id="494" customClass="SMAppDelegate">
             <connections>

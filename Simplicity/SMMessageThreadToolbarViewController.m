@@ -24,8 +24,18 @@
     _searchFieldViewController = [[SMTokenFieldViewController alloc] initWithNibName:@"SMTokenFieldViewController" bundle:nil];
     NSAssert(_searchFieldViewController.view != nil, @"_searchFieldViewController is nil");
     
+    _searchFieldView.translatesAutoresizingMaskIntoConstraints = NO;
+    _searchFieldViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
     [_searchFieldView addSubview:_searchFieldViewController.view];
-    _searchFieldViewController.view.frame = _searchFieldView.frame;
+
+    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    
+    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    
+    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
+    
+    //containerView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 8.0).active = true
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;

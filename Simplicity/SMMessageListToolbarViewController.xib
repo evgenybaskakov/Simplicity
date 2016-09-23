@@ -21,22 +21,8 @@
                 <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="ghj-kS-CBd">
                     <rect key="frame" x="0.0" y="0.0" width="380" height="37"/>
                     <subviews>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
-                            <rect key="frame" x="288" y="4" width="32" height="25"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
-                                <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
-                            </constraints>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="new-message" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ijl-Tg-Zxp">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="composeMessageAction:" target="-2" id="4Jy-b2-CGw"/>
-                            </connections>
-                        </button>
                         <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SIZ-9V-M6Z">
-                            <rect key="frame" x="328" y="4" width="32" height="25"/>
+                            <rect key="frame" x="338" y="4" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="32" id="YaO-HG-dop"/>
                                 <constraint firstAttribute="height" constant="22" id="rHh-Vl-owZ"/>
@@ -49,10 +35,24 @@
                                 <action selector="moveToTrashAction:" target="-2" id="eQb-Yi-Ffc"/>
                             </connections>
                         </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
+                            <rect key="frame" x="298" y="4" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
+                                <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="new-message" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ijl-Tg-Zxp">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="composeMessageAction:" target="-2" id="4Jy-b2-CGw"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <constraints>
                         <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="I6w-xx-Ddd"/>
-                        <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="20" id="QrZ-Ga-h2K"/>
+                        <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="10" id="QrZ-Ga-h2K"/>
                         <constraint firstAttribute="height" constant="37" id="WNC-zV-I2t"/>
                         <constraint firstItem="SIZ-9V-M6Z" firstAttribute="leading" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="8" id="fPN-D4-XkG"/>
                         <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="uHT-YB-2L9"/>

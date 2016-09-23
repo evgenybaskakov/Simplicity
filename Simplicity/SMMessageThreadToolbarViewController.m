@@ -29,13 +29,9 @@
     
     [_searchFieldView addSubview:_searchFieldViewController.view];
 
-    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    
-    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    
-    [_searchFieldView addConstraint:[NSLayoutConstraint constraintWithItem:_searchFieldView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_searchFieldViewController.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
-    
-    //containerView.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 8.0).active = true
+    [_searchFieldView.leadingAnchor constraintEqualToAnchor:_searchFieldViewController.view.leadingAnchor constant:0].active = true;
+    [_searchFieldView.trailingAnchor constraintEqualToAnchor:_searchFieldViewController.view.trailingAnchor constant:0].active = true;
+    [_searchFieldView.centerYAnchor constraintEqualToAnchor:_searchFieldViewController.view.centerYAnchor constant:0].active = true;
     
     SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;

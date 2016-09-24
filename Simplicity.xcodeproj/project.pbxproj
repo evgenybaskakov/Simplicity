@@ -84,7 +84,6 @@
 		00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED317F17F88DA700B04F5B /* SMMessageStorage.m */; };
 		00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */; };
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
-		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
 		8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */; };
 		800AB7EC1CACF64600582B57 /* SMMessagePlaceholderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 800AB7EA1CACF64600582B57 /* SMMessagePlaceholderViewController.m */; };
 		800AB7ED1CACF64600582B57 /* SMMessagePlaceholderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 800AB7EB1CACF64600582B57 /* SMMessagePlaceholderViewController.xib */; };
@@ -467,7 +466,6 @@
 		00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageFullDetailsView.m; sourceTree = "<group>"; };
 		00FC3C7619AADD67002DAF9C /* SMMessageThreadCellViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadCellViewController.h; sourceTree = "<group>"; };
 		00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadCellViewController.m; sourceTree = "<group>"; };
-		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
 		8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorController.h; sourceTree = "<group>"; };
 		8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorController.m; sourceTree = "<group>"; };
 		800AB7E91CACF64600582B57 /* SMMessagePlaceholderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessagePlaceholderViewController.h; sourceTree = "<group>"; };
@@ -1140,7 +1138,6 @@
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
 				802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */,
-				00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */,
 				8011CAF41CA3C66A00697210 /* SMLabeledPopUpListViewController.xib */,
 				8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */,
 				8052555D1D5708C700CDCBA2 /* SMLabelSelectionViewController.xib */,
@@ -1599,7 +1596,6 @@
 				8011CAF61CA3C66A00697210 /* SMLabeledPopUpListViewController.xib in Resources */,
 				801C49A31D49DC95004EB65B /* Button-Expand.png in Resources */,
 				80A44B041B5A10BC0049AB88 /* Underline-128.png in Resources */,
-				00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

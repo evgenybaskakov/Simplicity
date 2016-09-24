@@ -29,7 +29,7 @@
                             </constraints>
                         </customView>
                         <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qaN-Wg-fQb">
-                            <rect key="frame" x="7" y="5" width="144" height="25"/>
+                            <rect key="frame" x="10" y="5" width="144" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="BV4-PW-caB"/>
                                 <constraint firstAttribute="width" constant="144" id="ky7-dn-QHk"/>
@@ -59,7 +59,7 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="37" id="1Ij-v3-dFF"/>
                         <constraint firstItem="qaN-Wg-fQb" firstAttribute="top" secondItem="8ro-26-NEr" secondAttribute="top" constant="8" id="TuX-cq-7vM"/>
-                        <constraint firstItem="qaN-Wg-fQb" firstAttribute="leading" secondItem="8ro-26-NEr" secondAttribute="leading" constant="7" id="qc2-7h-MQ1"/>
+                        <constraint firstItem="qaN-Wg-fQb" firstAttribute="leading" secondItem="8ro-26-NEr" secondAttribute="leading" constant="10" id="qc2-7h-MQ1"/>
                         <constraint firstAttribute="trailing" secondItem="3Wz-7W-LHx" secondAttribute="trailing" constant="6" id="s1P-Ja-DoM"/>
                         <constraint firstItem="3Wz-7W-LHx" firstAttribute="top" secondItem="8ro-26-NEr" secondAttribute="top" constant="8" id="uns-Wk-nlc"/>
                         <constraint firstItem="3Wz-7W-LHx" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qaN-Wg-fQb" secondAttribute="trailing" constant="20" id="zjU-qn-1y4"/>

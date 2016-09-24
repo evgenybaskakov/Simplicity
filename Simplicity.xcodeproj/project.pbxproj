@@ -84,7 +84,6 @@
 		00ED318317F88DA700B04F5B /* SMMessageStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 00ED317F17F88DA700B04F5B /* SMMessageStorage.m */; };
 		00F96C0D19343D8000CA5836 /* SMMessageFullDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */; };
 		00FC3C7E19AADF68002DAF9C /* SMMessageThreadCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */; };
-		00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */; };
 		00FE6DF51A4E6C0600D2194F /* SMInstrumentPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */; };
 		8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */; };
 		800AB7EC1CACF64600582B57 /* SMMessagePlaceholderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 800AB7EA1CACF64600582B57 /* SMMessagePlaceholderViewController.m */; };
@@ -226,6 +225,9 @@
 		80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C41BEDCAA200467243 /* SMMailServiceProviderYahoo.m */; };
 		80BFC3C81BEDCACA00467243 /* SMMailServiceProviderOutlook.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */; };
 		80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */ = {isa = PBXBuildFile; fileRef = 80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */; };
+		80C402B21D96551500BD9D3F /* SMMailboxToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C402B11D96551500BD9D3F /* SMMailboxToolbarViewController.m */; };
+		80C402B41D96553D00BD9D3F /* SMMailboxToolbarViewController.h in Sources */ = {isa = PBXBuildFile; fileRef = 80C402B31D96553D00BD9D3F /* SMMailboxToolbarViewController.h */; };
+		80C402B61D96557900BD9D3F /* SMMailboxToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80C402B51D96557900BD9D3F /* SMMailboxToolbarViewController.xib */; };
 		80C69A961BB6553D00F24B9F /* SMCompression.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C69A951BB6553D00F24B9F /* SMCompression.m */; };
 		80C9D0061D87C706001155EC /* SMNoLabelsMessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C9D0041D87C706001155EC /* SMNoLabelsMessageViewController.m */; };
 		80C9D0071D87C706001155EC /* SMNoLabelsMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80C9D0051D87C706001155EC /* SMNoLabelsMessageViewController.xib */; };
@@ -465,8 +467,6 @@
 		00F96C0C19343D8000CA5836 /* SMMessageFullDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageFullDetailsView.m; sourceTree = "<group>"; };
 		00FC3C7619AADD67002DAF9C /* SMMessageThreadCellViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadCellViewController.h; sourceTree = "<group>"; };
 		00FC3C7D19AADF68002DAF9C /* SMMessageThreadCellViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadCellViewController.m; sourceTree = "<group>"; };
-		00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInstrumentPanelViewController.h; sourceTree = "<group>"; };
-		00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInstrumentPanelViewController.m; sourceTree = "<group>"; };
 		00FE6DF31A4E6C0600D2194F /* SMInstrumentPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInstrumentPanelViewController.xib; sourceTree = "<group>"; };
 		8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorController.h; sourceTree = "<group>"; };
 		8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorController.m; sourceTree = "<group>"; };
@@ -696,6 +696,9 @@
 		80BFC3C71BEDCACA00467243 /* SMMailServiceProviderOutlook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderOutlook.m; sourceTree = "<group>"; };
 		80BFC3C91BEDCAE900467243 /* SMMailServiceProviderCustom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderCustom.h; sourceTree = "<group>"; };
 		80BFC3CA1BEDCAE900467243 /* SMMailServiceProviderCustom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderCustom.m; sourceTree = "<group>"; };
+		80C402B11D96551500BD9D3F /* SMMailboxToolbarViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMMailboxToolbarViewController.m; sourceTree = "<group>"; };
+		80C402B31D96553D00BD9D3F /* SMMailboxToolbarViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMailboxToolbarViewController.h; sourceTree = "<group>"; };
+		80C402B51D96557900BD9D3F /* SMMailboxToolbarViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SMMailboxToolbarViewController.xib; sourceTree = "<group>"; };
 		80C69A941BB6553D00F24B9F /* SMCompression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCompression.h; sourceTree = "<group>"; };
 		80C69A951BB6553D00F24B9F /* SMCompression.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCompression.m; sourceTree = "<group>"; };
 		80C9D0031D87C706001155EC /* SMNoLabelsMessageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNoLabelsMessageViewController.h; sourceTree = "<group>"; };
@@ -978,8 +981,6 @@
 				006709321A99A77600C0C9CC /* SMFindContentsPanelViewController.m */,
 				0089D35D1A88084F00C189BB /* SMFolderColorController.h */,
 				0089D35E1A88084F00C189BB /* SMFolderColorController.m */,
-				00FE6DF11A4E6C0600D2194F /* SMInstrumentPanelViewController.h */,
-				00FE6DF21A4E6C0600D2194F /* SMInstrumentPanelViewController.m */,
 				8011CAF21CA3C66A00697210 /* SMLabeledPopUpListViewController.h */,
 				8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */,
 				8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */,
@@ -989,6 +990,8 @@
 				803F2AEF1D53129B002F8212 /* SMLabelWithCloseButton.h */,
 				803F2AF01D53129B002F8212 /* SMLabelWithCloseButton.m */,
 				8078EABC1CD47CBB00EBF22B /* SMMailboxController.h */,
+				80C402B31D96553D00BD9D3F /* SMMailboxToolbarViewController.h */,
+				80C402B11D96551500BD9D3F /* SMMailboxToolbarViewController.m */,
 				0097426C195686F900620145 /* SMMailboxViewController.h */,
 				0097426D195686F900620145 /* SMMailboxViewController.m */,
 				00172FED198B3BB700DB975E /* SMMessageBodyViewController.h */,
@@ -1143,6 +1146,7 @@
 				8052555D1D5708C700CDCBA2 /* SMLabelSelectionViewController.xib */,
 				803F2AF11D53129B002F8212 /* SMLabelWithCloseButton.xib */,
 				00974266195684DD00620145 /* SMMailboxViewController.xib */,
+				80C402B51D96557900BD9D3F /* SMMailboxToolbarViewController.xib */,
 				804373AD1CCF412000C802EC /* SMMessageEditorToolbarViewController.xib */,
 				00DBA6D71AC25FD500DFE03D /* SMMessageEditorWindowController.xib */,
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
@@ -1501,6 +1505,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80C402B61D96557900BD9D3F /* SMMailboxToolbarViewController.xib in Resources */,
 				8043D7D21B5180E400B07469 /* iconsineed-icon-reply-128.png in Resources */,
 				009C7BA01A5BB558002EA2DF /* circle-blue.png in Resources */,
 				80A44B111B5A16A60049AB88 /* shirt-left.png in Resources */,
@@ -1621,6 +1626,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80C402B41D96553D00BD9D3F /* SMMailboxToolbarViewController.h in Sources */,
+				80C402B21D96551500BD9D3F /* SMMailboxToolbarViewController.m in Sources */,
 				80B8600F1CF979EA00BD0804 /* SMSearchRequestInputController.m in Sources */,
 				800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */,
 				8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */,
@@ -1676,7 +1683,6 @@
 				007A73621A57A95500A4D694 /* SMMessageFullDetailsViewController.m in Sources */,
 				004741651AA3AAF0002566E8 /* SMMessageThreadInfoViewController.m in Sources */,
 				80FBF5621CE057D70041E230 /* SMUnifiedMessageStorage.m in Sources */,
-				00FE6DF41A4E6C0600D2194F /* SMInstrumentPanelViewController.m in Sources */,
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				80A33AED1C9930FA00243880 /* SMUserAccountDataObject.m in Sources */,

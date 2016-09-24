@@ -22,7 +22,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="380" height="37"/>
                     <subviews>
                         <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SIZ-9V-M6Z">
-                            <rect key="frame" x="338" y="4" width="32" height="25"/>
+                            <rect key="frame" x="338" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="32" id="YaO-HG-dop"/>
                                 <constraint firstAttribute="height" constant="22" id="rHh-Vl-owZ"/>
@@ -36,7 +36,7 @@
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
-                            <rect key="frame" x="298" y="4" width="32" height="25"/>
+                            <rect key="frame" x="298" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
                                 <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
@@ -51,11 +51,11 @@
                         </button>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="I6w-xx-Ddd"/>
+                        <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="I6w-xx-Ddd"/>
                         <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="10" id="QrZ-Ga-h2K"/>
                         <constraint firstAttribute="height" constant="37" id="WNC-zV-I2t"/>
                         <constraint firstItem="SIZ-9V-M6Z" firstAttribute="leading" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="8" id="fPN-D4-XkG"/>
-                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="9" id="uHT-YB-2L9"/>
+                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="uHT-YB-2L9"/>
                     </constraints>
                 </visualEffectView>
             </subviews>

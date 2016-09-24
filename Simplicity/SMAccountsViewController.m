@@ -113,7 +113,7 @@
         return;
     }
     
-    [_scrollView setFrame:self.view.frame];
+    [_scrollView setFrame:NSMakeRect(0, 0, NSWidth(self.view.frame), NSHeight(self.view.frame))];
     [self.view addSubview:_scrollView];
     
     BOOL unifiedMailboxButtonShown = [self shouldShowUnifiedMailboxButton];

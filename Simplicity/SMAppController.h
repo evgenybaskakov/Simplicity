@@ -13,6 +13,7 @@
 
 @protocol SMAbstractLocalFolder;
 
+@class SMMailboxToolbarViewController;
 @class SMMessageThreadToolbarViewController;
 @class SMMessageListToolbarViewController;
 @class SMTokenFieldViewController;
@@ -23,7 +24,6 @@
 @class SMMessageListViewController;
 @class SMAccountsViewController;
 @class SMMessageThreadViewController;
-@class SMInstrumentPanelViewController;
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
 @class SMOperationQueueWindowController;
@@ -55,7 +55,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 @property SMMailboxViewController *mailboxViewController;
 @property SMMessageListViewController *messageListViewController;
 @property SMMessageThreadViewController *messageThreadViewController;
-@property SMInstrumentPanelViewController *instrumentPanelViewController;
+@property SMMailboxToolbarViewController *mailboxToolbarViewController;
 @property SMMessageListToolbarViewController *messageListToolbarViewController;
 @property SMMessageThreadToolbarViewController *messageThreadToolbarViewController;
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SMMailboxToolbarViewController">
+            <connections>
+                <outlet property="addLabelButton" destination="Rak-0h-RxS" id="C85-aJ-e0z"/>
+                <outlet property="view" destination="9fu-q4-uiS" id="Fhd-Jv-k2h"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="9fu-q4-uiS">
+            <rect key="frame" x="0.0" y="0.0" width="173" height="37"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="fYr-LT-hWH">
+                    <rect key="frame" x="0.0" y="0.0" width="173" height="37"/>
+                    <subviews>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rak-0h-RxS">
+                            <rect key="frame" x="131" y="5" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="22" id="3R5-cJ-jjs"/>
+                                <constraint firstAttribute="width" constant="32" id="N7u-83-vaH"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="add-label" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MwI-ZH-gFb">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="addLabelButtonAction:" target="-2" id="1jS-e4-98c"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="Rak-0h-RxS" secondAttribute="trailing" constant="10" id="vzA-TM-eKb"/>
+                        <constraint firstItem="Rak-0h-RxS" firstAttribute="top" secondItem="fYr-LT-hWH" secondAttribute="top" constant="8" id="xH3-xX-21n"/>
+                        <constraint firstAttribute="height" constant="37" id="xec-W7-cyW"/>
+                    </constraints>
+                </visualEffectView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="fYr-LT-hWH" firstAttribute="leading" secondItem="9fu-q4-uiS" secondAttribute="leading" id="LJn-pD-Enx"/>
+                <constraint firstItem="fYr-LT-hWH" firstAttribute="top" secondItem="9fu-q4-uiS" secondAttribute="top" id="Zv2-St-53h"/>
+                <constraint firstAttribute="trailing" secondItem="fYr-LT-hWH" secondAttribute="trailing" id="eI4-Gk-Q3y"/>
+                <constraint firstAttribute="bottom" secondItem="fYr-LT-hWH" secondAttribute="bottom" id="lL3-O1-S18"/>
+            </constraints>
+            <point key="canvasLocation" x="290.5" y="218.5"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="add-label" width="128" height="128"/>
+    </resources>
+</document>

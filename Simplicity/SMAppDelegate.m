@@ -168,6 +168,9 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
+    // Cleanly crash on uncaught exceptions, such as during actions.
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{ @"NSApplicationCrashOnExceptions": @YES }];
+    
     _window.titlebarAppearsTransparent = YES;
 
     [[_window windowController] setShouldCascadeWindows:NO];

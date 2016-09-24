@@ -168,10 +168,7 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-    _window.titleVisibility = NSWindowTitleHidden;
     _window.titlebarAppearsTransparent = YES;
-    _window.styleMask |= NSFullSizeContentViewWindowMask;
-    _window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantLight];
 
     [[_window windowController] setShouldCascadeWindows:NO];
     [_window setFrameAutosaveName:@"MainWindow"];

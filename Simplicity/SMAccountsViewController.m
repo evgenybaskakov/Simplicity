@@ -46,13 +46,14 @@
 
         _scrollView = [[NSScrollView alloc] initWithFrame:rootView.frame];
         _scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        _scrollView.backgroundColor = [NSColor clearColor];
+        _scrollView.drawsBackground = NO;
         _scrollView.borderType = NSNoBorder;
         _scrollView.hasVerticalScroller = YES;
         _scrollView.hasHorizontalScroller = NO;
         
         _contentView = [[SMFlippedView alloc] initWithFrame:_scrollView.frame];
         _contentView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        
         _scrollView.documentView = _contentView;
         
         _accountButtonViewControllers = [NSMutableArray array];

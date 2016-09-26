@@ -56,7 +56,7 @@
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind {
     _textMonitorTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(textMonitorEvent:) userInfo:nil repeats:YES];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSString *signature = nil;
     
     if([[appDelegate preferencesController] shouldUseSingleSignature]) {

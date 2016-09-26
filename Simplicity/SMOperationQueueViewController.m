@@ -19,7 +19,7 @@
 // TODO: Issue #78. Should be refreshed when the user changes the current account.
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(appDelegate.currentAccountIsUnified) {
         SM_LOG_WARNING(@"SMOperationQueueViewController not implemented for unified account");
@@ -30,7 +30,7 @@
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMOperationExecutor *opExecutor = [(SMUserAccount*)appDelegate.currentAccount operationExecutor];
     SMOperation *op = [opExecutor getOpAtIndex:row];
     

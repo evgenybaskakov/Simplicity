@@ -83,7 +83,7 @@
     [_preferableMessageFormatList addItemsWithTitles:_preferableMessageFormatNames];
     
     // Load current properties
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     //
     
@@ -184,34 +184,34 @@
 }
 
 - (IBAction)showContactImagesInMessageListAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowContactImages = (_showContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
     [self checkControlsEnabled];
 }
 
 - (IBAction)useServerImagesInMessageListAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldUseServerContactImages = (_useServerImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
     [self checkControlsEnabled];
 }
 
 - (IBAction)allowLowQualityImagesInMessageListAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldAllowLowQualityContactImages = (_allowLowQualityContactImagesInMessageListCheckBox.state == NSOnState);
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
     [self checkControlsEnabled];
 }
 
 - (IBAction)showEmailAddressesInMailboxesAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowEmailAddressesInMailboxes = (_showEmailAddressesInMailboxes.state == NSOnState);
     [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
 }
 
 - (IBAction)showNotificationsAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowNotifications = (_showNotificationsCheckBox.state == NSOnState);
 }
 
@@ -219,7 +219,7 @@
     NSUInteger item = _messageBodyLinesPreviewList.indexOfSelectedItem;
     NSAssert(item < _messageListPreviewLinesValues.count, @"bad item %lu", item);
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].messageListPreviewLineCount = [_messageListPreviewLinesValues[item] unsignedIntegerValue];
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
@@ -228,7 +228,7 @@
     NSUInteger item = _messageCheckPeriodList.indexOfSelectedItem;
     NSAssert(item < _messageCheckPeriodValues.count, @"bad item %lu", item);
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].messageCheckPeriodSec = [_messageCheckPeriodValues[item] unsignedIntegerValue];
 
     [[appDelegate.currentAccount messageListController] scheduleMessageListUpdate:YES];
@@ -238,7 +238,7 @@
     if(_downloadsFolderPopup.stringValue != nil) {
         NSURL *url = _downloadsFolderPopup.clickedPathItem.URL;
         
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[appDelegate preferencesController] setDownloadsFolder:url.path];
         
         _downloadsFolderPopup.URL = url;
@@ -246,7 +246,7 @@
 }
 
 - (IBAction)defaultReplyAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     switch([_defaultReplyActionList indexOfSelectedItem]) {
         case 0:
             [[appDelegate preferencesController] setDefaultReplyAction:SMDefaultReplyAction_ReplyAll];
@@ -261,7 +261,7 @@
 }
 
 - (IBAction)preferableMessageFormatAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     switch([_preferableMessageFormatList indexOfSelectedItem]) {
         case 0:
             [[appDelegate preferencesController] setPreferableMessageFormat:SMPreferableMessageFormat_HTML];

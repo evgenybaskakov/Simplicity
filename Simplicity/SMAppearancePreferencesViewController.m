@@ -48,7 +48,7 @@
 
     //
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger mailboxThemeValue = [[appDelegate preferencesController] mailboxTheme];
     
     NSAssert(mailboxThemeValue < _mailboxThemeNames.count, @"bad mailboxThemeValue %lu loaded from preferences", mailboxThemeValue);
@@ -100,7 +100,7 @@ static const NSUInteger maxButtonFontSize = 24;
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     _regularFont = [fontManager convertFont:[fontManager selectedFont]];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setRegularMessageFont:_regularFont];
     
     [self notifyFontsChanged];
@@ -111,7 +111,7 @@ static const NSUInteger maxButtonFontSize = 24;
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     _fixedFont = [fontManager convertFont:[fontManager selectedFont]];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setFixedMessageFont:_fixedFont];
     
     [self notifyFontsChanged];
@@ -142,7 +142,7 @@ static const NSUInteger maxButtonFontSize = 24;
 }
 
 - (IBAction)mailboxThemeListAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     SMMailboxTheme mailboxThemeValue = (SMMailboxTheme)[_mailboxThemeList indexOfSelectedItem];
 
@@ -152,7 +152,7 @@ static const NSUInteger maxButtonFontSize = 24;
 }
 
 - (IBAction)useFixedSizeFontForPlainTextMessagesAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].useFixedSizeFontForPlainTextMessages = (_fixedSizeFontForPlainMessagesCheckBox.state == NSOnState);
 
     [self notifyFontsChanged];

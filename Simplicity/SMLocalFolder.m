@@ -294,7 +294,7 @@
 }
 
 - (SMMessageBodyFetchQueue*)chooseBackgroundOrForegroundMessageBodyFetchQueue {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate.currentAccount messageListController] localFolderIsCurrent:self]) {
         return _messageBodyFetchQueue;
     }
@@ -459,7 +459,7 @@
                 // Sort messages asynchronously by sequence number from newest to oldest.
                 // Using date would be less efficient, so keep this rough approach.
                 dispatch_async(queue, ^{
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
                     
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
@@ -681,7 +681,7 @@
     if([_remoteFolderName isEqualToString:label]) {
         NSAssert(_kind == SMFolderKindRegular, @"label %@ cannot match a regular folder name", label);
         
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         
         SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
         NSAssert(trashFolder != nil, @"no trash folder");

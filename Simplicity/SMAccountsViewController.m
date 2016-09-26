@@ -96,13 +96,13 @@
 }
 
 - (BOOL)shouldShowUnifiedMailboxButton {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     return ([[appDelegate preferencesController] shouldUseUnifiedMailbox] && appDelegate.accounts.count > 1)? YES : NO;
 }
 
 - (void)reloadAccountViews:(BOOL)reloadControllers {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     const NSInteger accountCount = appDelegate.accounts.count;
     
@@ -133,7 +133,7 @@
                 accountButtonViewController.accountImage.image = [SMAccountImageSelection defaultImage]; // TODO
             }
             else {
-                if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+                if([[appDelegate preferencesController] shouldShowEmailAddressesInMailboxes]) {
                     accountButtonViewController.accountName.stringValue = [appDelegate.accounts[i].accountAddress email];
                 }
                 else {
@@ -302,7 +302,7 @@
 }
 
 - (void)changeAccountTo:(NSInteger)accountIdx {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;
 
     BOOL updateViewControllers = NO;
@@ -359,7 +359,7 @@
     NSAssert(account != nil, @"account is nil");
     NSAssert(error != nil, @"error is nil");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
@@ -378,7 +378,7 @@
     
     NSAssert(account != nil, @"account is nil");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
@@ -396,7 +396,7 @@
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     if(accountIdx != NSNotFound) {
@@ -407,7 +407,7 @@
 }
 
 - (void)updateAccountButtonInfo:(NSInteger)accountIdx {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[accountIdx];
     
     NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
@@ -426,7 +426,7 @@
 }
 
 - (void)updateUnifiedAccountButtonInfo {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     NSString *unreadCountStr = @"";
     if([self shouldShowUnifiedMailboxButton] && !appDelegate.currentAccountIsUnified) {

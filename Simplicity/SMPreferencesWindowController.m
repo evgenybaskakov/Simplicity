@@ -93,7 +93,7 @@
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hidePreferencesWindow];
 }
 
@@ -122,7 +122,7 @@
 }
 
 - (IBAction)closeAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hidePreferencesWindow];
 }
 

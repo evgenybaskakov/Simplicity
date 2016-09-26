@@ -170,7 +170,7 @@ static const NSUInteger OP_QUEUES_SAVE_DELAY_SEC = 5;
 }
 
 - (void)notifyController {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] operationQueueWindowController] reloadOperationQueue];
 }
 

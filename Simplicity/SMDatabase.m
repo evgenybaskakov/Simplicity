@@ -222,7 +222,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 - (BOOL)shouldStartReclaimingOldData {
     const uint64_t fileSizeMb = [self dbFileSize] / (1024 * 1024);
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger maxStorageSizeMb = [appDelegate preferencesController].localStorageSizeMb;
     
     if(maxStorageSizeMb != 0 && fileSizeMb >= maxStorageSizeMb) {
@@ -236,7 +236,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
 - (BOOL)shouldReclaimMoreOldData {
     const uint64_t fileSizeMb = [self dbFileSize] / (1024 * 1024);
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger maxStorageSizeMb = [appDelegate preferencesController].localStorageSizeMb;
     NSUInteger sizeToReclaimMb = maxStorageSizeMb / 5;
     

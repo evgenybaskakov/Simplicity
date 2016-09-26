@@ -137,7 +137,7 @@
     }
 
     if(searchNetwork) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email allowWebSiteImage:allowWebSiteImage completionBlock:^(NSImage *image) {
             if(completionBlock) {
                 BOOL allowImage = [self allowImage:image];
@@ -154,7 +154,8 @@
 }
 
 - (BOOL)allowImage:(NSImage*)image {
-    if((image.size.width < QUALITY_CONTACT_IMAGE_W || image.size.height < QUALITY_CONTACT_IMAGE_H) && ![[[[NSApplication sharedApplication] delegate] preferencesController] shouldAllowLowQualityContactImages]) {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if((image.size.width < QUALITY_CONTACT_IMAGE_W || image.size.height < QUALITY_CONTACT_IMAGE_H) && ![[appDelegate preferencesController] shouldAllowLowQualityContactImages]) {
         return NO;
     }
     else {

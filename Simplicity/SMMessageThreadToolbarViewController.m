@@ -33,7 +33,7 @@
     [_searchFieldView.trailingAnchor constraintEqualToAnchor:_searchFieldViewController.view.trailingAnchor constant:0].active = true;
     [_searchFieldView.centerYAnchor constraintEqualToAnchor:_searchFieldViewController.view.centerYAnchor constant:0].active = true;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;
     
     _searchFieldViewController.target = appController;
@@ -47,7 +47,7 @@
 }
 
 - (IBAction)messageNavigationAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     switch(_messageNavigationControl.selectedSegment) {
         case 0:

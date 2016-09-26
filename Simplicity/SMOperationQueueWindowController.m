@@ -29,7 +29,7 @@
 }
 
 - (void)closeOperationQueueWindow {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hideOperationQueueSheet];
 }
 

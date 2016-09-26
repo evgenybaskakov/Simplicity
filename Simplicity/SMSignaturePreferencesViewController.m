@@ -33,7 +33,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [_signatureEditor setEditable:YES];
     [_signatureEditor setEditingDelegate:self];
@@ -62,7 +62,7 @@
     // Save previous signature state.
     [self saveSignature:(_useOneSignatureCheckBox.state == NSOnState? NO : YES)];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     BOOL useSingleSignature = (_useOneSignatureCheckBox.state == NSOnState);
 
     [[appDelegate preferencesController] setShouldUseSingleSignature:useSingleSignature];
@@ -82,7 +82,7 @@
 }
 
 - (void)initAccountList:(BOOL)useSingleSignature {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [_accountList removeAllItems];
     
@@ -101,7 +101,7 @@
 }
 
 - (void)initSignatureEditor:(BOOL)useSingleSignature {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(useSingleSignature) {
         NSString *signature = [[appDelegate preferencesController] singleSignature];
@@ -116,7 +116,7 @@
 - (void)saveSignature:(BOOL)useSingleSignature {
     NSString *signature = [(DOMHTMLElement *)[[_signatureEditor.mainFrame DOMDocument] documentElement] innerHTML];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(useSingleSignature) {
         [[appDelegate preferencesController] setSingleSignature:signature];

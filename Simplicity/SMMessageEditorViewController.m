@@ -111,7 +111,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         _editorsUndoList = [NSMutableArray array];
         
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         
         // Toolbar
         
@@ -199,7 +199,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [_innerView addSubview:_messageEditorToolbarViewController.view];
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.accounts.count > 1) {
         [_innerView addSubview:_fromBoxViewController.view];
     }
@@ -298,7 +298,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         [window setInitialFirstResponder:_subjectBoxViewController.textField];
         
-        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         if(appDelegate.accounts.count > 1) {
             [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
         }
@@ -318,7 +318,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             
             [window setInitialFirstResponder:_subjectBoxViewController.textField];
             
-            SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             if(appDelegate.accounts.count > 1) {
                 [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
             }
@@ -335,7 +335,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             
             [window setInitialFirstResponder:_toBoxViewController.tokenField];
             
-            SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             if(appDelegate.accounts.count > 1) {
                 [_fromBoxViewController.itemList setNextKeyView:_toBoxViewController.tokenField];
             }
@@ -357,7 +357,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSAssert(_fromBoxViewController.itemList != nil, @"_fromBoxViewController.itemList == nil");
     [_fromBoxViewController.itemList removeAllItems];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     for(NSUInteger i = 0, n = preferencesController.accountsCount; i < n; i++) {
         NSString *userAddressAndName = [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:i], [preferencesController userEmail:i] ];
@@ -416,7 +416,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
     
     SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
-    if(![[[[NSApplication sharedApplication] delegate] accounts] containsObject:account]) {
+
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if(![[appDelegate accounts] containsObject:account]) {
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"OK"];
@@ -513,7 +515,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
     SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
     
-    if(![[[[NSApplication sharedApplication] delegate] accounts] containsObject:account]) {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if(![[appDelegate accounts] containsObject:account]) {
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"OK"];
@@ -686,7 +689,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // Adjust the main menu
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     appController.htmlTextFormatMenuItem.state = NSOnState;
@@ -776,7 +779,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         else {
             NSString *signature;
             
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             if([[appDelegate preferencesController] shouldUseSingleSignature]) {
                 signature = [[appDelegate preferencesController] singleSignature];
             }
@@ -815,7 +818,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     // Adjust the main menu
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     appController.htmlTextFormatMenuItem.state = NSOffState;
@@ -981,7 +984,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     yPos += _messageEditorToolbarViewController.view.frame.size.height - 1;
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.accounts.count > 1) {
         _fromBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _fromBoxViewController.view.frame.size.height);
         

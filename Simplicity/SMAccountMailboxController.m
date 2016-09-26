@@ -105,7 +105,7 @@
 
             NSSet<SMFolderDesc*> *vanishedFolders;
             if([mailbox updateIMAPFolders:folders vanishedFolders:&vanishedFolders]) {
-                SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
                 NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
                 NSAssert(accountIdx != NSNotFound, @"mailbox account is not found");
@@ -157,7 +157,7 @@
     if([mailbox loadExistingFolders:folderDescs]) {
         [self ensureMainLocalFoldersCreated];
         
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderListForAccount:) withObject:_account waitUntilDone:NO];
     }
 
@@ -243,7 +243,7 @@
     SM_LOG_INFO(@"Enqueueing deleting of remote folder %@", folderName);
     
     // 1. Delete the remote folder
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
     // 2. Remove folder from the mailbox

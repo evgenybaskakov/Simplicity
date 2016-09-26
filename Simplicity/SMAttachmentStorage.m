@@ -62,7 +62,7 @@
 - (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
     NSAssert(!_account.unified, @"current account is unified, attachment storage is stubbed");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
     NSInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];

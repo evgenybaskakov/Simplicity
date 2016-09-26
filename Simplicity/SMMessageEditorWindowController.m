@@ -77,14 +77,14 @@
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
     [appController closeMessageEditorWindow:self];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
     appController.textFormatMenuItem.enabled = YES;
@@ -104,7 +104,7 @@
 }
 
 - (void)makeHTMLTextFormat:(id)sender {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
     appController.htmlTextFormatMenuItem.state = NSOnState;
@@ -114,7 +114,7 @@
 }
 
 - (void)makePlainTextFormat:(id)sender {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     appController.htmlTextFormatMenuItem.state = NSOffState;

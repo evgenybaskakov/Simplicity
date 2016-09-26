@@ -93,7 +93,7 @@
         return;
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     if(clearSearch) {
@@ -121,7 +121,7 @@
     if(_currentFolder == nil)
         return;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     [appController clearSearch:NO cancelFocus:YES];
@@ -149,7 +149,7 @@
     BOOL updateSearchResults = (changeFolder? NO : YES);
     [(SMSearchLocalFolder*)_currentFolder loadSelectedMessages:searchResults updateResults:updateSearchResults];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
@@ -175,7 +175,7 @@
 - (void)scheduleMessageListUpdate:(Boolean)now {
     [self cancelScheduledMessageListUpdate];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
     
     if(updateIntervalSec == 0) {
@@ -193,7 +193,7 @@
 - (void)messagesInLocalFolderUpdated:(NSNotification *)notification {
     SMLocalFolder *localFolder = [[notification userInfo] objectForKey:@"LocalFolderInstance"];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(_currentFolder == localFolder || (appDelegate.currentAccountIsUnified && _account.unified && [(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder])) {
         NSNumber *resultValue = [[notification userInfo] objectForKey:@"UpdateResult"];
         SMMessageStorageUpdateResult updateResult = [resultValue unsignedIntegerValue];
@@ -224,7 +224,7 @@
     SM_LOG_DEBUG(@"msg uid %u, remote folder %@, threadId %llu", uid, remoteFolderName, messageThread.threadId);
 
     if(_account.unified) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [appDelegate.messageThreadAccountProxy fetchMessageBodyUrgently:messageThread uid:uid messageId:messageId messageDate:messageDate remoteFolder:remoteFolderName];
     }
     else {
@@ -239,9 +239,9 @@
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates account:&account];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(_currentFolder == localFolder || (appDelegate.currentAccountIsUnified && _account.unified && [(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder])) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         SMAppController *appController = [appDelegate appController];
         
         [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];

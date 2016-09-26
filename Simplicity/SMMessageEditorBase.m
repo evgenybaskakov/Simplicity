@@ -82,7 +82,8 @@ static NSDictionary *fontNameToIndexMap;
 }
 
 + (NSString*)newMessageHTMLBeginTemplate:(Boolean)folded {
-    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
     NSFont *regularFont = preferencesController.regularMessageFont;
     NSString *fontFamily = regularFont.familyName;
     NSUInteger fontSize = (NSUInteger)regularFont.pointSize;

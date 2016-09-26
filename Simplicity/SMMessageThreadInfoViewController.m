@@ -72,7 +72,7 @@
     if(_messageThread == messageThread)
         return;
 /*
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     if(_messageThread.flagged) {
         _starButton.image = appDelegate.imageRegistry.yellowStarImage;
@@ -105,7 +105,7 @@
     
     // star
 /*
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     _starButton = [[NSButton alloc] init];
     _starButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -214,7 +214,7 @@
     if(_messageThread == nil)
         return;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
     
     NSMutableArray<NSString*> *labels = [NSMutableArray array];

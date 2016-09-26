@@ -160,7 +160,7 @@ static NSArray *_lastAddressesUsed;
 
     NSString *addressUniqueId = nil;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate addressBookController] findAddress:representedObject uniqueId:&addressUniqueId]) {
         [menu addItemWithTitle:@"Open in address book" action:@selector(openInAddressBookAction:) keyEquivalent:@""];
     }
@@ -349,7 +349,7 @@ static NSArray *_lastAddressesUsed;
 }
 
 - (void)newMessageAction:(NSMenuItem*)menuItem {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
@@ -359,14 +359,14 @@ static NSArray *_lastAddressesUsed;
     NSAssert(_addressWithMenu, @"no address for menu");
     NSAssert(_addressWithMenuUniqueId, @"no address unique id for menu");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate addressBookController] openAddressInAddressBook:_addressWithMenuUniqueId edit:NO];
 }
 
 - (void)addToAddressBookAction:(NSMenuItem*)menuItem {
     NSString *addressUniqueId = nil;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate addressBookController] addAddress:_addressWithMenu uniqueId:&addressUniqueId]) {
         [[appDelegate addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }

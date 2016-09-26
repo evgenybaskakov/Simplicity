@@ -15,6 +15,7 @@
 @class SMMessageEditorWebView;
 @class SMInlineButtonPanelViewController;
 @class SMMessageThreadViewController;
+@class SMAttachmentsPanelViewController;
 
 @interface SMMessageEditorViewController : NSViewController
 
@@ -49,5 +50,6 @@
 - (void)setTextBackgroundColor;
 - (void)closeEditor:(Boolean)shouldSaveDraft;
 - (void)saveDocument:(id)sender;
+- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
 
 @end

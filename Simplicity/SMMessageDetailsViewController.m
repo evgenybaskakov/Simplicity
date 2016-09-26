@@ -139,7 +139,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 - (void)updateMessage {
     NSAssert(_currentMessage != nil, @"nil message");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
     if([account.accountAddress matchEmail:_currentMessage.fromAddress]) {
@@ -203,7 +203,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 #define V_GAP_HALF (V_GAP/2)
 
 - (void)createSubviews {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     NSView *view = [self view];
 
@@ -300,7 +300,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)setReplyButtonImage {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     if(_currentMessage && _currentMessage.draft) {
         _replyOrEditButton.image = appDelegate.imageRegistry.editImage;
@@ -335,7 +335,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     }
 
     if(_attachmentButton == nil) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
         _attachmentButton = [[NSButton alloc] init];
         _attachmentButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -532,7 +532,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     if(_fullHeaderShown)
         return;
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     NSView *view = [self view];
     NSAssert(view != nil, @"no view");
@@ -630,7 +630,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 #pragma mark Actions
 
 - (void)editDraft:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     SMMessage *m = _currentMessage;
     
@@ -657,7 +657,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)composeReplyOrReplyAll:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     if([[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll) {
         [self composeReplyAll:sender];

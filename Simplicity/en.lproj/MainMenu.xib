@@ -659,7 +659,7 @@
             <rect key="contentRect" x="335" y="390" width="810" height="542"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="800" height="400"/>
-            <view key="contentView" id="372">
+            <view key="contentView" wantsLayer="YES" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="810" height="542"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>

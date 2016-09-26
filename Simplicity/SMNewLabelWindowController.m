@@ -31,7 +31,7 @@
     NSString *folderName = _labelName.stringValue;
     NSString *parentFolderName = _labelNestedCheckbox.state == NSOnState? _nestingLabelNameButton.titleOfSelectedItem : nil;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     NSAssert(!appDelegate.currentAccountIsUnified, @"cannot create label in unified account");
     NSAssert([appDelegate.currentMailboxController isKindOfClass:[SMAccountMailboxController class]], @"can't create folders in the unified mailbox");
@@ -70,12 +70,12 @@
     [_labelColorWell deactivate];
     [[NSColorPanel sharedColorPanel] orderOut:nil];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] hideNewLabelSheet];
 }
 
 - (void)updateExistingLabelsList {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
 
     NSMutableArray *labelsList = [NSMutableArray array];
@@ -92,7 +92,7 @@
         [_nestingLabelNameButton setEnabled:YES];
         [_labelNestedCheckbox setState:NSOnState];
 
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSColor *nestingColor = [[appDelegate.currentAccount folderColorController] colorForFolder:_suggestedNestingLabel];
         
         if(nestingColor != nil) {

@@ -146,7 +146,7 @@
     
     [self reloadAccountImages];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     if([preferencesController accountsCount] > 0) {
@@ -159,7 +159,7 @@
         [self loadCurrentValues:-1];
         [self setAccountPanelEnabled:NO];
     }
-
+    
     _useUnifiedMailboxButton.state = ([[appDelegate preferencesController] shouldUseUnifiedMailbox]? NSOnState : NSOffState);
     _useUnifiedMailboxButton.enabled = ([preferencesController accountsCount] > 1? YES : NO);
 }
@@ -170,7 +170,7 @@
 
 - (void)loadCurrentValues:(NSInteger)accountIdx {
     if(accountIdx >= 0) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         SMPreferencesController *preferencesController = [appDelegate preferencesController];
         
         _accountNameField.stringValue = [preferencesController accountName:accountIdx];
@@ -194,7 +194,7 @@
         [_smtpAuthTypeList selectItemAtIndex:[self authTypeIndex:[preferencesController smtpAuthType:accountIdx]]];
         
         _accountImageButton.image = _accountImages[accountIdx];
-
+        
         _useImageFromAddressBook.state = ([[appDelegate preferencesController] useAddressBookAccountImage:accountIdx]? NSOnState : NSOffState);
         _useImageFromAddressBook.enabled = YES;
     }
@@ -224,15 +224,15 @@
 }
 
 - (void)reloadAccountImages {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
-
+    
     NSUInteger accountsCount = [preferencesController accountsCount];
     _accountImages = [NSMutableArray arrayWithCapacity:accountsCount];
     
     for(NSUInteger i = 0; i < accountsCount; i++) {
         _accountImages[i] = [appDelegate.accounts[i] accountImage];
-
+        
         if(i == [self selectedAccount]) {
             _accountImageButton.image = _accountImages[i];
         }
@@ -333,9 +333,9 @@
 #pragma mark Main account settings actions
 
 - (IBAction)addAccountAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] showNewAccountWindow];
-
+    
     if(appDelegate.accounts.count != 0) {
         _removeAccountButton.enabled = YES;
     }
@@ -344,9 +344,10 @@
 - (IBAction)removeAccountAction:(id)sender {
     NSInteger selectedAccount = [self selectedAccount];
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
-
-    NSString *accountName = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:selectedAccount];
-
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    NSString *accountName = [[appDelegate preferencesController] accountName:selectedAccount];
+    
     NSAlert *alert = [[NSAlert alloc] init];
     
     [alert addButtonWithTitle:@"OK"];
@@ -358,9 +359,7 @@
         SM_LOG_DEBUG(@"Account deletion cancelled");
         return;
     }
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
+    
     if(!appDelegate.currentAccountIsUnified && selectedAccount == appDelegate.currentAccountIdx) {
         if(selectedAccount == 0) {
             if(appDelegate.accounts.count > 1) {
@@ -382,21 +381,21 @@
             NSAssert(appDelegate.accounts.count != 1, @"unified account can't be selected if there's just one account total");
         }
     }
-
+    
     [appDelegate removeAccount:selectedAccount];
     
     [_accountImages removeObjectAtIndex:selectedAccount];
     [_accountTableView reloadData];
-
+    
     if(selectedAccount > 0) {
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedAccount-1] byExtendingSelection:NO];
-
+        
         [self setAccountPanelEnabled:YES];
     }
     else {
         [self setAccountPanelEnabled:NO];
     }
-
+    
     [appDelegate enableOrDisableAccountControls];
     
     [[[appDelegate appController] preferencesWindowController] reloadAccounts];
@@ -435,8 +434,8 @@
     NSImage *newAccountImage = _urlChooserViewController.chosenImage;
     
     if(newAccountImage != nil) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-         
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        
         NSInteger selectedAccount = [self selectedAccount];
         NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
         
@@ -459,8 +458,9 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     NSString *newAccountName = _accountNameField.stringValue;
-   
-    if([newAccountName isEqualToString:[[[[NSApplication sharedApplication] delegate] preferencesController] accountName:selectedAccount]]) {
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if([newAccountName isEqualToString:[[appDelegate preferencesController] accountName:selectedAccount]]) {
         SM_LOG_INFO(@"Account name '%@' did not change", newAccountName);
         return;
     }
@@ -470,8 +470,6 @@
         return;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-
     if([[appDelegate preferencesController] accountExists:newAccountName]) {
         NSAlert *alert = [[NSAlert alloc] init];
         
@@ -483,8 +481,8 @@
         
         return;
     }
-
-    if(![[[[NSApplication sharedApplication] delegate] preferencesController] renameAccount:selectedAccount newName:newAccountName]) {
+    
+    if(![[appDelegate preferencesController] renameAccount:selectedAccount newName:newAccountName]) {
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"OK"];
@@ -506,9 +504,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setFullUserName:selectedAccount userName:_fullUserNameField.stringValue];
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setFullUserName:selectedAccount userName:_fullUserNameField.stringValue];
     [appDelegate reloadAccount:selectedAccount];
 }
 
@@ -517,28 +514,27 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
     [appDelegate reloadAccount:selectedAccount];
 }
 
 - (IBAction)useImageFromAddressBookAction:(id)sender {
     NSInteger selectedAccount = [self selectedAccount];
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
-
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:(_useImageFromAddressBook.state == NSOnState)];
-
+    
     [appDelegate reloadAccount:selectedAccount];
-
+    
     [self reloadAccounts];
 }
 
 - (IBAction)checkUnifiedMailboxAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     BOOL useUnifiedAccount = (_useUnifiedMailboxButton.state == NSOnState);
-
+    
     [appDelegate preferencesController].shouldUseUnifiedMailbox = useUnifiedAccount;
     
     if(!useUnifiedAccount) {
@@ -556,7 +552,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapServer:selectedAccount server:_imapServerField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapServer:selectedAccount server:_imapServerField.stringValue];
 }
 
 - (IBAction)enterImapUserNameAction:(id)sender {
@@ -564,7 +561,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapUserName:selectedAccount userName:_imapUserNameField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapUserName:selectedAccount userName:_imapUserNameField.stringValue];
 }
 
 - (IBAction)enterImapPasswordAction:(id)sender {
@@ -572,7 +570,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPassword:selectedAccount password:_imapPasswordField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapPassword:selectedAccount password:_imapPasswordField.stringValue];
 }
 
 - (IBAction)enterSmtpServerAction:(id)sender {
@@ -580,7 +579,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpServer:selectedAccount server:_smtpServerField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpServer:selectedAccount server:_smtpServerField.stringValue];
 }
 
 - (IBAction)enterSmtpUserNameAction:(id)sender {
@@ -588,7 +588,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpUserName:selectedAccount userName:_smtpUserNameField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpUserName:selectedAccount userName:_smtpUserNameField.stringValue];
 }
 
 - (IBAction)enterSmtpPasswordAction:(id)sender {
@@ -596,7 +597,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPassword:selectedAccount password:_smtpPasswordField.stringValue];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpPassword:selectedAccount password:_smtpPasswordField.stringValue];
 }
 
 #pragma mark Servers actions
@@ -606,7 +608,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_imapConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapConnectionType:selectedAccount connectionType:connectionType];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapConnectionType:selectedAccount connectionType:connectionType];
 }
 
 - (IBAction)selectImapAuthTypeAction:(id)sender {
@@ -614,7 +617,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_imapAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapAuthType:selectedAccount authType:authType];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapAuthType:selectedAccount authType:authType];
 }
 
 - (IBAction)enterImapPortAction:(id)sender {
@@ -622,7 +626,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setImapPort:selectedAccount port:(unsigned int)[_imapPortField.stringValue integerValue]];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setImapPort:selectedAccount port:(unsigned int)[_imapPortField.stringValue integerValue]];
 }
 
 - (NSString*)connectionStatusText:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
@@ -664,7 +669,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_smtpConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpConnectionType:selectedAccount connectionType:connectionType];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpConnectionType:selectedAccount connectionType:connectionType];
 }
 
 - (IBAction)selectSmtpAuthTypeAction:(id)sender {
@@ -672,7 +678,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_smtpAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpAuthType:selectedAccount authType:authType];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpAuthType:selectedAccount authType:authType];
 }
 
 - (IBAction)enterSmtpPortAction:(id)sender {
@@ -680,7 +687,8 @@
     NSAssert(selectedAccount >= 0, @"bad selected Account %ld", selectedAccount);
     
     // TODO: validate value
-    [[[[NSApplication sharedApplication] delegate] preferencesController] setSmtpPort:selectedAccount port:(unsigned int)[_smtpPortField.stringValue integerValue]];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] setSmtpPort:selectedAccount port:(unsigned int)[_smtpPortField.stringValue integerValue]];
 }
 
 - (IBAction)checkImapConnectionAction:(id)sender {
@@ -730,7 +738,8 @@
 #pragma mark Account list table
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    return [[appDelegate preferencesController] accountsCount];
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row {
@@ -741,14 +750,16 @@
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"MainCell" owner:self];
     
     cellView.imageView.image = _accountImages[row];
-    cellView.textField.stringValue = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    cellView.textField.stringValue = [[appDelegate preferencesController] accountName:row];
     
     return cellView;
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     NSInteger selectedRow = [_accountTableView selectedRow];
-    if(selectedRow < 0 || selectedRow >= [[[[NSApplication sharedApplication] delegate] preferencesController] accountsCount]) {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if(selectedRow < 0 || selectedRow >= [[appDelegate preferencesController] accountsCount]) {
         _removeAccountButton.enabled = NO;
         return;
     }
@@ -775,7 +786,7 @@
 
 - (void)reloadAccounts {
     NSInteger selectedRow = [_accountTableView selectedRow];
-
+    
     [_accountTableView reloadData];
     
     if(selectedRow >= 0 && selectedRow < [_accountTableView numberOfRows]) {
@@ -785,21 +796,22 @@
         [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     NSUInteger accountsCount = [preferencesController accountsCount];
-
+    
     [self setAccountPanelEnabled:(accountsCount > 0? YES : NO)];
     
     _useUnifiedMailboxButton.enabled = (accountsCount > 1? YES : NO);
-
+    
     [self reloadAccountImages];
 }
 
 - (void)showAccount:(NSString*)accountName {
     for(NSInteger row = 0; row < [_accountTableView numberOfRows]; row++) {
-        NSString *accountInRow = [[[[NSApplication sharedApplication] delegate] preferencesController] accountName:row];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        NSString *accountInRow = [[appDelegate preferencesController] accountName:row];
         
         if([accountInRow isEqualToString:accountName]) {
             [_accountTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];

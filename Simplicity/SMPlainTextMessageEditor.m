@@ -53,7 +53,7 @@
 }
 
 - (void)setMessageFont {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     _textView.font = (preferencesController.useFixedSizeFontForPlainTextMessages? preferencesController.fixedMessageFont : preferencesController.regularMessageFont);

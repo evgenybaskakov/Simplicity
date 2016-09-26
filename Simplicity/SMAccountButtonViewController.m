@@ -89,19 +89,19 @@
     SMUserAccount *account;
     [SMNotificationsController getAccountPreferencesChangedParams:notification account:&account];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(_accountIdx >= 0 && appDelegate.accounts[_accountIdx] == account) {
         [self reloadAccountInfo];
     }
 }
 
 - (void)reloadAccountInfo {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(_accountIdx >= 0 && _accountIdx < appDelegate.accounts.count, @"bad _accountIdx %ld", _accountIdx);
 
     _accountImage.image = [appDelegate.accounts[_accountIdx] accountImage];
     
-    if([[[[NSApplication sharedApplication] delegate] preferencesController] shouldShowEmailAddressesInMailboxes]) {
+    if([[appDelegate preferencesController] shouldShowEmailAddressesInMailboxes]) {
         _accountName.stringValue = [[appDelegate.accounts[_accountIdx] accountAddress] email];
     }
     else {

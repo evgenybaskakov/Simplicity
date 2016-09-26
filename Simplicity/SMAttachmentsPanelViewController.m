@@ -264,7 +264,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 }
 
 - (void)saveAttachmentToDownloads:(SMAttachmentItem*)attachmentItem {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSString *downloadsFolder = [[appDelegate preferencesController] downloadsFolder];
     NSAssert(downloadsFolder != nil, @"downloadsFolder is nil");
     

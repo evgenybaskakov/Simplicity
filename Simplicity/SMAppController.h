@@ -91,6 +91,13 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 @property (readonly, nonatomic) SMSearchRequestInputController *searchRequestInputController;
 @property (readonly, nonatomic) NSWindow *searchSuggestionsMenu;
 
+- (void)searchUsingToolbarSearchField:(id)sender;
+- (void)cancelSearchUsingToolbarSearchField:(id)sender;
+- (void)clearSearchUsingToolbarSearchField:(id)sender;
+- (void)enterSearchUsingToolbarSearchField:(id)sender;
+- (void)searchMenuCursorUp:(id)sender;
+- (void)searchMenuCursorDown:(id)sender;
+
 - (void)closeSearchSuggestionsMenu;
 - (void)adjustSearchSuggestionsMenuFrame;
 - (void)startNewSearch:(BOOL)showSuggestionsMenu;

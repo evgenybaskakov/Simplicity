@@ -84,7 +84,7 @@
             
             [self loadSelectedMessagesInternal];
             
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             [[appDelegate appController] finishSearch:SMSearchOperationKind_Content];
         }
     }
@@ -209,7 +209,7 @@
                 // Sort messages asynchronously by sequence number from newest to oldest.
                 // Using date would be less efficient, so keep this rough approach.
                 dispatch_async(queue, ^{
-                    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+                    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
                     
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     

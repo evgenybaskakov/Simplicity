@@ -54,7 +54,7 @@
 - (void)windowWillClose:(NSNotification *)notification {
     [_messageThreadViewController messageThreadViewWillClose];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;
     
     [appController closeMessageWindow:self];

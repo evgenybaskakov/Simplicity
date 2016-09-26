@@ -110,7 +110,7 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] closeNewAccountWindow];
 }
 
@@ -138,7 +138,7 @@ static const NSUInteger LAST_STEP = 3;
 }
 
 - (IBAction)cancelAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
     [appController closeNewAccountWindow];
@@ -457,7 +457,7 @@ static const NSUInteger LAST_STEP = 3;
     else {
         SMAddress *address = [[SMAddress alloc] initWithFullName:[SMStringUtils trimString:_fullNameField.stringValue] email:[SMStringUtils trimString:_emailAddressField.stringValue] representationMode:SMAddressRepresentation_FirstNameFirst];
         
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSImage *accountImage = [appDelegate.addressBookController loadPictureForAddress:address searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
         
         if(accountImage) {
@@ -508,7 +508,7 @@ static const NSUInteger LAST_STEP = 3;
     NSString *accountName = [SMStringUtils trimString:_accountNameField.stringValue];
     NSAssert(accountName != nil && accountName.length > 0, @"no account name");
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] accountExists:accountName]) {
         SM_LOG_WARNING(@"Account '%@' already exists", accountName);
         

@@ -100,7 +100,8 @@
 - (void)setDefaultFonts {
     WebView *view = (WebView *)self.view;
     
-    SMPreferencesController *preferencesController = [[[NSApplication sharedApplication] delegate] preferencesController];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
     NSFont *regularFont = preferencesController.regularMessageFont;
     NSFont *fixedFont = preferencesController.fixedMessageFont;

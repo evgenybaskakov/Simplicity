@@ -163,7 +163,7 @@
 }
 
 - (void)attachUnifiedLocalFolderToUserAccounts:(SMUnifiedLocalFolder*)unifiedLocalFolder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(_account.unified, @"account is not unified as expected");
 
     for(SMUserAccount *userAccount in appDelegate.accounts) {
@@ -187,7 +187,7 @@
 }
 
 - (void)attachLocalFolderToUnifiedAccount:(SMLocalFolder*)localFolder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(!_account.unified, @"account itself is unified");
     
     SMUnifiedLocalFolder *unifiedLocalFolder;
@@ -222,7 +222,7 @@
 }
 
 - (void)detachLocalFolderFromUnifiedAccount:(SMLocalFolder*)localFolder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(!_account.unified, @"account itself is unified");
     
     SMUnifiedLocalFolder *unifiedLocalFolder;

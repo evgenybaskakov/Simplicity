@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -20,13 +20,13 @@
             <rect key="frame" x="0.0" y="0.0" width="209" height="22"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Box" boxType="custom" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Hj3-qx-zYQ" customClass="SMTokenFieldBox">
+                <box boxType="custom" borderType="line" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hj3-qx-zYQ" customClass="SMTokenFieldBox">
                     <rect key="frame" x="0.0" y="0.0" width="209" height="22"/>
                     <view key="contentView" id="TDt-eB-H5t">
                         <rect key="frame" x="1" y="1" width="207" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="v3R-uR-s2s">
+                            <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="v3R-uR-s2s">
                                 <rect key="frame" x="189" y="2" width="16" height="16"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="16" id="KaO-kC-exl"/>
@@ -35,15 +35,16 @@
                             </progressIndicator>
                             <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="ICV-Fl-f4g">
                                 <rect key="frame" x="20" y="0.0" width="167" height="22"/>
-                                <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="dw6-0d-1iy">
+                                <clipView key="contentView" copiesOnScroll="NO" id="dw6-0d-1iy">
                                     <rect key="frame" x="0.0" y="0.0" width="167" height="22"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wRa-k7-jEY">
                                             <rect key="frame" x="0.0" y="-72" width="168" height="20"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </view>
                                     </subviews>
-                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="xfM-my-qbG">
                                     <rect key="frame" x="-100" y="-100" width="421" height="16"/>
@@ -92,7 +93,6 @@
                             <constraint firstItem="JQp-s0-5rB" firstAttribute="top" secondItem="TDt-eB-H5t" secondAttribute="top" constant="3" id="pE0-rc-9B2"/>
                         </constraints>
                     </view>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                     <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 </box>
             </subviews>

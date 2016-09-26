@@ -64,7 +64,7 @@
 - (void)awakeFromNib {
     SM_LOG_DEBUG(@"SMAppController: awakeFromNib: _messageListViewController %@", _messageListViewController);
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     appDelegate.appController = self;
 
     //
@@ -310,7 +310,7 @@
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) { // TODO: do we need this check?
         [self updateApplicationUnreadCountBadge:localFolder];
     }
@@ -322,7 +322,7 @@
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) { // TODO: do we need this check?
         [self updateApplicationUnreadCountBadge:localFolder];
     }
@@ -334,7 +334,7 @@
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(account == appDelegate.currentAccount) { // TODO: do we need this check?
         [self updateApplicationUnreadCountBadge:localFolder];
     }
@@ -345,7 +345,7 @@
 }
 
 - (void)updateMailboxFolderListForAccount:(id<SMAbstractAccount>)account {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     SM_LOG_DEBUG(@"Updating folder list...");
 
@@ -385,7 +385,7 @@
     _searchingForSuggestions = NO;
     _searchingForContent = NO;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     [[appDelegate.currentAccount searchController] stopLatestSearch];
     
@@ -429,7 +429,7 @@
 }
 
 - (void)searchUsingToolbarSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[[appDelegate appController] mailboxViewController] clearSelection];
     
     [self startNewSearch:YES];
@@ -513,7 +513,7 @@
     
     _searchSuggestionsMenuShown = NO;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate.appController searchRequestInputController] startNewSearchWithPattern:searchString]) {
         [_messageThreadToolbarViewController.searchFieldViewController startProgress];
 
@@ -545,7 +545,7 @@
 }
 
 - (void)moveSelectedMessageThreadsToTrash {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
@@ -560,7 +560,7 @@
         [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel];
     }
     else if(curWindow == [[NSApplication sharedApplication] mainWindow]) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[appDelegate.appController messageThreadViewController] showFindContentsPanel];
     }
 }
@@ -632,7 +632,7 @@
 #pragma mark Message editor window management
 
 - (IBAction)composeMessageAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(appDelegate.accounts.count == 0) {
         SM_LOG_INFO(@"no accounts");
@@ -755,7 +755,7 @@
  TODO!
  
  
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
     id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByName:inboxFolder.fullName];
     

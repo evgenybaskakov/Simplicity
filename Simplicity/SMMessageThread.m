@@ -107,7 +107,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 - (SMThreadUpdateResult)addMessage:(SMMessage*)message {
     message.updateStatus = SMMessageUpdateStatus_Unknown;
     
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
     NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:message.messageId];
@@ -142,7 +142,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (SMMessage*)getMessageByMessageId:(uint64_t)messageId {
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
     NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:messageId];
@@ -342,7 +342,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody hasAttachments:(BOOL)hasAttachments remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount messageIsNew:(BOOL*)messageIsNew {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
     SM_LOG_DEBUG(@"looking for imap message with id %llu", imapMessage.gmailMessageID);
@@ -521,7 +521,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
 }
 
 - (void)removeMessageFromMessageThread:(uint64_t)messageId {
-    SMAppDelegate *appDelegate =  [[NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
     NSNumber *messageIdNumber = [NSNumber numberWithUnsignedLongLong:messageId];

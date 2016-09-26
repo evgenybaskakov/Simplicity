@@ -176,7 +176,7 @@
         return;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(appDelegate != nil, @"no appDelegate");
     
     id<SMMailbox> mailbox = [account mailbox];

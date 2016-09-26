@@ -122,7 +122,7 @@ static const CGFloat CELL_SPACING = 0;
     
     [messageThreadCellViewController setMessage:message];
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
 
     if([messageThreadCellViewController loadMessageBody]) {
@@ -233,7 +233,7 @@ static const CGFloat CELL_SPACING = 0;
         if(lastUnseenMessageIdx != NSUIntegerMax) {
             SMMessageThreadCell *cell = _cells[lastUnseenMessageIdx];
 
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
 
             [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
@@ -398,7 +398,7 @@ static const CGFloat CELL_SPACING = 0;
 
 - (void)updateNavigationControls {
     // Update the navigation buttons
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(_currentMessageThread == nil || _cells.count == 1) {
         [[appDelegate appController] disableMessageThreadNavigationControl];
     }
@@ -527,7 +527,7 @@ static const CGFloat CELL_SPACING = 0;
         SMMessage *message = cell.message;
         
         if(message.messageId == messageId) {
-            SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             [[appDelegate.currentAccount messageListController] fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
             
             [cell.viewController updateMessage];
@@ -565,7 +565,7 @@ static const CGFloat CELL_SPACING = 0;
     // mark is as read; then update the message thread and the message
     // list to immediately reflect the changes.
     if(!collapsed && cell.message.unseen) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:NO];
         
         [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
@@ -941,7 +941,7 @@ static const CGFloat CELL_SPACING = 0;
         // Only close the current message thread if this is not a separate window
         // TODO: warn if editor is open! (issue #115)
         if(![self.view.window.delegate isKindOfClass:[SMMessageWindowController class]]) {
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             [[appDelegate.appController messageListViewController] deselectCurrentMessageThread];
         }
     } else {
@@ -976,7 +976,7 @@ static const CGFloat CELL_SPACING = 0;
     }
     
     SMMessageThreadCell *cell = _cells[cellIdx];
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
@@ -1009,7 +1009,7 @@ static const CGFloat CELL_SPACING = 0;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate.messageThreadAccountProxy setMessageUnseen:_currentMessageThread message:cell.message unseen:!cell.message.unseen];
 
     [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
@@ -1049,7 +1049,7 @@ static const CGFloat CELL_SPACING = 0;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate.messageThreadAccountProxy setMessageFlagged:_currentMessageThread message:cell.message flagged:(cell.message.flagged? NO : YES)];
     
     [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
@@ -1261,7 +1261,7 @@ static const CGFloat CELL_SPACING = 0;
 #pragma mark label manupilations
 
 - (void)addLabel:(NSString*)label {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate.messageThreadAccountProxy addMessageThreadLabel:_currentMessageThread label:label];
     
     [_messageThreadInfoViewController updateMessageThread];
@@ -1270,7 +1270,7 @@ static const CGFloat CELL_SPACING = 0;
 }
 
 - (void)removeLabel:(NSString*)label {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([appDelegate.messageThreadAccountProxy removeMessageThreadLabel:_currentMessageThread label:label]) {
         [self setMessageThread:nil selectedThreadsCount:0 localFolder:nil];
         // TODO: how about open windows with this thread open?

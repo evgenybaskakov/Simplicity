@@ -43,7 +43,7 @@
         [_localStorageSizeList addItemWithTitle:name];
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger localStorageSize = [[appDelegate preferencesController] localStorageSizeMb];
     NSUInteger localStorageSizeItem = [_localStorageSizeValues indexOfObject:[NSNumber numberWithUnsignedInteger:localStorageSize]];
     
@@ -89,7 +89,7 @@
     NSUInteger item = _localStorageSizeList.indexOfSelectedItem;
     NSAssert(item < _localStorageSizeValues.count, @"bad item %lu", item);
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].localStorageSizeMb = [_localStorageSizeValues[item] unsignedIntegerValue];
 }
 
@@ -97,12 +97,12 @@
     NSUInteger item = _logLevelList.indexOfSelectedItem;
     NSAssert(item < _logLevelValues.count, @"bad item %lu", item);
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].logLevel = [_logLevelValues[item] unsignedIntegerValue];
 }
 
 - (IBAction)useMailTransportLoggingAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].mailTransportLogLevel = (_useMailTransportLogging.state == NSOffState? 0 : 1);
 }
 

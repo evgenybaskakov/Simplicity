@@ -121,7 +121,8 @@
     [_accounts[accountIdx] stopAccount];
     [_accounts removeObjectAtIndex:accountIdx];
     
-    [[[[NSApplication sharedApplication] delegate] preferencesController] removeAccount:accountIdx];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate preferencesController] removeAccount:accountIdx];
 }
 
 - (void)reloadAccount:(NSUInteger)accountIdx {
@@ -230,7 +231,7 @@
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     // TODO: detect an active editor

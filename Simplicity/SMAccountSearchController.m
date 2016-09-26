@@ -515,7 +515,7 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)addContentsSection:(NSString*)searchPattern {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(searchPattern != nil) {
         NSString *sectionTitle = [NSString stringWithFormat:@"Messages contain: %@", searchPattern];
@@ -525,7 +525,7 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)addContactsSection:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     for(MCOIMAPMessage *imapMessage in imapMessages) {
         if([_contactSearchResults containsIndex:imapMessage.uid]) {
@@ -555,7 +555,7 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)addSubjectsSection:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     for(MCOIMAPMessage *imapMessage in imapMessages) {
         if([_subjectSearchResults containsIndex:imapMessage.uid]) {
@@ -577,7 +577,7 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)updateSearchMenuContent:(NSString*)searchPattern imapMessages:(NSArray<MCOIMAPMessage*>*)imapMessages {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     [[appDelegate.appController searchRequestInputController] clearSuggestionsForAccount:(SMUserAccount*)_account];
     
@@ -587,7 +587,7 @@ const char *const mcoOpKinds[] = {
 }
 
 - (void)finishSuggestionSearch:(NSString*)searchPattern {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] finishSearch:SMSearchOperationKind_Suggestions];
     
     if(_subjectSearchResults.count == 0 && _contactSearchResults.count == 0) {

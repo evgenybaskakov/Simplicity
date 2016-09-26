@@ -34,7 +34,7 @@
         _imapCheckOp = nil;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     _imapSession = [[MCOIMAPSession alloc] init];
@@ -80,7 +80,7 @@
         _smtpCheckOp = nil;
     }
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     _smtpSession = [[MCOSMTPSession alloc] init];

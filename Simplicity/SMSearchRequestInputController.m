@@ -59,7 +59,7 @@
 }
 
 - (void)clearSuggestionsForAccount:(SMUserAccount*)account {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [[appDelegate.appController searchMenuViewController] clearItemsWithObject:account];
 }
@@ -68,7 +68,7 @@
     searchPattern = [SMStringUtils trimString:searchPattern];
     SM_LOG_INFO(@"searching for string '%@'", searchPattern);
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     _searchTokens = [[[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] representedTokenObjects] mutableCopy];
     
     if(searchPattern.length != 0) {
@@ -92,7 +92,7 @@
 }
 
 - (void)submitNewSearchRequest:(SMSearchExpressionKind)kind {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     id searchItemAccount; // TODO: remove
     NSString *searchItem = [[[appDelegate appController] searchMenuViewController] getSelectedItemWithObject:&searchItemAccount];
@@ -116,7 +116,7 @@
 }
 
 - (void)addContentsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue account:(SMUserAccount*)account {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     NSString *section = @"Contents";
     
@@ -128,7 +128,7 @@
 }
 
 - (void)addContactsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue contacts:(NSArray*)contacts account:(SMUserAccount *)account {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     NSString *section = @"Contacts";
     [[[appDelegate appController] searchMenuViewController] addSection:section];
@@ -145,7 +145,7 @@
 }
 
 - (void)addSubjectsSectionToSuggestionsMenu:(NSString*)topLevelItemTitle topLevelItemValue:(NSString*)topLevelItemValue subjects:(NSArray*)subjects account:(SMUserAccount*)account {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     NSString *section = @"Subjects";
     [[[appDelegate appController] searchMenuViewController] addSection:section];
@@ -162,7 +162,7 @@
 }
 
 - (void)reloadSuggestionsMenu {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [[appDelegate.appController searchMenuViewController] reloadItems];
     [appDelegate.appController adjustSearchSuggestionsMenuFrame];
@@ -273,21 +273,21 @@
     SMSearchToken *newToken = [[SMSearchToken alloc] initWithKind:newKind string:oldToken.string];
     NSString *newTokenName = [self tokenKindToName:newToken.kind];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] changeToken:_tokenViewWithMenu tokenName:newTokenName contentsText:_tokenViewWithMenu.contentsText representedObject:newToken target:_tokenViewWithMenu.target action:_tokenViewWithMenu.action editedAction:_tokenViewWithMenu.editedAction deletedAction:_tokenViewWithMenu.deletedAction];
     
     [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)editTokenInSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] editToken:_tokenViewWithMenu];
     
     // Note: no other actions is to trigger here. It'll be triggered by the token itself.
 }
 
 - (void)deleteTokenFromSearchField:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate.appController.messageThreadToolbarViewController searchFieldViewController] deleteToken:_tokenViewWithMenu];
     
     // Note: no other actions is to trigger here. It'll be triggered by the token itself.
@@ -300,22 +300,22 @@
     // Propagate the token string the user entered to the search.
     token.string = tokenView.contentsText;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)deletedTokenAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)tokenSearchEditedAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] startNewSearch:NO];
 }
 
 - (void)searchForContentsAction:(id)sender {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] closeSearchSuggestionsMenu];
 }
 

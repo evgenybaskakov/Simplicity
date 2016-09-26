@@ -49,7 +49,7 @@
 }
 
 - (void)addMessageThread:(SMMessageThread*)messageThread {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSComparator messageThreadComparator = [[appDelegate messageComparators] messageThreadsComparatorByDate];
     NSUInteger index = [_messageThreadsByDate indexOfObject:messageThread inSortedRange:NSMakeRange(0, _messageThreadsByDate.count) options:NSBinarySearchingInsertionIndex usingComparator:messageThreadComparator];
     
@@ -78,7 +78,7 @@
 }
 
 - (NSUInteger)getMessageThreadIndexByDate:(SMMessageThread*)messageThread {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSComparator messageThreadComparator = [[appDelegate messageComparators] messageThreadsComparatorByDate];
     NSOrderedSet *sortedMessageThreads = _messageThreadsByDate;
     NSUInteger idx = [sortedMessageThreads indexOfObject:messageThread inSortedRange:NSMakeRange(0, sortedMessageThreads.count) options:NSBinarySearchingFirstEqual usingComparator:messageThreadComparator];

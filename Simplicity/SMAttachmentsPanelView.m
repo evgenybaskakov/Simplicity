@@ -39,7 +39,7 @@
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset {
     SM_LOG_DEBUG(@"???");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSImage *dragImage = appDelegate.imageRegistry.attachmentDocumentImage;
     return dragImage; // TODO: scale to a size
 }

@@ -13,7 +13,7 @@
 @implementation SMNotificationsController
 
 + (void)systemNotifyNewMessage:(NSString*)from {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     if(preferencesController.shouldShowNotifications) {
@@ -28,7 +28,7 @@
 }
 
 + (void)systemNotifyNewMessages:(NSUInteger)count {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     if(preferencesController.shouldShowNotifications) {

@@ -22,14 +22,14 @@
 }
 
 - (IBAction)composeMessageAction:(id)sender {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     [appController composeMessageAction:self];
 }
 
 - (IBAction)moveToTrashAction:(id)sender {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     [appController moveSelectedMessageThreadsToTrash];

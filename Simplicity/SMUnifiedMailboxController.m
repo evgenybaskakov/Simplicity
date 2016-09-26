@@ -63,7 +63,7 @@
 }
 
 - (NSUInteger)totalMessagesCount:(SMFolder*)folder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMLocalFolderRegistry *localFolderRegistry = [[appDelegate unifiedAccount] localFolderRegistry];
     id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByKind:folder.kind];
     
@@ -80,7 +80,7 @@
 }
 
 - (NSUInteger)unseenMessagesCount:(SMFolder*)folder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMLocalFolderRegistry *localFolderRegistry = [[appDelegate unifiedAccount] localFolderRegistry];
     id<SMAbstractLocalFolder> localFolder = [localFolderRegistry getLocalFolderByKind:folder.kind];
     

@@ -77,7 +77,7 @@
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         [self updateFolders:localFolder];
     }
@@ -89,7 +89,7 @@
     
     [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         [self updateFolders:localFolder];
     }
@@ -101,7 +101,7 @@
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {
         // This is happening very, very often
         // TODO: Fix!!! Issue #104.
@@ -112,7 +112,7 @@
 - (void)updateFolders:(SMLocalFolder*)localFolder {
     (void)localFolder;
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *selectedFolder = [appDelegate.currentMailboxController selectedFolder];
     
     if(selectedFolder != nil) {
@@ -136,7 +136,7 @@
 - (void)updateFolderListView {
     NSInteger selectedRow = -1;
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     [_favoriteFolders removeAllObjects];
     [_visibleFolders removeAllObjects];
@@ -193,7 +193,7 @@
 
     SMFolder *folder = [self selectedFolder:selectedRow favoriteFolderSelected:&_favoriteFolderSelected];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *selectedFolder = [appDelegate.currentMailboxController selectedFolder];
     
     if(folder == nil || [folder.fullName isEqualToString:selectedFolder.fullName])
@@ -205,7 +205,7 @@
 }
 
 - (void)changeFolder:(SMFolder*)folder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [[appDelegate.currentAccount searchController] stopLatestSearch];
     [[appDelegate.currentAccount messageListController] changeFolder:(folder != nil? folder.fullName : nil) clearSearch:YES];
@@ -227,7 +227,7 @@
 - (void)clearSelection {
     [_folderListView deselectAll:self];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *selectedFolder = [appDelegate.currentMailboxController selectedFolder];
     
     if(selectedFolder != nil) {
@@ -246,21 +246,21 @@
 }
 
 - (NSInteger)favoriteFoldersGroupOffset {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
 
     return 1 + mailbox.mainFolders.count;
 }
 
 - (NSInteger)allFoldersGroupOffset {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
     
     return 1 + mailbox.mainFolders.count + 1 + _favoriteFolders.count;
 }
 
 - (NSInteger)totalFolderRowsCount {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.accounts.count == 0) {
         return 0;
     }
@@ -275,7 +275,7 @@
 }
 
 - (SMFolder*)selectedFolder:(NSInteger)row favoriteFolderSelected:(Boolean*)favoriteFolderSelected {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
@@ -308,7 +308,7 @@
 }
 
 - (NSInteger)getFolderRow:(SMFolder*)folder {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
     
     const NSInteger mainFoldersGroupOffset = [self mainFoldersGroupOffset];
@@ -419,7 +419,7 @@ typedef enum {
     const NSInteger favoriteFoldersGroupOffset = [self favoriteFoldersGroupOffset];
     const NSInteger allFoldersGroupOffset = [self allFoldersGroupOffset];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     NSTableCellView *result = nil;
@@ -458,7 +458,7 @@ typedef enum {
             
             SMColorCircle *colorMark = (SMColorCircle *)result.imageView;
             
-            SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];            
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];            
             colorMark.color = [[appDelegate.currentAccount folderColorController] colorForFolder:folder.fullName];
 
             if(row == _rowWithMenu) {
@@ -573,7 +573,7 @@ typedef enum {
     // TODO: this is called too often (Issue #99)
     SM_LOG_DEBUG(@"folderName: %@", folder.fullName);
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger unseenCount = [appDelegate.currentMailboxController unseenMessagesCount:folder];
     
     if(unseenCount != 0) {
@@ -623,7 +623,7 @@ typedef enum {
     if(op == NSTableViewDropOn) {
         SMFolder *targetFolder = [self selectedFolder:row];
 
-        SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         if(targetFolder != nil && ![targetFolder.fullName isEqualToString:[[appDelegate.currentMailboxController selectedFolder] fullName]])
             return NSDragOperationMove;
     }
@@ -648,7 +648,7 @@ typedef enum {
         return NO;
     }
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolder *currentFolder = [appDelegate.currentMailboxController selectedFolder];
 
     if(currentFolder.kind == SMFolderKindOutbox && targetFolder.kind != SMFolderKindTrash) {
@@ -729,7 +729,7 @@ typedef enum {
 }
 
 - (void)newLabel {
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
 
     if(_rowWithMenu >= 0 && _rowWithMenu < _folderListView.numberOfRows) {
@@ -761,7 +761,7 @@ typedef enum {
         return;
     }
     
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
     [appDelegate.currentMailboxController deleteFolder:folder.fullName];
     
@@ -777,7 +777,7 @@ typedef enum {
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
     NSAssert(folder != nil, @"bad selected folder");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
     
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
@@ -794,7 +794,7 @@ typedef enum {
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
     NSAssert(folder != nil, @"bad selected folder");
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
     
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
@@ -811,7 +811,7 @@ typedef enum {
     SMFolder *folder = [self selectedFolder:_rowWithMenu];
     NSAssert(folder != nil, @"bad selected folder");
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSAssert(!appDelegate.currentAccountIsUnified, @"current account cannot be unified to change labels");
     
     NSMutableDictionary *labels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:appDelegate.currentAccountIdx]];
@@ -840,7 +840,7 @@ typedef enum {
     if([newLabelName isEqualToString:_labelToRename])
         return;
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     [appDelegate.currentMailboxController renameFolder:_labelToRename newFolderName:newLabelName];
 }

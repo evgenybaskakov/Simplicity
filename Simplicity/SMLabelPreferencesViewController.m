@@ -41,7 +41,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if(appDelegate.accountsExist && !appDelegate.currentAccountIsUnified) {
         _selectedAccount = appDelegate.currentAccountIdx;
@@ -111,7 +111,7 @@
     NSUInteger accountIdx = _selectedAccount;
 
     // Save label colors.
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMFolderColorController *folderColorController = [appDelegate.accounts[accountIdx] folderColorController];
     SMAccountMailbox *mailbox = [appDelegate.accounts[accountIdx] mailbox];
  
@@ -161,7 +161,7 @@
     
     [self initAccountList];
     
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if([[appDelegate preferencesController] accountsCount] > 0) {
         _selectedAccount = [[_accountList itemTitles] indexOfObjectIdenticalTo:selectedAccountName];
         if(_selectedAccount == NSNotFound) {
@@ -192,7 +192,7 @@
 }
 
 - (void)initAccountList {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     [_accountList removeAllItems];
     
@@ -218,7 +218,7 @@
     [self hideColorPanel];
     [self saveLabels];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     NSString *nestingLabel = nil;
@@ -242,7 +242,7 @@
     if(_labelTable.selectedRow >= 0) {
         NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
 
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         SMUserAccount *account = appDelegate.accounts[_selectedAccount];
         SMFolder *folder = [account mailbox].folders[_labelTable.selectedRow];
 
@@ -272,7 +272,7 @@
     
     NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     if(labelIndex < 0 || labelIndex >= [account mailbox].folders.count) {
         SM_LOG_ERROR(@"Bad edited label index %ld", labelIndex);
@@ -293,7 +293,7 @@
 
     NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     SMAccountMailboxController *mailboxController = [account mailboxController];
 
@@ -311,7 +311,7 @@
 #pragma mark Table implementation
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(!appDelegate.accountsExist) {
         return 0;
     }
@@ -329,7 +329,7 @@
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     NSAssert(_selectedAccount >= 0, @"_selectedAccount is negative");
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMUserAccount *account = appDelegate.accounts[_selectedAccount];
     id<SMMailbox> mailbox = [account mailbox];
     SMFolder *folder = mailbox.folders[row];

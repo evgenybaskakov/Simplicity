@@ -39,7 +39,7 @@
 - (SMFolderLabel*)getOrUpdateLabel:(NSString*)folderName withColor:(NSColor*)color {
     NSAssert(!_account.unified, @"account is unified; label acquision is stubbed");
 
-    SMAppDelegate *appDelegate = [[ NSApplication sharedApplication ] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
     
     NSDictionary *labels = [[appDelegate preferencesController] labels:accountIdx];

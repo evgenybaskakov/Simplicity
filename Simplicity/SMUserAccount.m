@@ -216,7 +216,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
 - (void)initAccountImage:(NSUInteger)accountIdx {
     if([_preferencesController useAddressBookAccountImage:accountIdx]) {
-        SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         _accountImage = [appDelegate.addressBookController loadPictureForAddress:_accountAddress searchNetwork:NO allowWebSiteImage:NO tag:0 completionBlock:nil];
     }
     else {

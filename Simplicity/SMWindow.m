@@ -23,7 +23,7 @@
 - (BOOL)makeFirstResponder:(nullable NSResponder *)responder {
     BOOL result = [super makeFirstResponder:responder];
 
-    SMAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = [appDelegate appController];
     
     // See http://stackoverflow.com/questions/9643544/how-to-easily-close-a-nswindow-that-is-not-key?rq=1

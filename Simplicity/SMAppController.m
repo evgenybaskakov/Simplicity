@@ -389,7 +389,10 @@
     
     [[appDelegate.currentAccount searchController] stopLatestSearch];
     
-    if(changeToPrevFolder) {
+    // If the user hasn't entered anything in the search field,
+    // the folder is not yet changed to the search results.
+    // So do not switch to the previous folder in that case.
+    if(changeToPrevFolder && [[appDelegate.currentAccount messageListController] currentLocalFolder].kind == SMFolderKindSearch) {
         // If the current account is unified, it means the search results
         // is loaded within each. So clear evething.
         // TODO: get rid of this weird logic (See issue #103).

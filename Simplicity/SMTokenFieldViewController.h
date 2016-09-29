@@ -10,10 +10,13 @@
 
 @class SMTokenView;
 @class SMTokenEditView;
+@class SMTokenFieldBox;
 
 @interface SMTokenFieldViewController : NSViewController<NSTextViewDelegate>
 
-@property IBOutlet NSScrollView *scrollView;
+@property (weak) IBOutlet NSScrollView *scrollView;
+@property (weak) IBOutlet SMTokenFieldBox *boxView;
+@property (weak) IBOutlet NSView *innerView;
 
 @property (readonly) BOOL tokenSelectionActive;
 

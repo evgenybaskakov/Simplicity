@@ -18,21 +18,23 @@ static const NSUInteger cornerRadius = 4;
     [[NSColor clearColor] set];
     NSRectFill(dirtyRect);
     
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:cornerRadius yRadius:cornerRadius];
+    NSRect focusRingRect = _focusedView.frame;
+
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(focusRingRect, -1, -1) xRadius:cornerRadius yRadius:cornerRadius+2];
+    [[NSColor colorWithCalibratedWhite:0.85 alpha:1.0] set];
+    [path fill];
+
+    path = [NSBezierPath bezierPathWithRoundedRect:focusRingRect xRadius:cornerRadius yRadius:cornerRadius];
     [[NSColor whiteColor] set];
     [path fill];
     
     if([self containsFirstResponder]) {
-        [self setKeyboardFocusRingNeedsDisplayInRect:[self bounds]];
+        [self setKeyboardFocusRingNeedsDisplayInRect:focusRingRect];
         
         NSSetFocusRingStyle(NSFocusRingBelow);
         
-        NSBezierPath *focusRingPath = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:cornerRadius yRadius:cornerRadius];
+        NSBezierPath *focusRingPath = [NSBezierPath bezierPathWithRoundedRect:focusRingRect xRadius:cornerRadius yRadius:cornerRadius];
         [focusRingPath fill];
-    }
-    else {
-        [[NSColor colorWithCalibratedWhite:0.85 alpha:1.0] set];
-        [path stroke];
     }
 }
 

@@ -10,6 +10,7 @@
 #import "SMTokenFieldViewController.h"
 #import "SMTokenFieldView.h"
 #import "SMTokenEditView.h"
+#import "SMTokenFieldBox.h"
 #import "SMTokenView.h"
 
 @implementation SMTokenFieldViewController {
@@ -45,11 +46,19 @@
     
     [self adjustTokenFrames];
     
-    _clearButton.hidden = YES;
-    _progressIndicator.hidden = YES;
+    _boxView.focusedView = _innerView;
+
+    self.view.postsFrameChangedNotifications = YES;
+    self.view.postsBoundsChangedNotifications = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewBoundsDidChange:) name:NSViewBoundsDidChangeNotification object:self.view];
+}
+
+- (void)viewBoundsDidChange:(NSNotification *)notification {
+    NSLog(@"notification: %@", notification);
 }
 
 - (BOOL)becomeFirstResponder {
+    _boxView.needsDisplay = YES;
     return [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
 }
 

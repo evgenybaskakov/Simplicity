@@ -7,6 +7,7 @@
 //
 
 #import "SMTokenEditView.h"
+#import "SMTokenFieldBox.h"
 #import "SMTokenFieldViewController.h"
 
 @implementation SMTokenEditView {
@@ -46,9 +47,21 @@
 }
 
 - (BOOL)becomeFirstResponder {
-    [_viewController.view display];
+    [_viewController.view setNeedsDisplay:YES];
+    [_viewController.boxView setNeedsDisplay:YES];
     [self setSelectedRange:NSMakeRange(0, 0)];
     return YES;
+}
+
+- (BOOL)resignFirstResponder {
+    if([super resignFirstResponder]) {
+        [_viewController.view setNeedsDisplay:YES];
+        [_viewController.boxView setNeedsDisplay:YES];
+        return YES;
+    }
+    else {
+        return NO;
+    }
 }
 
 - (void)paste:(id)sender {

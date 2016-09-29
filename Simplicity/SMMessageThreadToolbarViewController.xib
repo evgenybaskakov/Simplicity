@@ -21,13 +21,6 @@
                 <visualEffectView wantsLayer="YES" appearanceType="vibrantLight" blendingMode="behindWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="8ro-26-NEr">
                     <rect key="frame" x="0.0" y="0.0" width="597" height="37"/>
                     <subviews>
-                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Wz-7W-LHx" userLabel="Search field">
-                            <rect key="frame" x="291" y="5" width="300" height="24"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="300" id="cPi-n5-aTr"/>
-                                <constraint firstAttribute="height" constant="24" id="efa-Yq-mA6"/>
-                            </constraints>
-                        </customView>
                         <segmentedControl wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qaN-Wg-fQb">
                             <rect key="frame" x="10" y="5" width="144" height="25"/>
                             <constraints>
@@ -55,13 +48,20 @@
                                 <action selector="messageNavigationAction:" target="-2" id="Zam-0M-Iox"/>
                             </connections>
                         </segmentedControl>
+                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Wz-7W-LHx" userLabel="Search field">
+                            <rect key="frame" x="278" y="0.0" width="319" height="37"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="319" id="cPi-n5-aTr"/>
+                                <constraint firstAttribute="height" constant="37" id="efa-Yq-mA6"/>
+                            </constraints>
+                        </customView>
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="height" constant="37" id="1Ij-v3-dFF"/>
                         <constraint firstItem="qaN-Wg-fQb" firstAttribute="top" secondItem="8ro-26-NEr" secondAttribute="top" constant="8" id="TuX-cq-7vM"/>
                         <constraint firstItem="qaN-Wg-fQb" firstAttribute="leading" secondItem="8ro-26-NEr" secondAttribute="leading" constant="10" id="qc2-7h-MQ1"/>
-                        <constraint firstAttribute="trailing" secondItem="3Wz-7W-LHx" secondAttribute="trailing" constant="6" id="s1P-Ja-DoM"/>
-                        <constraint firstItem="3Wz-7W-LHx" firstAttribute="top" secondItem="8ro-26-NEr" secondAttribute="top" constant="8" id="uns-Wk-nlc"/>
+                        <constraint firstAttribute="trailing" secondItem="3Wz-7W-LHx" secondAttribute="trailing" id="s1P-Ja-DoM"/>
+                        <constraint firstItem="3Wz-7W-LHx" firstAttribute="top" secondItem="8ro-26-NEr" secondAttribute="top" id="uns-Wk-nlc"/>
                         <constraint firstItem="3Wz-7W-LHx" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qaN-Wg-fQb" secondAttribute="trailing" constant="20" id="zjU-qn-1y4"/>
                     </constraints>
                 </visualEffectView>
@@ -72,7 +72,7 @@
                 <constraint firstAttribute="trailing" secondItem="8ro-26-NEr" secondAttribute="trailing" id="dBu-Gb-wzB"/>
                 <constraint firstItem="8ro-26-NEr" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="fWX-h6-GkU"/>
             </constraints>
-            <point key="canvasLocation" x="502.5" y="219"/>
+            <point key="canvasLocation" x="502.5" y="218.5"/>
         </customView>
     </objects>
     <resources>

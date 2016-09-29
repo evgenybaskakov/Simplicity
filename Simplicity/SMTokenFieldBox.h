@@ -10,4 +10,6 @@
 
 @interface SMTokenFieldBox : NSBox
 
+@property NSView *focusedView;
+
 @end

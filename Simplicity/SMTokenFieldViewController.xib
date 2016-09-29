@@ -32,22 +32,22 @@
                                 <rect key="frame" x="12" y="9" width="222" height="22"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jqQ-9U-0aG" userLabel="Search Image">
-                                        <rect key="frame" x="3" y="4" width="14" height="14"/>
+                                        <rect key="frame" x="3" y="3" width="14" height="14"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="14" id="8Cb-Rv-Kwu"/>
                                             <constraint firstAttribute="width" constant="14" id="bix-Go-GU4"/>
                                         </constraints>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="search-icon" id="WOC-k4-80r"/>
                                     </imageView>
-                                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="qFU-dv-o6i">
-                                        <rect key="frame" x="204" y="3" width="16" height="16"/>
+                                    <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="qFU-dv-o6i">
+                                        <rect key="frame" x="202" y="2" width="16" height="16"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="16" id="clz-vK-6wQ"/>
                                             <constraint firstAttribute="width" constant="16" id="gwb-zi-n1d"/>
                                         </constraints>
                                     </progressIndicator>
                                     <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="BgR-my-g5J">
-                                        <rect key="frame" x="19" y="1" width="182" height="19"/>
+                                        <rect key="frame" x="19" y="0.0" width="182" height="19"/>
                                         <clipView key="contentView" copiesOnScroll="NO" id="5zn-Kh-Htd">
                                             <rect key="frame" x="0.0" y="0.0" width="182" height="19"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -69,7 +69,7 @@
                                         </scroller>
                                     </scrollView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YZX-Um-riv" userLabel="Clear Button">
-                                        <rect key="frame" x="203" y="1" width="13" height="19"/>
+                                        <rect key="frame" x="203" y="0.0" width="13" height="19"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="19" id="dmk-Bl-btV"/>
                                             <constraint firstAttribute="width" constant="13" id="vz5-m8-Ilq"/>
@@ -85,15 +85,15 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="jqQ-9U-0aG" firstAttribute="leading" secondItem="D94-68-ER9" secondAttribute="leading" constant="3" id="6FI-hJ-E3z"/>
-                                    <constraint firstItem="jqQ-9U-0aG" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="4" id="9GD-Tw-242"/>
+                                    <constraint firstItem="jqQ-9U-0aG" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="5" id="9GD-Tw-242"/>
                                     <constraint firstAttribute="trailing" secondItem="YZX-Um-riv" secondAttribute="trailing" constant="6" id="HaR-qZ-LMH"/>
-                                    <constraint firstAttribute="bottom" secondItem="BgR-my-g5J" secondAttribute="bottom" constant="1" id="ILb-6P-f99"/>
-                                    <constraint firstItem="YZX-Um-riv" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="2" id="KdI-1t-iZf"/>
-                                    <constraint firstItem="BgR-my-g5J" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="2" id="MxH-Jh-spz"/>
+                                    <constraint firstAttribute="bottom" secondItem="BgR-my-g5J" secondAttribute="bottom" id="ILb-6P-f99"/>
+                                    <constraint firstItem="YZX-Um-riv" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="3" id="KdI-1t-iZf"/>
+                                    <constraint firstItem="BgR-my-g5J" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="3" id="MxH-Jh-spz"/>
                                     <constraint firstAttribute="trailing" secondItem="BgR-my-g5J" secondAttribute="trailing" constant="21" id="Or4-mu-Fim"/>
                                     <constraint firstItem="BgR-my-g5J" firstAttribute="leading" secondItem="D94-68-ER9" secondAttribute="leading" constant="19" id="XMB-cF-LbP"/>
-                                    <constraint firstItem="qFU-dv-o6i" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="3" id="dFg-pO-ji7"/>
-                                    <constraint firstAttribute="trailing" secondItem="qFU-dv-o6i" secondAttribute="trailing" constant="2" id="k77-yx-lEv"/>
+                                    <constraint firstItem="qFU-dv-o6i" firstAttribute="centerX" secondItem="YZX-Um-riv" secondAttribute="centerX" id="chu-dZ-iFt"/>
+                                    <constraint firstItem="qFU-dv-o6i" firstAttribute="centerY" secondItem="YZX-Um-riv" secondAttribute="centerY" id="d8j-Bw-cCk"/>
                                 </constraints>
                             </customView>
                         </subviews>

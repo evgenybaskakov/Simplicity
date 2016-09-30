@@ -917,13 +917,14 @@ static const CGFloat CELL_SPACING = 0;
 }
 
 - (void)removeFindContentsResults {
-    NSAssert(_currentMessageThread != nil, @"_currentMessageThread == nil");
-    NSAssert(_cells.count > 0, @"no cells");
-    
-    for(SMMessageThreadCell *cell in _cells)
-        [cell.viewController removeAllHighlightedOccurrencesOfString];
-    
-    [self clearStringOccurrenceMarkIndex];
+    if(_currentMessageThread) {
+        NSAssert(_cells.count > 0, @"no cells");
+        
+        for(SMMessageThreadCell *cell in _cells)
+            [cell.viewController removeAllHighlightedOccurrencesOfString];
+        
+        [self clearStringOccurrenceMarkIndex];
+    }
     
     _currentStringToFind = nil;
     _currentStringToFindMatchCase = NO;

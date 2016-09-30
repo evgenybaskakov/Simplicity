@@ -19,31 +19,8 @@
 #import "SMLocalFolderRegistry.h"
 #import "SMSearchLocalFolder.h"
 
-@interface FolderEntry : NSObject
-@property (readonly) id<SMAbstractLocalFolder> folder;
-@property (readonly) NSTimeInterval timestamp;
-- (id)initWithFolder:(id<SMAbstractLocalFolder>)folder;
-- (void)updateTimestamp;
-@end
-
-@implementation FolderEntry
-- (id)initWithFolder:(id<SMAbstractLocalFolder>)folder {
-    self = [super init];
-    if(self) {
-        _folder = folder;
-        _timestamp = [[NSDate date] timeIntervalSince1970];
-    }
-    return self;
-}
-- (void)updateTimestamp {
-    _timestamp = [[NSDate date] timeIntervalSince1970];
-}
-@end
-
 @implementation SMLocalFolderRegistry {
-    NSMutableDictionary<NSString*, FolderEntry*> *_folders;
-    NSMutableOrderedSet<FolderEntry*> *_accessTimeSortedFolders;
-    NSComparator _accessTimeFolderComparator;
+    NSMutableDictionary<NSString*, id<SMAbstractLocalFolder>> *_folders;
 }
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -51,62 +28,36 @@
     
     if(self) {
         _folders = [NSMutableDictionary new];
-        _accessTimeSortedFolders = [NSMutableOrderedSet new];
-        _accessTimeFolderComparator = ^NSComparisonResult(id a, id b) {
-            FolderEntry *f1 = (FolderEntry*)a;
-            FolderEntry *f2 = (FolderEntry*)b;
-            
-            return f1.timestamp < f2.timestamp? NSOrderedAscending : (f1.timestamp > f2.timestamp? NSOrderedDescending : NSOrderedSame);
-        };
     }
     
     return self;
 }
 
 - (NSArray<id<SMAbstractLocalFolder>>*)localFolders {
-    NSArray<FolderEntry*> *folderEntires = _folders.allValues;
+    NSArray<id<SMAbstractLocalFolder>> *folderEntires = _folders.allValues;
     NSMutableArray<id<SMAbstractLocalFolder>> *localFolders = [NSMutableArray array];
     
-    for(FolderEntry *entry in folderEntires) {
-        [localFolders addObject:entry.folder];
+    for(id<SMAbstractLocalFolder> folder in folderEntires) {
+        [localFolders addObject:folder];
     }
     
     return localFolders;
 }
 
-- (void)updateFolderEntryAccessTime:(FolderEntry*)folderEntry {
-    [_accessTimeSortedFolders removeObjectAtIndex:[self getFolderEntryIndex:folderEntry]];
-    
-    [folderEntry updateTimestamp];
-
-    [_accessTimeSortedFolders insertObject:folderEntry atIndex:[self getFolderEntryIndex:folderEntry]];
-}
-
 - (id<SMAbstractLocalFolder>)getLocalFolderByName:(NSString*)localFolderName {
-    FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
-    
-    if(folderEntry == nil)
-        return nil;
-    
-    [self updateFolderEntryAccessTime:folderEntry];
-    
-    return folderEntry.folder;
+    return [_folders objectForKey:localFolderName];
 }
 
 - (id<SMAbstractLocalFolder>)getLocalFolderByKind:(SMFolderKind)kind {
     NSAssert(kind != SMFolderKindRegular, @"regular folders should not be accessed by kind");
     
-    for(FolderEntry *folderEntry in _folders.allValues) {
-        if(folderEntry.folder.kind == kind) {
-            return folderEntry.folder;
+    for(id<SMAbstractLocalFolder> folder in _folders.allValues) {
+        if(folder.kind == kind) {
+            return folder;
         }
     }
     
     return nil;
-}
-
-- (NSUInteger)getFolderEntryIndex:(FolderEntry*)folderEntry {
-    return [_accessTimeSortedFolders indexOfObject:folderEntry inSortedRange:NSMakeRange(0, _accessTimeSortedFolders.count) options:NSBinarySearchingInsertionIndex usingComparator:_accessTimeFolderComparator];
 }
 
 - (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
@@ -118,9 +69,8 @@
 }
 
 - (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount initialUnreadCountProvided:(BOOL)initialUnreadCountProvided syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
-    FolderEntry *folderEntry = [_folders objectForKey:localFolderName];
-    
-    NSAssert(folderEntry == nil, @"folder %@ already created", localFolderName);
+    id<SMAbstractLocalFolder> folder = [_folders objectForKey:localFolderName];
+    NSAssert(!folder, @"folder %@ already created", localFolderName);
     
     id<SMAbstractLocalFolder> newLocalFolder = nil;
     
@@ -151,15 +101,8 @@
         [self attachLocalFolderToUnifiedAccount:userLocalFolder];
     }
     
-    folderEntry = [[FolderEntry alloc] initWithFolder:newLocalFolder];
-
-    [folderEntry updateTimestamp];
-
-    [_folders setValue:folderEntry forKey:localFolderName];
-
-    [_accessTimeSortedFolders insertObject:folderEntry atIndex:[self getFolderEntryIndex:folderEntry]];
-    
-    return folderEntry.folder;
+    [_folders setValue:newLocalFolder forKey:localFolderName];
+    return newLocalFolder;
 }
 
 - (void)attachUnifiedLocalFolderToUserAccounts:(SMUnifiedLocalFolder*)unifiedLocalFolder {
@@ -206,18 +149,16 @@
 }
 
 - (void)removeLocalFolder:(NSString*)folderName {
-    FolderEntry *folderEntry = [_folders objectForKey:folderName];
-    [folderEntry.folder stopLocalFolderSync:YES];
+    id<SMAbstractLocalFolder> folder = [_folders objectForKey:folderName];
+    [folder stopLocalFolderSync:YES];
 
     [_folders removeObjectForKey:folderName];
-
-    [_accessTimeSortedFolders removeObjectAtIndex:[self getFolderEntryIndex:folderEntry]];
 
     if(_account.unified) {
         SM_FATAL(@"removing folders from the unified account is not implemented");
     }
     else {
-        [self detachLocalFolderFromUnifiedAccount:(SMLocalFolder*)folderEntry.folder];
+        [self detachLocalFolderFromUnifiedAccount:(SMLocalFolder*)folder];
     }
 }
 

@@ -190,7 +190,7 @@
                 [_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
             }
 
-            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:NO];
         }];
     }
     else {
@@ -228,7 +228,7 @@
                             [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
                         }
                         
-                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow];
+                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:YES];
                     });
                 });
             }
@@ -239,13 +239,13 @@
     }
 }
 
-- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)mcoMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow {
+- (void)completeMessagesRegionLoading:(NSArray<MCOIMAPMessage*>*)mcoMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags messageUIDsRequestedToLoad:(MCOIndexSet*)messageUIDsToLoadNow updateDatabase:(BOOL)updateDatabase {
     SM_LOG_DEBUG(@"loaded %lu message headers...", mcoMessages.count);
     
     _messageHeadersFetched += mcoMessages.count;
     
     // Store found messages in the DB 
-    [self updateMessageHeaders:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:YES newMessages:nil];
+    [self updateMessageHeaders:mcoMessages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:updateDatabase newMessages:nil];
     [self loadSelectedMessagesInternal];
     
     for(NSUInteger i = 0; i < mcoMessages.count; i++) {

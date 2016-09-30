@@ -2411,7 +2411,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 if(sqlInsertResult == SQLITE_DONE) {
                     SM_LOG_DEBUG(@"Message text with UID %u successfully inserted", uid);
                 } else if(sqlInsertResult == SQLITE_CONSTRAINT) {
-                    SM_LOG_INFO(@"Message text with UID %u already exists", uid);
+                    SM_LOG_DEBUG(@"Message text with UID %u already exists", uid);
                 } else {
                     SM_LOG_ERROR(@"Failed to insert message text with UID %u, error %d", uid, sqlInsertResult);
                     

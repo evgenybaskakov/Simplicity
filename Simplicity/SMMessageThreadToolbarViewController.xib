@@ -49,9 +49,9 @@
                             </connections>
                         </segmentedControl>
                         <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Wz-7W-LHx" userLabel="Search field">
-                            <rect key="frame" x="278" y="0.0" width="319" height="37"/>
+                            <rect key="frame" x="247" y="0.0" width="350" height="37"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="319" id="cPi-n5-aTr"/>
+                                <constraint firstAttribute="width" constant="350" id="cPi-n5-aTr"/>
                                 <constraint firstAttribute="height" constant="37" id="efa-Yq-mA6"/>
                             </constraints>
                         </customView>

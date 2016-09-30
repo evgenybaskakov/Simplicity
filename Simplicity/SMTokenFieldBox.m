@@ -20,13 +20,19 @@ static const NSUInteger cornerRadius = 4;
     
     NSRect focusRingRect = _focusedView.frame;
 
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(focusRingRect, -1, -1) xRadius:cornerRadius yRadius:cornerRadius+2];
-    [[NSColor colorWithCalibratedWhite:0.85 alpha:1.0] set];
-    [path fill];
-
-    path = [NSBezierPath bezierPathWithRoundedRect:focusRingRect xRadius:cornerRadius yRadius:cornerRadius];
+    [NSGraphicsContext saveGraphicsState];
+    
+    NSShadow* shadow = [[NSShadow alloc] init];
+    [shadow setShadowOffset:NSMakeSize(0.1, -0.5)];
+    [shadow setShadowBlurRadius:1.0];
+    [shadow setShadowColor:[[NSColor blackColor] colorWithAlphaComponent:0.2]];
+    [shadow set];
+    
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:focusRingRect xRadius:cornerRadius yRadius:cornerRadius];
     [[NSColor whiteColor] set];
     [path fill];
+    
+    [NSGraphicsContext restoreGraphicsState];
     
     if([self containsFirstResponder]) {
         [self setKeyboardFocusRingNeedsDisplayInRect:focusRingRect];

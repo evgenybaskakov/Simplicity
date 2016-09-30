@@ -217,7 +217,7 @@ static NSArray *_lastAddressesUsed;
     
 //    if([self editedAddress:representedObject]) {
 //        SMAddress *addressElem = representedObject;
-//        return [addressElem stringRepresentationDetailed];
+//        return addressElem.detailedRepresentation;
 //    }
 //    else {
         SMAddress *addressElem = representedObject;
@@ -230,7 +230,7 @@ static NSArray *_lastAddressesUsed;
     
     if([self editedAddress:representedObject]) {
         SMAddress *addressElem = representedObject;
-        return [addressElem stringRepresentationDetailed];
+        return addressElem.detailedRepresentation;
     }
     else {
         return nil;
@@ -241,7 +241,7 @@ static NSArray *_lastAddressesUsed;
     NSMutableArray *stringObjects = [NSMutableArray array];
     for(id address in objects) {
         NSAssert([address isKindOfClass:[SMAddress class]], @"bad address type");
-        [stringObjects addObject:[(SMAddress*)address stringRepresentationDetailed]];
+        [stringObjects addObject:((SMAddress*)address).detailedRepresentation];
     }
     [pboard writeObjects:stringObjects];
 
@@ -296,7 +296,7 @@ static NSArray *_lastAddressesUsed;
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
     
     [pasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-    [pasteBoard setString:_addressWithMenu.stringRepresentationDetailed forType:NSStringPboardType];
+    [pasteBoard setString:_addressWithMenu.detailedRepresentation forType:NSStringPboardType];
 }
 
 - (void)editAddressAction:(NSMenuItem*)menuItem {
@@ -371,7 +371,7 @@ static NSArray *_lastAddressesUsed;
         [[appDelegate addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }
     else {
-        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);
+        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.detailedRepresentation);
     }
 }
 

@@ -78,6 +78,8 @@
         _lastName = lastName;
         _email = email;
         _representationMode = representationMode;
+        
+        [self cacheDetailedRepresentation];
     }
     
     return self;
@@ -91,7 +93,8 @@
     self = [super init];
     
     if(self) {
-        [self initInternalWithString:string];
+        [self createInternalWithString:string];
+        [self cacheDetailedRepresentation];
     }
     
     return self;
@@ -105,17 +108,19 @@
         NSAssert(parsedAddress != nil, @"parsedAddress is nil");
 
         if([parsedAddress rangeOfString:@"@"].location == NSNotFound) {
-            [self initInternalWithString:[NSString stringWithFormat:@"%@%@%@", parsedAddress, EMAIL_DELIMITER, [mcoAddress mailbox]]];
+            [self createInternalWithString:[NSString stringWithFormat:@"%@%@%@", parsedAddress, EMAIL_DELIMITER, [mcoAddress mailbox]]];
         }
         else {
-            [self initInternalWithString:parsedAddress];
+            [self createInternalWithString:parsedAddress];
         }
+
+        [self cacheDetailedRepresentation];
     }
     
     return self;
 }
 
-- (void)initInternalWithString:(NSString*)string {
+- (void)createInternalWithString:(NSString*)string {
     _representationMode = SMAddressRepresentation_FirstNameFirst;
 
     string = [SMStringUtils trimString:string];
@@ -189,7 +194,7 @@
     return resultingString;
 }
 
-- (NSString*)stringRepresentationDetailed {
+- (void)cacheDetailedRepresentation {
     NSString *resultingString;
     
     if(_firstName != nil && _lastName != nil) {
@@ -203,7 +208,7 @@
         resultingString = _email;
     }
     
-    return resultingString;
+    _detailedRepresentation = resultingString;
 }
 
 - (NSString*)stringRepresentationShort {

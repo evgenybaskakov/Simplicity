@@ -309,7 +309,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     NSAssert([representedObject isKindOfClass:[SMAddress class]], @"bad kind of object: %@", representedObject);
     
     SMAddress *addressElem = representedObject;
-    return [addressElem stringRepresentationDetailed];
+    return addressElem.detailedRepresentation;
 }
 
 - (void)copyAddressAction:(NSMenuItem*)menuItem {
@@ -318,7 +318,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
     
     [pasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-    [pasteBoard setString:_addressWithMenu.stringRepresentationDetailed forType:NSStringPboardType];
+    [pasteBoard setString:_addressWithMenu.detailedRepresentation forType:NSStringPboardType];
 }
 
 - (void)replyAction:(NSMenuItem*)menuItem {
@@ -348,7 +348,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
         [[appDelegate addressBookController] openAddressInAddressBook:addressUniqueId edit:YES];
     }
     else {
-        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.stringRepresentationDetailed);
+        SM_LOG_ERROR(@"Could not add address '%@' to address book", _addressWithMenu.detailedRepresentation);
     }
 }
 

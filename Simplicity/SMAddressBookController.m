@@ -18,13 +18,16 @@
 #define QUALITY_CONTACT_IMAGE_W 48
 #define QUALITY_CONTACT_IMAGE_H 48
 
-@implementation SMAddressBookController
+@implementation SMAddressBookController {
+    NSMutableDictionary<NSString*,NSImage*> *_imageCache;
+}
 
 - (id)init {
     self = [super init];
     
     if(self) {
         _defaultUserImage = [NSImage imageNamed:NSImageNameUserGuest];
+        _imageCache = [NSMutableDictionary dictionary];
     }
     
     return self;
@@ -130,25 +133,45 @@
 }
 
 - (NSImage*)loadPictureForAddress:(SMAddress*)address searchNetwork:(BOOL)searchNetwork allowWebSiteImage:(BOOL)allowWebSiteImage tag:(NSInteger)tag completionBlock:(void (^)(NSImage*, NSInteger))completionBlock {
+    NSImage *cachedImage = [_imageCache objectForKey:address.detailedRepresentation];
+    if(cachedImage) {
+        if(cachedImage == (NSImage*)[NSNull null]) {
+            return nil;
+        }
+        else {
+            return cachedImage;
+        }
+    }
+    
     NSData *imageData = [self loadContactImageDataFromAddressBook:address];
     
     if(imageData != nil) {
-        return [[NSImage alloc] initWithData:imageData];
+        NSImage *image = [[NSImage alloc] initWithData:imageData];
+        
+        [_imageCache setObject:image?image:(NSImage*)[NSNull null] forKey:address.detailedRepresentation];
+        return image;
     }
 
     if(searchNetwork) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email allowWebSiteImage:allowWebSiteImage completionBlock:^(NSImage *image) {
             if(completionBlock) {
-                BOOL allowImage = [self allowImage:image];
-                completionBlock(allowImage? image : nil, tag);
+                if(![self allowImage:image])
+                    image = nil;
+                
+                [_imageCache setObject:image?image:(NSImage*)[NSNull null] forKey:address.detailedRepresentation];
+                completionBlock(image, tag);
             }
         }];
-        
-        BOOL allowImage = [self allowImage:image];
-        return allowImage? image : nil;
+
+        if(![self allowImage:image])
+            image = nil;
+
+        [_imageCache setObject:image?image:(NSImage*)[NSNull null] forKey:address.detailedRepresentation];
+        return image;
     }
     else {
+        [_imageCache setObject:(NSImage*)[NSNull null] forKey:address.detailedRepresentation];
         return nil;
     }
 }
@@ -174,11 +197,11 @@
         ABRecord *record = foundRecords[0];
         *uniqueId = record.uniqueId;
 
-        SM_LOG_INFO(@"Address '%@' found in address book (%lu records), first unique id '%@'", address.stringRepresentationDetailed, foundRecords.count, *uniqueId);
+        SM_LOG_INFO(@"Address '%@' found in address book (%lu records), first unique id '%@'", address.detailedRepresentation, foundRecords.count, *uniqueId);
         return YES;
     }
     else {
-        SM_LOG_INFO(@"Address '%@' not found in address book", address.stringRepresentationDetailed);
+        SM_LOG_INFO(@"Address '%@' not found in address book", address.detailedRepresentation);
         return NO;
     }
 }
@@ -206,14 +229,14 @@
     ABAddressBook *ab = [ABAddressBook sharedAddressBook];
 
     if(![ab addRecord:person] || ![ab save]) {
-        SM_LOG_ERROR(@"Failed to add / save address '%@' in address book", address.stringRepresentationDetailed);
+        SM_LOG_ERROR(@"Failed to add / save address '%@' in address book", address.detailedRepresentation);
         return NO;
     }
 
-    SM_LOG_INFO(@"Address '%@' saved to address book", address.stringRepresentationDetailed);
+    SM_LOG_INFO(@"Address '%@' saved to address book", address.detailedRepresentation);
 
     if(![self findAddress:address uniqueId:uniqueId]) {
-        SM_LOG_ERROR(@"Could not find newly added address '%@' in address book", address.stringRepresentationDetailed);
+        SM_LOG_ERROR(@"Could not find newly added address '%@' in address book", address.detailedRepresentation);
         return NO;
     }
     

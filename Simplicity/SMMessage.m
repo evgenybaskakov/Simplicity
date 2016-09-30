@@ -16,7 +16,9 @@
 #import "SMAddress.h"
 #import "SMMessage.h"
 
-@implementation SMMessage
+@implementation SMMessage {
+    NSString *_localizedDateString;
+}
 
 @synthesize plainTextBody = _plainTextBody;
 
@@ -186,16 +188,20 @@ static NSString *unquote(NSString *s) {
 }
 
 - (NSString*)localizedDate {
-    NSDate *messageDate = [self date];
-    NSDateComponents *messageDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:messageDate];
-    
-    NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate date]];
-    
-    if([today day] == [messageDateComponents day] && [today month] == [messageDateComponents month] && [today year] == [messageDateComponents year] && [today era] == [messageDateComponents era]) {
-        return [NSDateFormatter localizedStringFromDate:messageDate dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle];
-    } else {
-        return [NSDateFormatter localizedStringFromDate:messageDate dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle];
+    if(_localizedDateString == nil) {
+        NSDate *messageDate = [self date];
+        NSDateComponents *messageDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:messageDate];
+        
+        NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitEra|NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:[NSDate date]];
+        
+        if([today day] == [messageDateComponents day] && [today month] == [messageDateComponents month] && [today year] == [messageDateComponents year] && [today era] == [messageDateComponents era]) {
+            _localizedDateString = [NSDateFormatter localizedStringFromDate:messageDate dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle];
+        } else {
+            _localizedDateString = [NSDateFormatter localizedStringFromDate:messageDate dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterShortStyle];
+        }
     }
+    
+    return _localizedDateString;
 }
 
 - (NSArray*)htmlInlineAttachments {

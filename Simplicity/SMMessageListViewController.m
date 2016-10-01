@@ -37,6 +37,7 @@
 #import "SMMessageThread.h"
 #import "SMMessageStorage.h"
 #import "SMMessageListRowView.h"
+#import "SMMessageListToolbarViewController.h"
 
 @interface ScrollPosition : NSObject
 
@@ -254,6 +255,8 @@
         _immediateSelection = NO;
         _reloadDeferred = NO;
     }
+
+    [self updateToolbarButtons];
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
@@ -549,6 +552,8 @@
     [_currentFolderScrollPosition.threadsAtRows removeAllObjects];
 
     // Load the current folder scroll information.
+    NSIndexSet *selectedThreads = [NSIndexSet indexSet];
+    
     if(currentLocalFolder != nil) {
         _currentFolderScrollPosition = [_folderScrollPositions objectForKey:currentLocalFolder.localName];
         
@@ -568,8 +573,7 @@
                 NSUInteger threadIndex = [messageStorage getMessageThreadIndexByDate:_selectedMessageThread];
                 
                 if(threadIndex != NSNotFound) {
-                    [_messageListTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:threadIndex] byExtendingSelection:NO];
-                    return;
+                    selectedThreads = [NSIndexSet indexSetWithIndex:threadIndex];
                 }
             } else {
                 NSMutableIndexSet *threadIndexes = [NSMutableIndexSet indexSet];
@@ -582,18 +586,28 @@
                 }
 
                 if(threadIndexes.count != 0) {
-                    [_messageListTableView selectRowIndexes:threadIndexes byExtendingSelection:NO];
-                    return;
+                    selectedThreads = threadIndexes;
                 }
             }
         }
     }
 
-    [_messageListTableView selectRowIndexes:[NSIndexSet indexSet] byExtendingSelection:NO];
+    [_messageListTableView selectRowIndexes:selectedThreads byExtendingSelection:NO];
 
-    [_multipleSelectedMessageThreads removeAllObjects];
+    if(selectedThreads.count == 0) {
+        [_multipleSelectedMessageThreads removeAllObjects];
+        _selectedMessageThread = nil;
+    }
 
-    _selectedMessageThread = nil;
+    [self updateToolbarButtons];
+}
+
+- (void)updateToolbarButtons {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMMessageListToolbarViewController *messageListToolbarViewController = [[appDelegate appController] messageListToolbarViewController];
+
+    [[messageListToolbarViewController starButton] setEnabled:_messageListTableView.selectedRowIndexes.count != 0? YES : NO];
+    [[messageListToolbarViewController trashButton] setEnabled:_messageListTableView.selectedRowIndexes.count != 0? YES : NO];
 }
 
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {

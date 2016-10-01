@@ -8,6 +8,7 @@
 
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMMessageListViewController.h"
 #import "SMMessageListToolbarViewController.h"
 
 @interface SMMessageListToolbarViewController ()
@@ -33,6 +34,13 @@
     SMAppController *appController = [appDelegate appController];
     
     [appController moveSelectedMessageThreadsToTrash];
+}
+
+- (IBAction)starButtonAction:(id)sender {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMAppController *appController = [appDelegate appController];
+
+    [appController.messageListViewController toggleStarForSelected];
 }
 
 @end

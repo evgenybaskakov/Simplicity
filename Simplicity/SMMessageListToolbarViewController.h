@@ -10,7 +10,8 @@
 
 @interface SMMessageListToolbarViewController : NSViewController
 
-@property (nonatomic) IBOutlet NSButton *composeMessageButton;
-@property (nonatomic) IBOutlet NSButton *trashButton;
+@property (weak) IBOutlet NSButton *composeMessageButton;
+@property (weak) IBOutlet NSButton *trashButton;
+@property (weak) IBOutlet NSButton *starButton;
 
 @end

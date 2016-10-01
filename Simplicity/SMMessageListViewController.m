@@ -1017,6 +1017,45 @@
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
+- (void)toggleStarForSelected {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
+    
+    BOOL allFlagged = YES;
+    for(NSUInteger selectedRow = [_messageListTableView.selectedRowIndexes firstIndex]; selectedRow != NSNotFound; selectedRow = [_messageListTableView.selectedRowIndexes indexGreaterThanIndex:selectedRow]) {
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
+        
+        if(messageThread != nil && !messageThread.flagged) {
+            allFlagged = NO;
+            break;
+        }
+        else {
+            SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
+        }
+    }
+    
+    BOOL addStar = (allFlagged ? NO : YES);
+    for(NSUInteger selectedRow = [_messageListTableView.selectedRowIndexes firstIndex]; selectedRow != NSNotFound; selectedRow = [_messageListTableView.selectedRowIndexes indexGreaterThanIndex:selectedRow]) {
+        SMMessageThread *messageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:selectedRow];
+        
+        if(messageThread != nil) {
+            if(addStar) {
+                [self addStarToMessageThread:messageThread];
+            }
+            else {
+                [self removeStarFromMessageThread:messageThread];
+            }
+        }
+        else {
+            SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
+        }
+    }
+    
+    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
 - (void)markMessageThreadsAsUnseen:(Boolean)unseen {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];

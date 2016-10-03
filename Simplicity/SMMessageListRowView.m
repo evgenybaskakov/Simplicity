@@ -58,4 +58,8 @@
     }
 }
 
+- (BOOL)canDrawSubviewsIntoLayer {
+    return YES;
+}
+
 @end

@@ -606,8 +606,11 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListToolbarViewController *messageListToolbarViewController = [[appDelegate appController] messageListToolbarViewController];
 
-    [[messageListToolbarViewController starButton] setEnabled:_messageListTableView.selectedRowIndexes.count != 0? YES : NO];
-    [[messageListToolbarViewController trashButton] setEnabled:_messageListTableView.selectedRowIndexes.count != 0? YES : NO];
+    BOOL enable = _messageListTableView.selectedRowIndexes.count != 0? YES : NO;
+    
+    [[messageListToolbarViewController starButton] setEnabled:enable];
+    [[messageListToolbarViewController replyButton] setEnabled:enable];
+    [[messageListToolbarViewController trashButton] setEnabled:enable];
 }
 
 - (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {

@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageListToolbarViewController">
             <connections>
                 <outlet property="composeMessageButton" destination="X6C-yd-E2Q" id="HzA-kD-83r"/>
+                <outlet property="replyButton" destination="MDt-o5-t9N" id="rSd-eB-f3I"/>
                 <outlet property="starButton" destination="eqk-Jn-2EF" id="kzy-Co-Ykw"/>
                 <outlet property="trashButton" destination="SIZ-9V-M6Z" id="cki-5A-mfz"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -22,22 +23,8 @@
                 <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="ghj-kS-CBd">
                     <rect key="frame" x="0.0" y="0.0" width="380" height="37"/>
                     <subviews>
-                        <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eqk-Jn-2EF" userLabel="Star Button">
-                            <rect key="frame" x="338" y="6" width="32" height="25"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="22" id="ahA-8U-4TJ"/>
-                                <constraint firstAttribute="width" constant="32" id="oBA-WR-1fb"/>
-                            </constraints>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="star-gray-icon-small" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ulg-kG-wSs">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="starButtonAction:" target="-2" id="7EC-dQ-oS5"/>
-                            </connections>
-                        </button>
                         <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SIZ-9V-M6Z">
-                            <rect key="frame" x="282" y="6" width="32" height="25"/>
+                            <rect key="frame" x="338" y="6" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="32" id="YaO-HG-dop"/>
                                 <constraint firstAttribute="height" constant="22" id="rHh-Vl-owZ"/>
@@ -51,7 +38,7 @@
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
-                            <rect key="frame" x="242" y="6" width="32" height="25"/>
+                            <rect key="frame" x="201" y="6" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
                                 <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
@@ -64,15 +51,45 @@
                                 <action selector="composeMessageAction:" target="-2" id="4Jy-b2-CGw"/>
                             </connections>
                         </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MDt-o5-t9N" userLabel="Reply Button">
+                            <rect key="frame" x="241" y="6" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="32" id="870-3A-PvZ"/>
+                                <constraint firstAttribute="height" constant="22" id="CzN-5J-5F7"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="reply-all-small" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="atv-wK-43I">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="replyButtonAction:" target="-2" id="8ek-uc-ExU"/>
+                            </connections>
+                        </button>
+                        <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eqk-Jn-2EF" userLabel="Star Button">
+                            <rect key="frame" x="281" y="6" width="32" height="25"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="22" id="ahA-8U-4TJ"/>
+                                <constraint firstAttribute="width" constant="32" id="oBA-WR-1fb"/>
+                            </constraints>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="star-gray-icon-small" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ulg-kG-wSs">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="starButtonAction:" target="-2" id="7EC-dQ-oS5"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="trailing" secondItem="eqk-Jn-2EF" secondAttribute="trailing" constant="10" id="7bA-Dv-RL3"/>
+                        <constraint firstItem="MDt-o5-t9N" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="72K-BE-T3u"/>
+                        <constraint firstAttribute="trailing" secondItem="eqk-Jn-2EF" secondAttribute="trailing" constant="67" id="7bA-Dv-RL3"/>
                         <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="I6w-xx-Ddd"/>
+                        <constraint firstAttribute="trailing" secondItem="MDt-o5-t9N" secondAttribute="trailing" constant="107" id="Mxx-sn-gFj"/>
                         <constraint firstAttribute="height" constant="37" id="WNC-zV-I2t"/>
-                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="leading" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="8" id="fPN-D4-XkG"/>
-                        <constraint firstItem="eqk-Jn-2EF" firstAttribute="leading" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="24" id="nHX-48-vKp"/>
+                        <constraint firstAttribute="trailing" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="147" id="kUP-Wb-Jiq"/>
                         <constraint firstItem="eqk-Jn-2EF" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="oAD-vw-Wlc"/>
                         <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="uHT-YB-2L9"/>
+                        <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="10" id="xmt-6z-eEb"/>
                     </constraints>
                 </visualEffectView>
             </subviews>
@@ -87,6 +104,7 @@
     </objects>
     <resources>
         <image name="new-message" width="128" height="128"/>
+        <image name="reply-all-small" width="128" height="128"/>
         <image name="star-gray-icon-small" width="286" height="286"/>
         <image name="trash-black" width="128" height="128"/>
     </resources>

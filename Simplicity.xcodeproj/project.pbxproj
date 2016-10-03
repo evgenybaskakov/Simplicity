@@ -194,6 +194,8 @@
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
 		808BC04B1CD331630030E08E /* SMUnifiedMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */; };
 		808BC0591CD33E870030E08E /* SMUnifiedMailboxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */; };
+		808E3F871DA2127300C60007 /* reply-all-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 808E3F861DA2127300C60007 /* reply-all-small.png */; };
+		808E3F901DA212E200C60007 /* reply-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 808E3F8F1DA212E200C60007 /* reply-small.png */; };
 		8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */; };
 		809430C31CB629AB000C1619 /* edit-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 809430C21CB629AB000C1619 /* edit-icon.png */; };
 		8095CD041D3B673D00067E27 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8095CD031D3B673D00067E27 /* Images.xcassets */; };
@@ -649,6 +651,8 @@
 		808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedMailbox.m; sourceTree = "<group>"; };
 		808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedMailboxController.h; sourceTree = "<group>"; };
 		808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedMailboxController.m; sourceTree = "<group>"; };
+		808E3F861DA2127300C60007 /* reply-all-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reply-all-small.png"; sourceTree = "<group>"; };
+		808E3F8F1DA212E200C60007 /* reply-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reply-small.png"; sourceTree = "<group>"; };
 		8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMPreferencesWindowController.xib; sourceTree = "<group>"; };
 		809430C21CB629AB000C1619 /* edit-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "edit-icon.png"; sourceTree = "<group>"; };
 		8095CD031D3B673D00067E27 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -1197,6 +1201,8 @@
 				8043D7DB1B51824100B07469 /* iconsineed-icon-down-128.png */,
 				8043D7D01B5180E400B07469 /* iconsineed-icon-reply-128.png */,
 				8043D7D11B5180E400B07469 /* iconsineed-icon-reply-all-128.png */,
+				808E3F861DA2127300C60007 /* reply-all-small.png */,
+				808E3F8F1DA212E200C60007 /* reply-small.png */,
 				004F7FE91866A973004DEC3C /* search-icon.png */,
 				804373B71CCF431500C802EC /* sendicon.png */,
 				002057CB1A85D2DA00D5FE8A /* sent-white.png */,
@@ -1571,6 +1577,7 @@
 				004F7FEA1866A973004DEC3C /* search-icon.png in Resources */,
 				8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */,
 				00E9107F17D2F6F50028C679 /* SMMessageListViewController.xib in Resources */,
+				808E3F871DA2127300C60007 /* reply-all-small.png in Resources */,
 				00A6817A1A7DEDB800DAD2BD /* attachment-document.png in Resources */,
 				800C677F1B48FE6D00272D60 /* Text-Marker.png in Resources */,
 				80CEFA281BF2FEEB002A7F96 /* SMGeneralPreferencesViewController.xib in Resources */,
@@ -1599,6 +1606,7 @@
 				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
 				801E8A6A1D4878D80062E63F /* Button-Up-128.png in Resources */,
 				00AD52E81AA813FB00627433 /* add-label.png in Resources */,
+				808E3F901DA212E200C60007 /* reply-small.png in Resources */,
 				8052555F1D5708C700CDCBA2 /* SMLabelSelectionViewController.xib in Resources */,
 				800C67921B499F0700272D60 /* Images.xcassets in Resources */,
 				8011CAF61CA3C66A00697210 /* SMLabeledPopUpListViewController.xib in Resources */,

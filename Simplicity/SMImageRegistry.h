@@ -19,6 +19,8 @@
 @property (readonly, nonatomic) NSImage *editImage;
 @property (readonly, nonatomic) NSImage *replyImage;
 @property (readonly, nonatomic) NSImage *replyAllImage;
+@property (readonly, nonatomic) NSImage *replySmallImage;
+@property (readonly, nonatomic) NSImage *replyAllSmallImage;
 @property (readonly, nonatomic) NSImage *moreMessageActionsImage;
 
 @end

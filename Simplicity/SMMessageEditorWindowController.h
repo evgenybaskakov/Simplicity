@@ -8,12 +8,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "SMMessageEditorView.h"
+
 @class SMMessageEditorViewController;
 
 @interface SMMessageEditorWindowController : NSWindowController<NSWindowDelegate>
 
 @property (readonly) SMMessageEditorViewController *messageEditorViewController;
 
-- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
+- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind;
 
 @end

@@ -10,6 +10,7 @@
 #import <WebKit/WebKit.h>
 
 #import "SMAbstractAccount.h"
+#import "SMMessageEditorView.h"
 
 @protocol SMAbstractLocalFolder;
 
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (void)hideOperationQueueSheet;
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder;
-- (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments;
+- (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind;
 
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
 

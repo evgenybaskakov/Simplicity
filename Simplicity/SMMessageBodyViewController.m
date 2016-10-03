@@ -242,7 +242,7 @@
             [self highlightAllOccurrencesOfString:_currentFindString matchCase:_currentFindStringMatchCase];
         }
 
-        // TODO: remove duplication, see SMMessageEditorWebView.contentHeight
+        // TODO: remove duplication, see SMMessageEditorView.contentHeight
         _contentHeight = [[[frame frameView] documentView] frame].size.height;
 
         [SMNotificationsController localNotifyMessageViewFrameLoaded:_messageId account:_account];

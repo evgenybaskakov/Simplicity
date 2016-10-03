@@ -352,7 +352,7 @@ static NSArray *_lastAddressesUsed;
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
-    [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
+    [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil editorKind:kEmptyEditorContentsKind];
 }
 
 - (void)openInAddressBookAction:(NSMenuItem*)menuItem {

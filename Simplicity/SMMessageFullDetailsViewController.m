@@ -21,6 +21,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
+#import "SMMessageEditorView.h"
 #import "SMMessageThreadCellViewController.h"
 
 static const NSUInteger CONTACT_BUTTON_SIZE = 37;
@@ -329,7 +330,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
-    [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil];
+    [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[[_addressWithMenu mcoAddress]] cc:nil bcc:nil draftUid:0 mcoAttachments:nil editorKind:kEmptyEditorContentsKind];
 }
 
 - (void)openInAddressBookAction:(NSMenuItem*)menuItem {

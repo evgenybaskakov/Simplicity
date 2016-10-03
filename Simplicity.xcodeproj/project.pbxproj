@@ -158,7 +158,7 @@
 		8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */; };
 		8043D7E31B51AC4900B07469 /* SMEditorToolBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */; };
 		8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */; };
-		8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */; };
+		8043D7F41B5387EC00B07469 /* SMMessageEditorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8043D7F31B5387EC00B07469 /* SMMessageEditorView.m */; };
 		804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 804711C01B7B153B00399942 /* SMMessageListTableView.m */; };
 		8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBCB1C13D0800083954D /* SMInactiveButton.m */; };
 		8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBD51C140B510083954D /* SMNotificationsController.m */; };
@@ -585,8 +585,8 @@
 		8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMEditorToolBoxViewController.xib; sourceTree = "<group>"; };
 		8043D7E81B537FF700B07469 /* SMMessageEditorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorBase.h; sourceTree = "<group>"; };
 		8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorBase.m; sourceTree = "<group>"; };
-		8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorWebView.h; sourceTree = "<group>"; };
-		8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorWebView.m; sourceTree = "<group>"; };
+		8043D7F21B5387EC00B07469 /* SMMessageEditorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageEditorView.h; sourceTree = "<group>"; };
+		8043D7F31B5387EC00B07469 /* SMMessageEditorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageEditorView.m; sourceTree = "<group>"; };
 		804711BF1B7B153B00399942 /* SMMessageListTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListTableView.h; sourceTree = "<group>"; };
 		804711C01B7B153B00399942 /* SMMessageListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageListTableView.m; sourceTree = "<group>"; };
 		8048FBCA1C13D0800083954D /* SMInactiveButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInactiveButton.h; sourceTree = "<group>"; };
@@ -1008,10 +1008,10 @@
 				00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */,
 				804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */,
 				804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */,
+				8043D7F21B5387EC00B07469 /* SMMessageEditorView.h */,
+				8043D7F31B5387EC00B07469 /* SMMessageEditorView.m */,
 				8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */,
 				8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */,
-				8043D7F21B5387EC00B07469 /* SMMessageEditorWebView.h */,
-				8043D7F31B5387EC00B07469 /* SMMessageEditorWebView.m */,
 				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
 				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
 				007A735F1A57A95500A4D694 /* SMMessageFullDetailsViewController.h */,
@@ -1772,7 +1772,7 @@
 				005F9A3B1AAD46500022EDEF /* SMMailboxTableView.m in Sources */,
 				8043D7E21B51AC4900B07469 /* SMEditorToolBoxViewController.m in Sources */,
 				00A681701A7D6B6E00DAD2BD /* SMAttachmentsPanelView.m in Sources */,
-				8043D7F41B5387EC00B07469 /* SMMessageEditorWebView.m in Sources */,
+				8043D7F41B5387EC00B07469 /* SMMessageEditorView.m in Sources */,
 				80BFC3C51BEDCAA200467243 /* SMMailServiceProviderYahoo.m in Sources */,
 				80E657541B1C210900A0AA81 /* SMOpDeleteMessages.m in Sources */,
 				8039326A1C97D6E700CE38CB /* SMUserAccount.m in Sources */,

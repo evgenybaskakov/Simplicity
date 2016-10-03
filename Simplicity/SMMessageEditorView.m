@@ -1,5 +1,5 @@
 //
-//  SMMessageEditorWebView.m
+//  SMMessageEditorView.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 7/12/15.
@@ -13,9 +13,9 @@
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
-#import "SMMessageEditorWebView.h"
+#import "SMMessageEditorView.h"
 
-@implementation SMMessageEditorWebView {
+@implementation SMMessageEditorView {
     NSTimer *_textMonitorTimer;
     NSUInteger _cachedContentHeight;
 }

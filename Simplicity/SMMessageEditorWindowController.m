@@ -10,7 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
-#import "SMMessageEditorWebView.h"
+#import "SMMessageEditorView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
 
@@ -23,9 +23,10 @@
     NSArray *_bcc;
     uint32_t _draftUid;
     NSArray *_mcoAttachments;
+    SMEditorContentsKind _editorKind;
 }
 
-- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments {
+- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
     _initialTextContent = textContent;
     _initialPlainText = plainText;
     _subject = subject;
@@ -34,6 +35,7 @@
     _bcc = bcc;
     _draftUid = draftUid;
     _mcoAttachments = mcoAttachments;
+    _editorKind = editorKind;
 }
 
 - (void)windowDidLoad {
@@ -62,18 +64,7 @@
     
     // Editor setup
     
-    SMEditorContentsKind editorContentsKind = kEmptyEditorContentsKind;
-    
-    if(_initialTextContent != nil) {
-        if(_draftUid == 0) {
-            editorContentsKind = kUnfoldedReplyEditorContentsKind;
-        }
-        else {
-            editorContentsKind = kUnfoldedDraftEditorContentsKind;
-        }
-    }
-    
-    [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:editorContentsKind mcoAttachments:_mcoAttachments];
+    [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:_editorKind mcoAttachments:_mcoAttachments];
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

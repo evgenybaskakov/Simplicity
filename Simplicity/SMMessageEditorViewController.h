@@ -8,11 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "SMMessageEditorWebView.h"
+#import "SMMessageEditorView.h"
 
 @class SMAddressFieldViewController;
 @class SMLabeledTextFieldBoxViewController;
-@class SMMessageEditorWebView;
+@class SMMessageEditorView;
 @class SMInlineButtonPanelViewController;
 @class SMMessageThreadViewController;
 @class SMAttachmentsPanelViewController;

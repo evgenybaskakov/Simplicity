@@ -1,5 +1,5 @@
 //
-//  SMMessageEditorWebView.h
+//  SMMessageEditorView.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 7/12/15.
@@ -18,7 +18,7 @@ typedef enum {
 @class SMMessageEditorBase;
 @class SMEditorToolBoxViewController;
 
-@interface SMMessageEditorWebView : WebView<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebEditingDelegate>
+@interface SMMessageEditorView : WebView<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebEditingDelegate>
 
 @property __weak SMMessageEditorBase *messageEditorBase;
 @property __weak SMEditorToolBoxViewController *editorToolBoxViewController;

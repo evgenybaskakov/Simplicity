@@ -182,12 +182,19 @@
         return image;
     }
     
+    SMRemoteImageLoadController __weak *weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SMRemoteImageLoadController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
         BOOL fileNeedsReload;
-        NSImage *image = [self loadImageFromDisk:email fileNeedsReload:&fileNeedsReload];
+        NSImage *image = [_self loadImageFromDisk:email fileNeedsReload:&fileNeedsReload];
         if(image != nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_imageCache setObject:image forKey:email];
+                [_self->_imageCache setObject:image forKey:email];
                 completionBlock(image);
             });
         }
@@ -205,16 +212,21 @@
                 }
                 
                 if(image != nil) {
-                    [self saveImageToDisk:email image:image];
+                    [_self saveImageToDisk:email image:image];
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    if(!_self) {
+                        SM_LOG_WARNING(@"object is gone");
+                        return;
+                    }
+                    
                     if(image != nil) {
-                        [_imageCache setObject:image forKey:email];
+                        [_self->_imageCache setObject:image forKey:email];
                         completionBlock(image);
                     }
                     else {
-                        [_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
+                        [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
 
                         if(!allowWebSiteImage) {
                             completionBlock(nil);
@@ -223,14 +235,14 @@
 
                         [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
                             if(image == nil) {
-                                [_imageCache setObject:(NSImage*)[NSNull null] forKey:webSite];
+                                [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:webSite];
                             }
                             else {
                                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    [self saveImageToDisk:webSite image:image];
+                                    [_self saveImageToDisk:webSite image:image];
                                 });
 
-                                [_imageCache setObject:image forKey:webSite];
+                                [_self->_imageCache setObject:image forKey:webSite];
                             }
                             
                             completionBlock(image);
@@ -269,10 +281,18 @@
         }
     }
     
+    SMRemoteImageLoadController __weak *weakSelf = self;
+    
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", webSite]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        SMRemoteImageLoadController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
         if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
             NSString *htmlBody = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             if(htmlBody == nil) {
@@ -293,11 +313,11 @@
                 page.htmlBody = htmlBody;
                 page.completionBlock = completionBlock;
                 
-                [_htmlPagesToLoad addObject:page];
+                [_self->_htmlPagesToLoad addObject:page];
                 
-                if(_htmlPagesToLoad.count == 1) {
+                if(_self->_htmlPagesToLoad.count == 1) {
                     SM_LOG_INFO(@"loading page: %@", page.baseURL);
-                    [[_webView mainFrame] loadHTMLString:page.htmlBody baseURL:page.baseURL];
+                    [[_self->_webView mainFrame] loadHTMLString:page.htmlBody baseURL:page.baseURL];
                 }
             });
         }
@@ -422,9 +442,17 @@
             url = [NSURL URLWithString:u];
         }
         
+        SMRemoteImageLoadController __weak *weakSelf = self;
+        
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            SMRemoteImageLoadController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
             // Check if this download is still needed
             if(webPage.completionBlock != nil) {
                 if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
@@ -451,17 +479,17 @@
 
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if(webPage.bestImage != nil) {
-                            [_imageCache setObject:webPage.bestImage forKey:webPage.webSite];
+                            [_self->_imageCache setObject:webPage.bestImage forKey:webPage.webSite];
                         }
                         else {
-                            [_imageCache setObject:(NSImage*)[NSNull null] forKey:webPage.webSite];
+                            [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:webPage.webSite];
                         }
                         
                         capturedCompletionBlock(webPage.bestImage);
                     });
                     
                     if(webPage.bestImage != nil) {
-                        [self saveImageToDisk:webPage.webSite image:webPage.bestImage];
+                        [_self saveImageToDisk:webPage.webSite image:webPage.bestImage];
                     }
                     
                 }

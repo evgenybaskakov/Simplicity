@@ -58,20 +58,30 @@
     MCOIMAPOperation *op = [session storeLabelsOperationWithFolder:_remoteFolderName uids:_uids kind:MCOIMAPStoreFlagsRequestKindRemove labels:@[_label]];
     
     self.currentOp = op;
-    
-    [op start:^(NSError * error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Label %@ for folder %@ successfully removed", _label, _remoteFolderName);
-            
-            [self complete];
-        } else {
-            SM_LOG_ERROR(@"Error removing label %@ for folder %@: %@", _label, _remoteFolderName, error);
-            
-            [self fail];
+
+    __weak id weakSelf = self;
+    [op start:^(NSError *error) {
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processStoreLabelsOpResult:error];
     }];
+}
+
+- (void)processStoreLabelsOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Label %@ for folder %@ successfully removed", _label, _remoteFolderName);
+        
+        [self complete];
+    } else {
+        SM_LOG_ERROR(@"Error removing label %@ for folder %@: %@", _label, _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

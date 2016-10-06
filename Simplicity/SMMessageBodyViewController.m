@@ -296,7 +296,7 @@
 }
 
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
-    if (aSelector == @selector(consoleLog:) || aSelector == @selector(eventInput:)) {
+    if (aSelector == @selector(consoleLog:)) {
         return NO;
     }
     

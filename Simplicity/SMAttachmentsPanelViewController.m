@@ -137,7 +137,14 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     if([attachmentFilenameLowercase hasSuffix:@".jpg"] || [attachmentFilenameLowercase hasSuffix:@".jpeg"] || [attachmentFilenameLowercase hasSuffix:@".png"]) {
         
+        SMAttachmentsPanelViewController __weak *weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            SMAttachmentsPanelViewController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
             NSData *attachmentData = mcoAttachment.data;
             NSImage *image = [[NSImage alloc] initWithData:attachmentData];
             
@@ -150,7 +157,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
                 [image TIFFRepresentation];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:index];
+                    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_self->_collectionView itemAtIndex:index];
                     
                     [item setPreviewImage:image];
                 });

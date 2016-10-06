@@ -702,15 +702,25 @@
     
     [_imapConnectionProgressIndicator startAnimation:self];
     
+    __weak id weakSelf = self;
     [_connectionCheck checkImapConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"IMAP connection status %lu, code %lu", status, mcoError);
-        
-        [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-        [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
-        
-        _imapConnectionStatusImage.hidden = NO;
-        _imapConnectionProgressIndicator.hidden = YES;
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [_self processCheckImapConnectionOpResult:status mcoError:mcoError];
     }];
+}
+
+- (void)processCheckImapConnectionOpResult:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
+    SM_LOG_INFO(@"IMAP connection status %lu, code %lu", status, mcoError);
+    
+    [_imapConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+    [_imapConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+    
+    _imapConnectionStatusImage.hidden = NO;
+    _imapConnectionProgressIndicator.hidden = YES;
 }
 
 - (IBAction)checkSmtpConnectionAction:(id)sender {
@@ -724,15 +734,25 @@
     
     [_smtpConnectionProgressIndicator startAnimation:self];
     
+    __weak id weakSelf = self;
     [_connectionCheck checkSmtpConnection:selectedAccount statusBlock:^(SMConnectionStatus status, MCOErrorCode mcoError) {
-        SM_LOG_INFO(@"SMTP connection status %lu, code %lu", status, mcoError);
-        
-        [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
-        [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
-        
-        _smtpConnectionStatusImage.hidden = NO;
-        _smtpConnectionProgressIndicator.hidden = YES;
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [_self processSmtpConnectionOpResult:status mcoError:mcoError];
     }];
+}
+
+- (void)processSmtpConnectionOpResult:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
+    SM_LOG_INFO(@"SMTP connection status %lu, code %lu", status, mcoError);
+    
+    [_smtpConnectionStatusLabel setStringValue:[self connectionStatusText:status mcoError:mcoError]];
+    [_smtpConnectionStatusImage setImage:[self connectionStatusImage:status mcoError:mcoError]];
+    
+    _smtpConnectionStatusImage.hidden = NO;
+    _smtpConnectionProgressIndicator.hidden = YES;
 }
 
 #pragma mark Account list table

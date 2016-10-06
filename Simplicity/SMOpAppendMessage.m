@@ -62,25 +62,37 @@
 
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError * error, uint32_t createdUID) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
-
-            if(self.postActionTarget) {
-                NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:account, _messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Account", @"Message", @"UID", nil]];
-                
-                [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
-            }
-
-            [self complete];
-        } else {
-            SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
-            
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processAppendMessagesOpResult:error createdUID:createdUID];
     }];
+}
+
+- (void)processAppendMessagesOpResult:(NSError*)error createdUID:(uint32_t)createdUID {
+    SMUserAccount *account = (SMUserAccount*)_operationExecutor.account;
+
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
+        
+        if(self.postActionTarget) {
+            NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:account, _messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Account", @"Message", @"UID", nil]];
+            
+            [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
+        }
+        
+        [self complete];
+    } else {
+        SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

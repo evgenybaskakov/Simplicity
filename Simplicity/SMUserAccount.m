@@ -232,18 +232,30 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 - (void)initOpExecutor {
     [_mailboxController initFolders];
     
+    SMUserAccount __weak *weakSelf = self;
+
     // TODO: use the resulting dbOp
     [_database loadOpQueue:@"SMTPQueue" block:^(SMDatabaseOp *op, SMOperationQueue *smtpQueue) {
+        SMUserAccount *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
         // TODO: use the resulting dbOp
-        [_database loadOpQueue:@"IMAPQueue" block:^(SMDatabaseOp *op, SMOperationQueue *imapQueue) {
-            [imapQueue setOperationExecutorForPendingOps:_operationExecutor];
-            [smtpQueue setOperationExecutorForPendingOps:_operationExecutor];
-            
-            [_operationExecutor setSmtpQueue:smtpQueue imapQueue:imapQueue];
-            
-            [_outboxController loadSMTPQueue:smtpQueue postSendActionTarget:_outboxController postSendActionSelector:@selector(finishMessageSending:)];
+        [_self->_database loadOpQueue:@"IMAPQueue" block:^(SMDatabaseOp *op, SMOperationQueue *imapQueue) {
+            [_self processLoadOpeQueueResult:imapQueue smtpQueue:smtpQueue];
         }];
     }];
+}
+
+- (void)processLoadOpeQueueResult:(SMOperationQueue*)imapQueue smtpQueue:(SMOperationQueue*)smtpQueue {
+    [imapQueue setOperationExecutorForPendingOps:_operationExecutor];
+    [smtpQueue setOperationExecutorForPendingOps:_operationExecutor];
+    
+    [_operationExecutor setSmtpQueue:smtpQueue imapQueue:imapQueue];
+    
+    [_outboxController loadSMTPQueue:smtpQueue postSendActionTarget:_outboxController postSendActionSelector:@selector(finishMessageSending:)];
 }
 
 - (void)printImapServerCapabilities:(MCOIndexSet*)capabilities {
@@ -366,20 +378,27 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     
     void (^opBlock)(NSError*, MCOIndexSet*) = nil;
     
+    SMUserAccount __weak *weakSelf = self;
     opBlock = ^(NSError * error, MCOIndexSet * capabilities) {
+        SMUserAccount *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
         if(error) {
             SM_LOG_ERROR(@"error getting IMAP capabilities: %@", error);
             
-            [_capabilitiesOp start:opBlock];
+            [_self->_capabilitiesOp start:opBlock];
         } else {
-            [self printImapServerCapabilities:capabilities];
+            [_self printImapServerCapabilities:capabilities];
             
-            SM_LOG_INFO(@"IMAP server folder concurrent access is %@, maximum %u connections allowed", _imapSession.allowsFolderConcurrentAccessEnabled? @"ENABLED" : @"DISABLED", _imapSession.maximumConnections);
+            SM_LOG_INFO(@"IMAP server folder concurrent access is %@, maximum %u connections allowed", _self->_imapSession.allowsFolderConcurrentAccessEnabled? @"ENABLED" : @"DISABLED", _self->_imapSession.maximumConnections);
             
-            _imapServerCapabilities = capabilities;
-            _capabilitiesOp = nil;
+            _self->_imapServerCapabilities = capabilities;
+            _self->_capabilitiesOp = nil;
 
-            [self startIdle];
+            [_self startIdle];
         }
     };
     
@@ -391,7 +410,14 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     
     void (^opBlock)(NSError *) = nil;
     
+    SMUserAccount __weak *weakSelf = self;
     opBlock = ^(NSError *error) {
+        SMUserAccount *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
         if(error && error.code != MCOErrorNone) {
             SM_LOG_ERROR(@"IDLE operation error: %@", error);
         }
@@ -399,8 +425,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             SM_LOG_INFO(@"IDLE operation triggers for INBOX");
         }
         
-        _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
-        [_idleOp start:opBlock];
+        _self->_idleOp = [_self->_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
+        [_self->_idleOp start:opBlock];
     };
     
     _idleOp = [_imapSession idleOperationWithFolder:@"INBOX" lastKnownUID:0];
@@ -460,11 +486,18 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             MCOIMAPFetchContentOperation *op = [_imapSession fetchMessageAttachmentOperationWithFolder:remoteFolder uid:uid partID:partId encoding:[imapPart encoding] urgent:YES];
             
             // TODO: check if there is a leak if imapPart is accessed in this block!!!
+            SMUserAccount __weak *weakSelf = self;
             [op start:^(NSError * error, NSData * data) {
+                SMUserAccount *_self = weakSelf;
+                if(!_self) {
+                    SM_LOG_WARNING(@"object is gone");
+                    return;
+                }
+                
                 if (error.code == MCOErrorNone) {
                     NSAssert(data, @"no data");
                     
-                    [_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
+                    [_self->_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
                 } else {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
                 }

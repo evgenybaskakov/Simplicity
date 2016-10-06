@@ -899,7 +899,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -920,7 +920,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -1020,7 +1020,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getQueueBlock(dbOp, opQueue);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 
@@ -1189,7 +1189,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId != nil) {
             SM_LOG_DEBUG(@"Folder %@ already exists (id %@)", folderName, folderId);
         }
@@ -1197,8 +1197,8 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             const int generatedFolderId = [self generateFolderId];
             NSNumber *folderId = [NSNumber numberWithInt:generatedFolderId];
             
-            [_folderIds setObject:folderId forKey:folderName];
-            [_folderNames setObject:folderName forKey:folderId];
+            [self->_folderIds setObject:folderId forKey:folderName];
+            [self->_folderNames setObject:folderName forKey:folderId];
             
             sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
             
@@ -1322,14 +1322,14 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                     // Finally, just store information about what messages have their bodies in the DB.
                     //
                     
-                    [_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
+                    [self->_messagesWithBodies setObject:[NSMutableSet set] forKey:folderId];
                 } while(FALSE);
                 
                 [self closeDatabase:database];
             }
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -1345,7 +1345,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
@@ -1405,7 +1405,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -1421,13 +1421,13 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId == nil) {
             SM_LOG_ERROR(@"Folder %@ does not exist", folderName);
         }
         else {
-            [_folderIds removeObjectForKey:folderId];
-            [_folderNames removeObjectForKey:folderId];
+            [self->_folderIds removeObjectForKey:folderId];
+            [self->_folderNames removeObjectForKey:folderId];
             
             sqlite3 *database = [self openDatabase:DBOpenMode_ReadWrite];
             
@@ -1503,7 +1503,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -1569,7 +1569,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             loadFoldersBlock(dbOp, folders);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
@@ -1596,7 +1596,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId != nil) {
                     NSString *getCountSql = [NSString stringWithFormat:@"SELECT COUNT(*) FROM FOLDER%@", folderId];
                     const char *getCountStmt = [getCountSql UTF8String];
@@ -1653,7 +1653,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesCountBlock(dbOp, messagesCount);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
@@ -1743,7 +1743,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
@@ -1851,7 +1851,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesBlock(dbOp, outgoingMessages, messages, plainTextBodies, hasAttachmentsFlags);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 
@@ -1880,7 +1880,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
@@ -1904,7 +1904,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessageBlock(dbOp, message, plainTextBody, hasAttachments);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
@@ -1933,7 +1933,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
 
@@ -1956,7 +1956,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesBlock(dbOp, messages, plainTextBodies, hasAttachmentsFlags);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
@@ -1985,7 +1985,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
@@ -2039,7 +2039,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessagesBlock(dbOp, messages, plainTextBodies, hasAttachmentsFlags);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
     
@@ -2128,7 +2128,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             return;
         }
         
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId == nil) {
             SM_LOG_ERROR(@"no id for folder \"%@\" found in DB", folderName);
 
@@ -2144,7 +2144,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             return;
         }
 
-        NSSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+        NSSet *uidSet = [self->_messagesWithBodies objectForKey:folderId];
         if(uidSet == nil) {
             SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
 
@@ -2236,7 +2236,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             getMessageBodyBlock(dbOp, parser, attachments, plainTextBody);
         });
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     };
 
@@ -2299,7 +2299,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId != nil) {
             NSData *encodedMessage = [self encodeImapMessage:imapMessage];
             [self storeEncodedMessage:encodedMessage uid:imapMessage.uid threadId:imapMessage.gmailThreadID date:imapMessage.header.date folderId:folderId];
@@ -2314,7 +2314,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -2326,7 +2326,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
         
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId != nil) {
             NSData *encodedMessageBuilder = [self encodeMessageBuilder:outgoingMessage.messageBuilder];
             [self storeEncodedMessage:encodedMessageBuilder uid:outgoingMessage.uid threadId:outgoingMessage.threadId date:outgoingMessage.date folderId:folderId];
@@ -2339,7 +2339,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self triggerDBFailure:DBFailure_CriticalDataNotFound];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -2451,7 +2451,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     break;
@@ -2746,7 +2746,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
@@ -2808,7 +2808,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -2824,7 +2824,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
         
         if(database != nil) {
             do {
-                NSNumber *folderId = [_folderIds objectForKey:folderName];
+                NSNumber *folderId = [self->_folderIds objectForKey:folderName];
                 if(folderId == nil) {
                     SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
                     
@@ -2884,7 +2884,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -2896,7 +2896,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId == nil) {
             SM_LOG_ERROR(@"attempt to delete message UID %u: no id for folder \"%@\" found in DB", uid, folderName);
             return;
@@ -2909,7 +2909,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                 //
                 // Step 1: Remove message header with the given UID from the folder table.
                 //
-                NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+                NSMutableSet *uidSet = [self->_messagesWithBodies objectForKey:folderId];
                 if(uidSet == nil) {
                     SM_LOG_WARNING(@"folder '%@' (%@) is unknown", folderName, folderId);
                 }
@@ -3002,7 +3002,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             [self closeDatabase:database];
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }
@@ -3014,7 +3014,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
     dispatch_async(_serialQueue, ^{
         [self runUrgentTasks];
 
-        NSNumber *folderId = [_folderIds objectForKey:folderName];
+        NSNumber *folderId = [self->_folderIds objectForKey:folderName];
         if(folderId == nil) {
             SM_LOG_ERROR(@"No id for folder \"%@\" found in DB", folderName);
             
@@ -3022,7 +3022,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             return;
         }
         
-        NSMutableSet *uidSet = [_messagesWithBodies objectForKey:folderId];
+        NSMutableSet *uidSet = [self->_messagesWithBodies objectForKey:folderId];
         if(uidSet == nil) {
             SM_LOG_ERROR(@"folder '%@' (%@) is unknown", folderName, folderId);
         }
@@ -3175,7 +3175,7 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
             }
         }
         
-        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &_serialQueueLength);
+        const int32_t newSerialQueueLen = OSAtomicAdd32(-1, &self->_serialQueueLength);
         SM_LOG_NOISE(@"serial queue length decreased: %d", newSerialQueueLen);
     });
 }

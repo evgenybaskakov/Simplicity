@@ -128,17 +128,24 @@
     
     [_messageStorage startUpdate];
     
+    SMLocalFolder __weak *weakSelf = self;
+    
     if(_loadingFromDB) {
         _dbSyncInProgress = YES;
 
         [_dbOps addObject:[[_account database] getMessagesCountInDBFolder:_remoteFolderName block:^(SMDatabaseOp *op, NSUInteger messagesCount) {
+            SMLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
             SM_LOG_DEBUG(@"messagesCount=%lu", messagesCount);
 
-            [_dbOps removeObject:op];
+            [_self->_dbOps removeObject:op];
+            _self->_totalMessagesCount = messagesCount;
             
-            _totalMessagesCount = messagesCount;
-            
-            [self syncFetchMessageHeaders];
+            [_self syncFetchMessageHeaders];
         }]];
     }
     else {
@@ -152,18 +159,24 @@
         _folderInfoOp.urgent = YES;
 
         [_folderInfoOp start:^(NSError *error, MCOIMAPFolderInfo *info) {
-            _folderInfoOp = nil;
+            SMLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            _self->_folderInfoOp = nil;
 
             if(error == nil) {
-                SM_LOG_DEBUG(@"Folder %@, UIDNEXT: %u, UIDVALIDITY: %u, Messages count %u", _localName, info.uidNext, info.uidValidity, info.messageCount);
+                SM_LOG_DEBUG(@"Folder %@, UIDNEXT: %u, UIDVALIDITY: %u, Messages count %u", _self->_localName, info.uidNext, info.uidValidity, info.messageCount);
                 
-                _totalMessagesCount = [info messageCount];
+                _self->_totalMessagesCount = [info messageCount];
                 
-                [self syncFetchMessageHeaders];
+                [_self syncFetchMessageHeaders];
             } else {
-                SM_LOG_ERROR(@"Error fetching folder %@ info: %@", _localName, error);
+                SM_LOG_ERROR(@"Error fetching folder %@ info: %@", _self->_localName, error);
 
-                [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error];
+                [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_self->_account error:error];
             }
         }];
     }
@@ -402,32 +415,38 @@
     if(_loadingFromDB) {
         const NSUInteger numberOfMessagesToFetch = MIN(_totalMessagesCount - _messageHeadersFetched, MESSAGE_HEADERS_TO_FETCH_AT_ONCE_FROM_DB);
 
+        SMLocalFolder __weak *weakSelf = self;
         [_dbOps addObject:[[_account database] loadMessageHeadersFromDBFolder:_remoteFolderName offset:_messageHeadersFetched count:numberOfMessagesToFetch getMessagesBlock:^(SMDatabaseOp *op, NSArray<SMOutgoingMessage*> *outgoingMessages, NSArray<MCOIMAPMessage*> *mcoMessages, NSArray<NSString*> *mcoMessagePlainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
-            [_dbOps removeObject:op];
+            SMLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            [_self->_dbOps removeObject:op];
             
             NSAssert(mcoMessagePlainTextBodies == nil || mcoMessagePlainTextBodies.count == mcoMessages.count, @"mcoMessagePlainTextBodies.count %lu, mcoMessages.count %lu", mcoMessagePlainTextBodies.count, mcoMessages.count);
 
             for(SMOutgoingMessage *message in outgoingMessages) {
-                [self addMessage:message externalMessage:NO updateDatabase:NO];
-                
-                _messageHeadersFetched++;
+                [_self addMessage:message externalMessage:NO updateDatabase:NO];
+                _self->_messageHeadersFetched++;
             }
 
             NSArray<MCOIMAPMessage*> *newMessages;
-            [self syncNewMessages:mcoMessages mcoMessagePlainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:&newMessages];
+            [_self syncNewMessages:mcoMessages mcoMessagePlainTextBodies:mcoMessagePlainTextBodies hasAttachmentsFlags:hasAttachmentsFlags updateDatabase:NO newMessages:&newMessages];
 
-            SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
+            SMMessageBodyFetchQueue *bodyFetchQueue = [_self chooseBackgroundOrForegroundMessageBodyFetchQueue];
             
             for(NSUInteger i = 0; i < mcoMessages.count; i++) {
                 if((NSNull*)mcoMessagePlainTextBodies[i] == [NSNull null]) {
                     MCOIMAPMessage *m = mcoMessages[i];
 
                     // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                    [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                    [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_self->_remoteFolderName localFolder:_self];
                 }
             }
 
-            SM_LOG_INFO(@"folder %@, outgoing messages loaded: %lu, messages loaded: %lu, headers fetched: %lu", _localName, outgoingMessages.count, mcoMessages.count, _messageHeadersFetched);
+            SM_LOG_INFO(@"folder %@, outgoing messages loaded: %lu, messages loaded: %lu, headers fetched: %lu", _self->_localName, outgoingMessages.count, mcoMessages.count, _self->_messageHeadersFetched);
             
         }]];
     }
@@ -450,8 +469,15 @@
         _fetchMessageHeadersOp.urgent = YES;
         
         // TODO: cancellation?
+        SMLocalFolder __weak *weakSelf = self;
         [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
-            _fetchMessageHeadersOp = nil;
+            SMLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
+            _self->_fetchMessageHeadersOp = nil;
             
             if(error == nil || error.code == MCOErrorNone) {
                 dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -465,13 +491,13 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         NSArray<MCOIMAPMessage*> *newMessages;
-                        [self syncNewMessages:sortedMessages mcoMessagePlainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:&newMessages];
+                        [_self syncNewMessages:sortedMessages mcoMessagePlainTextBodies:nil hasAttachmentsFlags:nil updateDatabase:YES newMessages:&newMessages];
                         
-                        SMMessageBodyFetchQueue *bodyFetchQueue = [self chooseBackgroundOrForegroundMessageBodyFetchQueue];
+                        SMMessageBodyFetchQueue *bodyFetchQueue = [_self chooseBackgroundOrForegroundMessageBodyFetchQueue];
                         
                         for(MCOIMAPMessage *m in newMessages) {
                             // TODO: body loading should be cancelled as well as _loadMessageHeadersForUIDsFromDBFolderOp. See issue #72.
-                            [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_remoteFolderName localFolder:self];
+                            [bodyFetchQueue fetchMessageBodyWithUID:m.uid messageId:m.gmailMessageID threadId:m.gmailThreadID messageDate:[m.header date] urgent:NO tryLoadFromDatabase:NO remoteFolder:_self->_remoteFolderName localFolder:_self];
                         }
                     });
                 });

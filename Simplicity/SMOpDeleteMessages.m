@@ -58,21 +58,31 @@
     
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError * error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Flags for remote folder %@ successfully updated", _remoteFolderName);
-            
-            SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName operationExecutor:_operationExecutor];
-            
-            [self replaceWith:op];
-        } else {
-            SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
-            
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processStoreFlagsOpResult:error];
     }];
+}
+
+- (void)processStoreFlagsOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Flags for remote folder %@ successfully updated", _remoteFolderName);
+        
+        SMOpExpungeFolder *op = [[SMOpExpungeFolder alloc] initWithRemoteFolder:_remoteFolderName operationExecutor:_operationExecutor];
+        
+        [self replaceWith:op];
+    } else {
+        SM_LOG_ERROR(@"Error updating flags for remote folder %@: %@", _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

@@ -64,19 +64,29 @@
 
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError * error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Message flags set in remote folder %@", _remoteFolderName);
-            
-            [self complete];
-        } else {
-            SM_LOG_ERROR(@"Error setting message flags in remote folder %@: %@", _remoteFolderName, error);
-            
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processStoreFlagsOpResult:error];
     }];
+}
+
+- (void)processStoreFlagsOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Message flags set in remote folder %@", _remoteFolderName);
+        
+        [self complete];
+    } else {
+        SM_LOG_ERROR(@"Error setting message flags in remote folder %@: %@", _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

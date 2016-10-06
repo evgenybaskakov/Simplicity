@@ -60,24 +60,34 @@
     
     self.currentOp = op;
     
-    [op start:^(NSError * error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if (error == nil || error.code == MCOErrorNone) {
-            SM_LOG_DEBUG(@"message sent successfully");
-        
-            if(self.postActionTarget) {
-                [self.postActionTarget performSelector:self.postActionSelector withObject:_outgoingMessage afterDelay:0];
-            }
-            
-            [self complete];
+    __weak id weakSelf = self;
+    [op start:^(NSError *error) {
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
-        else {
-            SM_LOG_ERROR(@"Error sending message: %@", error);
-            
-            [self fail];
-        }
+        [_self processSendOpResult:error];
     }];
+}
+
+- (void)processSendOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if (error == nil || error.code == MCOErrorNone) {
+        SM_LOG_DEBUG(@"message sent successfully");
+        
+        if(self.postActionTarget) {
+            [self.postActionTarget performSelector:self.postActionSelector withObject:_outgoingMessage afterDelay:0];
+        }
+        
+        [self complete];
+    }
+    else {
+        SM_LOG_ERROR(@"Error sending message: %@", error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

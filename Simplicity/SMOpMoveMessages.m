@@ -70,33 +70,43 @@
     
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError *error, NSDictionary *uidMapping) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            if(uidMapping != nil) {
-                SMFolder *targetFolder = [[_operationExecutor.account mailbox] getFolderByName:_dstRemoteFolderName];
-
-                if(targetFolder != nil && targetFolder.kind == SMFolderKindRegular) {
-                    MCOIndexSet *uids = [MCOIndexSet indexSet];
-                    for(NSNumber *srcUid in uidMapping)
-                        [uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
-                    
-                    SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName operationExecutor:_operationExecutor];
-
-                    [op enqueue];
-                }
-            }
-            
-            SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName operationExecutor:_operationExecutor];
-            
-            [self replaceWith:op];
-        } else {
-            SM_LOG_ERROR(@"Error copying messages from %@ to %@: %@", _srcRemoteFolderName, _dstRemoteFolderName, error);
-
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processCopyMessagesOpResult:error uidMapping:uidMapping];
     }];
+}
+
+- (void)processCopyMessagesOpResult:(NSError*)error uidMapping:(NSDictionary*)uidMapping {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        if(uidMapping != nil) {
+            SMFolder *targetFolder = [[_operationExecutor.account mailbox] getFolderByName:_dstRemoteFolderName];
+            
+            if(targetFolder != nil && targetFolder.kind == SMFolderKindRegular) {
+                MCOIndexSet *uids = [MCOIndexSet indexSet];
+                for(NSNumber *srcUid in uidMapping)
+                    [uids addIndex:[[uidMapping objectForKey:srcUid] unsignedLongLongValue]];
+                
+                SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:_uids remoteFolderName:_dstRemoteFolderName label:_dstRemoteFolderName operationExecutor:_operationExecutor];
+                
+                [op enqueue];
+            }
+        }
+        
+        SMOpDeleteMessages *op = [[SMOpDeleteMessages alloc] initWithUids:_uids remoteFolderName:_srcRemoteFolderName operationExecutor:_operationExecutor];
+        
+        [self replaceWith:op];
+    } else {
+        SM_LOG_ERROR(@"Error copying messages from %@ to %@: %@", _srcRemoteFolderName, _dstRemoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

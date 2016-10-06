@@ -55,21 +55,31 @@
 
     _imapCheckOp = [_imapSession checkAccountOperation];
 
+    __weak id weakSelf = self;
     [_imapCheckOp start:^(NSError *error) {
-         if(error == nil || error.code == MCOErrorNone) {
-             SM_LOG_INFO(@"IMAP server connected ok");
-             
-             statusBlock(SMConnectionStatus_Connected, MCOErrorNone);
-         }
-         else {
-             SM_LOG_ERROR(@"IMAP connection error %lu: '%@'", error.code, error);
-             
-             statusBlock(SMConnectionStatus_ConnectionFailed, error.code);
-         }
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [_self processImapCheckOpResult:error statusBlock:statusBlock];
+    }];
+}
+
+- (void)processImapCheckOpResult:(NSError*)error statusBlock:(void (^)(SMConnectionStatus, MCOErrorCode))statusBlock {
+    if(error == nil || error.code == MCOErrorNone) {
+        SM_LOG_INFO(@"IMAP server connected ok");
         
-        _imapSession = nil;
-        _imapCheckOp = nil;
-     }];
+        statusBlock(SMConnectionStatus_Connected, MCOErrorNone);
+    }
+    else {
+        SM_LOG_ERROR(@"IMAP connection error %lu: '%@'", error.code, error);
+        
+        statusBlock(SMConnectionStatus_ConnectionFailed, error.code);
+    }
+    
+    _imapSession = nil;
+    _imapCheckOp = nil;
 }
 
 - (void)checkSmtpConnection:(NSUInteger)accountIdx statusBlock:(void (^)(SMConnectionStatus, MCOErrorCode))statusBlock {
@@ -103,21 +113,31 @@
 
     _smtpCheckOp = [_smtpSession checkAccountOperationWithFrom:fromAddress];
 
+    __weak id weakSelf = self;
     [_smtpCheckOp start:^(NSError *error) {
-        if(error == nil || error.code == MCOErrorNone) {
-            SM_LOG_INFO(@"SMTP server connected ok");
-            
-            statusBlock(SMConnectionStatus_Connected, MCOErrorNone);
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
-        else {
-            SM_LOG_ERROR(@"SMTP connection error %lu: '%@'", error.code, error);
-            
-            statusBlock(SMConnectionStatus_ConnectionFailed, error.code);
-        }
-        
-        _smtpSession = nil;
-        _smtpCheckOp = nil;
+        [_self processSmtpCheckOpResult:error statusBlock:statusBlock];
     }];
+}
+
+- (void)processSmtpCheckOpResult:(NSError*)error statusBlock:(void (^)(SMConnectionStatus, MCOErrorCode))statusBlock {
+    if(error == nil || error.code == MCOErrorNone) {
+        SM_LOG_INFO(@"SMTP server connected ok");
+        
+        statusBlock(SMConnectionStatus_Connected, MCOErrorNone);
+    }
+    else {
+        SM_LOG_ERROR(@"SMTP connection error %lu: '%@'", error.code, error);
+        
+        statusBlock(SMConnectionStatus_ConnectionFailed, error.code);
+    }
+    
+    _smtpSession = nil;
+    _smtpCheckOp = nil;
 }
 
 @end

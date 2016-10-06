@@ -177,20 +177,27 @@
             _loadMessageHeadersForUIDsFromDBFolderOp = nil;
         }
         
+        SMSearchLocalFolder __weak *weakSelf = self;
         _loadMessageHeadersForUIDsFromDBFolderOp = [[_account database] loadMessageHeadersForUIDsFromDBFolder:_remoteFolderName uids:messageUIDsToLoadNow block:^(SMDatabaseOp *op, NSArray<MCOIMAPMessage*> *messages, NSArray<NSString*> *plainTextBodies, NSArray<NSNumber*> *hasAttachmentsFlags) {
-            if(searchId != _currentSearchId) {
-                SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+            SMSearchLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
                 return;
             }
 
-            [_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
+            if(searchId != _self->_currentSearchId) {
+                SM_LOG_INFO(@"stale DB search dropped (stale search id %lu, current search id %lu)", searchId, _self->_currentSearchId);
+                return;
+            }
+
+            [_self->_restOfSelectedMessageUIDsToLoadFromDB removeIndexSet:messageUIDsToLoadNow];
             
             // Reduce the SERVER set of messages to load by the set of messages actually loaded from DB.
             for(MCOIMAPMessage *m in messages) {
-                [_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
+                [_self->_restOfSelectedMessageUIDsToLoadFromServer removeIndex:m.uid];
             }
 
-            [self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:NO];
+            [_self completeMessagesRegionLoading:messages plainTextBodies:plainTextBodies hasAttachmentsFlags:hasAttachmentsFlags messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:NO];
         }];
     }
     else {
@@ -202,7 +209,14 @@
         
         _fetchMessageHeadersOp.urgent = YES;
         
+        SMSearchLocalFolder __weak *weakSelf = self;
         [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
+            SMSearchLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
             if(error == nil || error.code == MCOErrorNone) {
                 dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
                 
@@ -214,21 +228,21 @@
                     NSArray<MCOIMAPMessage*> *sortedMessages = [messages sortedArrayUsingComparator:[appDelegate.messageComparators messagesComparatorBySequenceNumber]];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if(searchId != _currentSearchId) {
-                            SM_LOG_INFO(@"stale SERVER search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                        if(searchId != _self->_currentSearchId) {
+                            SM_LOG_INFO(@"stale SERVER search dropped (stale search id %lu, current search id %lu)", searchId, _self->_currentSearchId);
                             return;
                         }
                         
-                        _fetchMessageHeadersOp = nil;
+                        _self->_fetchMessageHeadersOp = nil;
                         
-                        [_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
+                        [_self->_restOfSelectedMessageUIDsToLoadFromServer removeIndexSet:messageUIDsToLoadNow];
                         
                         // Reduce the DB set of messages to load by the set of messages actually loaded from SERVER.
                         for(MCOIMAPMessage *m in sortedMessages) {
-                            [_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
+                            [_self->_restOfSelectedMessageUIDsToLoadFromDB removeIndex:m.uid];
                         }
                         
-                        [self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:YES];
+                        [_self completeMessagesRegionLoading:sortedMessages plainTextBodies:nil hasAttachmentsFlags:nil messageUIDsRequestedToLoad:messageUIDsToLoadNow updateDatabase:YES];
                     });
                 });
             }

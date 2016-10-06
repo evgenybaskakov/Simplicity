@@ -53,25 +53,35 @@
     
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError *error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Remote folder %@ successfully expunged", _remoteFolderName);
-            
-            SMMessageListController *messageListController = [_operationExecutor.account messageListController];
-            
-            // TODO: should check if the current folder is the same as expunged one
-            
-            [messageListController scheduleMessageListUpdate:YES];
-            
-            [self complete];
-        } else {
-            SM_LOG_ERROR(@"Error expunging remote folder %@: %@", _remoteFolderName, error);
-            
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processExpungeOpResult:error];
     }];
+}
+
+- (void)processExpungeOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Remote folder %@ successfully expunged", _remoteFolderName);
+        
+        SMMessageListController *messageListController = [_operationExecutor.account messageListController];
+        
+        // TODO: should check if the current folder is the same as expunged one
+        
+        [messageListController scheduleMessageListUpdate:YES];
+        
+        [self complete];
+    } else {
+        SM_LOG_ERROR(@"Error expunging remote folder %@: %@", _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 - (NSString*)name {

@@ -154,12 +154,20 @@
 
     if(searchNetwork) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        
+        SMAddressBookController __weak *weakSelf = self;
         NSImage *image = [appDelegate.remoteImageLoadController loadAvatar:address.email allowWebSiteImage:allowWebSiteImage completionBlock:^(NSImage *image) {
+            SMAddressBookController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
             if(completionBlock) {
-                if(![self allowImage:image])
+                if(![_self allowImage:image])
                     image = nil;
                 
-                [_imageCache setObject:image?image:(NSImage*)[NSNull null] forKey:address.detailedRepresentation];
+                [_self->_imageCache setObject:(image? image : (NSImage*)[NSNull null]) forKey:address.detailedRepresentation];
                 completionBlock(image, tag);
             }
         }];

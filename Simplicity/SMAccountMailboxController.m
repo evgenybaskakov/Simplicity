@@ -77,8 +77,14 @@
     SM_LOG_DEBUG(@"initializing folders");
 
     // TODO: use the resulting dbOp
+    __weak id weakSelf = self;
     [[_account database] loadDBFolders:^(SMDatabaseOp *op, NSArray<SMFolderDesc*> *folders) {
-        [(SMAccountMailboxController*)_account.mailboxController loadExistingFolders:folders];
+        SMAccountMailboxController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [(SMAccountMailboxController*)_self->_account.mailboxController loadExistingFolders:folders];
     }];
 }
 
@@ -92,45 +98,55 @@
         _fetchFoldersOp = [session fetchAllFoldersOperation];
     }
     
+    __weak id weakSelf = self;
     [_fetchFoldersOp start:^(NSError * error, NSArray *folders) {
-        _fetchFoldersOp = nil;
-        
-        // schedule now to keep the folder list updated
-        // regardless of any connectivity or server errors
-        [self scheduleFolderListUpdate:NO];
-        
-        if(error == nil || error.code == MCOErrorNone) {
-            SMAccountMailbox *mailbox = [ _account mailbox ];
-            NSAssert(mailbox != nil, @"mailbox is nil");
-
-            NSSet<SMFolderDesc*> *vanishedFolders;
-            if([mailbox updateIMAPFolders:folders vanishedFolders:&vanishedFolders]) {
-                SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-
-                NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
-                NSAssert(accountIdx != NSNotFound, @"mailbox account is not found");
-                
-                NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
-
-                for(SMFolderDesc *vanishedFolder in vanishedFolders) {
-                    [[_account database] removeDBFolder:vanishedFolder.folderName];
-                    [updatedLabels removeObjectForKey:vanishedFolder.folderName];
-                }
-                
-                [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
-                
-                [self addFoldersToDatabase];
-                [self ensureMainLocalFoldersCreated];
-            }
-
-            [SMNotificationsController localNotifyFolderListUpdated:(SMUserAccount*)_account];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
-        else {
-            SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
-
-            [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error];
-        }
+        [_self processFetchFoldersOpResult:error folders:folders];
     }];
+}
+
+- (void)processFetchFoldersOpResult:(NSError*)error folders:(NSArray*)folders {
+    _fetchFoldersOp = nil;
+    
+    // schedule now to keep the folder list updated
+    // regardless of any connectivity or server errors
+    [self scheduleFolderListUpdate:NO];
+    
+    if(error == nil || error.code == MCOErrorNone) {
+        SMAccountMailbox *mailbox = [ _account mailbox ];
+        NSAssert(mailbox != nil, @"mailbox is nil");
+        
+        NSSet<SMFolderDesc*> *vanishedFolders;
+        if([mailbox updateIMAPFolders:folders vanishedFolders:&vanishedFolders]) {
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+            
+            NSUInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
+            NSAssert(accountIdx != NSNotFound, @"mailbox account is not found");
+            
+            NSMutableDictionary *updatedLabels = [NSMutableDictionary dictionaryWithDictionary:[[appDelegate preferencesController] labels:accountIdx]];
+            
+            for(SMFolderDesc *vanishedFolder in vanishedFolders) {
+                [[_account database] removeDBFolder:vanishedFolder.folderName];
+                [updatedLabels removeObjectForKey:vanishedFolder.folderName];
+            }
+            
+            [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
+            
+            [self addFoldersToDatabase];
+            [self ensureMainLocalFoldersCreated];
+        }
+        
+        [SMNotificationsController localNotifyFolderListUpdated:(SMUserAccount*)_account];
+    }
+    else {
+        SM_LOG_ERROR(@"Error downloading folders structure: %@", error);
+        
+        [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_account error:error];
+    }
 }
 
 - (void)ensureMainLocalFoldersCreated {
@@ -193,20 +209,30 @@
     NSAssert(_createFolderOp == nil, @"another create folder op exists");
     _createFolderOp = [session createFolderOperation:fullFolderName];
 
+    __weak id weakSelf = self;
     [_createFolderOp start:^(NSError * error) {
-        _createFolderOp = nil;
-        
-        if (error != nil && error.code != MCOErrorNone) {
-            SM_LOG_ERROR(@"Error creating folder %@: %@", fullFolderName, error);
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
-        else {
-            SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
-
-            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
-        }
+        [_self processCreateFolderOpResults:error fullFolderName:fullFolderName];
     }];
     
     return fullFolderName;
+}
+
+- (void)processCreateFolderOpResults:(NSError*)error fullFolderName:(NSString*)fullFolderName {
+    _createFolderOp = nil;
+    
+    if (error != nil && error.code != MCOErrorNone) {
+        SM_LOG_ERROR(@"Error creating folder %@: %@", fullFolderName, error);
+    }
+    else {
+        SM_LOG_DEBUG(@"Folder %@ created", fullFolderName);
+        
+        [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
+    }
 }
 
 - (void)renameFolder:(NSString*)oldFolderName newFolderName:(NSString*)newFolderName {
@@ -224,17 +250,27 @@
     NSAssert(_renameFolderOp == nil, @"another create folder op exists");
     _renameFolderOp = [session renameFolderOperation:oldFolderName otherName:newFolderName];
     
+    __weak id weakSelf = self;
     [_renameFolderOp start:^(NSError * error) {
-        _renameFolderOp = nil;
-
-        if (error != nil && error.code != MCOErrorNone) {
-            SM_LOG_ERROR(@"Error renaming folder %@ to %@: %@", oldFolderName, newFolderName, error);
-        } else {
-            SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
-
-            [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processRenameFolderOpResult:error newFolderName:newFolderName oldFolderName:oldFolderName];
     }];
+}
+
+- (void)processRenameFolderOpResult:(NSError*)error newFolderName:(NSString*)newFolderName oldFolderName:(NSString*)oldFolderName {
+    _renameFolderOp = nil;
+    
+    if (error != nil && error.code != MCOErrorNone) {
+        SM_LOG_ERROR(@"Error renaming folder %@ to %@: %@", oldFolderName, newFolderName, error);
+    } else {
+        SM_LOG_DEBUG(@"Folder %@ renamed to %@", oldFolderName, newFolderName);
+        
+        [(SMAccountMailboxController*)_account.mailboxController scheduleFolderListUpdate:YES];
+    }
 }
 
 - (void)deleteFolder:(NSString*)folderName {

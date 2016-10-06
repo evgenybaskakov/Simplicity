@@ -232,10 +232,16 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
         _contactButton.image = account.accountImage;
     }
     else {
+        SMMessageFullDetailsViewController __weak *weakSelf = self;
         BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
         NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+            SMMessageFullDetailsViewController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
             if(image != nil) {
-                _contactButton.image = image;
+                _self->_contactButton.image = image;
             }
         }];
         

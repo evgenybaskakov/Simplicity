@@ -202,39 +202,50 @@ const char *const mcoOpKinds[] = {
             
             op.urgent = YES;
             
+            SMAccountSearchController __weak *weakSelf = self;
             [op start:^(NSError *error, MCOIndexSet *uids) {
-                if(searchId != _currentSearchId) {
-                    SM_LOG_INFO(@"stale SERVER suggestions search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                SMAccountSearchController *_self = weakSelf;
+                if(!_self) {
+                    SM_LOG_WARNING(@"object is gone");
+                    return;
+                }
+                
+                NSUInteger currentSearchId = _self->_currentSearchId;
+                NSMutableArray<SearchOpInfo*> *suggestionSearchOps = _self->_suggestionSearchOps;
+                NSString *searchRemoteFolderName = _self->_searchRemoteFolderName;
+                
+                if(searchId != currentSearchId) {
+                    SM_LOG_INFO(@"stale SERVER suggestions search dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
                     return;
                 }
 
-                SearchOpInfo *opInfo = _suggestionSearchOps[i];
+                SearchOpInfo *opInfo = suggestionSearchOps[i];
                 
-                if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
+                if(i < suggestionSearchOps.count && suggestionSearchOps[i] == opInfo) {
                     if(error == nil || error.code == MCOErrorNone) {
-                        SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, _searchRemoteFolderName);
+                        SM_LOG_DEBUG(@"search kind %s: %u messages found in remote folder %@", mcoOpKinds[opInfo.kind], uids.count, searchRemoteFolderName);
                     }
                     else {
-                        SM_LOG_ERROR(@"search kind %s: search in folder %@ failed: %@", mcoOpKinds[opInfo.kind], _searchRemoteFolderName, error);
+                        SM_LOG_ERROR(@"search kind %s: search in folder %@ failed: %@", mcoOpKinds[opInfo.kind], searchRemoteFolderName, error);
                         uids = nil;
                     }
                     
                     if(uids != nil && uids.count > 0) {
-                        [self updateSuggestionSearchResults:uids kind:opInfo.kind];
+                        [_self updateSuggestionSearchResults:uids kind:opInfo.kind];
                         
-                        MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:_searchRemoteFolderName requestKind:messageHeadersRequestKind uids:uids];
+                        MCOIMAPFetchMessagesOperation *op = [session fetchMessagesOperationWithFolder:searchRemoteFolderName requestKind:messageHeadersRequestKind uids:uids];
                         
                         op.urgent = YES;
                         
                         [op start:^(NSError *error, NSArray *imapMessages, MCOIndexSet *vanishedMessages) {
-                            if(searchId != _currentSearchId) {
-                                SM_LOG_INFO(@"stale SERVER suggestions search fetching dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+                            if(searchId != currentSearchId) {
+                                SM_LOG_INFO(@"stale SERVER suggestions search fetching dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
                                 return;
                             }
                             
-                            if(i < _suggestionSearchOps.count && _suggestionSearchOps[i] == opInfo) {
-                                [self updateSearchMenuContent:searchPattern imapMessages:imapMessages];
-                                [self checkSuggestionSearchCompletion:searchPattern];
+                            if(i < suggestionSearchOps.count && suggestionSearchOps[i] == opInfo) {
+                                [_self updateSearchMenuContent:searchPattern imapMessages:imapMessages];
+                                [_self checkSuggestionSearchCompletion:searchPattern];
                             }
                             else {
                                 SM_LOG_INFO(@"previous search aborted");
@@ -244,7 +255,7 @@ const char *const mcoOpKinds[] = {
                         opInfo.op = op;
                     }
                     else {
-                        [self checkSuggestionSearchCompletion:searchPattern];
+                        [_self checkSuggestionSearchCompletion:searchPattern];
                     }
                 }
                 else {
@@ -276,29 +287,40 @@ const char *const mcoOpKinds[] = {
     MCOIMAPSearchExpression *searchExpression = [self buildMCOSearchExpression:searchTokens searchPattern:searchPattern searchKind:SMSearchExpressionKind_Any];
     MCOIMAPSearchOperation *op = [session searchExpressionOperationWithFolder:_searchRemoteFolderName expression:searchExpression];
     op.urgent = YES;
-  
+
+    SMAccountSearchController __weak *weakSelf = self;
     [op start:^(NSError *error, MCOIndexSet *uids) {
-        if(searchId != _currentSearchId) {
-            SM_LOG_INFO(@"stale SERVER content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+        SMAccountSearchController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
+        NSUInteger currentSearchId = _self->_currentSearchId;
+        NSString *searchRemoteFolderName = _self->_searchRemoteFolderName;
+        SearchOpInfo *mainSearchOp = _self->_mainSearchOp;
+
+        if(searchId != currentSearchId) {
+            SM_LOG_INFO(@"stale SERVER content search dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
             return;
         }
         
         if(error == nil || error.code == MCOErrorNone) {
-            if(_mainSearchOp.op == op) {
-                SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, _searchRemoteFolderName);
+            if(mainSearchOp.op == op) {
+                SM_LOG_INFO(@"Remote content search results: %u messages in remote folder %@", uids.count, searchRemoteFolderName);
 
-                [self loadSearchResults:uids remoteFolderToSearch:_searchRemoteFolderName];
+                [_self loadSearchResults:uids remoteFolderToSearch:searchRemoteFolderName];
             }
             else {
                 SM_LOG_INFO(@"previous content search aborted");
             }
         }
         else {
-            SM_LOG_ERROR(@"search in folder %@ failed: %@", _searchRemoteFolderName, error);
+            SM_LOG_ERROR(@"search in folder %@ failed: %@", searchRemoteFolderName, error);
         }
 
-        if(_mainSearchOp.op == op) {
-            _mainSearchOp = nil;
+        if(mainSearchOp.op == op) {
+            mainSearchOp = nil;
         }
     }];
  
@@ -310,57 +332,84 @@ const char *const mcoOpKinds[] = {
 
     if(searchPattern != nil) {
         [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:searchPattern subject:nil content:nil block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
-            [_dbOps removeObject:op];
+            SMAccountSearchController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            [_self->_dbOps removeObject:op];
             
-            if(searchId != _currentSearchId) {
-                SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+            NSUInteger currentSearchId = _self->_currentSearchId;
+            NSMutableOrderedSet *suggestionResultsContacts = _self->_suggestionResultsContacts;
+            
+            if(searchId != currentSearchId) {
+                SM_LOG_INFO(@"stale DB contact search dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
                 return;
             }
             
             for(SMTextMessage *m in textMessages) {
                 if(m.from != nil) {
-                    [_suggestionResultsContacts addObject:m.from];
+                    [suggestionResultsContacts addObject:m.from];
                 }
                 
                 if(m.toList != nil) {
-                    [_suggestionResultsContacts addObjectsFromArray:m.toList];
+                    [suggestionResultsContacts addObjectsFromArray:m.toList];
                 }
                 
                 if(m.ccList != nil) {
-                    [_suggestionResultsContacts addObjectsFromArray:m.ccList];
+                    [suggestionResultsContacts addObjectsFromArray:m.ccList];
                 }
             }
             
             SM_LOG_DEBUG(@"Total %lu messages with matching contacts found", textMessages.count);
             
-            [self updateSearchMenuContent:searchPattern imapMessages:@[]];
+            [_self updateSearchMenuContent:searchPattern imapMessages:@[]];
         }]];
         
         [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:searchPattern content:nil block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
-            [_dbOps removeObject:op];
+            SMAccountSearchController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            [_self->_dbOps removeObject:op];
             
-            if(searchId != _currentSearchId) {
-                SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+            NSUInteger currentSearchId = _self->_currentSearchId;
+            NSMutableOrderedSet *suggestionResultsSubjects = _self->_suggestionResultsSubjects;
+            
+            if(searchId != currentSearchId) {
+                SM_LOG_INFO(@"stale DB subject search dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
                 return;
             }
             
             for(SMTextMessage *m in textMessages) {
                 if(m.subject != nil) {
-                    [_suggestionResultsSubjects addObject:m.subject];
+                    [suggestionResultsSubjects addObject:m.subject];
                 }
             }
             
             SM_LOG_DEBUG(@"Total %lu messages with matching subject found", textMessages.count);
             
-            [self updateSearchMenuContent:searchPattern imapMessages:@[]];
+            [_self updateSearchMenuContent:searchPattern imapMessages:@[]];
         }]];
     }
     
     [_dbOps addObject:[[_account database] findMessages:_searchRemoteFolderName tokens:searchTokens contact:nil subject:nil content:searchPattern block:^(SMDatabaseOp *op, NSArray<SMTextMessage*> *textMessages) {
-        [_dbOps removeObject:op];
+        SMAccountSearchController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
+        [_self->_dbOps removeObject:op];
         
-        if(searchId != _currentSearchId) {
-            SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, _currentSearchId);
+        NSUInteger currentSearchId = _self->_currentSearchId;
+        NSString *searchRemoteFolderName = _self->_searchRemoteFolderName;
+
+        if(searchId != currentSearchId) {
+            SM_LOG_INFO(@"stale DB content search dropped (stale search id %lu, current search id %lu)", searchId, currentSearchId);
             return;
         }
         
@@ -370,9 +419,9 @@ const char *const mcoOpKinds[] = {
             [uids addIndex:m.uid];
         }
 
-        SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, _searchRemoteFolderName);
+        SM_LOG_DEBUG(@"DB content search results: %u messages in remote folder %@", uids.count, searchRemoteFolderName);
         
-        [self loadSearchResults:uids remoteFolderToSearch:_searchRemoteFolderName];
+        [_self loadSearchResults:uids remoteFolderToSearch:searchRemoteFolderName];
     }]];
 }
 

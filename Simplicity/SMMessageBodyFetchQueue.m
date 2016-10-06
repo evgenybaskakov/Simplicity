@@ -241,25 +241,33 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 - (void)startFetchingDBOp:(FetchOpDesc*)opDesc {
     // TODO: Actually, DB ops in a paused queue should not be executed.
     //       However, they are not pausable right now. We can live with that.
+    SMMessageBodyFetchQueue __weak *weakSelf = self;
+    
     SMDatabaseOp *dbOp = [[opDesc.localFolder.account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.remoteFolder urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
-        if([self getFetchOp:opDesc.uid remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder] == nil) {
+        SMMessageBodyFetchQueue *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
+        if([_self getFetchOp:opDesc.uid remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder] == nil) {
             SM_LOG_DEBUG(@"Loading body for message UID %u from folder '%@' skipped (cancelled)", opDesc.uid, opDesc.remoteFolder);
             return;
         }
         
-        [self removeFetchOp:opDesc];
+        [_self removeFetchOp:opDesc];
         
         if(![(SMMessageStorage*)opDesc.localFolder.messageStorage messageHasData:opDesc.uid threadId:opDesc.threadId]) {
             if(parser == nil) {
                 SM_LOG_DEBUG(@"Message header with UID %u (remote folder '%@') was found in the database; body will be loaded from server", opDesc.uid, opDesc.remoteFolder);
                 
                 // Re-try, this time load from the server.
-                [self fetchMessageBodyWithUID:opDesc.uid messageId:opDesc.messageId threadId:opDesc.threadId messageDate:opDesc.messageDate urgent:opDesc.urgent tryLoadFromDatabase:NO remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder];
+                [_self fetchMessageBodyWithUID:opDesc.uid messageId:opDesc.messageId threadId:opDesc.threadId messageDate:opDesc.messageDate urgent:opDesc.urgent tryLoadFromDatabase:NO remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder];
             }
             else {
                 BOOL hasAttachments = (attachments.count > 0);
                 
-                [self loadMessageBodyWithMessageId:opDesc.messageId threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
+                [_self loadMessageBodyWithMessageId:opDesc.messageId threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
             }
         }
         else {
@@ -334,24 +342,31 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         [opDesc updateProgress:current total:maximum];
     };
 
+    SMMessageBodyFetchQueue __weak *weakSelf = self;
     [imapOp start:^(NSError *error, NSData *data) {
+        SMMessageBodyFetchQueue *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
         SM_LOG_DEBUG(@"Body download for message UID %u from folder '%@' ended", op.uid, op.remoteFolder);
 
         if(!op.urgent) {
-            if(![_nonUrgentRunningOps containsObject:op]) {
+            if(![_self->_nonUrgentRunningOps containsObject:op]) {
                 SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (cancelled)", op.uid, op.remoteFolder);
                 
-                [self startNextRemoteOp];
+                [_self startNextRemoteOp];
                 return;
             }
             
-            [_nonUrgentRunningOps removeObject:op];
+            [_self->_nonUrgentRunningOps removeObject:op];
         }
         
-        if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
+        if([_self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
             SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.remoteFolder);
 
-            [self startNextRemoteOp];
+            [_self startNextRemoteOp];
             return;
         }
         
@@ -371,15 +386,15 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if([self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
+                    if([_self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder] == nil) {
                         SM_LOG_INFO(@"Body download for message UID %u from folder '%@' skipped (completed before or cancelled)", op.uid, op.remoteFolder);
                         
-                        [self startNextRemoteOp];
+                        [_self startNextRemoteOp];
                         return;
                     }
                     
-                    FetchOpDesc *pendingOp = [self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder];
-                    [self removeFetchOp:op];
+                    FetchOpDesc *pendingOp = [_self getFetchOp:op.uid remoteFolder:op.remoteFolder localFolder:op.localFolder];
+                    [_self removeFetchOp:op];
                     
                     if(op.localFolder.syncedWithRemoteFolder || op.localFolder.kind == SMFolderKindSearch) {
                         [[op.localFolder.account database] putMessageBodyToDB:op.uid messageDate:op.messageDate data:data plainTextBody:plainTextBody folderName:op.remoteFolder];
@@ -399,7 +414,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                         loadedAttachments = attachments;
                     }
                     
-                    [self loadMessageBodyWithMessageId:op.messageId threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
+                    [_self loadMessageBodyWithMessageId:op.messageId threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
                 });
             });
         }
@@ -408,24 +423,24 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
             
             if(op.attempt < MAX_OP_ATTEMPTS) {
                 if(!op.urgent) {
-                    [_nonUrgentFailedOps addObject:op];
+                    [_self->_nonUrgentFailedOps addObject:op];
                 }
                 
                 // TODO!
                 // - move attempt count and retry delay to advanced prefs;
                 // - detect connectivity loss/restore.
-                [self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:FAILED_OP_RETRY_DELAY];
+                [_self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:FAILED_OP_RETRY_DELAY];
             }
             else {
                 SM_LOG_ERROR(@"Message body for uid %u, remote folder %@ (%@) is cancelling as failed", op.uid, op.remoteFolder, error);
 
-                [self removeFetchOp:op];
+                [_self removeFetchOp:op];
                 
                 // TODO: notify the user
             }
         }
         
-        [self startNextRemoteOp];
+        [_self startNextRemoteOp];
     }];
 }
 

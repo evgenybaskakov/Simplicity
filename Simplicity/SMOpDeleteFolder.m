@@ -62,19 +62,29 @@
     
     self.currentOp = op;
     
+    __weak id weakSelf = self;
     [op start:^(NSError *error) {
-        NSAssert(self.currentOp != nil, @"current op has disappeared");
-        
-        if(error == nil) {
-            SM_LOG_DEBUG(@"Remote folder %@ successfully deleted", _remoteFolderName);
-            
-            [self complete];
-        } else {
-            SM_LOG_ERROR(@"Error deleting remote folder %@: %@", _remoteFolderName, error);
-            
-            [self fail];
+        id _self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
         }
+        [_self processDeleteFolderOpResult:error];
     }];
+}
+
+- (void)processDeleteFolderOpResult:(NSError*)error {
+    NSAssert(self.currentOp != nil, @"current op has disappeared");
+    
+    if(error == nil) {
+        SM_LOG_DEBUG(@"Remote folder %@ successfully deleted", _remoteFolderName);
+        
+        [self complete];
+    } else {
+        SM_LOG_ERROR(@"Error deleting remote folder %@: %@", _remoteFolderName, error);
+        
+        [self fail];
+    }
 }
 
 @end

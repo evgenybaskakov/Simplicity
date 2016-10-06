@@ -458,7 +458,7 @@
 
 - (void)clearCursorSelection {
     [_selectedTokens enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-        _tokens[idx].selected = NO;
+        self->_tokens[idx].selected = NO;
     }];
     
     [_selectedTokens removeAllIndexes];
@@ -661,13 +661,13 @@
 - (void)deleteTokensAndText:(BOOL)deleteText selectedTokensOnly:(BOOL)selectedTokensOnly {
     if(selectedTokensOnly) {
         [_selectedTokens enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-            [_tokens[idx] removeFromSuperview];
+            [self->_tokens[idx] removeFromSuperview];
             
-            if(_tokens[idx].editorView) {
-                _tokens[idx].editorView = nil;
+            if(self->_tokens[idx].editorView) {
+                self->_tokens[idx].editorView = nil;
 
-                [_existingTokenEditor removeFromSuperview];
-                _existingTokenEditor = nil;
+                [self->_existingTokenEditor removeFromSuperview];
+                self->_existingTokenEditor = nil;
             }
         }];
 

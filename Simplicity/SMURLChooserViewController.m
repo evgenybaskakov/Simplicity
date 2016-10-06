@@ -6,6 +6,7 @@
 //  Copyright © 2016 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMURLChooserViewController.h"
 
 @interface SMURLChooserViewController ()
@@ -40,14 +41,26 @@
 }
 
 - (void)startProgress {
+    SMURLChooserViewController __weak *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_progressIndicator startAnimation:self];
+        SMURLChooserViewController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [_self->_progressIndicator startAnimation:self];
     });
 }
 
 - (void)stopProgress {
+    SMURLChooserViewController __weak *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_progressIndicator stopAnimation:self];
+        SMURLChooserViewController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        [_self->_progressIndicator stopAnimation:self];
     });
 }
 
@@ -86,15 +99,22 @@
     
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSURLSession *session = [NSURLSession sharedSession];
-    
+
+    SMURLChooserViewController __weak *weakSelf = self;
     _downloadTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        SMURLChooserViewController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
         NSImage *image = nil;
         if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
             image = [[NSImage alloc] initWithData:data];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self chooseImage:image url:url];
+            [_self chooseImage:image url:url];
         });
     }];
     
@@ -117,8 +137,14 @@
         [_fileDlg setAllowsMultipleSelection:NO];
     }
 
+    SMURLChooserViewController __weak *weakSelf = self;
     [_fileDlg beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-        NSArray<NSURL*>* files = [_fileDlg URLs];
+        SMURLChooserViewController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        NSArray<NSURL*>* files = [_self->_fileDlg URLs];
         for(NSURL* url in files) {
             NSImage *img = nil;
             if(url) {
@@ -126,14 +152,14 @@
             }
             
             if(img) {
-                _urlTextField.stringValue = url.path;
+                _self->_urlTextField.stringValue = url.path;
 
-                [self chooseImage:img url:url];
+                [_self chooseImage:img url:url];
                 break;
             }
         }
         
-        [_fileDlg close];
+        [_self->_fileDlg close];
     }];
 }
 

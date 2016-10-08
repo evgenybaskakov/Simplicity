@@ -10,7 +10,13 @@
 
 @class SMAddressFieldViewController;
 
-@interface SMLabeledTokenFieldBoxView : NSBox
+@interface SMLabeledTokenFieldBoxView : NSView
+
+@property BOOL drawTopLine;
+@property BOOL drawBottomLine;
+@property CGFloat topLineOffset;
+@property CGFloat bottomLineOffset;
+@property NSColor *lineColor;
 
 - (void)setViewController:(SMAddressFieldViewController*)controller;
 

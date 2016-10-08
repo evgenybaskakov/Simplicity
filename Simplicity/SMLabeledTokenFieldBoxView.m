@@ -26,4 +26,23 @@
     [_controller invalidateIntrinsicContentViewSize];
 }
 
+- (void)drawRect:(NSRect)dirtyRect {
+    [super drawRect:dirtyRect];
+    
+    [[NSColor whiteColor] setFill];
+    NSRectFill(dirtyRect);
+    
+    NSRect b = self.bounds;
+
+    if(_drawTopLine) {
+        [_lineColor set];
+        NSRectFill(NSMakeRect(NSMinX(b) + _topLineOffset, NSMinY(b) + NSHeight(b) - 1, NSWidth(b), 1));
+    }
+ 
+    if(_drawBottomLine) {
+        [_lineColor set];
+        NSRectFill(NSMakeRect(NSMinX(b) + _bottomLineOffset, NSMinY(b), NSWidth(b), 1));
+    }
+}
+
 @end

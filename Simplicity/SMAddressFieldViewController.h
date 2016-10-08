@@ -9,10 +9,13 @@
 #import <Cocoa/Cocoa.h>
 
 #import "SMSuggestionProvider.h"
+#import "SMLabeledTokenFieldBoxView.h"
 
 @class SMTokenField;
 
 @interface SMAddressFieldViewController : NSViewController<NSTokenFieldDelegate>
+
+@property (strong) IBOutlet SMLabeledTokenFieldBoxView *mainView;
 
 @property IBOutlet NSTextField *label;
 @property IBOutlet SMTokenField *tokenField;

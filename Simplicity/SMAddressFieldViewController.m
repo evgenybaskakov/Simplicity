@@ -33,15 +33,9 @@ static NSArray *_lastAddressesUsed;
 
     NSView *view = [self view];
 
-    NSAssert([view isKindOfClass:[NSBox class]], @"view not NSBox");
     NSAssert([view isKindOfClass:[SMLabeledTokenFieldBoxView class]], @"view not SMLabeledTokenFieldBoxView");
     
     [(SMLabeledTokenFieldBoxView*)view setViewController:self];
-
-    [(NSBox*)view setBoxType:NSBoxCustom];
-    [(NSBox*)view setTitlePosition:NSNoTitle];
-    [(NSBox*)view setFillColor:[NSColor whiteColor]];
-    [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
 - (void)viewDidAppear {

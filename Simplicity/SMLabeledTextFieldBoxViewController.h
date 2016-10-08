@@ -8,7 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "SMLabeledTokenFieldBoxView.h"
+
 @interface SMLabeledTextFieldBoxViewController : NSViewController<NSTextFieldDelegate>
+
+@property (strong) IBOutlet SMLabeledTokenFieldBoxView *mainView;
 
 @property IBOutlet NSTextField *label;
 @property IBOutlet NSTextField *textField;

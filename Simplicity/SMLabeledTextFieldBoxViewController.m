@@ -7,21 +7,13 @@
 //
 
 #import "SMLog.h"
+#import "SMLabeledTokenFieldBoxView.h"
 #import "SMLabeledTextFieldBoxViewController.h"
 
 @implementation SMLabeledTextFieldBoxViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    NSView *view = [self view];
-    
-    NSAssert([view isKindOfClass:[NSBox class]], @"view not NSBox");
-    
-    [(NSBox*)view setBoxType:NSBoxCustom];
-    [(NSBox*)view setTitlePosition:NSNoTitle];
-    [(NSBox*)view setFillColor:[NSColor whiteColor]];
-    [(NSBox*)view setBorderColor:[NSColor lightGrayColor]];
 }
 
 - (void)controlTextDidBeginEditing:(NSNotification *)obj {

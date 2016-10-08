@@ -12,6 +12,13 @@
 
 @implementation SMEditorToolBoxViewController
 
+- (void)viewDidLoad {
+    NSBox *view = (NSBox*)self.view;
+    NSColor *color = [NSColor colorWithWhite:0.86 alpha:1];
+    
+    view.borderColor = color;
+}
+
 #pragma mark Text attrbitute actions
 
 - (IBAction)setTextStyleAction:(id)sender {

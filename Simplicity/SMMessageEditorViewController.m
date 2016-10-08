@@ -345,7 +345,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
-
 #pragma mark Editor startup
 
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
@@ -972,55 +971,103 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_innerView removeConstraints:_innerView.constraints];
     
     if(self.embedded) {
-        _innerView.frame = NSMakeRect(EMBEDDED_MARGIN_W, EMBEDDED_MARGIN_H, self.view.frame.size.width - EMBEDDED_MARGIN_W * 2 - 2, self.view.frame.size.height - EMBEDDED_MARGIN_H * 2 - 1);
+        _innerView.frame = NSMakeRect(EMBEDDED_MARGIN_W, EMBEDDED_MARGIN_H, self.view.frame.size.width - EMBEDDED_MARGIN_W * 2 - 2, self.view.frame.size.height - EMBEDDED_MARGIN_H * 2);
     }
     
     const CGFloat curWidth = _innerView.frame.size.width;
     const CGFloat curHeight = _innerView.frame.size.height;
     
-    CGFloat yPos = -1;
+    CGFloat yPos = 0;
     
     _messageEditorToolbarViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _messageEditorToolbarViewController.view.frame.size.height);
     
-    yPos += _messageEditorToolbarViewController.view.frame.size.height - 1;
+    yPos += _messageEditorToolbarViewController.view.frame.size.height;
     
+    BOOL fromShown = NO;
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.accounts.count > 1) {
         _fromBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _fromBoxViewController.view.frame.size.height);
         
-        yPos += _fromBoxViewController.view.frame.size.height - 1;
+        yPos += _fromBoxViewController.view.frame.size.height;
+        
+        fromShown = YES;
     }
+    
+    CGFloat gridOffset = 22;
+    NSColor *gridColor = [NSColor colorWithWhite:0.86 alpha:1];
+    
+    SMLabeledTokenFieldBoxView *prevFieldView;
     
     _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height);
+    _toBoxViewController.mainView.drawTopLine = (fromShown? YES : NO);
+    _toBoxViewController.mainView.drawBottomLine = YES;
+    _toBoxViewController.mainView.topLineOffset = gridOffset;
+    _toBoxViewController.mainView.bottomLineOffset = gridOffset;
+    _toBoxViewController.mainView.lineColor = gridColor;
+    _toBoxViewController.mainView.needsDisplay = YES;
+
+    prevFieldView = _toBoxViewController.mainView;
+
+    yPos += _toBoxViewController.intrinsicContentViewSize.height;
     
-    yPos += _toBoxViewController.intrinsicContentViewSize.height - 1;
-    
-    CGFloat fullAddressPanelHeight = (_ccBoxViewController.view.frame.size.height - 1) + (_bccBoxViewController.view.frame.size.height - 1);
+    CGFloat fullAddressPanelHeight = 0;
     
     if(_fullAddressPanelShown) {
+        prevFieldView.drawBottomLine = NO;
+        prevFieldView = _ccBoxViewController.mainView;
+        
         _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.intrinsicContentViewSize.height);
+        _ccBoxViewController.mainView.drawTopLine = YES;
+        _ccBoxViewController.mainView.drawBottomLine = YES;
+        _ccBoxViewController.mainView.topLineOffset = gridOffset;
+        _ccBoxViewController.mainView.bottomLineOffset = gridOffset;
+        _ccBoxViewController.mainView.lineColor = gridColor;
+        _ccBoxViewController.mainView.needsDisplay = YES;
         
-        yPos += _ccBoxViewController.view.frame.size.height - 1;
+        yPos += _ccBoxViewController.view.frame.size.height;
         
+        prevFieldView.drawBottomLine = NO;
+        prevFieldView = _bccBoxViewController.mainView;
+
         _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.intrinsicContentViewSize.height);
+        _bccBoxViewController.mainView.drawTopLine = YES;
+        _bccBoxViewController.mainView.drawBottomLine = YES;
+        _bccBoxViewController.mainView.topLineOffset = gridOffset;
+        _bccBoxViewController.mainView.bottomLineOffset = gridOffset;
+        _bccBoxViewController.mainView.lineColor = gridColor;
+        _bccBoxViewController.mainView.needsDisplay = YES;
         
-        yPos += _bccBoxViewController.view.frame.size.height - 1;
+        yPos += _bccBoxViewController.view.frame.size.height;
+        
+        fullAddressPanelHeight += _ccBoxViewController.view.frame.size.height + _bccBoxViewController.view.frame.size.height;
     }
-    
+
+    prevFieldView.drawBottomLine = NO;
+
     if(!self.embedded || _fullAddressPanelShown) {
+        prevFieldView = _subjectBoxViewController.mainView;
+
         _subjectBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _subjectBoxViewController.view.frame.size.height);
+        _subjectBoxViewController.mainView.drawTopLine = YES;
+        _subjectBoxViewController.mainView.drawBottomLine = NO;
+        _subjectBoxViewController.mainView.topLineOffset = gridOffset;
+        _subjectBoxViewController.mainView.bottomLineOffset = gridOffset;
+        _subjectBoxViewController.mainView.lineColor = gridColor;
+        _subjectBoxViewController.mainView.needsDisplay = YES;
         
-        yPos += _subjectBoxViewController.view.frame.size.height - 1;
-    }
-    
-    if(self.embedded) {
-        fullAddressPanelHeight += _subjectBoxViewController.view.frame.size.height - 1;
+        yPos += _subjectBoxViewController.view.frame.size.height;
+
+        fullAddressPanelHeight += _subjectBoxViewController.view.frame.size.height;
     }
     
     if(!_plainText) {
         _editorToolBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _editorToolBoxViewController.view.frame.size.height);
         
-        yPos += _editorToolBoxViewController.view.frame.size.height; // no overlapping here, because editor view isn't bordered
+        yPos += _editorToolBoxViewController.view.frame.size.height;
+    }
+    else {
+        prevFieldView.bottomLineOffset = 0;
+        prevFieldView.drawBottomLine = YES;
     }
     
     _panelHeight = yPos - 1;

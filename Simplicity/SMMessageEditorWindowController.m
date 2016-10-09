@@ -56,7 +56,8 @@
 
     [[self window] setContentViewController:_messageEditorViewController];
     
-    [_messageEditorViewController setResponders:TRUE];
+    BOOL focusOnContent = [SMMessageEditorView kindToFocusOnContent:_editorKind];
+    [_messageEditorViewController setResponders:TRUE focusOnContent:focusOnContent];
     
     // Editor setup
     

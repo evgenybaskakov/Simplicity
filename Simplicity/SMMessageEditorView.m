@@ -20,6 +20,12 @@
     NSUInteger _cachedContentHeight;
 }
 
++ (BOOL)kindToFocusOnContent:(SMEditorContentsKind)kind {
+    return kind == kFoldedReplyEditorContentsKind ||
+           kind == kUnfoldedReplyEditorContentsKind ||
+           kind == kUnfoldedDraftEditorContentsKind;
+}
+
 - (id)init {
     self = [super init];
     
@@ -92,6 +98,8 @@
             NSAssert(nil, @"unknown editor contents kind %u", kind);
         }
     }
+    
+    _editorKind = kind;
 
     [self.mainFrame loadHTMLString:bodyHtml baseURL:nil];
 }
@@ -120,6 +128,12 @@
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_DEBUG(@"loaded");
+
+        BOOL focusOnContent = [SMMessageEditorView kindToFocusOnContent:_editorKind];
+        if(focusOnContent) {
+            WebScriptObject *scriptObject = [self windowScriptObject];
+            [scriptObject evaluateWebScript:@"document.getElementById('SimplicityEditor').focus()"];
+        }
 
         [self setCachedContentHeight];
         [self notifyContentHeightChanged];

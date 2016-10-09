@@ -23,9 +23,12 @@ typedef enum {
 @property __weak SMMessageEditorBase *messageEditorBase;
 @property __weak SMEditorToolBoxViewController *editorToolBoxViewController;
 
+@property (readonly) SMEditorContentsKind editorKind;
 @property (readonly) NSUInteger contentHeight;
 
 @property Boolean unsavedContentPending;
+
++ (BOOL)kindToFocusOnContent:(SMEditorContentsKind)kind;
 
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind;
 - (void)stopTextMonitor;

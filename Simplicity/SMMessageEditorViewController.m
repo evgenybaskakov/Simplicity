@@ -275,7 +275,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSAssert(nil, @"should not happen");
 }
 
-- (void)setResponders:(BOOL)force {
+- (void)setResponders:(BOOL)initialSetup focusOnContent:(BOOL)focusOnContent {
     NSWindow *window = [[self view] window];
     if(window == nil) {
         SM_LOG_DEBUG(@"no window yet to set responders for");
@@ -288,12 +288,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // a type of "WebHTMLView", which is a private Apple class. When the focus is on address or subject fields,
     // its type is either NSTokenTextView (subclass of NSTextView), or NSWindow.
     Boolean messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
+    NSView *initialResponder = nil;
     
+    if(!messageEditorFocus && initialSetup && focusOnContent) {
+        initialResponder = editorView;
+    }
+
     if(_fullAddressPanelShown) {
-        if(!messageEditorFocus) {
-            if(force) {
-                [window makeFirstResponder:_subjectBoxViewController.textField];
-            }
+        if(!messageEditorFocus && initialSetup && initialResponder == nil) {
+            initialResponder = _subjectBoxViewController.textField;
         }
         
         [window setInitialFirstResponder:_subjectBoxViewController.textField];
@@ -310,10 +313,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     else {
         if(!self.embedded) {
-            if(!messageEditorFocus) {
-                if(force) {
-                    [window makeFirstResponder:_subjectBoxViewController.textField];
-                }
+            if(!messageEditorFocus && initialSetup && initialResponder == nil) {
+                initialResponder = _subjectBoxViewController.textField;
             }
             
             [window setInitialFirstResponder:_subjectBoxViewController.textField];
@@ -327,10 +328,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             [_subjectBoxViewController.textField setNextKeyView:editorView];
         }
         else {
-            if(!messageEditorFocus) {
-                if(force) {
-                    [window makeFirstResponder:_toBoxViewController.tokenField];
-                }
+            if(!messageEditorFocus && initialSetup && initialResponder == nil) {
+                initialResponder = _toBoxViewController.tokenField;
             }
             
             [window setInitialFirstResponder:_toBoxViewController.tokenField];
@@ -342,6 +341,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             
             [_toBoxViewController.tokenField setNextKeyView:editorView];
         }
+    }
+
+    if(initialResponder != nil) {
+        [window makeFirstResponder:initialResponder];
     }
 }
 
@@ -679,7 +682,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     [self adjustFrames:FrameAdjustment_Resize];
-    [self setResponders:NO];
+    [self setResponders:NO focusOnContent:NO];
     
     // Setup undo
     
@@ -808,7 +811,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 
     [self adjustFrames:FrameAdjustment_Resize];
-    [self setResponders:NO];
+    [self setResponders:NO focusOnContent:NO];
     
     // Setup undo
     
@@ -921,7 +924,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
     }
     
-    [self setResponders:NO];
+    [self setResponders:NO focusOnContent:NO];
 }
 
 - (void)showFullAddressPanel:(Boolean)viewConstructionPhase {

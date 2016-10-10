@@ -187,7 +187,7 @@
 		80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80737ED61BFAFF6600E9D58A /* SMRoundedImageView.m */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
-		8076FD9B1DAA0FAE00C66B2C /* SMButtonWithMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076FD9A1DAA0FAE00C66B2C /* SMButtonWithMenu.m */; };
+		8076FD9B1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076FD9A1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m */; };
 		8078EAB41CD470D000EBF22B /* SMAccountMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */; };
 		807EE8281D9E3B01002F4926 /* SMTimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EE8271D9E3B01002F4926 /* SMTimeUtils.m */; };
 		807EE8311D9F6A46002F4926 /* star-gray-icon-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 807EE8301D9F6A46002F4926 /* star-gray-icon-small.png */; };
@@ -638,8 +638,8 @@
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
-		8076FD991DAA0FAE00C66B2C /* SMButtonWithMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMButtonWithMenu.h; sourceTree = "<group>"; };
-		8076FD9A1DAA0FAE00C66B2C /* SMButtonWithMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMButtonWithMenu.m; sourceTree = "<group>"; };
+		8076FD991DAA0FAE00C66B2C /* SMButtonWithLongClickAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMButtonWithLongClickAction.h; sourceTree = "<group>"; };
+		8076FD9A1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMButtonWithLongClickAction.m; sourceTree = "<group>"; };
 		8078EAB21CD470D000EBF22B /* SMAccountMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAccountMailbox.h; sourceTree = "<group>"; };
 		8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMAccountMailbox.m; sourceTree = "<group>"; };
 		8078EABC1CD47CBB00EBF22B /* SMMailboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailboxController.h; sourceTree = "<group>"; };
@@ -1087,8 +1087,8 @@
 				806E7C261B9FFD940081FD8E /* SMBox2.m */,
 				802408EC1B786FC80072FB98 /* SMBoxView.h */,
 				802408ED1B786FC80072FB98 /* SMBoxView.m */,
-				8076FD991DAA0FAE00C66B2C /* SMButtonWithMenu.h */,
-				8076FD9A1DAA0FAE00C66B2C /* SMButtonWithMenu.m */,
+				8076FD991DAA0FAE00C66B2C /* SMButtonWithLongClickAction.h */,
+				8076FD9A1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
 				008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */,
 				8011CAE81CA3A91D00697210 /* SMColorView.h */,
@@ -1705,7 +1705,7 @@
 				80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */,
 				803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */,
 				8024107E1C1E9E3B00493FB4 /* SMFolderLabel.m in Sources */,
-				8076FD9B1DAA0FAE00C66B2C /* SMButtonWithMenu.m in Sources */,
+				8076FD9B1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m in Sources */,
 				005F0D391A86BC980093E96D /* SMMessageBookmarksView.m in Sources */,
 				80571A9A1CF585CC001E25C8 /* SMUnifiedSearchController.m in Sources */,
 				807EE8281D9E3B01002F4926 /* SMTimeUtils.m in Sources */,

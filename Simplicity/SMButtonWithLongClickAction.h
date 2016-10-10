@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SMButtonWithMenu : NSButton
+@interface SMButtonWithLongClickAction : NSButton
+
+@property SEL longClickAction;
 
 @end

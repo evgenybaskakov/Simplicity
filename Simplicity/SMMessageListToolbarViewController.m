@@ -32,6 +32,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setReplyButtonImage) name:@"DefaultReplyActionChanged" object:nil];
 
     [self setReplyButtonImage];
+    
+    _replyButton.longClickAction = @selector(replyButtonLongClickAction:);
 }
 
 - (void)setReplyButtonImage {
@@ -70,6 +72,42 @@
     else {
         [self composeReply:NO];
     }
+}
+
+- (void)replyOneButtonAction:(id)sender {
+    [self composeReply:NO];
+}
+
+- (void)replyAllButtonAction:(id)sender {
+    [self composeReply:YES];
+}
+
+- (void)forwardButtonAction:(id)sender {
+    //TODO
+}
+
+- (void)replyButtonLongClickAction:(id)sender {
+    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+    
+    [[theMenu addItemWithTitle:@"Reply" action:@selector(replyOneButtonAction:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Reply All" action:@selector(replyAllButtonAction:) keyEquivalent:@""] setTarget:self];
+    [[theMenu addItemWithTitle:@"Forward" action:@selector(forwardButtonAction:) keyEquivalent:@""] setTarget:self];
+    
+    [theMenu popUpMenuPositioningItem:nil atLocation:NSMakePoint(_replyButton.bounds.size.width-8, _replyButton.bounds.size.height-1) inView:_replyButton];
+    
+    NSWindow* window = [_replyButton window];
+    
+    NSEvent* fakeMouseUp = [NSEvent mouseEventWithType:NSLeftMouseUp
+                                              location:_replyButton.bounds.origin
+                                         modifierFlags:0
+                                             timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                          windowNumber:[window windowNumber]
+                                               context:[NSGraphicsContext currentContext]
+                                           eventNumber:0
+                                            clickCount:1
+                                              pressure:0.0];
+    
+    [window postEvent:fakeMouseUp atStart:YES];
 }
 
 - (void)composeReply:(BOOL)replyAll {

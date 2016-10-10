@@ -275,10 +275,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSAssert(nil, @"should not happen");
 }
 
-- (void)setResponders:(BOOL)initialSetup focusOnContent:(BOOL)focusOnContent {
+- (void)setResponders:(BOOL)initialSetup focusKind:(SMEditorFocusKind)focusKind {
     NSWindow *window = [[self view] window];
     if(window == nil) {
-        SM_LOG_DEBUG(@"no window yet to set responders for");
+        SM_LOG_WARNING(@"no window yet to set responders for");
         return;
     }
 
@@ -290,8 +290,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
     NSView *initialResponder = nil;
     
-    if(!messageEditorFocus && initialSetup && focusOnContent) {
-        initialResponder = editorView;
+    if(!messageEditorFocus && initialSetup) {
+        if(focusKind == kEditorFocusKind_Content) {
+            initialResponder = editorView;
+        }
+        else if(focusKind == kEditorFocusKind_ToAddress) {
+            initialResponder = _toBoxViewController.tokenField;
+        }
     }
 
     if(_fullAddressPanelShown) {
@@ -682,7 +687,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     [self adjustFrames:FrameAdjustment_Resize];
-    [self setResponders:NO focusOnContent:NO];
+    [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
     
     // Setup undo
     
@@ -811,7 +816,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 
     [self adjustFrames:FrameAdjustment_Resize];
-    [self setResponders:NO focusOnContent:NO];
+    [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
     
     // Setup undo
     
@@ -924,7 +929,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         NSAssert(false, @"unknown controlSwitch state %ld", controlSwitch.state);
     }
     
-    [self setResponders:NO focusOnContent:NO];
+    [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
 }
 
 - (void)showFullAddressPanel:(Boolean)viewConstructionPhase {

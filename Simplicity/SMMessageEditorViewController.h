@@ -26,7 +26,7 @@
 
 - (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
 - (void)setEditorFrame:(NSRect)frame;
-- (void)setResponders:(BOOL)initialSetup focusOnContent:(BOOL)focusOnContent;
+- (void)setResponders:(BOOL)initialSetup focusKind:(SMEditorFocusKind)focusKind;
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;
 - (void)makeHTMLText;
 - (void)makePlainText;

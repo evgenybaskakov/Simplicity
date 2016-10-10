@@ -1125,9 +1125,7 @@ static const CGFloat CELL_SPACING = 0;
     Boolean reply = NO;
     NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
     if([replyKind isEqualToString:@"Forward"]) {
-        if(![SMStringUtils string:replySubject hasPrefix:@"Fw: " caseInsensitive:YES]) {
-            replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
-        }
+        replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
     }
     else {
         BOOL toAddressIsSet = NO;
@@ -1168,7 +1166,7 @@ static const CGFloat CELL_SPACING = 0;
     }
     
     if(cell.message.htmlBodyRendering != nil) {
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:kFoldedReplyEditorContentsKind mcoAttachments:(reply? nil : cell.message.attachments)];
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:([replyKind isEqualToString:@"Forward"]? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind) mcoAttachments:(reply? nil : cell.message.attachments)];
         
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;

@@ -20,6 +20,12 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageListToolbarViewController.h"
 
+typedef NS_ENUM(NSUInteger, ReplyKind) {
+    ReplyKind_ReplyOne,
+    ReplyKind_ReplyAll,
+    ReplyKind_Forward,
+};
+
 @interface SMMessageListToolbarViewController ()
 
 @end
@@ -67,23 +73,23 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if([[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll) {
-        [self composeReply:YES];
+        [self composeReply:ReplyKind_ReplyAll];
     }
     else {
-        [self composeReply:NO];
+        [self composeReply:ReplyKind_ReplyOne];
     }
 }
 
 - (void)replyOneButtonAction:(id)sender {
-    [self composeReply:NO];
+    [self composeReply:ReplyKind_ReplyOne];
 }
 
 - (void)replyAllButtonAction:(id)sender {
-    [self composeReply:YES];
+    [self composeReply:ReplyKind_ReplyAll];
 }
 
 - (void)forwardButtonAction:(id)sender {
-    //TODO
+    [self composeReply:ReplyKind_Forward];
 }
 
 - (void)replyButtonLongClickAction:(id)sender {
@@ -110,26 +116,33 @@
     [window postEvent:fakeMouseUp atStart:YES];
 }
 
-- (void)composeReply:(BOOL)replyAll {
+- (void)composeReply:(ReplyKind)replyKind {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageThread *messageThread = [[[appDelegate appController] messageThreadViewController] currentMessageThread];
     NSAssert(messageThread, @"no message thread selected");
     SMMessage *m = messageThread.messagesSortedByDate[0];
     NSAssert(m, @"no message");
 
-    NSArray *toAddressList = (replyAll? m.toAddressList : @[m.fromAddress.mcoAddress]);
-    NSArray *ccAddressList = (replyAll? m.ccAddressList : nil);
+    NSArray *toAddressList = (replyKind == ReplyKind_ReplyAll? m.toAddressList : (replyKind == ReplyKind_ReplyOne? @[m.fromAddress.mcoAddress] : nil));
+    NSArray *ccAddressList = (replyKind == ReplyKind_ReplyAll? m.ccAddressList : nil);
 
     // TODO: remove ourselves (myself) from CC and TO
     
     NSString *replySubject = m.subject;
-    if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
-        replySubject = [NSString stringWithFormat:@"Re: %@", replySubject];
+    if(replyKind == ReplyKind_Forward) {
+        replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
+    }
+    else {
+        if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
+            replySubject = [NSString stringWithFormat:@"Re: %@", replySubject];
+        }
     }
 
+    SMEditorContentsKind editorKind = (replyKind == ReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
+    
     // TODO: also detect if the current message is in raw text; compose reply likewise
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
-    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:replySubject to:toAddressList cc:ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:kUnfoldedReplyEditorContentsKind];
+    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:replySubject to:toAddressList cc:ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:editorKind];
 }
 
 @end

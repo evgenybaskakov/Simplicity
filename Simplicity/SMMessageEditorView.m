@@ -20,10 +20,25 @@
     NSUInteger _cachedContentHeight;
 }
 
-+ (BOOL)kindToFocusOnContent:(SMEditorContentsKind)kind {
-    return kind == kFoldedReplyEditorContentsKind ||
-           kind == kUnfoldedReplyEditorContentsKind ||
-           kind == kUnfoldedDraftEditorContentsKind;
++ (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {
+    switch(contentKind) {
+        case kFoldedReplyEditorContentsKind:
+        case kUnfoldedReplyEditorContentsKind:
+        case kUnfoldedDraftEditorContentsKind:
+            return kEditorFocusKind_Content;
+        case kFoldedForwardEditorContentsKind:
+        case kUnfoldedForwardEditorContentsKind:
+            return kEditorFocusKind_ToAddress;
+        case kEmptyEditorContentsKind:
+            return kEditorFocusKind_Subject;
+        default:
+            SM_FATAL(@"unknown editor contents kind %u", contentKind);
+            return 0;
+    }
+}
+
++ (BOOL)kindToFocusOnToAddress:(SMEditorContentsKind)kind {
+    return kind == kUnfoldedForwardEditorContentsKind;
 }
 
 - (id)init {
@@ -84,10 +99,10 @@
     else {
         NSAssert(htmlContents != nil, @"htmlContents is nil");
 
-        if(kind == kFoldedReplyEditorContentsKind) {
+        if(kind == kFoldedReplyEditorContentsKind || kind == kFoldedForwardEditorContentsKind) {
             bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
-        else if(kind == kUnfoldedReplyEditorContentsKind) {
+        else if(kind == kUnfoldedReplyEditorContentsKind || kind == kUnfoldedForwardEditorContentsKind) {
             bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
         }
         else if(kind == kUnfoldedDraftEditorContentsKind) {
@@ -129,8 +144,8 @@
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_DEBUG(@"loaded");
 
-        BOOL focusOnContent = [SMMessageEditorView kindToFocusOnContent:_editorKind];
-        if(focusOnContent) {
+        SMEditorFocusKind focusKind = [SMMessageEditorView contentKindToFocusKind:_editorKind];
+        if(focusKind == kEditorFocusKind_Content) {
             WebScriptObject *scriptObject = [self windowScriptObject];
             [scriptObject evaluateWebScript:@"document.getElementById('SimplicityEditor').focus()"];
         }

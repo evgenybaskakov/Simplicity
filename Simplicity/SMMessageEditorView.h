@@ -10,10 +10,20 @@
 
 typedef enum {
     kFoldedReplyEditorContentsKind,
+    kFoldedForwardEditorContentsKind,
     kUnfoldedReplyEditorContentsKind,
+    kUnfoldedForwardEditorContentsKind,
     kUnfoldedDraftEditorContentsKind,
     kEmptyEditorContentsKind,
+    kInvalidEditorContentsKind
 } SMEditorContentsKind;
+
+typedef enum {
+    kEditorFocusKind_Content,
+    kEditorFocusKind_Subject,
+    kEditorFocusKind_ToAddress,
+    kEditorFocusKind_Invalid
+} SMEditorFocusKind;
 
 @class SMMessageEditorBase;
 @class SMEditorToolBoxViewController;
@@ -26,9 +36,9 @@ typedef enum {
 @property (readonly) SMEditorContentsKind editorKind;
 @property (readonly) NSUInteger contentHeight;
 
-@property Boolean unsavedContentPending;
+@property BOOL unsavedContentPending;
 
-+ (BOOL)kindToFocusOnContent:(SMEditorContentsKind)kind;
++ (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind;
 
 - (void)startEditorWithHTML:(NSString*)htmlContents kind:(SMEditorContentsKind)kind;
 - (void)stopTextMonitor;

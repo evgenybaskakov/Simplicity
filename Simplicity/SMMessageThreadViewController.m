@@ -1166,12 +1166,16 @@ static const CGFloat CELL_SPACING = 0;
     }
     
     if(cell.message.htmlBodyRendering != nil) {
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:([replyKind isEqualToString:@"Forward"]? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind) mcoAttachments:(reply? nil : cell.message.attachments)];
+        SMEditorContentsKind editorKind = ([replyKind isEqualToString:@"Forward"]? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind);
+        
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:editorKind mcoAttachments:(reply? nil : cell.message.attachments)];
         
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;
         
         [_contentView addSubview:editorSubview];
+        
+        [_messageEditorViewController setResponders:YES focusKind:[SMMessageEditorView contentKindToFocusKind:editorKind]];
         
         [self updateCellFrames];
     }

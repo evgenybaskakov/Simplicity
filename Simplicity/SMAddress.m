@@ -244,4 +244,20 @@
     return [_email caseInsensitiveCompare:address.email] == NSOrderedSame;
 }
 
+- (BOOL)isEqual:(id)object {
+    if(self == object) {
+        return YES;
+    }
+    
+    if(![object isKindOfClass:[SMAddress class]]) {
+        return NO;
+    }
+    
+    return [_detailedRepresentation isEqualToString:((SMAddress*)object).detailedRepresentation];
+}
+
+- (NSUInteger)hash {
+    return [_detailedRepresentation hash];
+}
+
 @end

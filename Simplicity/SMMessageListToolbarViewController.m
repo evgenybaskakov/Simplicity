@@ -20,12 +20,6 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageListToolbarViewController.h"
 
-typedef NS_ENUM(NSUInteger, ReplyKind) {
-    ReplyKind_ReplyOne,
-    ReplyKind_ReplyAll,
-    ReplyKind_Forward,
-};
-
 @interface SMMessageListToolbarViewController ()
 
 @end
@@ -73,23 +67,23 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     if([[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll) {
-        [self composeReply:ReplyKind_ReplyAll];
+        [self composeReply:SMEditorReplyKind_ReplyAll];
     }
     else {
-        [self composeReply:ReplyKind_ReplyOne];
+        [self composeReply:SMEditorReplyKind_ReplyOne];
     }
 }
 
 - (void)replyOneButtonAction:(id)sender {
-    [self composeReply:ReplyKind_ReplyOne];
+    [self composeReply:SMEditorReplyKind_ReplyOne];
 }
 
 - (void)replyAllButtonAction:(id)sender {
-    [self composeReply:ReplyKind_ReplyAll];
+    [self composeReply:SMEditorReplyKind_ReplyAll];
 }
 
 - (void)forwardButtonAction:(id)sender {
-    [self composeReply:ReplyKind_Forward];
+    [self composeReply:SMEditorReplyKind_Forward];
 }
 
 - (void)replyButtonLongClickAction:(id)sender {
@@ -116,7 +110,7 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
     [window postEvent:fakeMouseUp atStart:YES];
 }
 
-- (void)composeReply:(ReplyKind)replyKind {
+- (void)composeReply:(SMEditorReplyKind)replyKind {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageThread *messageThread = [[[appDelegate appController] messageThreadViewController] currentMessageThread];
     NSAssert(messageThread, @"no message thread selected");
@@ -127,7 +121,7 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
     NSMutableArray<SMAddress*> *toAddressList = nil;
     NSMutableArray<SMAddress*> *ccAddressList = nil;
     
-    if(replyKind == ReplyKind_ReplyAll) {
+    if(replyKind == SMEditorReplyKind_ReplyAll) {
         toAddressList = [[SMAddress mcoAddressesToAddressList:m.toAddressList] mutableCopy];
         ccAddressList = [[SMAddress mcoAddressesToAddressList:m.ccAddressList] mutableCopy];
 
@@ -138,12 +132,12 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
 
         [ccAddressList removeObject:messageThread.account.accountAddress];
     }
-    else if(replyKind == ReplyKind_ReplyOne) {
+    else if(replyKind == SMEditorReplyKind_ReplyOne) {
         toAddressList = [@[m.fromAddress] mutableCopy];
     }
     
     NSString *replySubject = m.subject;
-    if(replyKind == ReplyKind_Forward) {
+    if(replyKind == SMEditorReplyKind_Forward) {
         replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
     }
     else {
@@ -152,7 +146,7 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
         }
     }
 
-    SMEditorContentsKind editorKind = (replyKind == ReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
+    SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
     
     // TODO: also detect if the current message is in raw text; compose reply likewise
     Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;

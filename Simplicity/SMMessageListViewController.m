@@ -970,15 +970,15 @@
 }
 
 - (void)menuActionReply:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"Reply" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:SMEditorReplyKind_ReplyOne toAddress:nil];
 }
 
 - (void)menuActionReplyAll:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"ReplyAll" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:SMEditorReplyKind_ReplyAll toAddress:nil];
 }
 
 - (void)menuActionForward:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:@"Forward" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:nil replyKind:SMEditorReplyKind_Forward toAddress:nil];
 }
 
 - (void)menuActionDelete:(id)sender {

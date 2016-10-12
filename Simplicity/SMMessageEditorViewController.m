@@ -17,6 +17,7 @@
 #import "SMNotificationsController.h"
 #import "SMStringUtils.h"
 #import "SMAddress.h"
+#import "SMMessage.h"
 #import "SMUserAccount.h"
 #import "SMSuggestionProvider.h"
 #import "SMAddressBookController.h"
@@ -86,6 +87,29 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean _doNotSaveDraftOnClose;
     SMUserAccount *_lastAccount;
     Boolean _adjustingFrames;
+}
+
++ (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
+    NSMutableArray<SMAddress*> *toAddressList = nil;
+    NSMutableArray<SMAddress*> *ccAddressList = nil;
+    
+    if(replyKind == SMEditorReplyKind_ReplyAll) {
+        toAddressList = [[SMAddress mcoAddressesToAddressList:message.toAddressList] mutableCopy];
+        ccAddressList = [[SMAddress mcoAddressesToAddressList:message.ccAddressList] mutableCopy];
+        
+        [toAddressList removeObject:accountAddress];
+        if(toAddressList.count == 0) {
+            toAddressList = [@[message.fromAddress] mutableCopy];
+        }
+        
+        [ccAddressList removeObject:accountAddress];
+    }
+    else if(replyKind == SMEditorReplyKind_ReplyOne) {
+        toAddressList = [@[message.fromAddress] mutableCopy];
+    }
+    
+    *to = toAddressList;
+    *cc = ccAddressList;
 }
 
 - (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {

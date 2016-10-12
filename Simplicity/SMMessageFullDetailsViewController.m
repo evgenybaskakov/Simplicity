@@ -329,7 +329,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 }
 
 - (void)replyAction:(NSMenuItem*)menuItem {
-    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Forward" toAddress:_addressWithMenu];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:SMEditorReplyKind_Forward toAddress:_addressWithMenu];
 }
 
 - (void)newMessageAction:(NSMenuItem*)menuItem {

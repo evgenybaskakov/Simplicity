@@ -8,9 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "SMEditorReplyKind.h"
 #import "SMMessageEditorView.h"
 
 @class SMAddress;
+@class SMMessage;
 @class SMAddressFieldViewController;
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorView;
@@ -24,6 +26,8 @@
 @property (readonly) CGFloat editorFullHeight;
 @property (readonly) Boolean hasUnsavedContents;
 @property (readonly) Boolean plainText;
+
++ (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc;
 
 - (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
 - (void)setEditorFrame:(NSRect)frame;

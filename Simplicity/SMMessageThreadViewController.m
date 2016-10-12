@@ -1121,41 +1121,16 @@ static const CGFloat CELL_SPACING = 0;
     NSAssert(cell.message.subject != nil, @"bad message subject");
     NSString *replySubject = cell.message.subject;
     
-    Boolean reply = NO;
-    NSString *replyKind = [messageInfo objectForKey:@"ReplyKind"];
-    if([replyKind isEqualToString:@"Forward"]) {
+    SMEditorReplyKind replyKind = [[messageInfo objectForKey:@"ReplyKind"] unsignedIntegerValue];
+    NSAssert(replyKind < SMEditorReplyKind_Invalid, @"invalid reply kind %lu", replyKind);
+
+    if(replyKind == SMEditorReplyKind_Forward) {
         replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
     }
     else {
-        BOOL toAddressIsSet = NO;
-        
-        if([replyKind isEqualToString:@"Reply"]) {
-            toAddressList = [NSMutableArray array];
-            
-            reply = YES;
-            
-            SMAddress *toAddress = [messageInfo objectForKey:@"ToAddress"];
-            if(toAddress != nil) {
-                [toAddressList addObject:toAddress];
-                toAddressIsSet = YES;
-            }
-        }
-        else if([replyKind isEqualToString:@"ReplyAll"]) {
-            toAddressList = [NSMutableArray arrayWithArray:[SMAddress mcoAddressesToAddressList:cell.message.toAddressList]];
-            ccAddressList = [NSMutableArray arrayWithArray:[SMAddress mcoAddressesToAddressList:cell.message.ccAddressList]];
-            
-            reply = YES;
-        }
-        
-        // TODO: remove ourselves (myself) from CC and TO
+        [SMMessageEditorViewController getReplyAddressLists:cell.message replyKind:replyKind accountAddress:_currentMessageThread.account.accountAddress to:&toAddressList cc:&ccAddressList];
 
-        //_currentMessageThread.account.accountAddress
-        
-        if(!toAddressIsSet) {
-            [toAddressList addObject:cell.message.fromAddress];
-        }
-        
-        if(reply) {
+        if(replyKind == SMEditorReplyKind_ReplyOne || replyKind == SMEditorReplyKind_ReplyAll) {
             if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
                 replySubject = [NSString stringWithFormat:@"Re: %@", replySubject];
             }
@@ -1163,9 +1138,9 @@ static const CGFloat CELL_SPACING = 0;
     }
     
     if(cell.message.htmlBodyRendering != nil) {
-        SMEditorContentsKind editorKind = ([replyKind isEqualToString:@"Forward"]? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind);
+        SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind);
         
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:editorKind mcoAttachments:(reply? nil : cell.message.attachments)];
+        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:editorKind mcoAttachments:(replyKind == SMEditorReplyKind_Forward? cell.message.attachments : nil)];
         
         editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
         editorSubview.autoresizingMask = NSViewWidthSizable;

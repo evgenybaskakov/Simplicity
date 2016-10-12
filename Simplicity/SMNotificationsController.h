@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "SMEditorReplyKind.h"
+
 @class SMAddress;
 @class SMUserAccount;
 @class SMLocalFolder;
@@ -37,7 +39,7 @@
 + (void)localNotifyDeleteMessage:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifySaveAttachments:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifySaveAttachmentsToDownloads:(SMMessageThreadCellViewController*)messageThreadCellViewController;
-+ (void)localNotifyComposeMessageReply:(SMMessageThreadCellViewController*)messageThreadCellViewController replyKind:(NSString*)replyKind toAddress:(SMAddress*)toAddress;
++ (void)localNotifyComposeMessageReply:(SMMessageThreadCellViewController*)messageThreadCellViewController replyKind:(SMEditorReplyKind)replyKind toAddress:(SMAddress*)toAddress;
 
 + (void)getAccountPreferencesChangedParams:(NSNotification*)notification account:(SMUserAccount**)account;
 + (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSError**)error account:(SMUserAccount**)account;

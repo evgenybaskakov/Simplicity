@@ -691,15 +691,15 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)composeReply:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Reply" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:SMEditorReplyKind_ReplyOne toAddress:nil];
 }
 
 - (void)composeReplyAll:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"ReplyAll" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:SMEditorReplyKind_ReplyAll toAddress:nil];
 }
 
 - (void)composeForward:(id)sender {
-    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:@"Forward" toAddress:nil];
+    [SMNotificationsController localNotifyComposeMessageReply:_enclosingThreadCell replyKind:SMEditorReplyKind_Forward toAddress:nil];
 }
 
 - (void)deleteMessage:(id)sender {

@@ -10,7 +10,6 @@
 
 #import "SMLog.h"
 #import "SMUserAccount.h"
-#import "SMUserAccount.h"
 #import "SMNotificationsController.h"
 #import "SMFindContentsPanelViewController.h"
 #import "SMMessage.h"
@@ -1116,8 +1115,8 @@ static const CGFloat CELL_SPACING = 0;
     NSView *editorSubview = _messageEditorViewController.view;
     NSAssert(editorSubview != nil, @"_messageEditorViewController.view is nil");
     
-    NSMutableArray *toAddressList = nil;
-    NSMutableArray *ccAddressList = nil;
+    NSMutableArray<SMAddress*> *toAddressList = nil;
+    NSMutableArray<SMAddress*> *ccAddressList = nil;
     
     NSAssert(cell.message.subject != nil, @"bad message subject");
     NSString *replySubject = cell.message.subject;
@@ -1137,25 +1136,23 @@ static const CGFloat CELL_SPACING = 0;
             
             SMAddress *toAddress = [messageInfo objectForKey:@"ToAddress"];
             if(toAddress != nil) {
-                [toAddressList addObject:[toAddress mcoAddress]];
-                
+                [toAddressList addObject:toAddress];
                 toAddressIsSet = YES;
             }
         }
         else if([replyKind isEqualToString:@"ReplyAll"]) {
-            toAddressList = [NSMutableArray arrayWithArray:cell.message.toAddressList];
-            ccAddressList = [NSMutableArray arrayWithArray:cell.message.ccAddressList];
+            toAddressList = [NSMutableArray arrayWithArray:[SMAddress mcoAddressesToAddressList:cell.message.toAddressList]];
+            ccAddressList = [NSMutableArray arrayWithArray:[SMAddress mcoAddressesToAddressList:cell.message.ccAddressList]];
             
             reply = YES;
         }
         
         // TODO: remove ourselves (myself) from CC and TO
+
+        //_currentMessageThread.account.accountAddress
         
         if(!toAddressIsSet) {
-            MCOAddress *fromAddress = cell.message.fromAddress.mcoAddress;
-            NSAssert(fromAddress != nil, @"bad message from address");
-            
-            [toAddressList addObject:fromAddress];
+            [toAddressList addObject:cell.message.fromAddress];
         }
         
         if(reply) {

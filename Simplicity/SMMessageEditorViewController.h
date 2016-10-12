@@ -10,6 +10,7 @@
 
 #import "SMMessageEditorView.h"
 
+@class SMAddress;
 @class SMAddressFieldViewController;
 @class SMLabeledTextFieldBoxViewController;
 @class SMMessageEditorView;
@@ -27,7 +28,7 @@
 - (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
 - (void)setEditorFrame:(NSRect)frame;
 - (void)setResponders:(BOOL)initialSetup focusKind:(SMEditorFocusKind)focusKind;
-- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;
+- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;
 - (void)makeHTMLText;
 - (void)makePlainText;
 - (void)sendMessage;

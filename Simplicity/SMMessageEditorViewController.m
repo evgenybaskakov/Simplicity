@@ -355,7 +355,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Editor startup
 
-- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
+- (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
     
     // Force the view loading for the 'from' box.
     // Otherwise the following sequence is incorrect.
@@ -385,15 +385,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     if(to) {
-        [_toBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:to]];
+        [_toBoxViewController.tokenField setObjectValue:to];
     }
     
     if(cc) {
-        [_ccBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:cc]];
+        [_ccBoxViewController.tokenField setObjectValue:cc];
     }
     
     if(bcc) {
-        [_bccBoxViewController.tokenField setObjectValue:[SMAddress mcoAddressesToAddressList:bcc]];
+        [_bccBoxViewController.tokenField setObjectValue:bcc];
     }
     
     if(mcoAttachments != nil && mcoAttachments.count > 0) {

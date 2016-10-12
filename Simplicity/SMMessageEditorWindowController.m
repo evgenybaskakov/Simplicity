@@ -18,15 +18,15 @@
     NSString *_initialTextContent;
     Boolean _initialPlainText;
     NSString *_subject;
-    NSArray *_to;
-    NSArray *_cc;
-    NSArray *_bcc;
+    NSArray<SMAddress*> *_to;
+    NSArray<SMAddress*> *_cc;
+    NSArray<SMAddress*> *_bcc;
     uint32_t _draftUid;
     NSArray *_mcoAttachments;
     SMEditorContentsKind _editorKind;
 }
 
-- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
+- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
     _initialTextContent = textContent;
     _initialPlainText = plainText;
     _subject = subject;

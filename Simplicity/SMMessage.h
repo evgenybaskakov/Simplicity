@@ -30,10 +30,10 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) MCOMessageHeader *parsedHeader; // TODO: remove
 @property (readonly) MCOIMAPMessage *imapMessage;
 @property (readonly) SMAddress *fromAddress;
-@property (readonly) NSArray *toAddressList;
-@property (readonly) NSArray *ccAddressList;
-@property (readonly) NSArray *parsedToAddressList;
-@property (readonly) NSArray *parsedCcAddressList;
+@property (readonly) NSArray<MCOAddress*> *toAddressList;
+@property (readonly) NSArray<MCOAddress*> *ccAddressList;
+@property (readonly) NSArray<NSString*> *parsedToAddressList;
+@property (readonly) NSArray<NSString*> *parsedCcAddressList;
 @property (readonly) NSString *subject;
 @property (readonly) NSDate *date;
 @property (readonly) uint32_t uid;

@@ -658,7 +658,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     SMMessage *m = _currentMessage;
     
     Boolean plainText = NO; // TODO: detect if the draft being opened is a plain text message, see issue #89
-    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:m.subject to:m.toAddressList cc:m.ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:kUnfoldedDraftEditorContentsKind];
+    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:m.subject to:[SMAddress mcoAddressesToAddressList:m.toAddressList] cc:[SMAddress mcoAddressesToAddressList:m.ccAddressList] bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:kUnfoldedDraftEditorContentsKind];
 }
 
 - (void)discardDraft:(id)sender {

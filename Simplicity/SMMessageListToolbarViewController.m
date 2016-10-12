@@ -123,8 +123,8 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
     SMMessage *m = messageThread.messagesSortedByDate[0];
     NSAssert(m, @"no message");
 
-    NSArray *toAddressList = (replyKind == ReplyKind_ReplyAll? m.toAddressList : (replyKind == ReplyKind_ReplyOne? @[m.fromAddress.mcoAddress] : nil));
-    NSArray *ccAddressList = (replyKind == ReplyKind_ReplyAll? m.ccAddressList : nil);
+    NSArray *toAddressList = (replyKind == ReplyKind_ReplyAll? [SMAddress mcoAddressesToAddressList:m.toAddressList] : (replyKind == ReplyKind_ReplyOne? @[m.fromAddress] : nil));
+    NSArray *ccAddressList = (replyKind == ReplyKind_ReplyAll? [SMAddress mcoAddressesToAddressList:m.ccAddressList] : nil);
 
     // TODO: remove ourselves (myself) from CC and TO
     

@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class MCOAddress;
 @class MCOMessageBuilder;
 
+@class SMAddress;
 @class SMUserAccount;
 
 @interface SMMessageBuilder : NSObject<NSCoding>
@@ -23,6 +23,6 @@
 @property (readonly) uint32_t uid;
 @property (readonly) uint64_t threadId;
 
-- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account;
+- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account;
 
 @end

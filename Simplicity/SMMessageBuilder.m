@@ -9,12 +9,17 @@
 #import <MailCore/MailCore.h>
 
 #import "SMLog.h"
+#import "SMAddress.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageBuilder.h"
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
+    return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress mcoAddressesToAddressList:to] cc:[SMAddress mcoAddressesToAddressList:cc] bcc:[SMAddress mcoAddressesToAddressList:bcc] attachmentItems:attachmentItems];
+}
+
++ (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
     if(from != nil) {
@@ -86,7 +91,7 @@
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
+- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
     self = [super init];
     
     if(self) {
@@ -120,7 +125,7 @@
         uint64_t threadId = [coder decodeInt64ForKey:@"threadId"];
         uint32_t uid = [coder decodeInt32ForKey:@"uid"];
     
-        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _mcoMessageBuilder = [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
         _plainText = plainText;
         _attachments = attachmentItems;
         _creationDate = creationDate;

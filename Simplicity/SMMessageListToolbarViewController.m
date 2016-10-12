@@ -120,13 +120,27 @@ typedef NS_ENUM(NSUInteger, ReplyKind) {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageThread *messageThread = [[[appDelegate appController] messageThreadViewController] currentMessageThread];
     NSAssert(messageThread, @"no message thread selected");
+
     SMMessage *m = messageThread.messagesSortedByDate[0];
     NSAssert(m, @"no message");
 
-    NSArray *toAddressList = (replyKind == ReplyKind_ReplyAll? [SMAddress mcoAddressesToAddressList:m.toAddressList] : (replyKind == ReplyKind_ReplyOne? @[m.fromAddress] : nil));
-    NSArray *ccAddressList = (replyKind == ReplyKind_ReplyAll? [SMAddress mcoAddressesToAddressList:m.ccAddressList] : nil);
+    NSMutableArray<SMAddress*> *toAddressList = nil;
+    NSMutableArray<SMAddress*> *ccAddressList = nil;
+    
+    if(replyKind == ReplyKind_ReplyAll) {
+        toAddressList = [[SMAddress mcoAddressesToAddressList:m.toAddressList] mutableCopy];
+        ccAddressList = [[SMAddress mcoAddressesToAddressList:m.ccAddressList] mutableCopy];
 
-    // TODO: remove ourselves (myself) from CC and TO
+        [toAddressList removeObject:messageThread.account.accountAddress];
+        if(toAddressList.count == 0) {
+            toAddressList = [@[m.fromAddress] mutableCopy];
+        }
+
+        [ccAddressList removeObject:messageThread.account.accountAddress];
+    }
+    else if(replyKind == ReplyKind_ReplyOne) {
+        toAddressList = [@[m.fromAddress] mutableCopy];
+    }
     
     NSString *replySubject = m.subject;
     if(replyKind == ReplyKind_Forward) {

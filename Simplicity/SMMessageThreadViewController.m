@@ -1103,9 +1103,14 @@ static const CGFloat CELL_SPACING = 0;
         }
     }
     
-    [self closeEmbeddedEditor:YES]; // Close the currently edited message; it should save draft, etc.
-    
     SMMessageThreadCell *cell = _cells[cellIdx];
+    
+    if(cell.message.htmlBodyRendering == nil) {
+        SM_LOG_WARNING(@"Message body is not yet loaded");
+        return;
+    }
+    
+    [self closeEmbeddedEditor:YES]; // Close the currently edited message; it should save draft, etc.
     
     _cellViewControllerToReply = cell.viewController;
     
@@ -1137,23 +1142,18 @@ static const CGFloat CELL_SPACING = 0;
         }
     }
     
-    if(cell.message.htmlBodyRendering != nil) {
-        SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind);
-        
-        [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:editorKind mcoAttachments:(replyKind == SMEditorReplyKind_Forward? cell.message.attachments : nil)];
-        
-        editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
-        editorSubview.autoresizingMask = NSViewWidthSizable;
-        
-        [_contentView addSubview:editorSubview];
-        
-        [_messageEditorViewController setResponders:YES focusKind:[SMMessageEditorView contentKindToFocusKind:editorKind]];
-        
-        [self updateCellFrames];
-    }
-    else {
-        SM_LOG_WARNING(@"Message body is not yet loaded");
-    }
+    SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward? kFoldedForwardEditorContentsKind : kFoldedReplyEditorContentsKind);
+    
+    [_messageEditorViewController startEditorWithHTML:cell.message.htmlBodyRendering subject:replySubject to:toAddressList cc:ccAddressList bcc:nil kind:editorKind mcoAttachments:(replyKind == SMEditorReplyKind_Forward? cell.message.attachments : nil)];
+    
+    editorSubview.translatesAutoresizingMaskIntoConstraints = YES;
+    editorSubview.autoresizingMask = NSViewWidthSizable;
+    
+    [_contentView addSubview:editorSubview];
+    
+    [_messageEditorViewController setResponders:YES focusKind:[SMMessageEditorView contentKindToFocusKind:editorKind]];
+    
+    [self updateCellFrames];
 }
 
 - (void)closeEmbeddedEditorWithoutSavingDraft {

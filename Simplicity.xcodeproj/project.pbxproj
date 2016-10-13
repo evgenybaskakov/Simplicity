@@ -511,6 +511,7 @@
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
 		801C49A01D49DC95004EB65B /* Button-Collapse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Collapse.png"; sourceTree = "<group>"; };
 		801C49A11D49DC95004EB65B /* Button-Expand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Expand.png"; sourceTree = "<group>"; };
+		801E36F31DAE054500D06B6F /* SMEditorReplyKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMEditorReplyKind.h; sourceTree = "<group>"; };
 		801E8A671D4878D80062E63F /* Button-Down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Down-128.png"; sourceTree = "<group>"; };
 		801E8A681D4878D80062E63F /* Button-Up-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Up-128.png"; sourceTree = "<group>"; };
 		801EDEE51BE9E96800A16E85 /* SMNewAccountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNewAccountWindowController.h; sourceTree = "<group>"; };
@@ -897,6 +898,7 @@
 				80E3F2331BE724BE0024AB6B /* SMConnectionCheck.m */,
 				8088F2411BA7F11B005A29E2 /* SMDatabase.h */,
 				8088F2421BA7F11B005A29E2 /* SMDatabase.m */,
+				801E36F31DAE054500D06B6F /* SMEditorReplyKind.h */,
 				00C75607195921AA006ED86B /* SMFolder.h */,
 				00C75608195921AA006ED86B /* SMFolder.m */,
 				804F33411BAFDDBA007E600C /* SMFolderDesc.h */,

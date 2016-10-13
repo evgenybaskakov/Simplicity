@@ -543,6 +543,17 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         return;
     }
     
+    if(_fromBoxViewController.itemList.numberOfItems == 0 || _fromBoxViewController.itemList.selectedItem == nil) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot save message, as no user account is chosen for it."]];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+        
+        return;
+    }
+    
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
     SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
     

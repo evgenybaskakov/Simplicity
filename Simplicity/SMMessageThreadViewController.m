@@ -1105,11 +1105,6 @@ static const CGFloat CELL_SPACING = 0;
     
     SMMessageThreadCell *cell = _cells[cellIdx];
     
-    if(cell.message.htmlBodyRendering == nil) {
-        SM_LOG_WARNING(@"Message body is not yet loaded");
-        return;
-    }
-    
     [self closeEmbeddedEditor:YES]; // Close the currently edited message; it should save draft, etc.
     
     _cellViewControllerToReply = cell.viewController;

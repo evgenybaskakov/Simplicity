@@ -88,29 +88,36 @@
     }
     
     NSString *signatureText = signature? [NSString stringWithFormat:@"<br/>%@", signature] : @"";
-    
     NSString *bodyHtml = nil;
     
-    if(htmlContents == nil) {
-        NSAssert(kind == kEmptyEditorContentsKind, @"invalid editor contents kind %u", kind);
-
+    if(kind == kEmptyEditorContentsKind) {
         bodyHtml = [NSString stringWithFormat:@"%@%@%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
     }
     else {
-        NSAssert(htmlContents != nil, @"htmlContents is nil");
+        if(htmlContents == nil) {
+            bodyHtml = @"";
 
-        if(kind == kFoldedReplyEditorContentsKind || kind == kFoldedForwardEditorContentsKind) {
-            bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
-        }
-        else if(kind == kUnfoldedReplyEditorContentsKind || kind == kUnfoldedForwardEditorContentsKind) {
-            bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
-        }
-        else if(kind == kUnfoldedDraftEditorContentsKind) {
-            // TODO: may need to adjust the HTML body id (set "SimplicityEditor" stuff, etc...)
-            bodyHtml = htmlContents;
+            if(kind == kFoldedForwardEditorContentsKind) {
+                kind = kFoldedReplyEditorContentsKind;
+            }
+            else if(kind == kUnfoldedForwardEditorContentsKind) {
+                kind = kUnfoldedReplyEditorContentsKind;
+            }
         }
         else {
-            NSAssert(nil, @"unknown editor contents kind %u", kind);
+            if(kind == kFoldedReplyEditorContentsKind || kind == kFoldedForwardEditorContentsKind) {
+                bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newFoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
+            }
+            else if(kind == kUnfoldedReplyEditorContentsKind || kind == kUnfoldedForwardEditorContentsKind) {
+                bodyHtml = [NSString stringWithFormat:@"%@%@<br><br><br><blockquote>%@</blockquote>%@", [SMMessageEditorBase newUnfoldedMessageHTMLBeginTemplate], signatureText, htmlContents, [SMMessageEditorBase newMessageHTMLEndTemplate], nil];
+            }
+            else if(kind == kUnfoldedDraftEditorContentsKind) {
+                // TODO: may need to adjust the HTML body id (set "SimplicityEditor" stuff, etc...)
+                bodyHtml = htmlContents;
+            }
+            else {
+                SM_FATAL(@"unknown editor contents kind %u", kind);
+            }
         }
     }
     

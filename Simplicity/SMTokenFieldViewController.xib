@@ -12,6 +12,7 @@
                 <outlet property="_progressIndicator" destination="qFU-dv-o6i" id="Hgy-q6-bsk"/>
                 <outlet property="boxView" destination="qpK-eN-HKM" id="jDk-nW-bDa"/>
                 <outlet property="innerView" destination="D94-68-ER9" id="A18-hZ-5nU"/>
+                <outlet property="placeholderLabel" destination="Qa2-Wk-Wah" id="WgD-7b-Fpq"/>
                 <outlet property="scrollView" destination="BgR-my-g5J" id="Q2f-BG-BuK"/>
                 <outlet property="view" destination="8m1-xC-ItL" id="ejI-PX-7zf"/>
             </connections>
@@ -68,6 +69,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qa2-Wk-Wah" userLabel="Placeholder label" customClass="SMClickThroughTextField">
+                                        <rect key="frame" x="85" y="2" width="51" height="17"/>
+                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="center" title="Search" drawsBackground="YES" id="OnZ-ju-iCA">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
+                                        </textFieldCell>
+                                    </textField>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YZX-Um-riv" userLabel="Clear Button">
                                         <rect key="frame" x="203" y="0.0" width="13" height="19"/>
                                         <constraints>
@@ -92,8 +101,10 @@
                                     <constraint firstItem="BgR-my-g5J" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="3" id="MxH-Jh-spz"/>
                                     <constraint firstAttribute="trailing" secondItem="BgR-my-g5J" secondAttribute="trailing" constant="21" id="Or4-mu-Fim"/>
                                     <constraint firstItem="BgR-my-g5J" firstAttribute="leading" secondItem="D94-68-ER9" secondAttribute="leading" constant="19" id="XMB-cF-LbP"/>
+                                    <constraint firstItem="Qa2-Wk-Wah" firstAttribute="top" secondItem="D94-68-ER9" secondAttribute="top" constant="3" id="bkw-Z5-SUC"/>
                                     <constraint firstItem="qFU-dv-o6i" firstAttribute="centerX" secondItem="YZX-Um-riv" secondAttribute="centerX" id="chu-dZ-iFt"/>
                                     <constraint firstItem="qFU-dv-o6i" firstAttribute="centerY" secondItem="YZX-Um-riv" secondAttribute="centerY" id="d8j-Bw-cCk"/>
+                                    <constraint firstItem="Qa2-Wk-Wah" firstAttribute="centerX" secondItem="D94-68-ER9" secondAttribute="centerX" id="won-Ji-kta"/>
                                 </constraints>
                             </customView>
                         </subviews>

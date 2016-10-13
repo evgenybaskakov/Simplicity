@@ -11,12 +11,14 @@
 @class SMTokenView;
 @class SMTokenEditView;
 @class SMTokenFieldBox;
+@class SMClickThroughTextField;
 
 @interface SMTokenFieldViewController : NSViewController<NSTextViewDelegate>
 
 @property (weak) IBOutlet NSScrollView *scrollView;
 @property (weak) IBOutlet SMTokenFieldBox *boxView;
 @property (weak) IBOutlet NSView *innerView;
+@property (weak) IBOutlet SMClickThroughTextField *placeholderLabel;
 
 @property (readonly) BOOL tokenSelectionActive;
 
@@ -34,6 +36,8 @@
 @property (readonly) NSUInteger tokenCount;
 @property (readonly) NSString *stringValue;
 
+- (void)getFocus;
+- (void)releaseFocus;
 - (void)addToken:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction;
 - (SMTokenView*)changeToken:(SMTokenView*)tokenView tokenName:(NSString*)tokenName contentsText:(NSString*)contentsText representedObject:(NSObject*)representedObject target:(id)target action:(SEL)action editedAction:(SEL)editedAction deletedAction:(SEL)deletedAction;
 - (void)deleteToken:(SMTokenView*)tokenView;

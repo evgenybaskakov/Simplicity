@@ -47,6 +47,7 @@
 }
 
 - (BOOL)becomeFirstResponder {
+    [_viewController getFocus];
     [_viewController.view setNeedsDisplay:YES];
     [_viewController.boxView setNeedsDisplay:YES];
     [self setSelectedRange:NSMakeRange(0, 0)];
@@ -55,6 +56,7 @@
 
 - (BOOL)resignFirstResponder {
     if([super resignFirstResponder]) {
+        [_viewController releaseFocus];
         [_viewController.view setNeedsDisplay:YES];
         [_viewController.boxView setNeedsDisplay:YES];
         return YES;

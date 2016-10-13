@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMClickThroughTextField.h"
 #import "SMTokenFieldViewController.h"
 #import "SMTokenFieldView.h"
 #import "SMTokenEditView.h"
@@ -60,6 +61,16 @@
 - (BOOL)becomeFirstResponder {
     _boxView.needsDisplay = YES;
     return [_tokenFieldView.window makeFirstResponder:_mainTokenEditor];
+}
+
+- (void)getFocus {
+    _placeholderLabel.hidden = YES;
+}
+
+- (void)releaseFocus {
+    if(_tokens.count == 0 && _existingTokenEditor == 0 && _mainTokenEditor.string.length == 0) {
+        _placeholderLabel.hidden = NO;
+    }
 }
 
 - (IBAction)clearButtonAction:(id)sender {

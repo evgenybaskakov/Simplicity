@@ -110,6 +110,7 @@
 		801B8E891B23B1BC00B144C0 /* queue-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E881B23B1BC00B144C0 /* queue-icon.png */; };
 		801C49A21D49DC95004EB65B /* Button-Collapse.png in Resources */ = {isa = PBXBuildFile; fileRef = 801C49A01D49DC95004EB65B /* Button-Collapse.png */; };
 		801C49A31D49DC95004EB65B /* Button-Expand.png in Resources */ = {isa = PBXBuildFile; fileRef = 801C49A11D49DC95004EB65B /* Button-Expand.png */; };
+		801D91481DAF5CD7008F5180 /* SMClickThroughTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 801D91471DAF5CD7008F5180 /* SMClickThroughTextField.m */; };
 		801E8A691D4878D80062E63F /* Button-Down-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 801E8A671D4878D80062E63F /* Button-Down-128.png */; };
 		801E8A6A1D4878D80062E63F /* Button-Up-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 801E8A681D4878D80062E63F /* Button-Up-128.png */; };
 		801EDEE81BE9E96800A16E85 /* SMNewAccountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */; };
@@ -511,6 +512,8 @@
 		801B8E881B23B1BC00B144C0 /* queue-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "queue-icon.png"; sourceTree = "<group>"; };
 		801C49A01D49DC95004EB65B /* Button-Collapse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Collapse.png"; sourceTree = "<group>"; };
 		801C49A11D49DC95004EB65B /* Button-Expand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Expand.png"; sourceTree = "<group>"; };
+		801D91461DAF5CD7008F5180 /* SMClickThroughTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMClickThroughTextField.h; sourceTree = "<group>"; };
+		801D91471DAF5CD7008F5180 /* SMClickThroughTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMClickThroughTextField.m; sourceTree = "<group>"; };
 		801E36F31DAE054500D06B6F /* SMEditorReplyKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMEditorReplyKind.h; sourceTree = "<group>"; };
 		801E8A671D4878D80062E63F /* Button-Down-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Down-128.png"; sourceTree = "<group>"; };
 		801E8A681D4878D80062E63F /* Button-Up-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Up-128.png"; sourceTree = "<group>"; };
@@ -1091,6 +1094,8 @@
 				802408ED1B786FC80072FB98 /* SMBoxView.m */,
 				8076FD991DAA0FAE00C66B2C /* SMButtonWithLongClickAction.h */,
 				8076FD9A1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m */,
+				801D91461DAF5CD7008F5180 /* SMClickThroughTextField.h */,
+				801D91471DAF5CD7008F5180 /* SMClickThroughTextField.m */,
 				008AB9DE1A4A80CC00F91D86 /* SMColorCircle.h */,
 				008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */,
 				8011CAE81CA3A91D00697210 /* SMColorView.h */,
@@ -1704,6 +1709,7 @@
 				009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */,
 				8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */,
 				80A33AED1C9930FA00243880 /* SMUserAccountDataObject.m in Sources */,
+				801D91481DAF5CD7008F5180 /* SMClickThroughTextField.m in Sources */,
 				80BFC3CB1BEDCAE900467243 /* SMMailServiceProviderCustom.m in Sources */,
 				803B10EF1C1123390057E785 /* SMMailboxRowView.m in Sources */,
 				8024107E1C1E9E3B00493FB4 /* SMFolderLabel.m in Sources */,

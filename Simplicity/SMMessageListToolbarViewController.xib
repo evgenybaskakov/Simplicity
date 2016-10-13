@@ -24,7 +24,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="380" height="37"/>
                     <subviews>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X6C-yd-E2Q">
-                            <rect key="frame" x="211" y="6" width="32" height="25"/>
+                            <rect key="frame" x="211" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="WRI-DF-KCq"/>
                                 <constraint firstAttribute="width" constant="32" id="zC8-HR-X1f"/>
@@ -38,7 +38,7 @@
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MDt-o5-t9N" userLabel="Reply Button" customClass="SMButtonWithLongClickAction">
-                            <rect key="frame" x="246" y="6" width="32" height="25"/>
+                            <rect key="frame" x="246" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="32" id="870-3A-PvZ"/>
                                 <constraint firstAttribute="height" constant="22" id="CzN-5J-5F7"/>
@@ -52,7 +52,7 @@
                             </connections>
                         </button>
                         <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eqk-Jn-2EF" userLabel="Star Button">
-                            <rect key="frame" x="281" y="6" width="32" height="25"/>
+                            <rect key="frame" x="281" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="ahA-8U-4TJ"/>
                                 <constraint firstAttribute="width" constant="32" id="oBA-WR-1fb"/>
@@ -66,7 +66,7 @@
                             </connections>
                         </button>
                         <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SIZ-9V-M6Z">
-                            <rect key="frame" x="338" y="6" width="32" height="25"/>
+                            <rect key="frame" x="338" y="5" width="32" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="32" id="YaO-HG-dop"/>
                                 <constraint firstAttribute="height" constant="22" id="rHh-Vl-owZ"/>
@@ -81,14 +81,14 @@
                         </button>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="MDt-o5-t9N" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="72K-BE-T3u"/>
+                        <constraint firstItem="MDt-o5-t9N" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="72K-BE-T3u"/>
                         <constraint firstAttribute="trailing" secondItem="eqk-Jn-2EF" secondAttribute="trailing" constant="67" id="7bA-Dv-RL3"/>
-                        <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="I6w-xx-Ddd"/>
+                        <constraint firstItem="X6C-yd-E2Q" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="I6w-xx-Ddd"/>
                         <constraint firstAttribute="trailing" secondItem="MDt-o5-t9N" secondAttribute="trailing" constant="102" id="Mxx-sn-gFj"/>
                         <constraint firstAttribute="height" constant="37" id="WNC-zV-I2t"/>
                         <constraint firstAttribute="trailing" secondItem="X6C-yd-E2Q" secondAttribute="trailing" constant="137" id="kUP-Wb-Jiq"/>
-                        <constraint firstItem="eqk-Jn-2EF" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="oAD-vw-Wlc"/>
-                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="7" id="uHT-YB-2L9"/>
+                        <constraint firstItem="eqk-Jn-2EF" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="oAD-vw-Wlc"/>
+                        <constraint firstItem="SIZ-9V-M6Z" firstAttribute="top" secondItem="ghj-kS-CBd" secondAttribute="top" constant="8" id="uHT-YB-2L9"/>
                         <constraint firstAttribute="trailing" secondItem="SIZ-9V-M6Z" secondAttribute="trailing" constant="10" id="xmt-6z-eEb"/>
                     </constraints>
                 </visualEffectView>

@@ -628,8 +628,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_editorToolBoxViewController.textSizeButton addItemsWithTitles:textSizes];
     [_editorToolBoxViewController.textSizeButton selectItemAtIndex:2];
     
-    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"Editing-Text-icon.png"];
-    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"Text-Marker.png"];
+    _editorToolBoxViewController.textForegroundColorSelector.icon = [NSImage imageNamed:@"text-color.png"];
+    _editorToolBoxViewController.textBackgroundColorSelector.icon = [NSImage imageNamed:@"background-color.png"];
 }
 
 #pragma mark Text attrbitute actions

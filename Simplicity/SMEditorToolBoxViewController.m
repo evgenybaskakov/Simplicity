@@ -17,6 +17,15 @@
     NSColor *color = [NSColor colorWithWhite:0.86 alpha:1];
     
     view.borderColor = color;
+
+    for(NSSegmentedControl *control in @[_textStyleButton, _toggleListButton, _justifyTextControl, _shiftButton, _toggleQuoteButton]) {
+        for(NSUInteger i = 0; i < control.segmentCount; i++) {
+            NSImage *img = [control imageForSegment:i];
+            NSSize buttonSize = [[control cell] cellSize];
+            [img setSize:NSMakeSize(buttonSize.height/1.8, buttonSize.height/1.8)];
+            [control setImage:img forSegment:i];
+        }
+    }
 }
 
 #pragma mark Text attrbitute actions
@@ -45,7 +54,9 @@
 }
 
 - (IBAction)toggleQuoteAction:(id)sender {
-    [_messageEditorViewController toggleQuote];
+    if(_toggleQuoteButton.selectedSegment == 0) {
+        [_messageEditorViewController toggleQuote];
+    }
 }
 
 - (IBAction)shiftAction:(id)sender {

@@ -11,30 +11,29 @@
                 <outlet property="fontSelectionButton" destination="jql-C8-Dmq" id="lpS-BD-uoP"/>
                 <outlet property="justifyTextControl" destination="PYc-3u-Ywx" id="IfK-ER-45i"/>
                 <outlet property="shiftButton" destination="ZN8-xv-e9A" id="Wov-dD-rD6"/>
-                <outlet property="showSourceButton" destination="EGq-e0-vfT" id="YFa-ZL-PsM"/>
                 <outlet property="textBackgroundColorSelector" destination="Fn8-1h-uOB" id="dc5-uU-pbP"/>
                 <outlet property="textForegroundColorSelector" destination="Qoz-bT-xOl" id="nH6-bb-fHA"/>
                 <outlet property="textSizeButton" destination="eJn-l5-E7p" id="wU8-EJ-Und"/>
                 <outlet property="textStyleButton" destination="2X9-vT-Zqa" id="4Ul-oJ-6UB"/>
                 <outlet property="toggleListButton" destination="hq6-jg-08T" id="qTK-Lh-vv3"/>
-                <outlet property="toggleQuoteButton" destination="NHO-0P-eB7" id="RNB-f4-VZc"/>
+                <outlet property="toggleQuoteButton" destination="Soi-Lq-Ija" id="9rE-0a-XvF"/>
                 <outlet property="view" destination="SRf-ju-wWd" id="JFI-FL-DV9"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <box autoresizesSubviews="NO" boxType="custom" borderType="line" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="SRf-ju-wWd" userLabel="Editor Tool Box">
-            <rect key="frame" x="0.0" y="0.0" width="613" height="29"/>
+            <rect key="frame" x="0.0" y="0.0" width="555" height="29"/>
             <view key="contentView" id="Fnx-oM-B6Q">
-                <rect key="frame" x="1" y="1" width="611" height="27"/>
+                <rect key="frame" x="1" y="1" width="553" height="27"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jql-C8-Dmq" userLabel="Font Name">
-                        <rect key="frame" x="1" y="0.0" width="111" height="26"/>
+                        <rect key="frame" x="3" y="5" width="107" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
+                        <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
+                            <font key="font" metaFont="system"/>
                             <menu key="menu" id="Wpe-nd-v4v">
                                 <items>
                                     <menuItem title="Font" state="on" id="9cw-aK-yUm"/>
@@ -48,11 +47,11 @@
                         </connections>
                     </popUpButton>
                     <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-l5-E7p" userLabel="Text Size">
-                        <rect key="frame" x="111" y="0.0" width="49" height="26"/>
+                        <rect key="frame" x="113" y="5" width="45" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
+                        <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
+                            <font key="font" metaFont="system"/>
                             <menu key="menu" id="mk5-WC-4Ug">
                                 <items>
                                     <menuItem title="10" state="on" id="Lpc-Fx-xeM"/>
@@ -66,14 +65,14 @@
                         </connections>
                     </popUpButton>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2X9-vT-Zqa" userLabel="Text Style">
-                        <rect key="frame" x="159" y="1" width="83" height="24"/>
+                        <rect key="frame" x="166" y="3" width="64" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectAny" id="Aas-1p-30s">
-                            <font key="font" metaFont="system"/>
+                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="selectAny" id="Aas-1p-30s">
+                            <font key="font" metaFont="smallSystem"/>
                             <segments>
-                                <segment image="Bold-128" width="25"/>
-                                <segment image="Italic-128" width="25" tag="1"/>
-                                <segment image="Underline-128" width="25">
+                                <segment image="bold" width="20"/>
+                                <segment image="italic" width="20" tag="1"/>
+                                <segment image="underline" width="20">
                                     <nil key="label"/>
                                 </segment>
                             </segments>
@@ -83,7 +82,7 @@
                         </connections>
                     </segmentedControl>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qoz-bT-xOl" userLabel="Text Foreground Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="244" y="2" width="23" height="23"/>
+                        <rect key="frame" x="238" y="5" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
@@ -91,7 +90,7 @@
                         </connections>
                     </colorWell>
                     <colorWell fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fn8-1h-uOB" userLabel="Text Background Color" customClass="SMColorWellWithIcon">
-                        <rect key="frame" x="271" y="2" width="23" height="23"/>
+                        <rect key="frame" x="262" y="5" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <color key="color" red="0.05813049898" green="0.055541899059999997" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
@@ -99,13 +98,13 @@
                         </connections>
                     </colorWell>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hq6-jg-08T" userLabel="List">
-                        <rect key="frame" x="296" y="1" width="57" height="24"/>
+                        <rect key="frame" x="286" y="3" width="43" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="OQ4-uB-5zu">
-                            <font key="font" metaFont="system"/>
+                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="OQ4-uB-5zu">
+                            <font key="font" metaFont="smallSystem"/>
                             <segments>
-                                <segment image="List Filled-50" width="25"/>
-                                <segment image="Numbered List Filled-50" width="25" tag="1"/>
+                                <segment image="bullet-list" width="20"/>
+                                <segment image="numbered-list" width="20" tag="1"/>
                             </segments>
                         </segmentedCell>
                         <connections>
@@ -113,42 +112,31 @@
                         </connections>
                     </segmentedControl>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZN8-xv-e9A" userLabel="Shift">
-                        <rect key="frame" x="352" y="1" width="57" height="24"/>
+                        <rect key="frame" x="337" y="3" width="43" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="AFj-VP-2mY">
-                            <font key="font" metaFont="system"/>
+                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="AFj-VP-2mY">
+                            <font key="font" metaFont="smallSystem"/>
                             <segments>
-                                <segment image="shirt-left" width="25"/>
-                                <segment image="shift-right" width="25" tag="1"/>
+                                <segment image="shift-left" width="20"/>
+                                <segment image="shift-right" width="20" tag="1"/>
                             </segments>
                         </segmentedCell>
                         <connections>
                             <action selector="shiftAction:" target="-2" id="uZ3-o9-Hsk"/>
                         </connections>
                     </segmentedControl>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NHO-0P-eB7" userLabel="Quote">
-                        <rect key="frame" x="512" y="-4" width="40" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="quote" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OrK-4p-l3P">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleQuoteAction:" target="-2" id="sDt-AB-K26"/>
-                        </connections>
-                    </button>
                     <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYc-3u-Ywx" userLabel="Justify">
-                        <rect key="frame" x="408" y="1" width="109" height="24"/>
+                        <rect key="frame" x="388" y="3" width="85" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="bsJ-5w-fII">
-                            <font key="font" metaFont="system"/>
+                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="bsJ-5w-fII">
+                            <font key="font" metaFont="smallSystem"/>
                             <segments>
-                                <segment image="align_left-128" width="25"/>
-                                <segment image="align_center-128" width="25" tag="1"/>
-                                <segment image="align_justify-128" width="25">
+                                <segment image="align-left" width="20"/>
+                                <segment image="align-center" width="20" tag="1"/>
+                                <segment image="align-justify" width="20">
                                     <nil key="label"/>
                                 </segment>
-                                <segment image="align_right-128" width="25">
+                                <segment image="align-right" width="20">
                                     <nil key="label"/>
                                 </segment>
                             </segments>
@@ -157,38 +145,40 @@
                             <action selector="justifyTextAction:" target="-2" id="e6w-KO-Rx5"/>
                         </connections>
                     </segmentedControl>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGq-e0-vfT">
-                        <rect key="frame" x="542" y="-5" width="72" height="32"/>
+                    <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Soi-Lq-Ija">
+                        <rect key="frame" x="481" y="3" width="22" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Source" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wY7-p1-UxM">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
+                        <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="Vwn-ii-apG">
+                            <font key="font" metaFont="smallSystem"/>
+                            <segments>
+                                <segment image="quote" width="20"/>
+                            </segments>
+                        </segmentedCell>
                         <connections>
-                            <action selector="showSourceAction:" target="-2" id="oCg-Dn-8ti"/>
+                            <action selector="toggleQuoteAction:" target="-2" id="Rje-cb-xoY"/>
                         </connections>
-                    </button>
+                    </segmentedControl>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstAttribute="height" constant="29" id="3up-Mm-fyB"/>
             </constraints>
             <color key="fillColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-            <point key="canvasLocation" x="381.5" y="314.5"/>
+            <point key="canvasLocation" x="352.5" y="314.5"/>
         </box>
     </objects>
     <resources>
-        <image name="Bold-128" width="128" height="128"/>
-        <image name="Italic-128" width="128" height="128"/>
-        <image name="List Filled-50" width="50" height="50"/>
-        <image name="Numbered List Filled-50" width="50" height="50"/>
-        <image name="Underline-128" width="128" height="128"/>
-        <image name="align_center-128" width="128" height="128"/>
-        <image name="align_justify-128" width="128" height="128"/>
-        <image name="align_left-128" width="128" height="128"/>
-        <image name="align_right-128" width="128" height="128"/>
-        <image name="quote" width="128" height="128"/>
-        <image name="shift-right" width="128" height="128"/>
-        <image name="shirt-left" width="128" height="128"/>
+        <image name="align-center" width="64" height="64"/>
+        <image name="align-justify" width="64" height="64"/>
+        <image name="align-left" width="64" height="64"/>
+        <image name="align-right" width="64" height="64"/>
+        <image name="bold" width="64" height="64"/>
+        <image name="bullet-list" width="64" height="64"/>
+        <image name="italic" width="64" height="64"/>
+        <image name="numbered-list" width="64" height="64"/>
+        <image name="quote" width="64" height="64"/>
+        <image name="shift-left" width="64" height="64"/>
+        <image name="shift-right" width="64" height="64"/>
+        <image name="underline" width="64" height="64"/>
     </resources>
 </document>

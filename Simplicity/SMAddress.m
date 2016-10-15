@@ -18,7 +18,7 @@
     SMAddressMenuRepresentation _representationMode;
 }
 
-+ (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses {
++ (NSArray*)mcoAddressesToAddressList:(NSArray<MCOAddress*>*)mcoAddresses {
     NSMutableArray *addressList = [NSMutableArray array];
     
     for(MCOAddress *address in mcoAddresses) {
@@ -29,7 +29,7 @@
     return addressList;
 }
 
-+ (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses {
++ (NSArray*)addressListToMCOAddresses:(NSArray<SMAddress*>*)mcoAddresses {
     NSMutableArray *addressList = [NSMutableArray array];
     
     for(SMAddress *address in mcoAddresses) {

@@ -16,7 +16,7 @@
 @implementation SMMessageBuilder
 
 + (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
-    return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress mcoAddressesToAddressList:to] cc:[SMAddress mcoAddressesToAddressList:cc] bcc:[SMAddress mcoAddressesToAddressList:bcc] attachmentItems:attachmentItems];
+    return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:attachmentItems];
 }
 
 + (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {

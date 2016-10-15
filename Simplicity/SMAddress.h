@@ -23,8 +23,8 @@ typedef NS_ENUM(NSUInteger, SMAddressMenuRepresentation) {
 @property (readonly) NSString *email;
 @property (readonly) NSString *detailedRepresentation;
 
-+ (NSArray*)mcoAddressesToAddressList:(NSArray*)mcoAddresses;
-+ (NSArray*)addressListToMCOAddresses:(NSArray*)mcoAddresses;
++ (NSArray<SMAddress*>*)mcoAddressesToAddressList:(NSArray<MCOAddress*>*)mcoAddresses;
++ (NSArray<MCOAddress*>*)addressListToMCOAddresses:(NSArray<SMAddress*>*)mcoAddresses;
 + (NSString*)displayAddress:(NSString*)address;
 + (NSString*)extractEmailFromAddressString:(NSString*)address name:(NSString**)name;
 

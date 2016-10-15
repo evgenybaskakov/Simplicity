@@ -19,15 +19,18 @@
             <rect key="frame" x="0.0" y="0.0" width="388" height="31"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="6zw-K1-zkc">
-                    <rect key="frame" x="5" y="4" width="32" height="23"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6zw-K1-zkc">
+                    <rect key="frame" x="-1" y="-3" width="71" height="34"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="Y0q-Ed-WLB"/>
-                        <constraint firstAttribute="width" constant="32" id="t21-gh-nH9"/>
+                        <constraint firstAttribute="width" constant="59" id="t21-gh-nH9"/>
                     </constraints>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="sendicon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="LrL-rZ-X6M">
+                    <buttonCell key="cell" type="push" title="Send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="LrL-rZ-X6M">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
                     </buttonCell>
                     <connections>
                         <action selector="sendAction:" target="-2" id="YAd-aM-XnA"/>
@@ -75,7 +78,6 @@
     </objects>
     <resources>
         <image name="attachment" width="128" height="128"/>
-        <image name="sendicon" width="256" height="167"/>
         <image name="trash-black" width="64" height="64"/>
     </resources>
 </document>

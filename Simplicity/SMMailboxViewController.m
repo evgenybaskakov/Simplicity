@@ -356,9 +356,11 @@
         case SMFolderKindStarred:
             return [NSImage imageNamed:@"star-white.png"];
         case SMFolderKindDrafts:
-            return [NSImage imageNamed:@"drafts-white.png"];
+            return [NSImage imageNamed:@"draft-white.png"];
         case SMFolderKindTrash:
             return [NSImage imageNamed:@"trash-white.png"];
+        case SMFolderKindAllMail:
+            return [NSImage imageNamed:@"archive-white.png"];
         default:
             return nil;
     }

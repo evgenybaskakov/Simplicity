@@ -30,16 +30,16 @@
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="3V8-xi-ERI">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment toolTip="Scroll to previous message in the conversation" image="Button-Up-128" width="32">
+                                    <segment toolTip="Scroll to previous message in the conversation" image="angle-up" width="32">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Scroll to next message in the conversation" image="Button-Down-128" width="32" tag="1">
+                                    <segment toolTip="Scroll to next message in the conversation" image="angle-down" width="32" tag="1">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Collapse all messages in the conversation" image="Button-Collapse" width="32">
+                                    <segment toolTip="Collapse all messages in the conversation" image="collapse" width="32">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Expand all messages in the conversation" image="Button-Expand">
+                                    <segment toolTip="Expand all messages in the conversation" image="expand">
                                         <nil key="label"/>
                                     </segment>
                                 </segments>
@@ -76,9 +76,9 @@
         </customView>
     </objects>
     <resources>
-        <image name="Button-Collapse" width="128" height="128"/>
-        <image name="Button-Down-128" width="128" height="128"/>
-        <image name="Button-Expand" width="128" height="128"/>
-        <image name="Button-Up-128" width="128" height="128"/>
+        <image name="angle-down" width="64" height="64"/>
+        <image name="angle-up" width="64" height="64"/>
+        <image name="collapse" width="64" height="64"/>
+        <image name="expand" width="64" height="64"/>
     </resources>
 </document>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMPreferencesWindowController">
@@ -25,6 +25,7 @@
                 <subviews>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R8P-os-OL7">
                         <rect key="frame" x="38" y="13" width="81" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" refusesFirstResponder="YES" borderStyle="border" transparent="YES" imageScaling="proportionallyDown" inset="2" id="0Rc-oG-m3O">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -60,7 +61,7 @@ Gw
                             <action selector="toolbarToggleAccountAction:" target="-2" id="fjE-ly-vpa"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="87EA2789-63BF-4A86-88DC-CD95E4724C23" label="Labels" paletteLabel="Labels" tag="-1" image="add-label" selectable="YES" id="bX1-BH-XNB">
+                    <toolbarItem implicitItemIdentifier="87EA2789-63BF-4A86-88DC-CD95E4724C23" label="Labels" paletteLabel="Labels" tag="-1" image="label" selectable="YES" id="bX1-BH-XNB">
                         <connections>
                             <action selector="toolbarToggleLabelsAction:" target="-2" id="FHs-hZ-KDf"/>
                         </connections>
@@ -92,6 +93,6 @@ Gw
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUser" width="32" height="32"/>
         <image name="Quote-50" width="50" height="50"/>
-        <image name="add-label" width="128" height="128"/>
+        <image name="label" width="128" height="128"/>
     </resources>
 </document>

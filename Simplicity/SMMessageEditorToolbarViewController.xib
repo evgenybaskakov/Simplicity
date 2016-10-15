@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageEditorToolbarViewController">
@@ -53,7 +53,7 @@
                         <constraint firstAttribute="height" constant="23" id="ne9-Fn-GD1"/>
                         <constraint firstAttribute="width" constant="32" id="oQ1-66-9lW"/>
                     </constraints>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="attachment-icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="9wt-gi-CN7">
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="attachment" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="9wt-gi-CN7">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -74,8 +74,8 @@
         </customView>
     </objects>
     <resources>
-        <image name="attachment-icon" width="128" height="128"/>
+        <image name="attachment" width="128" height="128"/>
         <image name="sendicon" width="256" height="167"/>
-        <image name="trash-black" width="512" height="512"/>
+        <image name="trash-black" width="64" height="64"/>
     </resources>
 </document>

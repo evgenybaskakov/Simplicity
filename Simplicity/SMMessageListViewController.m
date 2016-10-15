@@ -312,7 +312,6 @@
     view.starButton.tag = row;
 
     [self setToggleButtonAlpha:view.unseenButton];
-    [self setToggleButtonAlpha:view.starButton];
     
     [view setMessagesCount:messageThread.messagesCount];
     

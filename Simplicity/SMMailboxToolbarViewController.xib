@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMailboxToolbarViewController">
@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="173" height="37"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="fYr-LT-hWH">
+                <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="fYr-LT-hWH">
                     <rect key="frame" x="0.0" y="0.0" width="173" height="37"/>
                     <subviews>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rak-0h-RxS">
@@ -26,7 +26,7 @@
                                 <constraint firstAttribute="height" constant="22" id="3R5-cJ-jjs"/>
                                 <constraint firstAttribute="width" constant="32" id="N7u-83-vaH"/>
                             </constraints>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="add-label" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MwI-ZH-gFb">
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="label" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MwI-ZH-gFb">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
@@ -52,6 +52,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="add-label" width="128" height="128"/>
+        <image name="label" width="128" height="128"/>
     </resources>
 </document>

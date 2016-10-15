@@ -33,7 +33,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="bevel" title="Font" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="9cw-aK-yUm" id="bXd-qx-Sdl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="Wpe-nd-v4v">
                                 <items>
                                     <menuItem title="Font" state="on" id="9cw-aK-yUm"/>
@@ -51,7 +51,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="bevel" title="10" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="Lpc-Fx-xeM" id="3VB-vJ-U0b">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" id="mk5-WC-4Ug">
                                 <items>
                                     <menuItem title="10" state="on" id="Lpc-Fx-xeM"/>

@@ -43,7 +43,7 @@
                                 <constraint firstAttribute="width" constant="32" id="870-3A-PvZ"/>
                                 <constraint firstAttribute="height" constant="22" id="CzN-5J-5F7"/>
                             </constraints>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="reply-all-small" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="atv-wK-43I">
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="reply-all" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="atv-wK-43I">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
@@ -57,7 +57,7 @@
                                 <constraint firstAttribute="height" constant="22" id="ahA-8U-4TJ"/>
                                 <constraint firstAttribute="width" constant="32" id="oBA-WR-1fb"/>
                             </constraints>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="star-gray-icon-small" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ulg-kG-wSs">
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="star" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ulg-kG-wSs">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
@@ -103,9 +103,9 @@
         </customView>
     </objects>
     <resources>
-        <image name="new-message" width="128" height="128"/>
-        <image name="reply-all-small" width="128" height="128"/>
-        <image name="star-gray-icon-small" width="286" height="286"/>
-        <image name="trash-black" width="128" height="128"/>
+        <image name="new-message" width="64" height="64"/>
+        <image name="reply-all" width="128" height="128"/>
+        <image name="star" width="128" height="128"/>
+        <image name="trash-black" width="64" height="64"/>
     </resources>
 </document>

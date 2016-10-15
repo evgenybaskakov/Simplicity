@@ -14,17 +14,17 @@
     self = [super init];
     
     if(self) {
-        _attachmentImage = [NSImage imageNamed:@"attachment-icon.png"];
+        _attachmentImage = [NSImage imageNamed:@"attachment.png"];
         _attachmentDocumentImage = [NSImage imageNamed:@"attachment-document.png"];
         _blueCircleImage = [NSImage imageNamed:@"circle-blue.png"];
-        _yellowStarImage = [NSImage imageNamed:@"star-yellow-icon.png"];
-        _grayStarImage = [NSImage imageNamed:@"star-gray-icon.png"];
-        _editImage = [NSImage imageNamed:@"edit-icon.png"];
-        _infoImage = [NSImage imageNamed:@"info-icon.png"];
-        _replyImage = [NSImage imageNamed:@"iconsineed-icon-reply-128.png"];
-        _replyAllImage = [NSImage imageNamed:@"iconsineed-icon-reply-all-128.png"];
-        _replySmallImage = [NSImage imageNamed:@"reply-small.png"];
-        _replyAllSmallImage = [NSImage imageNamed:@"reply-all-small.png"];
+        _yellowStarImage = [NSImage imageNamed:@"star-yellow.png"];
+        _grayStarImage = [NSImage imageNamed:@"star-gray.png"];
+        _editImage = [NSImage imageNamed:@"edit.png"];
+        _infoImage = [NSImage imageNamed:@"info.png"];
+        _replyImage = [NSImage imageNamed:@"reply.png"];
+        _replyAllImage = [NSImage imageNamed:@"reply-all.png"];
+        _replySmallImage = [NSImage imageNamed:@"reply.png"];
+        _replyAllSmallImage = [NSImage imageNamed:@"reply-all.png"];
         _moreMessageActionsImage = [NSImage imageNamed:@"iconsineed-icon-down-128.png"];
     }
     

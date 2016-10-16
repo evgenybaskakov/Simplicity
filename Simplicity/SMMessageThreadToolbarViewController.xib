@@ -22,24 +22,24 @@
                     <rect key="frame" x="0.0" y="0.0" width="597" height="37"/>
                     <subviews>
                         <segmentedControl wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qaN-Wg-fQb">
-                            <rect key="frame" x="10" y="5" width="144" height="25"/>
+                            <rect key="frame" x="10" y="5" width="128" height="25"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="22" id="BV4-PW-caB"/>
-                                <constraint firstAttribute="width" constant="144" id="ky7-dn-QHk"/>
+                                <constraint firstAttribute="width" constant="128" id="ky7-dn-QHk"/>
                             </constraints>
                             <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="3V8-xi-ERI">
                                 <font key="font" metaFont="system"/>
                                 <segments>
-                                    <segment toolTip="Scroll to previous message in the conversation" image="angle-up" width="32">
+                                    <segment toolTip="Scroll to previous message in the conversation" image="angle-up" width="30">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Scroll to next message in the conversation" image="angle-down" width="32" tag="1">
+                                    <segment toolTip="Scroll to next message in the conversation" image="angle-down" width="30" tag="1">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Collapse all messages in the conversation" image="collapse" width="32">
+                                    <segment toolTip="Collapse all messages in the conversation" image="collapse" width="30">
                                         <nil key="label"/>
                                     </segment>
-                                    <segment toolTip="Expand all messages in the conversation" image="expand">
+                                    <segment toolTip="Expand all messages in the conversation" image="expand" width="37">
                                         <nil key="label"/>
                                     </segment>
                                 </segments>

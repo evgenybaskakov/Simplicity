@@ -184,7 +184,6 @@
 		807438421DB1FCA90054115B /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438411DB1FCA90054115B /* image.png */; };
 		807438451DB1FE850054115B /* angle-down.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438431DB1FE850054115B /* angle-down.png */; };
 		807438461DB1FE850054115B /* angle-up.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438441DB1FE850054115B /* angle-up.png */; };
-		807438521DB2012F0054115B /* archive-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438511DB2012F0054115B /* archive-white.png */; };
 		807438541DB2019C0054115B /* spam-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438531DB2019C0054115B /* spam-white.png */; };
 		807438561DB202220054115B /* draft.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438551DB202220054115B /* draft.png */; };
 		8074385A1DB2030A0054115B /* draft-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438591DB2030A0054115B /* draft-white.png */; };
@@ -201,6 +200,7 @@
 		807438A61DB3325B0054115B /* expand.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438A51DB3325B0054115B /* expand.png */; };
 		807438AC1DB338800054115B /* label.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438AB1DB338800054115B /* label.png */; };
 		807438B01DB33AC20054115B /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438AF1DB33AC20054115B /* info.png */; };
+		807438B61DB33DAF0054115B /* archive-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 807438B51DB33DAF0054115B /* archive-white.png */; };
 		8076B4B81B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */; };
 		8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */; };
 		8076FD9B1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 8076FD9A1DAA0FAE00C66B2C /* SMButtonWithLongClickAction.m */; };
@@ -635,7 +635,6 @@
 		807438411DB1FCA90054115B /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
 		807438431DB1FE850054115B /* angle-down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "angle-down.png"; sourceTree = "<group>"; };
 		807438441DB1FE850054115B /* angle-up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "angle-up.png"; sourceTree = "<group>"; };
-		807438511DB2012F0054115B /* archive-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive-white.png"; sourceTree = "<group>"; };
 		807438531DB2019C0054115B /* spam-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "spam-white.png"; sourceTree = "<group>"; };
 		807438551DB202220054115B /* draft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = draft.png; sourceTree = "<group>"; };
 		807438591DB2030A0054115B /* draft-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "draft-white.png"; sourceTree = "<group>"; };
@@ -652,6 +651,7 @@
 		807438A51DB3325B0054115B /* expand.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = expand.png; sourceTree = "<group>"; };
 		807438AB1DB338800054115B /* label.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = label.png; sourceTree = "<group>"; };
 		807438AF1DB33AC20054115B /* info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = info.png; sourceTree = "<group>"; };
+		807438B51DB33DAF0054115B /* archive-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "archive-white.png"; sourceTree = "<group>"; };
 		8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLabeledTextFieldBoxViewController.h; sourceTree = "<group>"; };
 		8076B4B61B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLabeledTextFieldBoxViewController.m; sourceTree = "<group>"; };
 		8076B4B71B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMLabeledTextFieldBoxViewController.xib; sourceTree = "<group>"; };
@@ -1312,10 +1312,10 @@
 			children = (
 				807438431DB1FE850054115B /* angle-down.png */,
 				807438441DB1FE850054115B /* angle-up.png */,
-				807438511DB2012F0054115B /* archive-white.png */,
 				801EDEEF1BE9EB6700A16E85 /* at_sign.png */,
 				00A681791A7DEDB800DAD2BD /* attachment-document.png */,
 				807438631DB207200054115B /* attachment.png */,
+				807438B51DB33DAF0054115B /* archive-white.png */,
 				8074386C1DB212220054115B /* circle-blue.png */,
 				8074389D1DB302880054115B /* collapse.png */,
 				807438591DB2030A0054115B /* draft-white.png */,
@@ -1616,10 +1616,10 @@
 				801EDEF21BE9F01800A16E85 /* gmail_logo.png in Resources */,
 				8043D7DC1B51824100B07469 /* iconsineed-icon-down-128.png in Resources */,
 				803632431DB0BB75003B7680 /* quote.png in Resources */,
+				807438B61DB33DAF0054115B /* archive-white.png in Resources */,
 				8074383E1DB1FA170054115B /* star-gray.png in Resources */,
 				8036322B1DB0AF24003B7680 /* bullet-list.png in Resources */,
 				00AD52E81AA813FB00627433 /* label-tmp.png in Resources */,
-				807438521DB2012F0054115B /* archive-white.png in Resources */,
 				8052555F1D5708C700CDCBA2 /* SMLabelSelectionViewController.xib in Resources */,
 				807438A61DB3325B0054115B /* expand.png in Resources */,
 				800C67921B499F0700272D60 /* Images.xcassets in Resources */,

@@ -18,7 +18,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do view setup here.
+    [self scaleImage:_addLabelButton];
+}
+
+- (void)scaleImage:(NSButton*)button {
+    NSImage *img = [button image];
+    NSSize buttonSize = [[button cell] cellSize];
+    [img setSize:NSMakeSize(buttonSize.height/1.8, buttonSize.height/1.8)];
+    [button setImage:img];
 }
 
 - (IBAction)addLabelButtonAction:(id)sender {

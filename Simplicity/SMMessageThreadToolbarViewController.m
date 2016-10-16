@@ -44,6 +44,22 @@
     _searchFieldViewController.enterAction = @selector(enterSearchUsingToolbarSearchField:);
     _searchFieldViewController.arrowUpAction = @selector(searchMenuCursorUp:);
     _searchFieldViewController.arrowDownAction = @selector(searchMenuCursorDown:);
+
+    for(NSSegmentedControl *control in @[_messageNavigationControl]) {
+        for(NSUInteger i = 0; i < control.segmentCount; i++) {
+            NSImage *img = [control imageForSegment:i];
+            NSSize buttonSize = [[control cell] cellSize];
+            [img setSize:NSMakeSize(buttonSize.height/1.8, buttonSize.height/1.8)];
+            [control setImage:img forSegment:i];
+        }
+    }
+}
+
+- (void)scaleImage:(NSButton*)button {
+    NSImage *img = [button image];
+    NSSize buttonSize = [[button cell] cellSize];
+    [img setSize:NSMakeSize(buttonSize.height/1.8, buttonSize.height/1.8)];
+    [button setImage:img];
 }
 
 - (IBAction)messageNavigationAction:(id)sender {

@@ -34,12 +34,25 @@
     [self setReplyButtonImage];
     
     _replyButton.longClickAction = @selector(replyButtonLongClickAction:);
+    
+    for(NSButton *control in @[_composeMessageButton, _replyButton, _starButton, _trashButton]) {
+        [self scaleImage:control];
+    }
+}
+
+- (void)scaleImage:(NSButton*)button {
+    NSImage *img = [button image];
+    NSSize buttonSize = [[button cell] cellSize];
+    [img setSize:NSMakeSize(buttonSize.height/1.8, buttonSize.height/1.8)];
+    [button setImage:img];
 }
 
 - (void)setReplyButtonImage {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
     _replyButton.image = [[appDelegate preferencesController] defaultReplyAction] == SMDefaultReplyAction_ReplyAll? appDelegate.imageRegistry.replyAllSmallImage : appDelegate.imageRegistry.replySmallImage;
+
+    [self scaleImage:_replyButton];
 }
 
 - (IBAction)composeMessageAction:(id)sender {

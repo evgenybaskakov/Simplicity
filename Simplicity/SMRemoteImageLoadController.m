@@ -341,20 +341,16 @@
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
-    if(frame != sender.mainFrame) {
+    if(frame != sender.mainFrame || _htmlPagesToLoad.count == 0) {
         return;
     }
     
     WebPage *webPage = _htmlPagesToLoad[0];
 
-    NSAssert(_htmlPagesToLoad.count > 0, @"no html pages in the queue");
     NSAssert(webPage.baseURL, @"_htmlPagesToLoad[0].baseURL is nil");
     NSAssert(webPage.htmlBody, @"_htmlPagesToLoad[0].htmlBody is nil");
 
-    SM_LOG_INFO(@"page loaded: %@", webPage.baseURL);
-//    if([webPage.baseURL.absoluteString isEqualToString:@"http://facebookmail.com"]) {
-//        SM_LOG_INFO(@"page loaded: %@", webPage.htmlBody);
-//    }
+    SM_LOG_DEBUG(@"page loaded: %@", webPage.baseURL);
     
     WebScriptObject *webScript = [sender windowScriptObject];
     [webScript setValue:self forKey:@"MyApp"];

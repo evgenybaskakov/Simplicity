@@ -693,15 +693,16 @@
     }
 
     NSArray *messageThreadsToMove;
-    
-    if(_selectedMessageThread != nil) {
-        messageThreadsToMove = [NSArray arrayWithObject:_selectedMessageThread];
+
+    if(_draggedMessageThread != nil) {
+        messageThreadsToMove = @[_draggedMessageThread];
     }
-    else if(_multipleSelectedMessageThreads.count > 0) {
-        messageThreadsToMove = [NSArray arrayWithArray:_multipleSelectedMessageThreads];
+    else if(_selectedMessageThread != nil) {
+        messageThreadsToMove = @[_selectedMessageThread];
     }
     else {
-        messageThreadsToMove = [NSArray arrayWithObject:_draggedMessageThread];
+        NSAssert(_multipleSelectedMessageThreads.count > 0, @"no message threads to drop");
+        messageThreadsToMove = [NSArray arrayWithArray:_multipleSelectedMessageThreads];
     }
     
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
@@ -764,22 +765,25 @@
 #pragma mark Messages drag and drop support
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard*)pboard {
-    // only permit dragging messages from the message list
-
     if(aTableView == _messageListTableView) {
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes];
         [pboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
         [pboard setData:data forType:NSStringPboardType];
 
-        if(_selectedMessageThread == nil && _multipleSelectedMessageThreads.count == 0) {
-            NSAssert(rowIndexes.count == 1, @"multiple rows (%lu) are dragged without selection", rowIndexes.count);
-
+        if(rowIndexes.count == 1) {
             SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
             id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
             NSAssert(currentLocalFolder != nil, @"no current folder");
 
-            _draggedMessageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:rowIndexes.firstIndex];
+            SMMessageThread *drag = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:rowIndexes.firstIndex];
+            
+            if(drag == _selectedMessageThread || [_multipleSelectedMessageThreads containsObject:drag]) {
+                // if the dragged thread is within the selection, use the general rules to perform the dragging
+                drag = nil;
+            }
+
+            _draggedMessageThread = drag;
         }
         
         return YES;

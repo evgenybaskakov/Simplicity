@@ -718,9 +718,10 @@
         }
     }
 
-    _selectedMessageThread = nil;
-    
-    [_multipleSelectedMessageThreads removeAllObjects];
+    if(_draggedMessageThread == nil) {
+        _selectedMessageThread = nil;
+        [_multipleSelectedMessageThreads removeAllObjects];
+    }
 
     // Check how many threads could make the move
     // Use the rest to decide how to change the table selection
@@ -733,7 +734,7 @@
     else {
         NSIndexSet *selectedRows = [_messageListTableView selectedRowIndexes];
         
-        if(selectedRows.count > 0) {
+        if(selectedRows.count > 0 && _draggedMessageThread == nil) {
             // Move the selection down after the message threads are deleted from the list.
             NSUInteger nextRow = selectedRows.firstIndex;
             _selectedMessageThread = [currentLocalFolder.messageStorage messageThreadAtIndexByDate:nextRow];

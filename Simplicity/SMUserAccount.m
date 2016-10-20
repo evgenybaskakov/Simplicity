@@ -398,7 +398,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             _self->_imapServerCapabilities = capabilities;
             _self->_capabilitiesOp = nil;
 
-            [_self startIdle];
+// TODO: do not enable until it's fully working
+//       otherwise it blocks other connections and messages
+//       can't get through
+//            [_self startIdle];
         }
     };
     

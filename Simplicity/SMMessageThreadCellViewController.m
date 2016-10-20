@@ -21,7 +21,6 @@
 static const NSUInteger MIN_BODY_HEIGHT = 150;
 
 @implementation SMMessageThreadCellViewController {
-    SMBoxView *_view;
     SMMessage *_message;
     SMMessageDetailsViewController *_messageDetailsViewController;
     SMMessageBodyViewController *_messageBodyViewController;
@@ -49,13 +48,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
         // init main view
         
-        _view = [[SMBoxView alloc] init];
-        _view.drawTop = YES;
-        _view.leftTopInset = 31;
-        _view.boxColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
-        _view.fillColor = [NSColor whiteColor];
-        _view.mouseInColor = [NSColor colorWithCalibratedWhite:0.95 alpha:1];
-        _view.translatesAutoresizingMaskIntoConstraints = NO;
+        _boxView = [[SMBoxView alloc] init];
+        _boxView.drawTop = YES;
+        _boxView.leftTopInset = 31;
+        _boxView.boxColor = [NSColor colorWithCalibratedWhite:0.9 alpha:1];
+        _boxView.fillColor = [NSColor whiteColor];
+        _boxView.mouseInColor = [NSColor colorWithCalibratedWhite:0.95 alpha:1];
+        _boxView.translatesAutoresizingMaskIntoConstraints = NO;
 
         // init header button
 
@@ -69,15 +68,15 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         [_headerButton setTransparent:YES];
         [_headerButton setEnabled:NO];
 
-        [_view addSubview:_headerButton];
+        [_boxView addSubview:_headerButton];
 
         [self addConstraint:_headerButton constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:0 constant:[SMMessageThreadCellViewController collapsedCellHeight]] priority:NSLayoutPriorityRequired];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_headerButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
 
         // init message details view
         
@@ -86,21 +85,21 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         NSView *messageDetailsView = [ _messageDetailsViewController view ];
         NSAssert(messageDetailsView, @"messageDetailsView");
         
-        [_view addSubview:messageDetailsView];
+        [_boxView addSubview:messageDetailsView];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow];
         
-        [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
+        [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:messageDetailsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0] priority:NSLayoutPriorityRequired];
     
-        _messageDetailsCollapsedBottomConstraint = [NSLayoutConstraint constraintWithItem:messageDetailsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+        _messageDetailsCollapsedBottomConstraint = [NSLayoutConstraint constraintWithItem:messageDetailsView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
         [_messageDetailsViewController setEnclosingThreadCell:self];
         
         // commit the main view
         
-        [self setView:_view];
+        [self setView:_boxView];
 
         // now set the view constraints depending on the desired states
 
@@ -133,11 +132,11 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         NSUInteger newAttachmentsPanelHeight = [_attachmentsPanelViewController intrinsicContentViewSize].height;
         
         if(newAttachmentsPanelHeight != _attachmentsPanelViewHeightConstraint.constant) {
-            [_view removeConstraint:_attachmentsPanelViewHeightConstraint];
+            [_boxView removeConstraint:_attachmentsPanelViewHeightConstraint];
 
             _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:_attachmentsPanelViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:newAttachmentsPanelHeight];
             
-            [_view addConstraint:_attachmentsPanelViewHeightConstraint];
+            [_boxView addConstraint:_attachmentsPanelViewHeightConstraint];
 
             [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageThreadCellHeightChanged" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self, @"ThreadCell", nil]];
         }
@@ -154,11 +153,11 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         [_progressIndicator startAnimation:self];
     }
     
-    [_view addSubview:_progressIndicator];
+    [_boxView addSubview:_progressIndicator];
     
-    [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+    [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
     
-    [self addConstraint:_view constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
+    [self addConstraint:_boxView constraint:[NSLayoutConstraint constraintWithItem:_progressIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_boxView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0] priority:NSLayoutPriorityDefaultLow-1];
 }
 
 - (void)hideProgressIndicator {
@@ -185,7 +184,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     // Therefore, to avoid different heights conflict, just make the height flexible.
     // After collapsing/uncollapsing, the following message thread cell update
     // procedure will choose the right frame and the autoresizing mask anyway.
-    _view.autoresizingMask |= NSViewHeightSizable;
+    _boxView.autoresizingMask |= NSViewHeightSizable;
     
     if(collapsed) {
         if(_collapsed)
@@ -194,8 +193,8 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         if(_attachmentsPanelShown) {
             NSAssert(_attachmentsPanelViewConstraints != nil, @"_attachmentsPanelViewConstraints not created");
 
-            [_view removeConstraints:_attachmentsPanelViewConstraints];
-            [_view removeConstraint:_attachmentsPanelViewHeightConstraint];
+            [_boxView removeConstraints:_attachmentsPanelViewConstraints];
+            [_boxView removeConstraint:_attachmentsPanelViewHeightConstraint];
             
             [_attachmentsPanelViewController.view removeFromSuperview];
             
@@ -204,9 +203,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         [_messageDetailsViewController collapse];
         
-//        _view.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
-        _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
-        _view.trackMouse = YES;
+//        _boxView.fillColor = [NSColor colorWithCalibratedRed:0.96 green:0.96 blue:0.96 alpha:1.0];
+        _boxView.drawBottom = _shouldDrawBottomLineWhenCollapsed;
+        _boxView.trackMouse = YES;
         
         [self hideProgressIndicator];
         
@@ -215,7 +214,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         }
         
         NSAssert(_messageDetailsCollapsedBottomConstraint != nil, @"_messageDetailsCollapsedBottomConstraint not created");
-        [_view addConstraint:_messageDetailsCollapsedBottomConstraint];
+        [_boxView addConstraint:_messageDetailsCollapsedBottomConstraint];
         
         _collapsed = YES;
     } else {
@@ -237,10 +236,10 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
             // ruin the message thread layout.
             // To prevent that from happening, forcely set the already known web body view width.
             // Future body height will be calculated based on it.
-            [messageBodyView setFrameSize:_view.frame.size];
+            [messageBodyView setFrameSize:_boxView.frame.size];
             
             // Add the view to the superview immediately to have the height calculation take effect.
-            [_view addSubview:messageBodyView];
+            [_boxView addSubview:messageBodyView];
 
             // The cell view is added to the superview, so now we can adjust its height.
             [self adjustCellHeightToFitContentResizeable:NO];
@@ -255,28 +254,28 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
 
         // Setup body constraints
 
-        [_view removeConstraint:_messageDetailsCollapsedBottomConstraint];
+        [_boxView removeConstraint:_messageDetailsCollapsedBottomConstraint];
         
         NSView *messageBodyView = [_messageBodyViewController view];
         NSAssert(messageBodyView, @"messageBodyView");
 
-        [_view addSubview:messageBodyView];
+        [_boxView addSubview:messageBodyView];
         
-        [_view addConstraint:[NSLayoutConstraint constraintWithItem:_messageDetailsViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        [_boxView addConstraint:[NSLayoutConstraint constraintWithItem:_messageDetailsViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         
-        [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+        [_boxView addConstraint:[NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
         
-        [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+        [_boxView addConstraint:[NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 
-        _mesageBottomConstraint = [NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+        _mesageBottomConstraint = [NSLayoutConstraint constraintWithItem:_boxView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:messageBodyView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
         
-        [_view addConstraint:_mesageBottomConstraint];
+        [_boxView addConstraint:_mesageBottomConstraint];
 
         // Set view internals
         
-        _view.fillColor = [NSColor whiteColor];
-        _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
-        _view.trackMouse = NO;
+        _boxView.fillColor = [NSColor whiteColor];
+        _boxView.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
+        _boxView.trackMouse = NO;
 
         [_messageDetailsViewController uncollapse];
         [_messageBodyViewController uncollapse];
@@ -299,7 +298,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     _shouldDrawBottomLineWhenCollapsed = shouldDrawBottomLineWhenCollapsed;
     
     if(_collapsed) {
-        _view.drawBottom = _shouldDrawBottomLineWhenCollapsed;
+        _boxView.drawBottom = _shouldDrawBottomLineWhenCollapsed;
     }
 }
 
@@ -307,7 +306,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     _shouldDrawBottomLineWhenUncollapsed = shouldDrawBottomLineWhenUncollapsed;
     
     if(!_collapsed) {
-        _view.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
+        _boxView.drawBottom = _shouldDrawBottomLineWhenUncollapsed;
     }
 }
 
@@ -349,7 +348,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     SM_LOG_DEBUG(@"contentHeight: %lu", contentHeight);
 
     if(_messageBodyHeightConstraint != nil) {
-        [_view removeConstraint:_messageBodyHeightConstraint];
+        [_boxView removeConstraint:_messageBodyHeightConstraint];
         _messageBodyHeightConstraint = nil;
     }
 
@@ -358,13 +357,13 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         // Unless requested otherwise, make the message body fixed.
         //
         if(_mesageBottomConstraint != nil) {
-            [_view removeConstraint:_mesageBottomConstraint];
+            [_boxView removeConstraint:_mesageBottomConstraint];
             _mesageBottomConstraint = nil;
         }
         
         _messageBodyHeightConstraint = [NSLayoutConstraint constraintWithItem:messageBodyView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:contentHeight];
 
-        [_view addConstraint:_messageBodyHeightConstraint];
+        [_boxView addConstraint:_messageBodyHeightConstraint];
 
     }
 }

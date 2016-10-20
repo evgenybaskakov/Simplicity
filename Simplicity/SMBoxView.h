@@ -10,6 +10,8 @@
 
 @interface SMBoxView : NSView
 
+@property NSInteger tag;
+
 @property (nonatomic) NSColor *fillColor;
 @property (nonatomic) NSColor *boxColor;
 @property (nonatomic) NSColor *mouseInColor;
@@ -18,5 +20,8 @@
 @property (nonatomic) NSUInteger leftTopInset;
 @property (nonatomic) NSUInteger leftBottomInset;
 @property (nonatomic) BOOL trackMouse;
+
+@property void (^mouseEnteredBlock)(SMBoxView*);
+@property void (^mouseExitedBlock)(SMBoxView*);
 
 @end

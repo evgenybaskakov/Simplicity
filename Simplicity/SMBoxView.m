@@ -13,6 +13,8 @@
     NSColor *_currentFillColor;
 }
 
+@synthesize tag;
+
 - (void)setFillColor:(NSColor*)fillColor {
     _fillColor = fillColor;
     _currentFillColor = _fillColor;
@@ -97,6 +99,10 @@
     if(_trackMouse) {
         _currentFillColor = _mouseInColor;
         [self setNeedsDisplay:YES];
+
+        if(_mouseEnteredBlock) {
+            _mouseEnteredBlock(self);
+        }
     }
 }
 
@@ -104,6 +110,10 @@
     if(_trackMouse) {
         _currentFillColor = _fillColor;
         [self setNeedsDisplay:YES];
+        
+        if(_mouseExitedBlock) {
+            _mouseExitedBlock(self);
+        }
     }
 }
 

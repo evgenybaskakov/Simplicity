@@ -31,6 +31,7 @@
 #import "SMAddressFieldViewController.h"
 #import "SMTokenField.h"
 #import "SMFlippedView.h"
+#import "SMBoxView.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMStringUtils.h"
@@ -52,7 +53,7 @@ static const CGFloat CELL_SPACING = 0;
     SMMessageEditorViewController *_messageEditorViewController;
     SMMessageThreadCellViewController *_cellViewControllerToReply;
     SMFindContentsPanelViewController *_findContentsPanelViewController;
-    NSMutableArray *_cells;
+    NSMutableArray<SMMessageThreadCell*> *_cells;
     NSView *_contentView;
     Boolean _findContentsActive;
     NSString *_currentStringToFind;
@@ -472,6 +473,37 @@ static const CGFloat CELL_SPACING = 0;
     
     for(NSInteger i = 0; i < _cells.count; i++) {
         SMMessageThreadCell *cell = _cells[i];
+        [cell.viewController.boxView setTag:i];
+        
+        SMMessageThreadViewController __weak *weakSelf = self;
+        
+        cell.viewController.boxView.mouseEnteredBlock = ^(SMBoxView *box) {
+            SMMessageThreadViewController *_self = weakSelf;
+            if(!_self) {
+                return;
+            }
+            
+            NSInteger row = box.tag;
+            
+            if(row + 1 < _self->_cells.count) {
+                SMBoxView *nextRowBox = _self->_cells[row + 1].viewController.boxView;
+                nextRowBox.drawTop = NO;
+            }
+        };
+        
+        cell.viewController.boxView.mouseExitedBlock = ^(SMBoxView *box) {
+            SMMessageThreadViewController *_self = weakSelf;
+            if(!_self) {
+                return;
+            }
+            
+            NSInteger row = box.tag;
+            
+            if(row + 1 < _self->_cells.count) {
+                SMBoxView *nextRowBox = _self->_cells[row + 1].viewController.boxView;
+                nextRowBox.drawTop = YES;
+            }
+        };
         
         NSAssert(cell.viewController != nil, @"cell.viewController is nil");
         if(_messageEditorViewController != nil) {

@@ -8,10 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMBoxView;
 @class SMMessageBodyViewController;
 @class SMMessageThreadViewController;
 
 @interface SMMessageThreadCellViewController : NSViewController
+
+@property (readonly) SMBoxView *boxView;
 
 @property (nonatomic) Boolean collapsed;
 @property (nonatomic) Boolean shouldDrawBottomLineWhenCollapsed;

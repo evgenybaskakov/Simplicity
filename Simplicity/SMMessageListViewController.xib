@@ -80,7 +80,7 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
+                                                    <button wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Clg-UM-hr3" userLabel="Star">
                                                         <rect key="frame" x="0.0" y="41" width="18" height="18"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="star-gray" imagePosition="only" alignment="center" alternateImage="star-yellow" state="on" imageScaling="proportionallyDown" inset="2" id="foW-9l-eeJ">
@@ -91,7 +91,7 @@
                                                             <action selector="toggleStarAction:" target="-2" id="ttl-pL-8Vj"/>
                                                         </connections>
                                                     </button>
-                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="xPq-SM-e48" userLabel="Unseen">
+                                                    <button wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xPq-SM-e48" userLabel="Unseen">
                                                         <rect key="frame" x="4" y="23" width="11" height="11"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="11" id="DAJ-2M-z4Z"/>
@@ -105,7 +105,7 @@
                                                             <action selector="toggleUnseenAction:" target="-2" id="gXc-E6-3L0"/>
                                                         </connections>
                                                     </button>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oxo-5I-gnK" userLabel="Attachment">
+                                                    <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oxo-5I-gnK" userLabel="Attachment">
                                                         <rect key="frame" x="196" y="20" width="18" height="18"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="18" id="1ah-1k-1Su"/>
@@ -113,7 +113,7 @@
                                                         </constraints>
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="attachment" id="5zw-26-NG2"/>
                                                     </imageView>
-                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
+                                                    <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hsQ-26-pkV" userLabel="Bookmark Panel" customClass="SMMessageBookmarksView">
                                                         <rect key="frame" x="218" y="47" width="13" height="13"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="13" id="Eyo-KN-2gG"/>
@@ -129,7 +129,7 @@
                                                             <font key="font" metaFont="smallSystemBold"/>
                                                         </buttonCell>
                                                     </button>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO" customClass="SMRoundedImageView">
+                                                    <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO" customClass="SMRoundedImageView">
                                                         <rect key="frame" x="22" y="23" width="35" height="35"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUserGuest" id="Whf-mb-hsn"/>
@@ -235,7 +235,7 @@
     <resources>
         <image name="NSUserGuest" width="32" height="32"/>
         <image name="attachment" width="128" height="128"/>
-        <image name="circle-blue" width="256" height="256"/>
+        <image name="circle-blue" width="64" height="64"/>
         <image name="star-gray" width="128" height="128"/>
         <image name="star-yellow" width="128" height="128"/>
     </resources>

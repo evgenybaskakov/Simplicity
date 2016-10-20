@@ -120,13 +120,13 @@
                                                         </constraints>
                                                     </customView>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DsX-8X-jlE" userLabel="Messages Count" customClass="SMInactiveButton">
-                                                        <rect key="frame" x="215" y="20" width="17" height="17"/>
+                                                        <rect key="frame" x="214" y="21" width="18" height="16"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="17" id="exA-kj-ZN9"/>
+                                                            <constraint firstAttribute="width" constant="18" id="exA-kj-ZN9"/>
                                                         </constraints>
                                                         <buttonCell key="cell" type="inline" title="99" bezelStyle="inline" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="svx-39-R2d">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="smallSystemBold"/>
+                                                            <font key="font" metaFont="systemBold" size="10"/>
                                                         </buttonCell>
                                                     </button>
                                                     <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Rg-A8-3PO" customClass="SMRoundedImageView">
@@ -160,7 +160,7 @@
                                                     <constraint firstItem="oxo-5I-gnK" firstAttribute="top" secondItem="32" secondAttribute="top" constant="25" id="ETR-b7-TqA"/>
                                                     <constraint firstItem="BTp-sC-DoL" firstAttribute="top" secondItem="32" secondAttribute="top" constant="-1" id="EeY-CT-9H2"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="top" secondItem="32" secondAttribute="top" constant="29" id="Gqa-MK-utm"/>
-                                                    <constraint firstItem="DsX-8X-jlE" firstAttribute="leading" secondItem="164" secondAttribute="trailing" constant="54" id="IZk-Yc-7ql"/>
+                                                    <constraint firstItem="DsX-8X-jlE" firstAttribute="leading" secondItem="164" secondAttribute="trailing" constant="53" id="IZk-Yc-7ql"/>
                                                     <constraint firstItem="xPq-SM-e48" firstAttribute="leading" secondItem="32" secondAttribute="leading" constant="4" id="Iys-BD-NjQ"/>
                                                     <constraint firstItem="DsX-8X-jlE" firstAttribute="top" secondItem="32" secondAttribute="top" constant="26" id="Ps2-57-W3o"/>
                                                     <constraint firstItem="hsQ-26-pkV" firstAttribute="leading" secondItem="BTp-sC-DoL" secondAttribute="trailing" constant="5" id="QCM-lj-Yyi"/>

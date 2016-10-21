@@ -37,7 +37,6 @@
 - (void)makePlainText;
 - (void)sendMessage;
 - (void)deleteEditedDraft;
-//- (void)saveMessage;
 - (void)attachDocument;
 - (void)toggleBold;
 - (void)toggleItalic;
@@ -53,7 +52,7 @@
 - (void)showSource;
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
-- (void)closeEditor:(Boolean)shouldSaveDraft;
+- (BOOL)closeEditor:(Boolean)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
 - (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
 

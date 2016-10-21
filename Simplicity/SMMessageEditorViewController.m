@@ -87,6 +87,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean _doNotSaveDraftOnClose;
     SMUserAccount *_lastAccount;
     Boolean _adjustingFrames;
+    Boolean _savedOnce;
 }
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
@@ -537,10 +538,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     return NO;
 }
 
-- (void)saveMessage {
+- (BOOL)saveMessage {
     if(![self hasUnsavedContents]) {
         SM_LOG_DEBUG(@"Message contains no changes, so no save is neccessary");
-        return;
+        return TRUE;
     }
     
     if(_fromBoxViewController.itemList.numberOfItems == 0 || _fromBoxViewController.itemList.selectedItem == nil) {
@@ -551,7 +552,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert runModal];
         
-        return;
+        return FALSE;
     }
     
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
@@ -566,7 +567,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert runModal];
         
-        return;
+        return FALSE;
     }
     
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
@@ -588,6 +589,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
     
     _htmlTextEditor.unsavedContentPending = NO;
+    
+    _savedOnce = YES;
+    
+    return TRUE;
 }
 
 - (void)attachDocument {
@@ -1208,14 +1213,44 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Misc
 
-- (void)closeEditor:(Boolean)shouldSaveDraft {
+- (BOOL)closeEditor:(Boolean)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary {
     if(shouldSaveDraft && !_doNotSaveDraftOnClose) {
-        [self saveMessage];
+        BOOL doSave = YES;
+        
+        if(askConfirmationIfNecessary) {
+            if(!_savedOnce && [self hasUnsavedContents]) {
+                NSAlert *alert = [[NSAlert alloc] init];
+                
+                [alert addButtonWithTitle:@"Save"];
+                [alert addButtonWithTitle:@"Cancel"];
+                [alert addButtonWithTitle:@"Don't save"];
+                [alert setMessageText:[NSString stringWithFormat:@"Would you like to save this draft?"]];
+                [alert setInformativeText:[NSString stringWithFormat:@"This message contains unsaved changes. You can save it as a draft to finish working on later."]];
+                [alert setAlertStyle:NSAlertStyleInformational];
+                
+                NSModalResponse response = [alert runModal];
+                
+                if(response == NSAlertSecondButtonReturn) {
+                    return FALSE;
+                }
+                else if(response == NSAlertThirdButtonReturn) {
+                    doSave = NO;
+                }
+            }
+        }
+        
+        if(doSave) {
+            if(![self saveMessage]) {
+                return FALSE;
+            }
+        }
     }
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [_htmlTextEditor stopTextMonitor];
+    
+    return TRUE;
 }
 
 - (void)saveDocument:(id)sender {

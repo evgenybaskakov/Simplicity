@@ -64,12 +64,21 @@
     [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:_editorKind mcoAttachments:_mcoAttachments];
 }
 
+- (BOOL)windowShouldClose:(id)sender {
+    if(sender == self.window) {
+        if(![_messageEditorViewController closeEditor:YES askConfirmationIfNecessary:YES]) {
+            return FALSE;
+        }
+    }
+    
+    return TRUE;
+}
+
 - (void)windowWillClose:(NSNotification *)notification {
     if(notification.object == self.window) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        SMAppController *appController = [appDelegate appController];
-
-        [appController closeMessageEditorWindow:self];
+        
+        [[appDelegate appController] closeMessageEditorWindow:self];
     }
 }
 

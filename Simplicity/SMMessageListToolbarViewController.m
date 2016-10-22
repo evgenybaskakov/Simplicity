@@ -18,6 +18,7 @@
 #import "SMMessageThread.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageListViewController.h"
+#import "SMMessageEditorViewController.h"
 #import "SMMessageListToolbarViewController.h"
 
 @interface SMMessageListToolbarViewController ()
@@ -131,24 +132,6 @@
     SMMessage *m = messageThread.messagesSortedByDate[0];
     NSAssert(m, @"no message");
 
-    NSMutableArray<SMAddress*> *toAddressList = nil;
-    NSMutableArray<SMAddress*> *ccAddressList = nil;
-    
-    if(replyKind == SMEditorReplyKind_ReplyAll) {
-        toAddressList = [[SMAddress mcoAddressesToAddressList:m.toAddressList] mutableCopy];
-        ccAddressList = [[SMAddress mcoAddressesToAddressList:m.ccAddressList] mutableCopy];
-
-        [toAddressList removeObject:messageThread.account.accountAddress];
-        if(toAddressList.count == 0) {
-            toAddressList = [@[m.fromAddress] mutableCopy];
-        }
-
-        [ccAddressList removeObject:messageThread.account.accountAddress];
-    }
-    else if(replyKind == SMEditorReplyKind_ReplyOne) {
-        toAddressList = [@[m.fromAddress] mutableCopy];
-    }
-    
     NSString *replySubject = m.subject;
     if(replyKind == SMEditorReplyKind_Forward) {
         replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
@@ -159,6 +142,11 @@
         }
     }
 
+    NSMutableArray<SMAddress*> *toAddressList = nil;
+    NSMutableArray<SMAddress*> *ccAddressList = nil;
+    
+    [SMMessageEditorViewController getReplyAddressLists:m replyKind:replyKind accountAddress:messageThread.account.accountAddress to:&toAddressList cc:&ccAddressList];
+    
     SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
     
     // TODO: also detect if the current message is in raw text; compose reply likewise

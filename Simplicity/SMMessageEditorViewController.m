@@ -94,9 +94,17 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSMutableArray<SMAddress*> *toAddressList = nil;
     NSMutableArray<SMAddress*> *ccAddressList = nil;
     
+    toAddressList = [@[message.fromAddress] mutableCopy];
+
     if(replyKind == SMEditorReplyKind_ReplyAll) {
-        toAddressList = [[SMAddress mcoAddressesToAddressList:message.toAddressList] mutableCopy];
         ccAddressList = [[SMAddress mcoAddressesToAddressList:message.ccAddressList] mutableCopy];
+
+        if([message.fromAddress isEqual:accountAddress]) {
+            [toAddressList addObjectsFromArray:[SMAddress mcoAddressesToAddressList:message.toAddressList]];
+        }
+        else {
+            [ccAddressList addObjectsFromArray:[SMAddress mcoAddressesToAddressList:message.toAddressList]];
+        }
         
         [toAddressList removeObject:accountAddress];
         if(toAddressList.count == 0) {
@@ -104,9 +112,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         }
         
         [ccAddressList removeObject:accountAddress];
-    }
-    else if(replyKind == SMEditorReplyKind_ReplyOne) {
-        toAddressList = [@[message.fromAddress] mutableCopy];
     }
     
     *to = toAddressList;

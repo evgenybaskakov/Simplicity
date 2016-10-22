@@ -466,10 +466,10 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSView *view = [self view];
     NSAssert(view != nil, @"no view");
 
-    NSView *subview = [_fullDetailsViewController view];
-    NSAssert(subview != nil, @"no full details view");
+    NSView *fullDetailsView = [_fullDetailsViewController view];
+    NSAssert(fullDetailsView != nil, @"no full details view");
     
-    [view addSubview:subview];
+    [view addSubview:fullDetailsView];
 
     NSAssert(_bottomConstraint != nil, @"no bottom constraint");
     [view removeConstraint:_bottomConstraint];
@@ -477,27 +477,41 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     if(_fullDetailsViewConstraints == nil) {
         _fullDetailsViewConstraints = [NSMutableArray array];
         
-        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
+        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:fullDetailsView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_MARGIN]];
         
-        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
+        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:fullDetailsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:H_MARGIN]];
         
-        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP]];
+        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:_messageBodyPreviewField attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:fullDetailsView attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP]];
         
-        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:subview attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:fullDetailsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     }
     
-    CABasicAnimation *anim = [CABasicAnimation animation];
-    anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    anim.duration = 0.1;
-    
-    // animate the panel sliding out from the bottom line of the message details view
-    // to do that, animate the bottom constaint constant so that it completely hides the panel at the beginning
-    // (the static constaint constant) to the vertical margin, which implies that the pannel is fully shown
-    _fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
-    _fullDetailsViewConstraints.lastObject.constant = -(_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
-    _fullDetailsViewConstraints.lastObject.animator.constant = V_MARGIN;
+    NSLog(@"_self->_fullDetailsViewController.intrinsicContentViewSize.height: %g", _fullDetailsViewController.intrinsicContentViewSize.height);
+    SMMessageDetailsViewController __weak *weakSelf = self;
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
+        SMMessageDetailsViewController *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
+        NSArray<NSLayoutConstraint*> *fullDetailsViewConstraints = _self->_fullDetailsViewConstraints;
+        
+        CABasicAnimation *anim = [CABasicAnimation animation];
+        anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+        anim.duration = 0.15;
+        
+        // animate the panel sliding out from the bottom line of the message details view
+        // to do that, animate the bottom constaint constant so that it completely hides the panel at the beginning
+        // (the static constraint constant) to the vertical margin, which implies that the pannel is fully shown
+        fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
+        fullDetailsViewConstraints.lastObject.constant = -_self->_fullDetailsViewController.intrinsicContentViewSize.height;
+        fullDetailsViewConstraints.lastObject.animator.constant = V_MARGIN;
 
-    [view.animator addConstraints:_fullDetailsViewConstraints];
+        [view.animator addConstraints:fullDetailsViewConstraints];
+    } completionHandler:^(void) {
+        ;
+    }];
     
     _fullDetailsShown = YES;
 }
@@ -509,8 +523,8 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     NSView *view = [self view];
     NSAssert(view != nil, @"no view");
 
-    NSView *subview = [_fullDetailsViewController view];
-    NSAssert(subview != nil, @"no full details view");
+    NSView *fullDetailsView = [_fullDetailsViewController view];
+    NSAssert(fullDetailsView != nil, @"no full details view");
 
     SMMessageDetailsViewController __weak *weakSelf = self;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
@@ -522,17 +536,17 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
         NSMutableArray<NSLayoutConstraint*> *fullDetailsViewConstraints = _self->_fullDetailsViewConstraints;
 
-        if(subview.superview == view) {
+        if(fullDetailsView.superview == view) {
             NSAssert(fullDetailsViewConstraints != nil, @"no full details view constraint");
             [view.animator removeConstraints:fullDetailsViewConstraints];
             
             CABasicAnimation *anim = [CABasicAnimation animation];
             anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-            anim.duration = 0.1;
+            anim.duration = 0.15;
 
             fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
             fullDetailsViewConstraints.lastObject.constant = V_MARGIN;
-            fullDetailsViewConstraints.lastObject.animator.constant = -(_self->_fullDetailsViewController.intrinsicContentViewSize.height + V_GAP + V_MARGIN);
+            fullDetailsViewConstraints.lastObject.animator.constant = -_self->_fullDetailsViewController.intrinsicContentViewSize.height;
 
             [view.animator addConstraints:fullDetailsViewConstraints];
         }
@@ -544,7 +558,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         }
         
         [view removeConstraints:_self->_fullDetailsViewConstraints];
-        [subview removeFromSuperview];
+        [fullDetailsView removeFromSuperview];
         [view addConstraint:_self->_bottomConstraint];
     }];
 

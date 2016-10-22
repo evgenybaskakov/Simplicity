@@ -54,6 +54,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
         [view setViewController:self];
         [self setView:view];
+
         [self createSubviews];
     }
     
@@ -267,10 +268,12 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 }
 
 - (NSSize)intrinsicContentViewSize {
+    CGFloat topSpace = [_fromAddress intrinsicContentSize].height + V_GAP_HALF + [_toAddresses intrinsicContentSize].height;
+
     if(_ccAddresses != nil) {
-        return NSMakeSize(-1, [_toAddresses intrinsicContentSize].height + V_GAP_HALF + [_ccAddresses intrinsicContentSize].height);
+        return NSMakeSize(-1, topSpace + V_GAP_HALF + [_ccAddresses intrinsicContentSize].height);
     } else {
-        return NSMakeSize(-1, [_toAddresses intrinsicContentSize].height);
+        return NSMakeSize(-1, topSpace);
     }
 }
 

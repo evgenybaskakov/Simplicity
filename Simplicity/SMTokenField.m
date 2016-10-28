@@ -68,4 +68,12 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
     [self invalidateIntrinsicContentSize];
 }
 
+- (void)textDidEndEditing:(NSNotification*)notification
+{
+    [super textDidEndEditing:notification];
+    
+    NSText *fieldEditor = [[self window] fieldEditor:YES forObject:self];
+    [fieldEditor setSelectedRange:NSMakeRange([[fieldEditor string] length], 0)];
+}
+
 @end

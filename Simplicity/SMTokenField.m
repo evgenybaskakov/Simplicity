@@ -68,6 +68,22 @@ static BOOL floats_equal(CGFloat a, CGFloat b) {
     [self invalidateIntrinsicContentSize];
 }
 
+- (BOOL)becomeFirstResponder
+{
+    // http://stackoverflow.com/questions/2995205/prevent-selecting-all-tokens-in-nstokenfield
+    if ([super becomeFirstResponder])
+    {
+        // If super became first responder, we can get the
+        // field editor and manipulate its selection directly
+        NSText * fieldEditor = [[self window] fieldEditor:YES forObject:self];
+        [fieldEditor setSelectedRange:NSMakeRange([[fieldEditor string] length], 0)];
+        return YES;
+    }
+    
+    return NO;
+}
+
+
 - (void)textDidEndEditing:(NSNotification*)notification
 {
     [super textDidEndEditing:notification];

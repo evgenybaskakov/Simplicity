@@ -17,6 +17,8 @@
 #import "SMAddress.h"
 #import "SMAddressFieldViewController.h"
 
+static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 83;
+
 static NSPasteboard *_lastPasteboardUsed;
 static SMAddressFieldViewController *_lastAddressFieldUsed;
 static NSArray *_lastAddressesUsed;
@@ -36,6 +38,26 @@ static NSArray *_lastAddressesUsed;
     NSAssert([view isKindOfClass:[SMLabeledTokenFieldBoxView class]], @"view not SMLabeledTokenFieldBoxView");
     
     [(SMLabeledTokenFieldBoxView*)view setViewController:self];
+
+    _tokenField = [[SMTokenField alloc] init];
+    _tokenField.delegate = self; // TODO: reference loop here?
+    _tokenField.tokenStyle = NSPlainTextTokenStyle;
+    _tokenField.translatesAutoresizingMaskIntoConstraints = NO;
+    _tokenField.bordered = NO;
+    _tokenField.drawsBackground = NO;
+    _tokenField.editable = YES;
+    _tokenField.selectable = YES;
+    _tokenField.cell.sendsActionOnEndEditing = YES;
+
+    [_tokenField setFrame:_scrollView.frame];
+    
+    _scrollView.documentView = _tokenField;
+    
+    [_tokenField.topAnchor constraintEqualToAnchor:_scrollView.topAnchor constant:0].active = true;
+    [_tokenField.leftAnchor constraintEqualToAnchor:_scrollView.leftAnchor constant:0].active = true;
+    [_tokenField.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor constant:-6].active = true;
+
+    [_scrollView.heightAnchor constraintLessThanOrEqualToConstant:MAX_ADDRESS_LIST_HEIGHT].active = true;
 }
 
 - (void)viewDidAppear {
@@ -50,8 +72,8 @@ static NSArray *_lastAddressesUsed;
     }
 }
 
-- (NSSize)intrinsicContentViewSize {
-    return NSMakeSize(-1, _tokenField.intrinsicContentSize.height + _topTokenFieldContraint.constant + _bottomTokenFieldContraint.constant);
+- (CGFloat)contentViewHeight {
+    return MIN(MAX_ADDRESS_LIST_HEIGHT, _tokenField.intrinsicContentSize.height) + _topTokenFieldContraint.constant + _bottomTokenFieldContraint.constant;
 }
 
 - (void)invalidateIntrinsicContentViewSize {

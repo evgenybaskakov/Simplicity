@@ -25,21 +25,26 @@
 #import "SMMessageThreadCellViewController.h"
 
 static const NSUInteger CONTACT_BUTTON_SIZE = 37;
+static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
 
 @implementation SMMessageFullDetailsViewController {
     NSButton *_contactButton;
     NSTextField *_fromLabel;
     NSTokenField *_fromAddress;
     NSTextField *_toLabel;
+    NSScrollView *_toScrollView;
     NSTokenField *_toAddresses;
     NSTextField *_ccLabel;
     NSTokenField *_ccAddresses;
+    NSScrollView *_ccScrollView;
     NSLayoutConstraint *_toBottomConstraint;
     NSMutableArray *_ccConstraints;
     Boolean _ccCreated;
     Boolean _addressListsFramesValid;
     SMAddress *_addressWithMenu;
     NSString *_addressWithMenuUniqueId;
+    NSLayoutConstraint *_toScrollViewHeightConstraint;
+    NSLayoutConstraint *_ccScrollViewHeightConstraint;
     SMMessageThreadCellViewController __weak *_enclosingThreadCell;
 }
 
@@ -55,6 +60,8 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
         [view setViewController:self];
         [self setView:view];
 
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+        
         [self createSubviews];
     }
     
@@ -73,6 +80,18 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 #define V_GAP_HALF (V_GAP/2)
 
 #define H_GAP 3
+
+- (void)tokenFieldHeightChanged:(NSNotification*)notification {
+    SMTokenField *tokenField = [[notification userInfo] objectForKey:@"Object"];
+    NSNumber *height = [[notification userInfo] objectForKey:@"Height"];
+    
+    if(tokenField == _toAddresses) {
+        _toScrollViewHeightConstraint.constant = MIN(MAX_ADDRESS_LIST_HEIGHT, height.floatValue);
+    }
+    else if(tokenField == _ccAddresses) {
+        _ccScrollViewHeightConstraint.constant = MIN(MAX_ADDRESS_LIST_HEIGHT, height.floatValue);
+    }
+}
 
 - (void)createSubviews {
     NSView *view = [self view];
@@ -135,7 +154,18 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     [view addConstraint:[NSLayoutConstraint constraintWithItem:_contactButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
     
     [view addConstraint:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
+
+    // init 'to' scroll view
     
+    _toScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+    _toScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    _toScrollView.hasVerticalScroller = YES;
+    _toScrollView.hasHorizontalScroller = NO;
+    _toScrollView.horizontalScrollElasticity = NSScrollElasticityNone;
+    _toScrollView.horizontalLineScroll = 0;
+    _toScrollView.drawsBackground = YES;
+    _toScrollView.borderType = NSNoBorder;
+
     // init 'to' address list
     
     _toAddresses = [[SMTokenField alloc] init];
@@ -146,16 +176,29 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     [_toAddresses setDrawsBackground:NO];
     [_toAddresses setEditable:NO];
     [_toAddresses setSelectable:YES];
+    
+    [_toAddresses setFrame:_toScrollView.frame];
 
-    [view addSubview:_toAddresses];
+    _toScrollView.documentView = _toAddresses;
+
+    [_toAddresses.topAnchor constraintEqualToAnchor:_toScrollView.topAnchor constant:0].active = true;
+    [_toAddresses.leftAnchor constraintEqualToAnchor:_toScrollView.leftAnchor constant:0].active = true;
+    [_toAddresses.widthAnchor constraintEqualToAnchor:_toScrollView.widthAnchor constant:-6].active = true;
+
+    _toScrollViewHeightConstraint = [_toScrollView.heightAnchor constraintEqualToConstant:MAX_ADDRESS_LIST_HEIGHT];
+    _toScrollViewHeightConstraint.active = true;
+
+    [view addSubview:_toScrollView];
     
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:_toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_toAddresses attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    // setup constraints
     
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toAddresses attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_toScrollView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-H_GAP]];
     
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_toAddresses attribute:NSLayoutAttributeWidth multiplier:1.0 constant:_toLabel.frame.size.width]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_fromAddress attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toScrollView attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
     
-    _toBottomConstraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toAddresses attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:_toScrollView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-H_GAP]];
+    
+    _toBottomConstraint = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_toScrollView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
 
     [view addConstraint:_toBottomConstraint];
 }
@@ -168,6 +211,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
     if(_ccLabel == nil) {
         NSAssert(_ccAddresses == nil, @"cc addresses already created");
+        NSAssert(_ccScrollView == nil, @"cc scroll view already created");
         NSAssert(_ccConstraints == nil, @"cc constraints already created");
 
         // init 'cc' label
@@ -179,8 +223,19 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
 
         [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_ccLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
         
-        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_toAddresses attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
+        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_toScrollView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccLabel attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
 
+        // init 'cc' scroll view
+        
+        _ccScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+        _ccScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+        _ccScrollView.hasVerticalScroller = YES;
+        _ccScrollView.hasHorizontalScroller = NO;
+        _ccScrollView.horizontalScrollElasticity = NSScrollElasticityNone;
+        _ccScrollView.horizontalLineScroll = 0;
+        _ccScrollView.drawsBackground = YES;
+        _ccScrollView.borderType = NSNoBorder;
+        
         // init 'cc' address list
         
         _ccAddresses = [[SMTokenField alloc] init];
@@ -192,16 +247,30 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
         [_ccAddresses setEditable:NO];
         [_ccAddresses setSelectable:YES];
         
-        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_ccLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-
-        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_toAddresses attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
+        [_ccAddresses setFrame:_ccScrollView.frame];
         
-        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeWidth multiplier:1.0 constant:_ccLabel.frame.size.width]];
+        _ccScrollView.documentView = _ccAddresses;
+        
+        [_ccAddresses.topAnchor constraintEqualToAnchor:_ccScrollView.topAnchor constant:0].active = true;
+        [_ccAddresses.leftAnchor constraintEqualToAnchor:_ccScrollView.leftAnchor constant:0].active = true;
+        [_ccAddresses.widthAnchor constraintEqualToAnchor:_ccScrollView.widthAnchor constant:-6].active = true;
+        
+        _ccScrollViewHeightConstraint = [_ccScrollView.heightAnchor constraintEqualToConstant:MAX_ADDRESS_LIST_HEIGHT];
+        _ccScrollViewHeightConstraint.active = true;
+        
+        // setup constraints
 
-        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccAddresses attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_ccLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:_ccScrollView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+
+        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:_toScrollView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccScrollView attribute:NSLayoutAttributeTop multiplier:1.0 constant:-V_GAP_HALF]];
+        
+        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_ccScrollView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:_ccLabel.frame.size.width]];
+
+        [_ccConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:_ccScrollView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     }
     else {
         NSAssert(_ccAddresses != nil, @"cc addresses not created");
+        NSAssert(_ccScrollView != nil, @"cc scroll view not created");
         NSAssert(_ccConstraints != nil, @"cc constraints not created");
     }
     
@@ -209,7 +278,7 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     [view removeConstraint:_toBottomConstraint];
 
     [view addSubview:_ccLabel];
-    [view addSubview:_ccAddresses];
+    [view addSubview:_ccScrollView];
     [view addConstraints:_ccConstraints];
     
     _ccCreated = YES;
@@ -267,13 +336,13 @@ static const NSUInteger CONTACT_BUTTON_SIZE = 37;
     }
 }
 
-- (NSSize)intrinsicContentViewSize {
-    CGFloat topSpace = [_fromAddress intrinsicContentSize].height + V_GAP_HALF + [_toAddresses intrinsicContentSize].height;
+- (CGFloat)contentViewHeight {
+    CGFloat topSpace = [_fromAddress intrinsicContentSize].height + V_GAP_HALF + MIN(MAX_ADDRESS_LIST_HEIGHT, [_toAddresses intrinsicContentSize].height);
 
     if(_ccAddresses != nil) {
-        return NSMakeSize(-1, topSpace + V_GAP_HALF + [_ccAddresses intrinsicContentSize].height);
+        return topSpace + V_GAP_HALF + MIN(MAX_ADDRESS_LIST_HEIGHT, [_ccAddresses intrinsicContentSize].height);
     } else {
-        return NSMakeSize(-1, topSpace);
+        return topSpace;
     }
 }
 

@@ -486,7 +486,6 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         [_fullDetailsViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:fullDetailsView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     }
     
-    NSLog(@"_self->_fullDetailsViewController.intrinsicContentViewSize.height: %g", _fullDetailsViewController.intrinsicContentViewSize.height);
     SMMessageDetailsViewController __weak *weakSelf = self;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
         SMMessageDetailsViewController *_self = weakSelf;
@@ -505,7 +504,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
         // to do that, animate the bottom constaint constant so that it completely hides the panel at the beginning
         // (the static constraint constant) to the vertical margin, which implies that the pannel is fully shown
         fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
-        fullDetailsViewConstraints.lastObject.constant = -_self->_fullDetailsViewController.intrinsicContentViewSize.height;
+        fullDetailsViewConstraints.lastObject.constant = -_self->_fullDetailsViewController.contentViewHeight;
         fullDetailsViewConstraints.lastObject.animator.constant = V_MARGIN;
 
         [view.animator addConstraints:fullDetailsViewConstraints];
@@ -546,7 +545,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
             fullDetailsViewConstraints.lastObject.animations = [NSDictionary dictionaryWithObject:anim forKey:@"constant"];
             fullDetailsViewConstraints.lastObject.constant = V_MARGIN;
-            fullDetailsViewConstraints.lastObject.animator.constant = -_self->_fullDetailsViewController.intrinsicContentViewSize.height;
+            fullDetailsViewConstraints.lastObject.animator.constant = -_self->_fullDetailsViewController.contentViewHeight;
 
             [view.animator addConstraints:fullDetailsViewConstraints];
         }
@@ -773,11 +772,13 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 
 #pragma mark Intrinsic size
 
-- (NSSize)intrinsicContentViewSize {
+- (CGFloat)contentViewHeight {
+    CGFloat topSpace = V_MARGIN + _fromAddress.frame.size.height + V_MARGIN;
+    
     if(_fullDetailsShown) {
-        return NSMakeSize(-1, V_MARGIN + _fromAddress.frame.size.height + V_GAP + _fullDetailsViewController.view.intrinsicContentSize.height + V_MARGIN);
+        return topSpace + V_GAP + _fullDetailsViewController.view.intrinsicContentSize.height;
     } else {
-        return NSMakeSize(-1, V_MARGIN + _fromAddress.frame.size.height + V_MARGIN);
+        return topSpace;
     }
 }
 

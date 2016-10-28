@@ -331,7 +331,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         return [SMMessageDetailsViewController messageDetaisHeaderHeight];
     }
     else {
-        const NSUInteger detailsHeight = [_messageDetailsViewController intrinsicContentViewSize].height;
+        const NSUInteger detailsHeight = _messageDetailsViewController.contentViewHeight;
         const NSUInteger bodyHeight = [self messageBodyHeight];
         const NSUInteger attachmentsHeight = (_attachmentsPanelViewController != nil?
                                               [_attachmentsPanelViewController intrinsicContentViewSize].height : 0);

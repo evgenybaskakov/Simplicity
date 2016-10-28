@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
@@ -7,11 +7,11 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMAddressFieldViewController">
             <connections>
-                <outlet property="bottomTokenFieldContraint" destination="4hD-IO-ikB" id="RT9-q6-nlt"/>
+                <outlet property="bottomTokenFieldContraint" destination="Qi9-zT-ZUf" id="BHI-vH-T9l"/>
                 <outlet property="label" destination="h52-Zf-ZXT" id="L01-9K-ZOu"/>
                 <outlet property="mainView" destination="Hz6-mo-xeY" id="1FL-D3-AGg"/>
-                <outlet property="tokenField" destination="wRf-O4-aIN" id="yw4-IA-OfA"/>
-                <outlet property="topTokenFieldContraint" destination="GY2-YQ-2ex" id="HRJ-Tr-qbs"/>
+                <outlet property="scrollView" destination="Be1-IG-5YT" id="6cr-Fx-gKl"/>
+                <outlet property="topTokenFieldContraint" destination="BL3-op-5uQ" id="jvx-ee-rKa"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="wa5-Wl-if2"/>
             </connections>
         </customObject>
@@ -31,27 +31,37 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <tokenField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wRf-O4-aIN" customClass="SMTokenField">
+                <scrollView wantsLayer="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Be1-IG-5YT">
                     <rect key="frame" x="60" y="6" width="340" height="17"/>
-                    <tokenFieldCell key="cell" selectable="YES" editable="YES" focusRingType="none" alignment="left" drawsBackground="YES" allowsEditingTextAttributes="YES" id="gYi-FM-fzn">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </tokenFieldCell>
-                    <connections>
-                        <outlet property="delegate" destination="-2" id="wFQ-wQ-0Zb"/>
-                    </connections>
-                </tokenField>
+                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="5N1-dT-GX3">
+                        <rect key="frame" x="0.0" y="0.0" width="340" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KCO-Rl-tDk">
+                                <rect key="frame" x="0.0" y="0.0" width="325" height="2"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </view>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="vFJ-D6-Q88">
+                        <rect key="frame" x="-100" y="-100" width="340" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="wat-9b-Klv">
+                        <rect key="frame" x="324" y="0.0" width="16" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
             </subviews>
             <constraints>
                 <constraint firstItem="h52-Zf-ZXT" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="2" id="3Bj-xb-fDs"/>
-                <constraint firstAttribute="bottom" secondItem="wRf-O4-aIN" secondAttribute="bottom" constant="6" id="4hD-IO-ikB"/>
                 <constraint firstItem="h52-Zf-ZXT" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="7" id="9CC-aK-AVp"/>
-                <constraint firstAttribute="trailing" secondItem="wRf-O4-aIN" secondAttribute="trailing" constant="3" id="BrG-7b-ON8"/>
-                <constraint firstItem="wRf-O4-aIN" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="7" id="GY2-YQ-2ex"/>
-                <constraint firstItem="wRf-O4-aIN" firstAttribute="leading" secondItem="h52-Zf-ZXT" secondAttribute="trailing" constant="3" id="WXV-fl-3qW"/>
+                <constraint firstItem="Be1-IG-5YT" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="7" id="BL3-op-5uQ"/>
+                <constraint firstAttribute="bottom" secondItem="Be1-IG-5YT" secondAttribute="bottom" constant="6" id="Qi9-zT-ZUf"/>
+                <constraint firstAttribute="trailing" secondItem="Be1-IG-5YT" secondAttribute="trailing" constant="3" id="STE-IH-F3h"/>
+                <constraint firstItem="Be1-IG-5YT" firstAttribute="leading" secondItem="h52-Zf-ZXT" secondAttribute="trailing" constant="3" id="Tac-DR-4E2"/>
             </constraints>
-            <point key="canvasLocation" x="267.5" y="192.5"/>
+            <point key="canvasLocation" x="267.5" y="192"/>
         </customView>
     </objects>
 </document>

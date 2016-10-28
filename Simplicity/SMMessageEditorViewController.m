@@ -1051,7 +1051,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     SMLabeledTokenFieldBoxView *prevFieldView;
     
-    _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.intrinsicContentViewSize.height);
+    _toBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _toBoxViewController.contentViewHeight);
     _toBoxViewController.mainView.drawTopLine = (fromShown? YES : NO);
     _toBoxViewController.mainView.drawBottomLine = YES;
     _toBoxViewController.mainView.topLineOffset = gridOffset;
@@ -1061,7 +1061,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
     prevFieldView = _toBoxViewController.mainView;
 
-    yPos += _toBoxViewController.intrinsicContentViewSize.height;
+    yPos += _toBoxViewController.contentViewHeight;
     
     CGFloat fullAddressPanelHeight = 0;
     
@@ -1069,7 +1069,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         prevFieldView.drawBottomLine = NO;
         prevFieldView = _ccBoxViewController.mainView;
         
-        _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.intrinsicContentViewSize.height);
+        _ccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _ccBoxViewController.contentViewHeight);
         _ccBoxViewController.mainView.drawTopLine = YES;
         _ccBoxViewController.mainView.drawBottomLine = YES;
         _ccBoxViewController.mainView.topLineOffset = gridOffset;
@@ -1082,7 +1082,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         prevFieldView.drawBottomLine = NO;
         prevFieldView = _bccBoxViewController.mainView;
 
-        _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.intrinsicContentViewSize.height);
+        _bccBoxViewController.view.frame = NSMakeRect(-1, yPos, curWidth+2, _bccBoxViewController.contentViewHeight);
         _bccBoxViewController.mainView.drawTopLine = YES;
         _bccBoxViewController.mainView.drawBottomLine = YES;
         _bccBoxViewController.mainView.topLineOffset = gridOffset;

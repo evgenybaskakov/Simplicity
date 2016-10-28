@@ -13,10 +13,11 @@
 
 @interface SMMessageFullDetailsViewController : NSViewController<NSTokenFieldDelegate>
 
+@property (readonly, nonatomic) CGFloat contentViewHeight;
+
 - (void)setEnclosingThreadCell:(SMMessageThreadCellViewController *)enclosingThreadCell;
 - (void)setMessage:(SMMessage*)message;
 
-- (NSSize)intrinsicContentViewSize;
 - (void)invalidateIntrinsicContentViewSize;
 
 @end

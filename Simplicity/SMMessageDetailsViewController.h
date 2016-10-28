@@ -13,6 +13,8 @@
 
 @interface SMMessageDetailsViewController : NSViewController
 
+@property (readonly, nonatomic) CGFloat contentViewHeight;
+
 + (NSUInteger)messageDetaisHeaderHeight;
 + (CGFloat)headerIconHeightRatio;
 
@@ -25,7 +27,5 @@
 
 - (void)setMessage:(SMMessage*)message;
 - (void)updateMessage;
-
-- (NSSize)intrinsicContentViewSize;
 
 @end

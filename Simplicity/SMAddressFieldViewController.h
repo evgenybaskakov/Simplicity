@@ -18,15 +18,17 @@
 @property (strong) IBOutlet SMLabeledTokenFieldBoxView *mainView;
 
 @property IBOutlet NSTextField *label;
-@property IBOutlet SMTokenField *tokenField;
+@property IBOutlet NSScrollView *scrollView;
 @property IBOutlet NSLayoutConstraint *topTokenFieldContraint;
 @property IBOutlet NSLayoutConstraint *bottomTokenFieldContraint;
 
+@property (readonly) SMTokenField *tokenField;
 @property (readonly) NSButton *controlSwitch;
 
 @property (weak) id<SMSuggestionProvider> suggestionProvider;
 
-- (NSSize)intrinsicContentViewSize;
+@property (readonly, nonatomic) CGFloat contentViewHeight;
+
 - (void)invalidateIntrinsicContentViewSize;
 - (void)addControlSwitch:(NSInteger)state target:(id)target action:(SEL)action;
 

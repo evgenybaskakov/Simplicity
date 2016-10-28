@@ -18,7 +18,7 @@
 }
 
 - (NSSize)intrinsicContentSize {
-    return [_controller intrinsicContentViewSize];
+    return NSMakeSize(-1, _controller.contentViewHeight);
 }
 
 - (void)invalidateIntrinsicContentSize {

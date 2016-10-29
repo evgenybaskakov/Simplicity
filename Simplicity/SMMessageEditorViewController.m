@@ -320,12 +320,18 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     Boolean messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
     NSView *initialResponder = nil;
     
-    if(!messageEditorFocus && initialSetup) {
+    if(!messageEditorFocus || initialSetup) {
         if(focusKind == kEditorFocusKind_Content) {
             initialResponder = editorView;
         }
         else if(focusKind == kEditorFocusKind_ToAddress) {
             initialResponder = _toBoxViewController.tokenField;
+        }
+        else if(focusKind == kEditorFocusKind_Subject) {
+            initialResponder = _subjectBoxViewController.textField;
+        }
+        else {
+            SM_FATAL(@"bad focus kind %u", focusKind);
         }
     }
 

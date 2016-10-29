@@ -280,9 +280,9 @@
     
     [view initFields];
     
-    [view.fromTextField setStringValue:firstMessage.fromAddress.stringRepresentationShort];
-    [view.subjectTextField setStringValue:[firstMessage subject]];
-    [view.dateTextField setStringValue:[firstMessage localizedDate]];
+    [view.fromTextField setStringValue:(firstMessage.fromAddress? firstMessage.fromAddress.stringRepresentationShort : @"")];
+    [view.subjectTextField setStringValue:(firstMessage.subject? firstMessage.subject : @"")];
+    [view.dateTextField setStringValue:firstMessage.localizedDate];
 
     if(currentLocalFolder.kind == SMFolderKindOutbox) {
         view.unseenButton.hidden = YES;
@@ -354,29 +354,34 @@
     
     view.tag = _nextCellViewTag++;
     
-    SMUserAccount *account = messageThread.account;
-    if([account.accountAddress matchEmail:firstMessage.fromAddress]) {
-        view.contactImage.image = account.accountImage;
-    }
-    else {
-        BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
-        NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:view.tag completionBlock:^(NSImage *image, NSInteger tag) {
-            if(view.tag == tag) {
-                if(image != nil) {
-                    view.contactImage.image = image;
-                }
-                else {
-                    view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];                
-                }
-            }
-        }];
-        
-        if(contactImage != nil) {
-            view.contactImage.image = contactImage;
+    if(firstMessage.fromAddress) {
+        SMUserAccount *account = messageThread.account;
+        if([account.accountAddress matchEmail:firstMessage.fromAddress]) {
+            view.contactImage.image = account.accountImage;
         }
         else {
-            view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];
+            BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+            NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:firstMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:view.tag completionBlock:^(NSImage *image, NSInteger tag) {
+                if(view.tag == tag) {
+                    if(image != nil) {
+                        view.contactImage.image = image;
+                    }
+                    else {
+                        view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];                
+                    }
+                }
+            }];
+            
+            if(contactImage != nil) {
+                view.contactImage.image = contactImage;
+            }
+            else {
+                view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];
+            }
         }
+    }
+    else {
+        view.contactImage.image = [[appDelegate addressBookController] defaultUserImage];
     }
     
     [_currentFolderScrollPosition.threadsAtRows setObject:messageThread forKey:[NSNumber numberWithUnsignedInteger:row]];

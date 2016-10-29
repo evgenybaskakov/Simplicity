@@ -116,8 +116,11 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
     if(_currentMessage != message) {
         _currentMessage = message;
         
-        [_fromAddress setStringValue:_currentMessage.fromAddress.stringRepresentationShort];
-        [_dateLabel setStringValue:[_currentMessage localizedDate]];
+        if(_currentMessage.fromAddress) {
+            [_fromAddress setStringValue:_currentMessage.fromAddress.stringRepresentationShort];
+        }
+                
+        [_dateLabel setStringValue:_currentMessage.localizedDate];
         
         if([_currentMessage isKindOfClass:[SMOutgoingMessage class]]) {
             _starButton.enabled = NO;
@@ -137,32 +140,34 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)updateMessage {
-    NSAssert(_currentMessage != nil, @"nil message");
-
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
-    SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
-    if([account.accountAddress matchEmail:_currentMessage.fromAddress]) {
-        _contactImageView.image = account.accountImage;
-    }
-    else {
-        SMMessageDetailsViewController __weak *weakSelf = self;
-        
-        BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
-        NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:_currentMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
-            SMMessageDetailsViewController *_self = weakSelf;
-            if(!_self) {
-                SM_LOG_WARNING(@"object is gone");
-                return;
-            }
+    NSAssert(_currentMessage != nil, @"nil message");
+
+    if(_currentMessage.fromAddress) {
+        SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
+        if([account.accountAddress matchEmail:_currentMessage.fromAddress]) {
+            _contactImageView.image = account.accountImage;
+        }
+        else {
+            SMMessageDetailsViewController __weak *weakSelf = self;
             
-            if(image != nil) {
-                _self->_contactImageView.image = image;
+            BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+            NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:_currentMessage.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+                SMMessageDetailsViewController *_self = weakSelf;
+                if(!_self) {
+                    SM_LOG_WARNING(@"object is gone");
+                    return;
+                }
+                
+                if(image != nil) {
+                    _self->_contactImageView.image = image;
+                }
+            }];
+            
+            if(contactImage != nil) {
+                _contactImageView.image = contactImage;
             }
-        }];
-        
-        if(contactImage != nil) {
-            _contactImageView.image = contactImage;
         }
     }
 

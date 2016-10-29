@@ -285,7 +285,7 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
 }
 
 - (void)setMessage:(SMMessage*)message {
-    [_fromAddress setObjectValue:@[message.fromAddress]];
+    [_fromAddress setObjectValue:message.fromAddress? @[message.fromAddress] : @[]];
 
     [_toAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.toAddressList]];
 
@@ -295,28 +295,29 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
         [_ccAddresses setObjectValue:[SMAddress mcoAddressesToAddressList:message.ccAddressList]];
     }
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    
-    SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
-    if([account.accountAddress matchEmail:message.fromAddress]) {
-        _contactButton.image = account.accountImage;
-    }
-    else {
-        SMMessageFullDetailsViewController __weak *weakSelf = self;
-        BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
-        NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
-            SMMessageFullDetailsViewController *_self = weakSelf;
-            if(!_self) {
-                SM_LOG_WARNING(@"object is gone");
-                return;
+    if(message.fromAddress) {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        SMUserAccount *account = _enclosingThreadCell.messageThreadViewController.currentMessageThread.account;
+        if([account.accountAddress matchEmail:message.fromAddress]) {
+            _contactButton.image = account.accountImage;
+        }
+        else {
+            SMMessageFullDetailsViewController __weak *weakSelf = self;
+            BOOL allowWebSiteImage = [appDelegate.preferencesController shouldUseServerContactImages];
+            NSImage *contactImage = [[appDelegate addressBookController] loadPictureForAddress:message.fromAddress searchNetwork:YES allowWebSiteImage:allowWebSiteImage tag:0 completionBlock:^(NSImage *image, NSInteger tag) {
+                SMMessageFullDetailsViewController *_self = weakSelf;
+                if(!_self) {
+                    SM_LOG_WARNING(@"object is gone");
+                    return;
+                }
+                if(image != nil) {
+                    _self->_contactButton.image = image;
+                }
+            }];
+            
+            if(contactImage != nil) {
+                _contactButton.image = contactImage;
             }
-            if(image != nil) {
-                _self->_contactButton.image = image;
-            }
-        }];
-        
-        if(contactImage != nil) {
-            _contactButton.image = contactImage;
         }
     }
     

@@ -132,6 +132,7 @@ static NSArray *_lastAddressesUsed;
     _controlSwitch.state = state;
     _controlSwitch.target = target;
     _controlSwitch.action = action;
+    _controlSwitch.refusesFirstResponder = YES;
 
     [view addSubview:_controlSwitch];
 

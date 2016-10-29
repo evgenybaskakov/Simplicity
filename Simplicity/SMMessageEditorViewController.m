@@ -330,9 +330,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         else if(focusKind == kEditorFocusKind_Subject) {
             initialResponder = _subjectBoxViewController.textField;
         }
-        else {
-            SM_FATAL(@"bad focus kind %u", focusKind);
-        }
     }
 
     if(_fullAddressPanelShown) {

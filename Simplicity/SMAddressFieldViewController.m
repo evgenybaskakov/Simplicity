@@ -60,6 +60,10 @@ static NSArray *_lastAddressesUsed;
     [_scrollView.heightAnchor constraintLessThanOrEqualToConstant:MAX_ADDRESS_LIST_HEIGHT].active = true;
 }
 
+- (void)dealloc {
+    _tokenField.delegate = nil;
+}
+
 - (void)viewDidAppear {
     if(!_tokenFieldFrameValid) {
         // this is critical because the frame height for each SMTokenField must be

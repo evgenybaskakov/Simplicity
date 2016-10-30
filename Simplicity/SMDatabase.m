@@ -1809,10 +1809,10 @@ typedef NS_ENUM(NSInteger, DBOpenMode) {
                             else {
                                 [plainTextBodies addObject:(NSString*)[NSNull null]];
                             }
+                            
+                            BOOL hasAttachments = (sqlite3_column_int(statement, 1) != 0);
+                            [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
                         }
-                        
-                        BOOL hasAttachments = (sqlite3_column_int(statement, 1) != 0);
-                        [hasAttachmentsFlags addObject:[NSNumber numberWithBool:hasAttachments]];
                     }
                 }
                 else {

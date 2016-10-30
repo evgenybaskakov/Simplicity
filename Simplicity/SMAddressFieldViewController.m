@@ -40,7 +40,7 @@ static NSArray *_lastAddressesUsed;
     [(SMLabeledTokenFieldBoxView*)view setViewController:self];
 
     _tokenField = [[SMTokenField alloc] init];
-    _tokenField.delegate = self; // TODO: reference loop here?
+    _tokenField.delegate = self;
     _tokenField.tokenStyle = NSPlainTextTokenStyle;
     _tokenField.translatesAutoresizingMaskIntoConstraints = NO;
     _tokenField.bordered = NO;

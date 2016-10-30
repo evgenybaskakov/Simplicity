@@ -69,6 +69,13 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
 }
 
 - (void)dealloc {
+    _fromAddress.delegate = nil;
+    _toAddresses.delegate = nil;
+    
+    if(_ccAddresses) {
+        _ccAddresses.delegate = nil;
+    }
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -128,7 +135,7 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
     // init 'from' address
     
     _fromAddress = [[SMTokenField alloc] init];
-    _fromAddress.delegate = self; // TODO: reference loop here?
+    _fromAddress.delegate = self;
     _fromAddress.tokenStyle = NSPlainTextTokenStyle;
     _fromAddress.translatesAutoresizingMaskIntoConstraints = NO;
     [_fromAddress setBordered:NO];
@@ -169,7 +176,7 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
     // init 'to' address list
     
     _toAddresses = [[SMTokenField alloc] init];
-    _toAddresses.delegate = self; // TODO: reference loop here?
+    _toAddresses.delegate = self;
     _toAddresses.tokenStyle = NSPlainTextTokenStyle;
     _toAddresses.translatesAutoresizingMaskIntoConstraints = NO;
     [_toAddresses setBordered:NO];
@@ -239,7 +246,7 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
         // init 'cc' address list
         
         _ccAddresses = [[SMTokenField alloc] init];
-        _ccAddresses.delegate = self; // TODO: reference loop here?
+        _ccAddresses.delegate = self;
         _ccAddresses.tokenStyle = NSPlainTextTokenStyle;
         _ccAddresses.translatesAutoresizingMaskIntoConstraints = NO;
         [_ccAddresses setBordered:NO];

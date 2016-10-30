@@ -10,6 +10,7 @@
 #import "SMMessageBuilder.h"
 #import "SMOutgoingMessage.h"
 #import "SMAttachmentItem.h"
+#import "SMAddress.h"
 
 @implementation SMOutgoingMessage {
     uint32_t _uid;
@@ -23,7 +24,12 @@
         _messageBuilder = messageBuilder;
         _uid = _messageBuilder.uid;
         _threadId = _messageBuilder.threadId;
-
+        
+        MCOAddress *from = _messageBuilder.mcoMessageBuilder.header.from;
+        NSAssert(from, @"no from field");
+        
+        _fromAddress = [[SMAddress alloc] initWithMCOAddress:from];
+        
         NSMutableArray *mcoAttachments = [NSMutableArray array];
         for(SMAttachmentItem *item in messageBuilder.attachments) {
             [mcoAttachments addObject:item.mcoAttachment];

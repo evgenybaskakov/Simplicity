@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
     @protected NSString *_htmlBodyRendering;
     @protected NSArray *_attachments;
     @protected Boolean _hasAttachments;
+    @protected SMAddress *_fromAddress;
 }
 
 @property (readonly) MCOMessageHeader *parsedHeader; // TODO: remove

@@ -48,7 +48,7 @@
         NSAssert(header, @"no header");
         
         MCOAddress *from = [header from];
-        NSAssert(header, @"no from field");
+        NSAssert(from, @"no from field");
 
         _fromAddress = [[SMAddress alloc] initWithMCOAddress:from];
         

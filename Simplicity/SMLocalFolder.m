@@ -599,6 +599,10 @@
             _totalMessagesCount++;
         }
         
+        if(_kind == SMFolderKindOutbox) {
+            _unseenMessagesCount++;
+        }
+        
         [SMNotificationsController localNotifyMessagesUpdated:self updateResult:SMMesssageStorageUpdateResultStructureChanged account:(SMUserAccount*)_account];
     }
 }
@@ -609,7 +613,12 @@
 
 - (void)removeMessage:(SMMessage*)message {
     [_messageStorage removeMessageFromStorage:message updateDatabase:NO];
-    
+
+    if(_kind == SMFolderKindOutbox) {
+        NSAssert(_unseenMessagesCount > 0, @"_unseenMessagesCount is 0");
+        _unseenMessagesCount--;
+    }
+
     NSAssert(_totalMessagesCount > 0, @"_totalMessagesCount is 0");
     _totalMessagesCount--;
     

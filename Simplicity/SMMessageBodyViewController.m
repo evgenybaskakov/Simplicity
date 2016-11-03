@@ -89,7 +89,15 @@
 }
 
 - (void)dealloc {
-    [(WebView*)self.view stopLoading:self];
+    WebView *view = (WebView*)self.view;
+    
+    [view setUIDelegate:nil];
+    [view setFrameLoadDelegate:nil];
+    [view setPolicyDelegate:nil];
+    [view setResourceLoadDelegate:nil];
+
+    [view stopLoading:self];
+      
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

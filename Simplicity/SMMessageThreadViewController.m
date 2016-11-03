@@ -40,6 +40,7 @@
 static const CGFloat MIN_EDITOR_HEIGHT = 200;
 static const CGFloat MAX_EDITOR_HEIGHT = 600;
 static const CGFloat CELL_SPACING = 0;
+static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 @interface SMMessageThreadViewController()
 - (void)messageBodyFetched:(NSNotification *)notification;
@@ -441,22 +442,25 @@ static const CGFloat CELL_SPACING = 0;
         fullHeight += CELL_SPACING;
     }
     
+    const CGFloat infoViewHeight = [SMMessageThreadInfoViewController infoHeaderHeight];
+    
     if([self shouldUseFullHeightForFirstCell]) {
         fullHeight += _contentView.frame.size.height;
     }
     else {
-        fullHeight += [SMMessageThreadInfoViewController infoHeaderHeight];
+        fullHeight += infoViewHeight;
         
         for(NSInteger i = 0; i < _cells.count; i++) {
             SMMessageThreadCell *cell = _cells[i];
             fullHeight += (CGFloat)cell.viewController.cellHeight;
             
-            if(i + 1 < _cells.count)
+            if(i + 1 < _cells.count) {
                 fullHeight += CELL_SPACING;
+            }
         }
     }
     
-    _contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight);
+    _contentView.frame = NSMakeRect(0, 0, _contentView.frame.size.width, fullHeight + _topOffset);
     _contentView.autoresizingMask = NSViewWidthSizable;
     
     if([self shouldUseFullHeightForFirstCell]) {
@@ -466,10 +470,10 @@ static const CGFloat CELL_SPACING = 0;
     NSView *infoView = [_messageThreadInfoViewController view];
     NSAssert(infoView != nil, @"no info view");
     
-    infoView.frame = NSMakeRect(-1, 0, _contentView.frame.size.width+2, [SMMessageThreadInfoViewController infoHeaderHeight]);
+    infoView.frame = NSMakeRect(-1, _topOffset, _contentView.frame.size.width+2, infoViewHeight);
     infoView.autoresizingMask = NSViewWidthSizable;
     
-    CGFloat ypos = infoView.bounds.size.height + CELL_SPACING;
+    CGFloat ypos = _topOffset + infoViewHeight + CELL_SPACING;
     
     for(NSInteger i = 0; i < _cells.count; i++) {
         SMMessageThreadCell *cell = _cells[i];
@@ -654,30 +658,38 @@ static const CGFloat CELL_SPACING = 0;
     CGFloat ypos = (CGFloat)cell.viewController.view.frame.origin.y;
 
     if(_firstVisibleCell > 0) {
-        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y;
+        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y + _topOffset;
         
-        if(fabs(curYPos - ypos) < 20) {
-            SMMessageThreadCell *prevCell = _cells[_firstVisibleCell-1];
-            ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
+        if(fabs(curYPos - ypos) < NEXT_CELL_SCROLL_THRESHOLD) {
+            if(_firstVisibleCell == 1) {
+                ypos = _topOffset - 1;
+            }
+            else {
+                SMMessageThreadCell *prevCell = _cells[_firstVisibleCell-1];
+                ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
+            }
         }
     }
+    else {
+        ypos = _topOffset - 1;
+    }
 
-    [self animatedScrollTo:ypos];
+    [self animatedScrollTo:ypos - _topOffset + 1];
 }
 
 - (void)scrollToNextMessage {
     if(_firstVisibleCell + 1 < _cells.count) {
-        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y;
+        CGFloat curYPos = _messageThreadView.documentVisibleRect.origin.y + _topOffset;
 
         SMMessageThreadCell *nextCell = _cells[_firstVisibleCell + 1];
         CGFloat ypos = (CGFloat)nextCell.viewController.view.frame.origin.y;
         
-        if(curYPos < ypos && ypos - curYPos < 20 && _firstVisibleCell + 2 < _cells.count) {
+        if(curYPos < ypos && ypos - curYPos < NEXT_CELL_SCROLL_THRESHOLD && _firstVisibleCell + 2 < _cells.count) {
             SMMessageThreadCell *prevCell = _cells[_firstVisibleCell + 2];
             ypos = (CGFloat)prevCell.viewController.view.frame.origin.y;
         }
         
-        [self animatedScrollTo:ypos];
+        [self animatedScrollTo:ypos - _topOffset + 1];
     }
 }
 
@@ -698,8 +710,7 @@ static const CGFloat CELL_SPACING = 0;
         _firstVisibleCell = 0;
         _lastVisibleCell = 0;
         
-        SMMessageThreadCell *cell = _cells[0];
-        [_contentView addSubview:cell.viewController.view];
+        [_contentView addSubview:_cells[0].viewController.view];
     }
     
     NSAssert(_firstVisibleCell <= _lastVisibleCell, @"bad _firstVisibleCell %lu, _lastVisibleCell %lu", _firstVisibleCell, _lastVisibleCell);
@@ -712,11 +723,11 @@ static const CGFloat CELL_SPACING = 0;
     
     SMMessageThreadCell *firstCell = _cells[_firstVisibleCell];
     
-    while(_firstVisibleCell > 0 && firstCell.viewController.view.frame.origin.y > visibleRect.origin.y) {
+    while(_firstVisibleCell > 0 && firstCell.viewController.view.frame.origin.y > visibleRect.origin.y + _topOffset) {
         firstCell = _cells[--_firstVisibleCell];
     }
     
-    while(_firstVisibleCell + 1 < _cells.count && firstCell.viewController.view.frame.origin.y + firstCell.viewController.cellHeight <= visibleRect.origin.y) {
+    while(_firstVisibleCell + 1 < _cells.count && firstCell.viewController.view.frame.origin.y + firstCell.viewController.cellHeight <= visibleRect.origin.y + _topOffset) {
         //TODO: should we?
         //      if(!firstCell.viewController.collapsed)
         [firstCell.viewController.view removeFromSuperview];
@@ -766,7 +777,7 @@ static const CGFloat CELL_SPACING = 0;
         
         if(cell.viewController.view.superview == nil) {
             if([self shouldUseFullHeightForFirstCell]) {
-                [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, _contentView.frame.size.height)];
+                [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, _contentView.frame.size.height - _topOffset)];
             }
             else {
                 [cell.viewController.view setFrameSize:NSMakeSize(_contentView.frame.size.width+2, cell.viewController.cellHeight)];
@@ -939,8 +950,9 @@ static const CGFloat CELL_SPACING = 0;
         CGFloat markGlobalYpos = markedCell.viewController.view.frame.origin.y + markedCell.viewController.cellHeaderHeight + markYPos;
 
         const NSUInteger delta = 50;
-        if(markGlobalYpos < visibleRect.origin.y + delta || markGlobalYpos >= visibleRect.origin.y + visibleRect.size.height - delta) {
-            [self animatedScrollTo:(markGlobalYpos >= delta*2? markGlobalYpos - delta : 0)];
+        if(markGlobalYpos < visibleRect.origin.y + _topOffset + delta || markGlobalYpos >= visibleRect.origin.y + visibleRect.size.height - delta) {
+            CGFloat newYpos = markGlobalYpos - _topOffset - delta;
+            [self animatedScrollTo:(newYpos >= delta ? newYpos : 0)];
         }
     }
     
@@ -1232,8 +1244,9 @@ static const CGFloat CELL_SPACING = 0;
 
         [rootView addSubview:_findContentsPanelViewController.view];
 
-        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
-        _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height);
+        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _topOffset - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
+        
+        _topOffset += _findContentsPanelViewController.view.frame.size.height;
         
         _findContentsPanelShown = YES;
     }
@@ -1242,6 +1255,8 @@ static const CGFloat CELL_SPACING = 0;
     NSAssert(searchField != nil, @"searchField == nil");
     
     [[searchField window] makeFirstResponder:searchField];
+
+    [self updateCellFrames];
 }
 
 - (void)hideFindContentsPanel {
@@ -1254,10 +1269,11 @@ static const CGFloat CELL_SPACING = 0;
 
     [_findContentsPanelViewController.view removeFromSuperview];
 
-    NSView *rootView = self.view;
-    _messageThreadView.frame = NSMakeRect(0, 0, rootView.frame.size.width, rootView.frame.size.height);
+    _topOffset -= _findContentsPanelViewController.view.frame.size.height;
     
     _findContentsPanelShown = NO;
+    
+    [self updateCellFrames];
 }
 
 #pragma mark label manupilations

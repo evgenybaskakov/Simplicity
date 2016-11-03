@@ -44,11 +44,10 @@
 #import "SMMessageListToolbarViewController.h"
 #import "SMMessageThreadToolbarViewController.h"
 #import "SMMailboxToolbarViewController.h"
+#import "SMTableHeaderView.h"
 
 @implementation SMAppController {
     NSSplitView *_mailboxSplitView;
-    NSSplitView *_messageListSplitView;
-    NSSplitView *_messageThreadSplitView;
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     NSMutableArray *_messageEditorWindowControllers;
@@ -86,6 +85,8 @@
     
     NSView *messageListToolbarView = [ _messageListToolbarViewController view ];
     NSAssert(messageListToolbarView, @"messageListToolbarView");
+
+    messageListToolbarView.translatesAutoresizingMaskIntoConstraints = NO;
     
     //
     
@@ -93,6 +94,8 @@
     
     NSView *messageThreadToolbarView = [ _messageThreadToolbarViewController view ];
     NSAssert(messageThreadToolbarView, @"messageThreadToolbarView");
+    
+    messageThreadToolbarView.translatesAutoresizingMaskIntoConstraints = NO;
     
     //
 
@@ -111,9 +114,6 @@
     //
 
     _messageListViewController = [ [ SMMessageListViewController alloc ] initWithNibName:@"SMMessageListViewController" bundle:nil ];
-    
-    NSView *messageListView = [ _messageListViewController view ];
-    NSAssert(messageListView, @"messageListView");
     
     //
     
@@ -140,31 +140,26 @@
     
     //
     
-    _messageListSplitView = [[NSSplitView alloc] init];
-    _messageListSplitView.delegate = self;
-    _messageListSplitView.translatesAutoresizingMaskIntoConstraints = NO;
+    NSView *messageListView = [ _messageListViewController view ];
+    NSAssert(messageListView, @"messageListView");
     
-    [_messageListSplitView setVertical:NO];
-    [_messageListSplitView setDividerStyle:NSSplitViewDividerStyleThin];
-
-    [_messageListSplitView addSubview:messageListToolbarView];
-    [_messageListSplitView addSubview:messageListView];
-
-    [_messageListSplitView adjustSubviews];
-
-    //
+    NSTableHeaderView *messageListHeaderView = [[SMTableHeaderView alloc] initWithFrame:NSMakeRect(0, 0, _messageListViewController.messageListTableView.frame.size.width, messageListToolbarView.frame.size.height)];
+    _messageListViewController.messageListTableView.headerView = messageListHeaderView;
     
-    _messageThreadSplitView = [[NSSplitView alloc] init];
-    _messageThreadSplitView.delegate = self;
-    _messageThreadSplitView.translatesAutoresizingMaskIntoConstraints = NO;
+    [messageListHeaderView addSubview:messageListToolbarView];
+ 
+    [messageListToolbarView.leftAnchor constraintEqualToAnchor:messageListHeaderView.leftAnchor constant:0].active = true;
+    [messageListToolbarView.rightAnchor constraintEqualToAnchor:messageListHeaderView.rightAnchor constant:0].active = true;
+    [messageListToolbarView.topAnchor constraintEqualToAnchor:messageListHeaderView.topAnchor constant:0].active = true;
     
-    [_messageThreadSplitView setVertical:NO];
-    [_messageThreadSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    NSBox *messageListViewSeparator = [self createSeparator];
     
-    [_messageThreadSplitView addSubview:messageThreadToolbarView];
-    [_messageThreadSplitView addSubview:messageThreadView];
+    [messageListView addSubview:messageListViewSeparator];
     
-    [_messageThreadSplitView adjustSubviews];
+    [messageListViewSeparator.leftAnchor constraintEqualToAnchor:messageListView.leftAnchor constant:0].active = true;
+    [messageListViewSeparator.rightAnchor constraintEqualToAnchor:messageListView.rightAnchor constant:0].active = true;
+    [messageListViewSeparator.topAnchor constraintEqualToAnchor:messageListHeaderView.bottomAnchor constant:0].active = true;
+    [messageListViewSeparator.heightAnchor constraintEqualToConstant:1].active = true;
     
     //
     
@@ -175,8 +170,8 @@
     [mainSplitView setDividerStyle:NSSplitViewDividerStyleThin];
     
     [mainSplitView addSubview:_mailboxSplitView];
-    [mainSplitView addSubview:_messageListSplitView];
-    [mainSplitView addSubview:_messageThreadSplitView];
+    [mainSplitView addSubview:messageListView];
+    [mainSplitView addSubview:messageThreadView];
     
     [mainSplitView adjustSubviews];
 
@@ -188,6 +183,27 @@
     
     [_view addSubview:mainSplitView];
     
+    //
+    
+    [_view addSubview:messageThreadToolbarView];
+    
+    [messageThreadToolbarView.leftAnchor constraintEqualToAnchor:messageThreadView.leftAnchor constant:0].active = true;
+    [messageThreadToolbarView.rightAnchor constraintEqualToAnchor:messageThreadView.rightAnchor constant:0].active = true;
+    [messageThreadToolbarView.topAnchor constraintEqualToAnchor:messageThreadView.topAnchor constant:0].active = true;
+
+    NSBox *messageThreadViewSeparator = [self createSeparator];
+    
+    [_view addSubview:messageThreadViewSeparator];
+    
+    [messageThreadViewSeparator.leftAnchor constraintEqualToAnchor:messageThreadToolbarView.leftAnchor constant:0].active = true;
+    [messageThreadViewSeparator.rightAnchor constraintEqualToAnchor:messageThreadToolbarView.rightAnchor constant:0].active = true;
+    [messageThreadViewSeparator.topAnchor constraintEqualToAnchor:messageThreadToolbarView.bottomAnchor constant:0].active = true;
+    [messageThreadViewSeparator.heightAnchor constraintEqualToConstant:1].active = true;
+
+    // Make an offset, so the initial position of the thread info
+    // appears below the toolbar.
+    _messageThreadViewController.topOffset = messageThreadToolbarView.frame.size.height + messageThreadViewSeparator.frame.size.height;
+
     //
 
     [_view addConstraint:[NSLayoutConstraint constraintWithItem:_view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:mainSplitView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
@@ -239,6 +255,18 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFlagsUpdated:) name:@"MessageFlagsUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
+}
+
+- (NSBox*)createSeparator {
+    NSBox *sep = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 100, 1)];
+    
+    sep.boxType = NSBoxCustom;
+    sep.titlePosition = NSNoTitle;
+    sep.borderColor = [NSColor colorWithWhite:0.8 alpha:1];
+    sep.borderType = NSLineBorder;
+    sep.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    return sep;
 }
 
 - (void)accountSyncError:(NSNotification*)notification {
@@ -538,7 +566,7 @@
 
 - (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex
 {
-    if(splitView == _mailboxSplitView || splitView == _messageListSplitView || splitView == _messageThreadSplitView)
+    if(splitView == _mailboxSplitView)
         return NSZeroRect;
     
     if([self isSearchResultsViewHidden])

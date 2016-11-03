@@ -101,6 +101,9 @@
     [_messageListTableView setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
     [_messageListTableView registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
     [_messageListTableView setDoubleAction:@selector(openMessageInWindow:)];
+    
+    _messageListTableView.allowsColumnReordering = NO;
+    
     _progressIndicator.hidden = YES;
 }
 

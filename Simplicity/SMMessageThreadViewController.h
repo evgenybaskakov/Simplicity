@@ -17,6 +17,8 @@
 @property (readonly) id<SMAbstractLocalFolder> currentLocalFolder;
 @property (readonly) SMMessageThread *currentMessageThread;
 
+@property CGFloat topOffset;
+
 - (void)findContents:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward;
 - (void)removeFindContentsResults;
 

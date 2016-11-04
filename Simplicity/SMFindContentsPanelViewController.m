@@ -22,8 +22,19 @@
     return self;
 }
 
+- (void)dealloc {
+    _searchField.delegate = nil;
+}
+
 - (void)viewDidLoad {
     _searchField.delegate = self;
+    
+    _searchField.nextKeyView = _matchCaseCheckbox;
+    _matchCaseCheckbox.nextKeyView = _forwardBackwardsButton;
+    _forwardBackwardsButton.nextKeyView = _doneButton;
+    _doneButton.nextKeyView = _searchField;
+    
+    _forwardBackwardsButton.selectedSegment = 1;
 }
 
 - (IBAction)findContentsSearchAction:(id)sender {

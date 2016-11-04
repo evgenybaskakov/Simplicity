@@ -388,6 +388,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Editor startup
 
+- (NSString*)fromItemForAccount:(NSUInteger)accountIdx {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    return [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:accountIdx], [preferencesController userEmail:accountIdx]];
+}
+
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments {
     
     // Force the view loading for the 'from' box.
@@ -400,17 +406,18 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     for(NSUInteger i = 0, n = preferencesController.accountsCount; i < n; i++) {
-        NSString *userAddressAndName = [NSString stringWithFormat:@"%@ <%@>", [preferencesController fullUserName:i], [preferencesController userEmail:i] ];
+        NSString *fromItem = [self fromItemForAccount:i];
         
-        [_fromBoxViewController.itemList addItemWithTitle:userAddressAndName];
-        [[_fromBoxViewController.itemList itemAtIndex:i] setRepresentedObject:appDelegate.accounts[i]];
+        [_fromBoxViewController.itemList addItemWithTitle:fromItem];
+        [_fromBoxViewController.itemList.lastItem setRepresentedObject:appDelegate.accounts[i]];
     }
     
     if(appDelegate.currentAccountIsUnified) {
+        // TODO: select the account matching the "to" if it's the reply being composed
         [_fromBoxViewController.itemList selectItemAtIndex:0];
     }
     else {
-        [_fromBoxViewController.itemList selectItemAtIndex:appDelegate.currentAccountIdx];
+        [_fromBoxViewController.itemList selectItemWithTitle:[self fromItemForAccount:appDelegate.currentAccountIdx]];
     }
     
     if(subject) {

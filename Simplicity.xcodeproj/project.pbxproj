@@ -209,6 +209,7 @@
 		807EE8281D9E3B01002F4926 /* SMTimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EE8271D9E3B01002F4926 /* SMTimeUtils.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
+		808940591DCC6E9300D2F3E6 /* unified-account.png in Resources */ = {isa = PBXBuildFile; fileRef = 808940581DCC6E9300D2F3E6 /* unified-account.png */; };
 		808BC04B1CD331630030E08E /* SMUnifiedMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */; };
 		808BC0591CD33E870030E08E /* SMUnifiedMailboxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC0581CD33E870030E08E /* SMUnifiedMailboxController.m */; };
 		8092A4E71BE1F33600107747 /* SMPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8092A4E61BE1F33600107747 /* SMPreferencesWindowController.xib */; };
@@ -669,6 +670,7 @@
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
+		808940581DCC6E9300D2F3E6 /* unified-account.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unified-account.png"; sourceTree = "<group>"; };
 		808BC0491CD331630030E08E /* SMUnifiedMailbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedMailbox.h; sourceTree = "<group>"; };
 		808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUnifiedMailbox.m; sourceTree = "<group>"; };
 		808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUnifiedMailboxController.h; sourceTree = "<group>"; };
@@ -1350,6 +1352,7 @@
 				807438301DB1F7E70054115B /* star.png */,
 				807438191DB1F12C0054115B /* trash-black.png */,
 				8074381B1DB1F2D00054115B /* trash-white.png */,
+				808940581DCC6E9300D2F3E6 /* unified-account.png */,
 			);
 			name = Icons;
 			sourceTree = "<group>";
@@ -1561,6 +1564,7 @@
 				00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */,
 				004A64221AC7A3000079A0C1 /* SMAddressFieldViewController.xib in Resources */,
 				803632321DB0B656003B7680 /* align-left.png in Resources */,
+				808940591DCC6E9300D2F3E6 /* unified-account.png in Resources */,
 				0002A0A217D1B1E000EA4AFF /* Credits.rtf in Resources */,
 				807438201DB1F49F0054115B /* inbox-white.png in Resources */,
 				801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */,

@@ -26,6 +26,7 @@
         _replySmallImage = [NSImage imageNamed:@"reply.png"];
         _replyAllSmallImage = [NSImage imageNamed:@"reply-all.png"];
         _moreMessageActionsImage = [NSImage imageNamed:@"iconsineed-icon-down-128.png"];
+        _unifiedAccountImage = [NSImage imageNamed:@"unified-account.png"];
     }
     
     return self;

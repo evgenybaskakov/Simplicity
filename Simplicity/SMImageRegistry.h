@@ -10,17 +10,18 @@
 
 @interface SMImageRegistry : NSObject
 
-@property (readonly, nonatomic) NSImage *attachmentImage;
-@property (readonly, nonatomic) NSImage *attachmentDocumentImage;
-@property (readonly, nonatomic) NSImage *blueCircleImage;
-@property (readonly, nonatomic) NSImage *yellowStarImage;
-@property (readonly, nonatomic) NSImage *grayStarImage;
-@property (readonly, nonatomic) NSImage *infoImage;
-@property (readonly, nonatomic) NSImage *editImage;
-@property (readonly, nonatomic) NSImage *replyImage;
-@property (readonly, nonatomic) NSImage *replyAllImage;
-@property (readonly, nonatomic) NSImage *replySmallImage;
-@property (readonly, nonatomic) NSImage *replyAllSmallImage;
-@property (readonly, nonatomic) NSImage *moreMessageActionsImage;
+@property (readonly) NSImage *attachmentImage;
+@property (readonly) NSImage *attachmentDocumentImage;
+@property (readonly) NSImage *blueCircleImage;
+@property (readonly) NSImage *yellowStarImage;
+@property (readonly) NSImage *grayStarImage;
+@property (readonly) NSImage *infoImage;
+@property (readonly) NSImage *editImage;
+@property (readonly) NSImage *replyImage;
+@property (readonly) NSImage *replyAllImage;
+@property (readonly) NSImage *replySmallImage;
+@property (readonly) NSImage *replyAllSmallImage;
+@property (readonly) NSImage *moreMessageActionsImage;
+@property (readonly) NSImage *unifiedAccountImage;
 
 @end

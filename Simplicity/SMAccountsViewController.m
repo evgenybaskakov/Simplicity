@@ -14,6 +14,7 @@
 #import "SMAccountMailbox.h"
 #import "SMUnifiedAccount.h"
 #import "SMUnifiedMailbox.h"
+#import "SMImageRegistry.h"
 #import "SMAddress.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
@@ -130,7 +131,7 @@
             
             if(i == -1) {
                 accountButtonViewController.accountName.stringValue = @"Unified Mailbox";
-                accountButtonViewController.accountImage.image = [SMAccountImageSelection defaultImage]; // TODO
+                accountButtonViewController.accountImage.image = [appDelegate.imageRegistry unifiedAccountImage];
             }
             else {
                 if([[appDelegate preferencesController] shouldShowEmailAddressesInMailboxes]) {

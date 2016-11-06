@@ -66,7 +66,7 @@
 
 #pragma mark Actions
 
-- (void)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (BOOL)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     
     // TODO: why attachments are in this object, not parameters?
     
@@ -76,7 +76,7 @@
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
     
-    [[account outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
+    return [[account outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
 }
 
 - (void)messageSentByServer:(SMOutgoingMessage*)message {
@@ -98,6 +98,21 @@
 - (void)saveDraft:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
+    SMFolder *draftsFolder = [[account mailbox] draftsFolder];
+    if(!draftsFolder) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"Dismiss"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot save draft, because Drafts folder is not availble for account '%@'.", account.accountName]];
+        [alert setInformativeText:@"Check account settings or choose another account to save the draft in the 'From' field."];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+        
+        return;
+    }
+    
+    NSAssert(draftsFolder.fullName, @"drafts folder has no name in account %@", account.accountName);
+    
     if(_saveDraftOp) {
         // There may be two last operations: the current one and a previous one
         // We're trying to cancel the current one. If that's successful, we'll simply replace it later.
@@ -114,9 +129,6 @@
     SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
-    
-    SMFolder *draftsFolder = [[account mailbox] draftsFolder];
-    NSAssert(draftsFolder && draftsFolder.fullName, @"no drafts folder");
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[account operationExecutor]];
     

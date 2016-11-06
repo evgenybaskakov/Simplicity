@@ -59,13 +59,24 @@
     }
 }
 
-- (void)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+- (BOOL)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
     SM_LOG_DEBUG(@"Sending message");
     
     SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
     id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByName:outboxFolder.fullName];
 
-    NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
+    if(!outboxLocalFolder) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"Dismiss"];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot send message, because Outbox folder is not availble for account '%@'.", _account.accountName]];
+        [alert setInformativeText:@"Check account settings or choose another account to send the message in the 'From' field."];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+        
+        return FALSE;
+    }
+
     [outboxLocalFolder addMessage:outgoingMessage];
 
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage operationExecutor:[(SMUserAccount*)_account operationExecutor]];
@@ -75,6 +86,8 @@
 
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     [[(SMUserAccount*)_account operationExecutor] saveSMTPQueue];
+    
+    return TRUE;
 }
 
 - (void)finishMessageSending:(SMOutgoingMessage*)message {

@@ -21,7 +21,7 @@
 - (id)initWithDraftUID:(uint32_t)draftMessageUid;
 - (void)addAttachmentItem:(SMAttachmentItem*)attachmentItem;
 - (void)removeAttachmentItems:(NSArray*)attachmentItems;
-- (void)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account;
+- (BOOL)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account;
 - (void)saveDraft:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account;
 - (void)deleteSavedDraft:(SMUserAccount*)account;
 

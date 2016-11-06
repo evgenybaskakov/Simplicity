@@ -69,7 +69,7 @@
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"Dismiss"];
-        [alert setMessageText:[NSString stringWithFormat:@"Cannot send message, because Outbox folder is not availble for account '%@'.", _account.accountName]];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot send message, because the Outbox folder is not availble for account '%@'.", _account.accountName]];
         [alert setInformativeText:@"Check account settings or choose another account to send the message in the 'From' field."];
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert runModal];

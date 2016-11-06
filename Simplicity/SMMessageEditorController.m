@@ -103,7 +103,7 @@
         NSAlert *alert = [[NSAlert alloc] init];
         
         [alert addButtonWithTitle:@"Dismiss"];
-        [alert setMessageText:[NSString stringWithFormat:@"Cannot save draft, because Drafts folder is not availble for account '%@'.", account.accountName]];
+        [alert setMessageText:[NSString stringWithFormat:@"Cannot save draft, because the Drafts folder is not availble for account '%@'.", account.accountName]];
         [alert setInformativeText:@"Check account settings or choose another account to save the draft in the 'From' field."];
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert runModal];

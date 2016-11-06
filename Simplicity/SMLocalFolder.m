@@ -716,9 +716,7 @@
     if([_remoteFolderName isEqualToString:label]) {
         NSAssert(_kind == SMFolderKindRegular, @"label %@ cannot match a regular folder name", label);
         
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        
-        SMFolder *trashFolder = [appDelegate.currentMailbox trashFolder];
+        SMFolder *trashFolder = [[_account mailbox] trashFolder];
         NSAssert(trashFolder != nil, @"no trash folder");
         
         if(![self moveMessageThread:messageThread toRemoteFolder:trashFolder.fullName]) {
@@ -865,7 +863,7 @@
     if(useThreadId) {
         NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
 
-        needUpdateMessageList = [_messageStorage deleteMessageFromStorage:uid threadId:threadId remoteFolder:_remoteFolderName unseenMessagesCount:unseenMessagesCountPtr];
+        needUpdateMessageList = [_messageStorage deleteMessageFromStorage:messageId threadId:threadId remoteFolder:_remoteFolderName unseenMessagesCount:unseenMessagesCountPtr];
 
         // Notify observers that message flags have possibly changed.
         [SMNotificationsController localNotifyMessageFlagsUpdates:self account:(SMUserAccount*)_account];

@@ -34,6 +34,7 @@
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account;
 + (void)localNotifyMessageViewFrameLoaded:(uint64_t)messageId account:(SMUserAccount*)account;
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
++ (void)localNotifyDiscardMessageDraft:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyChangeMessageFlaggedFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyChangeMessageUnreadFlag:(SMMessageThreadCellViewController*)messageThreadCellViewController;
 + (void)localNotifyDeleteMessage:(SMMessageThreadCellViewController*)messageThreadCellViewController;

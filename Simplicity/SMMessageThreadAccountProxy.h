@@ -13,6 +13,7 @@
 
 @interface SMMessageThreadAccountProxy : NSObject
 
+- (BOOL)moveMessage:(SMMessageThread*)messageThread message:(SMMessage*)message toRemoteFolder:(NSString*)remoteFolder;
 - (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(Boolean)unseen;
 - (void)setMessageFlagged:(SMMessageThread*)messageThread message:(SMMessage*)message flagged:(Boolean)flagged;
 - (void)addMessageThreadLabel:(SMMessageThread*)messageThread label:(NSString*)label;

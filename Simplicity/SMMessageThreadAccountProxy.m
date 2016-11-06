@@ -7,6 +7,7 @@
 //
 
 #import "SMUserAccount.h"
+#import "SMMessage.h"
 #import "SMAbstractLocalFolder.h"
 #import "SMFolderColorController.h"
 #import "SMMessageThread.h"
@@ -15,6 +16,11 @@
 #import "SMMessageThreadAccountProxy.h"
 
 @implementation SMMessageThreadAccountProxy
+
+- (BOOL)moveMessage:(SMMessageThread*)messageThread message:(SMMessage*)message toRemoteFolder:(NSString*)remoteFolder {
+    id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];
+    return [localFolder moveMessage:message.messageId uid:message.uid toRemoteFolder:remoteFolder];
+}
 
 - (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(Boolean)unseen {
     id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];

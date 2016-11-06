@@ -680,7 +680,7 @@ static const CGFloat HEADER_ICON_HEIGHT_RATIO = 1.8;
 }
 
 - (void)discardDraft:(id)sender {
-    SM_LOG_WARNING(@"TODO");
+    [SMNotificationsController localNotifyDiscardMessageDraft:_enclosingThreadCell];
 }
 
 - (void)toggleFullDetails:(id)sender {

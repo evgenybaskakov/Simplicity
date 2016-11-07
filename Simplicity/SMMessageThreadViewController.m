@@ -1020,13 +1020,14 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
     
     SMMessageThreadCell *cell = _cells[cellIdx];
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
 
-    id<SMMailbox> mailbox = _currentMessageThread.account.mailbox;
+    SMUserAccount *account = _currentMessageThread.account;
+    id<SMMailbox> mailbox = account.mailbox;
 
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController]; // TODO: wrong, current message thread may belong to a different account, message list view might not conform
     NSAssert(messageListViewController != nil, @"messageListViewController is nil");
     
@@ -1108,32 +1109,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 #pragma mark Draft discartion
 
 - (void)discardMessageDraft:(NSNotification *)notification {
-    NSDictionary *messageInfo = [notification userInfo];
-    NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
-    
-    if(cellIdx == _cells.count) {
-        SM_LOG_DEBUG(@"cell to change flagged flag not found");
-        return;
-    }
-    
-    SMMessageThreadCell *cell = _cells[cellIdx];
-    SMMessage *message = cell.message;
-    
-    NSAssert(cell.message.draft, @"draft message being discarted is not actually a draft");
-    
-    id<SMMailbox> mailbox = _currentMessageThread.account.mailbox;
-    
-    SMFolder *trashFolder = [mailbox trashFolder];
-    NSAssert(trashFolder != nil, @"no trash folder");
-    
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if([_currentLocalFolder moveMessage:message.messageId uid:message.uid toRemoteFolder:trashFolder.fullName]) {
-        [_messageThreadInfoViewController updateMessageThread];
-    }
-    
-    [self updateMessageThread];
-    
-    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [self deleteMessage:notification];
 }
 
 #pragma mark Saving downloads

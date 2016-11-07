@@ -24,6 +24,7 @@
 #import "SMMessagePlaceholderViewController.h"
 #import "SMMessageThreadAccountProxy.h"
 #import "SMAbstractLocalFolder.h"
+#import "SMMessageStorage.h"
 #import "SMMailbox.h"
 #import "SMMessageWindowController.h"
 #import "SMMessageEditorViewController.h"
@@ -293,8 +294,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     NSAssert(_cells != nil, @"no cells in the current thread");
     
     NSArray *newMessages = [_currentMessageThread messagesSortedByDate];
-    
-    if(newMessages.count > 0) {
+    if([_currentMessageThread.messageStorage messageThreadById:_currentMessageThread.threadId] != nil && newMessages.count > 0) {
         // check whether messages did not change
         if(newMessages.count == _cells.count) {
             Boolean equal = YES;
@@ -393,6 +393,8 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         _currentMessageThread = nil;
         
         [_messageThreadInfoViewController setMessageThread:nil];
+
+        [self hideCurrentMessageThread:0];
     }
 
     [self updateNavigationControls];
@@ -1027,22 +1029,12 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    SMMessageListViewController *messageListViewController = [[appDelegate appController] messageListViewController]; // TODO: wrong, current message thread may belong to a different account, message list view might not conform
-    NSAssert(messageListViewController != nil, @"messageListViewController is nil");
+    if([_currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    }
     
-    if(_currentMessageThread.messagesCount == 1) {
-        [messageListViewController moveSelectedMessageThreadsToFolder:trashFolder];
-    }
-    else {
-        NSAssert(_currentMessageThread.messagesCount > 1, @"no messages in the current message thread");
-
-        if([_currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
-            [messageListViewController reloadMessageList:YES];
-        }
-        
-        [self updateMessageThread];
-    }
+    [self updateMessageThread];
 }
 
 - (void)changeMessageCellUnreadFlag:(NSNotification *)notification {

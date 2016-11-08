@@ -1276,4 +1276,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self saveMessage];
 }
 
+#pragma mark Find Contents panel
+
+- (void)showFindContentsPanel {
+    SM_LOG_WARNING(@"TODO");
+}
+
 @end

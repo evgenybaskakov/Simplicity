@@ -55,5 +55,6 @@
 - (BOOL)closeEditor:(Boolean)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
 - (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
+- (void)showFindContentsPanel;
 
 @end

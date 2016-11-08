@@ -14,6 +14,7 @@
 #import "SMDatabase.h"
 #import "SMNotificationsController.h"
 #import "SMMessageEditorWindowController.h"
+#import "SMMessageEditorViewController.h"
 #import "SMNewLabelWindowController.h"
 #import "SMAccountsViewController.h"
 #import "SMMailboxViewController.h"
@@ -589,6 +590,9 @@
     
     if([curWindow.delegate isKindOfClass:[SMMessageWindowController class]]) {
         [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel];
+    }
+    else if([curWindow.delegate isKindOfClass:[SMMessageEditorWindowController class]]) {
+        [[(SMMessageEditorWindowController*)curWindow.delegate messageEditorViewController] showFindContentsPanel];
     }
     else if(curWindow == [[NSApplication sharedApplication] mainWindow]) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];

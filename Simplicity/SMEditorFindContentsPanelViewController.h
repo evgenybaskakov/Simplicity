@@ -1,0 +1,13 @@
+//
+//  SMEditorFindContentsPanelViewController.h
+//  Simplicity
+//
+//  Created by Evgeny Baskakov on 11/7/16.
+//  Copyright © 2016 Evgeny Baskakov. All rights reserved.
+//
+
+#import <Cocoa/Cocoa.h>
+
+@interface SMEditorFindContentsPanelViewController : NSViewController
+
+@end

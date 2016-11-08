@@ -208,6 +208,8 @@
 		8078EAB41CD470D000EBF22B /* SMAccountMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 8078EAB31CD470D000EBF22B /* SMAccountMailbox.m */; };
 		807EE8281D9E3B01002F4926 /* SMTimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 807EE8271D9E3B01002F4926 /* SMTimeUtils.m */; };
 		8081A78B1B27F65B0081727C /* SMOpAppendMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */; };
+		80856D001DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80856CFE1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m */; };
+		80856D011DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80856CFF1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib */; };
 		8088F2431BA7F11B005A29E2 /* SMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088F2421BA7F11B005A29E2 /* SMDatabase.m */; };
 		808940591DCC6E9300D2F3E6 /* unified-account.png in Resources */ = {isa = PBXBuildFile; fileRef = 808940581DCC6E9300D2F3E6 /* unified-account.png */; };
 		808BC04B1CD331630030E08E /* SMUnifiedMailbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 808BC04A1CD331630030E08E /* SMUnifiedMailbox.m */; };
@@ -668,6 +670,9 @@
 		807EE8271D9E3B01002F4926 /* SMTimeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMTimeUtils.m; sourceTree = "<group>"; };
 		8081A7891B27F65B0081727C /* SMOpAppendMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpAppendMessage.h; sourceTree = "<group>"; };
 		8081A78A1B27F65B0081727C /* SMOpAppendMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOpAppendMessage.m; sourceTree = "<group>"; };
+		80856CFD1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMEditorFindContentsPanelViewController.h; sourceTree = "<group>"; };
+		80856CFE1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMEditorFindContentsPanelViewController.m; sourceTree = "<group>"; };
+		80856CFF1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMEditorFindContentsPanelViewController.xib; sourceTree = "<group>"; };
 		8088F2411BA7F11B005A29E2 /* SMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMDatabase.h; sourceTree = "<group>"; };
 		8088F2421BA7F11B005A29E2 /* SMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMDatabase.m; sourceTree = "<group>"; };
 		808940581DCC6E9300D2F3E6 /* unified-account.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unified-account.png"; sourceTree = "<group>"; };
@@ -992,6 +997,8 @@
 				00A085AE1A72145300CC4E1C /* SMAttachmentsPanelViewController.m */,
 				003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */,
 				003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */,
+				80856CFD1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.h */,
+				80856CFE1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m */,
 				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
 				8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */,
 				006709311A99A77600C0C9CC /* SMFindContentsPanelViewController.h */,
@@ -1160,6 +1167,7 @@
 				004A64201AC7A3000079A0C1 /* SMAddressFieldViewController.xib */,
 				00A085AF1A72145300CC4E1C /* SMAttachmentsPanelViewController.xib */,
 				003DFF181A73681A003C26E2 /* SMAttachmentsPanelViewItem.xib */,
+				80856CFF1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib */,
 				8043D7E11B51AC4900B07469 /* SMEditorToolBoxViewController.xib */,
 				006709331A99A77600C0C9CC /* SMFindContentsPanelViewController.xib */,
 				802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */,
@@ -1555,6 +1563,7 @@
 				803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */,
 				80533ABC1B4114B700A0A67F /* text-color.png in Resources */,
 				803632411DB0B8A9003B7680 /* underline.png in Resources */,
+				80856D011DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib in Resources */,
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
 				802410741C1E880C00493FB4 /* SMLabelPreferencesViewController.xib in Resources */,
 				801EDEF61BE9F06500A16E85 /* yandex_logo_en.png in Resources */,
@@ -1663,6 +1672,7 @@
 				80B8600F1CF979EA00BD0804 /* SMSearchRequestInputController.m in Sources */,
 				800C679F1B49A89B00272D60 /* MKColorSwatchCell.m in Sources */,
 				8043D7EA1B537FF700B07469 /* SMMessageEditorBase.m in Sources */,
+				80856D001DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m in Sources */,
 				00DC84961967A70E00577667 /* SMAccountMailboxController.m in Sources */,
 				808BC0591CD33E870030E08E /* SMUnifiedMailboxController.m in Sources */,
 				00EB7E87199C70FA00CA2B1B /* SMMessageThread.m in Sources */,

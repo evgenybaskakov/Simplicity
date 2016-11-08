@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SMEditorFindContentsPanelViewController">
+            <connections>
+                <outlet property="view" destination="2de-YB-1zU" id="Z8P-rc-odF"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2de-YB-1zU">
+            <rect key="frame" x="0.0" y="0.0" width="487" height="57"/>
+            <subviews>
+                <visualEffectView appearanceType="vibrantLight" blendingMode="withinWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Rm3-EA-n9g">
+                    <rect key="frame" x="0.0" y="0.0" width="487" height="57"/>
+                    <subviews>
+                        <button horizontalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="R0s-lo-s3I">
+                            <rect key="frame" x="267" y="32" width="94" height="18"/>
+                            <buttonCell key="cell" type="check" title="Match Case" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WTD-be-k93">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                        <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E8f-mA-Sxs" userLabel="Forward And Backwards">
+                            <rect key="frame" x="365" y="30" width="47" height="24"/>
+                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="4uB-CL-eph">
+                                <font key="font" metaFont="system"/>
+                                <segments>
+                                    <segment image="NSLeftFacingTriangleTemplate" width="20"/>
+                                    <segment image="NSRightFacingTriangleTemplate" width="20" tag="1"/>
+                                </segments>
+                            </segmentedCell>
+                        </segmentedControl>
+                        <searchField wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1wn-wT-4Jh">
+                            <rect key="frame" x="8" y="31" width="253" height="22"/>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="IWG-lE-TFg"/>
+                            </constraints>
+                            <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" placeholderString="Find" drawsBackground="YES" usesSingleLineMode="YES" id="lUb-mq-CQG">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </searchFieldCell>
+                        </searchField>
+                        <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="OcY-7g-iRT">
+                            <rect key="frame" x="412" y="24" width="72" height="32"/>
+                            <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="p8M-iG-eg3">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                        <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vvE-EH-A4P">
+                            <rect key="frame" x="8" y="4" width="279" height="22"/>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="Replace" drawsBackground="YES" id="QPI-rL-Gmp">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vP4-UM-ORc">
+                            <rect key="frame" x="378" y="-2" width="106" height="32"/>
+                            <buttonCell key="cell" type="push" title="Replace all" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jRe-wb-U3O">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dMk-ua-d17">
+                            <rect key="frame" x="289" y="-2" width="89" height="32"/>
+                            <buttonCell key="cell" type="push" title="Replace" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="brD-Lb-2JA">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="OcY-7g-iRT" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="5" id="1aX-SA-fAe"/>
+                        <constraint firstItem="1wn-wT-4Jh" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="4YB-k4-BvH"/>
+                        <constraint firstItem="OcY-7g-iRT" firstAttribute="leading" secondItem="E8f-mA-Sxs" secondAttribute="trailing" constant="8" id="7PZ-TU-How"/>
+                        <constraint firstItem="dMk-ua-d17" firstAttribute="leading" secondItem="vvE-EH-A4P" secondAttribute="trailing" constant="8" id="B1z-W1-heo"/>
+                        <constraint firstItem="E8f-mA-Sxs" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="4" id="Cc4-fL-2Jp"/>
+                        <constraint firstItem="vvE-EH-A4P" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="HUd-WD-z3h"/>
+                        <constraint firstItem="R0s-lo-s3I" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="9" id="JXy-5J-R1l"/>
+                        <constraint firstItem="E8f-mA-Sxs" firstAttribute="leading" secondItem="R0s-lo-s3I" secondAttribute="trailing" constant="8" id="LUl-HA-cue"/>
+                        <constraint firstItem="vP4-UM-ORc" firstAttribute="leading" secondItem="dMk-ua-d17" secondAttribute="trailing" constant="12" id="Rru-7p-j1u"/>
+                        <constraint firstItem="1wn-wT-4Jh" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="4" id="UZL-t7-0Er"/>
+                        <constraint firstAttribute="trailing" secondItem="OcY-7g-iRT" secondAttribute="trailing" constant="9" id="Xql-NP-gV4"/>
+                        <constraint firstItem="vvE-EH-A4P" firstAttribute="top" secondItem="1wn-wT-4Jh" secondAttribute="bottom" constant="5" id="Zsx-bH-vbW"/>
+                        <constraint firstAttribute="bottom" secondItem="vP4-UM-ORc" secondAttribute="bottom" constant="5" id="gU6-N9-sFg"/>
+                        <constraint firstAttribute="bottom" secondItem="dMk-ua-d17" secondAttribute="bottom" constant="5" id="iI4-PC-XFZ"/>
+                        <constraint firstItem="R0s-lo-s3I" firstAttribute="leading" secondItem="1wn-wT-4Jh" secondAttribute="trailing" constant="8" id="w0M-PO-EZO"/>
+                        <constraint firstAttribute="bottom" secondItem="vvE-EH-A4P" secondAttribute="bottom" constant="4" id="yc8-jc-LyF"/>
+                        <constraint firstAttribute="trailing" secondItem="vP4-UM-ORc" secondAttribute="trailing" constant="9" id="zxv-Et-TmV"/>
+                    </constraints>
+                </visualEffectView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Rm3-EA-n9g" secondAttribute="trailing" id="2mP-IT-7Jc"/>
+                <constraint firstAttribute="bottom" secondItem="Rm3-EA-n9g" secondAttribute="bottom" id="GNP-EE-eOb"/>
+                <constraint firstItem="Rm3-EA-n9g" firstAttribute="leading" secondItem="2de-YB-1zU" secondAttribute="leading" id="Uvf-4z-npd"/>
+                <constraint firstItem="Rm3-EA-n9g" firstAttribute="top" secondItem="2de-YB-1zU" secondAttribute="top" id="apC-bj-kXd"/>
+            </constraints>
+            <point key="canvasLocation" x="373.5" y="202"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="NSLeftFacingTriangleTemplate" width="9" height="12"/>
+        <image name="NSRightFacingTriangleTemplate" width="9" height="12"/>
+    </resources>
+</document>

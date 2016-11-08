@@ -10,7 +10,7 @@
 #import "SMMessageListCellView.h"
 
 @implementation SMMessageListCellView {
-    Boolean _fieldsInitialized;
+    BOOL _fieldsInitialized;
 }
 
 @synthesize tag;

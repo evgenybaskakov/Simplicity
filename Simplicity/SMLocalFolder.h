@@ -49,7 +49,7 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
     @protected NSUInteger _totalMessagesCount;
     @protected NSUInteger _messageHeadersFetched;
     @protected NSUInteger _maxMessagesPerThisFolder;
-    @protected Boolean _syncedWithRemoteFolder;
+    @protected BOOL _syncedWithRemoteFolder;
     @protected SMMessageStorage *_messageStorage;
     @protected MCOIMAPFolderInfoOperation *_folderInfoOp;
     @protected MCOIMAPFetchMessagesOperation *_fetchMessageHeadersOp;
@@ -63,12 +63,12 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 @property (readonly) SMMessageBodyFetchQueue *messageBodyFetchQueue;
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(BOOL)syncWithRemoteFolder;
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(BOOL)syncWithRemoteFolder;
 
 #pragma mark Protected methods
 
-- (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(Boolean)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
+- (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
 - (void)finishMessageHeadersFetching;
 
 @end

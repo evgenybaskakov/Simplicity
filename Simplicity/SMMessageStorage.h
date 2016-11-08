@@ -36,16 +36,16 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 - (void)startUpdate;
 - (void)cancelUpdate;
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
 - (void)markMessageThreadAsUpdated:(uint64_t)threadId;
-- (SMMessageStorageUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock;
+- (SMMessageStorageUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(BOOL)removeVanishedMessages updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock;
 
-- (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase;
-- (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase;
+- (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
+- (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
 
 - (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds;
-- (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
-- (Boolean)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
+- (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
+- (BOOL)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
 
 // TODO: use folder name along with UID!!! See https://github.com/evgenybaskakov/Simplicity/issues/20.
 // TODO: return SMMessageThread*

@@ -24,7 +24,7 @@
 @property (readonly) NSMutableArray *attachmentItems;
 @property (readonly) NSUInteger collapsedHeight;
 @property (readonly) NSUInteger uncollapsedHeight;
-@property (readonly) Boolean enabledEditing;
+@property (readonly) BOOL enabledEditing;
 
 - (IBAction)togglePanelAction:(id)sender;
 

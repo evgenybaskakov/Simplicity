@@ -38,17 +38,17 @@
 }
 
 - (IBAction)findContentsSearchAction:(id)sender {
-    const Boolean matchCase = (_matchCaseCheckbox.state == NSOnState);
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
     [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:NO];
 }
 
 - (IBAction)setMatchCaseAction:(id)sender {
-    const Boolean matchCase = (_matchCaseCheckbox.state == NSOnState);
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
     [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:YES];
 }
 
 - (IBAction)findNextPrevAction:(id)sender {
-    const Boolean matchCase = (_matchCaseCheckbox.state == NSOnState);
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
         
     if([_forwardBackwardsButton selectedSegment] == 0) {
         [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:NO restart:NO];
@@ -57,7 +57,7 @@
     }
 }
 
-- (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward restart:(Boolean)restart {
+- (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward restart:(BOOL)restart {
     if(restart) {
         [_messageThreadViewController removeFindContentsResults];
     }

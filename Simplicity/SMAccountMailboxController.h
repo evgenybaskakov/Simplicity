@@ -17,7 +17,7 @@
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (void)loadExistingFolders:(NSArray<SMFolderDesc*>*)folderDescs;
-- (void)scheduleFolderListUpdate:(Boolean)now;
+- (void)scheduleFolderListUpdate:(BOOL)now;
 - (void)stopFolderListUpdate;
 
 @end

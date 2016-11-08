@@ -53,7 +53,7 @@
     _selectedFolder = folder;
 }
 
-- (void)scheduleFolderListUpdate:(Boolean)now {
+- (void)scheduleFolderListUpdate:(BOOL)now {
     SM_LOG_DEBUG(@"scheduling folder update after %u sec", FOLDER_LIST_UPDATE_INTERVAL_SEC);
 
     [self stopFolderListUpdate];

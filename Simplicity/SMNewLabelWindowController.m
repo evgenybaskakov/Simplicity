@@ -57,7 +57,7 @@
 }
 
 - (IBAction)toggleNestedLabelAction:(id)sender {
-    const Boolean nestLabel = (_labelNestedCheckbox.state == NSOnState);
+    const BOOL nestLabel = (_labelNestedCheckbox.state == NSOnState);
 
     [_nestingLabelNameButton setEnabled:nestLabel];
 }

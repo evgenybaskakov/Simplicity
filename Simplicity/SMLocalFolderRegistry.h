@@ -18,8 +18,8 @@
 @property (readonly) NSArray<id<SMAbstractLocalFolder>> *localFolders;
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
-- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder;
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(BOOL)syncWithRemoteFolder;
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(BOOL)syncWithRemoteFolder;
 - (id<SMAbstractLocalFolder>)getLocalFolderByName:(NSString*)folderName;
 - (id<SMAbstractLocalFolder>)getLocalFolderByKind:(SMFolderKind)kind;
 - (void)removeLocalFolder:(NSString*)folderName;

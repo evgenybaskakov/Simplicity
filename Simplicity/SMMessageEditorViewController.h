@@ -24,12 +24,12 @@
 
 @property (readonly) __weak SMMessageThreadViewController *messageThreadViewController;
 @property (readonly) CGFloat editorFullHeight;
-@property (readonly) Boolean hasUnsavedContents;
-@property (readonly) Boolean plainText;
+@property (readonly) BOOL hasUnsavedContents;
+@property (readonly) BOOL plainText;
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc;
 
-- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText;
+- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(BOOL)plainText;
 - (void)setEditorFrame:(NSRect)frame;
 - (void)setResponders:(BOOL)initialSetup focusKind:(SMEditorFocusKind)focusKind;
 - (void)startEditorWithHTML:(NSString*)messageHtmlBody subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc kind:(SMEditorContentsKind)editorKind mcoAttachments:(NSArray*)mcoAttachments;
@@ -52,7 +52,7 @@
 - (void)showSource;
 - (void)setTextForegroundColor;
 - (void)setTextBackgroundColor;
-- (BOOL)closeEditor:(Boolean)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
+- (BOOL)closeEditor:(BOOL)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
 - (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
 - (void)showFindContentsPanel;

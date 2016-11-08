@@ -74,20 +74,20 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
     NSMutableArray<NSView*> *_editorsUndoList;
     NSUInteger _editorUndoLevel;
-    Boolean _attachmentsPanelShown;
+    BOOL _attachmentsPanelShown;
     NSUInteger _panelHeight;
     NSSplitView *_textAndAttachmentsSplitView;
     NSView *_innerView;
-    Boolean _fullAddressPanelShown;
+    BOOL _fullAddressPanelShown;
     NSString *_lastSubject;
     NSString *_lastFrom;
     NSArray<SMAddress*> *_lastTo;
     NSArray<SMAddress*> *_lastCc;
     NSArray<SMAddress*> *_lastBcc;
-    Boolean _doNotSaveDraftOnClose;
+    BOOL _doNotSaveDraftOnClose;
     SMUserAccount *_lastAccount;
-    Boolean _adjustingFrames;
-    Boolean _savedOnce;
+    BOOL _adjustingFrames;
+    BOOL _savedOnce;
 }
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
@@ -118,7 +118,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     *cc = ccAddressList;
 }
 
-- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(Boolean)plainText {
+- (id)initWithFrame:(NSRect)frame messageThreadViewController:(SMMessageThreadViewController*)messageThreadViewController draftUid:(uint32_t)draftUid plainText:(BOOL)plainText {
     self = [super initWithNibName:nil bundle:nil];
     
     if(self) {
@@ -317,7 +317,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // Workaround: it is nearly impossible to check if the webview has focus. The first responder in that case has
     // a type of "WebHTMLView", which is a private Apple class. When the focus is on address or subject fields,
     // its type is either NSTokenTextView (subclass of NSTextView), or NSWindow.
-    Boolean messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
+    BOOL messageEditorFocus = ![window.firstResponder isKindOfClass:[NSWindow class]] && ![window.firstResponder isKindOfClass:[NSTextView class]];
     NSView *initialResponder = nil;
     
     if(!messageEditorFocus || initialSetup) {
@@ -452,7 +452,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastCc = _ccBoxViewController.tokenField.objectValue;
     _lastBcc = _bccBoxViewController.tokenField.objectValue;
     
-    Boolean sendEnabled = (to != nil && to.count != 0);
+    BOOL sendEnabled = (to != nil && to.count != 0);
     [_messageEditorToolbarViewController.sendButton setEnabled:sendEnabled];
     
     [_htmlTextEditor startEditorWithHTML:messageHtmlBody kind:editorKind];
@@ -519,7 +519,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
-- (Boolean)hasUnsavedContents {
+- (BOOL)hasUnsavedContents {
     NSString *subject = _subjectBoxViewController.textField.stringValue;
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
     NSArray *to = _toBoxViewController.tokenField.objectValue;
@@ -662,7 +662,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self makeHTMLText:NO conversion:EditorConversion_Direct];
 }
 
-- (void)makeHTMLText:(Boolean)force conversion:(EditorConversion)conversion {
+- (void)makeHTMLText:(BOOL)force conversion:(EditorConversion)conversion {
     if(!_plainText && !force) {
         return;
     }
@@ -772,7 +772,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self makePlainText:NO conversion:EditorConversion_Direct];
 }
 
-- (void)makePlainText:(Boolean)force conversion:(EditorConversion)conversion {
+- (void)makePlainText:(BOOL)force conversion:(EditorConversion)conversion {
     if(_plainText && !force) {
         return;
     }
@@ -991,7 +991,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
 }
 
-- (void)showFullAddressPanel:(Boolean)viewConstructionPhase {
+- (void)showFullAddressPanel:(BOOL)viewConstructionPhase {
     _fullAddressPanelShown = YES;
     
     [_innerView addSubview:_ccBoxViewController.view];
@@ -1005,7 +1005,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self notifyContentHeightChanged];
 }
 
-- (void)hideFullAddressPanel:(Boolean)viewConstructionPhase {
+- (void)hideFullAddressPanel:(BOOL)viewConstructionPhase {
     _fullAddressPanelShown = NO;
     
     [_ccBoxViewController.view removeFromSuperview];
@@ -1232,7 +1232,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Misc
 
-- (BOOL)closeEditor:(Boolean)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary {
+- (BOOL)closeEditor:(BOOL)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary {
     if(shouldSaveDraft && !_doNotSaveDraftOnClose) {
         BOOL doSave = YES;
         

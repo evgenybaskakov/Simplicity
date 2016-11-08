@@ -85,28 +85,28 @@
     return YES;
 }
 
-- (Boolean)isDraft {
+- (BOOL)isDraft {
     return NO;
 }
 
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
+- (BOOL)updateImapMessage:(MCOIMAPMessage*)m {
     SM_FATAL(@"Cannot update outgoig message");
     return NO;
 }
 
-- (Boolean)unseen {
+- (BOOL)unseen {
     return NO;
 }
 
-- (void)setUnseen:(Boolean)unseen {
+- (void)setUnseen:(BOOL)unseen {
     SM_FATAL(@"Cannot set seen/unseen outgoig message");
 }
 
-- (Boolean)flagged {
+- (BOOL)flagged {
     return NO;
 }
 
-- (void)setFlagged:(Boolean)flagged {
+- (void)setFlagged:(BOOL)flagged {
     SM_FATAL(@"Cannot set flagged/unflagged outgoig message");
 }
 

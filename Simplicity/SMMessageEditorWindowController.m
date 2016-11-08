@@ -16,7 +16,7 @@
 
 @implementation SMMessageEditorWindowController {
     NSString *_initialTextContent;
-    Boolean _initialPlainText;
+    BOOL _initialPlainText;
     NSString *_subject;
     NSArray<SMAddress*> *_to;
     NSArray<SMAddress*> *_cc;
@@ -26,7 +26,7 @@
     SMEditorContentsKind _editorKind;
 }
 
-- (void)initHtmlContents:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
+- (void)initHtmlContents:(NSString*)textContent plainText:(BOOL)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
     _initialTextContent = textContent;
     _initialPlainText = plainText;
     _subject = subject;

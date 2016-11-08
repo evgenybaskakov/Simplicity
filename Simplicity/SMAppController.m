@@ -53,8 +53,8 @@
     NSArray *_searchResultsShownConstraints;
     NSMutableArray *_messageEditorWindowControllers;
     NSMutableArray *_messageWindowControllers;
-    Boolean _operationQueueShown;
-    Boolean _syncedFoldersInitialized;
+    BOOL _operationQueueShown;
+    BOOL _syncedFoldersInitialized;
     BOOL _preferencesWindowShown;
     BOOL _searchSuggestionsMenuShown;
     BOOL _searchingForSuggestions;
@@ -530,7 +530,7 @@
     [self closeSearchSuggestionsMenu];
 }
 
-- (Boolean)isSearchResultsViewHidden {
+- (BOOL)isSearchResultsViewHidden {
     return _searchResultsShownConstraints != nil;
 }
 
@@ -674,11 +674,11 @@
         return;
     }
     
-    Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
+    BOOL plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [self openMessageEditorWindow:nil plainText:plainText subject:nil to:nil cc:nil bcc:nil draftUid:0 mcoAttachments:nil editorKind:kEmptyEditorContentsKind];
 }
 
-- (void)openMessageEditorWindow:(NSString*)textContent plainText:(Boolean)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
+- (void)openMessageEditorWindow:(NSString*)textContent plainText:(BOOL)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind {
     SMMessageEditorWindowController *messageEditorWindowController = [[SMMessageEditorWindowController alloc] initWithWindowNibName:@"SMMessageEditorWindowController"];
 
     [messageEditorWindowController initHtmlContents:textContent plainText:plainText subject:subject to:to cc:cc bcc:bcc draftUid:draftUid mcoAttachments:mcoAttachments editorKind:editorKind];

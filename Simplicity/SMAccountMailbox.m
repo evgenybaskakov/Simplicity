@@ -72,7 +72,7 @@
     }
 }
 
-- (Boolean)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
+- (BOOL)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
     NSAssert(imapFolders.count > 0, @"No IMAP folders provided");
     
     NSMutableArray<SMFolderDesc*> *flatFolders = [NSMutableArray arrayWithCapacity:imapFolders.count];
@@ -92,7 +92,7 @@
     return [self updateFlatFolders:flatFolders vanishedFolders:vanishedFolders];
 }
 
-- (Boolean)updateFlatFolders:(NSMutableArray<SMFolderDesc*>*)flatFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
+- (BOOL)updateFlatFolders:(NSMutableArray<SMFolderDesc*>*)flatFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders {
     NSAssert(flatFolders.count > 0, @"No folders provided");
     
     [flatFolders sortUsingComparator:^NSComparisonResult(SMFolderDesc *fd1, SMFolderDesc *fd2) {

@@ -74,11 +74,11 @@
     return _mcoAttachment.data;
 }
 
-- (Boolean)writeAttachmentTo:(NSURL*)baseUrl {
+- (BOOL)writeAttachmentTo:(NSURL*)baseUrl {
     return [self writeAttachmentTo:baseUrl withFileName:[self fileName]];
 }
 
-- (Boolean)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName {
+- (BOOL)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName {
     // TODO: write to the message attachments folder
     // TODO: write only if not written yet (compare checksum?)
     // TODO: write asynchronously

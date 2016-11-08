@@ -15,7 +15,7 @@
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
 - (BOOL)loadExistingFolders:(NSArray<SMFolderDesc*>*)existingFolders;
-- (Boolean)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders;
+- (BOOL)updateIMAPFolders:(NSArray<MCOIMAPFolder*>*)imapFolders vanishedFolders:(NSSet<SMFolderDesc*>**)vanishedFolders;
 - (void)removeFolder:(NSString*)folderName;
 
 @end

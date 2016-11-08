@@ -20,7 +20,7 @@
 - (id)initWithMCOAttachment:(MCOAttachment*)mcoAttachment;
 - (id)initWithLocalFilePath:(NSString*)localFilePath;
 
-- (Boolean)writeAttachmentTo:(NSURL*)baseUrl;
-- (Boolean)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName;
+- (BOOL)writeAttachmentTo:(NSURL*)baseUrl;
+- (BOOL)writeAttachmentTo:(NSURL*)baseUrl withFileName:(NSString*)fileName;
 
 @end

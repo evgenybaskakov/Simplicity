@@ -17,12 +17,12 @@
 
 @property (readonly) SMUserAccount *account;
 @property (readonly) MCOMessageBuilder *mcoMessageBuilder;
-@property (readonly) Boolean plainText;
+@property (readonly) BOOL plainText;
 @property (readonly) NSArray *attachments;
 @property (readonly) NSDate *creationDate;
 @property (readonly) uint32_t uid;
 @property (readonly) uint64_t threadId;
 
-- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account;
+- (id)initWithMessageText:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account;
 
 @end

@@ -50,7 +50,7 @@
     return _currentFolder;
 }
 
-- (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (void)changeFolderInternal:(NSString*)folderName remoteFolder:(NSString*)remoteFolderName syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     SM_LOG_DEBUG(@"new folder '%@'", folderName);
 
     if(_currentFolder != nil && _currentFolder.kind != SMFolderKindSearch) {
@@ -104,7 +104,7 @@
     [self startMessagesUpdate];
     
     if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
-        Boolean preserveSelection = NO;
+        BOOL preserveSelection = NO;
         [[appController messageListViewController] reloadMessageList:preserveSelection updateScrollPosition:YES];
     }
 }
@@ -129,7 +129,7 @@
     [self changeFolderInternal:nil remoteFolder:nil syncWithRemoteFolder:NO];
     
     if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
-        Boolean preserveSelection = NO;
+        BOOL preserveSelection = NO;
         [[appController messageListViewController] reloadMessageList:preserveSelection];
     }
 }
@@ -153,7 +153,7 @@
     SMAppController *appController = [appDelegate appController];
     
     if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
-        Boolean preserveSelection = NO;
+        BOOL preserveSelection = NO;
         [[appController messageListViewController] reloadMessageList:preserveSelection];
     }
 }
@@ -172,7 +172,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
 }
 
-- (void)scheduleMessageListUpdate:(Boolean)now {
+- (void)scheduleMessageListUpdate:(BOOL)now {
     [self cancelScheduledMessageListUpdate];
     
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];

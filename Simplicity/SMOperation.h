@@ -34,8 +34,8 @@ typedef enum {
 - (void)setOperationExecutor:(SMOperationExecutor*)operationExecutor;
 - (void)start;
 - (void)fail;
-- (Boolean)cancelOp;
-- (Boolean)cancelOpForced:(BOOL)force;
+- (BOOL)cancelOp;
+- (BOOL)cancelOpForced:(BOOL)force;
 - (void)complete;
 - (void)enqueue;
 - (void)replaceWith:(SMOperation*)op;

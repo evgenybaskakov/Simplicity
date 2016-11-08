@@ -17,8 +17,8 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 
 @implementation SMAttachmentsPanelViewItem {
     NSTrackingArea *_trackingArea;
-    Boolean _hasMouseOver;
-    Boolean _hasPreview;
+    BOOL _hasMouseOver;
+    BOOL _hasPreview;
 }
 
 - (NSColor*)unselectedColor {

@@ -60,15 +60,15 @@
     return nil;
 }
 
-- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     return [self createLocalFolder:localFolderName remoteFolder:remoteFolderName kind:kind initialUnreadCount:initialUnreadCount initialUnreadCountProvided:YES syncWithRemoteFolder:syncWithRemoteFolder];
 }
 
-- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     return [self createLocalFolder:localFolderName remoteFolder:remoteFolderName kind:kind initialUnreadCount:0 initialUnreadCountProvided:NO syncWithRemoteFolder:syncWithRemoteFolder];
 }
 
-- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount initialUnreadCountProvided:(BOOL)initialUnreadCountProvided syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id<SMAbstractLocalFolder>)createLocalFolder:(NSString*)localFolderName remoteFolder:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount initialUnreadCountProvided:(BOOL)initialUnreadCountProvided syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     id<SMAbstractLocalFolder> folder = [_folders objectForKey:localFolderName];
     NSAssert(!folder, @"folder %@ already created", localFolderName);
     

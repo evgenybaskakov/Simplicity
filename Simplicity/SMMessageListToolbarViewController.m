@@ -150,7 +150,7 @@
     SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
     
     // TODO: also detect if the current message is in raw text; compose reply likewise
-    Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
+    BOOL plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:replySubject to:toAddressList cc:ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:editorKind];
 }
 

@@ -54,11 +54,11 @@
     NSAssert(false, @"start not implemented");
 }
 
-- (Boolean)cancelOp {
+- (BOOL)cancelOp {
     return [self cancelOpForced:NO];
 }
 
-- (Boolean)cancelOpForced:(BOOL)force {
+- (BOOL)cancelOpForced:(BOOL)force {
     _cancelled = YES;
     
     if(!force) {

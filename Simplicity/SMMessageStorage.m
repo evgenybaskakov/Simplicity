@@ -121,7 +121,7 @@
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedLongLong:messageId]];
 }
 
-- (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     for(SMMessage *m in messageThread.messagesSortedByDate) {
         if(m.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
             (*unseenMessagesCount)--;
@@ -137,7 +137,7 @@
     [_unifiedMessageStorage removeMessageThread:messageThread];
 }
 
-- (Boolean)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
+- (BOOL)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount {
     [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageId]];
     
     SMMessageThread *messageThread = [self messageThreadById:threadId];
@@ -182,7 +182,7 @@
     [self cancelUpdate];
 }
 
-- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
+- (SMMessageStorageUpdateResult)updateIMAPMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
     
     NSAssert(plainTextBodies == nil || plainTextBodies.count == imapMessages.count, @"plainTextBodies.count %lu, imapMessages.count %lu", plainTextBodies.count, imapMessages.count);
@@ -212,8 +212,8 @@
         NSDate *firstMessageDate = nil;
         NSUInteger oldIndex = NSNotFound;
         
-        Boolean threadUpdated = NO;
-        Boolean newThreadCreated = NO;
+        BOOL threadUpdated = NO;
+        BOOL newThreadCreated = NO;
 
         if(messageThread == nil) {
             messageThread = [[SMMessageThread alloc] initWithThreadId:threadId messageStorage:self];
@@ -273,7 +273,7 @@
     return updateResult;
 }
 
-- (SMMessageStorageUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages updateDatabase:(Boolean)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock {
+- (SMMessageStorageUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(BOOL)removeVanishedMessages updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount processNewUnseenMessagesBlock:(void (^)(NSArray *newMessages))processNewUnseenMessagesBlock {
     SM_LOG_DEBUG(@"localFolder '%@'", _localFolder.localName);
     
     SMMessageStorageUpdateResult updateResult = SMMesssageStorageUpdateResultNone;
@@ -380,7 +380,7 @@
 }
 
 // TODO: update unseenMessagesCount
-- (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
+- (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase {
     NSUInteger oldIndex = NSNotFound;
 
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];
@@ -420,7 +420,7 @@
 
 // TODO: update database
 // TODO: update unseenMessagesCount
-- (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(Boolean)updateDatabase {
+- (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase {
     NSAssert(!updateDatabase, @"TODO: implement updateDatabase");
 
     NSNumber *threadIdNum = [NSNumber numberWithUnsignedLongLong:message.threadId];

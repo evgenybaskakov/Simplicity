@@ -68,9 +68,9 @@
     SMMessageThread *_selectedMessageThread;
     SMMessageThread *_draggedMessageThread;
     NSMutableArray *_multipleSelectedMessageThreads;
-    Boolean _immediateSelection;
-    Boolean _mouseSelectionInProcess;
-    Boolean _reloadDeferred;
+    BOOL _immediateSelection;
+    BOOL _mouseSelectionInProcess;
+    BOOL _reloadDeferred;
     NSIndexSet *_selectedRowsWithMenu;
     NSMutableDictionary<NSString*, ScrollPosition*> *_folderScrollPositions;
     ScrollPosition *_currentFolderScrollPosition;
@@ -511,7 +511,7 @@
     return NO;
 }
 
-- (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition {
+- (void)reloadMessageList:(BOOL)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition {
     if(updateScrollPosition) {
         [self saveScrollPosition];
         [self reloadMessageList:preserveSelection];
@@ -522,7 +522,7 @@
     }
 }
 
-- (void)reloadMessageList:(Boolean)preserveSelection {
+- (void)reloadMessageList:(BOOL)preserveSelection {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
@@ -620,7 +620,7 @@
     [[messageListToolbarViewController trashButton] setEnabled:enable];
 }
 
-- (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {
+- (void)messageHeadersSyncFinished:(BOOL)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {
     if(hasUpdates) {
         [self reloadMessageList:YES updateScrollPosition:updateScrollPosition];
 
@@ -1085,7 +1085,7 @@
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
-- (void)markMessageThreadsAsUnseen:(Boolean)unseen {
+- (void)markMessageThreadsAsUnseen:(BOOL)unseen {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
     id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
@@ -1132,7 +1132,7 @@
     for(SMMessage *m in messageThread.messagesSortedByDate) {
         if(m.draft) {
             if(m.htmlBodyRendering != nil) {
-                Boolean plainText = NO; // TODO: detect if the draft being opened is a plain text message, see issue #89 
+                BOOL plainText = NO; // TODO: detect if the draft being opened is a plain text message, see issue #89 
                 [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:m.subject to:[SMAddress mcoAddressesToAddressList:m.toAddressList] cc:[SMAddress mcoAddressesToAddressList:m.ccAddressList] bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:kUnfoldedDraftEditorContentsKind];
             }
             else {

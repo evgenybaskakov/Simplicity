@@ -15,11 +15,11 @@
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
     return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:attachmentItems];
 }
 
-+ (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
     if(from != nil) {
@@ -91,7 +91,7 @@
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
+- (id)initWithMessageText:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
     self = [super init];
     
     if(self) {
@@ -114,7 +114,7 @@
     
     if (self) {
         NSString *messageText = [coder decodeObjectForKey:@"messageText"];
-        Boolean plainText = [coder decodeBoolForKey:@"plainText"];
+        BOOL plainText = [coder decodeBoolForKey:@"plainText"];
         NSString *subject = [coder decodeObjectForKey:@"subject"];
         MCOAddress *from = [coder decodeObjectForKey:@"from"];
         NSArray *to = [coder decodeObjectForKey:@"to"];

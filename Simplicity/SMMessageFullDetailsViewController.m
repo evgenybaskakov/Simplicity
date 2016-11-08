@@ -39,8 +39,8 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
     NSScrollView *_ccScrollView;
     NSLayoutConstraint *_toBottomConstraint;
     NSMutableArray *_ccConstraints;
-    Boolean _ccCreated;
-    Boolean _addressListsFramesValid;
+    BOOL _ccCreated;
+    BOOL _addressListsFramesValid;
     SMAddress *_addressWithMenu;
     NSString *_addressWithMenuUniqueId;
     NSLayoutConstraint *_toScrollViewHeightConstraint;
@@ -415,7 +415,7 @@ static const NSUInteger MAX_ADDRESS_LIST_HEIGHT = 115;
 - (void)newMessageAction:(NSMenuItem*)menuItem {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
-    Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
+    BOOL plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[_addressWithMenu] cc:nil bcc:nil draftUid:0 mcoAttachments:nil editorKind:kEmptyEditorContentsKind];
 }
 

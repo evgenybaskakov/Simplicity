@@ -24,7 +24,7 @@ static SMAddressFieldViewController *_lastAddressFieldUsed;
 static NSArray *_lastAddressesUsed;
 
 @implementation SMAddressFieldViewController {
-    Boolean _tokenFieldFrameValid;
+    BOOL _tokenFieldFrameValid;
     SMAddress *_addressWithMenu;
     NSArray *_nonEditedAddresses;
     NSString *_addressWithMenuUniqueId;
@@ -372,7 +372,7 @@ static NSArray *_lastAddressesUsed;
 - (void)newMessageAction:(NSMenuItem*)menuItem {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     
-    Boolean plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
+    BOOL plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
     [[appDelegate appController] openMessageEditorWindow:nil plainText:plainText subject:nil to:@[_addressWithMenu] cc:nil bcc:nil draftUid:0 mcoAttachments:nil editorKind:kEmptyEditorContentsKind];
 }
 

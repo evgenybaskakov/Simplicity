@@ -16,26 +16,26 @@
 
 @property (readonly) SMBoxView *boxView;
 
-@property (nonatomic) Boolean collapsed;
-@property (nonatomic) Boolean shouldDrawBottomLineWhenCollapsed;
-@property (nonatomic) Boolean shouldDrawBottomLineWhenUncollapsed;
+@property (nonatomic) BOOL collapsed;
+@property (nonatomic) BOOL shouldDrawBottomLineWhenCollapsed;
+@property (nonatomic) BOOL shouldDrawBottomLineWhenUncollapsed;
 @property (nonatomic) NSUInteger cellIndex;
 
 @property (readonly, nonatomic) NSUInteger cellHeight;
 @property (readonly, nonatomic) NSUInteger cellHeaderHeight;
 @property (readonly, nonatomic) NSUInteger stringOccurrencesCount;
-@property (readonly, nonatomic) Boolean mainFrameLoaded;
+@property (readonly, nonatomic) BOOL mainFrameLoaded;
 
 @property (readonly, nonatomic) __weak SMMessageThreadViewController *messageThreadViewController;
 
 + (NSUInteger)collapsedCellHeight;
 
-- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed;
+- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(BOOL)collapsed;
 - (void)setMessage:(SMMessage*)message;
 - (void)updateMessage;
-- (Boolean)loadMessageBody;
-- (void)enableCollapse:(Boolean)enable;
-- (void)adjustCellHeightToFitContentResizeable:(Boolean)heightResizeable;
+- (BOOL)loadMessageBody;
+- (void)enableCollapse:(BOOL)enable;
+- (void)adjustCellHeightToFitContentResizeable:(BOOL)heightResizeable;
 
 #pragma mark Saving attachments
 
@@ -44,7 +44,7 @@
 
 #pragma mark Finding contents
 
-- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
 - (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;

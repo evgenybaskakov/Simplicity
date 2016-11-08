@@ -40,7 +40,7 @@
     MCOMessageBuilder *_prevSaveDraftMessage;
     SMOpAppendMessage *_prevSaveDraftOp;
     uint32_t _saveDraftUID;
-    Boolean _shouldDeleteSavedDraft;
+    BOOL _shouldDeleteSavedDraft;
 }
 
 - (id)initWithDraftUID:(uint32_t)draftMessageUid {
@@ -66,7 +66,7 @@
 
 #pragma mark Actions
 
-- (BOOL)sendMessage:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (BOOL)sendMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     
     // TODO: why attachments are in this object, not parameters?
     
@@ -95,7 +95,7 @@
     }
 }
 
-- (void)saveDraft:(NSString*)messageText plainText:(Boolean)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (void)saveDraft:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     SMFolder *draftsFolder = [[account mailbox] draftsFolder];
@@ -178,7 +178,7 @@
     }
 }
 
-- (Boolean)hasSavedDraft {
+- (BOOL)hasSavedDraft {
     return (_saveDraftUID != 0);
 }
 

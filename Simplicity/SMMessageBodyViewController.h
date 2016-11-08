@@ -20,11 +20,11 @@
 
 @property (readonly) NSUInteger contentHeight;
 @property (readonly) NSUInteger stringOccurrencesCount;
-@property (readonly) Boolean mainFrameLoaded;
+@property (readonly) BOOL mainFrameLoaded;
 
 - (void)uncollapse;
 - (void)setMessageHtmlText:(NSString*)htmlText messageId:(uint64_t)messageId folder:(NSString*)folder account:(SMUserAccount*)account;
-- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase;
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
 - (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;

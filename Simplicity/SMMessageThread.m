@@ -84,23 +84,23 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return _threadId;
 }
 
-- (Boolean)unseen {
+- (BOOL)unseen {
     return _threadFlags & ThreadFlagsUnseen;
 }
 
-- (Boolean)flagged {
+- (BOOL)flagged {
     return _threadFlags & ThreadFlagsFlagged;
 }
 
-- (Boolean)hasAttachments {
+- (BOOL)hasAttachments {
     return _threadFlags & ThreadFlagsHasAttachment;
 }
 
-- (Boolean)hasDraft {
+- (BOOL)hasDraft {
     return _threadFlags & ThreadFlagsHasDraft;
 }
 
-- (Boolean)hasPreview {
+- (BOOL)hasPreview {
     return _threadFlags & ThreadFlagsHasPreview;
 }
 
@@ -159,10 +159,10 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return [[_messageCollection messagesByDate] array];
 }
 
-- (Boolean)updateThreadAttributesForMessageId:(uint64_t)messageId {
+- (BOOL)updateThreadAttributesForMessageId:(uint64_t)messageId {
     SMMessage *message = [self getMessageByMessageId:messageId];
     
-    Boolean attributesChanged = NO;
+    BOOL attributesChanged = NO;
     
     if(message != nil) {
         NSAssert(message.messageId == messageId, @"bad message found");
@@ -172,7 +172,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             attributesChanged = YES;
         }
         else if(!message.hasAttachments && [self hasAttachments]) {
-            Boolean attachmentFound = NO;
+            BOOL attachmentFound = NO;
             for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.hasAttachments) {
                     attachmentFound = YES;
@@ -190,7 +190,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             attributesChanged = YES;
         }
         else if(!message.draft && [self hasDraft]) {
-            Boolean draftFound = NO;
+            BOOL draftFound = NO;
             for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.draft) {
                     draftFound = YES;
@@ -208,7 +208,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             attributesChanged = YES;
         }
         else if(!message.unseen && [self unseen]) {
-            Boolean unseenFound = NO;
+            BOOL unseenFound = NO;
             for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.unseen) {
                     unseenFound = YES;
@@ -226,7 +226,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             attributesChanged = YES;
         }
         else if(!message.flagged && [self flagged]) {
-            Boolean flaggedFound = NO;
+            BOOL flaggedFound = NO;
             for(SMMessage *m in _messageCollection.messagesByMessageId) {
                 if(m.flagged) {
                     flaggedFound = YES;
@@ -297,8 +297,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return message;
 }
 
-- (Boolean)messageHasData:(uint64_t)messageId {
-    Boolean hasData = NO;
+- (BOOL)messageHasData:(uint64_t)messageId {
+    BOOL hasData = NO;
     SMMessage *message = [self getMessageByMessageId:messageId];
 
     if(message != nil) {
@@ -358,7 +358,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
             }
             
             BOOL wasUnseen = message.unseen;
-            Boolean hasUpdates = [message updateImapMessage:imapMessage];
+            BOOL hasUpdates = [message updateImapMessage:imapMessage];
             
             message.updateStatus = SMMessageUpdateStatus_Persisted;
             
@@ -418,7 +418,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return [self messageOutdated:message] && [message.remoteFolder isEqualToString:remoteFolder];
 }
 
-- (SMThreadUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
+- (SMThreadUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(BOOL)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray *)addNewUnseenMessages {
     NSAssert([_messageCollection count] == [_messageCollection.messagesByDate count], @"message lists mismatch");
     NSAssert(_messageCollection.messagesByDate.count > 0, @"empty message thread");
     
@@ -489,7 +489,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         [newLabels addObjectsFromArray:message.labels];
     }
     
-    Boolean labelsChanged = NO;
+    BOOL labelsChanged = NO;
     if(![_labels isEqualToOrderedSet:newLabels]) {
         _labels = newLabels;
         labelsChanged = YES;

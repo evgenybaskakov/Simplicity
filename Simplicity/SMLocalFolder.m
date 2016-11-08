@@ -54,7 +54,7 @@
 @synthesize syncedWithRemoteFolder = _syncedWithRemoteFolder;
 @synthesize messageBodyFetchQueue = _messageBodyFetchQueue;
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     self = [super initWithUserAccount:account];
     
     if(self) {
@@ -81,7 +81,7 @@
     return self;
 }
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(Boolean)syncWithRemoteFolder {
+- (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolderName:(NSString*)localFolderName remoteFolderName:(NSString*)remoteFolderName kind:(SMFolderKind)kind initialUnreadCount:(NSUInteger)initialUnreadCount syncWithRemoteFolder:(BOOL)syncWithRemoteFolder {
     self = [self initWithUserAccount:account localFolderName:localFolderName remoteFolderName:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
     
     if(self) {
@@ -105,7 +105,7 @@
     }
 }
 
-- (Boolean)folderStillLoadingInitialState {
+- (BOOL)folderStillLoadingInitialState {
     if(_kind == SMFolderKindOutbox) {
         // Outbox is always up-to-date.
         return NO;
@@ -190,7 +190,7 @@
     }
 }
 
-- (Boolean)folderUpdateIsInProgress {
+- (BOOL)folderUpdateIsInProgress {
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
@@ -254,7 +254,7 @@
     [_messageStorage markMessageThreadAsUpdated:[threadId unsignedLongLongValue]];
 }
 
-- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName updateDatabase:(Boolean)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
+- (void)updateMessages:(NSArray*)imapMessages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags remoteFolder:(NSString*)remoteFolderName updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     MCOIMAPSession *session = [(SMUserAccount*)_account imapSession];
     
     NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
@@ -316,7 +316,7 @@
     }
 }
 
-- (void)finishHeadersSync:(Boolean)updateDatabase {
+- (void)finishHeadersSync:(BOOL)updateDatabase {
     SM_LOG_INFO(@"folder %@ is finishing syncing", _localName);
 
     // When the update ends, push a system notification if these conditions are met:
@@ -342,19 +342,19 @@
         }
     } : nil];
 
-    Boolean finishedDbSync = _dbSyncInProgress;
+    BOOL finishedDbSync = _dbSyncInProgress;
     
     [self finishMessageHeadersFetching];
 
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.
-    Boolean hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
+    BOOL hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
     
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
-- (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(Boolean)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
+- (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
     for(MCOIMAPMessage *m in messages) {
         [_fetchedMessageHeaders setObject:m forKey:[NSNumber numberWithUnsignedLongLong:m.gmailMessageID]];
     }
@@ -559,7 +559,7 @@
 */
 }
 
-- (Boolean)messageHeadersAreBeingLoaded {
+- (BOOL)messageHeadersAreBeingLoaded {
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
@@ -636,7 +636,7 @@
 
 #pragma mark Messages manipulation
 
-- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
+- (void)setMessageUnseen:(SMMessage*)message unseen:(BOOL)unseen {
     if(message.unseen == unseen)
         return;
     
@@ -660,7 +660,7 @@
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
 }
 
-- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
+- (void)setMessageFlagged:(SMMessage*)message flagged:(BOOL)flagged {
     if(message.flagged == flagged)
         return;
     
@@ -837,16 +837,16 @@
     return [self moveMessage:message.messageId uid:message.uid threadId:messageThread.threadId useThreadId:(messageThread? YES : NO) toRemoteFolder:destRemoteFolderName];
 }
 
-- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
+- (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     NSNumber *threadIdNum = [_messageStorage messageThreadByMessageId:messageId];
 
     const uint64_t threadId = (threadIdNum != nil? [threadIdNum unsignedLongLongValue] : 0);
-    const Boolean useThreadId = (threadIdNum != nil);
+    const BOOL useThreadId = (threadIdNum != nil);
 
     return [self moveMessage:messageId uid:uid threadId:threadId useThreadId:useThreadId toRemoteFolder:destRemoteFolderName];
 }
 
-- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(Boolean)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
+- (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(BOOL)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
 
     // Stop current message loading process.
@@ -858,7 +858,7 @@
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.
-    Boolean needUpdateMessageList = NO;
+    BOOL needUpdateMessageList = NO;
     
     if(useThreadId) {
         NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);

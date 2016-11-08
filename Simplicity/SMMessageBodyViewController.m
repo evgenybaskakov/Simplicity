@@ -52,12 +52,12 @@
     SMUserAccount *_account;
     unsigned long long _nextIdentifier;
     NSString *_currentFindString;
-    Boolean _currentFindStringMatchCase;
+    BOOL _currentFindStringMatchCase;
     NSString *_htmlText;
     uint32_t _uid;
     uint64_t _messageId;
     NSString *_folder;
-    Boolean _uncollapsed;
+    BOOL _uncollapsed;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -273,7 +273,7 @@
 
 #pragma mark Finding contents
 
-- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase {
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
     _currentFindString = str;
     _currentFindStringMatchCase = matchCase;
     

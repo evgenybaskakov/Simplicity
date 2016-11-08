@@ -37,9 +37,9 @@
 @implementation SMMailboxViewController {
     NSInteger _rowWithMenu;
     NSString *_labelToRename;
-    Boolean _favoriteFolderSelected;
+    BOOL _favoriteFolderSelected;
     NSBox *_hightlightBox;
-    Boolean _doHightlightRow;
+    BOOL _doHightlightRow;
     NSMutableArray<NSNumber*> *_favoriteFolders;
     NSMutableArray<NSNumber*> *_visibleFolders;
     SMFolder *_prevFolder;
@@ -274,7 +274,7 @@
     return [self selectedFolder:row favoriteFolderSelected:nil];
 }
 
-- (SMFolder*)selectedFolder:(NSInteger)row favoriteFolderSelected:(Boolean*)favoriteFolderSelected {
+- (SMFolder*)selectedFolder:(NSInteger)row favoriteFolderSelected:(BOOL*)favoriteFolderSelected {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     id<SMMailbox> mailbox = appDelegate.currentMailbox;
     

@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
     @protected NSAttributedString *_htmlMessageBody;
     @protected NSString *_htmlBodyRendering;
     @protected NSArray *_attachments;
-    @protected Boolean _hasAttachments;
+    @protected BOOL _hasAttachments;
     @protected SMAddress *_fromAddress;
 }
 
@@ -45,22 +45,22 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) NSString *remoteFolder;
 @property (readonly) NSArray *labels;
 @property (readonly) NSUInteger messageSize;
-@property (readonly) Boolean draft;
+@property (readonly) BOOL draft;
 
 @property (nonatomic) MCOMessageParser *msgParser;
 @property (nonatomic) NSString *plainTextBody;
 @property (nonatomic) NSArray *attachments;
-@property (nonatomic) Boolean hasAttachments;
+@property (nonatomic) BOOL hasAttachments;
 
-@property (nonatomic) Boolean unseen;
-@property (nonatomic) Boolean flagged;
+@property (nonatomic) BOOL unseen;
+@property (nonatomic) BOOL flagged;
 
 @property SMMessageUpdateStatus updateStatus;
 
 + (NSString*)parseAddress:(MCOAddress*)address;
 
 - (id)initWithMCOIMAPMessage:(MCOIMAPMessage*)m remoteFolder:(NSString*)remoteFolderName;
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m;
+- (BOOL)updateImapMessage:(MCOIMAPMessage*)m;
 - (NSString*)localizedDate;
 - (BOOL)hasData;
 - (void)addLabel:(NSString*)label;

@@ -25,7 +25,7 @@
 @property (readonly) NSUInteger totalMessagesCount;
 @property (readonly) NSUInteger messageHeadersFetched;
 @property (readonly) NSUInteger maxMessagesPerThisFolder;
-@property (readonly) Boolean syncedWithRemoteFolder;
+@property (readonly) BOOL syncedWithRemoteFolder;
 
 @property (readonly) id<SMAbstractMessageStorage> messageStorage;
 
@@ -43,11 +43,11 @@
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
 
 // tells whether there is message headers loading progress underway
-- (Boolean)messageHeadersAreBeingLoaded;
+- (BOOL)messageHeadersAreBeingLoaded;
 
 // tells whether there is still the initial server sync pending
 // and nothing was loaded from the DB
-- (Boolean)folderStillLoadingInitialState;
+- (BOOL)folderStillLoadingInitialState;
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.
@@ -60,13 +60,13 @@
 - (void)removeMessage:(SMMessage*)message;
 
 // sets/clears the unseen flag
-- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen;
+- (void)setMessageUnseen:(SMMessage*)message unseen:(BOOL)unseen;
 
 // sets/clears the "flag" mark
-- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged;
+- (void)setMessageFlagged:(SMMessage*)message flagged:(BOOL)flagged;
 
 // initiates process of moving the given message to another (remote) folder
-- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName;
+- (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName;
 
 // initiates process of moving the selected message to another (remote) folder
 - (BOOL)moveMessage:(SMMessage*)message withinMessageThread:(SMMessageThread*)messageThread toRemoteFolder:(NSString*)destRemoteFolderName;

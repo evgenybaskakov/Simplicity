@@ -19,13 +19,13 @@
 
 @property CGFloat topOffset;
 
-- (void)findContents:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward;
+- (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward;
 - (void)removeFindContentsResults;
 
 - (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)updateMessageThread;
 
-- (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex;
+- (void)setCellCollapsed:(BOOL)collapsed cellIndex:(NSUInteger)cellIndex;
 
 - (void)collapseAll;
 - (void)uncollapseAll;

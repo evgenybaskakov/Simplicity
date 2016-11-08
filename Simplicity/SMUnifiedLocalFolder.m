@@ -42,7 +42,7 @@
     return self;
 }
 
-- (Boolean)folderStillLoadingInitialState {
+- (BOOL)folderStillLoadingInitialState {
     for(SMLocalFolder *localFolder in _attachedLocalFolders) {
         if(![localFolder folderStillLoadingInitialState]) {
             return NO;
@@ -110,7 +110,7 @@
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
-- (Boolean)messageHeadersAreBeingLoaded {
+- (BOOL)messageHeadersAreBeingLoaded {
     SM_FATAL(@"TODO");
     return NO;
 }
@@ -123,11 +123,11 @@
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
-- (void)setMessageUnseen:(SMMessage*)message unseen:(Boolean)unseen {
+- (void)setMessageUnseen:(SMMessage*)message unseen:(BOOL)unseen {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
-- (void)setMessageFlagged:(SMMessage*)message flagged:(Boolean)flagged {
+- (void)setMessageFlagged:(SMMessage*)message flagged:(BOOL)flagged {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
@@ -140,7 +140,7 @@
     return NO;
 }
 
-- (Boolean)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
+- (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid toRemoteFolder:(NSString*)destRemoteFolderName {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
     return NO;
 }

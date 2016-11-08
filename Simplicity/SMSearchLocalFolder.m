@@ -49,7 +49,7 @@
     return self;
 }
 
-- (Boolean)folderStillLoadingInitialState {
+- (BOOL)folderStillLoadingInitialState {
     return NO;
 }
 

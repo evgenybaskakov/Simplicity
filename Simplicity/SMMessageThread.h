@@ -23,10 +23,10 @@
 @property (readonly) uint64_t threadId;
 @property (readonly) NSInteger messagesCount;
 @property (readonly) NSInteger unseenMessagesCount;
-@property (readonly) Boolean unseen;
-@property (readonly) Boolean flagged;
-@property (readonly) Boolean hasAttachments;
-@property (readonly) Boolean hasDraft;
+@property (readonly) BOOL unseen;
+@property (readonly) BOOL flagged;
+@property (readonly) BOOL hasAttachments;
+@property (readonly) BOOL hasDraft;
 @property (readonly) NSOrderedSet *labels;
 
 @property (readonly, nonatomic) SMUserAccount *account;
@@ -46,14 +46,14 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 - (SMThreadUpdateResult)removeMessage:(SMMessage*)message;
 
 - (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody hasAttachments:(BOOL)hasAttachments remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount messageIsNew:(BOOL*)messageIsNew;
-- (SMThreadUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(Boolean)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray*)addNewUnseenMessages;
+- (SMThreadUpdateResult)endUpdateWithRemoteFolder:(NSString*)remoteFolder removeVanishedMessages:(BOOL)removeVanishedMessages vanishedMessages:(NSMutableArray*)vanishedMessages addNewUnseenMessages:(NSMutableArray*)addNewUnseenMessages;
 - (void)markAsUpdated;
 
 - (void)cancelUpdate;
 
 - (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId;
-- (Boolean)messageHasData:(uint64_t)messageId;
-- (Boolean)updateThreadAttributesForMessageId:(uint64_t)messageId;
+- (BOOL)messageHasData:(uint64_t)messageId;
+- (BOOL)updateThreadAttributesForMessageId:(uint64_t)messageId;
 - (void)removeMessageFromMessageThread:(uint64_t)messageId;
 
 - (void)addLabel:(NSString*)label;

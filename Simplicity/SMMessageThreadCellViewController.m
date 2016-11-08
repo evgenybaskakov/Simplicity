@@ -35,12 +35,12 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     NSMutableArray *_attachmentsPanelViewConstraints;
     CGFloat _messageViewHeight;
     NSString *_htmlText;
-    Boolean _messageTextIsSet;
-    Boolean _attachmentsPanelShown;
-    Boolean _cellInitialized;
+    BOOL _messageTextIsSet;
+    BOOL _attachmentsPanelShown;
+    BOOL _cellInitialized;
 }
 
-- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(Boolean)collapsed {
+- (id)init:(SMMessageThreadViewController*)messageThreadViewController collapsed:(BOOL)collapsed {
     self = [super init];
     
     if(self) {
@@ -164,7 +164,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     [_progressIndicator removeFromSuperview];
 }
 
-- (void)enableCollapse:(Boolean)enable {
+- (void)enableCollapse:(BOOL)enable {
     [_headerButton setEnabled:enable];
 }
 
@@ -177,7 +177,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     return [SMMessageDetailsViewController messageDetaisHeaderHeight];
 }
 
-- (void)setCollapsed:(Boolean)collapsed {
+- (void)setCollapsed:(BOOL)collapsed {
     // When the collapse property changes, it also adds/removes subviews and constraints.
     // The added constraints may conflict with the autoresizing frame
     // which is set previously, when the message thread cells layout is set.
@@ -294,7 +294,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)setShouldDrawBottomLineWhenCollapsed:(Boolean)shouldDrawBottomLineWhenCollapsed {
+- (void)setShouldDrawBottomLineWhenCollapsed:(BOOL)shouldDrawBottomLineWhenCollapsed {
     _shouldDrawBottomLineWhenCollapsed = shouldDrawBottomLineWhenCollapsed;
     
     if(_collapsed) {
@@ -302,7 +302,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)setShouldDrawBottomLineWhenUncollapsed:(Boolean)shouldDrawBottomLineWhenUncollapsed {
+- (void)setShouldDrawBottomLineWhenUncollapsed:(BOOL)shouldDrawBottomLineWhenUncollapsed {
     _shouldDrawBottomLineWhenUncollapsed = shouldDrawBottomLineWhenUncollapsed;
     
     if(!_collapsed) {
@@ -310,7 +310,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (Boolean)isCollapsed {
+- (BOOL)isCollapsed {
     return _collapsed;
 }
 
@@ -340,7 +340,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (void)adjustCellHeightToFitContentResizeable:(Boolean)heightResizeable {
+- (void)adjustCellHeightToFitContentResizeable:(BOOL)heightResizeable {
     NSView *messageBodyView = [_messageBodyViewController view];
     NSAssert(messageBodyView, @"messageBodyView");
 
@@ -445,7 +445,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     }
 }
 
-- (Boolean)loadMessageBody {
+- (BOOL)loadMessageBody {
     NSAssert(_message != nil, @"no message set");
 
     if(_htmlText != nil)
@@ -466,7 +466,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     return TRUE;
 }
 
-- (Boolean)mainFrameLoaded {
+- (BOOL)mainFrameLoaded {
     return (_messageBodyViewController != nil) && _messageBodyViewController.mainFrameLoaded;
 }
 
@@ -498,7 +498,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
     return _messageBodyViewController.stringOccurrencesCount;
 }
 
-- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(Boolean)matchCase {
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
     [_messageBodyViewController highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 

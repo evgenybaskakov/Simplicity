@@ -20,9 +20,9 @@
 
 - (void)toggleStarForSelected;
 - (void)deselectCurrentMessageThread;
-- (void)reloadMessageList:(Boolean)preserveSelection;
-- (void)reloadMessageList:(Boolean)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
-- (void)messageHeadersSyncFinished:(Boolean)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;
+- (void)reloadMessageList:(BOOL)preserveSelection;
+- (void)reloadMessageList:(BOOL)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
+- (void)messageHeadersSyncFinished:(BOOL)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolderName;
 - (void)showLoadProgress;
 - (void)hideLoadProgress;

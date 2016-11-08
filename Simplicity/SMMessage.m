@@ -232,7 +232,7 @@ static NSString *unquote(NSString *s) {
     return _msgParser != nil;
 }
 
-- (Boolean)updateImapMessage:(MCOIMAPMessage*)m {
+- (BOOL)updateImapMessage:(MCOIMAPMessage*)m {
     NSAssert(m, @"bad param message");
     
     if(_imapMessage == nil) {
@@ -264,7 +264,7 @@ static NSString *unquote(NSString *s) {
     }
 }
 
-- (Boolean)unseen {
+- (BOOL)unseen {
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is not set");
         return NO;
@@ -273,7 +273,7 @@ static NSString *unquote(NSString *s) {
     return (_imapMessage.flags & MCOMessageFlagSeen) == 0;
 }
 
-- (void)setUnseen:(Boolean)unseen {
+- (void)setUnseen:(BOOL)unseen {
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is not set");
         return;
@@ -288,7 +288,7 @@ static NSString *unquote(NSString *s) {
     
 }
 
-- (Boolean)flagged {
+- (BOOL)flagged {
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is not set");
         return NO;
@@ -297,7 +297,7 @@ static NSString *unquote(NSString *s) {
     return (_imapMessage.flags & MCOMessageFlagFlagged) != 0;
 }
 
-- (void)setFlagged:(Boolean)flagged {
+- (void)setFlagged:(BOOL)flagged {
     if(_imapMessage == nil) {
         SM_LOG_DEBUG(@"IMAP message is not set");
         return;

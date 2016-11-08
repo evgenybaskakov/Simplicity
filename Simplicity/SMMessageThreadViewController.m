@@ -57,16 +57,16 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     SMFindContentsPanelViewController *_findContentsPanelViewController;
     NSMutableArray<SMMessageThreadCell*> *_cells;
     NSView *_contentView;
-    Boolean _findContentsActive;
+    BOOL _findContentsActive;
     NSString *_currentStringToFind;
-    Boolean _currentStringToFindMatchCase;
-    Boolean _stringOccurrenceMarked;
+    BOOL _currentStringToFindMatchCase;
+    BOOL _stringOccurrenceMarked;
     NSUInteger _stringOccurrenceMarkedCellIndex;
     NSUInteger _stringOccurrenceMarkedResultIndex;
     NSUInteger _firstVisibleCell, _lastVisibleCell;
-    Boolean _cellsArranged;
-    Boolean _cellsUpdateStarted;
-    Boolean _findContentsPanelShown;
+    BOOL _cellsArranged;
+    BOOL _cellsUpdateStarted;
+    BOOL _findContentsPanelShown;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -120,7 +120,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Setting new message threads
 
-- (SMMessageThreadCellViewController*)createMessageThreadCell:(SMMessage*)message collapsed:(Boolean)collapsed {
+- (SMMessageThreadCellViewController*)createMessageThreadCell:(SMMessage*)message collapsed:(BOOL)collapsed {
     SMMessageThreadCellViewController *messageThreadCellViewController = [[SMMessageThreadCellViewController alloc] init:self collapsed:collapsed];
     
     [messageThreadCellViewController setMessage:message];
@@ -138,7 +138,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     return messageThreadCellViewController;
 }
 
-- (void)closeEmbeddedEditor:(Boolean)saveDraft {
+- (void)closeEmbeddedEditor:(BOOL)saveDraft {
     if(_messageEditorViewController != nil) {
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
@@ -218,7 +218,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         }
         
         for(NSUInteger i = 0; i < messages.count; i++) {
-            Boolean collapsed = (messages.count == 1? NO : (_currentMessageThread.unseen? i != lastUnseenMessageIdx : i > 0));
+            BOOL collapsed = (messages.count == 1? NO : (_currentMessageThread.unseen? i != lastUnseenMessageIdx : i > 0));
             SMMessageThreadCellViewController *viewController = [self createMessageThreadCell:messages[i] collapsed:collapsed];
             
             [viewController enableCollapse:(messages.count > 1)];
@@ -297,7 +297,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     if([_currentMessageThread.messageStorage messageThreadById:_currentMessageThread.threadId] != nil && newMessages.count > 0) {
         // check whether messages did not change
         if(newMessages.count == _cells.count) {
-            Boolean equal = YES;
+            BOOL equal = YES;
             
             for(NSInteger i = 0; i < _cells.count; i++) {
                 if(newMessages[i] != ((SMMessageThreadCell*)_cells[i]).message) {
@@ -411,7 +411,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
 }
 
-- (Boolean)shouldUseFullHeightForFirstCell {
+- (BOOL)shouldUseFullHeightForFirstCell {
     if(_messageEditorViewController == nil && _cells.count == 1) {
         SMMessageThreadCell *firstCell = _cells[0];
         
@@ -582,7 +582,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Cells collapsing / uncollapsing
 
-- (void)setCellCollapsed:(Boolean)collapsed cellIndex:(NSUInteger)cellIndex {
+- (void)setCellCollapsed:(BOOL)collapsed cellIndex:(NSUInteger)cellIndex {
     NSAssert(cellIndex < _cells.count, @"bad index %lu", cellIndex);
     
     SMMessageThreadCell *cell = _cells[cellIndex];
@@ -836,7 +836,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Finding messages contents
 
-- (void)findContents:(NSString*)stringToFind matchCase:(Boolean)matchCase forward:(Boolean)forward {
+- (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward {
     NSAssert(_currentMessageThread != nil, @"_currentMessageThread == nil");
     NSAssert(_cells.count > 0, @"no cells");
     
@@ -898,7 +898,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         } else {
             [cell.viewController removeMarkedOccurrenceOfFoundString];
             
-            Boolean wrap = NO;
+            BOOL wrap = NO;
             for(NSUInteger i = _stringOccurrenceMarkedCellIndex;;) {
                 if(forward) {
                     if(i == _cells.count-1) {
@@ -1055,7 +1055,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     
     // If the message is being marked unseen, collapse its cell.
     // Then update the message thread and the message list views to reflect that.
-    Boolean preserveMessageListSelection = YES;
+    BOOL preserveMessageListSelection = YES;
     
     if(cell.message.unseen) {
         if(_cells.count == 1) {
@@ -1154,7 +1154,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     
     _cellViewControllerToReply = cell.viewController;
     
-    Boolean plainText = NO; // TODO: detect if the message being replied is plain text, see issue #88
+    BOOL plainText = NO; // TODO: detect if the message being replied is plain text, see issue #88
     _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:NSMakeRect(0, 0, 200, 100) messageThreadViewController:self draftUid:0 plainText:plainText];
     
     NSView *editorSubview = _messageEditorViewController.view;

@@ -22,12 +22,12 @@
     return [localFolder moveMessage:message.messageId uid:message.uid toRemoteFolder:remoteFolder];
 }
 
-- (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(Boolean)unseen {
+- (void)setMessageUnseen:(SMMessageThread*)messageThread message:(SMMessage*)message unseen:(BOOL)unseen {
     id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];
     [localFolder setMessageUnseen:message unseen:unseen];
 }
 
-- (void)setMessageFlagged:(SMMessageThread*)messageThread message:(SMMessage*)message flagged:(Boolean)flagged {
+- (void)setMessageFlagged:(SMMessageThread*)messageThread message:(SMMessage*)message flagged:(BOOL)flagged {
     id<SMAbstractLocalFolder> localFolder = [[messageThread.account messageListController] currentLocalFolder];
     [localFolder setMessageFlagged:message flagged:flagged];
 }

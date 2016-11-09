@@ -8,6 +8,13 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMEditorFindContentsPanelViewController">
             <connections>
+                <outlet property="directionButtons" destination="E8f-mA-Sxs" id="lGP-j7-kHD"/>
+                <outlet property="doneButton" destination="OcY-7g-iRT" id="NtA-dR-HW9"/>
+                <outlet property="findField" destination="1wn-wT-4Jh" id="EBN-0I-i0i"/>
+                <outlet property="matchCaseCheckbox" destination="R0s-lo-s3I" id="uxI-cv-Z1D"/>
+                <outlet property="replaceAllButton" destination="vP4-UM-ORc" id="xMi-wd-KEj"/>
+                <outlet property="replaceButton" destination="dMk-ua-d17" id="8OL-2B-RiF"/>
+                <outlet property="replaceField" destination="vvE-EH-A4P" id="iDP-KA-gQd"/>
                 <outlet property="view" destination="2de-YB-1zU" id="Z8P-rc-odF"/>
             </connections>
         </customObject>
@@ -25,6 +32,9 @@
                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="matchCaseCheckbox:" target="-2" id="6cL-ns-x72"/>
+                            </connections>
                         </button>
                         <searchField wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1wn-wT-4Jh">
                             <rect key="frame" x="8" y="31" width="253" height="22"/>
@@ -36,6 +46,9 @@
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </searchFieldCell>
+                            <connections>
+                                <action selector="findFieldAction:" target="-2" id="ZQa-Gg-Jfi"/>
+                            </connections>
                         </searchField>
                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="OcY-7g-iRT">
                             <rect key="frame" x="412" y="24" width="72" height="32"/>
@@ -43,6 +56,9 @@
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="doneButtonAction:" target="-2" id="AOn-lU-tKz"/>
+                            </connections>
                         </button>
                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vvE-EH-A4P">
                             <rect key="frame" x="8" y="4" width="279" height="22"/>
@@ -51,6 +67,9 @@
                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
+                            <connections>
+                                <action selector="replaceFieldAction:" target="-2" id="i95-Ec-nw7"/>
+                            </connections>
                         </textField>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vP4-UM-ORc">
                             <rect key="frame" x="378" y="-3" width="106" height="32"/>
@@ -58,6 +77,9 @@
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="replaceAllButtonAction:" target="-2" id="5ds-AS-r9A"/>
+                            </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dMk-ua-d17">
                             <rect key="frame" x="289" y="-3" width="89" height="32"/>
@@ -65,6 +87,9 @@
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="replaceButtonAction:" target="-2" id="YMs-KX-SVq"/>
+                            </connections>
                         </button>
                         <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E8f-mA-Sxs" userLabel="Forward And Backwards">
                             <rect key="frame" x="365" y="29" width="47" height="24"/>
@@ -75,6 +100,9 @@
                                     <segment image="NSRightFacingTriangleTemplate" width="20" tag="1"/>
                                 </segments>
                             </segmentedCell>
+                            <connections>
+                                <action selector="directionButtonsAction:" target="-2" id="Lpy-n5-ST5"/>
+                            </connections>
                         </segmentedControl>
                     </subviews>
                     <constraints>

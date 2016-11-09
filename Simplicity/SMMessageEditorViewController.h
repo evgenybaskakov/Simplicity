@@ -56,5 +56,6 @@
 - (void)saveDocument:(id)sender;
 - (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
 - (void)showFindContentsPanel;
+- (void)hideFindContentsPanel;
 
 @end

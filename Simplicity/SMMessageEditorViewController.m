@@ -1156,6 +1156,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_innerView setFrameSize:NSMakeSize(_innerView.frame.size.width, _innerView.frame.size.height + fullPanelHeightAdjustment)];
     }
     
+    if(_findContentsPanelShown) {
+        _findContentsPanelViewController.view.frame = NSMakeRect(0, yPos, curWidth, _findContentsPanelViewController.view.frame.size.height);
+        
+        yPos += _findContentsPanelViewController.view.frame.size.height;
+    }
+    
     _textAndAttachmentsSplitView.frame = NSMakeRect(-1, yPos, curWidth+2, curHeight - yPos - foldButtonHeight + fullPanelHeightAdjustment);
     
     yPos += _textAndAttachmentsSplitView.frame.size.height;
@@ -1285,16 +1291,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(_findContentsPanelViewController == nil) {
         _findContentsPanelViewController = [[SMEditorFindContentsPanelViewController alloc] initWithNibName:@"SMEditorFindContentsPanelViewController" bundle:nil];
         _findContentsPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        _findContentsPanelViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin | NSViewMaxYMargin;
-//TODO        _findContentsPanelViewController.messageThreadViewController = self;
+        _findContentsPanelViewController.view.autoresizingMask = NSViewWidthSizable;
+        _findContentsPanelViewController.messageEditorViewController = self;
     }
     
     if(!_findContentsPanelShown) {
-        NSView *rootView = self.view;
+        [self.view addSubview:_findContentsPanelViewController.view];
         
-        [rootView addSubview:_findContentsPanelViewController.view];
-        
-        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
+//        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
         
         _findContentsPanelShown = YES;
     }
@@ -1304,7 +1308,18 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 //    
 //    [[searchField window] makeFirstResponder:searchField];
     
-//    [self updateCellFrames];
+    [self adjustFrames:FrameAdjustment_Resize];
+}
+
+- (void)hideFindContentsPanel {
+    if(!_findContentsPanelShown)
+        return;
+    
+    [_findContentsPanelViewController.view removeFromSuperview];
+    
+    _findContentsPanelShown = NO;
+    
+    [self adjustFrames:FrameAdjustment_Resize];
 }
 
 @end

@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SMMessageEditorViewController;
+
 @interface SMEditorFindContentsPanelViewController : NSViewController
+
+@property (weak) SMMessageEditorViewController *messageEditorViewController;
 
 @end

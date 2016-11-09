@@ -27,6 +27,7 @@
 #import "SMColorWellWithIcon.h"
 #import "SMEditorToolBoxViewController.h"
 #import "SMMessageEditorToolbarViewController.h"
+#import "SMEditorFindContentsPanelViewController.h"
 #import "SMAddressFieldViewController.h"
 #import "SMLabeledPopUpListViewController.h"
 #import "SMLabeledTextFieldBoxViewController.h"
@@ -72,6 +73,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMMessageEditorToolbarViewController *_messageEditorToolbarViewController;
     SMAttachmentsPanelViewController *_attachmentsPanelViewController;
+    SMEditorFindContentsPanelViewController *_findContentsPanelViewController;
     NSMutableArray<NSView*> *_editorsUndoList;
     NSUInteger _editorUndoLevel;
     BOOL _attachmentsPanelShown;
@@ -88,6 +90,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     SMUserAccount *_lastAccount;
     BOOL _adjustingFrames;
     BOOL _savedOnce;
+    BOOL _findContentsPanelShown;
 }
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
@@ -1279,7 +1282,29 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Find Contents panel
 
 - (void)showFindContentsPanel {
-    SM_LOG_WARNING(@"TODO");
+    if(_findContentsPanelViewController == nil) {
+        _findContentsPanelViewController = [[SMEditorFindContentsPanelViewController alloc] initWithNibName:@"SMEditorFindContentsPanelViewController" bundle:nil];
+        _findContentsPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        _findContentsPanelViewController.view.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin | NSViewMaxYMargin;
+//TODO        _findContentsPanelViewController.messageThreadViewController = self;
+    }
+    
+    if(!_findContentsPanelShown) {
+        NSView *rootView = self.view;
+        
+        [rootView addSubview:_findContentsPanelViewController.view];
+        
+        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
+        
+        _findContentsPanelShown = YES;
+    }
+    
+//    NSSearchField *searchField = _findContentsPanelViewController.searchField;
+//    NSAssert(searchField != nil, @"searchField == nil");
+//    
+//    [[searchField window] makeFirstResponder:searchField];
+    
+//    [self updateCellFrames];
 }
 
 @end

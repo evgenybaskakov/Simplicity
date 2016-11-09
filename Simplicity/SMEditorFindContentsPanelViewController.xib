@@ -26,16 +26,6 @@
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                         </button>
-                        <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E8f-mA-Sxs" userLabel="Forward And Backwards">
-                            <rect key="frame" x="365" y="30" width="47" height="24"/>
-                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="4uB-CL-eph">
-                                <font key="font" metaFont="system"/>
-                                <segments>
-                                    <segment image="NSLeftFacingTriangleTemplate" width="20"/>
-                                    <segment image="NSRightFacingTriangleTemplate" width="20" tag="1"/>
-                                </segments>
-                            </segmentedCell>
-                        </segmentedControl>
                         <searchField wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1wn-wT-4Jh">
                             <rect key="frame" x="8" y="31" width="253" height="22"/>
                             <constraints>
@@ -63,26 +53,36 @@
                             </textFieldCell>
                         </textField>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vP4-UM-ORc">
-                            <rect key="frame" x="378" y="-2" width="106" height="32"/>
+                            <rect key="frame" x="378" y="-3" width="106" height="32"/>
                             <buttonCell key="cell" type="push" title="Replace all" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jRe-wb-U3O">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dMk-ua-d17">
-                            <rect key="frame" x="289" y="-2" width="89" height="32"/>
+                            <rect key="frame" x="289" y="-3" width="89" height="32"/>
                             <buttonCell key="cell" type="push" title="Replace" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="brD-Lb-2JA">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                         </button>
+                        <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="E8f-mA-Sxs" userLabel="Forward And Backwards">
+                            <rect key="frame" x="365" y="29" width="47" height="24"/>
+                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="4uB-CL-eph">
+                                <font key="font" metaFont="system"/>
+                                <segments>
+                                    <segment image="NSLeftFacingTriangleTemplate" width="20"/>
+                                    <segment image="NSRightFacingTriangleTemplate" width="20" tag="1"/>
+                                </segments>
+                            </segmentedCell>
+                        </segmentedControl>
                     </subviews>
                     <constraints>
                         <constraint firstItem="OcY-7g-iRT" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="5" id="1aX-SA-fAe"/>
                         <constraint firstItem="1wn-wT-4Jh" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="4YB-k4-BvH"/>
                         <constraint firstItem="OcY-7g-iRT" firstAttribute="leading" secondItem="E8f-mA-Sxs" secondAttribute="trailing" constant="8" id="7PZ-TU-How"/>
                         <constraint firstItem="dMk-ua-d17" firstAttribute="leading" secondItem="vvE-EH-A4P" secondAttribute="trailing" constant="8" id="B1z-W1-heo"/>
-                        <constraint firstItem="E8f-mA-Sxs" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="4" id="Cc4-fL-2Jp"/>
+                        <constraint firstItem="E8f-mA-Sxs" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="5" id="Cc4-fL-2Jp"/>
                         <constraint firstItem="vvE-EH-A4P" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="HUd-WD-z3h"/>
                         <constraint firstItem="R0s-lo-s3I" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="9" id="JXy-5J-R1l"/>
                         <constraint firstItem="E8f-mA-Sxs" firstAttribute="leading" secondItem="R0s-lo-s3I" secondAttribute="trailing" constant="8" id="LUl-HA-cue"/>
@@ -90,8 +90,8 @@
                         <constraint firstItem="1wn-wT-4Jh" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="4" id="UZL-t7-0Er"/>
                         <constraint firstAttribute="trailing" secondItem="OcY-7g-iRT" secondAttribute="trailing" constant="9" id="Xql-NP-gV4"/>
                         <constraint firstItem="vvE-EH-A4P" firstAttribute="top" secondItem="1wn-wT-4Jh" secondAttribute="bottom" constant="5" id="Zsx-bH-vbW"/>
-                        <constraint firstAttribute="bottom" secondItem="vP4-UM-ORc" secondAttribute="bottom" constant="5" id="gU6-N9-sFg"/>
-                        <constraint firstAttribute="bottom" secondItem="dMk-ua-d17" secondAttribute="bottom" constant="5" id="iI4-PC-XFZ"/>
+                        <constraint firstAttribute="bottom" secondItem="vP4-UM-ORc" secondAttribute="bottom" constant="4" id="gU6-N9-sFg"/>
+                        <constraint firstAttribute="bottom" secondItem="dMk-ua-d17" secondAttribute="bottom" constant="4" id="iI4-PC-XFZ"/>
                         <constraint firstItem="R0s-lo-s3I" firstAttribute="leading" secondItem="1wn-wT-4Jh" secondAttribute="trailing" constant="8" id="w0M-PO-EZO"/>
                         <constraint firstAttribute="bottom" secondItem="vvE-EH-A4P" secondAttribute="bottom" constant="4" id="yc8-jc-LyF"/>
                         <constraint firstAttribute="trailing" secondItem="vP4-UM-ORc" secondAttribute="trailing" constant="9" id="zxv-Et-TmV"/>
@@ -104,7 +104,7 @@
                 <constraint firstItem="Rm3-EA-n9g" firstAttribute="leading" secondItem="2de-YB-1zU" secondAttribute="leading" id="Uvf-4z-npd"/>
                 <constraint firstItem="Rm3-EA-n9g" firstAttribute="top" secondItem="2de-YB-1zU" secondAttribute="top" id="apC-bj-kXd"/>
             </constraints>
-            <point key="canvasLocation" x="373.5" y="202"/>
+            <point key="canvasLocation" x="373.5" y="201.5"/>
         </customView>
     </objects>
     <resources>

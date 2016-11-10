@@ -35,6 +35,7 @@ typedef enum {
 
 @property (readonly) SMEditorContentsKind editorKind;
 @property (readonly) NSUInteger contentHeight;
+@property (readonly) NSUInteger stringOccurrencesCount;
 
 @property BOOL unsavedContentPending;
 
@@ -61,5 +62,10 @@ typedef enum {
 
 // TODO: remove
 - (NSString*)getFontTypeface:(NSInteger)index;
+
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
+- (void)removeMarkedOccurrenceOfFoundString;
+- (void)removeAllHighlightedOccurrencesOfString;
 
 @end

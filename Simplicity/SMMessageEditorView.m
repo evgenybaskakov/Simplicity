@@ -18,6 +18,8 @@
 @implementation SMMessageEditorView {
     NSTimer *_textMonitorTimer;
     NSUInteger _cachedContentHeight;
+    NSString *_currentFindString;
+    BOOL _currentFindStringMatchCase;
 }
 
 + (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {
@@ -501,6 +503,55 @@
         "var el = document.getElementById('SimplicityContentToFold');"
         "el.style.display = '';"
         "jsNotifyContentHeightChanged();"]];
+}
+
+#pragma mark Finding contents
+
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
+    _currentFindString = str;
+    _currentFindStringMatchCase = matchCase;
+    
+//    if(!_mainFrameLoaded)
+//        return;
+    
+    NSAssert(str != nil, @"str == nil");
+    
+    [self removeAllHighlightedOccurrencesOfString];
+    
+    if(str.length > 0) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"SearchWebView" ofType:@"js"];
+        NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+        
+        WebScriptObject *scriptObject = [self windowScriptObject];
+        
+        // Uncomment to enable JS logs (TODO: propagate to advanced preferences?)
+        //        [scriptObject setValue:self forKey:@"Simplicity"];
+        //        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
+        
+        [scriptObject evaluateWebScript:jsCode];
+        [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
+        
+        NSString *occurrencesCount = [self stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
+        _stringOccurrencesCount = [occurrencesCount integerValue];
+    }
+}
+
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+    NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
+    NSString *highlightYpos = [self stringByEvaluatingJavaScriptFromString:doMark];
+    
+    NSAssert(highlightYpos != nil, @"no highlightYpos returned");
+    return highlightYpos.integerValue;
+}
+
+- (void)removeMarkedOccurrenceOfFoundString {
+    [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveMarkedOccurrenceOfFoundString()"];
+}
+
+- (void)removeAllHighlightedOccurrencesOfString {
+    [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
+    
+    _currentFindString = nil;
 }
 
 @end

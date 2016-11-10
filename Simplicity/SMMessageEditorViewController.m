@@ -91,6 +91,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     BOOL _adjustingFrames;
     BOOL _savedOnce;
     BOOL _findContentsPanelShown;
+    NSString *_currentStringToFind;
+    BOOL _currentStringToFindMatchCase;
+    BOOL _findContentsActive;
+    BOOL _stringOccurrenceMarked;
+    NSUInteger _stringOccurrenceMarkedResultIndex;
 }
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
@@ -1298,8 +1303,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(!_findContentsPanelShown) {
         [self.view addSubview:_findContentsPanelViewController.view];
         
-//        _findContentsPanelViewController.view.frame = NSMakeRect(0, rootView.frame.size.height - _findContentsPanelViewController.view.frame.size.height, rootView.frame.size.width, _findContentsPanelViewController.view.frame.size.height);
-        
         _findContentsPanelShown = YES;
     }
     
@@ -1320,6 +1323,137 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _findContentsPanelShown = NO;
     
     [self adjustFrames:FrameAdjustment_Resize];
+}
+
+#pragma mark Finding messages contents
+
+- (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward {
+    NSInteger markYPos = 0;
+    
+    if((_currentStringToFind != nil && ![_currentStringToFind isEqualToString:stringToFind]) || !_stringOccurrenceMarked) {
+        if(_stringOccurrenceMarked) {
+            [self removeMarkedOccurrenceOfFoundString];
+
+            _stringOccurrenceMarkedResultIndex = 0;
+        }
+        
+        [self highlightAllOccurrencesOfString:stringToFind matchCase:matchCase];
+        
+        if(!_stringOccurrenceMarked) {
+            if([self stringOccurrencesCount] > 0) {
+                _stringOccurrenceMarked = YES;
+                
+                markYPos = [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+            }
+        }
+        
+        _currentStringToFind = stringToFind;
+        _currentStringToFindMatchCase = matchCase;
+    } else {
+        // this is the case when there is a marked occurrence already
+        // so we just need to move it forward or backwards
+        // just scan the cells in the corresponsing direction and choose the right place
+        
+        NSAssert(_stringOccurrenceMarked, @"string occurrence not marked");
+        
+        if(forward) {
+            if(_stringOccurrenceMarkedResultIndex+1 < [self stringOccurrencesCount]) {
+                _stringOccurrenceMarkedResultIndex++;
+            }
+            else {
+                _stringOccurrenceMarkedResultIndex = 0;
+            }
+        }
+        else {
+            if(_stringOccurrenceMarkedResultIndex > 0) {
+                _stringOccurrenceMarkedResultIndex--;
+            }
+            else {
+                _stringOccurrenceMarkedResultIndex = [self stringOccurrencesCount]-1;
+            }
+        }
+        
+        markYPos = [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+    }
+    
+    // if there is a marked occurrence, make sure it is visible
+    // just scroll the thread view to the right cell
+    // note that the cell itself will scroll the html text to the marked position
+    if(_stringOccurrenceMarked) {
+// TODO
+//        NSView *editorView = _plainText? _plainTextEditor : _htmlTextEditor;
+//        NSRect visibleRect = [[_messageThreadView contentView] documentVisibleRect];
+//        CGFloat markGlobalYpos = markedCell.viewController.view.frame.origin.y + markedCell.viewController.cellHeaderHeight + markYPos;
+//        
+//        const NSUInteger delta = 50;
+//        if(markGlobalYpos < visibleRect.origin.y + _topOffset + delta || markGlobalYpos >= visibleRect.origin.y + visibleRect.size.height - delta) {
+//            CGFloat newYpos = markGlobalYpos - _topOffset - delta;
+//            [self animatedScrollTo:(newYpos >= delta ? newYpos : 0)];
+//        }
+    }
+    
+    _findContentsActive = YES;
+}
+
+- (void)removeFindContentsResults {
+    [self removeAllHighlightedOccurrencesOfString];
+    
+    [self clearStringOccurrenceMarkIndex];
+    
+    _currentStringToFind = nil;
+    _currentStringToFindMatchCase = NO;
+    _findContentsActive = NO;
+}
+
+- (void)clearStringOccurrenceMarkIndex {
+    _stringOccurrenceMarked = NO;
+}
+
+- (NSInteger)stringOccurrencesCount {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+        return 0;
+    }
+    else {
+        return [_htmlTextEditor stringOccurrencesCount];
+    }
+}
+
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+    }
+    else {
+        [_htmlTextEditor highlightAllOccurrencesOfString:str matchCase:matchCase];
+    }
+}
+
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+        return 0;
+    }
+    else {
+        return [_htmlTextEditor markOccurrenceOfFoundString:index];
+    }
+}
+
+- (void)removeMarkedOccurrenceOfFoundString {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+    }
+    else {
+        [_htmlTextEditor removeMarkedOccurrenceOfFoundString];
+    }
+}
+
+- (void)removeAllHighlightedOccurrencesOfString {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+    }
+    else {
+        [_htmlTextEditor removeAllHighlightedOccurrencesOfString];
+    }
 }
 
 @end

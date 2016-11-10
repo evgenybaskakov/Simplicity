@@ -27,18 +27,31 @@
 }
 
 - (IBAction)findFieldAction:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:NO];
 }
 
 - (IBAction)replaceFieldAction:(id)sender {
 }
 
 - (IBAction)matchCaseCheckbox:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:YES];
 }
 
 - (IBAction)directionButtonsAction:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    
+    if([_directionButtons selectedSegment] == 0) {
+        [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:NO restart:NO];
+    }
+    else if([_directionButtons selectedSegment] == 1) {
+        [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:NO];
+    }
 }
 
 - (IBAction)doneButtonAction:(id)sender {
+    [_messageEditorViewController removeFindContentsResults];
     [_messageEditorViewController hideFindContentsPanel];
 }
 
@@ -46,6 +59,14 @@
 }
 
 - (IBAction)replaceAllButtonAction:(id)sender {
+}
+
+- (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward restart:(BOOL)restart {
+    if(restart) {
+        [_messageEditorViewController removeFindContentsResults];
+    }
+    
+    [_messageEditorViewController findContents:stringToFind matchCase:matchCase forward:forward];
 }
 
 @end

@@ -55,7 +55,12 @@
 - (BOOL)closeEditor:(BOOL)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
 - (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
+
+#pragma mark Find contents panel
+
 - (void)showFindContentsPanel;
 - (void)hideFindContentsPanel;
+- (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward;
+- (void)removeFindContentsResults;
 
 @end

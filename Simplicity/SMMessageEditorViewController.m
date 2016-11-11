@@ -1383,7 +1383,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             SM_LOG_WARNING(@"TODO");
         }
         else {
-            NSLog(@"markYPos: %ld", markYPos);
             [self animatedScrollTo:markYPos];
         }
     }

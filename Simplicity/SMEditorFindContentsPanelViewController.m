@@ -10,8 +10,6 @@
 #import "SMEditorFindContentsPanelViewController.h"
 
 @interface SMEditorFindContentsPanelViewController ()
-@property (weak) IBOutlet NSSearchField *findField;
-@property (weak) IBOutlet NSTextField *replaceField;
 @property (weak) IBOutlet NSButton *matchCaseCheckbox;
 @property (weak) IBOutlet NSSegmentedControl *directionButtons;
 @property (weak) IBOutlet NSButton *doneButton;
@@ -23,7 +21,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do view setup here.
+    
+    _findField.nextKeyView = _matchCaseCheckbox;
+    _matchCaseCheckbox.nextKeyView = _directionButtons;
+    _directionButtons.nextKeyView = _doneButton;
+    _doneButton.nextKeyView = _replaceField;
+    _replaceField.nextKeyView = _replaceButton;
+    _replaceButton.nextKeyView = _replaceAllButton;
+    _replaceAllButton.nextKeyView = _findField;
+    
+    _directionButtons.selectedSegment = 1; // next, initially
 }
 
 - (IBAction)findFieldAction:(id)sender {

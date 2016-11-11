@@ -1306,10 +1306,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _findContentsPanelShown = YES;
     }
     
-//    NSSearchField *searchField = _findContentsPanelViewController.searchField;
-//    NSAssert(searchField != nil, @"searchField == nil");
-//    
-//    [[searchField window] makeFirstResponder:searchField];
+    NSSearchField *findField = _findContentsPanelViewController.findField;
+    NSAssert(findField != nil, @"findField == nil");
+
+    [[findField window] makeFirstResponder:findField];
     
     [self adjustFrames:FrameAdjustment_Resize];
 }

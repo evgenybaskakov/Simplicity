@@ -1403,14 +1403,24 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         // visible part of the document in the view. Hence use the documentVisibleRect
         // in the scroll view to get the new global position.
         NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
-        NSRect cellRect = NSMakeRect(sv.visibleRect.origin.x, documentVisibleRect.origin.y + ypos, sv.visibleRect.size.width, sv.visibleRect.size.height);
-        NSClipView *clipView = [sv contentView];
-        NSRect constrainedRect = [clipView constrainBoundsRect:cellRect];
-        [NSAnimationContext beginGrouping];
-        [[clipView animator] setBoundsOrigin:constrainedRect.origin];
-        [NSAnimationContext endGrouping];
+        CGFloat globalYpos = documentVisibleRect.origin.y + ypos;
         
-        [sv reflectScrolledClipView:clipView];
+        const NSUInteger delta = 50;
+        if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {
+            CGFloat adjustedGlobalYpos = globalYpos - delta;
+            if(adjustedGlobalYpos < delta) {
+                adjustedGlobalYpos = 0;
+            }
+            
+            NSRect cellRect = NSMakeRect(sv.visibleRect.origin.x, adjustedGlobalYpos, sv.visibleRect.size.width, sv.visibleRect.size.height);
+            NSClipView *clipView = [sv contentView];
+            NSRect constrainedRect = [clipView constrainBoundsRect:cellRect];
+            [NSAnimationContext beginGrouping];
+            [[clipView animator] setBoundsOrigin:constrainedRect.origin];
+            [NSAnimationContext endGrouping];
+            
+            [sv reflectScrolledClipView:clipView];
+        }
     }
 }
 

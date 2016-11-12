@@ -1458,8 +1458,38 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
+    if(str.length == 0) {
+        return;
+    }
+    
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
+        NSString *messageText = [_plainTextEditor.textView string];
+        NSMutableAttributedString *attrText = [_plainTextEditor.textView textStorage];
+        NSRange searchRange = NSMakeRange(0, messageText.length);
+        
+        if(searchRange.length == 0) {
+            return;
+        }
+
+        BOOL searchOptions = (matchCase? 0 : NSCaseInsensitiveSearch);
+        NSColor *highlightColor = [NSColor colorWithCalibratedWhite:0.8 alpha:1.0];
+
+        [attrText beginEditing];
+
+        while(TRUE) {
+            NSRange r = [messageText rangeOfString:str options:searchOptions range:searchRange];
+            
+            if(r.location == NSNotFound) {
+                break;
+            }
+
+            [attrText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:r];
+            
+            searchRange.location = r.location + 1;
+            searchRange.length = messageText.length - r.location - 1;
+        }
+
+        [attrText endEditing];
     }
     else {
         [_htmlTextEditor highlightAllOccurrencesOfString:str matchCase:matchCase];
@@ -1487,7 +1517,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)removeAllHighlightedOccurrencesOfString {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
+        NSString *messageText = [_plainTextEditor.textView string];
+        NSMutableAttributedString *attrText = [_plainTextEditor.textView textStorage];
+        
+        [attrText removeAttribute:NSBackgroundColorAttributeName range:NSMakeRange(0, messageText.length)];
     }
     else {
         [_htmlTextEditor removeAllHighlightedOccurrencesOfString];
@@ -1496,7 +1529,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)restoreStringOccurrencesHightlighting {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
+        // nothing to be done
     }
     else {
         // might not be efficient; a better approach would be to keep

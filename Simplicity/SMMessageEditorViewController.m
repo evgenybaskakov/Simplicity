@@ -470,7 +470,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)sendMessage {
     NSString *from = _fromBoxViewController.itemList.titleOfSelectedItem;
-    
+
     SMUserAccount *account = _fromBoxViewController.itemList.selectedItem.representedObject;
 
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
@@ -484,9 +484,11 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         return;
     }
+    
+    [self removeAllHighlightedOccurrencesOfString];
 
     NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
-
+    
     if(![_messageEditorController sendMessage:messageText plainText:_plainText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account]) {
         SM_LOG_WARNING(@"Cannot send the message from account %@", from);
         return;
@@ -599,6 +601,10 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
     
+    if(_findContentsActive) {
+        [self removeAllHighlightedOccurrencesOfString];
+    }
+    
     NSString *subject = _subjectBoxViewController.textField.stringValue;
     NSArray *to = _toBoxViewController.tokenField.objectValue;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
@@ -614,7 +620,19 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
     
     [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
-    
+
+    if(_findContentsActive) {
+        if(_plainText) {
+            // TODO
+        }
+        else {
+            // might not be efficient; a better approach would be to keep 
+            // the current find state in javascript and just restore it when saving is done
+            [self highlightAllOccurrencesOfString:_currentStringToFind matchCase:_currentStringToFindMatchCase];
+            [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+        }
+    }
+
     _htmlTextEditor.unsavedContentPending = NO;
     
     _savedOnce = YES;

@@ -626,7 +626,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             // TODO
         }
         else {
-            // might not be efficient; a better approach would be to keep 
+            // might not be efficient; a better approach would be to keep
             // the current find state in javascript and just restore it when saving is done
             [self highlightAllOccurrencesOfString:_currentStringToFind matchCase:_currentStringToFindMatchCase];
             [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];

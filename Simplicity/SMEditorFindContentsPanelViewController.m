@@ -35,31 +35,30 @@
 
 - (IBAction)findFieldAction:(id)sender {
     const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
-    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:NO];
-}
+    const BOOL forward = YES;
 
-- (IBAction)replaceFieldAction:(id)sender {
-}
-
-- (IBAction)matchCaseCheckbox:(id)sender {
-    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
-    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:YES];
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:forward restart:NO];
 }
 
 - (IBAction)directionButtonsAction:(id)sender {
     const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    const BOOL forward = (_directionButtons.selectedSegment == 1? YES : NO);
     
-    if([_directionButtons selectedSegment] == 0) {
-        [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:NO restart:NO];
-    }
-    else if([_directionButtons selectedSegment] == 1) {
-        [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:NO];
-    }
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:forward restart:NO];
+}
+
+- (IBAction)matchCaseCheckbox:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:YES restart:YES];
 }
 
 - (IBAction)doneButtonAction:(id)sender {
     [_messageEditorViewController removeFindContentsResults];
     [_messageEditorViewController hideFindContentsPanel];
+}
+
+- (IBAction)replaceFieldAction:(id)sender {
 }
 
 - (IBAction)replaceButtonAction:(id)sender {

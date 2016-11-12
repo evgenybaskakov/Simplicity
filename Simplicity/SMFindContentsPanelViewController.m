@@ -39,22 +39,22 @@
 
 - (IBAction)findContentsSearchAction:(id)sender {
     const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
-    [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:NO];
-}
-
-- (IBAction)setMatchCaseAction:(id)sender {
-    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
-    [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:YES];
+    const BOOL forward = YES;
+    
+    [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:forward restart:NO];
 }
 
 - (IBAction)findNextPrevAction:(id)sender {
     const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
-        
-    if([_forwardBackwardsButton selectedSegment] == 0) {
-        [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:NO restart:NO];
-    } else if([_forwardBackwardsButton selectedSegment] == 1) {
-        [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:NO];
-    }
+    const BOOL forward = (_forwardBackwardsButton.selectedSegment == 1? YES : NO);
+    
+    [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:forward restart:NO];
+}
+
+- (IBAction)setMatchCaseAction:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    
+    [self doFindContentsSearch:_searchField.stringValue matchCase:matchCase forward:YES restart:YES];
 }
 
 - (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward restart:(BOOL)restart {

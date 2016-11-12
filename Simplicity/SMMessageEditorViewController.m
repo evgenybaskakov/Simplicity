@@ -622,15 +622,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
 
     if(_findContentsActive) {
-        if(_plainText) {
-            // TODO
-        }
-        else {
-            // might not be efficient; a better approach would be to keep
-            // the current find state in javascript and just restore it when saving is done
-            [self highlightAllOccurrencesOfString:_currentStringToFind matchCase:_currentStringToFindMatchCase];
-            [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
-        }
+        [self restoreStringOccurrencesHightlighting];
     }
 
     _htmlTextEditor.unsavedContentPending = NO;
@@ -1499,6 +1491,18 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     else {
         [_htmlTextEditor removeAllHighlightedOccurrencesOfString];
+    }
+}
+
+- (void)restoreStringOccurrencesHightlighting {
+    if(_plainText) {
+        SM_LOG_WARNING(@"TODO");
+    }
+    else {
+        // might not be efficient; a better approach would be to keep
+        // the current find state in javascript and just restore it when saving is done
+        [self highlightAllOccurrencesOfString:_currentStringToFind matchCase:_currentStringToFindMatchCase];
+        [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
     }
 }
 

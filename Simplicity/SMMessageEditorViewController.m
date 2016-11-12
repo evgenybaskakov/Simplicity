@@ -601,7 +601,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     SM_LOG_INFO(@"Message has changed, a draft will be saved");
     
-    if(_findContentsActive) {
+    if(_findContentsActive && !_plainText) {
         [self removeAllHighlightedOccurrencesOfString];
     }
     
@@ -621,7 +621,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     
     [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
 
-    if(_findContentsActive) {
+    if(_findContentsActive && !_plainText) {
         [self restoreStringOccurrencesHightlighting];
     }
 
@@ -686,6 +686,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     _plainText = NO;
+
+    [self removeAllHighlightedOccurrencesOfString];
+    [self hideFindContentsPanel];
 
     [self createHTMLEditorToolbox];
     
@@ -796,6 +799,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     _plainText = YES;
+    
+    [self removeAllHighlightedOccurrencesOfString];
+    [self hideFindContentsPanel];
     
     [_editorToolBoxViewController.view removeFromSuperview];
     

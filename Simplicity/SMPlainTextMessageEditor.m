@@ -12,7 +12,7 @@
 
 @implementation SMPlainTextMessageEditor {
     NSMutableArray<NSValue*> *_highlightPositions;
-    NSUInteger _currentHighlightIndex;
+    NSUInteger _markedOccurrenceIndex;
     NSColor *_highlightColor;
 }
 
@@ -119,10 +119,10 @@
     
     [attrText endEditing];
     
-    _currentHighlightIndex = 0;
+    _markedOccurrenceIndex = 0;
 }
 
-- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+- (void)markOccurrenceOfFoundString:(NSUInteger)index {
     NSMutableAttributedString *attrText = [_textView textStorage];
 
     [attrText beginEditing];
@@ -131,7 +131,7 @@
     
     if(index >= _highlightPositions.count) {
         [attrText endEditing];
-        return 0;
+        return;
     }
     
     NSRange r = [_highlightPositions[index] rangeValue];
@@ -139,22 +139,20 @@
     [attrText addAttribute:NSBackgroundColorAttributeName value:[NSColor yellowColor] range:r];
     [attrText endEditing];
     
-    _currentHighlightIndex = index;
-    
-    return 0;
+    _markedOccurrenceIndex = index;
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-    if(_currentHighlightIndex >= _highlightPositions.count) {
+    if(_markedOccurrenceIndex >= _highlightPositions.count) {
         return;
     }
     
     NSMutableAttributedString *attrText = [_textView textStorage];
-    NSRange r = [_highlightPositions[_currentHighlightIndex] rangeValue];
+    NSRange r = [_highlightPositions[_markedOccurrenceIndex] rangeValue];
     
     [attrText addAttribute:NSBackgroundColorAttributeName value:_highlightColor range:r];
     
-    _currentHighlightIndex = 0;
+    _markedOccurrenceIndex = 0;
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
@@ -166,6 +164,14 @@
 
 - (NSUInteger)stringOccurrencesCount {
     return _highlightPositions.count;
+}
+
+- (void)animatedScrollToMakedOccurrence {
+    if(_markedOccurrenceIndex >= _highlightPositions.count) {
+        return;
+    }
+    
+    [_textView scrollRangeToVisible:[_highlightPositions[_markedOccurrenceIndex] rangeValue]];
 }
 
 @end

@@ -20,6 +20,7 @@
     NSUInteger _cachedContentHeight;
     NSString *_currentFindString;
     BOOL _currentFindStringMatchCase;
+    NSUInteger _markedOccurrenceYpos;
 }
 
 + (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {
@@ -536,12 +537,12 @@
     }
 }
 
-- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+- (void)markOccurrenceOfFoundString:(NSUInteger)index {
     NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
     NSString *highlightYpos = [self stringByEvaluatingJavaScriptFromString:doMark];
     
     NSAssert(highlightYpos != nil, @"no highlightYpos returned");
-    return highlightYpos.integerValue;
+    _markedOccurrenceYpos = highlightYpos.integerValue;
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
@@ -552,6 +553,34 @@
     [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
     
     _currentFindString = nil;
+}
+
+- (void)animatedScrollToMakedOccurrence {
+    // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
+    NSScrollView *sv = self.mainFrame.frameView.documentView.enclosingScrollView;
+    
+    // Note that unlike the thread view, this "_markedOccurrenceYpos" is relative to the current
+    // visible part of the document in the view. Hence use the documentVisibleRect
+    // in the scroll view to get the new global position.
+    NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
+    CGFloat globalYpos = documentVisibleRect.origin.y + _markedOccurrenceYpos;
+    
+    const NSUInteger delta = 50;
+    if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {
+        CGFloat adjustedGlobalYpos = globalYpos - delta;
+        if(adjustedGlobalYpos < delta) {
+            adjustedGlobalYpos = 0;
+        }
+        
+        NSRect cellRect = NSMakeRect(sv.visibleRect.origin.x, adjustedGlobalYpos, sv.visibleRect.size.width, sv.visibleRect.size.height);
+        NSClipView *clipView = [sv contentView];
+        NSRect constrainedRect = [clipView constrainBoundsRect:cellRect];
+        [NSAnimationContext beginGrouping];
+        [[clipView animator] setBoundsOrigin:constrainedRect.origin];
+        [NSAnimationContext endGrouping];
+        
+        [sv reflectScrolledClipView:clipView];
+    }
 }
 
 @end

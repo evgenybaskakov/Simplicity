@@ -1338,8 +1338,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 #pragma mark Finding messages contents
 
 - (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward {
-    NSInteger markYPos = 0;
-    
     if((_currentStringToFind != nil && ![_currentStringToFind isEqualToString:stringToFind]) || !_stringOccurrenceMarked) {
         if(_stringOccurrenceMarked) {
             [self removeMarkedOccurrenceOfFoundString];
@@ -1353,7 +1351,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             if([self stringOccurrencesCount] > 0) {
                 _stringOccurrenceMarked = YES;
                 
-                markYPos = [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+                [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
             }
         }
         
@@ -1383,48 +1381,24 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             }
         }
         
-        markYPos = [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
+        [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
     }
     
     // if there is a marked occurrence, make sure it is visible
     // just scroll the editor view to the right position
     if(_stringOccurrenceMarked) {
-        [self animatedScrollTo:markYPos];
+        [self animatedScrollToMakedOccurrence];
     }
     
     _findContentsActive = YES;
 }
 
-- (void)animatedScrollTo:(CGFloat)ypos {
+- (void)animatedScrollToMakedOccurrence {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
+        [_plainTextEditor animatedScrollToMakedOccurrence];
     }
     else {
-        // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
-        NSScrollView *sv = _htmlTextEditor.mainFrame.frameView.documentView.enclosingScrollView;
-        
-        // Note that unlike the thread view, this "ypos" is relative to the current
-        // visible part of the document in the view. Hence use the documentVisibleRect
-        // in the scroll view to get the new global position.
-        NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
-        CGFloat globalYpos = documentVisibleRect.origin.y + ypos;
-        
-        const NSUInteger delta = 50;
-        if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {
-            CGFloat adjustedGlobalYpos = globalYpos - delta;
-            if(adjustedGlobalYpos < delta) {
-                adjustedGlobalYpos = 0;
-            }
-            
-            NSRect cellRect = NSMakeRect(sv.visibleRect.origin.x, adjustedGlobalYpos, sv.visibleRect.size.width, sv.visibleRect.size.height);
-            NSClipView *clipView = [sv contentView];
-            NSRect constrainedRect = [clipView constrainBoundsRect:cellRect];
-            [NSAnimationContext beginGrouping];
-            [[clipView animator] setBoundsOrigin:constrainedRect.origin];
-            [NSAnimationContext endGrouping];
-            
-            [sv reflectScrolledClipView:clipView];
-        }
+        [_htmlTextEditor animatedScrollToMakedOccurrence];
     }
 }
 
@@ -1464,12 +1438,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
-- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+- (void)markOccurrenceOfFoundString:(NSUInteger)index {
     if(_plainText) {
-        return [_plainTextEditor markOccurrenceOfFoundString:index];
+        [_plainTextEditor markOccurrenceOfFoundString:index];
     }
     else {
-        return [_htmlTextEditor markOccurrenceOfFoundString:index];
+        [_htmlTextEditor markOccurrenceOfFoundString:index];
     }
 }
 

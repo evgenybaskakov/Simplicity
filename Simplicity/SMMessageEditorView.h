@@ -64,8 +64,9 @@ typedef enum {
 - (NSString*)getFontTypeface:(NSInteger)index;
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
-- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
+- (void)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;
+- (void)animatedScrollToMakedOccurrence;
 
 @end

@@ -11,7 +11,13 @@
 @interface SMPlainTextMessageEditor : NSScrollView<NSTextViewDelegate>
 
 @property (readonly) NSTextView *textView;
+@property (readonly) NSUInteger stringOccurrencesCount;
 
 - (id)initWithString:(NSString*)string;
+
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index;
+- (void)removeMarkedOccurrenceOfFoundString;
+- (void)removeAllHighlightedOccurrencesOfString;
 
 @end

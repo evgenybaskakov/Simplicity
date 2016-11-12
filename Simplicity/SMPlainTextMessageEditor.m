@@ -10,12 +10,18 @@
 #import "SMPreferencesController.h"
 #import "SMPlainTextMessageEditor.h"
 
-@implementation SMPlainTextMessageEditor
+@implementation SMPlainTextMessageEditor {
+    NSMutableArray<NSValue*> *_highlightPositions;
+    NSUInteger _currentHighlightIndex;
+    NSColor *_highlightColor;
+}
 
 - (id)initWithString:(NSString*)string {
     self = [super initWithFrame:NSMakeRect(0, 0, 100, 100)];
 
     if(self) {
+        _highlightColor = [NSColor colorWithCalibratedWhite:0.8 alpha:1.0];
+        
         _textView = [[NSTextView alloc] initWithFrame:self.frame];
         _textView.automaticQuoteSubstitutionEnabled = NO;
         _textView.automaticDashSubstitutionEnabled = NO;
@@ -74,6 +80,92 @@
     [_textView breakUndoCoalescing];
 
     return NO;
+}
+
+#pragma mark Content finding
+
+- (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
+    NSString *messageText = [_textView string];
+    NSMutableAttributedString *attrText = [_textView textStorage];
+    NSRange searchRange = NSMakeRange(0, messageText.length);
+    
+    if(searchRange.length == 0) {
+        return;
+    }
+    
+    BOOL searchOptions = (matchCase? 0 : NSCaseInsensitiveSearch);
+    
+    if(!_highlightPositions) {
+        _highlightPositions = [NSMutableArray array];
+    }
+    [_highlightPositions removeAllObjects];
+    
+    [attrText beginEditing];
+    
+    while(TRUE) {
+        NSRange r = [messageText rangeOfString:str options:searchOptions range:searchRange];
+        
+        if(r.location == NSNotFound) {
+            break;
+        }
+        
+        [attrText addAttribute:NSBackgroundColorAttributeName value:_highlightColor range:r];
+        
+        searchRange.location = r.location + 1;
+        searchRange.length = messageText.length - r.location - 1;
+        
+        [_highlightPositions addObject:[NSValue valueWithRange:r]];
+    }
+    
+    [attrText endEditing];
+    
+    _currentHighlightIndex = 0;
+}
+
+- (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
+    NSMutableAttributedString *attrText = [_textView textStorage];
+
+    [attrText beginEditing];
+
+    [self removeMarkedOccurrenceOfFoundString];
+    
+    if(index >= _highlightPositions.count) {
+        [attrText endEditing];
+        return 0;
+    }
+    
+    NSRange r = [_highlightPositions[index] rangeValue];
+    
+    [attrText addAttribute:NSBackgroundColorAttributeName value:[NSColor yellowColor] range:r];
+    [attrText endEditing];
+    
+    _currentHighlightIndex = index;
+    
+    return 0;
+}
+
+- (void)removeMarkedOccurrenceOfFoundString {
+    if(_currentHighlightIndex >= _highlightPositions.count) {
+        return;
+    }
+    
+    NSMutableAttributedString *attrText = [_textView textStorage];
+    NSRange r = [_highlightPositions[_currentHighlightIndex] rangeValue];
+    
+    [attrText addAttribute:NSBackgroundColorAttributeName value:_highlightColor range:r];
+    
+    _currentHighlightIndex = 0;
+}
+
+- (void)removeAllHighlightedOccurrencesOfString {
+    NSString *messageText = [_textView string];
+    NSMutableAttributedString *attrText = [_textView textStorage];
+
+    [attrText removeAttribute:NSBackgroundColorAttributeName range:NSMakeRange(0, messageText.length)];
+}
+
+- (NSUInteger)stringOccurrencesCount {
+    return _highlightPositions.count;
 }
 
 @end

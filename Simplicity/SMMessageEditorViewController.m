@@ -1389,12 +1389,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // if there is a marked occurrence, make sure it is visible
     // just scroll the editor view to the right position
     if(_stringOccurrenceMarked) {
-        if(_plainText) {
-            SM_LOG_WARNING(@"TODO");
-        }
-        else {
-            [self animatedScrollTo:markYPos];
-        }
+        [self animatedScrollTo:markYPos];
     }
     
     _findContentsActive = YES;
@@ -1449,8 +1444,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (NSInteger)stringOccurrencesCount {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
-        return 0;
+        return [_plainTextEditor stringOccurrencesCount];
     }
     else {
         return [_htmlTextEditor stringOccurrencesCount];
@@ -1463,33 +1457,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
     
     if(_plainText) {
-        NSString *messageText = [_plainTextEditor.textView string];
-        NSMutableAttributedString *attrText = [_plainTextEditor.textView textStorage];
-        NSRange searchRange = NSMakeRange(0, messageText.length);
-        
-        if(searchRange.length == 0) {
-            return;
-        }
-
-        BOOL searchOptions = (matchCase? 0 : NSCaseInsensitiveSearch);
-        NSColor *highlightColor = [NSColor colorWithCalibratedWhite:0.8 alpha:1.0];
-
-        [attrText beginEditing];
-
-        while(TRUE) {
-            NSRange r = [messageText rangeOfString:str options:searchOptions range:searchRange];
-            
-            if(r.location == NSNotFound) {
-                break;
-            }
-
-            [attrText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:r];
-            
-            searchRange.location = r.location + 1;
-            searchRange.length = messageText.length - r.location - 1;
-        }
-
-        [attrText endEditing];
+        [_plainTextEditor highlightAllOccurrencesOfString:str matchCase:matchCase];
     }
     else {
         [_htmlTextEditor highlightAllOccurrencesOfString:str matchCase:matchCase];
@@ -1498,8 +1466,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
-        return 0;
+        return [_plainTextEditor markOccurrenceOfFoundString:index];
     }
     else {
         return [_htmlTextEditor markOccurrenceOfFoundString:index];
@@ -1508,7 +1475,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)removeMarkedOccurrenceOfFoundString {
     if(_plainText) {
-        SM_LOG_WARNING(@"TODO");
+        [_plainTextEditor removeMarkedOccurrenceOfFoundString];
     }
     else {
         [_htmlTextEditor removeMarkedOccurrenceOfFoundString];
@@ -1517,10 +1484,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)removeAllHighlightedOccurrencesOfString {
     if(_plainText) {
-        NSString *messageText = [_plainTextEditor.textView string];
-        NSMutableAttributedString *attrText = [_plainTextEditor.textView textStorage];
-        
-        [attrText removeAttribute:NSBackgroundColorAttributeName range:NSMakeRange(0, messageText.length)];
+        [_plainTextEditor removeAllHighlightedOccurrencesOfString];
     }
     else {
         [_htmlTextEditor removeAllHighlightedOccurrencesOfString];

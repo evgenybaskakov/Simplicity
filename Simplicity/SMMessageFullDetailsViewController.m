@@ -21,7 +21,7 @@
 #import "SMMessageDetailsViewController.h"
 #import "SMMessageFullDetailsView.h"
 #import "SMMessageFullDetailsViewController.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 #import "SMMessageThreadCellViewController.h"
 
 static const NSUInteger CONTACT_BUTTON_SIZE = 37;

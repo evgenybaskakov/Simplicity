@@ -67,6 +67,6 @@ typedef enum {
 - (void)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;
-- (void)animatedScrollToMakedOccurrence;
+- (void)animatedScrollToMarkedOccurrence;
 
 @end

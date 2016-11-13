@@ -10,7 +10,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMMessageEditorWindowController.h"
 
@@ -56,7 +56,7 @@
 
     [[self window] setContentViewController:_messageEditorViewController];
     
-    SMEditorFocusKind focusKind = [SMMessageEditorView contentKindToFocusKind:_editorKind];
+    SMEditorFocusKind focusKind = [SMHTMLMessageEditorView contentKindToFocusKind:_editorKind];
     [_messageEditorViewController setResponders:TRUE focusKind:focusKind];
     
     // Editor setup

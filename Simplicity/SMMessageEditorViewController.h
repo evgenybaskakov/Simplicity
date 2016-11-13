@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "SMEditorReplyKind.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 
 @class SMAddress;
 @class SMMessage;

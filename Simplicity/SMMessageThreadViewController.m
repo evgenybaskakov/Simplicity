@@ -28,7 +28,7 @@
 #import "SMMailbox.h"
 #import "SMMessageWindowController.h"
 #import "SMMessageEditorViewController.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 #import "SMAddressFieldViewController.h"
 #import "SMTokenField.h"
 #import "SMFlippedView.h"
@@ -1191,7 +1191,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     
     [_contentView addSubview:editorSubview];
     
-    [_messageEditorViewController setResponders:YES focusKind:[SMMessageEditorView contentKindToFocusKind:editorKind]];
+    [_messageEditorViewController setResponders:YES focusKind:[SMHTMLMessageEditorView contentKindToFocusKind:editorKind]];
     
     [self updateCellFrames];
 }

@@ -8,8 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "SMMessageEditorView.h"
-
 @class SMAddress;
 @class SMMessageEditorViewController;
 

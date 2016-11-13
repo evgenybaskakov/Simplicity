@@ -37,7 +37,7 @@
 #import "SMPreferencesController.h"
 #import "SMMessageEditorBase.h"
 #import "SMMessageEditorController.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 #import "SMMessageEditorViewController.h"
 #import "SMPlainTextMessageEditor.h"
 
@@ -68,7 +68,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 @implementation SMMessageEditorViewController {
     SMMessageEditorBase *_messageEditorBase;
     SMMessageEditorController *_messageEditorController;
-    SMMessageEditorView *_htmlTextEditor;
+    SMHTMLMessageEditorView *_htmlTextEditor;
     SMPlainTextMessageEditor *_plainTextEditor;
     SMEditorToolBoxViewController *_editorToolBoxViewController;
     SMMessageEditorToolbarViewController *_messageEditorToolbarViewController;
@@ -724,16 +724,16 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         }
         
         NSAssert(_editorsUndoList.count > 0, @"editor undo list empty");
-        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMMessageEditorView class]], @"bad object in the editor undo list");
+        NSAssert([_editorsUndoList[_editorUndoLevel] isKindOfClass:[SMHTMLMessageEditorView class]], @"bad object in the editor undo list");
         NSAssert(_htmlTextEditor == nil, @"_htmlTextEditor is nil");
         
-        _htmlTextEditor = (SMMessageEditorView*)_editorsUndoList[_editorUndoLevel];
+        _htmlTextEditor = (SMHTMLMessageEditorView*)_editorsUndoList[_editorUndoLevel];
         
         NSAssert(_plainTextEditor != nil, @"_plainTextEditor is already nil");
         _plainTextEditor = nil;
     }
     else {
-        _htmlTextEditor = [[SMMessageEditorView alloc] init];
+        _htmlTextEditor = [[SMHTMLMessageEditorView alloc] init];
         _htmlTextEditor.translatesAutoresizingMaskIntoConstraints = YES;
         _htmlTextEditor.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         
@@ -784,7 +784,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)undoMakeHTMLText:(id)object {
-    EditorConversion conversion = [[((SMMessageEditorView*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
+    EditorConversion conversion = [[((SMHTMLMessageEditorView*)object) undoManager] isUndoing]? EditorConversion_Undo : EditorConversion_Redo;
     
     [self makePlainText:NO conversion:conversion];
 }
@@ -1393,18 +1393,18 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     // if there is a marked occurrence, make sure it is visible
     // just scroll the editor view to the right position
     if(_stringOccurrenceMarked) {
-        [self animatedScrollToMakedOccurrence];
+        [self animatedScrollToMarkedOccurrence];
     }
     
     _findContentsActive = YES;
 }
 
-- (void)animatedScrollToMakedOccurrence {
+- (void)animatedScrollToMarkedOccurrence {
     if(_plainText) {
-        [_plainTextEditor animatedScrollToMakedOccurrence];
+        [_plainTextEditor animatedScrollToMarkedOccurrence];
     }
     else {
-        [_htmlTextEditor animatedScrollToMakedOccurrence];
+        [_htmlTextEditor animatedScrollToMarkedOccurrence];
     }
 }
 

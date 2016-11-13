@@ -555,7 +555,7 @@
     _currentFindString = nil;
 }
 
-- (void)animatedScrollToMakedOccurrence {
+- (void)animatedScrollToMarkedOccurrence {
     // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
     NSScrollView *sv = self.mainFrame.frameView.documentView.enclosingScrollView;
     

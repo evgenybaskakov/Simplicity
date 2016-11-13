@@ -170,7 +170,7 @@
     return _highlightPositions.count;
 }
 
-- (void)animatedScrollToMakedOccurrence {
+- (void)animatedScrollToMarkedOccurrence {
     if(_markedOccurrenceIndex >= _highlightPositions.count) {
         return;
     }

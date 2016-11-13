@@ -981,6 +981,7 @@
 		005B086C17D4F5D000341051 /* Control */ = {
 			isa = PBXGroup;
 			children = (
+				80E697CA1DD82BF80071E520 /* Editor */,
 				80238AF01BE32BCE009E090C /* Preferences */,
 				80B860101CF97A1300BD0804 /* Search */,
 				80ED78F91C95351D00475EE5 /* SMAccountButtonViewController.h */,
@@ -997,16 +998,10 @@
 				00A085AE1A72145300CC4E1C /* SMAttachmentsPanelViewController.m */,
 				003DFF161A73681A003C26E2 /* SMAttachmentsPanelViewItem.h */,
 				003DFF171A73681A003C26E2 /* SMAttachmentsPanelViewItem.m */,
-				80856CFD1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.h */,
-				80856CFE1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m */,
-				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
-				8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */,
 				006709311A99A77600C0C9CC /* SMFindContentsPanelViewController.h */,
 				006709321A99A77600C0C9CC /* SMFindContentsPanelViewController.m */,
 				0089D35D1A88084F00C189BB /* SMFolderColorController.h */,
 				0089D35E1A88084F00C189BB /* SMFolderColorController.m */,
-				8043D7F21B5387EC00B07469 /* SMHTMLMessageEditorView.h */,
-				8043D7F31B5387EC00B07469 /* SMHTMLMessageEditorView.m */,
 				8011CAF21CA3C66A00697210 /* SMLabeledPopUpListViewController.h */,
 				8011CAF31CA3C66A00697210 /* SMLabeledPopUpListViewController.m */,
 				8076B4B51B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.h */,
@@ -1024,12 +1019,6 @@
 				00172FEE198B3BB700DB975E /* SMMessageBodyViewController.m */,
 				00BAE7F419207540001243F5 /* SMMessageDetailsViewController.h */,
 				00BAE7F519207540001243F5 /* SMMessageDetailsViewController.m */,
-				804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */,
-				804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */,
-				8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */,
-				8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */,
-				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
-				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
 				007A735F1A57A95500A4D694 /* SMMessageFullDetailsViewController.h */,
 				007A73601A57A95500A4D694 /* SMMessageFullDetailsViewController.m */,
 				00A25BB817E10D1400D0FCB1 /* SMMessageListController.h */,
@@ -1066,8 +1055,6 @@
 				801B8E7F1B23AA5200B144C0 /* SMOperationQueueWindowController.m */,
 				008F93681AC4F8E600C21D62 /* SMOutboxController.h */,
 				008F93691AC4F8E600C21D62 /* SMOutboxController.m */,
-				80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */,
-				80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */,
 				80BD0A1F1C4DFF0600F43EA2 /* SMSectionMenuViewController.h */,
 				80BD0A201C4DFF0600F43EA2 /* SMSectionMenuViewController.m */,
 				808BC0571CD33E870030E08E /* SMUnifiedMailboxController.h */,
@@ -1424,6 +1411,27 @@
 				80E6574D1B182AF700A0AA81 /* unittestcpp */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		80E697CA1DD82BF80071E520 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				80856CFD1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.h */,
+				80856CFE1DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.m */,
+				8043D7DF1B51AC4900B07469 /* SMEditorToolBoxViewController.h */,
+				8043D7E01B51AC4900B07469 /* SMEditorToolBoxViewController.m */,
+				8043D7F21B5387EC00B07469 /* SMHTMLMessageEditorView.h */,
+				8043D7F31B5387EC00B07469 /* SMHTMLMessageEditorView.m */,
+				804373AB1CCF412000C802EC /* SMMessageEditorToolbarViewController.h */,
+				804373AC1CCF412000C802EC /* SMMessageEditorToolbarViewController.m */,
+				8062FEED1B54D9B5007D7140 /* SMMessageEditorViewController.h */,
+				8062FEEE1B54D9B5007D7140 /* SMMessageEditorViewController.m */,
+				00CAFBF11AC3A116005363CD /* SMMessageEditorWindowController.h */,
+				00CAFBF21AC3A116005363CD /* SMMessageEditorWindowController.m */,
+				80AA4B661CC3671200306B1B /* SMPlainTextMessageEditor.h */,
+				80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */,
+			);
+			name = Editor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

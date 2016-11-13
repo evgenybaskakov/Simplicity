@@ -59,6 +59,7 @@
 }
 
 - (IBAction)replaceFieldAction:(id)sender {
+    [_messageEditorViewController replaceOccurrence:_replaceField.stringValue];
 }
 
 - (IBAction)replaceButtonAction:(id)sender {

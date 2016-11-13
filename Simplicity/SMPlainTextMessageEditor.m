@@ -89,7 +89,12 @@
     NSMutableAttributedString *attrText = [_textView textStorage];
     NSRange searchRange = NSMakeRange(0, messageText.length);
     
+    [attrText beginEditing];
+    
+    [self removeAllHighlightedOccurrencesOfString];
+
     if(searchRange.length == 0) {
+        [attrText endEditing];
         return;
     }
     
@@ -99,8 +104,6 @@
         _highlightPositions = [NSMutableArray array];
     }
     [_highlightPositions removeAllObjects];
-    
-    [attrText beginEditing];
     
     while(TRUE) {
         NSRange r = [messageText rangeOfString:str options:searchOptions range:searchRange];

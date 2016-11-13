@@ -1432,10 +1432,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
-    if(str.length == 0) {
-        return;
-    }
-    
     if(_plainText) {
         [_plainTextEditor highlightAllOccurrencesOfString:str matchCase:matchCase];
     }

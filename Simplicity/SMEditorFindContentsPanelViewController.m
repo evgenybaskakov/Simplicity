@@ -62,6 +62,12 @@
 }
 
 - (IBAction)replaceButtonAction:(id)sender {
+    const BOOL matchCase = (_matchCaseCheckbox.state == NSOnState);
+    const BOOL forward = (_directionButtons.selectedSegment == 1? YES : NO);
+
+    [_messageEditorViewController replaceOccurrence:_replaceField.stringValue];
+
+    [self doFindContentsSearch:_findField.stringValue matchCase:matchCase forward:forward restart:NO];
 }
 
 - (IBAction)replaceAllButtonAction:(id)sender {

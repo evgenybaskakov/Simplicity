@@ -14,6 +14,7 @@
     NSMutableArray<NSValue*> *_highlightPositions;
     NSUInteger _markedOccurrenceIndex;
     NSColor *_highlightColor;
+    NSString *_stringToFind;
 }
 
 - (id)initWithString:(NSString*)string {
@@ -124,6 +125,7 @@
     [attrText endEditing];
     
     _markedOccurrenceIndex = 0;
+    _stringToFind = str;
 }
 
 - (void)markOccurrenceOfFoundString:(NSUInteger)index {
@@ -176,6 +178,26 @@
     }
     
     [_textView scrollRangeToVisible:[_highlightPositions[_markedOccurrenceIndex] rangeValue]];
+}
+
+- (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement {
+    if(_markedOccurrenceIndex >= _highlightPositions.count) {
+        return;
+    }
+    
+    if([_stringToFind isEqualToString:replacement]) {
+        return;
+    }
+    
+    NSMutableAttributedString *attrText = [_textView textStorage];
+    NSRange r = [_highlightPositions[index] rangeValue];
+
+    [attrText beginEditing];
+    [attrText removeAttribute:NSBackgroundColorAttributeName range:r];
+    [attrText replaceCharactersInRange:r withString:replacement];
+    [attrText endEditing];
+    
+    // TODO: update highlight positions
 }
 
 @end

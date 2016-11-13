@@ -1479,4 +1479,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 }
 
+#pragma mark Replacing contents
+
+- (void)replaceOccurrence:(NSString*)replacement {
+    if(_plainText) {
+        [_plainTextEditor replaceOccurrence:_stringOccurrenceMarkedResultIndex replacement:replacement];
+    }
+    else {
+        SM_LOG_ERROR(@"TODO");
+    }
+}
+
 @end

@@ -197,7 +197,14 @@
     [attrText replaceCharactersInRange:r withString:replacement];
     [attrText endEditing];
     
-    // TODO: update highlight positions
+    [_highlightPositions removeObjectAtIndex:index];
+    
+    for(NSUInteger i = index; i < _highlightPositions.count; i++) {
+        NSRange rr = _highlightPositions[i].rangeValue;
+        rr.location += replacement.length - _stringToFind.length;
+        
+        _highlightPositions[i] = [NSValue valueWithRange:rr];
+    }
 }
 
 @end

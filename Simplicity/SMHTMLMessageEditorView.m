@@ -20,7 +20,7 @@
     NSUInteger _cachedContentHeight;
     NSString *_currentFindString;
     BOOL _currentFindStringMatchCase;
-    NSUInteger _markedOccurrenceYpos;
+    NSInteger _markedOccurrenceYpos;
 }
 
 + (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {

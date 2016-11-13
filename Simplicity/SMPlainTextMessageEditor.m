@@ -40,6 +40,7 @@
         self.borderType = NSNoBorder;
         self.translatesAutoresizingMaskIntoConstraints = YES;
         self.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        self.hasVerticalScroller = YES;
         self.documentView = _textView;
 
         [self setMessageFont];

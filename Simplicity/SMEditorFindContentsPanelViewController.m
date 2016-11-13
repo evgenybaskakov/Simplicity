@@ -66,6 +66,7 @@
 }
 
 - (IBAction)replaceAllButtonAction:(id)sender {
+    [_messageEditorViewController replaceAllOccurrences:_replaceField.stringValue];
 }
 
 - (void)doFindContentsSearch:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward restart:(BOOL)restart {

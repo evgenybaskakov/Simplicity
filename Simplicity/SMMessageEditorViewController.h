@@ -62,6 +62,7 @@
 - (void)hideFindContentsPanel;
 - (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward;
 - (void)replaceOccurrence:(NSString*)replacement;
+- (void)replaceAllOccurrences:(NSString*)replacement;
 - (void)removeFindContentsResults;
 
 @end

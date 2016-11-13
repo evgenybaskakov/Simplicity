@@ -199,12 +199,35 @@
     
     [_highlightPositions removeObjectAtIndex:index];
     
+    // update positions of the found strings to the right to the current occurrence
     for(NSUInteger i = index; i < _highlightPositions.count; i++) {
         NSRange rr = _highlightPositions[i].rangeValue;
         rr.location += replacement.length - _stringToFind.length;
         
         _highlightPositions[i] = [NSValue valueWithRange:rr];
     }
+}
+
+- (void)replaceAllOccurrences:(NSString*)replacement {
+    if(_highlightPositions.count == 0) {
+        return;
+    }
+    
+    NSMutableAttributedString *attrText = [_textView textStorage];
+    
+    [attrText beginEditing];
+
+    // go backwards to keep the rest of highlight positions valid
+    for(NSUInteger i = _highlightPositions.count; i > 0; i--) {
+        NSRange r = [_highlightPositions[i-1] rangeValue];
+
+        [attrText removeAttribute:NSBackgroundColorAttributeName range:r];
+        [attrText replaceCharactersInRange:r withString:replacement];
+    }
+
+    [attrText endEditing];
+    
+    [_highlightPositions removeAllObjects];
 }
 
 @end

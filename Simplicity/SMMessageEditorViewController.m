@@ -1497,4 +1497,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self animatedScrollToMarkedOccurrence];
 }
 
+- (void)replaceAllOccurrences:(NSString*)replacement {
+    if(_plainText) {
+        [_plainTextEditor replaceAllOccurrences:replacement];
+    }
+    else {
+        SM_LOG_ERROR(@"TODO");
+    }
+
+    _stringOccurrenceMarkedResultIndex = 0;
+}
+
 @end

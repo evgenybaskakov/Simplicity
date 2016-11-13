@@ -13,9 +13,9 @@
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 
-@implementation SMMessageEditorView {
+@implementation SMHTMLMessageEditorView {
     NSTimer *_textMonitorTimer;
     NSUInteger _cachedContentHeight;
     NSString *_currentFindString;
@@ -154,7 +154,7 @@
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_DEBUG(@"loaded");
 
-        SMEditorFocusKind focusKind = [SMMessageEditorView contentKindToFocusKind:_editorKind];
+        SMEditorFocusKind focusKind = [SMHTMLMessageEditorView contentKindToFocusKind:_editorKind];
         if(focusKind == kEditorFocusKind_Content) {
             WebScriptObject *scriptObject = [self windowScriptObject];
             [scriptObject evaluateWebScript:@"document.getElementById('SimplicityEditor').focus()"];

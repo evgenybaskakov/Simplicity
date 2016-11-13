@@ -10,7 +10,7 @@
 #import <WebKit/WebKit.h>
 
 #import "SMAbstractAccount.h"
-#import "SMMessageEditorView.h"
+#import "SMHTMLMessageEditorView.h"
 
 @protocol SMAbstractLocalFolder;
 

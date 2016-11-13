@@ -28,7 +28,7 @@ typedef enum {
 @class SMMessageEditorBase;
 @class SMEditorToolBoxViewController;
 
-@interface SMMessageEditorView : WebView<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebEditingDelegate>
+@interface SMHTMLMessageEditorView : WebView<WebFrameLoadDelegate, WebPolicyDelegate, WebResourceLoadDelegate, WebEditingDelegate>
 
 @property __weak SMMessageEditorBase *messageEditorBase;
 @property __weak SMEditorToolBoxViewController *editorToolBoxViewController;

@@ -1186,9 +1186,9 @@
 			isa = PBXGroup;
 			children = (
 				807438671DB208280054115B /* Icons */,
+				80E697CB1DD983AD0071E520 /* JS */,
 				800C67911B499F0700272D60 /* Images.xcassets */,
 				801EDED71BE9E6C400A16E85 /* Logos */,
-				00909E741A9ACDE300636C90 /* SearchWebView.js */,
 				80533AD51B4118B800A0A67F /* TextEditorIcons */,
 			);
 			name = Resources;
@@ -1432,6 +1432,14 @@
 				80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */,
 			);
 			name = Editor;
+			sourceTree = "<group>";
+		};
+		80E697CB1DD983AD0071E520 /* JS */ = {
+			isa = PBXGroup;
+			children = (
+				00909E741A9ACDE300636C90 /* SearchWebView.js */,
+			);
+			name = JS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

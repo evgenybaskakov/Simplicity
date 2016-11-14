@@ -10,7 +10,6 @@
 
 // We're using a global variable to store the number of occurrences
 var Simplicity_HighlightClass = "Simplicity_Highlight";
-var Simplicity_SearchResultCount = 0;
 var Simplicity_MarkedResultIndex = -1;
 var Simplicity_SearchResults = [];
 var Simplicity_HighlightColorText = "black";
@@ -48,7 +47,6 @@ function Simplicity_HighlightAllOccurrencesOfStringForElement(element, keyword, 
                 element.parentNode.insertBefore(text, next);
                 element = text;
                 if(isVisible(span)) {
-                    Simplicity_SearchResultCount++;
                     Simplicity_SearchResults.push(span);
                 }
             }
@@ -105,8 +103,9 @@ function Simplicity_HighlightAllOccurrencesOfString(keyword, matchCase) {
 function Simplicity_MarkOccurrenceOfFoundString(index) {
     Simplicity_RemoveMarkedOccurrenceOfFoundString();
 
-    if(index >= 0 && index < Simplicity_SearchResultCount) {
-        var span = Simplicity_SearchResults[Simplicity_SearchResultCount - index - 1];
+    var len = Simplicity_SearchResults.length;
+    if(index >= 0 && index < len) {
+        var span = Simplicity_SearchResults[len - index - 1];
         
         span.style.backgroundColor = Simplicity_MarkColorBackground;
         span.style.color = Simplicity_MarkColorText;
@@ -124,9 +123,10 @@ function Simplicity_MarkOccurrenceOfFoundString(index) {
 // the main entry point to remove the previously marked occurrence of the found string
 function Simplicity_RemoveMarkedOccurrenceOfFoundString() {
     var index = Simplicity_MarkedResultIndex;
-
-    if(index >= 0 && index < Simplicity_SearchResultCount) {
-        var span = Simplicity_SearchResults[Simplicity_SearchResultCount - index - 1];
+    var len = Simplicity_SearchResults.length;
+    
+    if(index >= 0 && index < len) {
+        var span = Simplicity_SearchResults[len - index - 1];
 
         span.style.backgroundColor = Simplicity_HighlightColorBackground;
         span.style.color = Simplicity_HighlightColorText;
@@ -137,9 +137,38 @@ function Simplicity_RemoveMarkedOccurrenceOfFoundString() {
 
 // the main entry point to remove the highlights
 function Simplicity_RemoveAllHighlights() {
-    Simplicity_SearchResultCount = 0;
     Simplicity_MarkedResultIndex = -1;
     Simplicity_SearchResults = [];
 
     Simplicity_RemoveAllHighlightsForElement(document.body);
+}
+
+function Simplicity_SearchResultCount() {
+    return Simplicity_SearchResults.length;
+}
+
+function Simplicity_ReplaceOccurrence(index, replacement) {
+    var len = Simplicity_SearchResults.length;
+    
+    if(index >= 0 && index < len) {
+        var span = Simplicity_SearchResults[len - index - 1];
+        var text = span.removeChild(span.firstChild);
+
+        text.nodeValue = replacement;
+        
+        span.parentNode.insertBefore(text, span);
+        span.parentNode.removeChild(span);
+    }
+}
+
+function Simplicity_ReplaceAllOccurrences(replacement) {
+    var len = Simplicity_SearchResults.length;
+    
+    for (var i = 0; i < len; i++) {
+        var span = Simplicity_SearchResults[i];
+        
+        span.firstChild.nodeValue = replacement;
+    }
+    
+    Simplicity_RemoveAllHighlights();
 }

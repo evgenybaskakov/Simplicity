@@ -532,7 +532,7 @@
         [scriptObject evaluateWebScript:jsCode];
         [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
         
-        NSString *occurrencesCount = [self stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
+        NSString *occurrencesCount = [self stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount()"];
         _stringOccurrencesCount = [occurrencesCount integerValue];
     }
 }
@@ -553,6 +553,14 @@
     [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
     
     _currentFindString = nil;
+}
+
+- (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement {
+    if([_currentFindString isEqualToString:replacement]) {
+        return;
+    }
+    
+    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceOccurrence('%lu', '%@')", index, replacement]];
 }
 
 - (void)animatedScrollToMarkedOccurrence {

@@ -1484,13 +1484,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 - (void)replaceOccurrence:(NSString*)replacement {
     if(_plainText) {
         [_plainTextEditor replaceOccurrence:_stringOccurrenceMarkedResultIndex replacement:replacement];
-        
-        if(_stringOccurrenceMarkedResultIndex == _plainTextEditor.stringOccurrencesCount) {
-            _stringOccurrenceMarkedResultIndex = 0;
-        }
     }
     else {
-        SM_LOG_ERROR(@"TODO");
+        [_htmlTextEditor replaceOccurrence:_stringOccurrenceMarkedResultIndex replacement:replacement];        
+    }
+
+    if(_stringOccurrenceMarkedResultIndex == self.stringOccurrencesCount) {
+        _stringOccurrenceMarkedResultIndex = 0;
     }
 
     [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];

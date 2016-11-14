@@ -298,7 +298,7 @@
         [scriptObject evaluateWebScript:jsCode];
         [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
         
-        NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount"];
+        NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount()"];
         _stringOccurrencesCount = [occurrencesCount integerValue];
     }
 }

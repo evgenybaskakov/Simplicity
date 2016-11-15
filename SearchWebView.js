@@ -158,6 +158,12 @@ function Simplicity_ReplaceOccurrence(index, replacement) {
         
         span.parentNode.insertBefore(text, span);
         span.parentNode.removeChild(span);
+
+        for (var i = len - index - 1; i + 1 < len; i++) {
+            Simplicity_SearchResults[i] = Simplicity_SearchResults[i + 1];
+        }
+        
+        Simplicity_SearchResults.pop();
     }
 }
 

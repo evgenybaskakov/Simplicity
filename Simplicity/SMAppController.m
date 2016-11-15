@@ -585,19 +585,27 @@
     [[[appDelegate appController] messageListViewController] moveSelectedMessageThreadsToFolder:trashFolder];
 }
 
-- (IBAction)toggleFindContentsPanelAction:(id)sender {
+- (void)showFindPanel:(BOOL)replace {
     NSWindow *curWindow = [[NSApplication sharedApplication] keyWindow];
     
     if([curWindow.delegate isKindOfClass:[SMMessageWindowController class]]) {
-        [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel];
+        [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel:replace];
     }
     else if([curWindow.delegate isKindOfClass:[SMMessageEditorWindowController class]]) {
-        [[(SMMessageEditorWindowController*)curWindow.delegate messageEditorViewController] showFindContentsPanel];
+        [[(SMMessageEditorWindowController*)curWindow.delegate messageEditorViewController] showFindContentsPanel:replace];
     }
     else if(curWindow == [[NSApplication sharedApplication] mainWindow]) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        [[appDelegate.appController messageThreadViewController] showFindContentsPanel];
+        [[appDelegate.appController messageThreadViewController] showFindContentsPanel:replace];
     }
+}
+
+- (IBAction)toggleFindContentsPanelAction:(id)sender {
+    [self showFindPanel:NO];
+}
+
+- (IBAction)toggleFindAndReplaceContentsPanelAction:(id)sender {
+    [self showFindPanel:YES];
 }
 
 - (IBAction)toggleSearchMailboxPanelAction:(id)sender {

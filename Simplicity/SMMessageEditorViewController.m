@@ -1308,7 +1308,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Find Contents panel
 
-- (void)showFindContentsPanel {
+- (void)showFindContentsPanel:(BOOL)replace {
     if(_findContentsPanelViewController == nil) {
         _findContentsPanelViewController = [[SMEditorFindContentsPanelViewController alloc] initWithNibName:@"SMEditorFindContentsPanelViewController" bundle:nil];
         _findContentsPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;

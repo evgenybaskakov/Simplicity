@@ -58,7 +58,7 @@
 
 #pragma mark Find contents panel
 
-- (void)showFindContentsPanel;
+- (void)showFindContentsPanel:(BOOL)replace;
 - (void)hideFindContentsPanel;
 - (void)findContents:(NSString*)stringToFind matchCase:(BOOL)matchCase forward:(BOOL)forward;
 - (void)replaceOccurrence:(NSString*)replacement;

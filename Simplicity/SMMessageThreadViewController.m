@@ -1229,7 +1229,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Find Contents panel management
 
-- (void)showFindContentsPanel {
+- (void)showFindContentsPanel:(BOOL)replace {
     if(_currentMessageThread == nil)
         return;
     

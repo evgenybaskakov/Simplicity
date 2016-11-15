@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (IBAction)composeMessageAction:(id)sender;
 - (IBAction)toggleFindContentsPanelAction:(id)sender;
+- (IBAction)toggleFindAndReplaceContentsPanelAction:(id)sender;
 - (IBAction)toggleSearchMailboxPanelAction:(id)sender;
 
 @property SMSectionMenuViewController *searchMenuViewController;

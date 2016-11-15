@@ -37,7 +37,7 @@
 
 - (void)messageThreadViewWillClose;
 
-- (void)showFindContentsPanel;
+- (void)showFindContentsPanel:(BOOL)replace;
 - (void)hideFindContentsPanel;
 
 - (void)addLabel:(NSString*)label;

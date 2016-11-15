@@ -1349,6 +1349,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             [self removeMarkedOccurrenceOfFoundString];
 
             _stringOccurrenceMarkedResultIndex = 0;
+            _stringOccurrenceMarked = NO;
         }
         
         [self highlightAllOccurrencesOfString:stringToFind matchCase:matchCase];

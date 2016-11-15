@@ -261,6 +261,22 @@
     return _cachedContentHeight;
 }
 
+#pragma mark Web view policies
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id <WebPolicyDecisionListener>)listener {
+    if ([actionInformation objectForKey:WebActionElementKey]) {
+        [listener ignore];
+        [[NSWorkspace sharedWorkspace] openURL:[request URL]];
+    } else {
+        [listener use];
+    }
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id<WebPolicyDecisionListener>)listener {
+    [listener ignore];
+    [[NSWorkspace sharedWorkspace] openURL:[request URL]];
+}
+
 #pragma mark Drag and drop to HTML editor
 
 - (NSUInteger)webView:(WebView *)sender dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo {

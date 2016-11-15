@@ -17,4 +17,7 @@
 
 @property (weak) SMMessageEditorViewController *messageEditorViewController;
 
+- (void)showReplaceControls;
+- (void)hideReplaceControls;
+
 @end

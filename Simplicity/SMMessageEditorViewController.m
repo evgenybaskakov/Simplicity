@@ -1316,6 +1316,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _findContentsPanelViewController.messageEditorViewController = self;
     }
     
+    if(replace) {
+        [_findContentsPanelViewController showReplaceControls];
+    }
+    else {
+        [_findContentsPanelViewController hideReplaceControls];
+    }
+    
     if(!_findContentsPanelShown) {
         [self.view addSubview:_findContentsPanelViewController.view];
         

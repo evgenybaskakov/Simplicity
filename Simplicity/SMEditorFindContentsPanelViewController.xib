@@ -8,13 +8,23 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMEditorFindContentsPanelViewController">
             <connections>
+                <outlet property="bottomFindFieldConstraint" destination="C4j-zW-Vh6" id="6z1-5E-xsb"/>
+                <outlet property="bottomReplaceAllButtonConstraint" destination="gU6-N9-sFg" id="5To-ZD-CQI"/>
+                <outlet property="bottomReplaceButtonConstraint" destination="iI4-PC-XFZ" id="8Br-gw-JGI"/>
+                <outlet property="bottomReplaceFieldConstraint" destination="yc8-jc-LyF" id="blb-Qx-fWK"/>
+                <outlet property="containerView" destination="Rm3-EA-n9g" id="FZa-GY-iTi"/>
                 <outlet property="directionButtons" destination="E8f-mA-Sxs" id="lGP-j7-kHD"/>
                 <outlet property="doneButton" destination="OcY-7g-iRT" id="NtA-dR-HW9"/>
                 <outlet property="findField" destination="1wn-wT-4Jh" id="EBN-0I-i0i"/>
+                <outlet property="leftReplaceFieldConstraint" destination="HUd-WD-z3h" id="1cc-sO-fTY"/>
                 <outlet property="matchCaseCheckbox" destination="R0s-lo-s3I" id="uxI-cv-Z1D"/>
                 <outlet property="replaceAllButton" destination="vP4-UM-ORc" id="xMi-wd-KEj"/>
                 <outlet property="replaceButton" destination="dMk-ua-d17" id="8OL-2B-RiF"/>
                 <outlet property="replaceField" destination="vvE-EH-A4P" id="iDP-KA-gQd"/>
+                <outlet property="rightReplaceAllButtonConstraint" destination="zxv-Et-TmV" id="xZC-22-wJI"/>
+                <outlet property="rightReplaceButtonConstraint" destination="zxv-Et-TmV" id="MPy-IO-Fdm"/>
+                <outlet property="rightReplaceFieldConstraint" destination="B1z-W1-heo" id="0YI-Ya-1Zc"/>
+                <outlet property="topReplaceFieldConstraint" destination="Zsx-bH-vbW" id="eQd-c3-Z0W"/>
                 <outlet property="view" destination="2de-YB-1zU" id="Z8P-rc-odF"/>
             </connections>
         </customObject>
@@ -113,6 +123,7 @@ Gw
                         <constraint firstItem="1wn-wT-4Jh" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="4YB-k4-BvH"/>
                         <constraint firstItem="OcY-7g-iRT" firstAttribute="leading" secondItem="E8f-mA-Sxs" secondAttribute="trailing" constant="8" id="7PZ-TU-How"/>
                         <constraint firstItem="dMk-ua-d17" firstAttribute="leading" secondItem="vvE-EH-A4P" secondAttribute="trailing" constant="8" id="B1z-W1-heo"/>
+                        <constraint firstAttribute="bottom" secondItem="1wn-wT-4Jh" secondAttribute="bottom" constant="31" id="C4j-zW-Vh6"/>
                         <constraint firstItem="E8f-mA-Sxs" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="5" id="Cc4-fL-2Jp"/>
                         <constraint firstItem="vvE-EH-A4P" firstAttribute="leading" secondItem="Rm3-EA-n9g" secondAttribute="leading" constant="8" id="HUd-WD-z3h"/>
                         <constraint firstItem="R0s-lo-s3I" firstAttribute="top" secondItem="Rm3-EA-n9g" secondAttribute="top" constant="9" id="JXy-5J-R1l"/>

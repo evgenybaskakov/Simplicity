@@ -579,6 +579,14 @@
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceOccurrence('%lu', '%@')", index, replacement]];
 }
 
+- (void)replaceAllOccurrences:(NSString*)replacement {
+    if([_currentFindString isEqualToString:replacement]) {
+        return;
+    }
+
+    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceAllOccurrences('%@')", replacement]];
+}
+
 - (void)animatedScrollToMarkedOccurrence {
     // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
     NSScrollView *sv = self.mainFrame.frameView.documentView.enclosingScrollView;

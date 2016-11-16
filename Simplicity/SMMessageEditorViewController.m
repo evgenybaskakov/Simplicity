@@ -1372,30 +1372,34 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _currentStringToFind = stringToFind;
         _currentStringToFindMatchCase = matchCase;
     } else {
-        // this is the case when there is a marked occurrence already
-        // so we just need to move it forward or backwards
-        // just scan the cells in the corresponsing direction and choose the right place
-        
-        NSAssert(_stringOccurrenceMarked, @"string occurrence not marked");
-        
-        if(forward) {
-            if(_stringOccurrenceMarkedResultIndex+1 < [self stringOccurrencesCount]) {
-                _stringOccurrenceMarkedResultIndex++;
+        NSUInteger occurrencesCount = [self stringOccurrencesCount];
+
+        if(occurrencesCount > 0) {
+            // this is the case when there is a marked occurrence already
+            // so we just need to move it forward or backwards
+            // just scan the cells in the corresponsing direction and choose the right place
+            
+            NSAssert(_stringOccurrenceMarked, @"string occurrence not marked");
+            
+            if(forward) {
+                if(_stringOccurrenceMarkedResultIndex+1 < occurrencesCount) {
+                    _stringOccurrenceMarkedResultIndex++;
+                }
+                else {
+                    _stringOccurrenceMarkedResultIndex = 0;
+                }
             }
             else {
-                _stringOccurrenceMarkedResultIndex = 0;
+                if(_stringOccurrenceMarkedResultIndex > 0) {
+                    _stringOccurrenceMarkedResultIndex--;
+                }
+                else {
+                    _stringOccurrenceMarkedResultIndex = occurrencesCount-1;
+                }
             }
+            
+            [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
         }
-        else {
-            if(_stringOccurrenceMarkedResultIndex > 0) {
-                _stringOccurrenceMarkedResultIndex--;
-            }
-            else {
-                _stringOccurrenceMarkedResultIndex = [self stringOccurrencesCount]-1;
-            }
-        }
-        
-        [self markOccurrenceOfFoundString:_stringOccurrenceMarkedResultIndex];
     }
     
     // if there is a marked occurrence, make sure it is visible

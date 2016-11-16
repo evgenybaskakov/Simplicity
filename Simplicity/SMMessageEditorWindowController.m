@@ -38,6 +38,10 @@
     _editorKind = editorKind;
 }
 
+- (void)initEditorViewController:(SMMessageEditorViewController*)messageEditorViewController {
+    _messageEditorViewController = messageEditorViewController;
+}
+
 - (void)windowDidLoad {
     [super windowDidLoad];
     
@@ -45,14 +49,14 @@
     
     [self setShouldCascadeWindows:YES];
 
-//    NSString *windowName = @"EditorWindow";
-//    [self.window setFrameUsingName:windowName];
-//    [self.window setFrameAutosaveName:windowName];
-    
     // View setup
     
-    _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] messageThreadViewController:nil draftUid:_draftUid plainText:_initialPlainText];
-    NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
+    BOOL existingEditor = (_messageEditorViewController != nil);
+
+    if(!existingEditor) {
+        _messageEditorViewController = [[SMMessageEditorViewController alloc] initWithFrame:[[self window] frame] messageThreadViewController:nil draftUid:_draftUid plainText:_initialPlainText];
+        NSAssert(_messageEditorViewController != nil, @"_messageEditorViewController is nil");
+    }
 
     [[self window] setContentViewController:_messageEditorViewController];
     
@@ -61,7 +65,9 @@
     
     // Editor setup
     
-    [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:_editorKind mcoAttachments:_mcoAttachments];
+    if(!existingEditor) {
+        [_messageEditorViewController startEditorWithHTML:_initialTextContent subject:_subject to:_to cc:_cc bcc:_bcc kind:_editorKind mcoAttachments:_mcoAttachments];
+    }
 }
 
 - (BOOL)windowShouldClose:(id)sender {

@@ -138,15 +138,20 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     return messageThreadCellViewController;
 }
 
+- (void)removeEmbeddedEditor {
+    [_messageEditorViewController.view removeFromSuperview];
+    
+    _messageEditorViewController = nil;
+    _cellViewControllerToReply = nil;
+}
+
 - (void)closeEmbeddedEditor:(BOOL)saveDraft {
     if(_messageEditorViewController != nil) {
         // TODO: it looks like that's not enough (unreg token notifi. as well)
         
-        [_messageEditorViewController.view removeFromSuperview];
         [_messageEditorViewController closeEditor:saveDraft askConfirmationIfNecessary:NO];
-        
-        _messageEditorViewController = nil;
-        _cellViewControllerToReply = nil;
+
+        [self removeEmbeddedEditor];
     }
 }
 
@@ -1299,6 +1304,18 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+}
+
+#pragma mark windowise editor
+
+- (void)makeEditorWindow:(SMMessageEditorViewController *)messageEditorViewController {
+    NSAssert(_messageEditorViewController == messageEditorViewController, @"unknown provided editor to windowise");
+    
+    [self removeEmbeddedEditor];
+    [self updateCellFrames];
+
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [[appDelegate appController] openMessageEditorWindow:messageEditorViewController];
 }
 
 @end

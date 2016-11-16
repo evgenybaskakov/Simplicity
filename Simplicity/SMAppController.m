@@ -695,6 +695,15 @@
     [_messageEditorWindowControllers addObject:messageEditorWindowController];
 }
 
+- (void)openMessageEditorWindow:(SMMessageEditorViewController*)messageEditorViewController {
+    SMMessageEditorWindowController *messageEditorWindowController = [[SMMessageEditorWindowController alloc] initWithWindowNibName:@"SMMessageEditorWindowController"];
+    
+    [messageEditorWindowController initEditorViewController:messageEditorViewController];
+    [messageEditorWindowController showWindow:self];
+    
+    [_messageEditorWindowControllers addObject:messageEditorWindowController];
+}
+
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController {
     [_messageEditorWindowControllers removeObject:messageEditorWindowController];
 }

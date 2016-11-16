@@ -11,6 +11,7 @@
 @protocol SMAbstractLocalFolder;
 
 @class SMMessageThread;
+@class SMMessageEditorViewController;
 
 @interface SMMessageThreadViewController : NSViewController
 
@@ -44,5 +45,7 @@
 - (void)removeLabel:(NSString*)label;
 
 - (void)closeEmbeddedEditorWithoutSavingDraft;
+
+- (void)makeEditorWindow:(SMMessageEditorViewController*)messageEditorViewController;
 
 @end

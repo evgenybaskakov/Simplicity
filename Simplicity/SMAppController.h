@@ -28,6 +28,7 @@
 @class SMMessageThreadViewController;
 @class SMNewLabelWindowController;
 @class SMMessageEditorWindowController;
+@class SMMessageEditorViewController;
 @class SMOperationQueueWindowController;
 @class SMMessageWindowController;
 @class SMMessageThread;
@@ -76,6 +77,7 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)openMessageEditorWindow:(NSString*)textContent plainText:(BOOL)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind;
+- (void)openMessageEditorWindow:(SMMessageEditorViewController*)messageEditorViewController;
 
 - (void)closeMessageEditorWindow:(SMMessageEditorWindowController*)messageEditorWindowController;
 

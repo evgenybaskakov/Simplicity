@@ -10,6 +10,7 @@
             <connections>
                 <outlet property="attachButton" destination="p8q-HM-jSs" id="SA4-g1-1Pd"/>
                 <outlet property="deleteButton" destination="jEL-eI-naP" id="wTH-9y-AFB"/>
+                <outlet property="makeWindowButton" destination="XAj-sp-C2D" id="BR8-6x-fKU"/>
                 <outlet property="sendButton" destination="6zw-K1-zkc" id="GcH-i2-CQg"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -20,7 +21,7 @@
             <rect key="frame" x="0.0" y="0.0" width="388" height="31"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6zw-K1-zkc">
+                <button toolTip="Send message" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6zw-K1-zkc">
                     <rect key="frame" x="-1" y="-3" width="71" height="34"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="Y0q-Ed-WLB"/>
@@ -34,7 +35,7 @@
                         <action selector="sendAction:" target="-2" id="YAd-aM-XnA"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
+                <button toolTip="Move draft to trash" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
                     <rect key="frame" x="351" y="2" width="32" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="E26-cl-hKn"/>
@@ -48,7 +49,7 @@
                         <action selector="deleteAction:" target="-2" id="fCa-k5-kI4"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
+                <button toolTip="Attach media or data files" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
                     <rect key="frame" x="315" y="2" width="32" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="ne9-Fn-GD1"/>
@@ -62,12 +63,28 @@
                         <action selector="attachAction:" target="-2" id="6mI-3X-Att"/>
                     </connections>
                 </button>
+                <button toolTip="Move editor to a separate window" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XAj-sp-C2D" userLabel="Window Button">
+                    <rect key="frame" x="275" y="2" width="32" height="26"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="32" id="OZb-dg-yof"/>
+                        <constraint firstAttribute="height" constant="23" id="suf-7v-Whs"/>
+                    </constraints>
+                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="make-window" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Sd-Is-Vhv">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="makeWindowAction:" target="-2" id="NBa-DD-btK"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="6zw-K1-zkc" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="0FM-Np-syk"/>
                 <constraint firstAttribute="trailing" secondItem="jEL-eI-naP" secondAttribute="trailing" constant="5" id="6H3-sV-P5J"/>
                 <constraint firstItem="jEL-eI-naP" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="8oT-ZP-tj0"/>
+                <constraint firstItem="p8q-HM-jSs" firstAttribute="leading" secondItem="XAj-sp-C2D" secondAttribute="trailing" constant="8" id="9aS-7A-H0g"/>
                 <constraint firstItem="p8q-HM-jSs" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="aJO-gF-fAW"/>
+                <constraint firstItem="XAj-sp-C2D" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="4" id="e2l-MW-Mvn"/>
                 <constraint firstItem="jEL-eI-naP" firstAttribute="leading" secondItem="p8q-HM-jSs" secondAttribute="trailing" constant="4" id="gWN-B5-9bt"/>
                 <constraint firstItem="6zw-K1-zkc" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="qH1-X3-CEc"/>
             </constraints>
@@ -76,6 +93,7 @@
     </objects>
     <resources>
         <image name="attachment" width="128" height="128"/>
+        <image name="make-window" width="128" height="128"/>
         <image name="trash-black" width="64" height="64"/>
     </resources>
 </document>

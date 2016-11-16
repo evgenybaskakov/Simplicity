@@ -113,6 +113,7 @@
 		80279AEC1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80279AEA1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib */; };
 		802DAC4F1B709047000FA34A /* SMInlineButtonPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */; };
 		802DAC501B709047000FA34A /* SMInlineButtonPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */; };
+		8032E1111DDC390A001153FF /* make-window.png in Resources */ = {isa = PBXBuildFile; fileRef = 8032E1101DDC390A001153FF /* make-window.png */; };
 		8036322A1DB0AF24003B7680 /* numbered-list.png in Resources */ = {isa = PBXBuildFile; fileRef = 803632281DB0AF24003B7680 /* numbered-list.png */; };
 		8036322B1DB0AF24003B7680 /* bullet-list.png in Resources */ = {isa = PBXBuildFile; fileRef = 803632291DB0AF24003B7680 /* bullet-list.png */; };
 		803632301DB0B656003B7680 /* align-center.png in Resources */ = {isa = PBXBuildFile; fileRef = 8036322C1DB0B656003B7680 /* align-center.png */; };
@@ -528,6 +529,7 @@
 		802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMInlineButtonPanelViewController.h; sourceTree = "<group>"; };
 		802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInlineButtonPanelViewController.m; sourceTree = "<group>"; };
 		802DAC4E1B709047000FA34A /* SMInlineButtonPanelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMInlineButtonPanelViewController.xib; sourceTree = "<group>"; };
+		8032E1101DDC390A001153FF /* make-window.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "make-window.png"; sourceTree = "<group>"; };
 		803632281DB0AF24003B7680 /* numbered-list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "numbered-list.png"; sourceTree = "<group>"; };
 		803632291DB0AF24003B7680 /* bullet-list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bullet-list.png"; sourceTree = "<group>"; };
 		8036322C1DB0B656003B7680 /* align-center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "align-center.png"; sourceTree = "<group>"; };
@@ -1333,6 +1335,7 @@
 				00AD52E71AA813FB00627433 /* label-tmp.png */,
 				807438AB1DB338800054115B /* label.png */,
 				807438681DB208820054115B /* link.png */,
+				8032E1101DDC390A001153FF /* make-window.png */,
 				8074381D1DB1F43C0054115B /* new-message.png */,
 				8074386A1DB2110B0054115B /* outbox-white.png */,
 				8074385D1DB204DC0054115B /* print.png */,
@@ -1574,6 +1577,7 @@
 				80BD0A231C4DFF0600F43EA2 /* SMSectionMenuViewController.xib in Resources */,
 				00B4C19A1AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib in Resources */,
 				807438451DB1FE850054115B /* angle-down.png in Resources */,
+				8032E1111DDC390A001153FF /* make-window.png in Resources */,
 				801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */,
 				8074389E1DB302880054115B /* collapse.png in Resources */,
 				803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */,

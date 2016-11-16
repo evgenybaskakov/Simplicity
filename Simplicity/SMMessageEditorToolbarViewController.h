@@ -17,6 +17,7 @@
 @property IBOutlet NSButton *sendButton;
 @property IBOutlet NSButton *deleteButton;
 @property IBOutlet NSButton *attachButton;
+@property IBOutlet NSButton *makeWindowButton;
 
 - (IBAction)sendAction:(id)sender;
 - (IBAction)deleteAction:(id)sender;

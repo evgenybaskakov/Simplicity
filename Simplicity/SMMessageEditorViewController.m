@@ -222,6 +222,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [self.view addSubview:_innerView];
     }
     else {
+        _messageEditorToolbarViewController.makeWindowButton.hidden = YES;
+        
         _innerView = self.view;
     }
     
@@ -1518,6 +1520,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     }
 
     _stringOccurrenceMarkedResultIndex = 0;
+}
+
+#pragma mark Windowise
+
+- (void)makeWindow {
+    // TODO
 }
 
 @end

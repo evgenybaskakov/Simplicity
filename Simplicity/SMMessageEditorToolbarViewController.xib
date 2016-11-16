@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMMessageEditorToolbarViewController">
@@ -33,13 +34,13 @@
                         <action selector="sendAction:" target="-2" id="YAd-aM-XnA"/>
                     </connections>
                 </button>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
-                    <rect key="frame" x="351" y="4" width="32" height="23"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
+                    <rect key="frame" x="351" y="2" width="32" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="E26-cl-hKn"/>
                         <constraint firstAttribute="width" constant="32" id="P7S-DL-aIP"/>
                     </constraints>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="trash-black" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="XMQ-k7-KRb">
+                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="trash-black" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XMQ-k7-KRb">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -47,13 +48,13 @@
                         <action selector="deleteAction:" target="-2" id="fCa-k5-kI4"/>
                     </connections>
                 </button>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
-                    <rect key="frame" x="315" y="4" width="32" height="23"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p8q-HM-jSs">
+                    <rect key="frame" x="315" y="2" width="32" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="ne9-Fn-GD1"/>
                         <constraint firstAttribute="width" constant="32" id="oQ1-66-9lW"/>
                     </constraints>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="attachment" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="9wt-gi-CN7">
+                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="attachment" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9wt-gi-CN7">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>

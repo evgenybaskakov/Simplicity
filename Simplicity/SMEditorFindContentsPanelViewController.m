@@ -11,41 +11,55 @@
 
 @interface SMEditorFindContentsPanelViewController ()
 
-@property (weak) IBOutlet NSVisualEffectView *containerView;
+@property IBOutlet NSVisualEffectView *containerView;
 
-@property (weak) IBOutlet NSButton *matchCaseCheckbox;
-@property (weak) IBOutlet NSSegmentedControl *directionButtons;
-@property (weak) IBOutlet NSButton *doneButton;
-@property (weak) IBOutlet NSButton *replaceButton;
-@property (weak) IBOutlet NSButton *replaceAllButton;
+@property IBOutlet NSButton *matchCaseCheckbox;
+@property IBOutlet NSSegmentedControl *directionButtons;
+@property IBOutlet NSButton *doneButton;
 
-@property (weak) IBOutlet NSLayoutConstraint *bottomFindFieldConstraint;
+@property IBOutlet NSButton *replaceButton;
+@property IBOutlet NSButton *replaceAllButton;
 
-@property (weak) IBOutlet NSLayoutConstraint *leftReplaceFieldConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *topReplaceFieldConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *bottomReplaceFieldConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *rightReplaceFieldConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *bottomReplaceButtonConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *rightReplaceButtonConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *bottomReplaceAllButtonConstraint;
-@property (weak) IBOutlet NSLayoutConstraint *rightReplaceAllButtonConstraint;
+@property IBOutlet NSLayoutConstraint *leftReplaceFieldConstraint;
+@property IBOutlet NSLayoutConstraint *topReplaceFieldConstraint;
+@property IBOutlet NSLayoutConstraint *bottomReplaceFieldConstraint;
+@property IBOutlet NSLayoutConstraint *rightReplaceFieldConstraint;
+@property IBOutlet NSLayoutConstraint *bottomReplaceButtonConstraint;
+@property IBOutlet NSLayoutConstraint *rightReplaceButtonConstraint;
+@property IBOutlet NSLayoutConstraint *bottomReplaceAllButtonConstraint;
+@property IBOutlet NSLayoutConstraint *rightReplaceAllButtonConstraint;
 
 @end
 
-@implementation SMEditorFindContentsPanelViewController
+@implementation SMEditorFindContentsPanelViewController {
+    CGFloat _delta;
+    BOOL _replaceFieldHidden;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    _directionButtons.selectedSegment = 1; // next, initially
+    _delta = _topReplaceFieldConstraint.constant + _replaceField.bounds.size.height;
+    _replaceFieldHidden = NO;
+
+    [self setResponders];
+}
+
+- (void)setResponders {
     _findField.nextKeyView = _matchCaseCheckbox;
     _matchCaseCheckbox.nextKeyView = _directionButtons;
     _directionButtons.nextKeyView = _doneButton;
-    _doneButton.nextKeyView = _replaceField;
-    _replaceField.nextKeyView = _replaceButton;
-    _replaceButton.nextKeyView = _replaceAllButton;
-    _replaceAllButton.nextKeyView = _findField;
     
-    _directionButtons.selectedSegment = 1; // next, initially
+    if(_replaceFieldHidden) {
+        _doneButton.nextKeyView = _findField;
+    }
+    else {
+        _doneButton.nextKeyView = _replaceField;
+        _replaceField.nextKeyView = _replaceButton;
+        _replaceButton.nextKeyView = _replaceAllButton;
+        _replaceAllButton.nextKeyView = _findField;
+    }
 }
 
 - (IBAction)findFieldAction:(id)sender {
@@ -94,7 +108,10 @@
 }
 
 - (void)showReplaceControls {
-    [_containerView removeConstraint:_bottomFindFieldConstraint];
+    if(!_replaceFieldHidden) {
+        return;
+    }
+    _replaceFieldHidden = NO;
 
     [_containerView addSubview:_replaceField];
     [_containerView addSubview:_replaceButton];
@@ -109,10 +126,21 @@
     [_containerView addConstraint:_bottomReplaceAllButtonConstraint];
     [_containerView addConstraint:_rightReplaceAllButtonConstraint];
     
-    [self.view setNeedsLayout:YES];
+    [self.view setFrame:NSMakeRect(NSMinX(self.view.frame), NSMinY(self.view.frame), NSWidth(self.view.frame), NSHeight(self.view.frame) + _delta)];
+
+    [self setResponders];
 }
 
 - (void)hideReplaceControls {
+    if(_replaceFieldHidden) {
+        return;
+    }
+    _replaceFieldHidden = YES;
+    
+    [_replaceField removeFromSuperview];
+    [_replaceButton removeFromSuperview];
+    [_replaceAllButton removeFromSuperview];
+    
     [_containerView removeConstraint:_leftReplaceFieldConstraint];
     [_containerView removeConstraint:_topReplaceFieldConstraint];
     [_containerView removeConstraint:_bottomReplaceFieldConstraint];
@@ -122,15 +150,9 @@
     [_containerView removeConstraint:_bottomReplaceAllButtonConstraint];
     [_containerView removeConstraint:_rightReplaceAllButtonConstraint];
     
-    [_replaceField removeFromSuperview];
-    [_replaceButton removeFromSuperview];
-    [_replaceAllButton removeFromSuperview];
+    [self.view setFrame:NSMakeRect(NSMinX(self.view.frame), NSMinY(self.view.frame), NSWidth(self.view.frame), NSHeight(self.view.frame) - _delta)];
 
-    [_containerView addConstraint:_bottomFindFieldConstraint];
-    
-    _bottomFindFieldConstraint.constant = 5;
-
-    [self.view setNeedsLayout:YES];
+    [self setResponders];
 }
 
 @end

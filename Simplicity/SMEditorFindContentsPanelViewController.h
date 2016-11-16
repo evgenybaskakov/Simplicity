@@ -12,8 +12,8 @@
 
 @interface SMEditorFindContentsPanelViewController : NSViewController
 
-@property (weak) IBOutlet NSSearchField *findField;
-@property (weak) IBOutlet NSTextField *replaceField;
+@property IBOutlet NSSearchField *findField;
+@property IBOutlet NSTextField *replaceField;
 
 @property (weak) SMMessageEditorViewController *messageEditorViewController;
 

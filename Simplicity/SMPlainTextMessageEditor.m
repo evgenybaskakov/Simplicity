@@ -200,10 +200,20 @@
     NSMutableAttributedString *attrText = [_textView textStorage];
     NSRange r = [_highlightPositions[index] rangeValue];
 
+    // First remove highlight, without notifying the text view.
+    // This way, the highlight won't be part of the undo/redo stack.
+    // See http://stackoverflow.com/questions/25590912/how-to-implement-undo-with-nstextview
     [attrText beginEditing];
     [attrText removeAttribute:NSBackgroundColorAttributeName range:r];
-    [attrText replaceCharactersInRange:r withString:replacement];
     [attrText endEditing];
+
+    // Now actually replace text, keeping this change in the undo/redo stack.
+    if ([_textView shouldChangeTextInRange:r replacementString:replacement]) {
+        [attrText beginEditing];
+        [attrText replaceCharactersInRange:r withString:replacement];
+        [attrText endEditing];
+        [_textView didChangeText];
+    }
     
     [_highlightPositions removeObjectAtIndex:index];
     
@@ -226,16 +236,33 @@
     }
     
     NSMutableAttributedString *attrText = [_textView textStorage];
-    
+
+    // First remove highlight, without notifying the text view.
+    // This way, the highlight won't be part of the undo/redo stack.
+    // See http://stackoverflow.com/questions/25590912/how-to-implement-undo-with-nstextview
+    [attrText beginEditing];
+
+    // go backwards to keep the rest of highlight positions valid
+    for(NSUInteger i = _highlightPositions.count; i > 0; i--) {
+        NSRange r = [_highlightPositions[i-1] rangeValue];
+        [attrText removeAttribute:NSBackgroundColorAttributeName range:r];
+    }
+
+    [attrText endEditing];
+
+    // Now actually replace text, keeping this change in the undo/redo stack.
     [attrText beginEditing];
 
     // go backwards to keep the rest of highlight positions valid
     for(NSUInteger i = _highlightPositions.count; i > 0; i--) {
         NSRange r = [_highlightPositions[i-1] rangeValue];
 
-        [attrText removeAttribute:NSBackgroundColorAttributeName range:r];
-        [attrText replaceCharactersInRange:r withString:replacement];
+        if ([_textView shouldChangeTextInRange:r replacementString:replacement]) {
+            [attrText replaceCharactersInRange:r withString:replacement];
+        }
     }
+
+    [_textView didChangeText];
 
     [attrText endEditing];
     

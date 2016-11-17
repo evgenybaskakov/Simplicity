@@ -580,6 +580,10 @@
         return;
     }
     
+    if(_stringOccurrencesCount != 0) {
+        _unsavedContentPending = YES;
+    }
+    
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceOccurrence('%lu', '%@')", index, replacement]];
 
     [self getOccurrencesCount];
@@ -588,6 +592,10 @@
 - (void)replaceAllOccurrences:(NSString*)replacement {
     if([_currentFindString isEqualToString:replacement]) {
         return;
+    }
+
+    if(_stringOccurrencesCount != 0) {
+        _unsavedContentPending = YES;
     }
 
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceAllOccurrences('%@')", replacement]];

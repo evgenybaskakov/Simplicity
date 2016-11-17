@@ -13,6 +13,8 @@
 @property (readonly) NSTextView *textView;
 @property (readonly) NSUInteger stringOccurrencesCount;
 
+@property BOOL unsavedContentPending;
+
 - (id)initWithString:(NSString*)string;
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;

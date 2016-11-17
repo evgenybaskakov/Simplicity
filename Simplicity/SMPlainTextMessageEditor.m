@@ -56,6 +56,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)textDidChange:(NSNotification *)notification {
+    _unsavedContentPending = YES;
+}
+
 - (void)defaultMessageFontChanged:(NSNotification*)notification {
     [self setMessageFont];
 }
@@ -188,7 +192,11 @@
     if([_stringToFind isEqualToString:replacement]) {
         return;
     }
-    
+ 
+    if(_highlightPositions.count != 0) {
+        _unsavedContentPending = YES;
+    }
+
     NSMutableAttributedString *attrText = [_textView textStorage];
     NSRange r = [_highlightPositions[index] rangeValue];
 
@@ -211,6 +219,10 @@
 - (void)replaceAllOccurrences:(NSString*)replacement {
     if(_highlightPositions.count == 0) {
         return;
+    }
+    
+    if(_highlightPositions.count != 0) {
+        _unsavedContentPending = YES;
     }
     
     NSMutableAttributedString *attrText = [_textView textStorage];

@@ -537,11 +537,22 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     NSArray *to = _toBoxViewController.tokenField.objectValue;
     NSArray *cc = _ccBoxViewController.tokenField.objectValue;
     NSArray *bcc = _bccBoxViewController.tokenField.objectValue;
-    
-    if(_htmlTextEditor.unsavedContentPending || _messageEditorController.hasUnsavedAttachments) {
+
+    if(_plainText) {
+        if(_plainTextEditor.unsavedContentPending) {
+            return YES;
+        }
+    }
+    else {
+        if(_htmlTextEditor.unsavedContentPending) {
+            return YES;
+        }
+    }
+
+    if(_messageEditorController.hasUnsavedAttachments) {
         return YES;
     }
-    
+
     if(_lastAccount != nil && _lastAccount != _fromBoxViewController.itemList.selectedItem.representedObject) {
         return YES;
     }
@@ -627,7 +638,12 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [self restoreStringOccurrencesHightlighting];
     }
 
-    _htmlTextEditor.unsavedContentPending = NO;
+    if(_plainText) {
+        _plainTextEditor.unsavedContentPending = NO;
+    }
+    else {
+        _htmlTextEditor.unsavedContentPending = NO;
+    }
     
     _savedOnce = YES;
     

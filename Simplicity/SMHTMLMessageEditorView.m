@@ -150,6 +150,10 @@
 
 #pragma mark Web view control
 
+- (void)webViewDidChange:(NSNotification *)notification {
+    //NSLog(@"webViewDidChange");
+}
+
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_DEBUG(@"loaded");

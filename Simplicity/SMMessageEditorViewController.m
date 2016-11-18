@@ -96,6 +96,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     BOOL _findContentsActive;
     BOOL _stringOccurrenceMarked;
     NSUInteger _stringOccurrenceMarkedResultIndex;
+    BOOL _editorStateInitialized;
 }
 
 + (void)getReplyAddressLists:(SMMessage*)message replyKind:(SMEditorReplyKind)replyKind accountAddress:(SMAddress*)accountAddress to:(NSArray<SMAddress*>**)to cc:(NSArray<SMAddress*>**)cc {
@@ -191,15 +192,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _subjectBoxViewController.view.autoresizingMask = NSViewWidthSizable;
         _subjectBoxViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
         
-        // unfold panel
-        
-        if(self.embedded) {
-            _foldPanelViewController = [[SMInlineButtonPanelViewController alloc] initWithNibName:@"SMInlineButtonPanelViewController" bundle:nil];
-            [_foldPanelViewController setButtonTarget:self action:@selector(unfoldHiddenText:)];
-            _foldPanelViewController.view.autoresizingMask = NSViewWidthSizable;
-            _foldPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        }
-        
         // register events
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addressFieldContentsChanged:) name:@"AddressFieldContentsChanged" object:nil];
         
@@ -210,7 +202,29 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (void)initView {
+    if(_foldPanelViewController) {
+        [_foldPanelViewController.view removeFromSuperview];
+        _foldPanelViewController = nil;
+    }
+    
+    if(_innerView) {
+        if(_innerView != self.view) {
+            [_innerView removeFromSuperview];
+        }
+        
+        _innerView = nil;
+    }
+    
+    if(_textAndAttachmentsSplitView) {
+        [_textAndAttachmentsSplitView removeFromSuperview];
+    }
+    
     if(self.embedded) {
+        _foldPanelViewController = [[SMInlineButtonPanelViewController alloc] initWithNibName:@"SMInlineButtonPanelViewController" bundle:nil];
+        [_foldPanelViewController setButtonTarget:self action:@selector(unfoldHiddenText:)];
+        _foldPanelViewController.view.autoresizingMask = NSViewWidthSizable;
+        _foldPanelViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
         _innerView = [[SMFlippedView alloc] init];
         _innerView.autoresizingMask = NSViewWidthSizable;
         _innerView.translatesAutoresizingMaskIntoConstraints = YES;
@@ -227,15 +241,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _innerView = self.view;
     }
     
-    [_toBoxViewController addControlSwitch:(self.embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
-    
-    _textAndAttachmentsSplitView = [[NSSplitView alloc] init];
-    _textAndAttachmentsSplitView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    _textAndAttachmentsSplitView.translatesAutoresizingMaskIntoConstraints = YES;
-    
-    //[_textAndAttachmentsSplitView setDelegate:self];
-    [_textAndAttachmentsSplitView setVertical:NO];
-    [_textAndAttachmentsSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    if(!_textAndAttachmentsSplitView) {
+        _textAndAttachmentsSplitView = [[NSSplitView alloc] init];
+        _textAndAttachmentsSplitView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        _textAndAttachmentsSplitView.translatesAutoresizingMaskIntoConstraints = YES;
+        _textAndAttachmentsSplitView.vertical = NO;
+        _textAndAttachmentsSplitView.dividerStyle = NSSplitViewDividerStyleThin;
+    }
     
     [_innerView addSubview:_messageEditorToolbarViewController.view];
 
@@ -255,38 +267,53 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         [_innerView addSubview:_subjectBoxViewController.view];
     }
     
-    if(!self.embedded) {
-        [self showFullAddressPanel:YES];
+    if(_editorToolBoxViewController) {
+        [_innerView addSubview:_editorToolBoxViewController.view];
     }
-    else {
-        [self hideFullAddressPanel:YES];
-    }
-    
-    // Controls initialization
-    
-    [_fromBoxViewController.label setStringValue:@"From:"];
-    [_toBoxViewController.label setStringValue:@"To:"];
-    [_ccBoxViewController.label setStringValue:@"Cc:"];
-    [_bccBoxViewController.label setStringValue:@"Bcc:"];
-    [_subjectBoxViewController.label setStringValue:@"Subject:"];
-    
-    // editor initialization
+ 
+    if(!_editorStateInitialized) {
+        // Controls initialization
+        
+        if(!self.embedded) {
+            [self showFullAddressPanel:YES];
+        }
+        else {
+            [self hideFullAddressPanel:YES];
+        }
+        
+        [_fromBoxViewController.label setStringValue:@"From:"];
+        [_toBoxViewController.label setStringValue:@"To:"];
+        [_ccBoxViewController.label setStringValue:@"Cc:"];
+        [_bccBoxViewController.label setStringValue:@"Bcc:"];
+        [_subjectBoxViewController.label setStringValue:@"Subject:"];
+        
+        [_toBoxViewController addControlSwitch:(self.embedded? NSOffState : NSOnState) target:self action:@selector(toggleFullAddressPanel:)];
+        
+        // editor initialization
 
-    if(_plainText) {
-        [self makePlainText:YES conversion:EditorConversion_Direct];
+        if(_plainText) {
+            [self makePlainText:YES conversion:EditorConversion_Direct];
+        }
+        else {
+            [self makeHTMLText:YES conversion:EditorConversion_Direct];
+        }
+        
+        // other stuff
+        
+        _attachmentsPanelShown = YES;
+        [self hideAttachmentsPanel];
+
+        // Event registration
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
+        
+        _editorStateInitialized = YES;
     }
     else {
-        [self makeHTMLText:YES conversion:EditorConversion_Direct];
+        if(_fullAddressPanelShown) {
+            [self addFullAddressPanelSubviews];
+        }
     }
-    
-    // other stuff
-    
-    _attachmentsPanelShown = YES;
-    [self hideAttachmentsPanel];
-    
-    // Event registration
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenFieldHeightChanged:) name:@"SMTokenFieldHeightChanged" object:nil];
 }
 
 - (void)dealloc {
@@ -1033,16 +1060,19 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
 }
 
-- (void)showFullAddressPanel:(BOOL)viewConstructionPhase {
-    _fullAddressPanelShown = YES;
-    
+- (void)addFullAddressPanelSubviews {
     [_innerView addSubview:_ccBoxViewController.view];
     [_innerView addSubview:_bccBoxViewController.view];
     
     if(self.embedded) {
         [_innerView addSubview:_subjectBoxViewController.view];
     }
+}
     
+- (void)showFullAddressPanel:(BOOL)viewConstructionPhase {
+    _fullAddressPanelShown = YES;
+    
+    [self addFullAddressPanelSubviews];
     [self adjustFrames:(viewConstructionPhase? FrameAdjustment_Resize : FrameAdjustment_ShowFullPanel)];
     [self notifyContentHeightChanged];
 }
@@ -1542,6 +1572,13 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 - (void)makeWindow {
     [_messageThreadViewController makeEditorWindow:self];
+    
+    _messageThreadViewController = nil;
+    
+    [self initView];
+    
+    [self adjustFrames:FrameAdjustment_Resize];
+    [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
 }
 
 @end

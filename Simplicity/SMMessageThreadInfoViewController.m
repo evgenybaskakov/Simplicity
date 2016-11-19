@@ -130,6 +130,7 @@
     // subject
 
     _subject = [SMMessageDetailsViewController createLabel:@"" bold:YES];
+    _subject.selectable = YES;
     _subject.textColor = [NSColor blackColor];
     
     [_subject.cell setLineBreakMode:NSLineBreakByTruncatingTail];

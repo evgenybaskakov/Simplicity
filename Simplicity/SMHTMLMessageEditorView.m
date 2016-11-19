@@ -15,12 +15,20 @@
 #import "SMEditorToolBoxViewController.h"
 #import "SMHTMLMessageEditorView.h"
 
+#define Simplicity_HighlightClass           @"Simplicity_Highlight"
+#define Simplicity_HighlightColorText       @"black"
+#define Simplicity_HighlightColorBackground @"lightgray"
+#define Simplicity_MarkColorText            @"black"
+#define Simplicity_MarkColorBackground      @"yellow"
+
 @implementation SMHTMLMessageEditorView {
     NSTimer *_textMonitorTimer;
     NSUInteger _cachedContentHeight;
     NSString *_currentFindString;
     BOOL _currentFindStringMatchCase;
-    NSInteger _markedOccurrenceYpos;
+    CGFloat _markedOccurrenceYpos;
+    NSMutableArray<DOMElement*> *_searchResults;
+    NSUInteger _markedResultIndex;
 }
 
 + (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {
@@ -532,6 +540,11 @@
     _currentFindString = str;
     _currentFindStringMatchCase = matchCase;
     
+    if(!_searchResults) {
+        _searchResults = [NSMutableArray array];
+    }
+
+// TODO
 //    if(!_mainFrameLoaded)
 //        return;
     
@@ -540,42 +553,149 @@
     [self removeAllHighlightedOccurrencesOfString];
     
     if(str.length > 0) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"SearchWebView" ofType:@"js"];
-        NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+        DOMHTMLElement *bodyElement = self.mainFrameDocument.body;
         
-        WebScriptObject *scriptObject = [self windowScriptObject];
-        
-        // Uncomment to enable JS logs (TODO: propagate to advanced preferences?)
-        //        [scriptObject setValue:self forKey:@"Simplicity"];
-        //        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
-        
-        [scriptObject evaluateWebScript:jsCode];
-        [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
-
+        [self highlightAllOccurrencesOfStringForElement:bodyElement str:(matchCase ? str : [str lowercaseString]) matchCase:matchCase];
         [self getOccurrencesCount];
+
+        [_searchResults sortUsingComparator:^NSComparisonResult(DOMElement *a, DOMElement *b) {
+            if(NSMaxY(b.boundingBox) != NSMaxY(a.boundingBox)) {
+                return NSMaxY(b.boundingBox) - NSMaxY(a.boundingBox);
+            }
+            else {
+                return NSMinX(b.boundingBox) - NSMinX(a.boundingBox);
+            }
+        }];
     }
 }
 
+- (BOOL)elementVisible:(DOMElement*)element {
+    return element.offsetWidth > 0 || element.offsetHeight > 0;
+}
+
+- (void)highlightAllOccurrencesOfStringForElement:(DOMNode*)element str:(NSString*)str matchCase:(BOOL)matchCase {
+    if (element) {
+        DOMDocument *document = self.mainFrameDocument;
+        
+        if (element.nodeType == DOM_TEXT_NODE) {
+            while (true) {
+                NSString *value = element.nodeValue;
+                NSRange r = matchCase? [value rangeOfString:str] : [[value lowercaseString] rangeOfString:str];
+                
+                if (r.location == NSNotFound) {
+                    break;
+                }
+                
+                DOMElement *span = [document createElement:@"span"];
+                DOMText *text = [document createTextNode:[value substringWithRange:r]];
+                
+                [span appendChild:text];
+                [span setAttribute:@"class" value:Simplicity_HighlightClass];
+                
+                span.style.backgroundColor = Simplicity_HighlightColorBackground;
+                span.style.color = Simplicity_HighlightColorText;
+                
+                text = [document createTextNode:[value substringFromIndex:r.location + str.length]];
+                
+                [element setNodeValue:[value substringToIndex:r.location]];
+                
+                DOMNode *next = element.nextSibling;
+                
+                [element.parentNode insertBefore:span refChild:next];
+                [element.parentNode insertBefore:text refChild:next];
+                
+                element = text;
+                
+                if([self elementVisible:span]) {
+                    [_searchResults addObject:span];
+                }
+            }
+        }
+        else if (element.nodeType == DOM_ELEMENT_NODE && [element isKindOfClass:[DOMHTMLElement class]]) {
+            DOMHTMLElement *htmlElement = (DOMHTMLElement*)element;
+            
+            if (![htmlElement.style.display isEqualToString:@"none"] && ![[htmlElement.nodeName lowercaseString] isEqualToString:@"select"]) {
+                DOMNodeList *childNodes = htmlElement.childNodes;
+                
+                for (unsigned i = childNodes.length; i != 0; i--) {
+                    DOMNode *child = [childNodes item:i-1];
+                    
+                    [self highlightAllOccurrencesOfStringForElement:child str:str matchCase:matchCase];
+                }
+            }
+        }
+    }
+}
+
+- (BOOL)removeAllHighlightsForElement:(DOMNode*)element {
+    if (element) {
+        if (element.nodeType == DOM_ELEMENT_NODE) {
+            if ([[[element.attributes getNamedItem:@"class"] nodeValue] isEqualToString:Simplicity_HighlightClass]) {
+                DOMNode *text = [element removeChild:element.firstChild];
+                
+                [element.parentNode insertBefore:text refChild:element];
+                [element.parentNode removeChild:element];
+                 
+                return true;
+            }
+            else {
+                DOMNodeList *childNodes = element.childNodes;
+                BOOL normalize = NO;
+                
+                for (unsigned i = childNodes.length; i != 0; i--) {
+                    DOMNode *child = [childNodes item:i-1];
+                
+                    if ([self removeAllHighlightsForElement:child]) {
+                        normalize = YES;
+                    }
+                }
+
+                if (normalize) {
+                    [element normalize];
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
 - (void)getOccurrencesCount {
-    NSString *occurrencesCount = [self stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount()"];
-    _stringOccurrencesCount = [occurrencesCount integerValue];
+    _stringOccurrencesCount = _searchResults.count;
 }
 
 - (void)markOccurrenceOfFoundString:(NSUInteger)index {
-    NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
-    NSString *highlightYpos = [self stringByEvaluatingJavaScriptFromString:doMark];
+    [self removeMarkedOccurrenceOfFoundString];
     
-    NSAssert(highlightYpos != nil, @"no highlightYpos returned");
-    _markedOccurrenceYpos = highlightYpos.integerValue;
+    if (index >= _searchResults.count) {
+        return;
+    }
+    
+    DOMElement *span = _searchResults[_searchResults.count - index - 1];
+    
+    span.style.backgroundColor = Simplicity_MarkColorBackground;
+    span.style.color = Simplicity_MarkColorText;
+    
+    _markedResultIndex = index;
+    _markedOccurrenceYpos = NSMaxY(span.boundingBox);
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-    [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveMarkedOccurrenceOfFoundString()"];
+    NSUInteger index = _markedResultIndex;
+    
+    if(index < _searchResults.count) {
+        DOMElement *span = _searchResults[_searchResults.count - index - 1];
+        
+        span.style.backgroundColor = Simplicity_HighlightColorBackground;
+        span.style.color = Simplicity_HighlightColorText;
+    }
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-    [self stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
+    DOMHTMLElement *bodyElement = self.mainFrameDocument.body;
+    [self removeAllHighlightsForElement:bodyElement];
     
+    [_searchResults removeAllObjects];
     _currentFindString = nil;
 }
 

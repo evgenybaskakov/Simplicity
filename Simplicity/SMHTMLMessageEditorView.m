@@ -13,22 +13,13 @@
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
+#import "SMHTMLFindContext.h"
 #import "SMHTMLMessageEditorView.h"
-
-#define Simplicity_HighlightClass           @"Simplicity_Highlight"
-#define Simplicity_HighlightColorText       @"black"
-#define Simplicity_HighlightColorBackground @"lightgray"
-#define Simplicity_MarkColorText            @"black"
-#define Simplicity_MarkColorBackground      @"yellow"
 
 @implementation SMHTMLMessageEditorView {
     NSTimer *_textMonitorTimer;
     NSUInteger _cachedContentHeight;
-    NSString *_currentFindString;
-    BOOL _currentFindStringMatchCase;
-    CGFloat _markedOccurrenceYpos;
-    NSMutableArray<DOMElement*> *_searchResults;
-    NSUInteger _markedResultIndex;
+    SMHTMLFindContext *_findContext;
 }
 
 + (SMEditorFocusKind)contentKindToFocusKind:(SMEditorContentsKind)contentKind {
@@ -164,7 +155,7 @@
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
-        SM_LOG_DEBUG(@"loaded");
+        SM_LOG_INFO(@"editor document main frame loaded");
 
         SMEditorFocusKind focusKind = [SMHTMLMessageEditorView contentKindToFocusKind:_editorKind];
         if(focusKind == kEditorFocusKind_Content) {
@@ -537,169 +528,31 @@
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
-    _currentFindString = str;
-    _currentFindStringMatchCase = matchCase;
-    
-    if(!_searchResults) {
-        _searchResults = [NSMutableArray array];
+    // TODO: move to the 'mainFrameLoaded' event handler
+    if(!_findContext) {
+        _findContext = [[SMHTMLFindContext alloc] initWithDocument:self.mainFrameDocument];
     }
-
-// TODO
-//    if(!_mainFrameLoaded)
-//        return;
-    
-    NSAssert(str != nil, @"str == nil");
-    
-    [self removeAllHighlightedOccurrencesOfString];
-    
-    if(str.length > 0) {
-        DOMHTMLElement *bodyElement = self.mainFrameDocument.body;
-        
-        [self highlightAllOccurrencesOfStringForElement:bodyElement str:(matchCase ? str : [str lowercaseString]) matchCase:matchCase];
-        [self getOccurrencesCount];
-
-        [_searchResults sortUsingComparator:^NSComparisonResult(DOMElement *a, DOMElement *b) {
-            if(NSMaxY(b.boundingBox) != NSMaxY(a.boundingBox)) {
-                return NSMaxY(b.boundingBox) - NSMaxY(a.boundingBox);
-            }
-            else {
-                return NSMinX(b.boundingBox) - NSMinX(a.boundingBox);
-            }
-        }];
-    }
-}
-
-- (BOOL)elementVisible:(DOMElement*)element {
-    return element.offsetWidth > 0 || element.offsetHeight > 0;
-}
-
-- (void)highlightAllOccurrencesOfStringForElement:(DOMNode*)element str:(NSString*)str matchCase:(BOOL)matchCase {
-    if (element) {
-        DOMDocument *document = self.mainFrameDocument;
-        
-        if (element.nodeType == DOM_TEXT_NODE) {
-            while (true) {
-                NSString *value = element.nodeValue;
-                NSRange r = matchCase? [value rangeOfString:str] : [[value lowercaseString] rangeOfString:str];
-                
-                if (r.location == NSNotFound) {
-                    break;
-                }
-                
-                DOMElement *span = [document createElement:@"span"];
-                DOMText *text = [document createTextNode:[value substringWithRange:r]];
-                
-                [span appendChild:text];
-                [span setAttribute:@"class" value:Simplicity_HighlightClass];
-                
-                span.style.backgroundColor = Simplicity_HighlightColorBackground;
-                span.style.color = Simplicity_HighlightColorText;
-                
-                text = [document createTextNode:[value substringFromIndex:r.location + str.length]];
-                
-                [element setNodeValue:[value substringToIndex:r.location]];
-                
-                DOMNode *next = element.nextSibling;
-                
-                [element.parentNode insertBefore:span refChild:next];
-                [element.parentNode insertBefore:text refChild:next];
-                
-                element = text;
-                
-                if([self elementVisible:span]) {
-                    [_searchResults addObject:span];
-                }
-            }
-        }
-        else if (element.nodeType == DOM_ELEMENT_NODE && [element isKindOfClass:[DOMHTMLElement class]]) {
-            DOMHTMLElement *htmlElement = (DOMHTMLElement*)element;
-            
-            if (![htmlElement.style.display isEqualToString:@"none"] && ![[htmlElement.nodeName lowercaseString] isEqualToString:@"select"]) {
-                DOMNodeList *childNodes = htmlElement.childNodes;
-                
-                for (unsigned i = childNodes.length; i != 0; i--) {
-                    DOMNode *child = [childNodes item:i-1];
-                    
-                    [self highlightAllOccurrencesOfStringForElement:child str:str matchCase:matchCase];
-                }
-            }
-        }
-    }
-}
-
-- (BOOL)removeAllHighlightsForElement:(DOMNode*)element {
-    if (element) {
-        if (element.nodeType == DOM_ELEMENT_NODE) {
-            if ([[[element.attributes getNamedItem:@"class"] nodeValue] isEqualToString:Simplicity_HighlightClass]) {
-                DOMNode *text = [element removeChild:element.firstChild];
-                
-                [element.parentNode insertBefore:text refChild:element];
-                [element.parentNode removeChild:element];
-                 
-                return true;
-            }
-            else {
-                DOMNodeList *childNodes = element.childNodes;
-                BOOL normalize = NO;
-                
-                for (unsigned i = childNodes.length; i != 0; i--) {
-                    DOMNode *child = [childNodes item:i-1];
-                
-                    if ([self removeAllHighlightsForElement:child]) {
-                        normalize = YES;
-                    }
-                }
-
-                if (normalize) {
-                    [element normalize];
-                }
-            }
-        }
-    }
-    
-    return false;
-}
-
-- (void)getOccurrencesCount {
-    _stringOccurrencesCount = _searchResults.count;
+    [_findContext highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 
 - (void)markOccurrenceOfFoundString:(NSUInteger)index {
-    [self removeMarkedOccurrenceOfFoundString];
-    
-    if (index >= _searchResults.count) {
-        return;
-    }
-    
-    DOMElement *span = _searchResults[_searchResults.count - index - 1];
-    
-    span.style.backgroundColor = Simplicity_MarkColorBackground;
-    span.style.color = Simplicity_MarkColorText;
-    
-    _markedResultIndex = index;
-    _markedOccurrenceYpos = NSMaxY(span.boundingBox);
+    [_findContext markOccurrenceOfFoundString:index];
+}
+
+- (NSUInteger)stringOccurrencesCount {
+    return _findContext.stringOccurrencesCount;
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-    NSUInteger index = _markedResultIndex;
-    
-    if(index < _searchResults.count) {
-        DOMElement *span = _searchResults[_searchResults.count - index - 1];
-        
-        span.style.backgroundColor = Simplicity_HighlightColorBackground;
-        span.style.color = Simplicity_HighlightColorText;
-    }
+    [_findContext removeMarkedOccurrenceOfFoundString];
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-    DOMHTMLElement *bodyElement = self.mainFrameDocument.body;
-    [self removeAllHighlightsForElement:bodyElement];
-    
-    [_searchResults removeAllObjects];
-    _currentFindString = nil;
+    [_findContext removeAllHighlightedOccurrencesOfString];
 }
 
 - (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement {
+/*TODO
     if([_currentFindString isEqualToString:replacement]) {
         return;
     }
@@ -711,9 +564,11 @@
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceOccurrence('%lu', '%@')", index, replacement]];
 
     [self getOccurrencesCount];
+*/
 }
 
 - (void)replaceAllOccurrences:(NSString*)replacement {
+ /*TODO
     if([_currentFindString isEqualToString:replacement]) {
         return;
     }
@@ -725,6 +580,7 @@
     [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceAllOccurrences('%@')", replacement]];
 
     [self getOccurrencesCount];
+*/
 }
 
 - (void)animatedScrollToMarkedOccurrence {
@@ -735,7 +591,7 @@
     // visible part of the document in the view. Hence use the documentVisibleRect
     // in the scroll view to get the new global position.
     NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
-    CGFloat globalYpos = documentVisibleRect.origin.y + _markedOccurrenceYpos;
+    CGFloat globalYpos = documentVisibleRect.origin.y + _findContext.markedOccurrenceYpos;
     
     const NSUInteger delta = 50;
     if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {

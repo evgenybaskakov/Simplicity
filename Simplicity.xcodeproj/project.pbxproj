@@ -93,6 +93,7 @@
 		801B8E821B23AA5200B144C0 /* SMOperationQueueWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E801B23AA5200B144C0 /* SMOperationQueueWindowController.xib */; };
 		801B8E861B23AEB700B144C0 /* SMOperationQueueViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */; };
 		801B8E871B23AEB700B144C0 /* SMOperationQueueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */; };
+		801D182A1DE042FC002B40BD /* SMHTMLFindContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 801D18291DE042FC002B40BD /* SMHTMLFindContext.m */; };
 		801D91481DAF5CD7008F5180 /* SMClickThroughTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 801D91471DAF5CD7008F5180 /* SMClickThroughTextField.m */; };
 		801EDEE81BE9E96800A16E85 /* SMNewAccountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 801EDEE61BE9E96800A16E85 /* SMNewAccountWindowController.m */; };
 		801EDEE91BE9E96800A16E85 /* SMNewAccountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */; };
@@ -498,6 +499,8 @@
 		801B8E831B23AEB700B144C0 /* SMOperationQueueViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOperationQueueViewController.h; sourceTree = "<group>"; };
 		801B8E841B23AEB700B144C0 /* SMOperationQueueViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOperationQueueViewController.m; sourceTree = "<group>"; };
 		801B8E851B23AEB700B144C0 /* SMOperationQueueViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMOperationQueueViewController.xib; sourceTree = "<group>"; };
+		801D18281DE042FC002B40BD /* SMHTMLFindContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMHTMLFindContext.h; sourceTree = "<group>"; };
+		801D18291DE042FC002B40BD /* SMHTMLFindContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMHTMLFindContext.m; sourceTree = "<group>"; };
 		801D91461DAF5CD7008F5180 /* SMClickThroughTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMClickThroughTextField.h; sourceTree = "<group>"; };
 		801D91471DAF5CD7008F5180 /* SMClickThroughTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMClickThroughTextField.m; sourceTree = "<group>"; };
 		801E36F31DAE054500D06B6F /* SMEditorReplyKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMEditorReplyKind.h; sourceTree = "<group>"; };
@@ -918,6 +921,8 @@
 				8024107D1C1E9E3B00493FB4 /* SMFolderLabel.m */,
 				8071EE011BDBFF8800175A7B /* SMFolderUIDDictionary.h */,
 				8071EE021BDBFF8800175A7B /* SMFolderUIDDictionary.m */,
+				801D18281DE042FC002B40BD /* SMHTMLFindContext.h */,
+				801D18291DE042FC002B40BD /* SMHTMLFindContext.m */,
 				802DAC4C1B709047000FA34A /* SMInlineButtonPanelViewController.h */,
 				802DAC4D1B709047000FA34A /* SMInlineButtonPanelViewController.m */,
 				0082F5FC1A0FFAAC0050578A /* SMLocalFolder.h */,
@@ -1849,6 +1854,7 @@
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
 				80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */,
+				801D182A1DE042FC002B40BD /* SMHTMLFindContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

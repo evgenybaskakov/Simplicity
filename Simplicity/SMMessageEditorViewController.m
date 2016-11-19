@@ -1576,7 +1576,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _messageThreadViewController = nil;
     
     [self initView];
-    
+
+    [_htmlTextEditor unfoldContent];
+
     [self adjustFrames:FrameAdjustment_Resize];
     [self setResponders:NO focusKind:kEditorFocusKind_Invalid];
 }

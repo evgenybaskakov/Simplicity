@@ -33,8 +33,6 @@
 }
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
-    _currentFindString = str;
-    
     // TODO
     //    if(!_mainFrameLoaded)
     //        return;
@@ -189,7 +187,34 @@
     [self removeAllHighlightsForElement:bodyElement];
     
     [_searchResults removeAllObjects];
-    _currentFindString = nil;
+}
+
+#pragma mark Replacing content
+
+- (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement {
+    if(index >= _searchResults.count) {
+        return;
+    }
+    
+    DOMElement *span = _searchResults[_searchResults.count - index - 1];
+    DOMNode *text = [span removeChild:span.firstChild];
+    
+    text.nodeValue = replacement;
+    
+    [span.parentNode insertBefore:text refChild:span];
+    [span.parentNode removeChild:span];
+    
+    [_searchResults removeObjectAtIndex:_searchResults.count - index - 1];
+}
+
+- (void)replaceAllOccurrences:(NSString*)replacement {
+    for (NSUInteger i = 0; i < _searchResults.count; i++) {
+        DOMElement *span = _searchResults[i];
+        
+        span.firstChild.nodeValue = replacement;
+    }
+    
+    [self removeAllHighlightedOccurrencesOfString];
 }
 
 @end

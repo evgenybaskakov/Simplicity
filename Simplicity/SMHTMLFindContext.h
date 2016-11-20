@@ -10,7 +10,6 @@
 
 @interface SMHTMLFindContext : NSObject
 
-@property (readonly) NSString *currentFindString;
 @property (readonly) CGFloat markedOccurrenceYpos;
 @property (readonly) NSUInteger markedResultIndex;
 @property (readonly) NSUInteger stringOccurrencesCount;
@@ -21,5 +20,7 @@
 - (void)markOccurrenceOfFoundString:(NSUInteger)index;
 - (void)removeMarkedOccurrenceOfFoundString;
 - (void)removeAllHighlightedOccurrencesOfString;
+- (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement;
+- (void)replaceAllOccurrences:(NSString*)replacement;
 
 @end

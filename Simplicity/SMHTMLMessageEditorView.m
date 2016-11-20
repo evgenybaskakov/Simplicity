@@ -552,35 +552,19 @@
 }
 
 - (void)replaceOccurrence:(NSUInteger)index replacement:(NSString*)replacement {
-/*TODO
-    if([_currentFindString isEqualToString:replacement]) {
-        return;
-    }
-    
-    if(_stringOccurrencesCount != 0) {
+    if(_findContext.stringOccurrencesCount != 0) {
         _unsavedContentPending = YES;
     }
     
-    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceOccurrence('%lu', '%@')", index, replacement]];
-
-    [self getOccurrencesCount];
-*/
+    [_findContext replaceOccurrence:index replacement:replacement];
 }
 
 - (void)replaceAllOccurrences:(NSString*)replacement {
- /*TODO
-    if([_currentFindString isEqualToString:replacement]) {
-        return;
-    }
-
-    if(_stringOccurrencesCount != 0) {
+    if(_findContext.stringOccurrencesCount != 0) {
         _unsavedContentPending = YES;
     }
 
-    [self stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Simplicity_ReplaceAllOccurrences('%@')", replacement]];
-
-    [self getOccurrencesCount];
-*/
+    [_findContext replaceAllOccurrences:replacement];
 }
 
 - (void)animatedScrollToMarkedOccurrence {

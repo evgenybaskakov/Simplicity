@@ -33,10 +33,6 @@
 }
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
-    // TODO
-    //    if(!_mainFrameLoaded)
-    //        return;
-    
     NSAssert(str != nil, @"str == nil");
     
     [self removeAllHighlightedOccurrencesOfString];

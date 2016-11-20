@@ -157,6 +157,8 @@
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_INFO(@"editor document main frame loaded");
 
+        _findContext = nil;
+
         SMEditorFocusKind focusKind = [SMHTMLMessageEditorView contentKindToFocusKind:_editorKind];
         if(focusKind == kEditorFocusKind_Content) {
             WebScriptObject *scriptObject = [self windowScriptObject];
@@ -528,7 +530,6 @@
 #pragma mark Finding contents
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
-    // TODO: move to the 'mainFrameLoaded' event handler
     if(!_findContext) {
         _findContext = [[SMHTMLFindContext alloc] initWithDocument:self.mainFrameDocument];
     }

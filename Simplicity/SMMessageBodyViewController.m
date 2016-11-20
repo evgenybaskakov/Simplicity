@@ -23,6 +23,7 @@
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMAttachmentStorage.h"
+#import "SMHTMLFindContext.h"
 
 @interface SMMessageBodyViewController (WebResourceLoadDelegate)
 
@@ -53,6 +54,7 @@
     unsigned long long _nextIdentifier;
     NSString *_currentFindString;
     BOOL _currentFindStringMatchCase;
+    SMHTMLFindContext *_findContext;
     NSString *_htmlText;
     uint32_t _uid;
     uint64_t _messageId;
@@ -238,6 +240,7 @@
         }
 
         _mainFrameLoaded = YES;
+        _findContext = nil;
         
         // Don't allow message body scrolling.
         // Instead, the thread cell is responsible for setting its
@@ -284,56 +287,33 @@
 
     [self removeAllHighlightedOccurrencesOfString];
 
-    if(str.length > 0) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"SearchWebView" ofType:@"js"];
-        NSString *jsCode = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-        
-        WebView *view = (WebView*)[self view];
-        WebScriptObject *scriptObject = [view windowScriptObject];
-
-// Uncomment to enable JS logs (TODO: propagate to advanced preferences?)
-//        [scriptObject setValue:self forKey:@"Simplicity"];        
-//        [scriptObject evaluateWebScript:@"console = { log: function(msg) { Simplicity.consoleLog_(msg); } }"];
-
-        [scriptObject evaluateWebScript:jsCode];
-        [scriptObject evaluateWebScript:[NSString stringWithFormat:@"Simplicity_HighlightAllOccurrencesOfString('%@', %u)", str, matchCase? 1 : 0]];
-        
-        NSString *occurrencesCount = [view stringByEvaluatingJavaScriptFromString:@"Simplicity_SearchResultCount()"];
-        _stringOccurrencesCount = [occurrencesCount integerValue];
-    }
-}
-
-+ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector {
-    if (aSelector == @selector(consoleLog:)) {
-        return NO;
+    if(str.length == 0) {
+        return;
     }
     
-    return YES;
-}
+    WebView *view = (WebView*)[self view];
 
-- (void)consoleLog:(NSString *)message {
-    SM_LOG_INFO(@"JSLog: %@", message);
+    if(!_findContext) {
+        _findContext = [[SMHTMLFindContext alloc] initWithDocument:view.mainFrameDocument];
+    }
+    [_findContext highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 
 - (NSInteger)markOccurrenceOfFoundString:(NSUInteger)index {
-    WebView *view = (WebView*)[self view];
+    [_findContext markOccurrenceOfFoundString:index];
+    return _findContext.markedOccurrenceYpos;
+}
 
-    NSString *doMark = [NSString stringWithFormat:@"Simplicity_MarkOccurrenceOfFoundString('%lu')", index];
-    NSString *highlightYpos = [view stringByEvaluatingJavaScriptFromString:doMark];
-    
-    NSAssert(highlightYpos != nil, @"no highlightYpos returned");
-    return highlightYpos.integerValue;
+- (NSUInteger)stringOccurrencesCount {
+    return _findContext.stringOccurrencesCount;
 }
 
 - (void)removeMarkedOccurrenceOfFoundString {
-    WebView *view = (WebView*)[self view];
-    [view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveMarkedOccurrenceOfFoundString()"];
+    [_findContext removeMarkedOccurrenceOfFoundString];
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-    WebView *view = (WebView*)[self view];
-    [view stringByEvaluatingJavaScriptFromString:@"Simplicity_RemoveAllHighlights()"];
-    
+    [_findContext removeAllHighlightedOccurrencesOfString];
     _currentFindString = nil;
 }
 

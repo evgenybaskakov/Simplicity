@@ -587,11 +587,8 @@
     // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
     NSScrollView *sv = self.mainFrame.frameView.documentView.enclosingScrollView;
     
-    // Note that unlike the thread view, this "_markedOccurrenceYpos" is relative to the current
-    // visible part of the document in the view. Hence use the documentVisibleRect
-    // in the scroll view to get the new global position.
     NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
-    CGFloat globalYpos = documentVisibleRect.origin.y + _findContext.markedOccurrenceYpos;
+    CGFloat globalYpos = _findContext.markedOccurrenceYpos;
     
     const NSUInteger delta = 50;
     if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {

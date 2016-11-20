@@ -42,7 +42,6 @@
 		0089D35F1A88084F00C189BB /* SMFolderColorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0089D35E1A88084F00C189BB /* SMFolderColorController.m */; };
 		008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */; };
 		008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */ = {isa = PBXBuildFile; fileRef = 008F93691AC4F8E600C21D62 /* SMOutboxController.m */; };
-		00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */ = {isa = PBXBuildFile; fileRef = 00909E741A9ACDE300636C90 /* SearchWebView.js */; };
 		009217AF1A930019003A0348 /* SMMessageThreadCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 009217AE1A930019003A0348 /* SMMessageThreadCollection.m */; };
 		00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00974266195684DD00620145 /* SMMailboxViewController.xib */; };
 		0097426E195686F900620145 /* SMMailboxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0097426D195686F900620145 /* SMMailboxViewController.m */; };
@@ -411,7 +410,6 @@
 		008AB9DF1A4A80CC00F91D86 /* SMColorCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMColorCircle.m; sourceTree = "<group>"; };
 		008F93681AC4F8E600C21D62 /* SMOutboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOutboxController.h; sourceTree = "<group>"; };
 		008F93691AC4F8E600C21D62 /* SMOutboxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOutboxController.m; sourceTree = "<group>"; };
-		00909E741A9ACDE300636C90 /* SearchWebView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SearchWebView.js; sourceTree = "<group>"; };
 		009217AD1A930019003A0348 /* SMMessageThreadCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadCollection.h; sourceTree = "<group>"; };
 		009217AE1A930019003A0348 /* SMMessageThreadCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadCollection.m; sourceTree = "<group>"; };
 		00974266195684DD00620145 /* SMMailboxViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMailboxViewController.xib; sourceTree = "<group>"; };
@@ -1193,7 +1191,6 @@
 			isa = PBXGroup;
 			children = (
 				807438671DB208280054115B /* Icons */,
-				80E697CB1DD983AD0071E520 /* JS */,
 				800C67911B499F0700272D60 /* Images.xcassets */,
 				801EDED71BE9E6C400A16E85 /* Logos */,
 				80533AD51B4118B800A0A67F /* TextEditorIcons */,
@@ -1442,14 +1439,6 @@
 			name = Editor;
 			sourceTree = "<group>";
 		};
-		80E697CB1DD983AD0071E520 /* JS */ = {
-			isa = PBXGroup;
-			children = (
-				00909E741A9ACDE300636C90 /* SearchWebView.js */,
-			);
-			name = JS;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1593,7 +1582,6 @@
 				802410741C1E880C00493FB4 /* SMLabelPreferencesViewController.xib in Resources */,
 				801EDEF61BE9F06500A16E85 /* yandex_logo_en.png in Resources */,
 				8076B4B91B6898C5002D2C62 /* SMLabeledTextFieldBoxViewController.xib in Resources */,
-				00909E751A9ACDE300636C90 /* SearchWebView.js in Resources */,
 				803F2AF31D53129B002F8212 /* SMLabelWithCloseButton.xib in Resources */,
 				00974267195684DD00620145 /* SMMailboxViewController.xib in Resources */,
 				004A64221AC7A3000079A0C1 /* SMAddressFieldViewController.xib in Resources */,

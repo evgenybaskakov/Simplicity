@@ -8,6 +8,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "SMLog.h"
 #import "SMHTMLFindContext.h"
 
 #define Simplicity_HighlightClass           @"Simplicity_Highlight"
@@ -19,14 +20,16 @@
 @implementation SMHTMLFindContext {
     DOMDocument *_document;
     NSMutableArray<DOMElement*> *_searchResults;
+    WebView *_webview;
 }
 
-- (id)initWithDocument:(DOMDocument*)document {
+- (id)initWithDocument:(DOMDocument*)document webview:(WebView*)webview {
     self = [super init];
     
     if(self) {
         _searchResults = [NSMutableArray array];
         _document = document;
+        _webview = webview;
     }
 
     return self;
@@ -193,14 +196,35 @@
     }
     
     DOMElement *span = _searchResults[_searchResults.count - index - 1];
-    DOMNode *text = [span removeChild:span.firstChild];
+    DOMNode *text = span.firstChild;
+    NSUInteger textLen = text.nodeValue.length;
+    DOMNode *orig = span.previousSibling;
+    NSString *origBegin = orig.nodeValue;
     
-    text.nodeValue = replacement;
-    
-    [span.parentNode insertBefore:text refChild:span];
-    [span.parentNode removeChild:span];
+//    DOMNode *text = [span removeChild:span.firstChild];
+//    
+//    text.nodeValue = replacement;
+//    
+//    [span.parentNode insertBefore:text refChild:span];
+//    [span.parentNode removeChild:span];
     
     [_searchResults removeObjectAtIndex:_searchResults.count - index - 1];
+
+    [self removeAllHighlightedOccurrencesOfString];
+  
+    DOMRange *range = [[[_webview mainFrame] DOMDocument] createRange];
+    [range setStart:orig offset:(int)origBegin.length];
+    [range setEnd:orig offset:(int)(origBegin.length + textLen)];
+    
+    [_webview setSelectedDOMRange:range affinity:NSSelectionAffinityDownstream];
+    [_webview replaceSelectionWithText:replacement];
+
+    DOMRange *emptyRange = [[[_webview mainFrame] DOMDocument] createRange];
+    [_webview setSelectedDOMRange:emptyRange affinity:NSSelectionAffinityDownstream];
+
+    //    [parent setNodeValue:[parentValue stringByAppendingString:replacement]];
+    
+//    [_undoManager registerUndoWithTarget:self selector:@selector(undoAction) object:self];
 }
 
 - (void)replaceAllOccurrences:(NSString*)replacement {

@@ -8,13 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class WebView;
+
 @interface SMHTMLFindContext : NSObject
 
 @property (readonly) CGFloat markedOccurrenceYpos;
 @property (readonly) NSUInteger markedResultIndex;
 @property (readonly) NSUInteger stringOccurrencesCount;
 
-- (id)initWithDocument:(DOMDocument*)document;
+- (id)initWithDocument:(DOMDocument*)document webview:(WebView*)webview;
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase;
 - (void)markOccurrenceOfFoundString:(NSUInteger)index;

@@ -124,8 +124,11 @@
     
     if([[[element.attributes getNamedItem:@"class"] nodeValue] isEqualToString:Simplicity_HighlightClass]) {
         DOMNode *text = [element removeChild:element.firstChild];
+        NSString *textValue = text.nodeValue;
+        DOMNode *leftSibling = element.previousSibling;
+        NSString *siblingValue = leftSibling.nodeValue;
         
-        [element.parentNode insertBefore:text refChild:element];
+        [leftSibling setNodeValue:[siblingValue stringByAppendingString:textValue]];
         [element.parentNode removeChild:element];
         
         return true;
@@ -197,24 +200,24 @@
     
     DOMElement *span = _searchResults[_searchResults.count - index - 1];
     DOMNode *text = span.firstChild;
-    NSUInteger textLen = text.nodeValue.length;
+    NSString *textValue = text.nodeValue;
+    NSUInteger textLen = textValue.length;
     DOMNode *orig = span.previousSibling;
-    NSString *origBegin = orig.nodeValue;
     
-//    DOMNode *text = [span removeChild:span.firstChild];
-//    
-//    text.nodeValue = replacement;
-//    
-//    [span.parentNode insertBefore:text refChild:span];
-//    [span.parentNode removeChild:span];
+    // Go to the beginning of the text where the replacement has been done and count the full length.
+    NSUInteger prefixLen = orig.nodeValue.length;
+    while(orig.previousSibling && [[[orig.previousSibling.attributes getNamedItem:@"class"] nodeValue] isEqualToString:Simplicity_HighlightClass]) {
+        orig = orig.previousSibling.previousSibling;
+        prefixLen += orig.nodeValue.length + textLen;
+    }
     
     [_searchResults removeObjectAtIndex:_searchResults.count - index - 1];
 
     [self removeAllHighlightedOccurrencesOfString];
   
     DOMRange *range = [[[_webview mainFrame] DOMDocument] createRange];
-    [range setStart:orig offset:(int)origBegin.length];
-    [range setEnd:orig offset:(int)(origBegin.length + textLen)];
+    [range setStart:orig offset:(int)prefixLen];
+    [range setEnd:orig offset:(int)(prefixLen + textLen)];
     
     [_webview setSelectedDOMRange:range affinity:NSSelectionAffinityDownstream];
     [_webview replaceSelectionWithText:replacement];
@@ -222,9 +225,7 @@
     DOMRange *emptyRange = [[[_webview mainFrame] DOMDocument] createRange];
     [_webview setSelectedDOMRange:emptyRange affinity:NSSelectionAffinityDownstream];
 
-    //    [parent setNodeValue:[parentValue stringByAppendingString:replacement]];
-    
-//    [_undoManager registerUndoWithTarget:self selector:@selector(undoAction) object:self];
+    [self highlightAllOccurrencesOfString:textValue matchCase:NO]; // todo
 }
 
 - (void)replaceAllOccurrences:(NSString*)replacement {

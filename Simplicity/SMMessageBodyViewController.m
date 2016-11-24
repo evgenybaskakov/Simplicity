@@ -294,8 +294,9 @@
     WebView *view = (WebView*)[self view];
 
     if(!_findContext) {
-        _findContext = [[SMHTMLFindContext alloc] initWithDocument:view.mainFrameDocument];
+        _findContext = [[SMHTMLFindContext alloc] initWithDocument:view.mainFrameDocument webview:view];
     }
+
     [_findContext highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 

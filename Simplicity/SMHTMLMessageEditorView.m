@@ -531,8 +531,9 @@
 
 - (void)highlightAllOccurrencesOfString:(NSString*)str matchCase:(BOOL)matchCase {
     if(!_findContext) {
-        _findContext = [[SMHTMLFindContext alloc] initWithDocument:self.mainFrameDocument];
+        _findContext = [[SMHTMLFindContext alloc] initWithDocument:self.mainFrameDocument webview:self];
     }
+    
     [_findContext highlightAllOccurrencesOfString:str matchCase:matchCase];
 }
 

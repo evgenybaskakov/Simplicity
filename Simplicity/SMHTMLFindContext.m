@@ -19,6 +19,9 @@
 
 @implementation SMHTMLFindContext {
     DOMDocument *_document;
+    NSString *_stringToFind;
+    NSString *_replacementString;
+    BOOL _matchCase;
     NSMutableArray<DOMElement*> *_searchResults;
     WebView *_webview;
 }
@@ -44,9 +47,10 @@
         return;
     }
     
-    DOMHTMLElement *bodyElement = _document.body;
+    _matchCase = matchCase;
+    _stringToFind = matchCase ? str : str.lowercaseString;
     
-    [self highlightAllOccurrencesOfStringForElement:bodyElement str:(matchCase ? str : [str lowercaseString]) matchCase:matchCase];
+    [self highlightAllOccurrencesOfStringForElement:_document.body];
     [self getOccurrencesCount];
     
     [_searchResults sortUsingComparator:^NSComparisonResult(DOMElement *a, DOMElement *b) {
@@ -63,7 +67,7 @@
     return element.offsetWidth > 0 || element.offsetHeight > 0;
 }
 
-- (void)highlightAllOccurrencesOfStringForElement:(DOMNode*)element str:(NSString*)str matchCase:(BOOL)matchCase {
+- (void)highlightAllOccurrencesOfStringForElement:(DOMNode*)element {
     if(!element) {
         return;
     }
@@ -71,7 +75,7 @@
     if(element.nodeType == DOM_TEXT_NODE) {
         while (true) {
             NSString *value = element.nodeValue;
-            NSRange r = matchCase? [value rangeOfString:str] : [[value lowercaseString] rangeOfString:str];
+            NSRange r = _matchCase? [value rangeOfString:_stringToFind] : [[value lowercaseString] rangeOfString:_stringToFind];
             
             if(r.location == NSNotFound) {
                 break;
@@ -86,7 +90,7 @@
             span.style.backgroundColor = Simplicity_HighlightColorBackground;
             span.style.color = Simplicity_HighlightColorText;
             
-            text = [_document createTextNode:[value substringFromIndex:r.location + str.length]];
+            text = [_document createTextNode:[value substringFromIndex:r.location + _stringToFind.length]];
             
             [element setNodeValue:[value substringToIndex:r.location]];
             
@@ -109,9 +113,7 @@
             DOMNodeList *childNodes = htmlElement.childNodes;
             
             for (unsigned i = childNodes.length; i != 0; i--) {
-                DOMNode *child = [childNodes item:i-1];
-                
-                [self highlightAllOccurrencesOfStringForElement:child str:str matchCase:matchCase];
+                [self highlightAllOccurrencesOfStringForElement:[childNodes item:i-1]];
             }
         }
     }
@@ -138,9 +140,7 @@
         BOOL normalize = NO;
         
         for (unsigned i = childNodes.length; i != 0; i--) {
-            DOMNode *child = [childNodes item:i-1];
-            
-            if([self removeAllHighlightsForElement:child]) {
+            if([self removeAllHighlightsForElement:[childNodes item:i-1]]) {
                 normalize = YES;
             }
         }
@@ -185,8 +185,7 @@
 }
 
 - (void)removeAllHighlightedOccurrencesOfString {
-    DOMHTMLElement *bodyElement = _document.body;
-    [self removeAllHighlightsForElement:bodyElement];
+    [self removeAllHighlightsForElement:_document.body];
     
     [_searchResults removeAllObjects];
 }
@@ -197,6 +196,8 @@
     if(index >= _searchResults.count) {
         return;
     }
+    
+    _replacementString = replacement;
     
     DOMElement *span = _searchResults[_searchResults.count - index - 1];
     DOMNode *text = span.firstChild;
@@ -213,29 +214,72 @@
     
     [_searchResults removeObjectAtIndex:_searchResults.count - index - 1];
 
-    [self removeAllHighlightedOccurrencesOfString];
-  
-    DOMRange *range = [[[_webview mainFrame] DOMDocument] createRange];
-    [range setStart:orig offset:(int)prefixLen];
-    [range setEnd:orig offset:(int)(prefixLen + textLen)];
+    if(_replacementString.length != 0) {
+        [self removeAllHighlightedOccurrencesOfString];
+      
+        DOMRange *range = [[[_webview mainFrame] DOMDocument] createRange];
+        [range setStart:orig offset:(int)prefixLen];
+        [range setEnd:orig offset:(int)(prefixLen + textLen)];
+
+        [_webview setSelectedDOMRange:range affinity:NSSelectionAffinityDownstream];
+        [_webview replaceSelectionWithText:_replacementString];
+
+        DOMRange *emptyRange = [[[_webview mainFrame] DOMDocument] createRange];
+        [_webview setSelectedDOMRange:emptyRange affinity:NSSelectionAffinityDownstream];
+
+        [self highlightAllOccurrencesOfString:textValue matchCase:_matchCase];
+    }
+
+    _replacementString = nil;
+}
+
+- (void)replaceAllOccurrencesForElement:(DOMNode*)element {
+    if(!element) {
+        return;
+    }
     
-    [_webview setSelectedDOMRange:range affinity:NSSelectionAffinityDownstream];
-    [_webview replaceSelectionWithText:replacement];
-
-    DOMRange *emptyRange = [[[_webview mainFrame] DOMDocument] createRange];
-    [_webview setSelectedDOMRange:emptyRange affinity:NSSelectionAffinityDownstream];
-
-    [self highlightAllOccurrencesOfString:textValue matchCase:NO]; // todo
+    if(element.nodeType == DOM_TEXT_NODE) {
+        NSString *origValue = element.nodeValue;
+        NSString *replacementValue = [origValue stringByReplacingOccurrencesOfString:_stringToFind withString:_replacementString options:(_matchCase? NSLiteralSearch : NSCaseInsensitiveSearch) range:NSMakeRange(0, origValue.length)];
+        
+        if(![origValue isEqualToString:replacementValue]) {
+            DOMRange *range = [[[_webview mainFrame] DOMDocument] createRange];
+            [range setStart:element offset:0];
+            [range setEnd:element offset:(int)origValue.length];
+            
+            [_webview setSelectedDOMRange:range affinity:NSSelectionAffinityDownstream];
+            [_webview replaceSelectionWithText:replacementValue];
+        }
+    }
+    else if(element.nodeType == DOM_ELEMENT_NODE && [element isKindOfClass:[DOMHTMLElement class]]) {
+        DOMHTMLElement *htmlElement = (DOMHTMLElement*)element;
+        
+        if(![htmlElement.style.display isEqualToString:@"none"] && ![[htmlElement.nodeName lowercaseString] isEqualToString:@"select"]) {
+            DOMNodeList *childNodes = htmlElement.childNodes;
+            
+            for (unsigned i = childNodes.length; i != 0; i--) {
+                [self replaceAllOccurrencesForElement:[childNodes item:i-1]];
+            }
+        }
+    }
 }
 
 - (void)replaceAllOccurrences:(NSString*)replacement {
-    for (NSUInteger i = 0; i < _searchResults.count; i++) {
-        DOMElement *span = _searchResults[i];
-        
-        span.firstChild.nodeValue = replacement;
-    }
-    
     [self removeAllHighlightedOccurrencesOfString];
+    
+    _replacementString = replacement;
+
+    [[_webview undoManager] beginUndoGrouping];
+    
+    [self replaceAllOccurrencesForElement:_document.body];
+
+    DOMRange *emptyRange = [[[_webview mainFrame] DOMDocument] createRange];
+    [_webview setSelectedDOMRange:emptyRange affinity:NSSelectionAffinityDownstream];
+    [_webview replaceSelectionWithText:@""];
+
+    [[_webview undoManager] endUndoGrouping];
+
+    _replacementString = nil;
 }
 
 @end

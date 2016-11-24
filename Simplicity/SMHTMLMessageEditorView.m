@@ -150,7 +150,9 @@
 #pragma mark Web view control
 
 - (void)webViewDidChange:(NSNotification *)notification {
-    //NSLog(@"webViewDidChange");
+    if(self.undoManager.undoing || self.undoManager.redoing) {
+        [self animatedScrollTo:self.selectedDOMRange.startContainer.boundingBox.origin.y];
+    }
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
@@ -570,15 +572,18 @@
 }
 
 - (void)animatedScrollToMarkedOccurrence {
+    [self animatedScrollTo:_findContext.markedOccurrenceYpos];
+}
+
+- (void)animatedScrollTo:(CGFloat)ypos {
     // http://stackoverflow.com/questions/7020842/disable-rubber-band-scrolling-for-webview-in-lion/11820479#11820479
     NSScrollView *sv = self.mainFrame.frameView.documentView.enclosingScrollView;
     
     NSRect documentVisibleRect = [[sv contentView] documentVisibleRect];
-    CGFloat globalYpos = _findContext.markedOccurrenceYpos;
     
     const NSUInteger delta = 50;
-    if(globalYpos < documentVisibleRect.origin.y + delta || globalYpos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {
-        CGFloat adjustedGlobalYpos = globalYpos - delta;
+    if(ypos < documentVisibleRect.origin.y + delta || ypos >= documentVisibleRect.origin.y + documentVisibleRect.size.height - delta) {
+        CGFloat adjustedGlobalYpos = ypos - delta;
         if(adjustedGlobalYpos < delta) {
             adjustedGlobalYpos = 0;
         }

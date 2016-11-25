@@ -22,6 +22,7 @@
 @implementation SMMessageStorage {
     NSMutableDictionary *_messagesThreadsMap;
     SMMessageThreadCollection *_messageThreadCollection;
+    NSMutableIndexSet *_deletedMessagesDuringUpdate;
     __weak SMUnifiedMessageStorage *_unifiedMessageStorage;
 }
 
@@ -35,6 +36,7 @@
         _localFolder = localFolder;
         _messagesThreadsMap = [NSMutableDictionary new];
         _messageThreadCollection = [SMMessageThreadCollection new];
+        _deletedMessagesDuringUpdate = [NSMutableIndexSet new];
     }
 
     return self;
@@ -128,6 +130,9 @@
         }
 
         [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedLongLong:m.messageId]];
+        
+        NSAssert(sizeof(NSUInteger) == sizeof(m.messageId), @"sizes of NSUInteger and SMMessage.messageId do not match");
+        [_deletedMessagesDuringUpdate addIndex:m.messageId];
     }
 
     [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageThread.threadId]];
@@ -149,6 +154,9 @@
         return true;
     }
     else {
+        NSAssert(sizeof(NSUInteger) == sizeof(messageId), @"sizes of NSUInteger and messageId do not match");
+        [_deletedMessagesDuringUpdate addIndex:messageId];
+        
         SMMessage *message = [messageThread getMessageByMessageId:messageId];
         if(message != nil) {
             if(message.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
@@ -176,6 +184,13 @@
 
 - (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds {
     [_messagesThreadsMap removeObjectsForKeys:messageIds];
+    
+    for(NSNumber *messageIdNumber in messageIds) {
+        uint64_t messageId = messageIdNumber.unsignedLongLongValue;
+        
+        NSAssert(sizeof(NSUInteger) == sizeof(messageId), @"sizes of NSUInteger and messageId do not match");
+        [_deletedMessagesDuringUpdate addIndex:messageId];
+    }
 }
 
 - (void)startUpdate {
@@ -190,6 +205,13 @@
     
     for(NSUInteger i = 0; i < imapMessages.count; i++) {
         MCOIMAPMessage *imapMessage = imapMessages[i];
+        
+        NSAssert(sizeof(NSUInteger) == sizeof(imapMessage.gmailMessageID), @"sizes of NSUInteger and MCOIMAPMessage.gmailMessageID do not match");
+        if([_deletedMessagesDuringUpdate containsIndex:imapMessage.gmailMessageID]) {
+            SM_LOG_DEBUG(@"message with id %llu is deleted locally", imapMessage.gmailMessageID);
+            continue;
+        }
+        
         NSString *plainTextBody = nil;
         BOOL hasAttachments = NO;
         
@@ -203,9 +225,9 @@
         
         NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
 
-        SM_LOG_DEBUG(@"looking for imap message with id %llu, gmailThreadId %llu", [imapMessage gmailMessageID], [imapMessage gmailThreadID]);
+        SM_LOG_DEBUG(@"looking for imap message with id %llu, gmailThreadId %llu", imapMessage.gmailMessageID, imapMessage.gmailThreadID);
 
-        const uint64_t threadId = [imapMessage gmailThreadID];
+        const uint64_t threadId = imapMessage.gmailThreadID;
         NSNumber *threadIdKey = [NSNumber numberWithUnsignedLongLong:threadId];
         SMMessageThread *messageThread = [[_messageThreadCollection messageThreads] objectForKey:threadIdKey];
 
@@ -330,6 +352,8 @@
     }
     
     NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
+    
+    [_deletedMessagesDuringUpdate removeAllIndexes];
     
     if(processNewUnseenMessagesBlock != nil) {
         processNewUnseenMessagesBlock(newUnseenMessages);

@@ -242,8 +242,6 @@ static NSString *unquote(NSString *s) {
 
         return YES;
     } else if(_imapMessage.originalFlags != m.originalFlags) {
-        // TODO: be careful there because in future new flags should combine with the local flags
-        
         SM_LOG_DEBUG(@"IMAP message uid %u original flags have changed", self.uid);
 
         _imapMessage = m;

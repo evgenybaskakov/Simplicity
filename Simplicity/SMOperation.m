@@ -100,6 +100,8 @@
 }
 
 - (void)replaceWith:(SMOperation*)op {
+    op.postAction = _postAction; // Inherit the post action from the parent op.
+    
     [_operationExecutor replaceOperation:self with:op];
 }
 

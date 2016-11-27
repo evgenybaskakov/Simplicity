@@ -785,6 +785,7 @@
 
     // Now, we have to cancel message bodies loading for the deleted messages.
     MCOIndexSet *messagesToMoveUids = [MCOIndexSet indexSet];
+    NSMutableIndexSet *messagesToMoveIds = [NSMutableIndexSet indexSet];
     NSArray *messages = [messageThread messagesSortedByDate];
     
     // Iterate messages for each deleted message thread.
@@ -798,6 +799,7 @@
                 // Keep the message for later; we'll have to actually move it remotely.
                 // Note that local (outgoing) messages do not require moving.
                 [messagesToMoveUids addIndex:message.uid];
+                [messagesToMoveIds addIndex:message.messageId];
             }
 
             // Cancel message body fetching.
@@ -823,6 +825,17 @@
             
             SM_LOG_INFO(@"Enqeueing moving of %u messages from remote folder %@ to folder %@", messagesToMoveUids.count, _remoteFolderName, destRemoteFolderName);
         }
+        
+        __weak id weakSelf = self;
+        op.postAction = ^(SMOperation *op) {
+            SMLocalFolder *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            [_self->_messageStorage completeDeletionForMessages:messagesToMoveIds];
+        };
         
         [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     }
@@ -887,6 +900,17 @@
     
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     
+    __weak id weakSelf = self;
+    op.postAction = ^(SMOperation *op) {
+        SMLocalFolder *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
+        [_self->_messageStorage completeDeletionForMessages:[NSIndexSet indexSetWithIndex:messageId]];
+    };
+
     return needUpdateMessageList;
 }
 

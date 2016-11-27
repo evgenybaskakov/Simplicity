@@ -22,7 +22,8 @@
 @implementation SMMessageStorage {
     NSMutableDictionary *_messagesThreadsMap;
     SMMessageThreadCollection *_messageThreadCollection;
-    NSMutableIndexSet *_deletedMessagesDuringUpdate;
+    NSMutableIndexSet *_messagesWithUnfinishedDeletion;
+    NSMutableIndexSet *_messagesWithUnfinishedUpdate;
     __weak SMUnifiedMessageStorage *_unifiedMessageStorage;
 }
 
@@ -36,7 +37,8 @@
         _localFolder = localFolder;
         _messagesThreadsMap = [NSMutableDictionary new];
         _messageThreadCollection = [SMMessageThreadCollection new];
-        _deletedMessagesDuringUpdate = [NSMutableIndexSet new];
+        _messagesWithUnfinishedDeletion = [NSMutableIndexSet new];
+        _messagesWithUnfinishedUpdate = [NSMutableIndexSet new];
     }
 
     return self;
@@ -119,6 +121,11 @@
     }
 }
 
+- (void)updateMessageInStorage:(SMMessage *)message {
+    NSAssert(sizeof(NSUInteger) == sizeof(message.messageId), @"sizes of NSUInteger and SMMessage.messageId do not match");
+    [_messagesWithUnfinishedUpdate addIndex:message.messageId];
+}
+
 - (NSNumber*)messageThreadByMessageId:(uint64_t)messageId {
     return [_messagesThreadsMap objectForKey:[NSNumber numberWithUnsignedLongLong:messageId]];
 }
@@ -132,7 +139,9 @@
         [_messagesThreadsMap removeObjectForKey:[NSNumber numberWithUnsignedLongLong:m.messageId]];
         
         NSAssert(sizeof(NSUInteger) == sizeof(m.messageId), @"sizes of NSUInteger and SMMessage.messageId do not match");
-        [_deletedMessagesDuringUpdate addIndex:m.messageId];
+        [_messagesWithUnfinishedDeletion addIndex:m.messageId];
+
+        SM_LOG_INFO(@"add message id: %llu, total %lu", m.messageId, _messagesWithUnfinishedDeletion.count);
     }
 
     [_messageThreadCollection.messageThreads removeObjectForKey:[NSNumber numberWithUnsignedLongLong:messageThread.threadId]];
@@ -155,8 +164,10 @@
     }
     else {
         NSAssert(sizeof(NSUInteger) == sizeof(messageId), @"sizes of NSUInteger and messageId do not match");
-        [_deletedMessagesDuringUpdate addIndex:messageId];
-        
+        [_messagesWithUnfinishedDeletion addIndex:messageId];
+
+        SM_LOG_INFO(@"add message id: %llu, total %lu", messageId, _messagesWithUnfinishedDeletion.count);
+
         SMMessage *message = [messageThread getMessageByMessageId:messageId];
         if(message != nil) {
             if(message.unseen && unseenMessagesCount != nil && *unseenMessagesCount > 0) {
@@ -187,10 +198,22 @@
     
     for(NSNumber *messageIdNumber in messageIds) {
         uint64_t messageId = messageIdNumber.unsignedLongLongValue;
-        
+
         NSAssert(sizeof(NSUInteger) == sizeof(messageId), @"sizes of NSUInteger and messageId do not match");
-        [_deletedMessagesDuringUpdate addIndex:messageId];
+        [_messagesWithUnfinishedDeletion addIndex:messageId];
+
+        SM_LOG_INFO(@"add message id: %llu, total %lu", messageId, _messagesWithUnfinishedDeletion.count);
     }
+}
+
+- (void)completeDeletionForMessages:(NSIndexSet*)messageIds {
+    for(NSUInteger i = [messageIds firstIndex]; i != NSNotFound; i = [messageIds indexGreaterThanIndex:i]) {
+        SM_LOG_INFO(@"remove message id: %lu", i);
+    }
+    
+    [_messagesWithUnfinishedDeletion removeIndexes:messageIds];
+
+    SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedDeletion.count);
 }
 
 - (void)startUpdate {
@@ -207,11 +230,16 @@
         MCOIMAPMessage *imapMessage = imapMessages[i];
         
         NSAssert(sizeof(NSUInteger) == sizeof(imapMessage.gmailMessageID), @"sizes of NSUInteger and MCOIMAPMessage.gmailMessageID do not match");
-        if([_deletedMessagesDuringUpdate containsIndex:imapMessage.gmailMessageID]) {
-            SM_LOG_DEBUG(@"message with id %llu is deleted locally", imapMessage.gmailMessageID);
+        if([_messagesWithUnfinishedDeletion containsIndex:imapMessage.gmailMessageID]) {
+            SM_LOG_INFO(@"message with id %llu is deleted locally", imapMessage.gmailMessageID);
             continue;
         }
-        
+
+        if([_messagesWithUnfinishedUpdate containsIndex:imapMessage.gmailMessageID]) {
+            SM_LOG_INFO(@"message with id %llu is updated locally", imapMessage.gmailMessageID);
+            continue;
+        }
+
         NSString *plainTextBody = nil;
         BOOL hasAttachments = NO;
         
@@ -352,8 +380,6 @@
     }
     
     NSAssert(_messageThreadCollection.messageThreads.count == _messageThreadCollection.messageThreadsByDate.count, @"message threads count %lu not equal to sorted threads count %lu", _messageThreadCollection.messageThreads.count, _messageThreadCollection.messageThreadsByDate.count);
-    
-    [_deletedMessagesDuringUpdate removeAllIndexes];
     
     if(processNewUnseenMessagesBlock != nil) {
         processNewUnseenMessagesBlock(newUnseenMessages);

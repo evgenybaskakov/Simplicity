@@ -121,9 +121,11 @@
     }
 }
 
-- (void)updateMessageInStorage:(SMMessage *)message {
+- (void)updateMessageInStorage:(SMMessage *)message folder:(NSString*)folderName {
     NSAssert(sizeof(NSUInteger) == sizeof(message.messageId), @"sizes of NSUInteger and SMMessage.messageId do not match");
     [_messagesWithUnfinishedUpdate addIndex:message.messageId];
+
+    [[_account database] updateMessageInDBFolder:message.imapMessage folder:folderName];
 }
 
 - (NSNumber*)messageThreadByMessageId:(uint64_t)messageId {
@@ -206,11 +208,19 @@
     }
 }
 
+- (void)completeUpdateForMessage:(SMMessage*)message {
+    NSAssert(sizeof(NSUInteger) == sizeof(uint64), @"sizes of NSUInteger and uint64 (messageId) do not match");
+    [_messagesWithUnfinishedUpdate removeIndex:message.messageId];
+    
+    SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedUpdate.count);
+}
+
 - (void)completeDeletionForMessages:(NSIndexSet*)messageIds {
     for(NSUInteger i = [messageIds firstIndex]; i != NSNotFound; i = [messageIds indexGreaterThanIndex:i]) {
         SM_LOG_INFO(@"remove message id: %lu", i);
     }
     
+    NSAssert(sizeof(NSUInteger) == sizeof(uint64), @"sizes of NSUInteger and uint64 (messageId) do not match");
     [_messagesWithUnfinishedDeletion removeIndexes:messageIds];
 
     SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedDeletion.count);

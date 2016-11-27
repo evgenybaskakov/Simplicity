@@ -647,15 +647,19 @@
     
     // set the local message flags
     message.unseen = unseen;
-
-    // update the local database
-    [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+    
+    // update the local copies of the mesage
+    [_messageStorage updateMessageInStorage:message folder:_remoteFolderName];
 
     // Notify listeners (mailbox, etc).
     [SMNotificationsController localNotifyMessageFlagsUpdates:self account:(SMUserAccount*)_account];
     
     // enqueue the remote folder operation
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(unseen? MCOIMAPStoreFlagsRequestKindRemove : MCOIMAPStoreFlagsRequestKindAdd) flags:MCOMessageFlagSeen operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+    
+    op.postAction = ^(SMOperation *op) {
+        [self->_messageStorage completeUpdateForMessage:message];
+    };
     
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
 }
@@ -667,11 +671,15 @@
     // set the local message flags
     message.flagged = flagged;
     
-    // update the local database
-    [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+    // update the local copies of the mesage
+    [_messageStorage updateMessageInStorage:message folder:_remoteFolderName];
     
     // enqueue the remote folder operation
     SMOpSetMessageFlags *op = [[SMOpSetMessageFlags alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName kind:(flagged? MCOIMAPStoreFlagsRequestKindAdd : MCOIMAPStoreFlagsRequestKindRemove) flags:MCOMessageFlagFlagged operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+    
+    op.postAction = ^(SMOperation *op) {
+        [self->_messageStorage completeUpdateForMessage:message];
+    };
     
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
 }
@@ -685,11 +693,15 @@
     [messageThread addLabel:label];
     
     for(SMMessage *message in messageThread.messagesSortedByDate) {
-        // update the local database
-        [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+        // update the local copies of the messages
+        [_messageStorage updateMessageInStorage:message folder:_remoteFolderName];
         
         // enqueue the remote folder operation
         SMOpAddLabel *op = [[SMOpAddLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+        
+        op.postAction = ^(SMOperation *op) {
+            [self->_messageStorage completeUpdateForMessage:message];
+        };
         
         [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     }
@@ -702,15 +714,17 @@
     [messageThread removeLabel:label];
     
     for(SMMessage *message in messageThread.messagesSortedByDate) {
-        // update the local database
-        [[_account database] updateMessageInDBFolder:message.imapMessage folder:_remoteFolderName];
+        // update the local copies of the mesage
+        [_messageStorage updateMessageInStorage:message folder:_remoteFolderName];
         
-        if([message.labels containsObject:label]) {
-            // enqueue the remote folder operation
-            SMOpRemoveLabel *op = [[SMOpRemoveLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
-            
-            [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
-        }
+        // enqueue the remote folder operation
+        SMOpRemoveLabel *op = [[SMOpRemoveLabel alloc] initWithUids:[MCOIndexSet indexSetWithIndex:message.uid] remoteFolderName:_remoteFolderName label:label operationExecutor:[(SMUserAccount*)_account operationExecutor]];
+    
+        op.postAction = ^(SMOperation *op) {
+            [self->_messageStorage completeUpdateForMessage:message];
+        };
+
+        [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     }
     
     if([_remoteFolderName isEqualToString:label]) {

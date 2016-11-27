@@ -42,12 +42,13 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 
 - (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
 - (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
-- (void)updateMessageInStorage:(SMMessage*)message;
+- (void)updateMessageInStorage:(SMMessage*)message folder:(NSString*)folderName;
 
 - (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds;
 - (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
 - (BOOL)deleteMessageFromStorage:(uint64_t)messageId threadId:(uint64_t)threadId remoteFolder:(NSString*)remoteFolder unseenMessagesCount:(NSUInteger*)unseenMessagesCount;
 
+- (void)completeUpdateForMessage:(SMMessage*)message;
 - (void)completeDeletionForMessages:(NSIndexSet*)messagesToMoveIds;
 
 // TODO: use folder name along with UID!!! See https://github.com/evgenybaskakov/Simplicity/issues/20.

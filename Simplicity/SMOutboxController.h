@@ -10,6 +10,7 @@
 
 #import "SMUserAccountDataObject.h"
 
+@class SMOpSendMessage;
 @class SMOperationQueue;
 @class SMOutgoingMessage;
 
@@ -18,8 +19,8 @@
 + (NSString*)outboxFolderName;
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
-- (BOOL)sendMessage:(SMOutgoingMessage*)message postSendActionTarget:(id)target postSendActionSelector:(SEL)selector;
+- (void)loadSMTPQueue:(SMOperationQueue*)queue postSendAction:(void (^)(SMOpSendMessage *))postSendAction;
+- (BOOL)sendMessage:(SMOutgoingMessage*)message postSendAction:(void (^)(SMOpSendMessage *))postSendAction;
 - (void)finishMessageSending:(SMOutgoingMessage*)message;
 - (void)cancelMessageSending:(SMOutgoingMessage*)message;
 

@@ -40,15 +40,14 @@
     return self;
 }
 
-- (void)loadSMTPQueue:(SMOperationQueue*)queue postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+- (void)loadSMTPQueue:(SMOperationQueue*)queue postSendAction:(void (^)(SMOpSendMessage *))postSendAction {
     for(NSUInteger i = 0, n = queue.count; i < n; i++) {
         SMOperation *op = [queue getOpAtIndex:i];
         
         if([op isKindOfClass:[SMOpSendMessage class]]) {
             SMOpSendMessage *opSendMessage = (SMOpSendMessage*)op;
 
-            opSendMessage.postActionTarget = target;
-            opSendMessage.postActionSelector = selector;
+            opSendMessage.postAction = (void (^)(SMOperation*))postSendAction;
 
             SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
             id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByName:outboxFolder.fullName];
@@ -59,7 +58,7 @@
     }
 }
 
-- (BOOL)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendActionTarget:(id)target postSendActionSelector:(SEL)selector {
+- (BOOL)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendAction:(void (^)(SMOpSendMessage *))postSendAction {
     SM_LOG_DEBUG(@"Sending message");
     
     SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
@@ -81,8 +80,7 @@
 
     SMOpSendMessage *op = [[SMOpSendMessage alloc] initWithOutgoingMessage:outgoingMessage operationExecutor:[(SMUserAccount*)_account operationExecutor]];
 
-    op.postActionTarget = target;
-    op.postActionSelector = selector;
+    op.postAction = (void (^)(SMOperation*))postSendAction;
 
     [[(SMUserAccount*)_account operationExecutor] enqueueOperation:op];
     [[(SMUserAccount*)_account operationExecutor] saveSMTPQueue];

@@ -15,6 +15,7 @@ typedef enum {
 
 @class SMOperation;
 @class SMOperationExecutor;
+@class SMUserAccount;
 @class MCOOperation;
 
 @interface SMOperation : NSObject<NSCoding> {
@@ -23,9 +24,9 @@ typedef enum {
 
 @property (readonly) NSDate *timeCreated;
 @property (readonly) SMOpKind opKind;
+@property (readonly) SMUserAccount *account;
 
-@property (nonatomic) id postActionTarget;
-@property (nonatomic) SEL postActionSelector;
+@property void (^postAction)(SMOperation *);
 
 @property MCOOperation *currentOp;
 
@@ -42,6 +43,5 @@ typedef enum {
 - (NSString*)name;
 - (NSString*)details;
 - (void)encodeWithCoder:(NSCoder*)coder;
-
 
 @end

@@ -29,6 +29,7 @@
 #import "SMAccountMailboxController.h"
 #import "SMOutboxController.h"
 #import "SMOperationQueue.h"
+#import "SMOpSendMessage.h"
 #import "SMSuggestionProvider.h"
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
@@ -255,7 +256,9 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     
     [_operationExecutor setSmtpQueue:smtpQueue imapQueue:imapQueue];
     
-    [_outboxController loadSMTPQueue:smtpQueue postSendActionTarget:_outboxController postSendActionSelector:@selector(finishMessageSending:)];
+    [_outboxController loadSMTPQueue:smtpQueue postSendAction:^(SMOpSendMessage *op) {
+        [self->_outboxController finishMessageSending:op.outgoingMessage];
+    }];
 }
 
 - (void)printImapServerCapabilities:(MCOIndexSet*)capabilities {

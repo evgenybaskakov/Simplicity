@@ -31,14 +31,17 @@
     self = [super init];
 
     if (self) {
-        _postActionTarget = nil;
-        _postActionSelector = nil;
+        _postAction = nil;
         _currentOp = nil;
         _timeCreated = [coder decodeObjectForKey:@"_timeCreated"];
         _opKind = (SMOpKind)[coder decodeIntegerForKey:@"_opKind"];
     }
     
     return self;
+}
+
+- (SMUserAccount*)account {
+    return (SMUserAccount*)_operationExecutor.account;
 }
 
 - (void)setOperationExecutor:(SMOperationExecutor*)operationExecutor {
@@ -85,6 +88,10 @@
 }
 
 - (void)complete {
+    if(_postAction) {
+        _postAction(self);
+    }
+    
     [_operationExecutor completeOperation:self];
 }
 

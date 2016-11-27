@@ -77,10 +77,6 @@
     if (error == nil || error.code == MCOErrorNone) {
         SM_LOG_DEBUG(@"message sent successfully");
         
-        if(self.postActionTarget) {
-            [self.postActionTarget performSelector:self.postActionSelector withObject:_outgoingMessage afterDelay:0];
-        }
-        
         [self complete];
     }
     else {

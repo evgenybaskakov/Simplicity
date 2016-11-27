@@ -16,7 +16,6 @@
 #import "SMOpAppendMessage.h"
 
 @implementation SMOpAppendMessage {
-    SMMessageBuilder *_messageBuilder;
     NSString *_remoteFolderName;
     MCOMessageFlag _flags;
 }
@@ -74,18 +73,12 @@
 }
 
 - (void)processAppendMessagesOpResult:(NSError*)error createdUID:(uint32_t)createdUID {
-    SMUserAccount *account = (SMUserAccount*)_operationExecutor.account;
-
     NSAssert(self.currentOp != nil, @"current op has disappeared");
     
     if(error == nil) {
         SM_LOG_DEBUG(@"Message appended to remote folder %@, new uid %u", _remoteFolderName, createdUID);
-        
-        if(self.postActionTarget) {
-            NSDictionary *messageInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:account, _messageBuilder.mcoMessageBuilder, [NSNumber numberWithUnsignedInteger:createdUID], nil] forKeys:[NSArray arrayWithObjects:@"Account", @"Message", @"UID", nil]];
-            
-            [self.postActionTarget performSelector:self.postActionSelector withObject:messageInfo afterDelay:0];
-        }
+
+        _uid = createdUID; // store the id so that the message post action could use
         
         [self complete];
     } else {

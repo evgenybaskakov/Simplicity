@@ -32,6 +32,7 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageEditorController.h"
+#import "SMOpSendMessage.h"
 
 @implementation SMMessageEditorController {
     NSMutableArray *_attachmentItems;
@@ -76,23 +77,21 @@
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
     
-    return [[account outboxController] sendMessage:outgoingMessage postSendActionTarget:self postSendActionSelector:@selector(messageSentByServer:)];
-}
+    return [[account outboxController] sendMessage:outgoingMessage postSendAction:^(SMOpSendMessage *op) {
+        SMOutgoingMessage *message = op.outgoingMessage;
+        SMUserAccount *account = message.messageBuilder.account;
+        
+        [[account outboxController] finishMessageSending:message];
+        
+        [self deleteSavedDraft:account];
 
-- (void)messageSentByServer:(SMOutgoingMessage*)message {
-    SMUserAccount *account = message.messageBuilder.account;
-    
-    [[account outboxController] finishMessageSending:message];
-    
-    [self deleteSavedDraft:account];
-
-    if(_saveDraftOp) {
-        if(![_saveDraftOp cancelOp]) {
-            // Could not cancel save op. To avoid orphaned drafts,
-            // schedule its deletion for later.
-            _shouldDeleteSavedDraft = YES;
-        }
-    }
+        if(self->_saveDraftOp) {
+            if(![self->_saveDraftOp cancelOp]) {
+                // Could not cancel save op. To avoid orphaned drafts,
+                // schedule its deletion for later.
+                self->_shouldDeleteSavedDraft = YES;
+            }
+        }}];
 }
 
 - (void)saveDraft:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
@@ -132,8 +131,11 @@
     
     SMOpAppendMessage *op = [[SMOpAppendMessage alloc] initWithMessageBuilder:messageBuilder remoteFolderName:draftsFolder.fullName flags:(MCOMessageFlagSeen | MCOMessageFlagDraft) operationExecutor:[account operationExecutor]];
     
-    op.postActionTarget = self;
-    op.postActionSelector = @selector(messageSavedToDrafts:);
+    op.postAction = ^(SMOperation *op) {
+        SMOpAppendMessage *appendOp = (SMOpAppendMessage*)op;
+        
+        [self messageSavedToDrafts:appendOp.account message:appendOp.messageBuilder uid:appendOp.uid];
+    };
     
     [[account operationExecutor] enqueueOperation:op];
     
@@ -145,19 +147,19 @@
 
 #pragma mark Message after-saving actions
 
-- (void)messageSavedToDrafts:(NSDictionary *)info {
-    SMUserAccount *account = [info objectForKey:@"Account"];
-    MCOMessageBuilder *message = [info objectForKey:@"Message"]; // TODO: use SMMessage, not builder
-    uint32_t uid = [[info objectForKey:@"UID"] unsignedIntValue];
+- (void)messageSavedToDrafts:(SMUserAccount*)account message:(SMMessageBuilder*)messageBuilder uid:(uint32_t)uid {
+    // TODO: use SMMessage, not builder (?)
     
     NSAssert(account != nil, @"no account in the notification");
     
     SM_LOG_DEBUG(@"uid %u", uid);
     
-    if(message == _prevSaveDraftMessage || message == _saveDraftMessage) {
+    MCOMessageBuilder *mcoMessageBuilder = messageBuilder.mcoMessageBuilder;
+    
+    if(mcoMessageBuilder == _prevSaveDraftMessage || mcoMessageBuilder == _saveDraftMessage) {
         [self deleteSavedDraft:account];
         
-        if(message == _prevSaveDraftMessage) {
+        if(mcoMessageBuilder == _prevSaveDraftMessage) {
             _prevSaveDraftMessage = nil;
             _prevSaveDraftOp = nil;
         } else {

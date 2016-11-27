@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
 
 - (BOOL)addMessageToStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
 - (void)removeMessageFromStorage:(SMMessage*)message updateDatabase:(BOOL)updateDatabase;
+- (void)updateMessageInStorage:(SMMessage*)message;
 
 - (void)deleteMessagesFromStorageByMessageIds:(NSArray<NSNumber*>*)messageIds;
 - (void)deleteMessageThread:(SMMessageThread*)messageThread updateDatabase:(BOOL)updateDatabase unseenMessagesCount:(NSUInteger*)unseenMessagesCount;

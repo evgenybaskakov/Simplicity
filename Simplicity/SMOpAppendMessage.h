@@ -14,6 +14,9 @@
 
 @interface SMOpAppendMessage : SMOperation
 
+@property (readonly) SMMessageBuilder *messageBuilder;
+@property (readonly) uint32_t uid;
+
 - (id)initWithMessageBuilder:(SMMessageBuilder*)messageBuilder remoteFolderName:(NSString*)remoteFolderName flags:(MCOMessageFlag)flags operationExecutor:(SMOperationExecutor*)operationExecutor;
 
 @end

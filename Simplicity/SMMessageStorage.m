@@ -212,7 +212,8 @@
     NSAssert(sizeof(NSUInteger) == sizeof(uint64), @"sizes of NSUInteger and uint64 (messageId) do not match");
     [_messagesWithUnfinishedUpdate removeIndex:message.messageId];
     
-    SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedUpdate.count);
+    if(_messagesWithUnfinishedUpdate.count > 0)
+        SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedUpdate.count);
 }
 
 - (void)completeDeletionForMessages:(NSIndexSet*)messageIds {
@@ -223,7 +224,8 @@
     NSAssert(sizeof(NSUInteger) == sizeof(uint64), @"sizes of NSUInteger and uint64 (messageId) do not match");
     [_messagesWithUnfinishedDeletion removeIndexes:messageIds];
 
-    SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedDeletion.count);
+    if(_messagesWithUnfinishedDeletion.count > 0)
+        SM_LOG_INFO(@"remaining mesage ids %lu", _messagesWithUnfinishedDeletion.count);
 }
 
 - (void)startUpdate {
@@ -242,11 +244,6 @@
         NSAssert(sizeof(NSUInteger) == sizeof(imapMessage.gmailMessageID), @"sizes of NSUInteger and MCOIMAPMessage.gmailMessageID do not match");
         if([_messagesWithUnfinishedDeletion containsIndex:imapMessage.gmailMessageID]) {
             SM_LOG_INFO(@"message with id %llu is deleted locally", imapMessage.gmailMessageID);
-            continue;
-        }
-
-        if([_messagesWithUnfinishedUpdate containsIndex:imapMessage.gmailMessageID]) {
-            SM_LOG_INFO(@"message with id %llu is updated locally", imapMessage.gmailMessageID);
             continue;
         }
 
@@ -288,9 +285,15 @@
             SMMessage *firstMessage = messageThread.messagesSortedByDate.firstObject;
             firstMessageDate = [firstMessage date];
         }
-
-        BOOL messageIsNew;
-        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage plainTextBody:plainTextBody hasAttachments:hasAttachments remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount messageIsNew:&messageIsNew];
+        
+        BOOL ignoreUpdate = NO;
+        if([_messagesWithUnfinishedUpdate containsIndex:imapMessage.gmailMessageID]) {
+            SM_LOG_INFO(@"message with id %llu is updated locally", imapMessage.gmailMessageID);
+            ignoreUpdate = YES;
+        }
+        
+        BOOL messageIsNew = NO;
+        const SMThreadUpdateResult threadUpdateResult = [messageThread updateIMAPMessage:imapMessage ignoreUpdate:ignoreUpdate plainTextBody:plainTextBody hasAttachments:hasAttachments remoteFolder:remoteFolderName session:session unseenCount:unseenMessagesCount messageIsNew:&messageIsNew];
         
         if(messageIsNew) {
             [newMessages addObject:imapMessage];

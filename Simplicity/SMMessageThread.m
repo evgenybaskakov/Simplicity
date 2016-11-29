@@ -341,7 +341,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     [_labels addObjectsFromArray:message.labels];
 }
 
-- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage plainTextBody:(NSString*)plainTextBody hasAttachments:(BOOL)hasAttachments remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount messageIsNew:(BOOL*)messageIsNew {
+- (SMThreadUpdateResult)updateIMAPMessage:(MCOIMAPMessage*)imapMessage ignoreUpdate:(BOOL)ignoreUpdate plainTextBody:(NSString*)plainTextBody hasAttachments:(BOOL)hasAttachments remoteFolder:(NSString*)remoteFolderName session:(MCOIMAPSession*)session unseenCount:(NSUInteger*)unseenCount messageIsNew:(BOOL*)messageIsNew {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication ] delegate];
     SMMessageComparators *comparators = [appDelegate messageComparators];
 
@@ -352,35 +352,44 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     if(messageIndex < [_messageCollection count]) {
         SMMessage *message = [_messageCollection.messagesByMessageId objectAtIndex:messageIndex];
         
+        // check if an exact match is found
         if(message.messageId == imapMessage.gmailMessageID) {
+            *messageIsNew = NO;
+
+            message.updateStatus = SMMessageUpdateStatus_Persisted;
+
             if(plainTextBody != nil) {
                 message.plainTextBody = plainTextBody;
             }
             
-            BOOL wasUnseen = message.unseen;
-            BOOL hasUpdates = [message updateImapMessage:imapMessage];
-            
-            message.updateStatus = SMMessageUpdateStatus_Persisted;
-            
-            BOOL nowUnseen = message.unseen;
-            if(wasUnseen != nowUnseen && unseenCount != nil) {
-                if(nowUnseen) {
-                    (*unseenCount)++;
+            if(!ignoreUpdate) {
+                BOOL wasUnseen = message.unseen;
+                BOOL hasUpdates = [message updateImapMessage:imapMessage];
+                
+                BOOL nowUnseen = message.unseen;
+                if(wasUnseen != nowUnseen && unseenCount != nil) {
+                    if(nowUnseen) {
+                        (*unseenCount)++;
+                    }
+                    else if(*unseenCount > 0) {
+                        (*unseenCount)--;
+                    }
                 }
-                else if(*unseenCount > 0) {
-                    (*unseenCount)--;
+                
+                if(hasUpdates) {
+                    [self updateThreadFlagsFromMessage:message];
+                    
+                    return SMThreadUpdateResultFlagsChanged;
+                } else {
+                    return SMThreadUpdateResultNone;
                 }
             }
-            
-            *messageIsNew = NO;
-            
-            if(hasUpdates) {
-                [self updateThreadFlagsFromMessage:message];
-
-                return SMThreadUpdateResultFlagsChanged;
-            } else {
+            else {
                 return SMThreadUpdateResultNone;
             }
+        }
+        else {
+            // otherwise, this is where a new message is going to take a seat
         }
     }
     

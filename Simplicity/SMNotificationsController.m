@@ -56,8 +56,8 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FolderListUpdated" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:account, @"Account", nil]];
 }
 
-+ (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", account, @"Account", nil]];
++ (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder scheduleUpdate:(BOOL)scheduleUpdate hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageHeadersSyncFinished" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:localFolder, @"LocalFolderInstance", [NSNumber numberWithBool:scheduleUpdate], @"ScheduleUpdate", [NSNumber numberWithBool:hasUpdates], @"HasUpdates", account, @"Account", nil]];
 }
 
 + (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder messageId:(uint64_t)messageId threadId:(int64_t)threadId account:(SMUserAccount*)account {
@@ -144,13 +144,18 @@
     }
 }
 
-+ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account {
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder scheduleUpdate:(BOOL*)scheduleUpdate hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account {
     NSDictionary *messageInfo = [notification userInfo];
     
     if(localFolder) {
         *localFolder = [messageInfo objectForKey:@"LocalFolderInstance"];
     }
 
+    if(scheduleUpdate) {
+        NSNumber *scheduleUpdateNumber = [[notification userInfo] objectForKey:@"ScheduleUpdate"];
+        *scheduleUpdate = [scheduleUpdateNumber boolValue];
+    }
+    
     if(hasUpdates) {
         NSNumber *hasUpdatesNumber = [[notification userInfo] objectForKey:@"HasUpdates"];
         *hasUpdates = [hasUpdatesNumber boolValue];

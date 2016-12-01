@@ -139,7 +139,7 @@
         [self finishMessageHeadersFetching];
         
         // TODO: unified mailbox search???f
-        [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:YES account:(SMUserAccount*)_account];
+        [SMNotificationsController localNotifyMessageHeadersSyncFinished:self scheduleUpdate:NO hasUpdates:YES account:(SMUserAccount*)_account];
         
         return;
     }

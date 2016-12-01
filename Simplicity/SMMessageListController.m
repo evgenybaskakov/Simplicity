@@ -175,19 +175,30 @@
 - (void)scheduleMessageListUpdate:(BOOL)now {
     [self cancelScheduledMessageListUpdate];
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
+    NSTimeInterval delaySec;
     
-    if(updateIntervalSec == 0) {
-        // TODO: handle 0 ("auto") value in a more sophisticated way
-        updateIntervalSec = 60;
+    if(now) {
+        delaySec = 0;
     }
-
-    NSTimeInterval delay_sec = now? 0 : updateIntervalSec;
+    else {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
+        
+        if(updateIntervalSec == 0) {
+            // TODO: handle 0 ("auto") value in a more sophisticated way
+            updateIntervalSec = 60;
+            
+            //
+            // start idle op after messages bodies are downloaded
+            //
+        }
+        
+        delaySec = updateIntervalSec;
+    }
     
-    SM_LOG_DEBUG(@"scheduling message list update after %lu sec", (unsigned long)delay_sec);
+    SM_LOG_DEBUG(@"scheduling message list update after %g sec", delaySec);
 
-    [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delay_sec];
+    [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delaySec];
 }
 
 - (void)messagesInLocalFolderUpdated:(NSNotification *)notification {
@@ -234,10 +245,11 @@
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
     SMLocalFolder *localFolder;
+    BOOL scheduleUpdate;
     BOOL hasUpdates;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:&hasUpdates account:&account];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder scheduleUpdate:&scheduleUpdate hasUpdates:&hasUpdates account:&account];
 
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(_currentFolder == localFolder || (appDelegate.currentAccountIsUnified && _account.unified && [(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder])) {
@@ -256,7 +268,10 @@
             }
         }
         
-        [self scheduleMessageListUpdate:NO];
+        // Schedule message update only we are being asked to.
+        if(scheduleUpdate) {
+            [self scheduleMessageListUpdate:NO];
+        }
     }
 }
 

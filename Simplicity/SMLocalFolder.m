@@ -194,7 +194,7 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)finishMessageHeadersFetching {
+- (BOOL)finishMessageHeadersFetching {
     BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
     
     _finishingFetch = NO;
@@ -214,8 +214,13 @@
         SM_LOG_INFO(@"folder %@ loaded from the local database, starting syncing with server", _localName);
         
         [self startLocalFolderSync];
+
+        // We just started an update. Therefore, there's no need to
+        // schedule another one right now.
+        return NO;
     }
-    else if(!_loadingFromDB && _syncedWithRemoteFolder) {
+    
+    if(!_loadingFromDB && _syncedWithRemoteFolder) {
         SM_LOG_INFO(@"folder %@ already synced with server", _localName);
     }
     else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
@@ -224,6 +229,8 @@
     else {
         SM_LOG_INFO(@"folder %@ loaded from the local database, but not synced with server", _localName);
     }
+    
+    return YES;
 }
 
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
@@ -343,15 +350,14 @@
     } : nil];
 
     BOOL finishedDbSync = _dbSyncInProgress;
-    
-    [self finishMessageHeadersFetching];
+    BOOL scheduleUpdate = [self finishMessageHeadersFetching];
 
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.
     BOOL hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
     
-    [SMNotificationsController localNotifyMessageHeadersSyncFinished:self hasUpdates:hasUpdates account:(SMUserAccount*)_account];
+    [SMNotificationsController localNotifyMessageHeadersSyncFinished:self scheduleUpdate:scheduleUpdate hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
 - (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {
@@ -447,7 +453,6 @@
             }
 
             SM_LOG_INFO(@"folder %@, outgoing messages loaded: %lu, messages loaded: %lu, headers fetched: %lu", _self->_localName, outgoingMessages.count, mcoMessages.count, _self->_messageHeadersFetched);
-            
         }]];
     }
     else {

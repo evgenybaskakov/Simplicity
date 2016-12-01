@@ -75,7 +75,7 @@
     SMLocalFolder *localFolder;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder hasUpdates:nil account:&account];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder scheduleUpdate:nil hasUpdates:nil account:&account];
     
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     if(appDelegate.currentAccountIsUnified || account == appDelegate.currentAccount) {

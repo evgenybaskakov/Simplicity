@@ -171,6 +171,8 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 }
 
 - (void)scheduleMessageListUpdate:(BOOL)now {
+    NSAssert(!_account.unified, @"Cannot schedule message list update for the unified account");
+    
     [self cancelScheduledMessageListUpdate];
     
     NSTimeInterval delaySec;
@@ -179,8 +181,6 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
         delaySec = 0;
     }
     else {
-        NSAssert(!_account.unified, @"Cannot schedule message list update for the unified account");
-        
         SMUserAccount *userAccount = (SMUserAccount*)_account;
         if(userAccount.idleEnabled) {
             [userAccount startIdle];
@@ -252,15 +252,19 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder scheduleUpdate:&scheduleUpdate hasUpdates:&hasUpdates account:&account];
 
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if(_currentFolder == localFolder || (appDelegate.currentAccountIsUnified && _account.unified && [(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder])) {
+    // The unified account is never related to message updates.
+    // So always ignore it.
+    if(_account == account && _currentFolder == localFolder) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         SMAppController *appController = [appDelegate appController];
+        
+        NSAssert(!_account.unified, @"Cannot process fetched messages in the unified account");
         
         [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];
         
         // Keep certain folders always synced.
         // Go through the "always synced" folders and update them.
+        // TODO: fix this mess
         for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
             SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
             

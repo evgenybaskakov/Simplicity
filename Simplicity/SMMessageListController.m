@@ -29,6 +29,8 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
+static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
+
 @implementation SMMessageListController {
     id<SMAbstractLocalFolder> _currentFolder;
     id<SMAbstractLocalFolder> _prevNonSearchFolder;
@@ -181,16 +183,19 @@
         delaySec = 0;
     }
     else {
+        NSAssert(!_account.unified, @"Cannot schedule message list update for the unified account");
+        
+        SMUserAccount *userAccount = (SMUserAccount*)_account;
+        if(userAccount.idleEnabled) {
+            [userAccount startIdle];
+            return;
+        }
+        
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
         
         if(updateIntervalSec == 0) {
-            // TODO: handle 0 ("auto") value in a more sophisticated way
-            updateIntervalSec = 60;
-            
-            //
-            // start idle op after messages bodies are downloaded
-            //
+            updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
         }
         
         delaySec = updateIntervalSec;

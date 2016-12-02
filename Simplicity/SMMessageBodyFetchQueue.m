@@ -125,6 +125,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)sendEmptyNotification {
     if(!_emptyNotificationSent) {
+        SM_LOG_INFO(@"Body fetch queue %@ for account %@ is empty", self, _account.accountName);
+        
         [SMNotificationsController localNotifyMessageBodyFetchQueueEmpty:self account:(SMUserAccount*)_account];
         
         _emptyNotificationSent = YES;
@@ -134,6 +136,8 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)sendNotEmptyNotification {
     if(!_notEmptyNotificationSent) {
+        SM_LOG_INFO(@"Body fetch queue %@ for account %@ is not empty", self, _account.accountName);
+
         [SMNotificationsController localNotifyMessageBodyFetchQueueNotEmpty:self account:(SMUserAccount*)_account];
         
         _notEmptyNotificationSent = YES;

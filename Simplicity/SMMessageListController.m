@@ -34,7 +34,6 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 @implementation SMMessageListController {
     id<SMAbstractLocalFolder> _currentFolder;
     id<SMAbstractLocalFolder> _prevNonSearchFolder;
-    MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -66,9 +65,6 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
         SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
         [localFolder stopLocalFolderSync:YES];
     }
-    
-    [_folderInfoOp cancel];
-    _folderInfoOp = nil;
     
     // Cancel scheduled message list updates.
     [NSObject cancelPreviousPerformRequestsWithTarget:self];

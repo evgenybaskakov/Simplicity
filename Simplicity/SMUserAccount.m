@@ -34,6 +34,8 @@
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
 
+static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
+
 const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     switch(type) {
         case MCOConnectionLogTypeReceived: return "Received";
@@ -415,6 +417,39 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     [_capabilitiesOp start:opBlock];
 }
 
+- (void)scheduleMessageListUpdate {
+    [self cancelScheduledMessagesUpdate];
+    
+    if(self.idleEnabled) {
+        [self startIdle];
+    }
+    else {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
+        
+        if(updateIntervalSec == 0) {
+            updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
+        }
+        
+        SM_LOG_DEBUG(@"scheduling message list update after %lu sec", updateIntervalSec);
+        
+        [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:updateIntervalSec];
+    }
+}
+
+- (void)cancelScheduledMessagesUpdate {
+    if(self.idleEnabled) {
+        [self stopIdle];
+    }
+    else {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
+    }
+}
+
+- (void)startMessagesUpdate {
+    [_messageListController startMessagesUpdate];
+}
+
 - (void)startIdle {
     if(_idleOp != nil) {
         // This happens when the control message check is finished
@@ -461,7 +496,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
         // In any case, just sync the messages.
         // Any connectivity errors will be handled alongside.
-        [_self->_messageListController scheduleMessageListUpdate:YES];
+        [_self startMessagesUpdate];
     };
     
     _idleOp = [_imapSession idleOperationWithFolder:remoteFolderToWatch lastKnownUID:0];
@@ -470,7 +505,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     // After the idle op is started, we must check if there are any changes happened.
     // If we don't then there's a time gap between the last sync and the idle start,
     // i.e. we're at risk to miss something.
-    [_messageListController scheduleMessageListUpdate:YES];
+    [self startMessagesUpdate];
 }
 
 - (void)stopIdle {

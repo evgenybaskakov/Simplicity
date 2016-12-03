@@ -28,8 +28,7 @@
 - (void)fetchMessageInlineAttachments:(SMMessage*)message messageThread:(SMMessageThread*)messageThread;
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName messageThread:(SMMessageThread*)messageThread;
 - (void)loadSearchResults:(MCOIndexSet*)searchResults remoteFolderToSearch:(NSString*)remoteFolderNameToSearch searchResultsLocalFolder:(NSString*)searchResultsLocalFolder changeFolder:(BOOL)changeFolder;
-- (void)scheduleMessageListUpdate:(BOOL)now;
-- (void)cancelScheduledMessageListUpdate;
+- (void)startMessagesUpdate;
 - (BOOL)localFolderIsCurrent:(SMLocalFolder*)localFolder;
 
 @end

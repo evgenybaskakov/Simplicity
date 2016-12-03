@@ -35,7 +35,6 @@
 - (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
-- (void)startIdle;
 - (void)stopAccount;
 - (void)reloadAccount:(NSUInteger)accountIdx;
 

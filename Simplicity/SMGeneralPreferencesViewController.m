@@ -231,7 +231,7 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].messageCheckPeriodSec = [_messageCheckPeriodValues[item] unsignedIntegerValue];
 
-    [[appDelegate.currentAccount messageListController] scheduleMessageListUpdate:YES];
+    [[appDelegate.currentAccount messageListController] startMessagesUpdate];
 }
 
 - (IBAction)downloadsFolderPopupAction:(id)sender {

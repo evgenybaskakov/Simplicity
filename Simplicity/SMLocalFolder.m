@@ -796,7 +796,7 @@
     [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
-    [[_account messageListController] cancelScheduledMessageListUpdate];
+    [_account cancelScheduledMessagesUpdate];
 
     // Remove the deleted message threads from the message storage.
     NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
@@ -886,7 +886,7 @@
     [self stopLocalFolderSync:NO];
     
     // Cancel scheduled update. It will be restored after message movement is finished.
-    [[_account messageListController] cancelScheduledMessageListUpdate];
+    [_account cancelScheduledMessagesUpdate];
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.

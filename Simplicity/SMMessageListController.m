@@ -29,8 +29,6 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 
-static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
-
 @implementation SMMessageListController {
     id<SMAbstractLocalFolder> _currentFolder;
     id<SMAbstractLocalFolder> _prevNonSearchFolder;
@@ -66,10 +64,10 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
         [localFolder stopLocalFolderSync:YES];
     }
     
-    // Cancel scheduled message list updates.
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    [self cancelScheduledMessageListUpdate];
+    // Cancel automatic updates of this folder
+    [_account cancelScheduledMessagesUpdate];
 
+    // Create the new local folder if necessary
     if(folderName != nil) {
         id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolderByName:folderName];
         
@@ -156,50 +154,10 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
     }
 }
 
-// Message updating
-
-// TODO: Local folder sync timeout?
-
 - (void)startMessagesUpdate {
     SM_LOG_DEBUG(@"updating message list");
     
     [_currentFolder startLocalFolderSync];
-}
-
-- (void)cancelScheduledMessageListUpdate {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
-}
-
-- (void)scheduleMessageListUpdate:(BOOL)now {
-    NSAssert(!_account.unified, @"Cannot schedule message list update for the unified account");
-    
-    [self cancelScheduledMessageListUpdate];
-    
-    NSTimeInterval delaySec;
-    
-    if(now) {
-        delaySec = 0;
-    }
-    else {
-        SMUserAccount *userAccount = (SMUserAccount*)_account;
-        if(userAccount.idleEnabled) {
-            [userAccount startIdle];
-            return;
-        }
-        
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
-        
-        if(updateIntervalSec == 0) {
-            updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
-        }
-        
-        delaySec = updateIntervalSec;
-    }
-    
-    SM_LOG_DEBUG(@"scheduling message list update after %g sec", delaySec);
-
-    [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delaySec];
 }
 
 - (void)messagesInLocalFolderUpdated:(NSNotification *)notification {
@@ -275,7 +233,7 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
         
         // Schedule message update only we are being asked to.
         if(scheduleUpdate) {
-            [self scheduleMessageListUpdate:NO];
+            [_account scheduleMessageListUpdate];
         }
     }
 }

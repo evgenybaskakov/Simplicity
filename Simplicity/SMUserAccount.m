@@ -453,19 +453,15 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         _self->_idleOp = nil;
 
         if(error && error.code != MCOErrorNone) {
-            // TODO: should we immediately restart it, or the server
-            //       connnectivity issue handler will sort this out?
             SM_LOG_ERROR(@"IDLE operation error for folder '%@': %@", remoteFolderToWatch, error);
-
-            if(_self.idleEnabled) {
-                [_self startIdle];
-            }
         }
         else {
             SM_LOG_INFO(@"IDLE operation triggers for '%@'", remoteFolderToWatch);
-
-            [_self->_messageListController scheduleMessageListUpdate:YES];
         }
+
+        // In any case, just sync the messages.
+        // Any connectivity errors will be handled alongside.
+        [_self->_messageListController scheduleMessageListUpdate:YES];
     };
     
     _idleOp = [_imapSession idleOperationWithFolder:remoteFolderToWatch lastKnownUID:0];

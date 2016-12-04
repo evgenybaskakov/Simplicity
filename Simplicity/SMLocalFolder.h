@@ -70,8 +70,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
 
-// This returns YES if new local folder update should be scheduled.
-// Otherwise, it returns NO.
-- (BOOL)finishMessageHeadersFetching;
+- (void)finishMessageHeadersFetching;
 
 @end

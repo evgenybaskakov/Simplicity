@@ -194,7 +194,7 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (BOOL)finishMessageHeadersFetching {
+- (void)finishMessageHeadersFetching {
     BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
     
     _finishingFetch = NO;
@@ -217,20 +217,21 @@
 
         // We just started an update. Therefore, there's no need to
         // schedule another one right now.
-        return NO;
-    }
-    
-    if(!_loadingFromDB && _syncedWithRemoteFolder) {
-        SM_LOG_INFO(@"folder %@ already synced with server", _localName);
-    }
-    else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
-        SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);
+        // However, this makes the logic too complex (the shouldStartRemoteSync
+        // flag should be set once this folder is made "current" or "always updating").
+        // TODO: fix
     }
     else {
-        SM_LOG_INFO(@"folder %@ loaded from the local database, but not synced with server", _localName);
+        if(!_loadingFromDB && _syncedWithRemoteFolder) {
+            SM_LOG_INFO(@"folder %@ already synced with server", _localName);
+        }
+        else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
+            SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);
+        }
+        else {
+            SM_LOG_INFO(@"folder %@ loaded from the local database, but not synced with server", _localName);
+        }
     }
-    
-    return YES;
 }
 
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
@@ -350,7 +351,9 @@
     } : nil];
 
     BOOL finishedDbSync = _dbSyncInProgress;
-    BOOL scheduleUpdate = [self finishMessageHeadersFetching];
+    BOOL scheduleUpdate = YES;
+    
+    [self finishMessageHeadersFetching];
 
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.

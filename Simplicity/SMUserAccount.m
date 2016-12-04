@@ -55,6 +55,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     MCOIMAPCapabilityOperation *_capabilitiesOp;
     MCOIMAPIdleOperation *_idleOp;
     NSInteger _idleId;
+    NSString *_idleFolder;
 }
 
 @synthesize unified = _unified;
@@ -411,6 +412,11 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             
             _self->_imapServerCapabilities = capabilities;
             _self->_capabilitiesOp = nil;
+            
+            // Previous scheduleMessageListUpdate might not be able
+            // to start because the server capabilities were not know.
+            // So schedule it up right now.
+            [_self scheduleMessageListUpdate];
         }
     };
     
@@ -418,12 +424,17 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 - (void)scheduleMessageListUpdate {
-    [self cancelScheduledMessagesUpdate];
-    
+    if(_imapServerCapabilities == nil) {
+        SM_LOG_INFO(@"IMAP server capabilities not yet known, postponing message list update");
+        return;
+    }
+        
     if(self.idleEnabled) {
         [self startIdle];
     }
     else {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
+
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
         
@@ -459,18 +470,17 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     }
     
     SMLocalFolder *currentLocalFolder = (SMLocalFolder*)_messageListController.currentLocalFolder;
-    NSString *remoteFolderToWatch = nil;
     
     if(currentLocalFolder.syncedWithRemoteFolder) {
-        remoteFolderToWatch = currentLocalFolder.remoteFolderName;
+        _idleFolder = currentLocalFolder.remoteFolderName;
     }
     else {
         // Otherwise just watch the Inbox.
-        remoteFolderToWatch = [[_mailbox inboxFolder] fullName];
+        _idleFolder = [[_mailbox inboxFolder] fullName];
     }
     
     NSUInteger idleId = ++_idleId;
-    SM_LOG_INFO(@"new idle operation is running for folder '%@', id %lu", remoteFolderToWatch, idleId);
+    SM_LOG_INFO(@"new IDLE operation is running for folder '%@', id %lu", _idleFolder, idleId);
     
     SMUserAccount __weak *weakSelf = self;
     void (^opBlock)(NSError *) = ^(NSError *error) {
@@ -481,17 +491,18 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         }
         
         if(idleId != _self->_idleId) {
-            SM_LOG_INFO(@"stale idle operation dismissed");
+            SM_LOG_INFO(@"stale idle operation dismissed, id %lu", idleId);
             return;
         }
         
         _self->_idleOp = nil;
+        _self->_idleFolder = nil;
 
         if(error && error.code != MCOErrorNone) {
-            SM_LOG_ERROR(@"IDLE operation error for folder '%@': %@", remoteFolderToWatch, error);
+            SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_idleFolder, _self->_idleId, error);
         }
         else {
-            SM_LOG_INFO(@"IDLE operation triggers for '%@'", remoteFolderToWatch);
+            SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_idleFolder, _self->_idleId);
         }
 
         // In any case, just sync the messages.
@@ -499,7 +510,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         [_self startMessagesUpdate];
     };
     
-    _idleOp = [_imapSession idleOperationWithFolder:remoteFolderToWatch lastKnownUID:0];
+    _idleOp = [_imapSession idleOperationWithFolder:_idleFolder lastKnownUID:0];
     [_idleOp start:opBlock];
     
     // After the idle op is started, we must check if there are any changes happened.
@@ -509,9 +520,14 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 - (void)stopIdle {
-    [_idleOp cancel];
-    
-    _idleOp = nil;
+    if(_idleOp != nil) {
+        SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _idleFolder, _idleId);
+
+        [_idleOp cancel];
+        
+        _idleOp = nil;
+        _idleFolder = nil;
+    }
 }
 
 - (void)fetchMessageInlineAttachments:(SMMessage *)message {

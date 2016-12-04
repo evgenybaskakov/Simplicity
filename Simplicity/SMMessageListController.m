@@ -222,14 +222,14 @@
         
         // Keep certain folders always synced.
         // Go through the "always synced" folders and update them.
-        // TODO: fix this mess
-        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
-            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
-            
-            if(localFolder != _currentFolder) {
-                [localFolder startLocalFolderSync];
-            }
-        }
+// TODO: fix this mess
+//        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
+//            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
+//            
+//            if(localFolder != _currentFolder) {
+//                [localFolder startLocalFolderSync];
+//            }
+//        }
         
         // Schedule message update only we are being asked to.
         if(scheduleUpdate) {

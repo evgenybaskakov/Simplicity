@@ -70,11 +70,11 @@
     if(error == nil) {
         SM_LOG_DEBUG(@"Remote folder %@ successfully expunged", _remoteFolderName);
         
-        SMMessageListController *messageListController = [_operationExecutor.account messageListController];
+        // SMMessageListController *messageListController = [_operationExecutor.account messageListController];
         
         // TODO: should check if the current folder is the same as expunged one
         
-        [messageListController scheduleMessageListUpdate:YES];
+        // TODO: [messageListController scheduleMessageListUpdate:YES];
         
         [self complete];
     } else {

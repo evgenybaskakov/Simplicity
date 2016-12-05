@@ -25,7 +25,9 @@
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
 
-@property (readonly) MCOIndexSet *imapServerCapabilities;
+@property (readonly) BOOL idleSupported;
+@property (readonly) BOOL idleEnabled;
+
 @property (readonly) SMOperationExecutor *operationExecutor;
 @property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
 

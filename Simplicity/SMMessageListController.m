@@ -32,7 +32,6 @@
 @implementation SMMessageListController {
     id<SMAbstractLocalFolder> _currentFolder;
     id<SMAbstractLocalFolder> _prevNonSearchFolder;
-    MCOIMAPFolderInfoOperation *_folderInfoOp;
 }
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -65,13 +64,10 @@
         [localFolder stopLocalFolderSync:YES];
     }
     
-    [_folderInfoOp cancel];
-    _folderInfoOp = nil;
-    
-    // Cancel scheduled message list updates.
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    [self cancelScheduledMessageListUpdate];
+    // Cancel automatic updates of this folder
+    [_account cancelScheduledMessagesUpdate];
 
+    // Create the new local folder if necessary
     if(folderName != nil) {
         id<SMAbstractLocalFolder> localFolder = [[_account localFolderRegistry] getLocalFolderByName:folderName];
         
@@ -158,47 +154,10 @@
     }
 }
 
-// Message updating
-
-// TODO: Local folder sync timeout?
-
 - (void)startMessagesUpdate {
     SM_LOG_DEBUG(@"updating message list");
     
     [_currentFolder startLocalFolderSync];
-}
-
-- (void)cancelScheduledMessageListUpdate {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
-}
-
-- (void)scheduleMessageListUpdate:(BOOL)now {
-    [self cancelScheduledMessageListUpdate];
-    
-    NSTimeInterval delaySec;
-    
-    if(now) {
-        delaySec = 0;
-    }
-    else {
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
-        
-        if(updateIntervalSec == 0) {
-            // TODO: handle 0 ("auto") value in a more sophisticated way
-            updateIntervalSec = 60;
-            
-            //
-            // start idle op after messages bodies are downloaded
-            //
-        }
-        
-        delaySec = updateIntervalSec;
-    }
-    
-    SM_LOG_DEBUG(@"scheduling message list update after %g sec", delaySec);
-
-    [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:delaySec];
 }
 
 - (void)messagesInLocalFolderUpdated:(NSNotification *)notification {
@@ -251,26 +210,30 @@
     
     [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder scheduleUpdate:&scheduleUpdate hasUpdates:&hasUpdates account:&account];
 
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if(_currentFolder == localFolder || (appDelegate.currentAccountIsUnified && _account.unified && [(SMUnifiedLocalFolder*)_currentFolder hasLocalFolderAttached:localFolder])) {
+    // The unified account is never related to message updates.
+    // So always ignore it.
+    if(_account == account && _currentFolder == localFolder) {
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         SMAppController *appController = [appDelegate appController];
+        
+        NSAssert(!_account.unified, @"Cannot process fetched messages in the unified account");
         
         [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];
         
         // Keep certain folders always synced.
         // Go through the "always synced" folders and update them.
-        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
-            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
-            
-            if(localFolder != _currentFolder) {
-                [localFolder startLocalFolderSync];
-            }
-        }
+// TODO: fix this mess
+//        for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
+//            SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
+//            
+//            if(localFolder != _currentFolder) {
+//                [localFolder startLocalFolderSync];
+//            }
+//        }
         
         // Schedule message update only we are being asked to.
         if(scheduleUpdate) {
-            [self scheduleMessageListUpdate:NO];
+            [_account scheduleMessageListUpdate];
         }
     }
 }

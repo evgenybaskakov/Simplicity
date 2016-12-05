@@ -67,6 +67,14 @@
     return nil;
 }
 
+- (void)scheduleMessageListUpdate {
+    //TODO SM_FATAL(@"TODO");
+}
+
+- (void)cancelScheduledMessagesUpdate {
+    //TODO SM_FATAL(@"TODO");
+}
+
 - (void)fetchMessageInlineAttachments:(SMMessage*)message {
     SM_FATAL(@"TODO");
 }

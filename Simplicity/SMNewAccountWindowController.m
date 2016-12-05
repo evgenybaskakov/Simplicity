@@ -519,29 +519,36 @@ static const NSUInteger LAST_STEP = 3;
         [alert setAlertStyle:NSWarningAlertStyle];
         
         [alert runModal];
+        
+        return;
     }
-    else {
-        SM_LOG_INFO(@"Account '%@' does not yet exist, creating it", accountName);
 
-        [[appDelegate appController] closeNewAccountWindow];
-        
-        NSString *fullUserName = [SMStringUtils trimString:_fullNameField.stringValue];
-        NSAssert(fullUserName != nil && fullUserName.length > 0, @"no user name");
-        
-        [[appDelegate preferencesController] addAccountWithName:accountName userName:fullUserName emailAddress:emailAddress provider:provider accountImage:_userSelectedAccountImage];
-        
-        [[[appDelegate appController] preferencesWindowController] reloadAccounts];
+    SM_LOG_INFO(@"Account '%@' does not yet exist, creating it", accountName);
 
-        if(![[appDelegate appController] preferencesWindowShown]) {
-            [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
-        }
+    [[appDelegate appController] closeNewAccountWindow];
+    
+    NSString *fullUserName = [SMStringUtils trimString:_fullNameField.stringValue];
+    NSAssert(fullUserName != nil && fullUserName.length > 0, @"no user name");
+    
+    // 1. Create an in the preferences with the data the user just entered
+    [[appDelegate preferencesController] addAccountWithName:accountName userName:fullUserName emailAddress:emailAddress provider:provider accountImage:_userSelectedAccountImage];
+    
+    // 2. Create an internal account object representing its state
+    [appDelegate addAccount];
+    
+    // 3. Load the account data to the preferences window
+    [[[appDelegate appController] preferencesWindowController] reloadAccounts];
 
-        [appDelegate addAccount];
-        
-        [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
-
-        [appDelegate enableOrDisableAccountControls];
+    // 4. Show the preferences
+    if(![[appDelegate appController] preferencesWindowShown]) {
+        [[[appDelegate appController] preferencesWindowController] showAccount:accountName];
     }
+
+    // 5. Reload the shown accounts
+    [[[appDelegate appController] accountsViewController] reloadAccountViews:YES];
+
+    // 6. Set up the buttons
+    [appDelegate enableOrDisableAccountControls];
 }
 
 @end

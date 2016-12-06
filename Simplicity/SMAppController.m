@@ -282,7 +282,6 @@
     BOOL showError;
     switch(error.code) {
         case MCOErrorTLSNotAvailable:
-        case MCOErrorParse:
         case MCOErrorCertificate:
         case MCOErrorAuthentication:
         case MCOErrorGmailIMAPNotEnabled:

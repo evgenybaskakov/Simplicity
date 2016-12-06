@@ -510,9 +510,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             return;
         }
         
-        _self->_idleOp = nil;
-        _self->_idleFolder = nil;
-
         if(error && error.code != MCOErrorNone) {
             SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_idleFolder, _self->_idleId, error);
         }
@@ -520,6 +517,9 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_idleFolder, _self->_idleId);
         }
 
+        _self->_idleOp = nil;
+        _self->_idleFolder = nil;
+        
         // In any case, just sync the messages.
         // Any connectivity errors will be handled alongside.
         [_self startMessagesUpdate];

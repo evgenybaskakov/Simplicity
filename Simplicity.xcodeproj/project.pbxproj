@@ -219,6 +219,10 @@
 		8095CD041D3B673D00067E27 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8095CD031D3B673D00067E27 /* Images.xcassets */; };
 		80967AE91BF004F000ABF7AE /* icloud_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 80967AE81BF004F000ABF7AE /* icloud_logo.png */; };
 		80967AEC1BF0623700ABF7AE /* SMMailServiceProviderICloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */; };
+		80A2A5301DF69D8C003676B9 /* LICENCE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 80A2A52C1DF69D8C003676B9 /* LICENCE.txt */; };
+		80A2A5311DF69D8C003676B9 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2A52E1DF69D8C003676B9 /* Reachability.m */; };
+		80A2A5321DF69D8C003676B9 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 80A2A52F1DF69D8C003676B9 /* README.md */; };
+		80A2A5341DF69E06003676B9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80A2A5331DF69E06003676B9 /* SystemConfiguration.framework */; };
 		80A2EA9D1B844BC8001765EA /* SMLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A2EA9C1B844BC8001765EA /* SMLog.m */; };
 		80A33AED1C9930FA00243880 /* SMUserAccountDataObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A33AEC1C9930FA00243880 /* SMUserAccountDataObject.m */; };
 		80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AA4B671CC3671200306B1B /* SMPlainTextMessageEditor.m */; };
@@ -689,6 +693,11 @@
 		80967AEA1BF0623700ABF7AE /* SMMailServiceProviderICloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMailServiceProviderICloud.h; sourceTree = "<group>"; };
 		80967AEB1BF0623700ABF7AE /* SMMailServiceProviderICloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMailServiceProviderICloud.m; sourceTree = "<group>"; };
 		809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAbstractLocalFolder.h; sourceTree = "<group>"; };
+		80A2A52C1DF69D8C003676B9 /* LICENCE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE.txt; sourceTree = "<group>"; };
+		80A2A52D1DF69D8C003676B9 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		80A2A52E1DF69D8C003676B9 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		80A2A52F1DF69D8C003676B9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		80A2A5331DF69E06003676B9 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		80A2EA9B1B844BC8001765EA /* SMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLog.h; sourceTree = "<group>"; };
 		80A2EA9C1B844BC8001765EA /* SMLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLog.m; sourceTree = "<group>"; };
 		80A33AEB1C9930FA00243880 /* SMUserAccountDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccountDataObject.h; sourceTree = "<group>"; };
@@ -797,6 +806,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80A2A5341DF69E06003676B9 /* SystemConfiguration.framework in Frameworks */,
 				80D547D31C5EA2D000E903C7 /* Quartz.framework in Frameworks */,
 				80D547D41C5EA2D000E903C7 /* QuartzCore.framework in Frameworks */,
 				80D547D51C5EA2D000E903C7 /* QuickLook.framework in Frameworks */,
@@ -836,6 +846,7 @@
 		0002A09017D1B1E000EA4AFF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80A2A5331DF69E06003676B9 /* SystemConfiguration.framework */,
 				80D547D01C5EA2D000E903C7 /* Quartz.framework */,
 				80D547D11C5EA2D000E903C7 /* QuartzCore.framework */,
 				80D547D21C5EA2D000E903C7 /* QuickLook.framework */,
@@ -867,6 +878,7 @@
 				005B086517D4F3BD00341051 /* Model */,
 				005B086D17D4F62600341051 /* View */,
 				8095CD031D3B673D00067E27 /* Images.xcassets */,
+				80A2A5241DF69D79003676B9 /* Reachability */,
 				0002A09817D1B1E000EA4AFF /* Supporting Files */,
 			);
 			path = Simplicity;
@@ -1357,6 +1369,17 @@
 			name = Icons;
 			sourceTree = "<group>";
 		};
+		80A2A5241DF69D79003676B9 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				80A2A52C1DF69D8C003676B9 /* LICENCE.txt */,
+				80A2A52D1DF69D8C003676B9 /* Reachability.h */,
+				80A2A52E1DF69D8C003676B9 /* Reachability.m */,
+				80A2A52F1DF69D8C003676B9 /* README.md */,
+			);
+			name = Reachability;
+			sourceTree = "<group>";
+		};
 		80B860101CF97A1300BD0804 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -1576,6 +1599,7 @@
 				8074389E1DB302880054115B /* collapse.png in Resources */,
 				803A29A61C00399B00FF8D7C /* SMSignaturePreferencesViewController.xib in Resources */,
 				80533ABC1B4114B700A0A67F /* text-color.png in Resources */,
+				80A2A5301DF69D8C003676B9 /* LICENCE.txt in Resources */,
 				803632411DB0B8A9003B7680 /* underline.png in Resources */,
 				80856D011DD1BA1E00D9C3CD /* SMEditorFindContentsPanelViewController.xib in Resources */,
 				0002A09C17D1B1E000EA4AFF /* InfoPlist.strings in Resources */,
@@ -1803,6 +1827,7 @@
 				803A29AB1C02465C00FF8D7C /* SMAddressBookController.m in Sources */,
 				8000DBFF1B2E2F3700F43961 /* SMMessageEditorController.m in Sources */,
 				80CEFA321BF30C4E002A7F96 /* SMAccountImageSelection.m in Sources */,
+				80A2A5311DF69D8C003676B9 /* Reachability.m in Sources */,
 				8071EDF91BDB515100175A7B /* SMMessageBodyFetchQueue.m in Sources */,
 				803B10EC1C1025F80057E785 /* SMMailboxLabelView.m in Sources */,
 				800C67A01B49A89B00272D60 /* MKColorSwatchMatrix.m in Sources */,
@@ -1842,6 +1867,7 @@
 				8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */,
 				008AB9E01A4A80CC00F91D86 /* SMColorCircle.m in Sources */,
 				80AA4B681CC3671200306B1B /* SMPlainTextMessageEditor.m in Sources */,
+				80A2A5321DF69D8C003676B9 /* README.md in Sources */,
 				801D182A1DE042FC002B40BD /* SMHTMLFindContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

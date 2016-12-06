@@ -93,7 +93,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
     }
     
-    SM_LOG_DEBUG(@"user account initialized");
+    SM_LOG_DEBUG(@"user account '%@' initialized", _accountName);
     
     return self;
 }
@@ -103,7 +103,22 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 - (BOOL)idleSupported {
-    return _imapServerCapabilities && [_imapServerCapabilities containsIndex:MCOIMAPCapabilityId];
+    if(!_imapServerCapabilities ||
+       !_imapSession)
+    {
+        SM_LOG_INFO(@"user account '%@': no connection, IDLE not activated", _accountName);
+        return NO;
+    }
+
+    if(![_imapServerCapabilities containsIndex:MCOIMAPCapabilityId] ||
+       _imapSession.maximumConnections <= 1)
+    {
+        SM_LOG_INFO(@"user account '%@': IDLE not supported", _accountName);
+        return NO;
+    }
+    
+    SM_LOG_INFO(@"user account '%@': IDLE is supported", _accountName);
+    return YES;
 }
 
 - (BOOL)idleEnabled {

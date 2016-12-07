@@ -8,8 +8,12 @@
 
 #import <MailCore/MailCore.h>
 
+#import "Reachability.h"
+
 #import "SMLog.h"
+#import "SMStringUtils.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMAddress.h"
 #import "SMAddressBookController.h"
 #import "SMAccountImageSelection.h"
@@ -51,6 +55,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
 @implementation SMUserAccount {
     SMPreferencesController __weak *_preferencesController;
+    Reachability *_imapServerReachability;
     MCOIndexSet *_imapServerCapabilities;
     MCOIMAPCapabilityOperation *_capabilitiesOp;
     MCOIMAPIdleOperation *_idleOp;
@@ -91,6 +96,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
     }
     
     SM_LOG_DEBUG(@"user account '%@' initialized", _accountName);
@@ -100,6 +106,99 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+- (void)accountSyncError:(NSNotification*)notification {
+    NSError *error;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getAccountSyncErrorParams:notification error:&error account:&account];
+    
+    NSAssert(account != nil, @"account is nil");
+    NSAssert(error != nil, @"error is nil");
+    
+    BOOL severeError;
+    switch(error.code) {
+        case MCOErrorTLSNotAvailable:
+        case MCOErrorCertificate:
+        case MCOErrorAuthentication:
+        case MCOErrorGmailIMAPNotEnabled:
+        case MCOErrorMobileMeMoved:
+        case MCOErrorYahooUnavailable:
+        case MCOErrorStartTLSNotAvailable:
+        case MCOErrorNeedsConnectToWebmail:
+        case MCOErrorAuthenticationRequired:
+        case MCOErrorInvalidAccount:
+        case MCOErrorCompression:
+        case MCOErrorGmailApplicationSpecificPasswordRequired:
+        case MCOErrorServerDate:
+        case MCOErrorNoValidServerFound:
+            severeError = YES;
+            break;
+            
+        default:
+            severeError = NO;
+            break;
+    }
+    
+    if(severeError) {
+        NSString *errorDesc = [SMStringUtils trimString:error.localizedDescription];
+        if(errorDesc.length == 0) {
+            errorDesc = @"Unknown server error occurred.";
+        }
+        else if([errorDesc characterAtIndex:errorDesc.length-1] != '.') {
+            errorDesc = [errorDesc stringByAppendingString:@"."];
+        }
+        
+        NSAlert *alert = [[NSAlert alloc] init];
+        
+        [alert addButtonWithTitle:@"Dismiss"];
+        [alert addButtonWithTitle:@"Properties"];
+        [alert setMessageText:[NSString stringWithFormat:@"There was a problem accessing your accout \"%@\"", account.accountName]];
+        [alert setInformativeText:[NSString stringWithFormat:@"%@ Error code %ld.\n\nPlease choose either to open account preferences, or dismiss this message.", errorDesc, error.code]];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        
+        if([alert runModal] == NSAlertSecondButtonReturn) {
+            // Exit the alert modal loop first.
+            // Easiest way is to dispatch the request to the main thread queue.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+                [[appDelegate appController] showPreferencesWindowAction:YES accountName:account.accountName];
+            });
+        }
+    }
+    else {
+        if(_imapServerReachability) {
+            [_imapServerReachability stopNotifier];
+        }
+        
+        NSString *imapServer = _imapSession.hostname;
+        
+        _imapServerReachability = [Reachability reachabilityWithHostname:imapServer];
+        
+        __weak id weakSelf = self;
+        _imapServerReachability.reachableBlock = ^(Reachability *reachability) {
+            SMUserAccount *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(_self->_imapServerReachability != reachability) {
+                    SM_LOG_WARNING(@"stale reachability object for IMAP server %@", imapServer);
+                    return;
+                }
+                
+                SM_LOG_INFO(@"IMAP server %@ is now reachable", imapServer);
+                
+                [_self scheduleMessageListUpdate];
+            });
+        };
+        
+        [_imapServerReachability startNotifier];
+    }
 }
 
 - (BOOL)idleSupported {
@@ -201,6 +300,12 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     [_imapSession setConnectionType:[SMPreferencesController smToMCOConnectionType:[_preferencesController imapConnectionType:accountIdx]]];
     [_imapSession setUsername:[_preferencesController imapUserName:accountIdx]];
     [_imapSession setPassword:[_preferencesController imapPassword:accountIdx]];
+    
+    // Cancel previously scheduled reachability notifier
+    if(_imapServerReachability) {
+        [_imapServerReachability stopNotifier];
+        _imapServerReachability = nil;
+    }
     
     // Init the SMTP server.
     _smtpSession = [[MCOSMTPSession alloc] init];

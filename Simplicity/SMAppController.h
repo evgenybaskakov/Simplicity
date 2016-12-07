@@ -88,6 +88,8 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 - (BOOL)preferencesWindowShown;
 - (void)hidePreferencesWindow;
 
+- (void)showPreferencesWindowAction:(BOOL)showAccount accountName:(NSString*)accountName;
+
 @property (nonatomic) SMNewAccountWindowController *createNewAccountWindowController;
 
 - (void)showNewAccountWindow;

@@ -82,6 +82,7 @@
     SMConnectionCheck *_connectionCheck;
     SMURLChooserViewController *_urlChooserViewController;
     NSWindow *_urlChooserWindow;
+    BOOL _connectivityChangesWereMade;
 }
 
 - (void)viewDidLoad {
@@ -166,6 +167,20 @@
 
 - (void)viewDidAppear {
     [self reloadAccounts];
+}
+
+- (void)viewWillDisappear {
+    if(_connectivityChangesWereMade) {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        SMPreferencesController *preferencesController = [appDelegate preferencesController];
+        
+        NSUInteger accountsCount = [preferencesController accountsCount];
+        for(NSUInteger i = 0; i < accountsCount; i++) {
+            [appDelegate reconnectAccount:i];
+        }
+    }
+    
+    _connectivityChangesWereMade = NO;
 }
 
 - (void)loadCurrentValues:(NSInteger)accountIdx {
@@ -507,6 +522,8 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setFullUserName:selectedAccount userName:_fullUserNameField.stringValue];
     [appDelegate reloadAccount:selectedAccount];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterEmailAddressAction:(id)sender {
@@ -517,6 +534,8 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setUserEmail:selectedAccount email:_emailAddressField.stringValue];
     [appDelegate reloadAccount:selectedAccount];
+
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)useImageFromAddressBookAction:(id)sender {
@@ -554,6 +573,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapServer:selectedAccount server:_imapServerField.stringValue];
+
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterImapUserNameAction:(id)sender {
@@ -563,6 +584,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapUserName:selectedAccount userName:_imapUserNameField.stringValue];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterImapPasswordAction:(id)sender {
@@ -572,6 +595,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapPassword:selectedAccount password:_imapPasswordField.stringValue];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterSmtpServerAction:(id)sender {
@@ -581,6 +606,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpServer:selectedAccount server:_smtpServerField.stringValue];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterSmtpUserNameAction:(id)sender {
@@ -590,6 +617,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpUserName:selectedAccount userName:_smtpUserNameField.stringValue];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterSmtpPasswordAction:(id)sender {
@@ -599,6 +628,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpPassword:selectedAccount password:_smtpPasswordField.stringValue];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 #pragma mark Servers actions
@@ -610,6 +641,8 @@
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_imapConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapConnectionType:selectedAccount connectionType:connectionType];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)selectImapAuthTypeAction:(id)sender {
@@ -619,6 +652,8 @@
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_imapAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapAuthType:selectedAccount authType:authType];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterImapPortAction:(id)sender {
@@ -628,6 +663,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setImapPort:selectedAccount port:(unsigned int)[_imapPortField.stringValue integerValue]];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (NSString*)connectionStatusText:(SMConnectionStatus)status mcoError:(MCOErrorCode)mcoError {
@@ -671,6 +708,8 @@
     SMServerConnectionType connectionType = [[_connectionTypeConstants objectAtIndex:[_smtpConnectionTypeList indexOfSelectedItem]] unsignedIntegerValue];
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpConnectionType:selectedAccount connectionType:connectionType];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)selectSmtpAuthTypeAction:(id)sender {
@@ -680,6 +719,8 @@
     SMServerAuthType authType = [[_authTypeConstants objectAtIndex:[_smtpAuthTypeList indexOfSelectedItem]] unsignedIntegerValue];
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpAuthType:selectedAccount authType:authType];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)enterSmtpPortAction:(id)sender {
@@ -689,6 +730,8 @@
     // TODO: validate value
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate preferencesController] setSmtpPort:selectedAccount port:(unsigned int)[_smtpPortField.stringValue integerValue]];
+    
+    _connectivityChangesWereMade = YES;
 }
 
 - (IBAction)checkImapConnectionAction:(id)sender {
@@ -709,6 +752,7 @@
             SM_LOG_WARNING(@"object is gone");
             return;
         }
+        
         [_self processCheckImapConnectionOpResult:status mcoError:mcoError];
     }];
 }

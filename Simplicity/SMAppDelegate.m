@@ -105,10 +105,8 @@
     SMUserAccount *account = [[SMUserAccount alloc] initWithPreferencesController:_preferencesController];
     
     [_accounts addObject:account];
-    
-    [account initSession:_accounts.count-1];
-    [account getIMAPServerCapabilities];
-    [account initOpExecutor];
+
+    [self reconnectAccount:_accounts.count-1];
 }
 
 - (void)removeAccount:(NSUInteger)accountIdx {
@@ -132,6 +130,16 @@
     [account reloadAccount:accountIdx];
     
     [SMNotificationsController localNotifyAccountPreferencesChanged:account];
+}
+
+- (void)reconnectAccount:(NSUInteger)accountIdx {
+    NSAssert(accountIdx < _accounts.count, @"accountIdx %lu is out of bounds %lu", accountIdx, _accounts.count);
+    
+    SMUserAccount *account = (SMUserAccount*)_accounts[accountIdx];
+
+    [account initSession:accountIdx];
+    [account getIMAPServerCapabilities];
+    [account initOpExecutor];
 }
 
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account {

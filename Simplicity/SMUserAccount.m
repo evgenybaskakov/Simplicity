@@ -510,9 +510,12 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 - (void)getIMAPServerCapabilities {
-    NSAssert(_capabilitiesOp == nil, @"_capabilitiesOp is not nil");
+    if(_capabilitiesOp != nil) {
+        [_capabilitiesOp cancel];
+        _capabilitiesOp = nil;
+    }
     
-    _capabilitiesOp = [_imapSession capabilityOperation];
+    MCOIMAPCapabilityOperation *capabilitiesOp = [_imapSession capabilityOperation];
     
     void (^opBlock)(NSError*, MCOIndexSet*) = nil;
     
@@ -521,6 +524,11 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         SMUserAccount *_self = weakSelf;
         if(!_self) {
             SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+        
+        if(_self->_capabilitiesOp != capabilitiesOp) {
+            SM_LOG_WARNING(@"stale capabilities op ignored");
             return;
         }
 
@@ -542,8 +550,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             [_self scheduleMessageListUpdate];
         }
     };
-    
-    [_capabilitiesOp start:opBlock];
+
+    [capabilitiesOp start:opBlock];
+
+    _capabilitiesOp = capabilitiesOp;
 }
 
 - (void)scheduleMessageListUpdate {

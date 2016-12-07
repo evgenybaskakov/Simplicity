@@ -56,6 +56,7 @@
 - (void)addAccount;
 - (void)removeAccount:(NSUInteger)accountIdx;
 - (void)reloadAccount:(NSUInteger)accountIdx;
+- (void)reconnectAccount:(NSUInteger)accountIdx;
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account;
 - (void)enableOrDisableAccountControls;
 

@@ -190,7 +190,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                     SM_LOG_WARNING(@"stale reachability object for IMAP server %@", imapServer);
                     return;
                 }
-                
+
+                [_self->_imapServerReachability stopNotifier];
+                _self->_imapServerReachability = nil;
+
                 SM_LOG_INFO(@"IMAP server %@ is now reachable", imapServer);
                 
                 [_self scheduleMessageListUpdate];

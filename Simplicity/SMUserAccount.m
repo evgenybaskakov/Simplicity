@@ -58,6 +58,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     Reachability *_imapServerReachability;
     MCOIndexSet *_imapServerCapabilities;
     MCOIMAPCapabilityOperation *_capabilitiesOp;
+    MCOIMAPOperation *_checkAccountOp;
     MCOIMAPIdleOperation *_idleOp;
     NSInteger _idleId;
     NSString *_idleFolder;
@@ -107,7 +108,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
 
 - (void)accountSyncError:(NSNotification*)notification {
     NSError *error;
@@ -191,12 +191,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                     return;
                 }
 
-                [_self->_imapServerReachability stopNotifier];
-                _self->_imapServerReachability = nil;
-
-                SM_LOG_INFO(@"IMAP server %@ is now reachable", imapServer);
-                
-                [_self scheduleMessageListUpdate];
+                [_self imapServerReachable];
             });
         };
         
@@ -204,6 +199,44 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
         [_imapServerReachability startNotifier];
     }
+}
+
+- (void)imapServerReachable {
+    [_imapServerReachability stopNotifier];
+    _imapServerReachability = nil;
+    
+    SM_LOG_INFO(@"IMAP server %@ is now reachable", _imapSession.hostname);
+    
+    if(_checkAccountOp) {
+        [_checkAccountOp cancel];
+        _checkAccountOp = nil;
+    }
+    
+    MCOIMAPOperation *checkAccountOp = [_imapSession checkAccountOperation];
+
+    __weak id weakSelf = self;
+    [checkAccountOp start:^(NSError *error) {
+        SMUserAccount *_self = weakSelf;
+        if(!_self) {
+            SM_LOG_WARNING(@"object is gone");
+            return;
+        }
+
+        if(_self->_checkAccountOp != checkAccountOp) {
+            SM_LOG_WARNING(@"stale _checkAccountOp object for IMAP server %@", _self->_imapSession.hostname);
+            return;
+        }
+        
+        _self->_checkAccountOp = nil;
+        
+        if(error == nil || error.code == MCOErrorNone) {
+            [SMNotificationsController localNotifyAccountSyncSuccess:_self];
+        }
+    }];
+    
+    _checkAccountOp = checkAccountOp;
+    
+    [self scheduleMessageListUpdate];
 }
 
 - (BOOL)idleSupported {

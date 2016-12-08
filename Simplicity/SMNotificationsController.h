@@ -23,6 +23,7 @@
 + (void)systemNotifyNewMessages:(NSUInteger)count;
 
 + (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account;
++ (void)localNotifyAccountSyncSuccess:(SMUserAccount*)account;
 + (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSError*)error;
 + (void)localNotifyFolderListUpdated:(SMUserAccount*)account;
 + (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder scheduleUpdate:(BOOL)scheduleUpdate hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account;
@@ -43,6 +44,7 @@
 + (void)localNotifyComposeMessageReply:(SMMessageThreadCellViewController*)messageThreadCellViewController replyKind:(SMEditorReplyKind)replyKind toAddress:(SMAddress*)toAddress;
 
 + (void)getAccountPreferencesChangedParams:(NSNotification*)notification account:(SMUserAccount**)account;
++ (void)getAccountSyncSuccessParams:(NSNotification*)notification account:(SMUserAccount**)account;
 + (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSError**)error account:(SMUserAccount**)account;
 + (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder scheduleUpdate:(BOOL*)scheduleUpdate hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder messageId:(uint64_t*)messageId threadId:(int64_t*)threadId account:(SMUserAccount**)account;

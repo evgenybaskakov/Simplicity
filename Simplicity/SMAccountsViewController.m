@@ -60,7 +60,7 @@
         _accountButtonViewControllers = [NSMutableArray array];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncSuccess:) name:@"FolderListUpdated" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncSuccess:) name:@"AccountSyncSuccess" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesUpdated:) name:@"MessagesUpdated" object:nil];
     }
     
@@ -375,7 +375,7 @@
 - (void)accountSyncSuccess:(NSNotification*)notification {
     SMUserAccount *account;
     
-    [SMNotificationsController getFolderListUpdatedParams:notification account:&account];
+    [SMNotificationsController getAccountSyncSuccessParams:notification account:&account];
     
     NSAssert(account != nil, @"account is nil");
     

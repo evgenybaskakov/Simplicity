@@ -200,6 +200,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             });
         };
         
+        [self stopIdle];
+
         [_imapServerReachability startNotifier];
     }
 }

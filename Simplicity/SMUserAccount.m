@@ -235,8 +235,16 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     }];
     
     _checkAccountOp = checkAccountOp;
-    
-    [self scheduleMessageListUpdate];
+        
+    if(_imapServerCapabilities == nil) {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        
+        NSUInteger accountIdx = [appDelegate accountIndex:self];
+        [appDelegate reconnectAccount:accountIdx];
+    }
+    else {
+        [self scheduleMessageListUpdate];
+    }
 }
 
 - (BOOL)idleSupported {

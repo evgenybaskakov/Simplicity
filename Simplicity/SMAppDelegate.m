@@ -165,6 +165,10 @@
     _preferencesController.currentAccount = (_currentAccountIsUnified? UNIFIED_ACCOUNT_IDX : _currentAccountIdx);
 }
 
+- (NSUInteger)accountIndex:(SMUserAccount*)account {
+    return [_accounts indexOfObject:account];
+}
+
 - (void)enableOrDisableAccountControls {
     BOOL enableElements = (_accounts.count != 0);
 

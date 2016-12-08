@@ -59,5 +59,6 @@
 - (void)reconnectAccount:(NSUInteger)accountIdx;
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account;
 - (void)enableOrDisableAccountControls;
+- (NSUInteger)accountIndex:(SMUserAccount*)account;
 
 @end

@@ -46,6 +46,10 @@
 #define kFixedMessageFontSize           @"FixedMessageFontSize"
 #define kUseFixedSizeFontForPlainTextMessages @"UseFixedFontForPlainTextMessages"
 #define kShouldUseUnifiedMailbox        @"ShouldUseUnifiedMailbox"
+#define kMaxMessagesToDownloadAtOnce    @"MaxMessagesToDownloadAtOnce"
+#define kMaxAttemptsForMessageDownload  @"MaxAttemptsForMessageDownload"
+#define kMessageDownloadRetryDelay      @"MessageDownloadRetryDelay"
+#define kMessageDownloadServerTimeout   @"MessageDownloadServerTimeout"
 
 // Per-account properties
 #define kAccountName                    @"AccountName"
@@ -82,6 +86,10 @@
     NSUInteger _localStorageSizeMbCached;
     NSString *_singleSignatureCached;
     SMMailboxTheme _mailboxThemeCached;
+    NSUInteger _maxMessagesToDownloadAtOnceCached;
+    NSUInteger _maxAttemptsForMessageDownloadCached;
+    NSUInteger _messageDownloadRetryDelayCached;
+    NSUInteger _messageDownloadServerTimeoutCached;
     NSDictionary<NSString*, SMFolderLabel*> *_labelsCached;
 }
 
@@ -1274,4 +1282,121 @@
     
     _shouldUseUnifiedMailboxCached = shouldUseUnifiedMailbox;
 }
+
+#pragma mark MaxMessagesToDownloadAtOnce
+
+- (NSUInteger)maxMessagesToDownloadAtOnce {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMaxMessagesToDownloadAtOnce] == nil) {
+            _maxMessagesToDownloadAtOnceCached = 5;
+            
+            SM_LOG_INFO(@"Using default _maxMessagesToDownloadAtOnceCached: %lu", _maxMessagesToDownloadAtOnceCached);
+        }
+        else {
+            _maxMessagesToDownloadAtOnceCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMaxMessagesToDownloadAtOnce];
+            
+            SM_LOG_INFO(@"Loaded _maxMessagesToDownloadAtOnceCached: %lu", _maxMessagesToDownloadAtOnceCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _maxMessagesToDownloadAtOnceCached;
+}
+
+- (void)setMaxMessagesToDownloadAtOnce:(NSUInteger)sec {
+    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMaxMessagesToDownloadAtOnce];
+    
+    _maxMessagesToDownloadAtOnceCached = sec;
+}
+
+#pragma mark MaxAttemptsForMessageDownload
+
+- (NSUInteger)maxAttemptsForMessageDownload {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMaxAttemptsForMessageDownload] == nil) {
+            _maxAttemptsForMessageDownloadCached = 5;
+            
+            SM_LOG_INFO(@"Using default _maxAttemptsForMessageDownloadCached: %lu", _maxAttemptsForMessageDownloadCached);
+        }
+        else {
+            _maxAttemptsForMessageDownloadCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMaxAttemptsForMessageDownload];
+            
+            SM_LOG_INFO(@"Loaded _maxAttemptsForMessageDownloadCached: %lu", _maxAttemptsForMessageDownloadCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _maxAttemptsForMessageDownloadCached;
+}
+
+- (void)setMaxAttemptsForMessageDownload:(NSUInteger)sec {
+    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMaxAttemptsForMessageDownload];
+    
+    _maxAttemptsForMessageDownloadCached = sec;
+}
+
+#pragma mark MessageDownloadRetryDelay
+
+- (NSUInteger)messageDownloadRetryDelay {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageDownloadRetryDelay] == nil) {
+            _messageDownloadRetryDelayCached = 5;
+            
+            SM_LOG_INFO(@"Using default _messageDownloadRetryDelayCached: %lu", _messageDownloadRetryDelayCached);
+        }
+        else {
+            _messageDownloadRetryDelayCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageDownloadRetryDelay];
+            
+            SM_LOG_INFO(@"Loaded _messageDownloadRetryDelayCached: %lu", _messageDownloadRetryDelayCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _messageDownloadRetryDelayCached;
+}
+
+- (void)setMessageDownloadRetryDelay:(NSUInteger)sec {
+    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageDownloadRetryDelay];
+    
+    _messageDownloadRetryDelayCached = sec;
+}
+
+#pragma mark MessageDownloadServerTimeout
+
+- (NSUInteger)messageDownloadServerTimeout {
+    static BOOL skipUserDefaults = NO;
+    
+    if(!skipUserDefaults) {
+        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageDownloadServerTimeout] == nil) {
+            _messageDownloadServerTimeoutCached = 10;
+            
+            SM_LOG_INFO(@"Using default _messageDownloadServerTimeoutCached: %lu", _messageDownloadServerTimeoutCached);
+        }
+        else {
+            _messageDownloadServerTimeoutCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageDownloadServerTimeout];
+            
+            SM_LOG_INFO(@"Loaded _messageDownloadServerTimeoutCached: %lu", _messageDownloadServerTimeoutCached);
+        }
+        
+        skipUserDefaults = YES;
+    }
+    
+    return _messageDownloadServerTimeoutCached;
+}
+
+- (void)setMessageDownloadServerTimeout:(NSUInteger)sec {
+    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageDownloadServerTimeout];
+    
+    _messageDownloadServerTimeoutCached = sec;
+}
+
 @end

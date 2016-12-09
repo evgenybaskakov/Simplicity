@@ -1,14 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMAdvancedPreferencesViewController">
             <connections>
                 <outlet property="localStorageSizeList" destination="Xch-Yy-v0y" id="EaQ-zH-fqN"/>
                 <outlet property="logLevelList" destination="IpU-rH-9jx" id="ehC-tf-MUH"/>
+                <outlet property="maxAttemptsForMessageDownload" destination="bCL-dL-qCa" id="e0C-eE-tWG"/>
+                <outlet property="maxAttemptsForMessageDownloadList" destination="bCL-dL-qCa" id="PrU-N3-BJ3"/>
+                <outlet property="maxMessagesToDownloadAtOnce" destination="Gg9-bP-lAY" id="lNN-RA-HDV"/>
+                <outlet property="maxMessagesToDownloadAtOnceList" destination="Gg9-bP-lAY" id="Ycm-R5-kzD"/>
+                <outlet property="messageDownloadRetryDelay" destination="u09-fq-ucl" id="Uux-jY-Wvg"/>
+                <outlet property="messageDownloadRetryDelayList" destination="u09-fq-ucl" id="MSJ-Jc-QBi"/>
+                <outlet property="messageDownloadServerTimeout" destination="4Qw-vi-heQ" id="EIG-AW-WO4"/>
+                <outlet property="messageDownloadServerTimeoutList" destination="4Qw-vi-heQ" id="0ma-24-oT3"/>
                 <outlet property="useMailTransportLogging" destination="f9Y-XZ-X9g" id="bZR-hc-led"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -16,11 +25,12 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="569" height="109"/>
+            <rect key="frame" x="0.0" y="0.0" width="569" height="214"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xch-Yy-v0y">
-                    <rect key="frame" x="305" y="65" width="182" height="26"/>
+                    <rect key="frame" x="305" y="170" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="sCq-Xy-tT8" id="Rej-F6-sJh">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
@@ -37,7 +47,8 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aKo-yY-WLF">
-                    <rect key="frame" x="114" y="71" width="187" height="17"/>
+                    <rect key="frame" x="114" y="176" width="187" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" enabled="NO" sendsActionOnEndEditing="YES" alignment="right" title="Local storage size:" id="jkx-r3-n3s">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -45,7 +56,8 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IpU-rH-9jx">
-                    <rect key="frame" x="305" y="39" width="182" height="26"/>
+                    <rect key="frame" x="305" y="144" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="g7V-Dd-t4g" id="EwO-KB-550">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
@@ -61,8 +73,27 @@
                         <action selector="logLevelAction:" target="-2" id="eeT-AN-VqY"/>
                     </connections>
                 </popUpButton>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gg9-bP-lAY">
+                    <rect key="frame" x="305" y="95" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vyR-Zk-fF0" id="oGH-di-OYs">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="0Qo-pE-Okz">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="vyR-Zk-fF0"/>
+                                <menuItem title="Item 2" id="eGt-ED-znO"/>
+                                <menuItem title="Item 3" id="wiQ-mM-qXX"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="maxMessagesToDownloadAtOnceAction:" target="-2" id="VM4-Xa-quD"/>
+                    </connections>
+                </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HbE-N6-hAq">
-                    <rect key="frame" x="114" y="45" width="187" height="17"/>
+                    <rect key="frame" x="114" y="150" width="187" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Log level:" id="Nvw-bU-96y">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -70,7 +101,8 @@
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f9Y-XZ-X9g">
-                    <rect key="frame" x="305" y="18" width="246" height="18"/>
+                    <rect key="frame" x="305" y="123" width="246" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Enable mail transport logging" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="rXM-Lz-Ps8">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -79,8 +111,98 @@
                         <action selector="useMailTransportLoggingAction:" target="-2" id="2uM-fH-BE8"/>
                     </connections>
                 </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SYh-Vm-kZN">
+                    <rect key="frame" x="43" y="101" width="258" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Maximum messages to download at once:" id="s0Q-Lv-Lzv">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u09-fq-ucl">
+                    <rect key="frame" x="305" y="43" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="t1Z-k4-vIb" id="zsl-KE-fg3">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="Qcr-K0-sCh">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="t1Z-k4-vIb"/>
+                                <menuItem title="Item 2" id="QS2-Mm-ejC"/>
+                                <menuItem title="Item 3" id="Wjw-rK-VWJ"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="messageDownloadRetryDelayAction:" target="-2" id="Ngk-BU-r3l"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P6u-79-pBt">
+                    <rect key="frame" x="108" y="49" width="193" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message download retry delay:" id="c0K-Vc-eAy">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4Qw-vi-heQ">
+                    <rect key="frame" x="305" y="17" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cdc-rS-XNn" id="iUz-8M-J8x">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="ZMd-UV-iRR">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="cdc-rS-XNn"/>
+                                <menuItem title="Item 2" id="nJl-He-F7A"/>
+                                <menuItem title="Item 3" id="miz-dj-8eb"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="messageDownloadServerTimeoutAction:" target="-2" id="wYp-aE-Yfi"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NLt-eL-u36">
+                    <rect key="frame" x="85" y="23" width="216" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message download server timeout:" id="jTd-2f-8oK">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bCL-dL-qCa">
+                    <rect key="frame" x="305" y="69" width="182" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WmY-0J-5u9" id="kr3-2Z-A9a">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="C5m-3k-yWN">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="WmY-0J-5u9"/>
+                                <menuItem title="Item 2" id="gpK-M9-P6r"/>
+                                <menuItem title="Item 3" id="6jk-ld-dpI"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="maxAttemptsForMessageDownloadAction:" target="-2" id="7ya-OC-fcw"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H7S-7o-nZD">
+                    <rect key="frame" x="37" y="75" width="264" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Maximum attempts for message download:" id="7Vw-2H-zM0">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
-            <point key="canvasLocation" x="332.5" y="294.5"/>
+            <point key="canvasLocation" x="332.5" y="347"/>
         </customView>
         <arrayController id="UNU-KY-ttd">
             <connections>

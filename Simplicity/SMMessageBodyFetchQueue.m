@@ -18,12 +18,8 @@
 #import "SMDatabase.h"
 #import "SMMessage.h"
 #import "SMLocalFolder.h"
+#import "SMPreferencesController.h"
 #import "SMMessageBodyFetchQueue.h"
-
-static const NSUInteger MAX_BODY_FETCH_OPS = 5;
-static const NSUInteger FAILED_OP_RETRY_DELAY = 10;
-static const NSUInteger MAX_OP_ATTEMPTS = 5;
-static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 @interface FetchOpDesc : NSObject
 @property (readonly) uint32_t uid;
@@ -209,7 +205,11 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         return;
     }
     
-    while(_nonUrgentPendingOps.count > 0 && _nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    NSUInteger maxBodyFetchOps = preferencesController.maxMessagesToDownloadAtOnce;
+
+    while(_nonUrgentPendingOps.count > 0 && _nonUrgentRunningOps.count < maxBodyFetchOps) {
         NSUInteger nextOpIndex = 0;
         
         FetchOpDesc *nextOp = _nonUrgentPendingOps[nextOpIndex];
@@ -227,8 +227,12 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 
 - (void)scheduleRemoteOp:(FetchOpDesc*)op {
     NSAssert([op isKindOfClass:[FetchOpDesc class]], @"unknown op class");
-        
-    if(!_queuePaused && _nonUrgentRunningOps.count < MAX_BODY_FETCH_OPS) {
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    NSUInteger maxBodyFetchOps = preferencesController.maxMessagesToDownloadAtOnce;
+    
+    if(!_queuePaused && _nonUrgentRunningOps.count < maxBodyFetchOps) {
         NSAssert(![_nonUrgentRunningOps containsObject:op], @"op already running");
         
         [self startFetchingRemoteOp:op];
@@ -425,7 +429,10 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
         else {
             SM_LOG_ERROR(@"Error downloading message body for uid %u, remote folder %@ (%@), %lu attempts made", op.uid, op.remoteFolder, error, op.attempt);
             
-            if(op.attempt < MAX_OP_ATTEMPTS) {
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+            SMPreferencesController *preferencesController = [appDelegate preferencesController];
+            
+            if(op.attempt < preferencesController.maxAttemptsForMessageDownload) {
                 if(!op.urgent) {
                     [_self->_nonUrgentFailedOps addObject:op];
                 }
@@ -433,7 +440,7 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
                 // TODO!
                 // - move attempt count and retry delay to advanced prefs;
                 // - detect connectivity loss/restore.
-                [_self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:FAILED_OP_RETRY_DELAY];
+                [_self performSelector:@selector(startFetchingRemoteOp:) withObject:op afterDelay:preferencesController.messageDownloadRetryDelay];
             }
             else {
                 SM_LOG_ERROR(@"Message body for uid %u, remote folder %@ (%@) is cancelling as failed", op.uid, op.remoteFolder, error);
@@ -516,7 +523,10 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
 }
 
 - (void)scheduleTimeoutCheck {
-    [self performSelector:@selector(serverOpTimeoutCheck) withObject:nil afterDelay:SERVER_OP_TIMEOUT_SEC];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
+    [self performSelector:@selector(serverOpTimeoutCheck) withObject:nil afterDelay:preferencesController.messageDownloadServerTimeout];
 }
 
 - (void)cancelTimeoutCheck {
@@ -533,8 +543,12 @@ static const NSUInteger SERVER_OP_TIMEOUT_SEC = 30;
     NSMutableSet *timedOutOps = [NSMutableSet set];
     NSDate *currentTime = [NSDate date];
     
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    NSUInteger serverOpTimeoutSec = preferencesController.messageDownloadServerTimeout;
+    
     for(FetchOpDesc *op in _nonUrgentRunningOps) {
-        if([currentTime timeIntervalSinceDate:op.updateTime] >= SERVER_OP_TIMEOUT_SEC) {
+        if([currentTime timeIntervalSinceDate:op.updateTime] >= serverOpTimeoutSec) {
             [timedOutOps addObject:op];
         }
     }

@@ -54,6 +54,10 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @property (nonatomic) NSUInteger mailTransportLogLevel;
 @property (nonatomic) NSFont *regularMessageFont;
 @property (nonatomic) NSFont *fixedMessageFont;
+@property (nonatomic) NSUInteger maxMessagesToDownloadAtOnce;
+@property (nonatomic) NSUInteger maxAttemptsForMessageDownload;
+@property (nonatomic) NSUInteger messageDownloadRetryDelay;
+@property (nonatomic) NSUInteger messageDownloadServerTimeout;
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType;
 + (MCOConnectionType)smToMCOConnectionType:(SMServerConnectionType)smConnectionType;

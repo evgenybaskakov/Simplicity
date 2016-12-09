@@ -19,6 +19,10 @@
 @property (weak) IBOutlet NSPopUpButton *localStorageSizeList;
 @property (weak) IBOutlet NSPopUpButton *logLevelList;
 @property (weak) IBOutlet NSButton *useMailTransportLogging;
+@property (weak) IBOutlet NSPopUpButton *maxMessagesToDownloadAtOnceList;
+@property (weak) IBOutlet NSPopUpButton *maxAttemptsForMessageDownloadList;
+@property (weak) IBOutlet NSPopUpButton *messageDownloadRetryDelayList;
+@property (weak) IBOutlet NSPopUpButton *messageDownloadServerTimeoutList;
 
 @end
 
@@ -27,9 +31,15 @@
     NSArray *_localStorageSizeValues;
     NSArray *_logLevelNames;
     NSArray *_logLevelValues;
+    NSArray *_maxMessagesToDownloadAtOnceItems;
+    NSArray *_maxAttemptsForMessageDownloadItems;
+    NSArray *_messageDownloadRetryDelayItems;
+    NSArray *_messageDownloadServerTimeoutItems;
 }
 
 - (void)viewDidLoad {
+    NSUInteger v, item;
+    
     [super viewDidLoad];
 
     // Local storage size
@@ -83,6 +93,86 @@
     else {
         _useMailTransportLogging.state = NSOnState;
     }
+
+    // maxMessagesToDownloadAtOnce
+    
+    _maxMessagesToDownloadAtOnceItems = @[@1, @3, @5, @10, @15];
+    
+    [_maxMessagesToDownloadAtOnceList removeAllItems];
+    
+    for(NSNumber *num in _maxMessagesToDownloadAtOnceItems) {
+        [_maxMessagesToDownloadAtOnceList addItemWithTitle:[NSString stringWithFormat:@"%@", num]];
+    }
+    
+    v = [[appDelegate preferencesController] maxMessagesToDownloadAtOnce];
+    item = [_maxMessagesToDownloadAtOnceItems indexOfObject:[NSNumber numberWithUnsignedInteger:v]];
+    
+    if(item == NSNotFound) {
+        SM_LOG_ERROR(@"Bad maxMessagesToDownloadAtOnce value %lu, using zero for safety", v);
+        item = 0;
+    }
+    
+    [_maxMessagesToDownloadAtOnceList selectItemAtIndex:item];
+    
+    // maxAttemptsForMessageDownload
+    
+    _maxAttemptsForMessageDownloadItems = @[@1, @3, @5, @10, @20];
+    
+    [_maxAttemptsForMessageDownloadList removeAllItems];
+    
+    for(NSNumber *num in _maxAttemptsForMessageDownloadItems) {
+        [_maxAttemptsForMessageDownloadList addItemWithTitle:[NSString stringWithFormat:@"%@", num]];
+    }
+    
+    v = [[appDelegate preferencesController] maxAttemptsForMessageDownload];
+    item = [_maxAttemptsForMessageDownloadItems indexOfObject:[NSNumber numberWithUnsignedInteger:v]];
+    
+    if(item == NSNotFound) {
+        SM_LOG_ERROR(@"Bad maxAttemptsForMessageDownload value %lu, using zero for safety", v);
+        item = 0;
+    }
+    
+    [_maxAttemptsForMessageDownloadList selectItemAtIndex:item];
+    
+    // messageDownloadRetryDelay
+    
+    _messageDownloadRetryDelayItems = @[@1, @3, @5, @10, @15, @30, @60];
+    
+    [_messageDownloadRetryDelayList removeAllItems];
+    
+    for(NSNumber *num in _messageDownloadRetryDelayItems) {
+        [_messageDownloadRetryDelayList addItemWithTitle:[NSString stringWithFormat:@"%@ sec", num]];
+    }
+    
+    v = [[appDelegate preferencesController] messageDownloadRetryDelay];
+    item = [_messageDownloadRetryDelayItems indexOfObject:[NSNumber numberWithUnsignedInteger:v]];
+    
+    if(item == NSNotFound) {
+        SM_LOG_ERROR(@"Bad messageDownloadRetryDelay value %lu, using zero for safety", v);
+        item = 0;
+    }
+    
+    [_messageDownloadRetryDelayList selectItemAtIndex:item];
+    
+    // messageDownloadServerTimeout
+    
+    _messageDownloadServerTimeoutItems = @[@5, @10, @20, @30, @60];
+    
+    [_messageDownloadServerTimeoutList removeAllItems];
+    
+    for(NSNumber *num in _messageDownloadServerTimeoutItems) {
+        [_messageDownloadServerTimeoutList addItemWithTitle:[NSString stringWithFormat:@"%@ sec", num]];
+    }
+    
+    v = [[appDelegate preferencesController] messageDownloadServerTimeout];
+    item = [_messageDownloadServerTimeoutItems indexOfObject:[NSNumber numberWithUnsignedInteger:v]];
+    
+    if(item == NSNotFound) {
+        SM_LOG_ERROR(@"Bad messageDownloadServerTimeout value %lu, using zero for safety", v);
+        item = 0;
+    }
+    
+    [_messageDownloadServerTimeoutList selectItemAtIndex:item];
 }
 
 - (IBAction)localStorageSizeAction:(id)sender {
@@ -104,6 +194,38 @@
 - (IBAction)useMailTransportLoggingAction:(id)sender {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].mailTransportLogLevel = (_useMailTransportLogging.state == NSOffState? 0 : 1);
+}
+
+- (IBAction)maxMessagesToDownloadAtOnceAction:(id)sender {
+    NSUInteger item = _maxMessagesToDownloadAtOnceList.indexOfSelectedItem;
+    NSAssert(item < _maxMessagesToDownloadAtOnceItems.count, @"bad item %lu", item);
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].maxMessagesToDownloadAtOnce = [_maxMessagesToDownloadAtOnceItems[item] unsignedIntegerValue];
+}
+
+- (IBAction)maxAttemptsForMessageDownloadAction:(id)sender {
+    NSUInteger item = _maxAttemptsForMessageDownloadList.indexOfSelectedItem;
+    NSAssert(item < _maxAttemptsForMessageDownloadItems.count, @"bad item %lu", item);
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].maxAttemptsForMessageDownload = [_maxAttemptsForMessageDownloadItems[item] unsignedIntegerValue];
+}
+
+- (IBAction)messageDownloadRetryDelayAction:(id)sender {
+    NSUInteger item = _messageDownloadRetryDelayList.indexOfSelectedItem;
+    NSAssert(item < _messageDownloadRetryDelayItems.count, @"bad item %lu", item);
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].messageDownloadRetryDelay = [_messageDownloadRetryDelayItems[item] unsignedIntegerValue];
+}
+
+- (IBAction)messageDownloadServerTimeoutAction:(id)sender {
+    NSUInteger item = _messageDownloadServerTimeoutList.indexOfSelectedItem;
+    NSAssert(item < _messageDownloadServerTimeoutItems.count, @"bad item %lu", item);
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].messageDownloadServerTimeout = [_messageDownloadServerTimeoutItems[item] unsignedIntegerValue];
 }
 
 @end

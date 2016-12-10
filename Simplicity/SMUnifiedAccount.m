@@ -67,7 +67,7 @@
     return nil;
 }
 
-- (void)scheduleMessageListUpdate {
+- (void)scheduleMessageListUpdate:(BOOL)now {
     //TODO SM_FATAL(@"TODO");
 }
 

@@ -351,7 +351,6 @@
     } : nil];
 
     BOOL finishedDbSync = _dbSyncInProgress;
-    BOOL scheduleUpdate = YES;
     
     [self finishMessageHeadersFetching];
 
@@ -359,8 +358,9 @@
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.
     BOOL hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
+    BOOL updateNow = finishedDbSync? YES : NO;
     
-    [SMNotificationsController localNotifyMessageHeadersSyncFinished:self scheduleUpdate:scheduleUpdate hasUpdates:hasUpdates account:(SMUserAccount*)_account];
+    [SMNotificationsController localNotifyMessageHeadersSyncFinished:self updateNow:updateNow hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 
 - (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages {

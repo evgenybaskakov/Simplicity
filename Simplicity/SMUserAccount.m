@@ -98,6 +98,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChangedNotification:) name:kReachabilityChangedNotification object:nil];
     }
     
     SM_LOG_DEBUG(@"user account '%@' initialized", _accountName);
@@ -179,6 +181,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         
         __weak id weakSelf = self;
         _imapServerReachability.reachableBlock = ^(Reachability *reachability) {
+            SM_LOG_INFO(@"reachability triggers");
+
             SMUserAccount *_self = weakSelf;
             if(!_self) {
                 SM_LOG_WARNING(@"object is gone");
@@ -195,10 +199,15 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             });
         };
         
+        SM_LOG_INFO(@"stopping IDLE");
         [self stopIdle];
 
         [_imapServerReachability startNotifier];
     }
+}
+
+- (void)reachabilityChangedNotification:(NSNotification*)notification {
+    SM_LOG_INFO(@"server reachability changed: %@", notification);
 }
 
 - (void)imapServerReachable {
@@ -243,7 +252,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         [appDelegate reconnectAccount:accountIdx];
     }
     else {
-        [self scheduleMessageListUpdate];
+        [self scheduleMessageListUpdate:NO];
     }
 }
 
@@ -298,6 +307,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         // If the current folder message body fetch queue is not empty, background fetch should be paused.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
             if(self.idleEnabled) {
+                SM_LOG_INFO(@"stopping IDLE");
                 [self stopIdle];
             }
             
@@ -590,7 +600,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             // Previous scheduleMessageListUpdate might not be able
             // to start because the server capabilities were not know.
             // So schedule it up right now.
-            [_self scheduleMessageListUpdate];
+            [_self scheduleMessageListUpdate:NO];
         }
     };
 
@@ -599,33 +609,44 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     _capabilitiesOp = capabilitiesOp;
 }
 
-- (void)scheduleMessageListUpdate {
+- (void)scheduleMessageListUpdate:(BOOL)now {
     if(_imapServerCapabilities == nil) {
-        SM_LOG_INFO(@"IMAP server capabilities not yet known, postponing message list update");
+        SM_LOG_INFO(@"IMAP server capabilities not yet known, postponing message list update (account '%@')", _accountName);
         return;
     }
-        
-    if(self.idleEnabled) {
-        [self startIdle];
+    
+    if(_messageListController.currentLocalFolder == nil) {
+        SM_LOG_WARNING(@"No current folder (account '%@')", _accountName);
+        return;
+    }
+    
+    if(now) {
+        [self startMessagesUpdate];
     }
     else {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
-
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
-        
-        if(updateIntervalSec == 0) {
-            updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
+        if(self.idleEnabled) {
+            [self startIdle];
         }
-        
-        SM_LOG_DEBUG(@"scheduling message list update after %lu sec", updateIntervalSec);
-        
-        [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:updateIntervalSec];
+        else {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
+
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+            NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
+            
+            if(updateIntervalSec == 0) {
+                updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
+            }
+            
+            SM_LOG_DEBUG(@"scheduling message list update after %lu sec (account '%@')", updateIntervalSec, _accountName);
+            
+            [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:updateIntervalSec];
+        }
     }
 }
 
 - (void)cancelScheduledMessagesUpdate {
     if(self.idleEnabled) {
+        SM_LOG_INFO(@"stopping IDLE");
         [self stopIdle];
     }
     else {

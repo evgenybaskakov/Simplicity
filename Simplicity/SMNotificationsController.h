@@ -26,7 +26,7 @@
 + (void)localNotifyAccountSyncSuccess:(SMUserAccount*)account;
 + (void)localNotifyAccountSyncError:(SMUserAccount*)account error:(NSError*)error;
 + (void)localNotifyFolderListUpdated:(SMUserAccount*)account;
-+ (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder scheduleUpdate:(BOOL)scheduleUpdate hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account;
++ (void)localNotifyMessageHeadersSyncFinished:(SMLocalFolder*)localFolder updateNow:(BOOL)updateNow hasUpdates:(BOOL)hasUpdates account:(SMUserAccount*)account;
 + (void)localNotifyMessageBodyFetched:(SMLocalFolder*)localFolder messageId:(uint64_t)messageId threadId:(int64_t)threadId account:(SMUserAccount*)account;
 + (void)localNotifyMessageBodyFetchQueueEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account;
 + (void)localNotifyMessageBodyFetchQueueNotEmpty:(SMMessageBodyFetchQueue*)queue account:(SMUserAccount*)account;
@@ -46,7 +46,7 @@
 + (void)getAccountPreferencesChangedParams:(NSNotification*)notification account:(SMUserAccount**)account;
 + (void)getAccountSyncSuccessParams:(NSNotification*)notification account:(SMUserAccount**)account;
 + (void)getAccountSyncErrorParams:(NSNotification*)notification error:(NSError**)error account:(SMUserAccount**)account;
-+ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder scheduleUpdate:(BOOL*)scheduleUpdate hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account;
++ (void)getMessageHeadersSyncFinishedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder updateNow:(BOOL*)updateNow hasUpdates:(BOOL*)hasUpdates account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder messageId:(uint64_t*)messageId threadId:(int64_t*)threadId account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchQueueEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account;
 + (void)getMessageBodyFetchQueueNotEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account;

@@ -204,11 +204,11 @@
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {
     SMLocalFolder *localFolder;
-    BOOL scheduleUpdate;
+    BOOL updateNow;
     BOOL hasUpdates;
     SMUserAccount *account;
     
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder scheduleUpdate:&scheduleUpdate hasUpdates:&hasUpdates account:&account];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder updateNow:&updateNow hasUpdates:&hasUpdates account:&account];
 
     // The unified account is never related to message updates.
     // So always ignore it.
@@ -232,9 +232,7 @@
 //        }
         
         // Schedule message update only we are being asked to.
-        if(scheduleUpdate) {
-            [_account scheduleMessageListUpdate];
-        }
+        [_account scheduleMessageListUpdate:updateNow];
     }
 }
 

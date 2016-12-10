@@ -72,26 +72,90 @@
 #define kUseAddressBookAccountImage     @"kUseAddressBookAccountImage"
 
 @implementation SMPreferencesController {
-    BOOL _shouldShowNotificationsCached;
-    BOOL _shouldShowContactImagesCached;
-    BOOL _shouldUseServerContactImagesCached;
-    BOOL _shouldAllowLowQualityContactImagesCached;
-    BOOL _shouldShowEmailAddressesInMailboxesCached;
-    BOOL _shouldUseSingleSignatureCached;
-    BOOL _shouldUseUnifiedMailboxCached;
-    BOOL _useFixedSizeFontForPlainTextMessagesCached;
-    NSUInteger _messageListPreviewLineCountCached;
-    NSUInteger _messageCheckPeriodSecCached;
     NSString *_downloadsFolderCached;
-    NSUInteger _localStorageSizeMbCached;
     NSString *_singleSignatureCached;
     SMMailboxTheme _mailboxThemeCached;
-    NSUInteger _maxMessagesToDownloadAtOnceCached;
-    NSUInteger _maxAttemptsForMessageDownloadCached;
-    NSUInteger _messageDownloadRetryDelayCached;
-    NSUInteger _messageDownloadServerTimeoutCached;
     NSDictionary<NSString*, SMFolderLabel*> *_labelsCached;
 }
+
+#define CACHED_VAR(name) name ## Cached
+
+#define DEFINE_INTEGER_PREFERENCE(name, setter, key, defaultValue)                                  \
+    static NSUInteger CACHED_VAR(name);                                                             \
+                                                                                                    \
+    - (NSUInteger)name {                                                                            \
+        static BOOL skipUserDefaults = NO;                                                          \
+                                                                                                    \
+        if(!skipUserDefaults) {                                                                     \
+            if([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) {                   \
+                CACHED_VAR(name) = defaultValue;                                                    \
+                                                                                                    \
+                SM_LOG_INFO(@"Using default value for %s: %lu", # name, CACHED_VAR(name));          \
+            }                                                                                       \
+            else {                                                                                  \
+                CACHED_VAR(name) = [[NSUserDefaults standardUserDefaults] integerForKey:key];       \
+                                                                                                    \
+                SM_LOG_INFO(@"Loaded value for %s: %lu",  # name, CACHED_VAR(name));                \
+            }                                                                                       \
+                                                                                                    \
+            skipUserDefaults = YES;                                                                 \
+        }                                                                                           \
+                                                                                                    \
+        return CACHED_VAR(name);                                                                    \
+    }                                                                                               \
+                                                                                                    \
+    - (void)setter:(NSUInteger)sec {                                                                \
+        [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:key];                          \
+                                                                                                    \
+        CACHED_VAR(name) = sec;                                                                     \
+    }
+
+#define DEFINE_BOOL_PREFERENCE(name, setter, key, defaultValue)                                     \
+    static BOOL CACHED_VAR(name);                                                                   \
+                                                                                                    \
+    - (BOOL)name {                                                                                  \
+        static BOOL skipUserDefaults = NO;                                                          \
+                                                                                                    \
+        if(!skipUserDefaults) {                                                                     \
+            if([[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) {                   \
+                CACHED_VAR(name) = defaultValue;                                                    \
+                                                                                                    \
+                SM_LOG_INFO(@"Using value for %s: %s", # name, CACHED_VAR(name)? "YES" : "NO");     \
+            }                                                                                       \
+            else {                                                                                  \
+                CACHED_VAR(name) = [[NSUserDefaults standardUserDefaults] boolForKey:key];          \
+                                                                                                    \
+                SM_LOG_INFO(@"Loaded value for %s: %s",  # name, CACHED_VAR(name)? "YES" : "NO");   \
+            }                                                                                       \
+                                                                                                    \
+            skipUserDefaults = YES;                                                                 \
+        }                                                                                           \
+                                                                                                    \
+        return CACHED_VAR(name);                                                                    \
+    }                                                                                               \
+                                                                                                    \
+    - (void)setter:(BOOL)sec {                                                                      \
+        [[NSUserDefaults standardUserDefaults] setBool:sec forKey:key];                             \
+                                                                                                    \
+        CACHED_VAR(name) = sec;                                                                     \
+    }
+
+DEFINE_BOOL_PREFERENCE(useFixedSizeFontForPlainTextMessages,    setUseFixedSizeFontForPlainTextMessages,    kUseFixedSizeFontForPlainTextMessages, YES)
+DEFINE_BOOL_PREFERENCE(shouldShowContactImages,                 setShouldShowContactImages,                 kShouldShowContactImages,              YES)
+DEFINE_BOOL_PREFERENCE(shouldUseServerContactImages,            setShouldUseServerContactImages,            kShouldUseServerContactImages,         YES)
+DEFINE_BOOL_PREFERENCE(shouldAllowLowQualityContactImages,      setShouldAllowLowQualityContactImages,      kShouldAllowLowQualityContactImages,   NO)
+DEFINE_BOOL_PREFERENCE(shouldShowEmailAddressesInMailboxes,     setShouldShowEmailAddressesInMailboxes,     kShouldShowEmailAddressesInMailboxes,  NO)
+DEFINE_BOOL_PREFERENCE(shouldShowNotifications,                 setShouldShowNotifications,                 kShouldShowNotifications,              YES)
+DEFINE_BOOL_PREFERENCE(shouldUseSingleSignature,                setShouldUseSingleSignature,                kShouldUseSingleSignature,             YES)
+DEFINE_BOOL_PREFERENCE(shouldUseUnifiedMailbox,                 setShouldUseUnifiedMailbox,                 kShouldUseUnifiedMailbox,              YES)
+
+DEFINE_INTEGER_PREFERENCE(messageListPreviewLineCount,      setMessageListPreviewLineCount,     kMessageListPreviewLineCount,   2)
+DEFINE_INTEGER_PREFERENCE(messageCheckPeriodSec,            setMessageCheckPeriodSec,           kMessageCheckPeriodSec,         0)
+DEFINE_INTEGER_PREFERENCE(localStorageSizeMb,               setLocalStorageSizeMb,              kLocalStorageSizeMb,            0)
+DEFINE_INTEGER_PREFERENCE(maxMessagesToDownloadAtOnce,      setMaxMessagesToDownloadAtOnce,     kMaxMessagesToDownloadAtOnce,   5)
+DEFINE_INTEGER_PREFERENCE(maxAttemptsForMessageDownload,    setMaxAttemptsForMessageDownload,   kMaxAttemptsForMessageDownload, 5)
+DEFINE_INTEGER_PREFERENCE(messageDownloadRetryDelay,        setMessageDownloadRetryDelay,       kMessageDownloadRetryDelay,     15)
+DEFINE_INTEGER_PREFERENCE(messageDownloadServerTimeout,     setMessageDownloadServerTimeout,    kMessageDownloadServerTimeout,  10)
 
 + (SMServerConnectionType)mcoToSMConnectionType:(MCOConnectionType)mcoConnectionType {
     switch(mcoConnectionType) {
@@ -668,180 +732,6 @@
     }
 }
 
-#pragma mark Use fixed size font for plain text messages
-
-- (BOOL)useFixedSizeFontForPlainTextMessages {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kUseFixedSizeFontForPlainTextMessages] == nil) {
-            _useFixedSizeFontForPlainTextMessagesCached = YES;
-            
-            SM_LOG_INFO(@"Using default kUseFixedSizeFontForPlainTextMessages: %@", _useFixedSizeFontForPlainTextMessagesCached? @"YES" : @"NO");
-        }
-        else {
-            _useFixedSizeFontForPlainTextMessagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kUseFixedSizeFontForPlainTextMessages]);
-            
-            SM_LOG_INFO(@"Loaded kUseFixedSizeFontForPlainTextMessages: %@", _useFixedSizeFontForPlainTextMessagesCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _useFixedSizeFontForPlainTextMessagesCached;
-}
-
-- (void)setUseFixedSizeFontForPlainTextMessages:(BOOL)flag {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kUseFixedSizeFontForPlainTextMessages];
-    
-    _useFixedSizeFontForPlainTextMessagesCached = flag;
-}
-
-#pragma mark Should show contact images in message list
-
-- (BOOL)shouldShowContactImages {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowContactImages] == nil) {
-            _shouldShowContactImagesCached = YES;
-
-            SM_LOG_INFO(@"Using default kShouldShowContactImages: %@", _shouldShowContactImagesCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldShowContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowContactImages]);
-            
-            SM_LOG_INFO(@"Loaded kShouldShowContactImages: %@", _shouldShowContactImagesCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-
-    return _shouldShowContactImagesCached;
-}
-
-- (void)setShouldShowContactImages:(BOOL)flag {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowContactImages];
-
-    _shouldShowContactImagesCached = flag;
-}
-
-#pragma mark Should use sender's server image in message list
-
-- (BOOL)shouldUseServerContactImages {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseServerContactImages] == nil) {
-            _shouldUseServerContactImagesCached = YES;
-            
-            SM_LOG_INFO(@"Using default kShouldUseServerContactImages: %@", _shouldUseServerContactImagesCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldUseServerContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseServerContactImages]);
-            
-            SM_LOG_INFO(@"Loaded kShouldUseServerContactImages: %@", _shouldUseServerContactImagesCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldUseServerContactImagesCached;
-}
-
-- (void)setShouldUseServerContactImages:(BOOL)flag {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldUseServerContactImages];
-    
-    _shouldUseServerContactImagesCached = flag;
-}
-
-#pragma mark Should allow low-res images in message list
-
-- (BOOL)shouldAllowLowQualityContactImages {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldAllowLowQualityContactImages] == nil) {
-            _shouldAllowLowQualityContactImagesCached = NO;
-            
-            SM_LOG_INFO(@"Using default kShouldAllowLowQualityContactImages: %@", _shouldAllowLowQualityContactImagesCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldAllowLowQualityContactImagesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldAllowLowQualityContactImages]);
-            
-            SM_LOG_INFO(@"Loaded kShouldAllowLowQualityContactImages: %@", _shouldAllowLowQualityContactImagesCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldAllowLowQualityContactImagesCached;
-}
-
-- (void)setShouldAllowLowQualityContactImages:(BOOL)flag {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldAllowLowQualityContactImages];
-    
-    _shouldAllowLowQualityContactImagesCached = flag;
-}
-
-#pragma mark Should show email addresses in mailboxes
-
-- (BOOL)shouldShowEmailAddressesInMailboxes {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowEmailAddressesInMailboxes] == nil) {
-            _shouldShowEmailAddressesInMailboxesCached = NO;
-            
-            SM_LOG_INFO(@"Using default kShouldShowEmailAddressesInMailboxes: %@", _shouldShowEmailAddressesInMailboxesCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldShowEmailAddressesInMailboxesCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowEmailAddressesInMailboxes]);
-            
-            SM_LOG_INFO(@"Loaded kShouldShowEmailAddressesInMailboxes: %@", _shouldShowEmailAddressesInMailboxesCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldShowEmailAddressesInMailboxesCached;
-}
-
-- (void)setShouldShowEmailAddressesInMailboxes:(BOOL)flag {
-    [[NSUserDefaults standardUserDefaults] setBool:flag forKey:kShouldShowEmailAddressesInMailboxes];
-    
-    _shouldShowEmailAddressesInMailboxesCached = flag;
-}
-
-#pragma mark Should show notifications
-
-- (BOOL)shouldShowNotifications {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldShowNotifications] == nil) {
-            _shouldShowNotificationsCached = YES;
-            
-            SM_LOG_INFO(@"Using default kShouldShowNotifications: %@", _shouldShowNotificationsCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldShowNotificationsCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldShowNotifications]);
-            
-            SM_LOG_INFO(@"Loaded kShouldShowNotifications: %@", _shouldShowNotificationsCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldShowNotificationsCached;
-}
-
-- (void)setShouldShowNotifications:(BOOL)shouldShowNotifications {
-    [[NSUserDefaults standardUserDefaults] setBool:shouldShowNotifications forKey:kShouldShowNotifications];
-    
-    _shouldShowNotificationsCached = shouldShowNotifications;
-}
-
 #pragma mark Current Account
 
 - (NSInteger)currentAccount {
@@ -855,64 +745,6 @@
 
 - (void)setCurrentAccount:(NSInteger)accountIdx {
     [[NSUserDefaults standardUserDefaults] setInteger:accountIdx forKey:kCurrentAccount];
-}
-
-#pragma mark Message list preview lines
-
-- (NSUInteger)messageListPreviewLineCount {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageListPreviewLineCount] == nil) {
-            _messageListPreviewLineCountCached = 2;
-            
-            SM_LOG_INFO(@"Using default _messageListPreviewLineCountCached: %lu", _messageListPreviewLineCountCached);
-        }
-        else {
-            _messageListPreviewLineCountCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageListPreviewLineCount];
-            
-            SM_LOG_INFO(@"Loaded _messageListPreviewLineCountCached: %lu", _messageListPreviewLineCountCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _messageListPreviewLineCountCached;
-}
-
-- (void)setMessageListPreviewLineCount:(NSUInteger)count {
-    [[NSUserDefaults standardUserDefaults] setInteger:count forKey:kMessageListPreviewLineCount];
-
-    _messageListPreviewLineCountCached = count;
-}
-
-#pragma mark Messages check period
-
-- (NSUInteger)messageCheckPeriodSec {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageCheckPeriodSec] == nil) {
-            _messageCheckPeriodSecCached = 0;
-            
-            SM_LOG_INFO(@"Using default _messageCheckPeriodSecCached: %lu", _messageCheckPeriodSecCached);
-        }
-        else {
-            _messageCheckPeriodSecCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageCheckPeriodSec];
-            
-            SM_LOG_INFO(@"Loaded _messageCheckPeriodSecCached: %lu", _messageCheckPeriodSecCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _messageCheckPeriodSecCached;
-}
-
-- (void)setMessageCheckPeriodSec:(NSUInteger)sec {
-    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageCheckPeriodSec];
-    
-    _messageCheckPeriodSecCached = sec;
 }
 
 #pragma mark Downloads folder
@@ -965,35 +797,6 @@
     [[NSUserDefaults standardUserDefaults] setObject:folder forKey:kDownloadsFolder];
 
     _downloadsFolderCached = folder;
-}
-
-#pragma mark Local storage size
-
-- (NSUInteger)localStorageSizeMb {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kLocalStorageSizeMb] == nil) {
-            _localStorageSizeMbCached = 0;
-            
-            SM_LOG_INFO(@"Using default _localStorageSizeMbCached: %lu", _localStorageSizeMbCached);
-        }
-        else {
-            _localStorageSizeMbCached = [[NSUserDefaults standardUserDefaults] integerForKey:kLocalStorageSizeMb];
-            
-            SM_LOG_INFO(@"Loaded _localStorageSizeMbCached: %lu", _localStorageSizeMbCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _localStorageSizeMbCached;
-}
-
-- (void)setLocalStorageSizeMb:(NSUInteger)sizeMb {
-    [[NSUserDefaults standardUserDefaults] setInteger:sizeMb forKey:kLocalStorageSizeMb];
-    
-    _localStorageSizeMbCached = sizeMb;
 }
 
 #pragma mark Default reply action
@@ -1059,33 +862,6 @@
 }
 
 #pragma mark Signatures
-
-- (BOOL)shouldUseSingleSignature {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseSingleSignature] == nil) {
-            _shouldUseSingleSignatureCached = YES;
-            
-            SM_LOG_INFO(@"Using default kShouldUseSingleSignature: %@", _shouldUseSingleSignatureCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldUseSingleSignatureCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseSingleSignature]);
-            
-            SM_LOG_INFO(@"Loaded kShouldUseSingleSignature: %@", _shouldUseSingleSignatureCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldUseSingleSignatureCached;
-}
-
-- (void)setShouldUseSingleSignature:(BOOL)shouldUseSingleSignature {
-    [[NSUserDefaults standardUserDefaults] setBool:shouldUseSingleSignature forKey:kShouldUseSingleSignature];
-    
-    _shouldUseSingleSignatureCached = shouldUseSingleSignature;
-}
 
 - (NSString*)singleSignature {
     static BOOL skipUserDefaults = NO;
@@ -1252,151 +1028,6 @@
     NSData *fontDescData = [NSKeyedArchiver archivedDataWithRootObject:fontDesc];
     [[NSUserDefaults standardUserDefaults] setObject:fontDescData forKey:kFixedMessageFont];
     [[NSUserDefaults standardUserDefaults] setFloat:font.pointSize forKey:kFixedMessageFontSize];
-}
-
-#pragma mark Unified Mailbox
-
-- (BOOL)shouldUseUnifiedMailbox {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kShouldUseUnifiedMailbox] == nil) {
-            _shouldUseUnifiedMailboxCached = YES;
-            
-            SM_LOG_INFO(@"Using default kShouldUseUnifiedMailbox: %@", _shouldUseUnifiedMailboxCached? @"YES" : @"NO");
-        }
-        else {
-            _shouldUseUnifiedMailboxCached = ([[NSUserDefaults standardUserDefaults] boolForKey:kShouldUseUnifiedMailbox]);
-            
-            SM_LOG_INFO(@"Loaded kShouldUseUnifiedMailbox: %@", _shouldUseUnifiedMailboxCached? @"YES" : @"NO");
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _shouldUseUnifiedMailboxCached;
-}
-
-- (void)setShouldUseUnifiedMailbox:(BOOL)shouldUseUnifiedMailbox {
-    [[NSUserDefaults standardUserDefaults] setBool:shouldUseUnifiedMailbox forKey:kShouldUseUnifiedMailbox];
-    
-    _shouldUseUnifiedMailboxCached = shouldUseUnifiedMailbox;
-}
-
-#pragma mark MaxMessagesToDownloadAtOnce
-
-- (NSUInteger)maxMessagesToDownloadAtOnce {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMaxMessagesToDownloadAtOnce] == nil) {
-            _maxMessagesToDownloadAtOnceCached = 5;
-            
-            SM_LOG_INFO(@"Using default _maxMessagesToDownloadAtOnceCached: %lu", _maxMessagesToDownloadAtOnceCached);
-        }
-        else {
-            _maxMessagesToDownloadAtOnceCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMaxMessagesToDownloadAtOnce];
-            
-            SM_LOG_INFO(@"Loaded _maxMessagesToDownloadAtOnceCached: %lu", _maxMessagesToDownloadAtOnceCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _maxMessagesToDownloadAtOnceCached;
-}
-
-- (void)setMaxMessagesToDownloadAtOnce:(NSUInteger)sec {
-    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMaxMessagesToDownloadAtOnce];
-    
-    _maxMessagesToDownloadAtOnceCached = sec;
-}
-
-#pragma mark MaxAttemptsForMessageDownload
-
-- (NSUInteger)maxAttemptsForMessageDownload {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMaxAttemptsForMessageDownload] == nil) {
-            _maxAttemptsForMessageDownloadCached = 5;
-            
-            SM_LOG_INFO(@"Using default _maxAttemptsForMessageDownloadCached: %lu", _maxAttemptsForMessageDownloadCached);
-        }
-        else {
-            _maxAttemptsForMessageDownloadCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMaxAttemptsForMessageDownload];
-            
-            SM_LOG_INFO(@"Loaded _maxAttemptsForMessageDownloadCached: %lu", _maxAttemptsForMessageDownloadCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _maxAttemptsForMessageDownloadCached;
-}
-
-- (void)setMaxAttemptsForMessageDownload:(NSUInteger)sec {
-    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMaxAttemptsForMessageDownload];
-    
-    _maxAttemptsForMessageDownloadCached = sec;
-}
-
-#pragma mark MessageDownloadRetryDelay
-
-- (NSUInteger)messageDownloadRetryDelay {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageDownloadRetryDelay] == nil) {
-            _messageDownloadRetryDelayCached = 5;
-            
-            SM_LOG_INFO(@"Using default _messageDownloadRetryDelayCached: %lu", _messageDownloadRetryDelayCached);
-        }
-        else {
-            _messageDownloadRetryDelayCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageDownloadRetryDelay];
-            
-            SM_LOG_INFO(@"Loaded _messageDownloadRetryDelayCached: %lu", _messageDownloadRetryDelayCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _messageDownloadRetryDelayCached;
-}
-
-- (void)setMessageDownloadRetryDelay:(NSUInteger)sec {
-    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageDownloadRetryDelay];
-    
-    _messageDownloadRetryDelayCached = sec;
-}
-
-#pragma mark MessageDownloadServerTimeout
-
-- (NSUInteger)messageDownloadServerTimeout {
-    static BOOL skipUserDefaults = NO;
-    
-    if(!skipUserDefaults) {
-        if([[NSUserDefaults standardUserDefaults] objectForKey:kMessageDownloadServerTimeout] == nil) {
-            _messageDownloadServerTimeoutCached = 10;
-            
-            SM_LOG_INFO(@"Using default _messageDownloadServerTimeoutCached: %lu", _messageDownloadServerTimeoutCached);
-        }
-        else {
-            _messageDownloadServerTimeoutCached = [[NSUserDefaults standardUserDefaults] integerForKey:kMessageDownloadServerTimeout];
-            
-            SM_LOG_INFO(@"Loaded _messageDownloadServerTimeoutCached: %lu", _messageDownloadServerTimeoutCached);
-        }
-        
-        skipUserDefaults = YES;
-    }
-    
-    return _messageDownloadServerTimeoutCached;
-}
-
-- (void)setMessageDownloadServerTimeout:(NSUInteger)sec {
-    [[NSUserDefaults standardUserDefaults] setInteger:sec forKey:kMessageDownloadServerTimeout];
-    
-    _messageDownloadServerTimeoutCached = sec;
 }
 
 @end

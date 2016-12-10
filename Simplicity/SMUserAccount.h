@@ -15,12 +15,15 @@
 @class SMPreferencesController;
 @class SMOperationExecutor;
 @class SMMessageBodyFetchQueue;
+@class SMAccountConnectionController;
 @class SMMessage;
 
 @class MCOIMAPSession;
 @class MCOSMTPSession;
 
 @interface SMUserAccount : NSObject<SMAbstractAccount>
+
+@property (readonly) BOOL imapServerAvailable;
 
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
@@ -31,11 +34,14 @@
 @property (readonly) SMOperationExecutor *operationExecutor;
 @property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
 
+@property (readonly) SMAccountConnectionController *connectionController;
+
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 - (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
 - (void)stopAccount;
 - (void)reloadAccount:(NSUInteger)accountIdx;
+- (void)startMessagesUpdate;
 
 @end

@@ -34,7 +34,7 @@
 #import "SMOpSendMessage.h"
 #import "SMSuggestionProvider.h"
 #import "SMNotificationsController.h"
-#import "SMAccountConnectionController.h"
+#import "SMFolderIdleController.h"
 #import "SMUserAccount.h"
 
 static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
@@ -88,7 +88,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         _outboxController = [[SMOutboxController alloc] initWithUserAccount:self];
         _operationExecutor = [[SMOperationExecutor alloc] initWithUserAccount:self];
         _backgroundMessageBodyFetchQueue = [[SMMessageBodyFetchQueue alloc] initWithUserAccount:self];
-        _connectionController = [[SMAccountConnectionController alloc] initWithUserAccount:self];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
@@ -133,7 +132,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is empty, background fetch should be activated.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_connectionController startIdle];
+            [_inboxIdleController startIdle];
             [_backgroundMessageBodyFetchQueue resumeBodyFetchQueue];
         }
     }
@@ -148,7 +147,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is not empty, background fetch should be paused.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_connectionController stopIdle];
+            [_inboxIdleController stopIdle];
             [_backgroundMessageBodyFetchQueue pauseBodyFetchQueue];
         }
     }
@@ -196,7 +195,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     [_imapSession setPassword:[_preferencesController imapPassword:accountIdx]];
     
     // Cancel previously scheduled reachability notifier
-    [_connectionController stopReachabilityMonitor];
+    if(_inboxIdleController) {
+        [_inboxIdleController stopReachabilityMonitor];
+        _inboxIdleController = nil;
+    }
     
     // Init the SMTP server.
     _smtpSession = [[MCOSMTPSession alloc] init];
@@ -460,7 +462,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     }
     else {
         if(self.idleEnabled) {
-            [_connectionController startIdle];
+            [_inboxIdleController startIdle];
         }
         else {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
@@ -482,7 +484,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 - (void)cancelScheduledMessagesUpdate {
     if(self.idleEnabled) {
         SM_LOG_INFO(@"stopping IDLE");
-        [_connectionController stopIdle];
+        [_inboxIdleController stopIdle];
     }
     else {
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
@@ -566,6 +568,24 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
                 }
             }];
+        }
+    }
+}
+
+- (void)ensureMainLocalFoldersCreated {
+    for(SMFolder *folder in _mailbox.mainFolders) {
+        if([_localFolderRegistry getLocalFolderByName:folder.fullName] == nil) {
+            if(folder.kind == SMFolderKindOutbox) {
+                // TODO: workaround for possible "Outbox" folder name collision
+                [_localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:NO];
+            }
+            else {
+                SMLocalFolder *newLocalFolder = (SMLocalFolder*)[_localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:YES];
+                
+                if(folder.kind == SMFolderKindInbox) {
+                    _inboxIdleController = [[SMFolderIdleController alloc] initWithUserAccount:self folder:newLocalFolder];
+                }
+            }
         }
     }
 }

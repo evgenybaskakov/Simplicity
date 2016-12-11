@@ -137,7 +137,8 @@
             [[appDelegate preferencesController] setLabels:accountIdx labels:updatedLabels];
             
             [self addFoldersToDatabase];
-            [self ensureMainLocalFoldersCreated];
+
+            [_account ensureMainLocalFoldersCreated];
         }
         
         [SMNotificationsController localNotifyFolderListUpdated:(SMUserAccount*)_account];
@@ -149,32 +150,16 @@
     }
 }
 
-- (void)ensureMainLocalFoldersCreated {
-    SMLocalFolderRegistry *localFolderRegistry = [_account localFolderRegistry];
-    SMAccountMailbox *mailbox = [_account mailbox];
-    
-    for(SMFolder *folder in mailbox.mainFolders) {
-        if([localFolderRegistry getLocalFolderByName:folder.fullName] == nil) {
-            if(folder.kind == SMFolderKindOutbox) {
-                // TODO: workaround for possible "Outbox" folder name collision
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:nil kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:NO];
-            }
-            else {
-                [localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:YES];
-            }
-        }
-    }
-}
-
 - (void)loadExistingFolders:(NSArray<SMFolderDesc*>*)folderDescs {
     SMAccountMailbox *mailbox = [_account mailbox];
     NSAssert(mailbox != nil, @"mailbox is nil");
 
     if([mailbox loadExistingFolders:folderDescs]) {
-        [self ensureMainLocalFoldersCreated];
+        [_account ensureMainLocalFoldersCreated];
         
         SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[appDelegate appController] performSelectorOnMainThread:@selector(updateMailboxFolderListForAccount:) withObject:_account waitUntilDone:NO];
+        // TODO: get rid of the deferred selector call
     }
 
     [self scheduleFolderListUpdate:YES];

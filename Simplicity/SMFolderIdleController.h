@@ -1,5 +1,5 @@
 //
-//  SMAccountConnectionController.h
+//  SMFolderIdleController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 12/9/16.
@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMAccountConnectionController : NSObject
+@class SMLocalFolder;
 
-- (id)initWithUserAccount:(SMUserAccount*)account;
+@interface SMFolderIdleController : NSObject
+
+@property SMLocalFolder *watchedFolder;
+
+- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder;
 
 - (void)startIdle;
 - (void)stopIdle;

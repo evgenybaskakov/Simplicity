@@ -16,6 +16,7 @@
 #import "SMMessageListController.h"
 #import "SMMailbox.h"
 #import "SMLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
 #import "SMAccountConnectionController.h"
@@ -26,7 +27,7 @@
     MCOIMAPOperation *_checkAccountOp;
     MCOIMAPIdleOperation *_idleOp;
     NSInteger _idleId;
-    NSString *_idleFolder;
+    SMLocalFolder *_idleFolder;
 }
 
 - (id)initWithUserAccount:(SMUserAccount*)account {
@@ -208,18 +209,22 @@
         return;
     }
     
+#if 0
     SMLocalFolder *currentLocalFolder = (SMLocalFolder*)_account.messageListController.currentLocalFolder;
     
     if(currentLocalFolder.syncedWithRemoteFolder) {
-        _idleFolder = currentLocalFolder.remoteFolderName;
+        _idleFolder = currentLocalFolder;
     }
     else {
-        // Otherwise just watch the Inbox.
-        _idleFolder = [[_account.mailbox inboxFolder] fullName];
+#endif
+        // ALWAYS watch the Inbox, until IDLE is supported for multiple folders.
+        _idleFolder = (SMLocalFolder*)[_account.localFolderRegistry getLocalFolderByKind:SMFolderKindInbox];
+#if 0
     }
+#endif
     
     NSUInteger idleId = ++_idleId;
-    SM_LOG_INFO(@"new IDLE operation is running for folder '%@', id %lu", _idleFolder, idleId);
+    SM_LOG_INFO(@"new IDLE operation is running for folder '%@', id %lu", _idleFolder.remoteFolderName, idleId);
     
     SMAccountConnectionController __weak *weakSelf = self;
     void (^opBlock)(NSError *) = ^(NSError *error) {
@@ -235,27 +240,29 @@
         }
         
         if(error && error.code != MCOErrorNone) {
-            SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_idleFolder, _self->_idleId, error);
+            SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_idleFolder.remoteFolderName, _self->_idleId, error);
         }
         else {
-            SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_idleFolder, _self->_idleId);
+            SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_idleFolder.remoteFolderName, _self->_idleId);
         }
+
+        SMLocalFolder *folder = _self->_idleFolder;
         
         _self->_idleOp = nil;
         _self->_idleFolder = nil;
         
         // In any case, just sync the messages.
         // Any connectivity errors will be handled alongside.
-        [_self->_account startMessagesUpdate];
+        [folder startLocalFolderSync];
     };
     
-    _idleOp = [_account.imapSession idleOperationWithFolder:_idleFolder lastKnownUID:0];
+    _idleOp = [_account.imapSession idleOperationWithFolder:_idleFolder.remoteFolderName lastKnownUID:0];
     [_idleOp start:opBlock];
     
     // After the idle op is started, we must check if there are any changes happened.
     // If we don't then there's a time gap between the last sync and the idle start,
     // i.e. we're at risk to miss something.
-    [_account startMessagesUpdate];
+    [_idleFolder startLocalFolderSync];
 }
 
 - (void)stopIdle {
@@ -265,7 +272,7 @@
     }
     
     if(_idleOp != nil) {
-        SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _idleFolder, _idleId);
+        SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _idleFolder.remoteFolderName, _idleId);
         
         [_idleOp cancel];
         

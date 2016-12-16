@@ -15,6 +15,7 @@
 #import "SMMessageListController.h"
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
+#import "SMFolderUpdateController.h"
 #import "SMMessageThreadAccountProxy.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
@@ -32,6 +33,7 @@
 @implementation SMMessageListController {
     id<SMAbstractLocalFolder> _currentFolder;
     id<SMAbstractLocalFolder> _prevNonSearchFolder;
+    SMFolderUpdateController *_folderUpdateController;
 }
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -59,13 +61,14 @@
     [_currentFolder stopLocalFolderSync:YES];
 
     // Stop "always synced" folders sync, as we want the new folder to updated ASAP
-    for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
-        SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
-        [localFolder stopLocalFolderSync:YES];
-    }
+    //TODO: cleanup
+    //for(SMFolder *folder in [(SMAccountMailbox*)_account.mailbox alwaysSyncedFolders]) {
+    //    SMLocalFolder *localFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:folder.fullName];
+    //    [localFolder stopLocalFolderSync:YES];
+    //}
     
     // Cancel automatic updates of this folder
-    [_account cancelScheduledMessagesUpdate];
+    [_folderUpdateController cancelScheduledFolderUpdate];
 
     // Create the new local folder if necessary
     if(folderName != nil) {
@@ -77,6 +80,8 @@
 
             localFolder = [[_account localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
         }
+        
+        _folderUpdateController = [[SMFolderUpdateController alloc] initWithUserAccount:(SMUserAccount*)_account folder:(SMLocalFolder*)localFolder];
         
         _currentFolder = localFolder;
     } else {
@@ -97,7 +102,8 @@
     }
     
     [self changeFolderInternal:folder remoteFolder:folder syncWithRemoteFolder:YES];
-    [self startMessagesUpdate];
+
+    [_currentFolder startLocalFolderSync];
     
     if(_account == appDelegate.currentAccount || appDelegate.currentAccountIsUnified) {
         BOOL preserveSelection = NO;
@@ -152,12 +158,6 @@
         BOOL preserveSelection = NO;
         [[appController messageListViewController] reloadMessageList:preserveSelection];
     }
-}
-
-- (void)startMessagesUpdate {
-    SM_LOG_DEBUG(@"updating message list");
-    
-    [_currentFolder startLocalFolderSync];
 }
 
 - (void)messagesInLocalFolderUpdated:(NSNotification *)notification {
@@ -232,7 +232,7 @@
 //        }
         
         // Schedule message update only we are being asked to.
-        [_account scheduleMessageListUpdate:updateNow];
+        [_folderUpdateController scheduleFolderUpdate:updateNow];
     }
 }
 

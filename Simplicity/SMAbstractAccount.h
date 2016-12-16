@@ -42,8 +42,6 @@
 @property BOOL foldersInitialized; // TODO: this is crap
 
 - (void)ensureMainLocalFoldersCreated;
-- (void)scheduleMessageListUpdate:(BOOL)now;
-- (void)cancelScheduledMessagesUpdate;
 - (void)fetchMessageInlineAttachments:(SMMessage*)message;
 
 @end

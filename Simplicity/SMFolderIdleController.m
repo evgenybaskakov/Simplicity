@@ -13,7 +13,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
-#import "SMMessageListController.h"
+#import "SMFolderUpdateController.h"
 #import "SMMailbox.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
@@ -23,18 +23,20 @@
 
 @implementation SMFolderIdleController {
     SMUserAccount __weak *_account;
+    SMFolderUpdateController __weak *_updateController;
     Reachability *_imapServerReachability;
     MCOIMAPOperation *_checkAccountOp;
     MCOIMAPIdleOperation *_idleOp;
     NSInteger _idleId;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder {
+- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder updateController:(SMFolderUpdateController*)updateController {
     self = [super init];
     
     if(self) {
         _account = account;
         _watchedFolder = folder;
+        _updateController = updateController;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
         
@@ -42,6 +44,11 @@
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [_imapServerReachability stopNotifier];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)stopReachabilityMonitor {
@@ -192,7 +199,7 @@
         [appDelegate reconnectAccount:accountIdx];
     }
     else {
-        [_account scheduleMessageListUpdate:NO];
+        [_updateController scheduleFolderUpdate:NO];
     }
 }
 

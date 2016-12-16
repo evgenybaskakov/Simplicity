@@ -15,7 +15,6 @@
 @class SMPreferencesController;
 @class SMOperationExecutor;
 @class SMMessageBodyFetchQueue;
-@class SMFolderIdleController;
 @class SMMessage;
 
 @class MCOIMAPSession;
@@ -33,7 +32,6 @@
 
 @property (readonly) SMOperationExecutor *operationExecutor;
 @property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
-@property (readonly) SMFolderIdleController *inboxIdleController;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 - (void)initSession:(NSUInteger)accountIdx;
@@ -42,6 +40,5 @@
 - (void)ensureMainLocalFoldersCreated;
 - (void)stopAccount;
 - (void)reloadAccount:(NSUInteger)accountIdx;
-- (void)startMessagesUpdate;
 
 @end

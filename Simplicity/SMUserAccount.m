@@ -34,10 +34,8 @@
 #import "SMOpSendMessage.h"
 #import "SMSuggestionProvider.h"
 #import "SMNotificationsController.h"
-#import "SMFolderIdleController.h"
+#import "SMFolderUpdateController.h"
 #import "SMUserAccount.h"
-
-static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 
 const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     switch(type) {
@@ -56,6 +54,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     SMPreferencesController __weak *_preferencesController;
     MCOIndexSet *_imapServerCapabilities;
     MCOIMAPCapabilityOperation *_capabilitiesOp;
+    SMFolderUpdateController *_inboxUpdateController;
 }
 
 @synthesize unified = _unified;
@@ -132,7 +131,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is empty, background fetch should be activated.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_inboxIdleController startIdle];
+            [_inboxUpdateController scheduleFolderUpdate:NO];
             [_backgroundMessageBodyFetchQueue resumeBodyFetchQueue];
         }
     }
@@ -147,7 +146,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is not empty, background fetch should be paused.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_inboxIdleController stopIdle];
+            [_inboxUpdateController cancelScheduledFolderUpdate];
             [_backgroundMessageBodyFetchQueue pauseBodyFetchQueue];
         }
     }
@@ -195,9 +194,9 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     [_imapSession setPassword:[_preferencesController imapPassword:accountIdx]];
     
     // Cancel previously scheduled reachability notifier
-    if(_inboxIdleController) {
-        [_inboxIdleController stopReachabilityMonitor];
-        _inboxIdleController = nil;
+    if(_inboxUpdateController) {
+        [_inboxUpdateController cancelScheduledFolderUpdate];
+        _inboxUpdateController = nil;
     }
     
     // Init the SMTP server.
@@ -437,7 +436,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
             // Previous scheduleMessageListUpdate might not be able
             // to start because the server capabilities were not know.
             // So schedule it up right now.
-            [_self scheduleMessageListUpdate:NO];
+            [_self->_inboxUpdateController scheduleFolderUpdate:NO];
         }
     };
 
@@ -446,57 +445,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     _capabilitiesOp = capabilitiesOp;
 }
 
-- (void)scheduleMessageListUpdate:(BOOL)now {
-    if(_imapServerCapabilities == nil) {
-        SM_LOG_INFO(@"IMAP server capabilities not yet known, postponing message list update (account '%@')", _accountName);
-        return;
-    }
-    
-    if(_messageListController.currentLocalFolder == nil) {
-        SM_LOG_WARNING(@"No current folder (account '%@')", _accountName);
-        return;
-    }
-    
-    if(now) {
-        [self startMessagesUpdate];
-    }
-    else {
-        if(self.idleEnabled) {
-            [_inboxIdleController startIdle];
-        }
-        else {
-            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
-
-            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-            NSUInteger updateIntervalSec = [[appDelegate preferencesController] messageCheckPeriodSec];
-            
-            if(updateIntervalSec == 0) {
-                updateIntervalSec = AUTO_MESSAGE_CHECK_PERIOD_SEC;
-            }
-            
-            SM_LOG_DEBUG(@"scheduling message list update after %lu sec (account '%@')", updateIntervalSec, _accountName);
-            
-            [self performSelector:@selector(startMessagesUpdate) withObject:nil afterDelay:updateIntervalSec];
-        }
-    }
-}
-
-- (void)cancelScheduledMessagesUpdate {
-    if(self.idleEnabled) {
-        SM_LOG_INFO(@"stopping IDLE");
-        [_inboxIdleController stopIdle];
-    }
-    else {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startMessagesUpdate) object:nil];
-    }
-}
-
 - (BOOL)imapServerAvailable {
     return _imapServerCapabilities != nil? YES : NO;
-}
-
-- (void)startMessagesUpdate {
-    [_messageListController startMessagesUpdate];
 }
 
 - (void)fetchMessageInlineAttachments:(SMMessage *)message {
@@ -583,7 +533,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                 SMLocalFolder *newLocalFolder = (SMLocalFolder*)[_localFolderRegistry createLocalFolder:folder.fullName remoteFolder:folder.fullName kind:folder.kind initialUnreadCount:folder.initialUnreadCount syncWithRemoteFolder:YES];
                 
                 if(folder.kind == SMFolderKindInbox) {
-                    _inboxIdleController = [[SMFolderIdleController alloc] initWithUserAccount:self folder:newLocalFolder];
+                    _inboxUpdateController = [[SMFolderUpdateController alloc] initWithUserAccount:self folder:newLocalFolder];
                 }
             }
         }

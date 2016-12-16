@@ -9,12 +9,13 @@
 #import <Foundation/Foundation.h>
 
 @class SMLocalFolder;
+@class SMFolderUpdateController;
 
 @interface SMFolderIdleController : NSObject
 
-@property SMLocalFolder *watchedFolder;
+@property (readonly) SMLocalFolder *watchedFolder;
 
-- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder;
+- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder updateController:(SMFolderUpdateController*)updateController;
 
 - (void)startIdle;
 - (void)stopIdle;

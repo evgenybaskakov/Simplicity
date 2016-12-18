@@ -84,7 +84,7 @@
         if(!_account.unified) {
             SMUserAccount *userAccount = (SMUserAccount*)_account;
             
-            if(!userAccount.inboxAlwaysSynced || localFolder.kind != SMFolderKindInbox) {
+            if(localFolder.kind != SMFolderKindInbox) {
                 // Don't duplicate the inbox update controller unless it's not synced automatically.
                 _folderUpdateController = [[SMFolderUpdateController alloc] initWithUserAccount:userAccount folder:(SMLocalFolder*)localFolder];
             }

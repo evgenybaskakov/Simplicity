@@ -131,7 +131,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is empty, background fetch should be activated.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_inboxUpdateController scheduleFolderUpdate:NO];
             [_backgroundMessageBodyFetchQueue resumeBodyFetchQueue];
         }
     }
@@ -146,7 +145,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     if(account == self) {
         // If the current folder message body fetch queue is not empty, background fetch should be paused.
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
-            [_inboxUpdateController cancelScheduledFolderUpdate];
             [_backgroundMessageBodyFetchQueue pauseBodyFetchQueue];
         }
     }
@@ -447,10 +445,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
 - (BOOL)imapServerAvailable {
     return _imapServerCapabilities != nil? YES : NO;
-}
-
-- (BOOL)inboxAlwaysSynced {
-    return YES; // TODO: implement exceptions
 }
 
 - (void)fetchMessageInlineAttachments:(SMMessage *)message {

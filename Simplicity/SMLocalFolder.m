@@ -201,21 +201,6 @@
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
-- (void)finishMessageHeadersFetching {
-    _finishingFetch = NO;
-    _loadingFromDB = NO;
-    _dbSyncInProgress = NO;
-    _useProvidedUnseenMessagesCount = NO;
-
-    [_fetchedMessageHeaders removeAllObjects];
-    
-    for(SMDatabaseOp *dbOp in _dbOps) {
-        [dbOp cancel];
-    }
-    
-    [_dbOps removeAllObjects];
-}
-
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
     [_messageBodyFetchQueue fetchMessageBodyWithUID:uid messageId:messageId threadId:threadId messageDate:messageDate urgent:YES tryLoadFromDatabase:YES remoteFolder:remoteFolderName localFolder:self];
 }
@@ -332,15 +317,26 @@
         }
     } : nil];
 
-    BOOL finishedDbSync = _dbSyncInProgress;
+    BOOL justFinishedDBSync = _dbSyncInProgress;
     
-    [self finishMessageHeadersFetching];
+    _finishingFetch = NO;
+    _loadingFromDB = NO;
+    _dbSyncInProgress = NO;
+    _useProvidedUnseenMessagesCount = NO;
+    
+    [_fetchedMessageHeaders removeAllObjects];
+    
+    for(SMDatabaseOp *dbOp in _dbOps) {
+        [dbOp cancel];
+    }
+    
+    [_dbOps removeAllObjects];
 
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.
-    BOOL hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
-    BOOL updateNow = finishedDbSync? YES : NO;
+    BOOL hasUpdates = (justFinishedDBSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
+    BOOL updateNow = justFinishedDBSync? YES : NO;
     
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self updateNow:updateNow hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }

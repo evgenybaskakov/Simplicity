@@ -30,6 +30,8 @@
 @property (readonly) BOOL idleSupported;
 @property (readonly) BOOL idleEnabled;
 
+@property (readonly) BOOL inboxAlwaysSynced;
+
 @property (readonly) SMOperationExecutor *operationExecutor;
 @property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
 

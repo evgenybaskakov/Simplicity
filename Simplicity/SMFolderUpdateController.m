@@ -34,6 +34,8 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 }
 
 - (void)dealloc {
+    [self cancelScheduledFolderUpdate];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

@@ -449,6 +449,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     return _imapServerCapabilities != nil? YES : NO;
 }
 
+- (BOOL)inboxAlwaysSynced {
+    return YES; // TODO: implement exceptions
+}
+
 - (void)fetchMessageInlineAttachments:(SMMessage *)message {
     NSString *remoteFolder = message.remoteFolder;
     uint32_t uid = message.uid;

@@ -773,15 +773,6 @@
         return TRUE;
     }
 
-    // Stop current message loading process.
-    // Note that body loading should continue. Body loading errors for messages that aren't there shall be ignored.
-    // TODO: check that!
-    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync:NO];
-    
-    // Cancel scheduled update. It will be restored after message movement is finished.
-    //TODO: cleanup this [_account cancelScheduledMessagesUpdate];
-
     // Remove the deleted message threads from the message storage.
     NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
     [_messageStorage deleteMessageThread:messageThread updateDatabase:YES unseenMessagesCount:unseenMessagesCountPtr];
@@ -864,13 +855,6 @@
 
 - (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(BOOL)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
-
-    // Stop current message loading process.
-    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync:NO];
-    
-    // Cancel scheduled update. It will be restored after message movement is finished.
-    // TODO: cleanup this [_account cancelScheduledMessagesUpdate];
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.

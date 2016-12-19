@@ -760,8 +760,7 @@
             NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
             [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
-            SMFolder *trashFolder = [[_account mailbox] trashFolder];
-            SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:trashFolder.fullName];
+            SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindTrash];
 
             NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
             [trashLocalFolder addMessage:message];

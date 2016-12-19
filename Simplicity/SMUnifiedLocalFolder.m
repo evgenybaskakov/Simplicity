@@ -110,11 +110,6 @@
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }
 
-- (BOOL)messageHeadersAreBeingLoaded {
-    SM_FATAL(@"TODO");
-    return NO;
-}
-
 - (void)addMessage:(SMMessage*)message {
     SM_FATAL(@"Stubbed implementation: this must be redirected to the owning local folder");
 }

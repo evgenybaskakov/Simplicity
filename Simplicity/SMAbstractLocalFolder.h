@@ -42,9 +42,6 @@
 // urgently fetches the body of the message specified by its UID
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId;
 
-// tells whether there is message headers loading progress underway
-- (BOOL)messageHeadersAreBeingLoaded;
-
 // tells whether there is still the initial server sync pending
 // and nothing was loaded from the DB
 - (BOOL)folderStillLoadingInitialState;

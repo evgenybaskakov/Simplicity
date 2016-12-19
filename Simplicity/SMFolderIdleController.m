@@ -1,5 +1,5 @@
 //
-//  SMAccountConnectionController.m
+//  SMFolderIdleController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 12/9/16.
@@ -13,27 +13,30 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
-#import "SMMessageListController.h"
+#import "SMFolderUpdateController.h"
 #import "SMMailbox.h"
 #import "SMLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
-#import "SMAccountConnectionController.h"
+#import "SMFolderIdleController.h"
 
-@implementation SMAccountConnectionController {
+@implementation SMFolderIdleController {
     SMUserAccount __weak *_account;
+    SMFolderUpdateController __weak *_updateController;
     Reachability *_imapServerReachability;
     MCOIMAPOperation *_checkAccountOp;
     MCOIMAPIdleOperation *_idleOp;
     NSInteger _idleId;
-    NSString *_idleFolder;
 }
 
-- (id)initWithUserAccount:(SMUserAccount*)account {
+- (id)initWithUserAccount:(SMUserAccount*)account folder:(SMLocalFolder*)folder updateController:(SMFolderUpdateController*)updateController {
     self = [super init];
     
     if(self) {
         _account = account;
+        _watchedFolder = folder;
+        _updateController = updateController;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
         
@@ -41,6 +44,11 @@
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [_imapServerReachability stopNotifier];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)stopReachabilityMonitor {
@@ -118,11 +126,11 @@
         
         _imapServerReachability = [Reachability reachabilityWithHostname:imapServer];
         
-        SMAccountConnectionController *__weak weakSelf = self;
+        SMFolderIdleController *__weak weakSelf = self;
         _imapServerReachability.reachableBlock = ^(Reachability *reachability) {
             SM_LOG_INFO(@"reachability triggers");
             
-            SMAccountConnectionController *_self = weakSelf;
+            SMFolderIdleController *_self = weakSelf;
             if(!_self) {
                 SM_LOG_WARNING(@"object is gone");
                 return;
@@ -164,7 +172,7 @@
     
     __weak id weakSelf = self;
     [checkAccountOp start:^(NSError *error) {
-        SMAccountConnectionController *_self = weakSelf;
+        SMFolderIdleController *_self = weakSelf;
         if(!_self) {
             SM_LOG_WARNING(@"object is gone");
             return;
@@ -191,12 +199,12 @@
         [appDelegate reconnectAccount:accountIdx];
     }
     else {
-        [_account scheduleMessageListUpdate:NO];
+        [_updateController scheduleFolderUpdate:NO];
     }
 }
 
 - (void)startIdle {
-    if(![_account idleEnabled]) {
+    if(![_account idleEnabled:_watchedFolder.kind]) {
         SM_LOG_INFO(@"IDLE is disabled");
         return;
     }
@@ -204,26 +212,16 @@
     if(_idleOp != nil) {
         // This happens when the control message check is finished
         // as we just enabled the idle operation.
-        SM_LOG_DEBUG(@"idle operation is already running");
+        SM_LOG_INFO(@"idle operation is already running for folder '%@', id %lu", _watchedFolder.remoteFolderName, _idleId);
         return;
     }
     
-    SMLocalFolder *currentLocalFolder = (SMLocalFolder*)_account.messageListController.currentLocalFolder;
-    
-    if(currentLocalFolder.syncedWithRemoteFolder) {
-        _idleFolder = currentLocalFolder.remoteFolderName;
-    }
-    else {
-        // Otherwise just watch the Inbox.
-        _idleFolder = [[_account.mailbox inboxFolder] fullName];
-    }
-    
     NSUInteger idleId = ++_idleId;
-    SM_LOG_INFO(@"new IDLE operation is running for folder '%@', id %lu", _idleFolder, idleId);
+    SM_LOG_INFO(@"new IDLE operation is running for folder '%@', id %lu", _watchedFolder.remoteFolderName, idleId);
     
-    SMAccountConnectionController __weak *weakSelf = self;
+    SMFolderIdleController __weak *weakSelf = self;
     void (^opBlock)(NSError *) = ^(NSError *error) {
-        SMAccountConnectionController *_self = weakSelf;
+        SMFolderIdleController *_self = weakSelf;
         if(!_self) {
             SM_LOG_WARNING(@"object is gone");
             return;
@@ -235,42 +233,42 @@
         }
         
         if(error && error.code != MCOErrorNone) {
-            SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_idleFolder, _self->_idleId, error);
+            SM_LOG_ERROR(@"IDLE operation error for folder '%@', id %lu: %@", _self->_watchedFolder.remoteFolderName, _self->_idleId, error);
         }
         else {
-            SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_idleFolder, _self->_idleId);
+            SM_LOG_INFO(@"IDLE operation triggers for '%@', id %lu", _self->_watchedFolder.remoteFolderName, _self->_idleId);
         }
+
+        SMLocalFolder *folder = _self->_watchedFolder;
         
         _self->_idleOp = nil;
-        _self->_idleFolder = nil;
         
         // In any case, just sync the messages.
         // Any connectivity errors will be handled alongside.
-        [_self->_account startMessagesUpdate];
+        [folder startLocalFolderSync];
     };
     
-    _idleOp = [_account.imapSession idleOperationWithFolder:_idleFolder lastKnownUID:0];
+    _idleOp = [_account.imapSession idleOperationWithFolder:_watchedFolder.remoteFolderName lastKnownUID:0];
     [_idleOp start:opBlock];
     
     // After the idle op is started, we must check if there are any changes happened.
     // If we don't then there's a time gap between the last sync and the idle start,
     // i.e. we're at risk to miss something.
-    [_account startMessagesUpdate];
+    [_watchedFolder startLocalFolderSync];
 }
 
 - (void)stopIdle {
-    if(![_account idleEnabled]) {
+    if(![_account idleEnabled:_watchedFolder.kind]) {
         SM_LOG_INFO(@"IDLE is disabled");
         return;
     }
     
     if(_idleOp != nil) {
-        SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _idleFolder, _idleId);
+        SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _watchedFolder.remoteFolderName, _idleId);
         
         [_idleOp cancel];
         
         _idleOp = nil;
-        _idleFolder = nil;
     }
 }
 

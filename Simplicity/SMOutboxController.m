@@ -49,8 +49,7 @@
 
             opSendMessage.postAction = (void (^)(SMOperation*))postSendAction;
 
-            SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-            id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByName:outboxFolder.fullName];
+            id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindOutbox];
 
             NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
             [outboxLocalFolder addMessage:opSendMessage.outgoingMessage];
@@ -61,8 +60,7 @@
 - (BOOL)sendMessage:(SMOutgoingMessage*)outgoingMessage postSendAction:(void (^)(SMOpSendMessage *))postSendAction {
     SM_LOG_DEBUG(@"Sending message");
     
-    SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByName:outboxFolder.fullName];
+    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindOutbox];
 
     if(!outboxLocalFolder) {
         NSAlert *alert = [[NSAlert alloc] init];
@@ -91,8 +89,7 @@
 - (void)finishMessageSending:(SMOutgoingMessage*)message {
     SM_LOG_DEBUG(@"Removing message");
 
-    SMFolder *outboxFolder = [[_account mailbox] outboxFolder];
-    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByName:outboxFolder.fullName];
+    id<SMAbstractLocalFolder> outboxLocalFolder = [[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindOutbox];
 
     NSAssert(outboxLocalFolder != nil, @"outboxLocalFolder is nil");
     [outboxLocalFolder removeMessage:message];

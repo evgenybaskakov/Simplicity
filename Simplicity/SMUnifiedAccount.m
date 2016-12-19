@@ -67,16 +67,12 @@
     return nil;
 }
 
-- (void)scheduleMessageListUpdate:(BOOL)now {
-    //TODO SM_FATAL(@"TODO");
-}
-
-- (void)cancelScheduledMessagesUpdate {
-    //TODO SM_FATAL(@"TODO");
-}
-
 - (void)fetchMessageInlineAttachments:(SMMessage*)message {
     SM_FATAL(@"TODO");
+}
+
+- (void)ensureMainLocalFoldersCreated {
+    SM_FATAL(@"not implemented in the unified account");
 }
 
 @end

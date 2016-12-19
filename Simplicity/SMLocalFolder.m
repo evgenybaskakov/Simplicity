@@ -115,12 +115,12 @@
 }
 
 - (void)startLocalFolderSync {
-    if(_dbSyncInProgress || _folderInfoOp != nil || _fetchMessageHeadersOp != nil || _dbMessageThreadsLoadsCount > 0 || _searchMessageThreadsOps.count > 0) {
+    if(_dbSyncInProgress || [self folderUpdateIsInProgress] || _dbMessageThreadsLoadsCount > 0 || _searchMessageThreadsOps.count > 0) {
         SM_LOG_WARNING(@"previous op is still in progress for folder %@", _localName);
         return;
     }
 
-    SM_LOG_INFO(@"Local folder %@ is syncing", _localName);
+    SM_LOG_INFO(@"Local folder %@ is syncing (loading from %s)", _localName, _loadingFromDB ? "DB" : "SERVER");
 
     NSAssert(_dbOps.count == 0, @"db ops still pending");
 
@@ -155,13 +155,18 @@
 
         // TODO: handle session reopening/uids validation   
         
-        _folderInfoOp = [session folderInfoOperation:_localName];
-        _folderInfoOp.urgent = YES;
+        MCOIMAPFolderInfoOperation *folderInfoOp = [session folderInfoOperation:_localName];
+        folderInfoOp.urgent = YES;
 
-        [_folderInfoOp start:^(NSError *error, MCOIMAPFolderInfo *info) {
+        [folderInfoOp start:^(NSError *error, MCOIMAPFolderInfo *info) {
             SMLocalFolder *_self = weakSelf;
             if(!_self) {
                 SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
+            if(_self->_folderInfoOp != folderInfoOp) {
+                SM_LOG_WARNING(@"stale op");
                 return;
             }
 
@@ -179,6 +184,8 @@
                 [SMNotificationsController localNotifyAccountSyncError:(SMUserAccount*)_self->_account error:error];
             }
         }];
+
+        _folderInfoOp = folderInfoOp;
     }
 }
 
@@ -192,46 +199,6 @@
 
 - (BOOL)folderUpdateIsInProgress {
     return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
-}
-
-- (void)finishMessageHeadersFetching {
-    BOOL shouldStartRemoteSync = _loadingFromDB && _syncedWithRemoteFolder;
-    
-    _finishingFetch = NO;
-    _loadingFromDB = NO;
-    _dbSyncInProgress = NO;
-    _useProvidedUnseenMessagesCount = NO;
-
-    [_fetchedMessageHeaders removeAllObjects];
-    
-    for(SMDatabaseOp *dbOp in _dbOps) {
-        [dbOp cancel];
-    }
-    
-    [_dbOps removeAllObjects];
-
-    if(shouldStartRemoteSync) {
-        SM_LOG_INFO(@"folder %@ loaded from the local database, starting syncing with server", _localName);
-        
-        [self startLocalFolderSync];
-
-        // We just started an update. Therefore, there's no need to
-        // schedule another one right now.
-        // However, this makes the logic too complex (the shouldStartRemoteSync
-        // flag should be set once this folder is made "current" or "always updating").
-        // TODO: fix
-    }
-    else {
-        if(!_loadingFromDB && _syncedWithRemoteFolder) {
-            SM_LOG_INFO(@"folder %@ already synced with server", _localName);
-        }
-        else if(!_loadingFromDB && !_syncedWithRemoteFolder) {
-            SM_LOG_INFO(@"folder %@ not yet loaded from the local database (but won't be synced with server anyway)", _localName);
-        }
-        else {
-            SM_LOG_INFO(@"folder %@ loaded from the local database, but not synced with server", _localName);
-        }
-    }
 }
 
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName threadId:(uint64_t)threadId {
@@ -350,15 +317,28 @@
         }
     } : nil];
 
-    BOOL finishedDbSync = _dbSyncInProgress;
+    BOOL justFinishedDBSync = _dbSyncInProgress;
     
-    [self finishMessageHeadersFetching];
+    _finishingFetch = NO;
+    _loadingFromDB = NO;
+    _dbSyncInProgress = NO;
+    _useProvidedUnseenMessagesCount = NO;
+    
+    [_fetchedMessageHeaders removeAllObjects];
+    
+    for(SMDatabaseOp *dbOp in _dbOps) {
+        [dbOp cancel];
+    }
+    
+    [_dbOps removeAllObjects];
 
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.
-    BOOL hasUpdates = (finishedDbSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
-    BOOL updateNow = finishedDbSync? YES : NO;
+    BOOL hasUpdates = (justFinishedDBSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
+    BOOL updateNow = justFinishedDBSync? YES : NO;
+    
+    SM_LOG_INFO(@"folder %@ has finished syncing (has updates: %s, update now: %s)", _localName, hasUpdates? "YES" : "NO", updateNow? "YES" : "NO");
     
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self updateNow:updateNow hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
@@ -472,16 +452,20 @@
 
         NSAssert(_fetchMessageHeadersOp == nil, @"previous search op not cleared");
         
-        _fetchMessageHeadersOp = [session fetchMessagesByNumberOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind numbers:regionToFetch];
+        MCOIMAPFetchMessagesOperation *fetchMessageHeadersOp = [session fetchMessagesByNumberOperationWithFolder:_remoteFolderName requestKind:messageHeadersRequestKind numbers:regionToFetch];
         
-        _fetchMessageHeadersOp.urgent = YES;
+        fetchMessageHeadersOp.urgent = YES;
         
-        // TODO: cancellation?
         SMLocalFolder __weak *weakSelf = self;
-        [_fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
+        [fetchMessageHeadersOp start:^(NSError *error, NSArray<MCOIMAPMessage*> *messages, MCOIndexSet *vanishedMessages) {
             SMLocalFolder *_self = weakSelf;
             if(!_self) {
                 SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
+            if(_self->_fetchMessageHeadersOp != fetchMessageHeadersOp) {
+                SM_LOG_WARNING(@"stale op");
                 return;
             }
             
@@ -513,6 +497,8 @@
                 SM_LOG_ERROR(@"Error downloading messages list: %@", error);
             }
         }];
+        
+        _fetchMessageHeadersOp = fetchMessageHeadersOp;
     }
 }
 
@@ -565,10 +551,6 @@
         _dbMessageThreadsLoadsCount++;
     }
 */
-}
-
-- (BOOL)messageHeadersAreBeingLoaded {
-    return _folderInfoOp != nil || _fetchMessageHeadersOp != nil;
 }
 
 - (void)stopLocalFolderSync:(BOOL)stopBodyLoading {
@@ -778,8 +760,7 @@
             NSAssert([message isKindOfClass:[SMOutgoingMessage class]], @"non-outgoing message %@ found in Outbox", message);
             [[_account outboxController] cancelMessageSending:(SMOutgoingMessage*)message];
 
-            SMFolder *trashFolder = [[_account mailbox] trashFolder];
-            SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByName:trashFolder.fullName];
+            SMLocalFolder *trashLocalFolder = (SMLocalFolder*)[[_account localFolderRegistry] getLocalFolderByKind:SMFolderKindTrash];
 
             NSAssert(trashLocalFolder, @"trashLocalFolder is nil");
             [trashLocalFolder addMessage:message];
@@ -791,15 +772,6 @@
         
         return TRUE;
     }
-
-    // Stop current message loading process.
-    // Note that body loading should continue. Body loading errors for messages that aren't there shall be ignored.
-    // TODO: check that!
-    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync:NO];
-    
-    // Cancel scheduled update. It will be restored after message movement is finished.
-    [_account cancelScheduledMessagesUpdate];
 
     // Remove the deleted message threads from the message storage.
     NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
@@ -883,13 +855,6 @@
 
 - (BOOL)moveMessage:(uint64_t)messageId uid:(uint32_t)uid threadId:(uint64_t)threadId useThreadId:(BOOL)useThreadId toRemoteFolder:(NSString*)destRemoteFolderName {
     NSAssert(![_remoteFolderName isEqualToString:destRemoteFolderName], @"src and dest remove folders are the same %@", _remoteFolderName);
-
-    // Stop current message loading process.
-    // TODO: maybe there's a nicer way (mark moved messages, skip them after headers are loaded...)
-    [self stopLocalFolderSync:NO];
-    
-    // Cancel scheduled update. It will be restored after message movement is finished.
-    [_account cancelScheduledMessagesUpdate];
 
     // Remove the deleted message from the current folder in the message storage.
     // This is necessary to immediately reflect the visual change.

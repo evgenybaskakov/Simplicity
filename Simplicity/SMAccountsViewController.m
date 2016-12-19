@@ -413,11 +413,10 @@
     
     NSUInteger buttonIdx = [self accountIdxToAccountButtonIdx:accountIdx];
     
-    SMFolder *inboxFolder = [[account mailbox] inboxFolder];
-    id<SMAbstractLocalFolder> inboxLocalFolder = [account.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
-    
     NSString *unreadCountStr = @"";
     if(appDelegate.currentAccount != account) {
+        id<SMAbstractLocalFolder> inboxLocalFolder = [account.localFolderRegistry getLocalFolderByKind:SMFolderKindInbox];
+
         if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
             unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
         }
@@ -432,8 +431,7 @@
     NSString *unreadCountStr = @"";
     if([self shouldShowUnifiedMailboxButton] && !appDelegate.currentAccountIsUnified) {
         SMUnifiedAccount *unifiedAccount = appDelegate.unifiedAccount;
-        SMFolder *inboxFolder = [unifiedAccount.mailbox inboxFolder];
-        id<SMAbstractLocalFolder> inboxLocalFolder = [unifiedAccount.localFolderRegistry getLocalFolderByName:inboxFolder.fullName];
+        id<SMAbstractLocalFolder> inboxLocalFolder = [unifiedAccount.localFolderRegistry getLocalFolderByKind:SMFolderKindInbox];
         
         if(inboxLocalFolder && inboxLocalFolder.unseenMessagesCount > 0) {
             unreadCountStr = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];

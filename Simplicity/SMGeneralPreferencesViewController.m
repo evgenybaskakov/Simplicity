@@ -224,14 +224,18 @@
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
-- (IBAction)messageCheckPeriodListAciton:(id)sender {
+- (IBAction)messageCheckPeriodListAction:(id)sender {
     NSUInteger item = _messageCheckPeriodList.indexOfSelectedItem;
     NSAssert(item < _messageCheckPeriodValues.count, @"bad item %lu", item);
-    
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    [appDelegate preferencesController].messageCheckPeriodSec = [_messageCheckPeriodValues[item] unsignedIntegerValue];
 
-    [[appDelegate.currentAccount messageListController] startMessagesUpdate];
+    NSUInteger newValue = [_messageCheckPeriodValues[item] unsignedIntegerValue];
+
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if([appDelegate preferencesController].messageCheckPeriodSec != newValue) {
+        [appDelegate preferencesController].messageCheckPeriodSec = newValue;
+    
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MessageCheckPeriodChanged" object:nil userInfo:nil];
+    }
 }
 
 - (IBAction)downloadsFolderPopupAction:(id)sender {

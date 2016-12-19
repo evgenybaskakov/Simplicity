@@ -11,11 +11,11 @@
 #import <MailCore/MailCore.h>
 
 #import "SMAbstractAccount.h"
+#import "SMFolderKind.h"
 
 @class SMPreferencesController;
 @class SMOperationExecutor;
 @class SMMessageBodyFetchQueue;
-@class SMAccountConnectionController;
 @class SMMessage;
 
 @class MCOIMAPSession;
@@ -28,20 +28,16 @@
 @property MCOIMAPSession *imapSession;
 @property MCOSMTPSession *smtpSession;
 
-@property (readonly) BOOL idleSupported;
-@property (readonly) BOOL idleEnabled;
-
 @property (readonly) SMOperationExecutor *operationExecutor;
 @property (readonly) SMMessageBodyFetchQueue *backgroundMessageBodyFetchQueue;
-
-@property (readonly) SMAccountConnectionController *connectionController;
 
 - (id)initWithPreferencesController:(SMPreferencesController*)preferencesController;
 - (void)initSession:(NSUInteger)accountIdx;
 - (void)initOpExecutor;
 - (void)getIMAPServerCapabilities;
+- (void)ensureMainLocalFoldersCreated;
 - (void)stopAccount;
 - (void)reloadAccount:(NSUInteger)accountIdx;
-- (void)startMessagesUpdate;
+- (BOOL)idleEnabled:(SMFolderKind)folderKind;
 
 @end

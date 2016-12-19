@@ -744,8 +744,7 @@
  
  
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    SMFolder *inboxFolder = [appDelegate.currentMailbox inboxFolder];
-    id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByName:inboxFolder.fullName];
+    id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByKind:SMFolderKindInbox];
     
     // TODO: use sum for inbox folders across all accounts
 

@@ -212,7 +212,7 @@
     if(_idleOp != nil) {
         // This happens when the control message check is finished
         // as we just enabled the idle operation.
-        SM_LOG_DEBUG(@"idle operation is already running");
+        SM_LOG_INFO(@"idle operation is already running for folder '%@', id %lu", _watchedFolder.remoteFolderName, _idleId);
         return;
     }
     

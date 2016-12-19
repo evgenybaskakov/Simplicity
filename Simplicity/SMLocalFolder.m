@@ -338,6 +338,8 @@
     BOOL hasUpdates = (justFinishedDBSync || _serverSyncCount == 1 || updateResult != SMMesssageStorageUpdateResultNone);
     BOOL updateNow = justFinishedDBSync? YES : NO;
     
+    SM_LOG_INFO(@"folder %@ has finished syncing (has updates: %s, update now: %s)", _localName, hasUpdates? "YES" : "NO", updateNow? "YES" : "NO");
+    
     [SMNotificationsController localNotifyMessageHeadersSyncFinished:self updateNow:updateNow hasUpdates:hasUpdates account:(SMUserAccount*)_account];
 }
 

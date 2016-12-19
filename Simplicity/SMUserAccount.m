@@ -90,6 +90,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
     }
     
     SM_LOG_DEBUG(@"user account '%@' initialized", _accountName);
@@ -147,6 +148,19 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         if(queue == [(SMLocalFolder*)_messageListController.currentLocalFolder messageBodyFetchQueue]) {
             [_backgroundMessageBodyFetchQueue pauseBodyFetchQueue];
         }
+    }
+}
+
+- (void)messageHeadersSyncFinished:(NSNotification *)notification {
+    SMLocalFolder *localFolder;
+    BOOL updateNow;
+    BOOL hasUpdates;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder updateNow:&updateNow hasUpdates:&hasUpdates account:&account];
+    
+    if(account == self && !account.unified && localFolder.kind == SMFolderKindInbox) {
+        [_inboxUpdateController scheduleFolderUpdate:updateNow];
     }
 }
 

@@ -49,7 +49,7 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
         [_watchedFolder startLocalFolderSync];
     }
     else {
-        if(_account.idleEnabled && _idleController != nil) {
+        if([_account idleEnabled:_watchedFolder.kind] && _idleController != nil) {
             [_idleController startIdle];
         }
         else {
@@ -70,7 +70,7 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 }
 
 - (void)cancelScheduledFolderUpdate {
-    if(_account.idleEnabled) {
+    if([_account idleEnabled:_watchedFolder.kind]) {
         SM_LOG_INFO(@"stopping IDLE");
         [_idleController stopIdle];
     }

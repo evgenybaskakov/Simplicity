@@ -102,25 +102,33 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)idleSupported {
+- (BOOL)idleEnabled:(SMFolderKind)folderKind {
+    if(_preferencesController.messageCheckPeriodSec != 0) {
+        SM_LOG_INFO(@"user account '%@': IDLE disabled in user preferences", _accountName);
+        return NO;
+    }
+
     if(!_imapServerCapabilities || !_imapSession) {
         SM_LOG_INFO(@"user account '%@': no connection, IDLE not activated", _accountName);
         return NO;
     }
     
-    if(![_imapServerCapabilities containsIndex:MCOIMAPCapabilityId] ||
-       _imapSession.maximumConnections <= 1)
-    {
+    if(![_imapServerCapabilities containsIndex:MCOIMAPCapabilityId]) {
         SM_LOG_INFO(@"user account '%@': IDLE not supported", _accountName);
         return NO;
     }
     
-    SM_LOG_INFO(@"user account '%@': IDLE is supported", _accountName);
+    if(_imapSession.maximumConnections < 2) {
+        SM_LOG_INFO(@"user account '%@': too few connections (%u) allowed, IDLE disabled", _accountName, _imapSession.maximumConnections);
+        return NO;
+    }
+    
+    if(folderKind != SMFolderKindInbox && _imapSession.maximumConnections < 3) {
+        SM_LOG_INFO(@"user account '%@': too few connections (%u) allowed, IDLE disabled for non-INBOX folder", _accountName, _imapSession.maximumConnections);
+        return NO;
+    }
+    
     return YES;
-}
-
-- (BOOL)idleEnabled {
-    return _preferencesController.messageCheckPeriodSec == 0 && self.idleSupported;
 }
 
 - (void)messageFetchQueueEmpty:(NSNotification*)notification {

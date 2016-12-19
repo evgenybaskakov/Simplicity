@@ -549,6 +549,7 @@
 		8036323D1DB0B8A9003B7680 /* italic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = italic.png; sourceTree = "<group>"; };
 		8036323E1DB0B8A9003B7680 /* underline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = underline.png; sourceTree = "<group>"; };
 		803632421DB0BB75003B7680 /* quote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quote.png; sourceTree = "<group>"; };
+		803637681E07846A00C4A21B /* SMFolderKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderKind.h; sourceTree = "<group>"; };
 		803932681C97D6E700CE38CB /* SMUserAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccount.h; sourceTree = "<group>"; };
 		803932691C97D6E700CE38CB /* SMUserAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUserAccount.m; sourceTree = "<group>"; };
 		803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAdvancedPreferencesViewController.h; sourceTree = "<group>"; };
@@ -931,6 +932,7 @@
 				801E36F31DAE054500D06B6F /* SMEditorReplyKind.h */,
 				00C75607195921AA006ED86B /* SMFolder.h */,
 				00C75608195921AA006ED86B /* SMFolder.m */,
+				803637681E07846A00C4A21B /* SMFolderKind.h */,
 				804F33411BAFDDBA007E600C /* SMFolderDesc.h */,
 				804F33421BAFDDBA007E600C /* SMFolderDesc.m */,
 				80C45C6D1DFBE2060034FAC0 /* SMFolderIdleController.h */,

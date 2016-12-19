@@ -204,7 +204,7 @@
 }
 
 - (void)startIdle {
-    if(![_account idleEnabled]) {
+    if(![_account idleEnabled:_watchedFolder.kind]) {
         SM_LOG_INFO(@"IDLE is disabled");
         return;
     }
@@ -258,7 +258,7 @@
 }
 
 - (void)stopIdle {
-    if(![_account idleEnabled]) {
+    if(![_account idleEnabled:_watchedFolder.kind]) {
         SM_LOG_INFO(@"IDLE is disabled");
         return;
     }

@@ -224,7 +224,7 @@
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
-- (IBAction)messageCheckPeriodListAciton:(id)sender {
+- (IBAction)messageCheckPeriodListAction:(id)sender {
     NSUInteger item = _messageCheckPeriodList.indexOfSelectedItem;
     NSAssert(item < _messageCheckPeriodValues.count, @"bad item %lu", item);
     

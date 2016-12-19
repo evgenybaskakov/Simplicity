@@ -91,6 +91,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueEmpty:) name:@"MessageBodyFetchQueueEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageFetchQueueNotEmpty:) name:@"MessageBodyFetchQueueNotEmpty" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageCheckPeriodChanged:) name:@"MessageCheckPeriodChanged" object:nil];
     }
     
     SM_LOG_DEBUG(@"user account '%@' initialized", _accountName);
@@ -129,6 +130,10 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     }
     
     return YES;
+}
+
+- (void)messageCheckPeriodChanged:(NSNotification *)notification {
+    [_inboxUpdateController scheduleFolderUpdate:YES];
 }
 
 - (void)messageFetchQueueEmpty:(NSNotification*)notification {

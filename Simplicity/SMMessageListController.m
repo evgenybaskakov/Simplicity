@@ -42,6 +42,7 @@
     if(self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messagesInLocalFolderUpdated:) name:@"MessagesUpdated" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageHeadersSyncFinished:) name:@"MessageHeadersSyncFinished" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageCheckPeriodChanged:) name:@"MessageCheckPeriodChanged" object:nil];
     }
 
     return self;
@@ -207,6 +208,10 @@
     else {
         [_currentFolder fetchMessageBodyUrgentlyWithUID:uid messageId:messageId messageDate:messageDate remoteFolder:remoteFolderName threadId:messageThread.threadId];
     }
+}
+
+- (void)messageCheckPeriodChanged:(NSNotification *)notification {
+    [_folderUpdateController scheduleFolderUpdate:YES];
 }
 
 - (void)messageHeadersSyncFinished:(NSNotification *)notification {

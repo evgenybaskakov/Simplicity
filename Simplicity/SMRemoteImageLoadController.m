@@ -90,8 +90,17 @@
     NSURL *imageFileUrl = [dirUrl URLByAppendingPathComponent:imageName];
     NSString *imageFilePath = [imageFileUrl path];
     
-    NSBitmapImageRep *imageRep = (NSBitmapImageRep*)[[image representations] objectAtIndex: 0];
-    NSData *imageData = [imageRep representationUsingType:NSPNGFileType properties:[NSDictionary dictionary]];
+    NSData *imageData;
+    
+    if(image != nil) {
+        NSBitmapImageRep *imageRep = (NSBitmapImageRep*)[[image representations] objectAtIndex: 0];
+        imageData = [imageRep representationUsingType:NSPNGFileType properties:[NSDictionary dictionary]];
+    }
+    else {
+        // In case if there was no image found, create an empty file
+        // to prevent countless download attempts.
+        imageData = [NSData data];
+    }
     
     if([imageData writeToFile:imageFilePath atomically:YES]) {
         SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", imageFilePath, (unsigned long)[imageData length]);
@@ -125,10 +134,12 @@
                 SM_LOG_INFO(@"image file %@ expired", imageFilePath);
             }
         }
+
+        return [[NSImage alloc] initWithContentsOfFile:imageFilePath];
     }
-    
-    NSImage *image = [[NSImage alloc] initWithContentsOfFile:imageFilePath];
-    return image;
+    else {
+        return nil;
+    }
 }
 
 - (NSString*)webSiteFromEmail:(NSString*)email {
@@ -199,60 +210,62 @@
             });
         }
         
-        if(image == nil || fileNeedsReload) {
-            NSString *emailMD5 = [self md5:email];
-            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
-            NSURLRequest *request = [NSURLRequest requestWithURL:url];
-            NSURLSession *session = [NSURLSession sharedSession];
+        if(!fileNeedsReload) {
+            return;
+        }
+        
+        NSString *emailMD5 = [self md5:email];
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURLSession *session = [NSURLSession sharedSession];
+        
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSImage *image = nil;
+            if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
+                image = [[NSImage alloc] initWithData:data];
+            }
             
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                NSImage *image = nil;
-                if(error == nil && data != nil && [response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse*)response).statusCode == 200) {
-                    image = [[NSImage alloc] initWithData:data];
+            if(image != nil) {
+                [_self saveImageToDisk:email image:image];
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(!_self) {
+                    SM_LOG_WARNING(@"object is gone");
+                    return;
                 }
                 
                 if(image != nil) {
-                    [_self saveImageToDisk:email image:image];
+                    [_self->_imageCache setObject:image forKey:email];
+                    completionBlock(image);
                 }
+                else {
+                    [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if(!_self) {
-                        SM_LOG_WARNING(@"object is gone");
+                    if(!allowWebSiteImage) {
+                        completionBlock(nil);
                         return;
                     }
-                    
-                    if(image != nil) {
-                        [_self->_imageCache setObject:image forKey:email];
-                        completionBlock(image);
-                    }
-                    else {
-                        [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:email];
 
-                        if(!allowWebSiteImage) {
-                            completionBlock(nil);
-                            return;
+                    [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
+                        if(image == nil) {
+                            [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:webSite];
                         }
+                        else {
+                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                [_self saveImageToDisk:webSite image:image];
+                            });
 
-                        [self loadWebSiteImage:webSite completionBlock:^(NSImage *image) {
-                            if(image == nil) {
-                                [_self->_imageCache setObject:(NSImage*)[NSNull null] forKey:webSite];
-                            }
-                            else {
-                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    [_self saveImageToDisk:webSite image:image];
-                                });
-
-                                [_self->_imageCache setObject:image forKey:webSite];
-                            }
-                            
-                            completionBlock(image);
-                        }];
-                    }
-                });
-            }];
-            
-            [task resume];
-        }
+                            [_self->_imageCache setObject:image forKey:webSite];
+                        }
+                        
+                        completionBlock(image);
+                    }];
+                }
+            });
+        }];
+        
+        [task resume];
     });
 
     return nil;
@@ -273,14 +286,12 @@
     image = [self loadImageFromDisk:webSite fileNeedsReload:&fileNeedsReload];
     if(image != nil) {
         completionBlock(image);
-        
-        if(!fileNeedsReload) {
-            // No further actions needed.
-            // Otherwise, the file will be loaded from the network anyway.
-            return;
-        }
     }
     
+    if(!fileNeedsReload) {
+        return;
+    }
+
     SMRemoteImageLoadController __weak *weakSelf = self;
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", webSite]];
@@ -484,10 +495,7 @@
                         capturedCompletionBlock(webPage.bestImage);
                     });
                     
-                    if(webPage.bestImage != nil) {
-                        [_self saveImageToDisk:webPage.webSite image:webPage.bestImage];
-                    }
-                    
+                    [_self saveImageToDisk:webPage.webSite image:webPage.bestImage];
                 }
             }
         }];

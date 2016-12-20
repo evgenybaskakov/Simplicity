@@ -70,8 +70,9 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
 }
 
 - (void)cancelScheduledFolderUpdate {
-    if([_account idleEnabled:_watchedFolder.kind]) {
-        SM_LOG_INFO(@"stopping IDLE");
+    if([_account idleEnabled:_watchedFolder.kind] && _idleController != nil) {
+        SM_LOG_INFO(@"stopping IDLE for folder %@", _watchedFolder.remoteFolderName);
+        
         [_idleController stopIdle];
     }
     else {

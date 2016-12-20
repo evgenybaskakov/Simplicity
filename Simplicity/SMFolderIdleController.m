@@ -146,7 +146,8 @@
             });
         };
         
-        SM_LOG_INFO(@"stopping IDLE");
+        SM_LOG_INFO(@"stopping IDLE for folder %@", _watchedFolder.remoteFolderName);
+        
         [self stopIdle];
         
         [_imapServerReachability startNotifier];

@@ -184,7 +184,7 @@ static NSString *unquote(NSString *s) {
     
     SM_LOG_DEBUG(@"uid %u, sent date %@, received date %@", [self uid], [header date], [header receivedDate]);
 
-    return [header date];
+    return [header receivedDate];
 }
 
 - (NSString*)localizedDate {

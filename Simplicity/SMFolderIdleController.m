@@ -269,6 +269,7 @@
     if(_idleOp != nil) {
         SM_LOG_INFO(@"cancelling IDLE operation for folder '%@', id %lu", _watchedFolder.remoteFolderName, _idleId);
         
+        [_idleOp interruptIdle];
         [_idleOp cancel];
         
         _idleOp = nil;

@@ -134,12 +134,9 @@
     }
     
     if(finishFetch) {
-        [_messageStorage endUpdateWithRemoteFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
+        SMMessageStorageUpdateResult updateResult = [_messageStorage endUpdateWithRemoteFolder:nil removeVanishedMessages:NO updateDatabase:NO unseenMessagesCount:&_unseenMessagesCount processNewUnseenMessagesBlock:nil];
         
-        [self finishMessageHeadersFetching];
-        
-        // TODO: unified mailbox search???f
-        [SMNotificationsController localNotifyMessageHeadersSyncFinished:self updateNow:NO hasUpdates:YES account:(SMUserAccount*)_account];
+        [self finalizeLocalFolderUpdate:updateResult];
         
         return;
     }

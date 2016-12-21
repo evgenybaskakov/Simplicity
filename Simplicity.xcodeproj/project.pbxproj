@@ -550,6 +550,7 @@
 		8036323E1DB0B8A9003B7680 /* underline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = underline.png; sourceTree = "<group>"; };
 		803632421DB0BB75003B7680 /* quote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quote.png; sourceTree = "<group>"; };
 		803637681E07846A00C4A21B /* SMFolderKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderKind.h; sourceTree = "<group>"; };
+		803637741E0A638B00C4A21B /* SMMessageStorageUpdateResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMessageStorageUpdateResult.h; sourceTree = "<group>"; };
 		803932681C97D6E700CE38CB /* SMUserAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccount.h; sourceTree = "<group>"; };
 		803932691C97D6E700CE38CB /* SMUserAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUserAccount.m; sourceTree = "<group>"; };
 		803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAdvancedPreferencesViewController.h; sourceTree = "<group>"; };
@@ -968,6 +969,7 @@
 				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
 				00ED317E17F88DA700B04F5B /* SMMessageStorage.h */,
 				00ED317F17F88DA700B04F5B /* SMMessageStorage.m */,
+				803637741E0A638B00C4A21B /* SMMessageStorageUpdateResult.h */,
 				00EB7E85199C70FA00CA2B1B /* SMMessageThread.h */,
 				00EB7E86199C70FA00CA2B1B /* SMMessageThread.m */,
 				803A653C1CEED32E0026B194 /* SMMessageThreadAccountProxy.h */,

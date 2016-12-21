@@ -12,6 +12,7 @@
 
 #import "SMAbstractLocalFolder.h"
 #import "SMUserAccountDataObject.h"
+#import "SMMessageStorageUpdateResult.h"
 #import "SMFolder.h"
 
 // TODO: move to advanced settings
@@ -70,6 +71,6 @@ static const MCOIMAPMessagesRequestKind messageHeadersRequestKind = (MCOIMAPMess
 
 - (void)updateMessageHeaders:(NSArray<MCOIMAPMessage*>*)messages plainTextBodies:(NSArray<NSString*>*)plainTextBodies hasAttachmentsFlags:(NSArray<NSNumber*>*)hasAttachmentsFlags updateDatabase:(BOOL)updateDatabase newMessages:(NSMutableArray<MCOIMAPMessage*>*)newMessages;
 
-- (void)finishMessageHeadersFetching;
+- (void)finalizeLocalFolderUpdate:(SMMessageStorageUpdateResult)updateResult;
 
 @end

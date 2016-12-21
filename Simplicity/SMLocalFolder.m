@@ -317,6 +317,12 @@
         }
     } : nil];
 
+    [self finalizeLocalFolderUpdate:updateResult];
+}
+
+// This is a protected method.
+// Be careful, it is called from ancestors (SMSearchLocalFolder).
+- (void)finalizeLocalFolderUpdate:(SMMessageStorageUpdateResult)updateResult {
     BOOL justFinishedDBSync = _dbSyncInProgress;
     
     _finishingFetch = NO;
@@ -331,7 +337,7 @@
     }
     
     [_dbOps removeAllObjects];
-
+    
     // Tell everybody we have updates if we just finished loading from the DB or
     // updated from the server for the first time.
     // So the view controllers will have a chance to hide their DB and server sync progress indicators.

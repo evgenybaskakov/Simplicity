@@ -11,6 +11,7 @@
 #import <MailCore/MailCore.h>
 
 #import "SMUserAccountDataObject.h"
+#import "SMMessageStorageUpdateResult.h"
 #import "SMAbstractMessageStorage.h"
 
 @protocol SMAbstractAccount;
@@ -21,12 +22,6 @@
 @class SMUnifiedMessageStorage;
 
 @interface SMMessageStorage : SMUserAccountDataObject<SMAbstractMessageStorage>
-
-typedef NS_ENUM(NSInteger, SMMessageStorageUpdateResult) {
-    SMMesssageStorageUpdateResultNone,
-    SMMesssageStorageUpdateResultFlagsChanged,
-    SMMesssageStorageUpdateResultStructureChanged
-};
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account localFolder:(id<SMAbstractLocalFolder>)localFolder;
 

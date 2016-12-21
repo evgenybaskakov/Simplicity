@@ -34,12 +34,14 @@
     self = [super init];
     
     if(self) {
+        NSAssert(folder != nil, @"folder being watched is nil");
+        NSAssert(folder.remoteFolderName != nil, @"name of the folder being watched is nil");
+
         _account = account;
         _watchedFolder = folder;
         _updateController = updateController;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accountSyncError:) name:@"AccountSyncError" object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChangedNotification:) name:kReachabilityChangedNotification object:nil];
     }
     

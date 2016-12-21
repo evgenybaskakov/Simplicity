@@ -25,6 +25,9 @@ static const NSUInteger AUTO_MESSAGE_CHECK_PERIOD_SEC = 60;
     self = [super init];
     
     if(self) {
+        NSAssert(folder != nil, @"folder being watched is nil");
+        NSAssert(folder.remoteFolderName != nil, @"name of the folder being watched is nil");
+
         _account = account;
         _watchedFolder = folder;
         _idleController = [[SMFolderIdleController alloc] initWithUserAccount:account folder:folder updateController:self];

@@ -80,13 +80,17 @@
             SMFolderKind kind = (folder != nil? folder.kind : SMFolderKindRegular);
 
             localFolder = [[_account localFolderRegistry] createLocalFolder:folderName remoteFolder:remoteFolderName kind:kind syncWithRemoteFolder:syncWithRemoteFolder];
+            
+            NSAssert(localFolder != nil, @"could not create local folder %@", remoteFolderName);
         }
         
-        if(!_account.unified) {
-            SMUserAccount *userAccount = (SMUserAccount*)_account;
+        if(localFolder.kind != SMFolderKindInbox && localFolder.syncedWithRemoteFolder) {
+            // Don't duplicate the inbox update controller unless it's not synced automatically.
+            // Don't watch folders not synced with the server.
+        
+            if(!_account.unified) {
+                SMUserAccount *userAccount = (SMUserAccount*)_account;
             
-            if(localFolder.kind != SMFolderKindInbox) {
-                // Don't duplicate the inbox update controller unless it's not synced automatically.
                 _folderUpdateController = [[SMFolderUpdateController alloc] initWithUserAccount:userAccount folder:(SMLocalFolder*)localFolder];
             }
         }

@@ -537,7 +537,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         
         [alert addButtonWithTitle:@"OK"];
         [alert addButtonWithTitle:@"Cancel"];
-        [alert setMessageText:@"Are you sure you want to delete this draft?"];
+        [alert setMessageText:@"Are you sure you want to discard this draft?"];
         [alert setAlertStyle:NSWarningAlertStyle];
         
         if([alert runModal] != NSAlertFirstButtonReturn) {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -35,13 +35,13 @@
                         <action selector="sendAction:" target="-2" id="YAd-aM-XnA"/>
                     </connections>
                 </button>
-                <button toolTip="Move draft to trash" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
+                <button toolTip="Discard draft" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jEL-eI-naP">
                     <rect key="frame" x="351" y="2" width="32" height="26"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="23" id="E26-cl-hKn"/>
                         <constraint firstAttribute="width" constant="32" id="P7S-DL-aIP"/>
                     </constraints>
-                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="trash-black" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XMQ-k7-KRb">
+                    <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="discard-draft" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XMQ-k7-KRb">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -93,7 +93,7 @@
     </objects>
     <resources>
         <image name="attachment" width="128" height="128"/>
+        <image name="discard-draft" width="128" height="128"/>
         <image name="make-window" width="128" height="128"/>
-        <image name="trash-black" width="64" height="64"/>
     </resources>
 </document>

@@ -126,6 +126,7 @@
 		803632401DB0B8A9003B7680 /* italic.png in Resources */ = {isa = PBXBuildFile; fileRef = 8036323D1DB0B8A9003B7680 /* italic.png */; };
 		803632411DB0B8A9003B7680 /* underline.png in Resources */ = {isa = PBXBuildFile; fileRef = 8036323E1DB0B8A9003B7680 /* underline.png */; };
 		803632431DB0BB75003B7680 /* quote.png in Resources */ = {isa = PBXBuildFile; fileRef = 803632421DB0BB75003B7680 /* quote.png */; };
+		8036377D1E0A689F00C4A21B /* discard-draft.png in Resources */ = {isa = PBXBuildFile; fileRef = 8036377C1E0A689F00C4A21B /* discard-draft.png */; };
 		8039326A1C97D6E700CE38CB /* SMUserAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = 803932691C97D6E700CE38CB /* SMUserAccount.m */; };
 		803A29991C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803A29971C00397C00FF8D7C /* SMAdvancedPreferencesViewController.m */; };
 		803A299A1C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803A29981C00397C00FF8D7C /* SMAdvancedPreferencesViewController.xib */; };
@@ -551,6 +552,7 @@
 		803632421DB0BB75003B7680 /* quote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quote.png; sourceTree = "<group>"; };
 		803637681E07846A00C4A21B /* SMFolderKind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderKind.h; sourceTree = "<group>"; };
 		803637741E0A638B00C4A21B /* SMMessageStorageUpdateResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMessageStorageUpdateResult.h; sourceTree = "<group>"; };
+		8036377C1E0A689F00C4A21B /* discard-draft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discard-draft.png"; sourceTree = "<group>"; };
 		803932681C97D6E700CE38CB /* SMUserAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMUserAccount.h; sourceTree = "<group>"; };
 		803932691C97D6E700CE38CB /* SMUserAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMUserAccount.m; sourceTree = "<group>"; };
 		803A29961C00397C00FF8D7C /* SMAdvancedPreferencesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAdvancedPreferencesViewController.h; sourceTree = "<group>"; };
@@ -1350,6 +1352,7 @@
 				807438B51DB33DAF0054115B /* archive-white.png */,
 				8074386C1DB212220054115B /* circle-blue.png */,
 				8074389D1DB302880054115B /* collapse.png */,
+				8036377C1E0A689F00C4A21B /* discard-draft.png */,
 				807438591DB2030A0054115B /* draft-white.png */,
 				807438551DB202220054115B /* draft.png */,
 				807438651DB207C90054115B /* edit.png */,
@@ -1644,6 +1647,7 @@
 				80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */,
 				803632371DB0B7B4003B7680 /* shift-right.png in Resources */,
 				8074381E1DB1F43C0054115B /* new-message.png in Resources */,
+				8036377D1E0A689F00C4A21B /* discard-draft.png in Resources */,
 				807438561DB202220054115B /* draft.png in Resources */,
 				80FAC6F11D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib in Resources */,
 				807438641DB207200054115B /* attachment.png in Resources */,

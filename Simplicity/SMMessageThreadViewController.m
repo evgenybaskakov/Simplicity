@@ -69,6 +69,8 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     BOOL _findContentsPanelShown;
 }
 
+@synthesize topOffset = _topOffset;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
@@ -116,6 +118,20 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 - (void)messageThreadViewWillClose {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setTopOffset:(CGFloat)topOffset {
+    _topOffset = topOffset;
+
+    NSEdgeInsets scrollerInsets = {
+        .top = _topOffset
+    };
+    
+    _messageThreadView.scrollerInsets = scrollerInsets;
+}
+
+- (CGFloat)topOffset {
+    return _topOffset;
 }
 
 #pragma mark Setting new message threads

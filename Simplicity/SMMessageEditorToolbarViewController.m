@@ -22,7 +22,7 @@
 - (void)scaleImage:(NSButton*)button {
     NSImage *img = [button image];
     NSSize buttonSize = [[button cell] cellSize];
-    [img setSize:NSMakeSize(buttonSize.height/1.5, buttonSize.height/1.5)];
+    [img setSize:NSMakeSize(buttonSize.height/1.7, buttonSize.height/1.7)];
     [button setImage:img];
 }
 

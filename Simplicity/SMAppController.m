@@ -271,37 +271,32 @@
 
 - (void)messageHeadersSyncFinished:(NSNotification*)notification {
     SMLocalFolder *localFolder;
-    SMUserAccount *account;
     
-    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder updateNow:nil hasUpdates:nil account:&account];
+    [SMNotificationsController getMessageHeadersSyncFinishedParams:notification localFolder:&localFolder updateNow:nil hasUpdates:nil account:nil];
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
-        [self updateApplicationUnreadCountBadge:localFolder];
+    if(localFolder.kind == SMFolderKindInbox) {
+        [self updateApplicationUnreadCountBadge];
     }
 }
 
 - (void)messageFlagsUpdated:(NSNotification*)notification {
     SMLocalFolder *localFolder;
-    SMUserAccount *account;
     
-    [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:&account];
+    [SMNotificationsController getMessageFlagsUpdatedParams:notification localFolder:&localFolder account:nil];
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
-        [self updateApplicationUnreadCountBadge:localFolder];
+    if(localFolder.kind == SMFolderKindInbox) {
+        [self updateApplicationUnreadCountBadge];
     }
 }
 
 - (void)messagesUpdated:(NSNotification*)notification {
-    SMLocalFolder *localFolder;
     SMUserAccount *account;
+    SMLocalFolder *localFolder;
     
     [SMNotificationsController getMessagesUpdatedParams:notification localFolder:&localFolder account:&account];
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    if(account == appDelegate.currentAccount) { // TODO: do we need this check?
-        [self updateApplicationUnreadCountBadge:localFolder];
+    if(localFolder.kind == SMFolderKindInbox) {
+        [self updateApplicationUnreadCountBadge];
     }
 
     if(localFolder.syncedWithRemoteFolder) {
@@ -737,34 +732,28 @@
 
 #pragma mark Folder stats
 
-- (void)updateApplicationUnreadCountBadge:(SMLocalFolder*)localFolder {
-/*
- 
- TODO!
- 
- 
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    id<SMAbstractLocalFolder> inboxLocalFolder = [[appDelegate.currentAccount localFolderRegistry] getLocalFolderByKind:SMFolderKindInbox];
-    
-    // TODO: use sum for inbox folders across all accounts
+- (void)updateApplicationUnreadCountBadge {
+    NSUInteger unseenMessagesCount = 0;
 
-    if(((appDelegate.currentAccountIsUnified && [(SMUnifiedLocalFolder*)inboxLocalFolder attachedLocalFolderForAccount:\
-                                                 appDelegate.currentAccount] == localFolder) || ((SMLocalFolder*)inboxLocalFolder == localFolder))) {
-        NSString *messageCountString;
-        
-        if(inboxLocalFolder.unseenMessagesCount > 999) {
-            messageCountString = @"999+";
-        }
-        else if(inboxLocalFolder.unseenMessagesCount > 0) {
-            messageCountString = [NSString stringWithFormat:@"%lu", inboxLocalFolder.unseenMessagesCount];
-        }
-        else {
-            messageCountString = @"";
-        }
-        
-        [[[NSApplication sharedApplication] dockTile] setBadgeLabel:messageCountString];
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    for(NSUInteger i = 0; i < appDelegate.accounts.count; i++) {
+        SMLocalFolder *inbox = (SMLocalFolder*)[[appDelegate.accounts[i] localFolderRegistry] getLocalFolderByKind:SMFolderKindInbox];
+        unseenMessagesCount += inbox.unseenMessagesCount;
     }
- */
+    
+    NSString *messageCountString;
+    
+    if(unseenMessagesCount > 999) {
+        messageCountString = @"999+";
+    }
+    else if(unseenMessagesCount > 0) {
+        messageCountString = [NSString stringWithFormat:@"%lu", unseenMessagesCount];
+    }
+    else {
+        messageCountString = @"";
+    }
+    
+    [[[NSApplication sharedApplication] dockTile] setBadgeLabel:messageCountString];
 }
 
 #pragma mark Navigation in message thread

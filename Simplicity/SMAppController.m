@@ -152,6 +152,7 @@
     [messageListToolbarView.leftAnchor constraintEqualToAnchor:messageListHeaderView.leftAnchor constant:0].active = true;
     [messageListToolbarView.rightAnchor constraintEqualToAnchor:messageListHeaderView.rightAnchor constant:0].active = true;
     [messageListToolbarView.topAnchor constraintEqualToAnchor:messageListHeaderView.topAnchor constant:0].active = true;
+    [messageListToolbarView.bottomAnchor constraintEqualToAnchor:messageListHeaderView.bottomAnchor constant:0].active = true;
     
     NSBox *messageListViewSeparator = [self createSeparator];
     

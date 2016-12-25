@@ -344,13 +344,11 @@
     }
     
     NSString *bodyPreview = [firstMessage plainTextBody];
-    if(bodyPreview == nil || bodyPreview.length == 0) {
-        if(firstMessage.hasData) {
-            bodyPreview = @"Message has no content";
-        }
-        else {
-            bodyPreview = @"";
-        }
+    if(bodyPreview == nil) {
+        bodyPreview = @"";
+    }
+    else if(bodyPreview.length == 0) {
+        bodyPreview = @"Message has no content.";
     }
         
     [view.messagePreviewTextField setStringValue:bodyPreview];

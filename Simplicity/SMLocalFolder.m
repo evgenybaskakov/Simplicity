@@ -307,13 +307,15 @@
     
     NSUInteger *unseenMessagesCountPtr = (_useProvidedUnseenMessagesCount? nil : &_unseenMessagesCount);
     SMMessageStorageUpdateResult updateResult = [_messageStorage endUpdateWithRemoteFolder:_remoteFolderName removeVanishedMessages:YES updateDatabase:updateDatabase unseenMessagesCount:unseenMessagesCountPtr processNewUnseenMessagesBlock:shouldUseNotifications? ^(NSArray *newUnseenMessages) {
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        
         if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
             for(SMMessage *m in newUnseenMessages) {
-                [SMNotificationsController systemNotifyNewMessage:m.fromAddress.stringRepresentationShort];
+                [appDelegate.notificationController systemNotifyNewMessage:m.fromAddress.stringRepresentationShort];
             }
         }
         else {
-            [SMNotificationsController systemNotifyNewMessages:newUnseenMessages.count];
+            [appDelegate.notificationController systemNotifyNewMessages:newUnseenMessages.count];
         }
     } : nil];
 

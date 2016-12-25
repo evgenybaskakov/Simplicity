@@ -17,10 +17,10 @@
 @class SMMessageThreadCellViewController;
 @class SMMessageBodyFetchQueue;
 
-@interface SMNotificationsController : NSObject
+@interface SMNotificationsController : NSObject<NSUserNotificationCenterDelegate>
 
-+ (void)systemNotifyNewMessage:(NSString*)from;
-+ (void)systemNotifyNewMessages:(NSUInteger)count;
+- (void)systemNotifyNewMessage:(NSString*)from;
+- (void)systemNotifyNewMessages:(NSUInteger)count;
 
 + (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account;
 + (void)localNotifyAccountSyncSuccess:(SMUserAccount*)account;

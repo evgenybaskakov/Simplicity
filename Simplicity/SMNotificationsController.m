@@ -12,7 +12,21 @@
 
 @implementation SMNotificationsController
 
-+ (void)systemNotifyNewMessage:(NSString*)from {
+- (id)init {
+    self = [super init];
+    
+    if(self) {
+        [[NSUserNotificationCenter defaultUserNotificationCenter]  setDelegate:self];
+    }
+    
+    return self;
+}
+
+- (void)dealloc {
+    [[NSUserNotificationCenter defaultUserNotificationCenter]  setDelegate:nil];
+}
+
+- (void)systemNotifyNewMessage:(NSString*)from {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
@@ -21,13 +35,16 @@
 
         notification.title = @"New message";
         notification.informativeText = [NSString stringWithFormat:@"From %@", from];
-        notification.soundName = NSUserNotificationDefaultSoundName;
+        notification.soundName = nil; // TODO: NSUserNotificationDefaultSoundName;
+        notification.actionButtonTitle = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? @"Reply" : @"Reply All");
+        notification.otherButtonTitle = @"Delete";
+        notification.hasActionButton = YES;
         
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
     }
 }
 
-+ (void)systemNotifyNewMessages:(NSUInteger)count {
+- (void)systemNotifyNewMessages:(NSUInteger)count {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
@@ -264,6 +281,17 @@
     if(account) {
         *account = [messageInfo objectForKey:@"Account"];
     }
+}
+
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
+    // Reply button: activationType 2
+    // Content click: activationType 0
+    NSLog(@"%s: activationType %ld", __func__, notification.activationType);
+}
+
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center didDismissAlert:(NSUserNotification *)notification {
+    // Delete button: activationType 1
+    NSLog(@"%s: activationType %ld", __func__, notification.activationType);
 }
 
 @end

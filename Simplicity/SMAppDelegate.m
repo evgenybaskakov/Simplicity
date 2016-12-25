@@ -43,6 +43,7 @@
     self = [ super init ];
 
     if(self) {
+        _notificationController = [[SMNotificationsController alloc] init];
         _preferencesController = [[SMPreferencesController alloc] init];
         _messageComparators = [[SMMessageComparators alloc] init];
         _addressBookController = [[SMAddressBookController alloc] init];

@@ -15,6 +15,7 @@
 
 @class SMAppController;
 @class SMUserAccount;
+@class SMNotificationsController;
 @class SMPreferencesController;
 @class SMUnifiedAccount;
 @class SMUnifiedMailbox;
@@ -35,6 +36,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
+@property (readonly) SMNotificationsController *notificationController;
 @property (readonly) SMPreferencesController *preferencesController;
 @property (readonly) SMMessageComparators *messageComparators;
 @property (readonly) SMAddressBookController *addressBookController;

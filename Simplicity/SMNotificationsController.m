@@ -8,10 +8,14 @@
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMUserAccount.h"
 #import "SMLocalFolder.h"
+#import "SMLocalFolderRegistry.h"
+#import "SMMessageStorage.h"
+#import "SMMessageThread.h"
 #import "SMMessage.h"
 #import "SMAddress.h"
 
@@ -293,23 +297,37 @@
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
     NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
-    NSString *localFolder = [notification.userInfo objectForKey:@"LocalFolder"];
+    NSString *localFolderName = [notification.userInfo objectForKey:@"LocalFolder"];
     NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
 
-    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolder, accountName, notification.activationType);
+    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolderName, accountName, notification.activationType);
     
-    if(messageId == nil || localFolder == nil || accountName == nil) {
+    if(messageId == nil || localFolderName == nil || accountName == nil) {
         return;
     }
     
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+
+    NSUInteger accountIdx = [appDelegate accountIndexByName:accountName];
+    if(accountIdx == NSNotFound) {
+        return;
+    }
+
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
     if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
         // Reply button clicked
         SMEditorReplyKind replyKind = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? SMEditorReplyKind_ReplyOne : SMEditorReplyKind_ReplyAll);
         
-        //TODO [appDelegate.appController composeReply:replyKind message:(SMMessage*)message account:(SMUserAccount*)account];
+        SMUserAccount *account = appDelegate.accounts[accountIdx];
+        SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
+        SMMessage *message = [localFolder messageById:messageId.unsignedLongLongValue];
+        
+        if(message == nil) {
+            return;
+        }
+        
+        [appDelegate.appController composeReply:replyKind message:message account:account];
     }
     else if(notification.activationType == NSUserNotificationActivationTypeNone) {
         // Content clicked
@@ -319,12 +337,12 @@
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDismissAlert:(NSUserNotification *)notification {
     NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
-    NSString *localFolder = [notification.userInfo objectForKey:@"LocalFolder"];
+    NSString *localFolderName = [notification.userInfo objectForKey:@"LocalFolder"];
     NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
     
-    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolder, accountName, notification.activationType);
+    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolderName, accountName, notification.activationType);
 
-    if(messageId == nil || localFolder == nil || accountName == nil) {
+    if(messageId == nil || localFolderName == nil || accountName == nil) {
         return;
     }
     

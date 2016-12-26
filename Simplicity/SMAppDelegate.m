@@ -170,6 +170,18 @@
     return [_accounts indexOfObject:account];
 }
 
+- (NSUInteger)accountIndexByName:(NSString*)accountName {
+    for(NSUInteger i = 0; i < _accounts.count; i++) {
+        SMUserAccount *account = _accounts[i];
+        
+        if([account.accountName isEqualToString:accountName]) {
+            return i;
+        }
+    }
+    
+    return NSNotFound;
+}
+
 - (void)enableOrDisableAccountControls {
     BOOL enableElements = (_accounts.count != 0);
 

@@ -60,6 +60,7 @@
 - (void)reloadAccount:(NSUInteger)accountIdx;
 - (void)reconnectAccount:(NSUInteger)accountIdx;
 - (void)setCurrentAccount:(id<SMAbstractAccount>)account;
+- (NSUInteger)accountIndexByName:(NSString*)accountName;
 - (void)enableOrDisableAccountControls;
 - (NSUInteger)accountIndex:(SMUserAccount*)account;
 

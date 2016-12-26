@@ -311,7 +311,7 @@
         
         if(newUnseenMessages.count <= MAX_NEW_MESSAGE_NOTIFICATIONS) {
             for(SMMessage *m in newUnseenMessages) {
-                [appDelegate.notificationController systemNotifyNewMessage:m.fromAddress.stringRepresentationShort];
+                [appDelegate.notificationController systemNotifyNewMessage:m localFolder:self];
             }
         }
         else {

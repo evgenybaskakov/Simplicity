@@ -11,6 +11,7 @@
 
 #import "SMAbstractAccount.h"
 #import "SMHTMLMessageEditorView.h"
+#import "SMEditorReplyKind.h"
 
 @protocol SMAbstractLocalFolder;
 
@@ -74,6 +75,8 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 - (void)toggleOperationQueueSheet;
 - (void)hideOperationQueueSheet;
+
+- (void)composeReply:(SMEditorReplyKind)replyKind message:(SMMessage*)message account:(SMUserAccount*)account;
 
 - (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder;
 - (void)openMessageEditorWindow:(NSString*)textContent plainText:(BOOL)plainText subject:(NSString*)subject to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc draftUid:(uint32_t)draftUid mcoAttachments:(NSArray*)mcoAttachments editorKind:(SMEditorContentsKind)editorKind;

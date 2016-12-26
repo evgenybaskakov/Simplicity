@@ -10,6 +10,7 @@
 
 #import "SMEditorReplyKind.h"
 
+@class SMMessage;
 @class SMAddress;
 @class SMUserAccount;
 @class SMLocalFolder;
@@ -19,7 +20,7 @@
 
 @interface SMNotificationsController : NSObject<NSUserNotificationCenterDelegate>
 
-- (void)systemNotifyNewMessage:(NSString*)from;
+- (void)systemNotifyNewMessage:(SMMessage*)message localFolder:(SMLocalFolder*)localFolder;
 - (void)systemNotifyNewMessages:(NSUInteger)count;
 
 + (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account;

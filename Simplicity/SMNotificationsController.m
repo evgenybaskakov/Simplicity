@@ -6,9 +6,14 @@
 //  Copyright © 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
+#import "SMUserAccount.h"
+#import "SMLocalFolder.h"
+#import "SMMessage.h"
+#import "SMAddress.h"
 
 @implementation SMNotificationsController
 
@@ -26,12 +31,15 @@
     [[NSUserNotificationCenter defaultUserNotificationCenter]  setDelegate:nil];
 }
 
-- (void)systemNotifyNewMessage:(NSString*)from {
+- (void)systemNotifyNewMessage:(SMMessage*)message localFolder:(SMLocalFolder*)localFolder {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     if(preferencesController.shouldShowNotifications) {
+        NSString *from = message.fromAddress.stringRepresentationShort;
         NSUserNotification *notification = [[NSUserNotification alloc] init];
+        
+        notification.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedLongLong:message.messageId], @"MessageId", localFolder.localName, @"LocalFolder", ((SMUserAccount*)localFolder.account).accountName, @"AccountName", nil];
 
         notification.title = @"New message";
         notification.informativeText = [NSString stringWithFormat:@"From %@", from];
@@ -284,14 +292,46 @@
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
-    // Reply button: activationType 2
-    // Content click: activationType 0
-    NSLog(@"%s: activationType %ld", __func__, notification.activationType);
+    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
+    NSString *localFolder = [notification.userInfo objectForKey:@"LocalFolder"];
+    NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
+
+    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolder, accountName, notification.activationType);
+    
+    if(messageId == nil || localFolder == nil || accountName == nil) {
+        return;
+    }
+    
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMPreferencesController *preferencesController = [appDelegate preferencesController];
+
+    if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
+        // Reply button clicked
+        SMEditorReplyKind replyKind = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? SMEditorReplyKind_ReplyOne : SMEditorReplyKind_ReplyAll);
+        
+        //TODO [appDelegate.appController composeReply:replyKind message:(SMMessage*)message account:(SMUserAccount*)account];
+    }
+    else if(notification.activationType == NSUserNotificationActivationTypeNone) {
+        // Content clicked
+        // TODO
+    }
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDismissAlert:(NSUserNotification *)notification {
-    // Delete button: activationType 1
-    NSLog(@"%s: activationType %ld", __func__, notification.activationType);
+    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
+    NSString *localFolder = [notification.userInfo objectForKey:@"LocalFolder"];
+    NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
+    
+    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolder, accountName, notification.activationType);
+
+    if(messageId == nil || localFolder == nil || accountName == nil) {
+        return;
+    }
+    
+    if(notification.activationType == NSUserNotificationActivationTypeContentsClicked) {
+        // Delete button clicked
+        // TODO
+    }
 }
 
 @end

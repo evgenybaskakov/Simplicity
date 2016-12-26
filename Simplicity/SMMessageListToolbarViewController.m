@@ -132,26 +132,7 @@
     SMMessage *m = messageThread.messagesSortedByDate[0];
     NSAssert(m, @"no message");
 
-    NSString *replySubject = m.subject;
-    if(replyKind == SMEditorReplyKind_Forward) {
-        replySubject = [NSString stringWithFormat:@"Fw: %@", replySubject];
-    }
-    else {
-        if(![SMStringUtils string:replySubject hasPrefix:@"Re: " caseInsensitive:YES]) {
-            replySubject = [NSString stringWithFormat:@"Re: %@", replySubject];
-        }
-    }
-
-    NSMutableArray<SMAddress*> *toAddressList = nil;
-    NSMutableArray<SMAddress*> *ccAddressList = nil;
-    
-    [SMMessageEditorViewController getReplyAddressLists:m replyKind:replyKind accountAddress:messageThread.account.accountAddress to:&toAddressList cc:&ccAddressList];
-    
-    SMEditorContentsKind editorKind = (replyKind == SMEditorReplyKind_Forward ? kUnfoldedForwardEditorContentsKind : kUnfoldedReplyEditorContentsKind);
-    
-    // TODO: also detect if the current message is in raw text; compose reply likewise
-    BOOL plainText = [appDelegate.preferencesController preferableMessageFormat] == SMPreferableMessageFormat_RawText? YES : NO;
-    [[appDelegate appController] openMessageEditorWindow:m.htmlBodyRendering plainText:plainText subject:replySubject to:toAddressList cc:ccAddressList bcc:nil draftUid:m.uid mcoAttachments:m.attachments editorKind:editorKind];
+    [appDelegate.appController composeReply:replyKind message:m account:messageThread.account];
 }
 
 @end

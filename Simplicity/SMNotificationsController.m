@@ -11,7 +11,10 @@
 #import "SMAppController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
+#import "SMMailboxViewController.h"
+#import "SMMessageListController.h"
 #import "SMUserAccount.h"
+#import "SMMailbox.h"
 #import "SMLocalFolder.h"
 #import "SMLocalFolderRegistry.h"
 #import "SMMessageStorage.h"
@@ -323,6 +326,7 @@
     }
 
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
+    SMUserAccount *account = appDelegate.accounts[accountIdx];
 
     if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
         NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
@@ -334,7 +338,6 @@
         // Reply button clicked
         SMEditorReplyKind replyKind = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? SMEditorReplyKind_ReplyOne : SMEditorReplyKind_ReplyAll);
         
-        SMUserAccount *account = appDelegate.accounts[accountIdx];
         SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
         SMMessage *message = [localFolder messageById:messageId.unsignedLongLongValue];
         
@@ -345,6 +348,14 @@
         [appDelegate.appController composeReply:replyKind message:message account:account];
     }
     else if(notification.activationType == NSUserNotificationActivationTypeContentsClicked) {
+        SMFolder *folder = [account.mailbox getFolderByName:localFolderName];
+        
+        if(folder == nil) {
+            return;
+        }
+        
+        [[appDelegate.appController mailboxViewController] changeFolder:folder];
+
         // Content clicked
         // TODO
         

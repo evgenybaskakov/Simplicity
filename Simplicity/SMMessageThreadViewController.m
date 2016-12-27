@@ -1009,7 +1009,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         // TODO: warn if editor is open! (issue #115)
         if(![self.view.window.delegate isKindOfClass:[SMMessageWindowController class]]) {
             SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-            [[appDelegate.appController messageListViewController] deselectCurrentMessageThread];
+            [[appDelegate.appController messageListViewController] unselectCurrentMessageThread];
         }
     } else {
         [super keyDown:theEvent];

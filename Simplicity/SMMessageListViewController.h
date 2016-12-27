@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class SMFolder;
+@class SMMessageThread;
 
 @interface SMMessageListViewController : NSViewController<NSTableViewDataSource, NSTableViewDelegate>
 
@@ -19,7 +20,8 @@
 - (IBAction)toggleUnseenAction:(id)sender;
 
 - (void)toggleStarForSelected;
-- (void)deselectCurrentMessageThread;
+- (void)unselectCurrentMessageThread;
+- (void)selectMessageThread:(SMMessageThread*)messageThread;
 - (void)reloadMessageList:(BOOL)preserveSelection;
 - (void)reloadMessageList:(BOOL)preserveSelection updateScrollPosition:(BOOL)updateScrollPosition;
 - (void)messageHeadersSyncFinished:(BOOL)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition;

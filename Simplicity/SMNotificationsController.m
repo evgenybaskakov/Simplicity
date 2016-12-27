@@ -12,6 +12,7 @@
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
 #import "SMMailboxViewController.h"
+#import "SMMessageListViewController.h"
 #import "SMMessageListController.h"
 #import "SMUserAccount.h"
 #import "SMMailbox.h"
@@ -327,20 +328,28 @@
 
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     SMUserAccount *account = appDelegate.accounts[accountIdx];
-
+    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
+    
     if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
-        NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
-
+        // Reply button clicked.
+        // Open a new editor with the reply being edited.
         if(messageId == nil) {
             return;
         }
         
-        // Reply button clicked
         SMEditorReplyKind replyKind = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? SMEditorReplyKind_ReplyOne : SMEditorReplyKind_ReplyAll);
         
         SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
-        SMMessage *message = [localFolder messageById:messageId.unsignedLongLongValue];
+        if(localFolder == nil) {
+            return;
+        }
+
+        SMMessageThread *messageThread = [localFolder messageThreadByMessageId:messageId.unsignedLongLongValue];
+        if(messageThread == nil) {
+            return;
+        }
         
+        SMMessage *message = [messageThread getMessageByMessageId:messageId.unsignedLongLongValue];
         if(message == nil) {
             return;
         }
@@ -348,6 +357,8 @@
         [appDelegate.appController composeReply:replyKind message:message account:account];
     }
     else if(notification.activationType == NSUserNotificationActivationTypeContentsClicked) {
+        // Content clicked.
+        // Go to the local folder and select the target message.
         SMFolder *folder = [account.mailbox getFolderByName:localFolderName];
         
         if(folder == nil) {
@@ -356,9 +367,21 @@
         
         [[appDelegate.appController mailboxViewController] changeFolder:folder];
 
-        // Content clicked
-        // TODO
-        
+        if(messageId == nil) {
+            return;
+        }
+
+        SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
+        if(localFolder == nil) {
+            return;
+        }
+
+        SMMessageThread *messageThread = [localFolder messageThreadByMessageId:messageId.unsignedLongLongValue];
+        if(messageThread == nil) {
+            return;
+        }
+
+        [[appDelegate.appController messageListViewController] selectMessageThread:messageThread];
     }
 }
 

@@ -188,6 +188,24 @@
     return YES;
 }
 
+- (void)selectMessageThread:(SMMessageThread*)messageThread {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    id<SMAbstractLocalFolder> currentLocalFolder = [messageListController currentLocalFolder];
+    NSAssert(currentLocalFolder != nil, @"bad corrent folder");
+    
+    NSUInteger messageThreadIdx = [currentLocalFolder.messageStorage getMessageThreadIndexByDate:messageThread];
+    
+    if(messageThreadIdx != NSNotFound) {
+        _selectedMessageThread = messageThread;
+    }
+    else {
+        _selectedMessageThread = nil;
+    }
+    
+    [self changeSelectedMessageThread];
+}
+
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {
     [self cancelChangeSelectedMessageThread];
 
@@ -1168,13 +1186,13 @@
                 // TODO: special case 1: editor is open
                 //       see issue #115
 
-                [self deselectCurrentMessageThread];
+                [self unselectCurrentMessageThread];
             }
         }
     }
 }
 
-- (void)deselectCurrentMessageThread {
+- (void)unselectCurrentMessageThread {
     [self reloadMessageList:NO];
     [self changeSelectedMessageThread];
 }

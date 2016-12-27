@@ -909,11 +909,13 @@
     return needUpdateMessageList;
 }
 
-- (SMMessage*)messageById:(uint64_t)messageId {
+- (SMMessageThread*)messageThreadByMessageId:(uint64_t)messageId {
     NSNumber *messageThreadId = [_messageStorage messageThreadByMessageId:messageId];
-    SMMessageThread *messageThread = [_messageStorage messageThreadById:messageThreadId.unsignedLongLongValue];
-
-    return [messageThread getMessageByMessageId:messageId];
+    if(messageThreadId == nil) {
+        return nil;
+    }
+    
+    return [_messageStorage messageThreadById:messageThreadId.unsignedLongLongValue];
 }
 
 @end

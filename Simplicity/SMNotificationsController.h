@@ -21,7 +21,7 @@
 @interface SMNotificationsController : NSObject<NSUserNotificationCenterDelegate>
 
 - (void)systemNotifyNewMessage:(SMMessage*)message localFolder:(SMLocalFolder*)localFolder;
-- (void)systemNotifyNewMessages:(NSUInteger)count;
+- (void)systemNotifyNewMessages:(NSUInteger)count localFolder:(SMLocalFolder*)localFolder;
 
 + (void)localNotifyAccountPreferencesChanged:(SMUserAccount*)account;
 + (void)localNotifyAccountSyncSuccess:(SMUserAccount*)account;

@@ -46,7 +46,8 @@
         notification.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedLongLong:message.messageId], @"MessageId", localFolder.localName, @"LocalFolder", ((SMUserAccount*)localFolder.account).accountName, @"AccountName", nil];
 
         notification.title = @"New message";
-        notification.informativeText = [NSString stringWithFormat:@"From %@", from];
+        notification.subtitle = [NSString stringWithFormat:@"From %@", from];
+        notification.informativeText = message.plainTextBody;
         notification.soundName = nil; // TODO: NSUserNotificationDefaultSoundName;
         notification.actionButtonTitle = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? @"Reply" : @"Reply All");
         notification.otherButtonTitle = @"Delete";
@@ -56,16 +57,18 @@
     }
 }
 
-- (void)systemNotifyNewMessages:(NSUInteger)count {
+- (void)systemNotifyNewMessages:(NSUInteger)count localFolder:(SMLocalFolder*)localFolder {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     
     if(preferencesController.shouldShowNotifications) {
         NSUserNotification *notification = [[NSUserNotification alloc] init];
-        
+
+        notification.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:localFolder.localName, @"LocalFolder", ((SMUserAccount*)localFolder.account).accountName, @"AccountName", nil];
+
         notification.title = [NSString stringWithFormat:@"%lu new messages", count];
-//        notification.informativeText = previewText;
-        notification.soundName = NSUserNotificationDefaultSoundName;
+        notification.soundName = nil; // TODO: NSUserNotificationDefaultSoundName;
+        notification.hasActionButton = NO;
         
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
     }
@@ -295,14 +298,20 @@
     }
 }
 
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification {
+    NSLog(@"%s", __func__);
+    return NO;
+}
+
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
-    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
     NSString *localFolderName = [notification.userInfo objectForKey:@"LocalFolder"];
     NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
 
-    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolderName, accountName, notification.activationType);
+    SM_LOG_INFO(@"localFolder %@, accountName %@, activationType %ld", localFolderName, accountName, notification.activationType);
     
-    if(messageId == nil || localFolderName == nil || accountName == nil) {
+    [[NSUserNotificationCenter defaultUserNotificationCenter] removeDeliveredNotification:notification];
+    
+    if(localFolderName == nil || accountName == nil) {
         return;
     }
     
@@ -316,6 +325,12 @@
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
 
     if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
+        NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
+
+        if(messageId == nil) {
+            return;
+        }
+        
         // Reply button clicked
         SMEditorReplyKind replyKind = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? SMEditorReplyKind_ReplyOne : SMEditorReplyKind_ReplyAll);
         
@@ -329,9 +344,10 @@
         
         [appDelegate.appController composeReply:replyKind message:message account:account];
     }
-    else if(notification.activationType == NSUserNotificationActivationTypeNone) {
+    else if(notification.activationType == NSUserNotificationActivationTypeContentsClicked) {
         // Content clicked
         // TODO
+        
     }
 }
 
@@ -342,11 +358,13 @@
     
     SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolderName, accountName, notification.activationType);
 
+    [[NSUserNotificationCenter defaultUserNotificationCenter] removeDeliveredNotification:notification];
+
     if(messageId == nil || localFolderName == nil || accountName == nil) {
         return;
     }
     
-    if(notification.activationType == NSUserNotificationActivationTypeContentsClicked) {
+    if(notification.activationType == NSUserNotificationActivationTypeNone) {
         // Delete button clicked
         // TODO
     }

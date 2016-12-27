@@ -315,7 +315,7 @@
             }
         }
         else {
-            [appDelegate.notificationController systemNotifyNewMessages:newUnseenMessages.count];
+            [appDelegate.notificationController systemNotifyNewMessages:newUnseenMessages.count localFolder:self];
         }
     } : nil];
 

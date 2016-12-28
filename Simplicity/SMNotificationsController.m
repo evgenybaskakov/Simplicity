@@ -397,10 +397,26 @@
     if(messageId == nil || localFolderName == nil || accountName == nil) {
         return;
     }
-    
+
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    NSUInteger accountIdx = [appDelegate accountIndexByName:accountName];
+    if(accountIdx == NSNotFound) {
+        return;
+    }
+
     if(notification.activationType == NSUserNotificationActivationTypeNone) {
         // Delete button clicked
-        // TODO
+        // Content clicked.
+        // Go to the local folder and select the target message.
+        SMUserAccount *account = appDelegate.accounts[accountIdx];
+        SMFolder *folder = [account.mailbox getFolderByName:localFolderName];
+        
+        if(folder == nil) {
+            return;
+        }
+        
+        [[appDelegate.appController mailboxViewController] changeFolder:folder];
+        [[appDelegate.appController messageListViewController] scrollToTop];
     }
 }
 

@@ -188,6 +188,12 @@
     return YES;
 }
 
+- (void)scrollToTop {
+    if(_messageListTableView.numberOfRows != 0) {
+        [_messageListTableView scrollRowToVisible:0];
+    }
+}
+
 - (void)selectMessageThread:(SMMessageThread*)messageThread {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
@@ -204,6 +210,8 @@
     }
     
     [self changeSelectedMessageThread];
+    
+    [_messageListTableView scrollRowToVisible:messageThreadIdx];
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification {

@@ -19,6 +19,7 @@
 - (IBAction)toggleStarAction:(id)sender;
 - (IBAction)toggleUnseenAction:(id)sender;
 
+- (void)scrollToTop;
 - (void)toggleStarForSelected;
 - (void)unselectCurrentMessageThread;
 - (void)selectMessageThread:(SMMessageThread*)messageThread;

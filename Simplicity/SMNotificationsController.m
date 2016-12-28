@@ -367,21 +367,22 @@
         
         [[appDelegate.appController mailboxViewController] changeFolder:folder];
 
-        if(messageId == nil) {
-            return;
-        }
+        if(messageId != nil) {
+            SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
+            if(localFolder == nil) {
+                return;
+            }
 
-        SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
-        if(localFolder == nil) {
-            return;
-        }
+            SMMessageThread *messageThread = [localFolder messageThreadByMessageId:messageId.unsignedLongLongValue];
+            if(messageThread == nil) {
+                return;
+            }
 
-        SMMessageThread *messageThread = [localFolder messageThreadByMessageId:messageId.unsignedLongLongValue];
-        if(messageThread == nil) {
-            return;
+            [[appDelegate.appController messageListViewController] selectMessageThread:messageThread];
         }
-
-        [[appDelegate.appController messageListViewController] selectMessageThread:messageThread];
+        else {
+            [[appDelegate.appController messageListViewController] scrollToTop];
+        }
     }
 }
 

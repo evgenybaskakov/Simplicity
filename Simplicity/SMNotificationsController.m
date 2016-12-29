@@ -51,7 +51,9 @@
 
         notification.title = @"New message";
         notification.subtitle = [NSString stringWithFormat:@"From %@", from];
-        notification.informativeText = message.plainTextBody;
+        if(preferencesController.shouldShowMessagePreviewInNotifications) {
+            notification.informativeText = message.plainTextBody;
+        }
         notification.soundName = nil; // TODO: NSUserNotificationDefaultSoundName;
         notification.actionButtonTitle = (preferencesController.defaultReplyAction == SMDefaultReplyAction_Reply ? @"Reply" : @"Reply All");
         notification.otherButtonTitle = @"Delete";

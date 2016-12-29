@@ -16,6 +16,7 @@
                 <outlet property="preferableMessageFormatList" destination="I0E-zl-2Tf" id="xcP-7b-fWh"/>
                 <outlet property="showContactImagesInMessageListCheckBox" destination="7NE-4Z-ser" id="mep-cQ-3c3"/>
                 <outlet property="showEmailAddressesInMailboxes" destination="RbI-5o-uCF" id="YGK-F5-4mH"/>
+                <outlet property="showMessagePreviewInNotificationsCheckBox" destination="W7w-Me-e6O" id="CYU-hN-7FQ"/>
                 <outlet property="showNotificationsCheckBox" destination="aoh-Bh-9aV" id="AgK-ez-dHA"/>
                 <outlet property="useServerImagesInMessageListCheckBox" destination="5lq-7Y-4DG" id="m6i-Bd-fyV"/>
                 <outlet property="useServerImagesInMessageListLabel" destination="7bc-bL-WRg" id="DB3-hl-G73"/>
@@ -25,11 +26,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="569" height="281"/>
+            <rect key="frame" x="0.0" y="0.0" width="569" height="301"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Po6-Eh-BT8">
-                    <rect key="frame" x="275" y="120" width="179" height="26"/>
+                    <rect key="frame" x="275" y="122" width="179" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="w5X-E8-eFW" id="CSj-sl-zPU">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -47,7 +48,7 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xs1-1Q-W4w">
-                    <rect key="frame" x="97" y="125" width="174" height="17"/>
+                    <rect key="frame" x="97" y="127" width="174" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message body preview:" id="lQp-6o-ijZ">
                         <font key="font" metaFont="system"/>
@@ -56,7 +57,7 @@
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RbI-5o-uCF">
-                    <rect key="frame" x="277" y="170" width="274" height="18"/>
+                    <rect key="frame" x="277" y="190" width="274" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show email addresses in mailboxes" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Z1W-rl-mGg">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -67,7 +68,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoh-Bh-9aV">
-                    <rect key="frame" x="277" y="150" width="274" height="18"/>
+                    <rect key="frame" x="277" y="170" width="274" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show notifications" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="9iW-cn-OCk">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -78,7 +79,7 @@
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7bc-bL-WRg">
-                    <rect key="frame" x="295" y="209" width="256" height="34"/>
+                    <rect key="frame" x="295" y="229" width="256" height="34"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Use sender's server image if contact image is not available" id="fYC-Xd-Rio">
                         <font key="font" metaFont="system"/>
@@ -87,7 +88,7 @@
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ifd-nL-FH6">
-                    <rect key="frame" x="277" y="190" width="274" height="18"/>
+                    <rect key="frame" x="277" y="210" width="274" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Allow low quality contact images" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="aji-fi-Kaf">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -98,7 +99,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7NE-4Z-ser">
-                    <rect key="frame" x="277" y="245" width="274" height="18"/>
+                    <rect key="frame" x="277" y="265" width="274" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show contact images in the message list" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="QYp-XT-pu5">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -109,7 +110,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5lq-7Y-4DG">
-                    <rect key="frame" x="277" y="225" width="274" height="18"/>
+                    <rect key="frame" x="277" y="245" width="274" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="center" state="on" inset="2" id="w6E-So-udd">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -120,7 +121,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vb1-DB-paf" userLabel="Download button">
-                    <rect key="frame" x="271" y="11" width="186" height="32"/>
+                    <rect key="frame" x="271" y="13" width="186" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Syk-y8-cvR">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -128,7 +129,7 @@
                     </buttonCell>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KMZ-Cm-SFd">
-                    <rect key="frame" x="97" y="48" width="174" height="17"/>
+                    <rect key="frame" x="97" y="50" width="174" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Preferable message format:" id="CZ8-ql-oMH">
                         <font key="font" metaFont="system"/>
@@ -137,7 +138,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="I0E-zl-2Tf">
-                    <rect key="frame" x="275" y="42" width="179" height="26"/>
+                    <rect key="frame" x="275" y="44" width="179" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Pms-DP-MxT" id="3Ng-6V-6ur">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -155,7 +156,7 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TkN-oH-ctl">
-                    <rect key="frame" x="97" y="20" width="174" height="17"/>
+                    <rect key="frame" x="97" y="22" width="174" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Downloads folder:" id="J96-p9-LaT">
                         <font key="font" metaFont="system"/>
@@ -164,7 +165,7 @@
                     </textFieldCell>
                 </textField>
                 <pathControl verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hq7-uA-hHG" userLabel="Download folder Path Control">
-                    <rect key="frame" x="274" y="16" width="175" height="26"/>
+                    <rect key="frame" x="274" y="18" width="175" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <pathCell key="cell" selectable="YES" editable="YES" alignment="left" pathStyle="popUp" id="Npc-5e-MJ5">
                         <font key="font" metaFont="system"/>
@@ -177,7 +178,7 @@
                     </connections>
                 </pathControl>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aLX-C6-Ql6">
-                    <rect key="frame" x="275" y="68" width="179" height="26"/>
+                    <rect key="frame" x="275" y="70" width="179" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="AlW-0R-fjU" id="gjJ-aB-H02">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -195,7 +196,7 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lxq-60-uoq">
-                    <rect key="frame" x="97" y="73" width="174" height="17"/>
+                    <rect key="frame" x="97" y="75" width="174" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Default reply action:" id="Spk-Q8-mRf">
                         <font key="font" metaFont="system"/>
@@ -204,7 +205,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GYX-UV-rG3">
-                    <rect key="frame" x="97" y="99" width="174" height="17"/>
+                    <rect key="frame" x="97" y="101" width="174" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Message check period:" id="kuX-H6-HZB">
                         <font key="font" metaFont="system"/>
@@ -213,7 +214,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Dw-A5-Heu">
-                    <rect key="frame" x="275" y="94" width="179" height="26"/>
+                    <rect key="frame" x="275" y="96" width="179" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="hjl-p1-m90" id="o2I-kJ-rtC">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -230,8 +231,19 @@
                         <action selector="messageCheckPeriodListAction:" target="-2" id="1GN-7R-bMz"/>
                     </connections>
                 </popUpButton>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W7w-Me-e6O" userLabel="Show message previews in notifications">
+                    <rect key="frame" x="277" y="150" width="274" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Message preview in notifications" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Lee-xm-To8">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="showMessagePreviewInNotificationsAction:" target="-2" id="LoH-IB-Wsi"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="438.5" y="216.5"/>
+            <point key="canvasLocation" x="438.5" y="226.5"/>
         </customView>
     </objects>
 </document>

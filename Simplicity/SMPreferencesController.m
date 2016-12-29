@@ -35,6 +35,7 @@
 #define kDefaultReplyAction             @"DefaultReplyAction"
 #define kMailboxTheme                   @"MailboxTheme"
 #define kShouldShowNotifications        @"ShouldShowNotifications"
+#define kShouldShowMessagePreviewInNotifications @"ShouldShowMessagePreviewInNotifications"
 #define kShouldUseSingleSignature       @"ShouldUseSingleSignature"
 #define kSingleSignature                @"SingleSignature"
 #define kLogLevel                       @"LogLevel"
@@ -140,14 +141,15 @@
         CACHED_VAR(name) = sec;                                                                     \
     }
 
-DEFINE_BOOL_PREFERENCE(useFixedSizeFontForPlainTextMessages,    setUseFixedSizeFontForPlainTextMessages,    kUseFixedSizeFontForPlainTextMessages, YES)
-DEFINE_BOOL_PREFERENCE(shouldShowContactImages,                 setShouldShowContactImages,                 kShouldShowContactImages,              YES)
-DEFINE_BOOL_PREFERENCE(shouldUseServerContactImages,            setShouldUseServerContactImages,            kShouldUseServerContactImages,         YES)
-DEFINE_BOOL_PREFERENCE(shouldAllowLowQualityContactImages,      setShouldAllowLowQualityContactImages,      kShouldAllowLowQualityContactImages,   NO)
-DEFINE_BOOL_PREFERENCE(shouldShowEmailAddressesInMailboxes,     setShouldShowEmailAddressesInMailboxes,     kShouldShowEmailAddressesInMailboxes,  NO)
-DEFINE_BOOL_PREFERENCE(shouldShowNotifications,                 setShouldShowNotifications,                 kShouldShowNotifications,              YES)
-DEFINE_BOOL_PREFERENCE(shouldUseSingleSignature,                setShouldUseSingleSignature,                kShouldUseSingleSignature,             YES)
-DEFINE_BOOL_PREFERENCE(shouldUseUnifiedMailbox,                 setShouldUseUnifiedMailbox,                 kShouldUseUnifiedMailbox,              YES)
+DEFINE_BOOL_PREFERENCE(useFixedSizeFontForPlainTextMessages,    setUseFixedSizeFontForPlainTextMessages,    kUseFixedSizeFontForPlainTextMessages,    YES)
+DEFINE_BOOL_PREFERENCE(shouldShowContactImages,                 setShouldShowContactImages,                 kShouldShowContactImages,                 YES)
+DEFINE_BOOL_PREFERENCE(shouldUseServerContactImages,            setShouldUseServerContactImages,            kShouldUseServerContactImages,            YES)
+DEFINE_BOOL_PREFERENCE(shouldAllowLowQualityContactImages,      setShouldAllowLowQualityContactImages,      kShouldAllowLowQualityContactImages,      NO)
+DEFINE_BOOL_PREFERENCE(shouldShowEmailAddressesInMailboxes,     setShouldShowEmailAddressesInMailboxes,     kShouldShowEmailAddressesInMailboxes,     NO)
+DEFINE_BOOL_PREFERENCE(shouldShowNotifications,                 setShouldShowNotifications,                 kShouldShowNotifications,                 YES)
+DEFINE_BOOL_PREFERENCE(shouldShowMessagePreviewInNotifications, setShouldShowMessagePreviewInNotifications, kShouldShowMessagePreviewInNotifications, YES)
+DEFINE_BOOL_PREFERENCE(shouldUseSingleSignature,                setShouldUseSingleSignature,                kShouldUseSingleSignature,                YES)
+DEFINE_BOOL_PREFERENCE(shouldUseUnifiedMailbox,                 setShouldUseUnifiedMailbox,                 kShouldUseUnifiedMailbox,                 YES)
 
 DEFINE_INTEGER_PREFERENCE(messageListPreviewLineCount,      setMessageListPreviewLineCount,     kMessageListPreviewLineCount,   2)
 DEFINE_INTEGER_PREFERENCE(messageCheckPeriodSec,            setMessageCheckPeriodSec,           kMessageCheckPeriodSec,         0)

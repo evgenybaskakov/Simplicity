@@ -26,6 +26,7 @@
 @property (weak) IBOutlet NSButton *allowLowQualityContactImagesInMessageListCheckBox;
 @property (weak) IBOutlet NSButton *showEmailAddressesInMailboxes;
 @property (weak) IBOutlet NSButton *showNotificationsCheckBox;
+@property (weak) IBOutlet NSButton *showMessagePreviewInNotificationsCheckBox;
 @property (weak) IBOutlet NSPopUpButton *messageBodyLinesPreviewList;
 @property (weak) IBOutlet NSPopUpButton *messageCheckPeriodList;
 @property (weak) IBOutlet NSPathControl *downloadsFolderPopup;
@@ -88,6 +89,11 @@
     //
     
     _showNotificationsCheckBox.state = ([[appDelegate preferencesController] shouldShowNotifications]? NSOnState : NSOffState);
+    
+    //
+
+    _showMessagePreviewInNotificationsCheckBox.state = ([[appDelegate preferencesController] shouldShowMessagePreviewInNotifications]? NSOnState : NSOffState);
+    _showMessagePreviewInNotificationsCheckBox.enabled = (_showNotificationsCheckBox.state == NSOnState);
 
     //
     
@@ -213,6 +219,13 @@
 - (IBAction)showNotificationsAction:(id)sender {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [appDelegate preferencesController].shouldShowNotifications = (_showNotificationsCheckBox.state == NSOnState);
+
+    _showMessagePreviewInNotificationsCheckBox.enabled = (_showNotificationsCheckBox.state == NSOnState);
+}
+
+- (IBAction)showMessagePreviewInNotificationsAction:(id)sender {
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    [appDelegate preferencesController].shouldShowMessagePreviewInNotifications = (_showMessagePreviewInNotificationsCheckBox.state == NSOnState);
 }
 
 - (IBAction)messageBodyLinesPreviewListAction:(id)sender {

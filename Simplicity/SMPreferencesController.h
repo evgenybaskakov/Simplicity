@@ -40,6 +40,7 @@ typedef NS_ENUM(NSUInteger, SMPreferableMessageFormat) {
 @property (nonatomic) BOOL shouldAllowLowQualityContactImages;
 @property (nonatomic) BOOL shouldShowEmailAddressesInMailboxes;
 @property (nonatomic) BOOL shouldShowNotifications;
+@property (nonatomic) BOOL shouldShowMessagePreviewInNotifications;
 @property (nonatomic) BOOL shouldUseSingleSignature;
 @property (nonatomic) BOOL shouldUseUnifiedMailbox;
 @property (nonatomic) NSUInteger messageListPreviewLineCount;

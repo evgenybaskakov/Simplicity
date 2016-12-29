@@ -48,12 +48,12 @@
 
 // Adds a new message to the folder.
 // Ensures that the folder consistency and sorting order are not changed.
-// Can only happen if there's no update ongoing at the current moment.
+// TODO: remove?
 - (void)addMessage:(SMMessage*)message;
 
 // Removes the given message from the folder.
 // Ensures that the folder consistency and sorting order are not changed.
-// Can only happen if there's no update ongoing at the current moment.
+// TODO: remove?
 - (void)removeMessage:(SMMessage*)message;
 
 // sets/clears the unseen flag

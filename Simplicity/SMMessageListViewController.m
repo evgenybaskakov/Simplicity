@@ -704,17 +704,15 @@
 - (void)moveSelectedMessageThreadsToFolder:(SMFolder*)remoteFolder {
     SM_LOG_DEBUG(@"to remote folder %@", remoteFolder.fullName);
     
-    // 1. stop current sync, disable further syncs
-    // 2. remote selected message threads from the list
-    // 3. clear currently selected message
-    // 4. start copy op
-    // 5. once copy done, start 'add delete flag' op
-    // 6. once flagging is done, start 'expunge folder' op
-    // 7. once expunge is done, enable and start sync
+    // Action sequence:
+    // - remote selected message threads from the list
+    // - clear currently selected message
+    // - start copy op
+    // - once copy done, start 'add delete flag' op
+    // - once flagging is done, start 'expunge folder' op
     // err-1. if copy op fails, retry N times, then revert the changes made to the message list
     // err-2. if flagging op fails, retry N times, then register the op and put it to background
     // err-3. if expunge op fails, retry N times, then register the op and put it to background
-    // TODO: save transaction history in a registry on disk, so these ops could be retried even after app restart
 
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];

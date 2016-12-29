@@ -310,10 +310,11 @@
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
+    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
     NSString *localFolderName = [notification.userInfo objectForKey:@"LocalFolder"];
     NSString *accountName = [notification.userInfo objectForKey:@"AccountName"];
 
-    SM_LOG_INFO(@"localFolder %@, accountName %@, activationType %ld", localFolderName, accountName, notification.activationType);
+    SM_LOG_INFO(@"messageId %@, localFolder %@, accountName %@, activationType %ld", messageId, localFolderName, accountName, notification.activationType);
     
     [[NSUserNotificationCenter defaultUserNotificationCenter] removeDeliveredNotification:notification];
     
@@ -330,7 +331,6 @@
 
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
     SMUserAccount *account = appDelegate.accounts[accountIdx];
-    NSNumber *messageId = [notification.userInfo objectForKey:@"MessageId"];
     
     if(notification.activationType == NSUserNotificationActivationTypeActionButtonClicked) {
         // Reply button clicked.
@@ -417,9 +417,28 @@
         if(folder == nil) {
             return;
         }
+
+        SMLocalFolder *localFolder = (SMLocalFolder*)[account.localFolderRegistry getLocalFolderByName:localFolderName];
+        if(localFolder == nil) {
+            return;
+        }
         
-        [[appDelegate.appController mailboxViewController] changeFolder:folder];
-        [[appDelegate.appController messageListViewController] scrollToTop];
+        SMMessageThread *messageThread = [localFolder messageThreadByMessageId:messageId.unsignedLongLongValue];
+        if(messageThread == nil) {
+            return;
+        }
+
+        SMMessage *message = [messageThread getMessageByMessageId:messageId.unsignedLongLongValue];
+        if(message == nil) {
+            return;
+        }
+
+        SMFolder *trashFolder = [account.mailbox trashFolder];
+        NSAssert(trashFolder != nil, @"no trash folder");
+        
+        if([localFolder moveMessage:message withinMessageThread:messageThread toRemoteFolder:trashFolder.fullName]) {
+            [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+        }
     }
 }
 

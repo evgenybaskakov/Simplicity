@@ -24,7 +24,7 @@
 - (void)removeFindContentsResults;
 
 - (void)setMessageThread:(SMMessageThread*)messageThread selectedThreadsCount:(NSUInteger)selectedThreadsCount localFolder:(id<SMAbstractLocalFolder>)localFolder;
-- (void)updateMessageThread;
+- (void)updateMessageThread0;
 
 - (void)setCellCollapsed:(BOOL)collapsed cellIndex:(NSUInteger)cellIndex;
 

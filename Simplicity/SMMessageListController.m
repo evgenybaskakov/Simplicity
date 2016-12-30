@@ -185,7 +185,8 @@
                 SMAppController *appController = [appDelegate appController];
                 
                 [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
-                [[appController messageThreadViewController] updateMessageThread];
+
+                [appController updateMessageThreadViews];
             }
         }
     }
@@ -235,6 +236,8 @@
         NSAssert(!_account.unified, @"Cannot process fetched messages in the unified account");
         
         [[appController messageListViewController] messageHeadersSyncFinished:hasUpdates updateScrollPosition:YES];
+
+        [appController updateMessageThreadViews];
         
         // Schedule message update only we are being asked to.
         [_folderUpdateController scheduleFolderUpdate:updateNow];

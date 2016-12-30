@@ -11,6 +11,7 @@
 #import "SMEditorReplyKind.h"
 
 @class SMMessage;
+@class SMMessageThread;
 @class SMAddress;
 @class SMUserAccount;
 @class SMLocalFolder;
@@ -34,6 +35,7 @@
 + (void)localNotifyMessageFlagsUpdates:(SMLocalFolder*)localFolder account:(SMUserAccount*)account;
 + (void)localNotifyMessagesUpdated:(SMLocalFolder*)localFolder updateResult:(NSUInteger)updateResult account:(SMUserAccount*)account;
 + (void)localNotifyNewLabelCreated:(NSString*)labelName account:(SMUserAccount*)account;
++ (void)localNotifyMessageThreadUpdated:(SMMessageThread*)messageThread;
 + (void)localNotifyMessageViewFrameLoaded:(uint64_t)messageId account:(SMUserAccount*)account;
 + (void)localNotifyDeleteEditedMessageDraft:(SMMessageEditorViewController*)messageEditorViewController account:(SMUserAccount*)account;
 + (void)localNotifyDiscardMessageDraft:(SMMessageThreadCellViewController*)messageThreadCellViewController;
@@ -53,6 +55,7 @@
 + (void)getMessageBodyFetchQueueNotEmptyParams:(NSNotification*)notification queue:(SMMessageBodyFetchQueue**)queue account:(SMUserAccount**)account;
 + (void)getMessageFlagsUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account;
 + (void)getMessagesUpdatedParams:(NSNotification*)notification localFolder:(SMLocalFolder**)localFolder account:(SMUserAccount**)account;
++ (void)getMessageThreadUpdatedParams:(NSNotification*)notification threadId:(uint64_t*)threadId account:(SMUserAccount**)account;
 + (void)getMessageViewFrameLoadedParams:(NSNotification*)notification messageId:(uint64_t*)messageId account:(SMUserAccount**)account;
 + (void)getFolderListUpdatedParams:(NSNotification*)notification account:(SMUserAccount**)account;
 

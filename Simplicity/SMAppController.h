@@ -31,7 +31,7 @@
 @class SMMessageEditorWindowController;
 @class SMMessageEditorViewController;
 @class SMOperationQueueWindowController;
-@class SMMessageWindowController;
+@class SMMessageThreadWindowController;
 @class SMMessageThread;
 @class SMSearchRequestInputController;
 @class SMUserAccount;
@@ -119,6 +119,8 @@ typedef NS_ENUM(NSUInteger, SMSearchOperationKind) {
 
 @property (nonatomic, readonly) BOOL messageWindowsOpened;
 
-- (void)closeMessageWindow:(SMMessageWindowController*)messageWindowController;
+- (void)closeMessageWindow:(SMMessageThreadWindowController*)messageWindowController;
+
+- (void)updateMessageThreadViews;
 
 @end

@@ -647,9 +647,6 @@
 - (void)messageHeadersSyncFinished:(BOOL)hasUpdates updateScrollPosition:(BOOL)updateScrollPosition {
     if(hasUpdates) {
         [self reloadMessageList:YES updateScrollPosition:updateScrollPosition];
-
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-        [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     }
 }
 
@@ -862,7 +859,7 @@
         [self addStarToMessageThread:messageThread];
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
 }
 
 - (void)addStarToMessageThread:(SMMessageThread*)messageThread {
@@ -932,7 +929,7 @@
         [messageThread updateThreadAttributesForMessageId:message.messageId];
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
+    [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
 }
 
 #pragma mark Context menu creation
@@ -1038,13 +1035,14 @@
 
         if(messageThread != nil) {
             [self addStarToMessageThread:messageThread];
+            
+            [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
         }
         else {
             SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
@@ -1058,13 +1056,14 @@
         
         if(messageThread != nil) {
             [self removeStarFromMessageThread:messageThread];
+
+            [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
         }
         else {
             SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 
@@ -1097,14 +1096,15 @@
             else {
                 [self removeStarFromMessageThread:messageThread];
             }
+
+            [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
         }
         else {
             SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
-    [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+    [self reloadMessageList:YES];
 }
 
 - (void)markMessageThreadsAsUnseen:(BOOL)unseen {
@@ -1122,13 +1122,14 @@
                 
                 [messageThread updateThreadAttributesForMessageId:message.messageId];
             }
+
+            [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
         }
         else {
             SM_LOG_ERROR(@"message thread at row %lu not found", selectedRow);
         }
     }
     
-    [[[appDelegate appController] messageThreadViewController] updateMessageThread];
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
 

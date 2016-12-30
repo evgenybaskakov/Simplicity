@@ -331,7 +331,7 @@
         [appController updateMailboxFolderListForAccount:appDelegate.currentAccount];
         [[appController operationQueueWindowController] reloadOperationQueue];
         [[appController messageListViewController] reloadMessageList:YES updateScrollPosition:YES];
-        [[appController messageThreadViewController] updateMessageThread];
+        [[appController messageThreadViewController] updateMessageThread0];
         
         [self reloadAccountViews:NO];
     }

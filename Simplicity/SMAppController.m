@@ -796,10 +796,14 @@
 #pragma mark Message thread view management
 
 - (void)updateMessageThreadViews {
-    [_messageThreadViewController updateMessageThread0];
+    [_messageThreadViewController updateMessageThread];
     
-    for(SMMessageThreadWindowController *w in _messageThreadWindowControllers) {
-        [w.messageThreadViewController updateMessageThread0];
+    NSMutableArray<SMMessageThreadWindowController*> *threadWindowControllers = _messageThreadWindowControllers.copy;
+
+    // traverse the copy because the shared container might mutate on thread updates
+    // eg if a thread becomes empty, its window might be removed
+    for(SMMessageThreadWindowController *w in threadWindowControllers) {
+        [w.messageThreadViewController updateMessageThread];
         
         // TODO: check if window is empty?
         // TODO: check if there's an editor being used?

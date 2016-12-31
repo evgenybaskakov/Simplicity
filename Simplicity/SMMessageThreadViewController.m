@@ -309,7 +309,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Building visual layout of message threads
 
-- (void)updateMessageThread0 {
+- (void)updateMessageThread {
     if(_currentMessageThread == nil)
         return;
     
@@ -629,7 +629,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         
         [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
         
-        [self updateMessageThread0];
+        [self updateMessageThread];
         
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
     }
@@ -1088,12 +1088,12 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         else {
             cell.viewController.collapsed = YES;
             
-            [self updateMessageThread0];
+            [self updateMessageThread];
             [self updateCellFrames];
         }
     }
     else {
-        [self updateMessageThread0];
+        [self updateMessageThread];
     }
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveMessageListSelection];
@@ -1115,7 +1115,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     
     [_currentMessageThread updateThreadAttributesForMessageId:cell.message.messageId];
     
-    [self updateMessageThread0];
+    [self updateMessageThread];
     
     [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
 }
@@ -1344,7 +1344,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     [SMNotificationsController getMessageThreadUpdatedParams:notification threadId:&threadId account:&account];
     
     if(_currentMessageThread.account == account && _currentMessageThread.threadId == threadId) {
-        [self updateMessageThread0];
+        [self updateMessageThread];
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  SMMessageWindowController.m
+//  SMMessageThreadWindowController.m
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 8/15/15.
@@ -11,9 +11,9 @@
 #import "SMFlippedView.h"
 #import "SMMessageThread.h"
 #import "SMMessageThreadViewController.h"
-#import "SMMessageWindowController.h"
+#import "SMMessageThreadWindowController.h"
 
-@implementation SMMessageWindowController
+@implementation SMMessageThreadWindowController
 
 - (void)windowWillLoad {
     [super windowWillLoad];
@@ -57,7 +57,7 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;
     
-    [appController closeMessageWindow:self];
+    [appController unregisterMessageThreadWindow:self];
 }
 
 @end

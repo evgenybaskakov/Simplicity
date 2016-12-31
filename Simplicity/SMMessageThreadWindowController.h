@@ -1,5 +1,5 @@
 //
-//  SMMessageWindowController.h
+//  SMMessageThreadWindowController.h
 //  Simplicity
 //
 //  Created by Evgeny Baskakov on 8/15/15.
@@ -12,7 +12,7 @@
 
 @class SMMessageThread;
 
-@interface SMMessageWindowController : NSWindowController<NSWindowDelegate>
+@interface SMMessageThreadWindowController : NSWindowController<NSWindowDelegate>
 
 @property (readonly) SMMessageThreadViewController *messageThreadViewController;
 

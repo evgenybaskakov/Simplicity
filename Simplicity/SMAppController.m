@@ -38,7 +38,7 @@
 #import "SMLocalFolder.h"
 #import "SMMessageThread.h"
 #import "SMNewAccountWindowController.h"
-#import "SMMessageWindowController.h"
+#import "SMMessageThreadWindowController.h"
 #import "SMPreferencesWindowController.h"
 #import "SMSectionMenuViewController.h"
 #import "SMTokenFieldViewController.h"
@@ -53,7 +53,7 @@
     NSLayoutConstraint *_searchResultsHeightConstraint;
     NSArray *_searchResultsShownConstraints;
     NSMutableArray *_messageEditorWindowControllers;
-    NSMutableArray *_messageWindowControllers;
+    NSMutableArray<SMMessageThreadWindowController*> *_messageThreadWindowControllers;
     BOOL _operationQueueShown;
     BOOL _syncedFoldersInitialized;
     BOOL _preferencesWindowShown;
@@ -220,7 +220,7 @@
     //
     
     _messageEditorWindowControllers = [NSMutableArray array];
-    _messageWindowControllers = [NSMutableArray array];
+    _messageThreadWindowControllers = [NSMutableArray array];
     
     //
     
@@ -521,8 +521,8 @@
 - (void)showFindPanel:(BOOL)replace {
     NSWindow *curWindow = [[NSApplication sharedApplication] keyWindow];
     
-    if([curWindow.delegate isKindOfClass:[SMMessageWindowController class]]) {
-        [[(SMMessageWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel:replace];
+    if([curWindow.delegate isKindOfClass:[SMMessageThreadWindowController class]]) {
+        [[(SMMessageThreadWindowController*)curWindow.delegate messageThreadViewController] showFindContentsPanel:replace];
     }
     else if([curWindow.delegate isKindOfClass:[SMMessageEditorWindowController class]]) {
         [[(SMMessageEditorWindowController*)curWindow.delegate messageEditorViewController] showFindContentsPanel:replace];
@@ -668,8 +668,8 @@
 
 #pragma mark Message viewer window
 
-- (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {
-    SMMessageWindowController *messageWindowController = [[SMMessageWindowController alloc] initWithWindowNibName:@"SMMessageWindowController"];
+- (void)openMessageThreadWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {
+    SMMessageThreadWindowController *messageWindowController = [[SMMessageThreadWindowController alloc] initWithWindowNibName:@"SMMessageThreadWindowController"];
     
     messageWindowController.messageThread = messageThread;
     messageWindowController.localFolder = localFolder;
@@ -677,15 +677,15 @@
 
     [messageWindowController showWindow:self];
     
-    [_messageWindowControllers addObject:messageWindowController];
+    [_messageThreadWindowControllers addObject:messageWindowController];
 }
 
-- (void)closeMessageWindow:(SMMessageWindowController*)messageWindowController {
-    [_messageWindowControllers removeObject:messageWindowController];
+- (void)unregisterMessageThreadWindow:(SMMessageThreadWindowController*)messageWindowController {
+    [_messageThreadWindowControllers removeObject:messageWindowController];
 }
 
 - (BOOL)messageWindowsOpened {
-    return _messageWindowControllers.count != 0;
+    return _messageThreadWindowControllers.count != 0;
 }
 
 #pragma mark Menu actions
@@ -791,6 +791,32 @@
 
 - (void)disableMessageThreadNavigationControl {
     _messageThreadToolbarViewController.messageNavigationControl.enabled = NO;
+}
+
+#pragma mark Message thread view management
+
+- (void)updateMessageThreadViews {
+    [_messageThreadViewController updateMessageThread];
+    
+    NSMutableArray<SMMessageThreadWindowController*> *threadWindowControllers = _messageThreadWindowControllers.copy;
+
+    // traverse the copy because the shared container might mutate on thread updates
+    // eg if a thread becomes empty, its window might be removed
+    for(SMMessageThreadWindowController *w in threadWindowControllers) {
+        [w.messageThreadViewController updateMessageThread];
+    }
+}
+
+- (void)closeMessageThreadWindowWithController:(SMMessageThreadViewController*)messageThreadViewController {
+    NSMutableArray<SMMessageThreadWindowController*> *threadWindowControllers = _messageThreadWindowControllers.copy;
+    
+    // traverse the copy because the shared container might mutate on thread updates
+    // eg if a thread becomes empty, its window might be removed
+    for(SMMessageThreadWindowController *w in threadWindowControllers) {
+        if(w.messageThreadViewController == messageThreadViewController) {
+            [w close];
+        }
+    }
 }
 
 @end

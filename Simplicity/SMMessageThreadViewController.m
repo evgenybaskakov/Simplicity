@@ -26,7 +26,7 @@
 #import "SMAbstractLocalFolder.h"
 #import "SMMessageStorage.h"
 #import "SMMailbox.h"
-#import "SMMessageWindowController.h"
+#import "SMMessageThreadWindowController.h"
 #import "SMMessageEditorViewController.h"
 #import "SMHTMLMessageEditorView.h"
 #import "SMAddressFieldViewController.h"
@@ -44,7 +44,7 @@ static const CGFloat CELL_SPACING = 0;
 static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 @interface SMMessageThreadViewController()
-- (void)messageBodyFetched:(NSNotification *)notification;
+- (void)messageBodyFetched:(NSNotification*)notification;
 - (void)updateMessageView:(uint64_t)messageId threadId:(uint64_t)threadId;
 @end
 
@@ -97,6 +97,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         
         _cells = [NSMutableArray new];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageThreadUpdated:) name:@"MessageThreadUpdated" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageBodyFetched:) name:@"MessageBodyFetched" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageViewFrameLoaded:) name:@"MessageViewFrameLoaded" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(composeMessageReply:) name:@"ComposeMessageReply" object:nil];
@@ -408,6 +409,10 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     } else {
         SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
         
+        if(_messageEditorViewController != nil) {
+            [self makeEditorWindow:_messageEditorViewController];
+        }
+        
         [_cells removeAllObjects];
         [_contentView setSubviews:[NSArray array]];
         
@@ -415,7 +420,13 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         
         [_messageThreadInfoViewController setMessageThread:nil];
 
+        [self hideFindContentsPanel];
         [self hideCurrentMessageThread:0];
+     
+        // In case if this controller is in a separate window, close it
+        // The app controller will decide itself if this is a windowized mode
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        [[appDelegate appController] closeMessageThreadWindowWithController:self];
     }
 
     [self updateNavigationControls];
@@ -811,17 +822,17 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
 }
 
-- (void)viewBoundsDidChange:(NSNotification *)notification {
+- (void)viewBoundsDidChange:(NSNotification*)notification {
     [self arrangeVisibleCells];
 }
 
-- (void)viewFrameDidChange:(NSNotification *)notification {
+- (void)viewFrameDidChange:(NSNotification*)notification {
     [self updateCellFrames];
 }
 
 #pragma mark Processing incoming notifications
 
-- (void)messageBodyFetched:(NSNotification *)notification {
+- (void)messageBodyFetched:(NSNotification*)notification {
     uint64_t messageId;
     int64_t threadId;
     SMUserAccount *account;
@@ -833,7 +844,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
 }
 
-- (void)messageViewFrameLoaded:(NSNotification *)notification {
+- (void)messageViewFrameLoaded:(NSNotification*)notification {
     uint64_t messageId;
     SMUserAccount *account;
     
@@ -1007,7 +1018,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     if([theEvent keyCode] == 53) { // esc
         // Only close the current message thread if this is not a separate window
         // TODO: warn if editor is open! (issue #115)
-        if(![self.view.window.delegate isKindOfClass:[SMMessageWindowController class]]) {
+        if(![self.view.window.delegate isKindOfClass:[SMMessageThreadWindowController class]]) {
             SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
             [[appDelegate.appController messageListViewController] unselectCurrentMessageThread];
         }
@@ -1033,7 +1044,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Message manipulations
 
-- (void)deleteMessage:(NSNotification *)notification {
+- (void)deleteMessage:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -1050,15 +1061,15 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+
     if([_currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+        [SMNotificationsController localNotifyMessageThreadUpdated:_currentMessageThread];
     }
-    
-    [self updateMessageThread];
 }
 
-- (void)changeMessageCellUnreadFlag:(NSNotification *)notification {
+- (void)changeMessageCellUnreadFlag:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -1098,7 +1109,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     [[[appDelegate appController] messageListViewController] reloadMessageList:preserveMessageListSelection];
 }
 
-- (void)changeMessageCellFlaggedFlag:(NSNotification *)notification {
+- (void)changeMessageCellFlaggedFlag:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -1121,13 +1132,13 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Draft discartion
 
-- (void)discardMessageDraft:(NSNotification *)notification {
+- (void)discardMessageDraft:(NSNotification*)notification {
     [self deleteMessage:notification];
 }
 
 #pragma mark Saving downloads
 
-- (void)saveAttachments:(NSNotification *)notification {
+- (void)saveAttachments:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -1140,7 +1151,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     [cell.viewController saveAttachments];
 }
 
-- (void)saveAttachmentsToDownloads:(NSNotification *)notification {
+- (void)saveAttachmentsToDownloads:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     NSUInteger cellIdx = [self findCell:[messageInfo objectForKey:@"ThreadCell"]];
     
@@ -1155,7 +1166,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
 #pragma mark Message reply composition
 
-- (void)composeMessageReply:(NSNotification *)notification {
+- (void)composeMessageReply:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
     
@@ -1222,7 +1233,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     [self updateCellFrames];
 }
 
-- (void)deleteEditedMessageDraft:(NSNotification *)notification {
+- (void)deleteEditedMessageDraft:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     SMMessageEditorViewController *messageEditorViewController = [messageInfo objectForKey:@"MessageEditorViewController"];
     
@@ -1231,13 +1242,13 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     }
 }
 
-- (void)messageEditorContentHeightChanged:(NSNotification *)notification {
+- (void)messageEditorContentHeightChanged:(NSNotification*)notification {
     if(_messageEditorViewController != nil) {
         [self updateCellFrames];
     }
 }
 
-- (void)messageThreadCellHeightChanged:(NSNotification *)notification {
+- (void)messageThreadCellHeightChanged:(NSNotification*)notification {
     NSDictionary *messageInfo = [notification userInfo];
     SMMessageThreadCellViewController *cellViewControllerToReply = [messageInfo objectForKey:@"ThreadCell"];
     
@@ -1332,6 +1343,19 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     [[appDelegate appController] openMessageEditorWindow:messageEditorViewController];
+}
+
+#pragma mark external updates
+
+- (void)messageThreadUpdated:(NSNotification*)notification {
+    uint64_t threadId;
+    SMUserAccount *account;
+    
+    [SMNotificationsController getMessageThreadUpdatedParams:notification threadId:&threadId account:&account];
+    
+    if(_currentMessageThread.account == account && _currentMessageThread.threadId == threadId) {
+        [self updateMessageThread];
+    }
 }
 
 @end

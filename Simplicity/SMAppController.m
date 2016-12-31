@@ -804,10 +804,6 @@
     // eg if a thread becomes empty, its window might be removed
     for(SMMessageThreadWindowController *w in threadWindowControllers) {
         [w.messageThreadViewController updateMessageThread];
-        
-        // TODO: check if window is empty?
-        // TODO: check if there's an editor being used?
-        // TODO: the checks must be implemented within the thread window controller themselves
     }
 }
 

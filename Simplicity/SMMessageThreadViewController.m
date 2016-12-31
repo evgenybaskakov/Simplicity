@@ -409,6 +409,10 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     } else {
         SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
         
+        if(_messageEditorViewController != nil) {
+            [self makeEditorWindow:_messageEditorViewController];
+        }
+        
         [_cells removeAllObjects];
         [_contentView setSubviews:[NSArray array]];
         
@@ -418,6 +422,8 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
         [self hideFindContentsPanel];
         [self hideCurrentMessageThread:0];
+        
+        // TODO: if this is a windowized message thread view, close the window
     }
 
     [self updateNavigationControls];

@@ -1051,12 +1051,12 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     SMFolder *trashFolder = [mailbox trashFolder];
     NSAssert(trashFolder != nil, @"no trash folder");
     
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+
     if([_currentLocalFolder moveMessage:cell.message withinMessageThread:_currentMessageThread toRemoteFolder:trashFolder.fullName]) {
-        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
+        [SMNotificationsController localNotifyMessageThreadUpdated:_currentMessageThread];
     }
-    
-    [self updateMessageThread0];
 }
 
 - (void)changeMessageCellUnreadFlag:(NSNotification*)notification {

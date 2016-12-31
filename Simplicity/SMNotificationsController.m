@@ -454,7 +454,7 @@
         
         if([localFolder moveMessage:message withinMessageThread:messageThread toRemoteFolder:trashFolder.fullName]) {
             [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
-            // TODO: reload current message thread view, it could have this message opened
+            [SMNotificationsController localNotifyMessageThreadUpdated:messageThread];
         }
     }
 }

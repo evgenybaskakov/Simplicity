@@ -274,7 +274,7 @@
 		80ED78FC1C95351D00475EE5 /* SMAccountButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80ED78FA1C95351D00475EE5 /* SMAccountButtonViewController.m */; };
 		80ED78FD1C95351D00475EE5 /* SMAccountButtonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */; };
 		80F7EA731B8009290000992E /* SMMessageThreadWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA711B8009290000992E /* SMMessageThreadWindowController.m */; };
-		80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageWindowController.xib */; };
+		80F7EA741B8009290000992E /* SMMessageThreadWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80F7EA721B8009290000992E /* SMMessageThreadWindowController.xib */; };
 		80F7EA7E1B81B0C80000992E /* SMStringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F7EA7D1B81B0C80000992E /* SMStringUtils.m */; };
 		80FAC6E41D939CE5007EEB91 /* SMMessageListToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FAC6E21D939CE5007EEB91 /* SMMessageListToolbarViewController.m */; };
 		80FAC6E51D939CE5007EEB91 /* SMMessageListToolbarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80FAC6E31D939CE5007EEB91 /* SMMessageListToolbarViewController.xib */; };
@@ -795,7 +795,7 @@
 		80ED78FB1C95351D00475EE5 /* SMAccountButtonViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMAccountButtonViewController.xib; sourceTree = "<group>"; };
 		80F7EA701B8009290000992E /* SMMessageThreadWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageThreadWindowController.h; sourceTree = "<group>"; };
 		80F7EA711B8009290000992E /* SMMessageThreadWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMMessageThreadWindowController.m; sourceTree = "<group>"; };
-		80F7EA721B8009290000992E /* SMMessageWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageWindowController.xib; sourceTree = "<group>"; };
+		80F7EA721B8009290000992E /* SMMessageThreadWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SMMessageThreadWindowController.xib; sourceTree = "<group>"; };
 		80F7EA7C1B81B0C80000992E /* SMStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMStringUtils.h; sourceTree = "<group>"; };
 		80F7EA7D1B81B0C80000992E /* SMStringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMStringUtils.m; sourceTree = "<group>"; };
 		80FAC6E11D939CE5007EEB91 /* SMMessageListToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMMessageListToolbarViewController.h; sourceTree = "<group>"; };
@@ -1203,7 +1203,7 @@
 				00E9107D17D2F6F50028C679 /* SMMessageListViewController.xib */,
 				800AB7EB1CACF64600582B57 /* SMMessagePlaceholderViewController.xib */,
 				80FAC6EF1D93B18E007EEB91 /* SMMessageThreadToolbarViewController.xib */,
-				80F7EA721B8009290000992E /* SMMessageWindowController.xib */,
+				80F7EA721B8009290000992E /* SMMessageThreadWindowController.xib */,
 				801EDEE71BE9E96800A16E85 /* SMNewAccountWindowController.xib */,
 				00B4C1991AA6CB1F00C14BF4 /* SMNewLabelWindowController.xib */,
 				80C9D0051D87C706001155EC /* SMNoLabelsMessageViewController.xib */,
@@ -1637,7 +1637,7 @@
 				8074385E1DB204DC0054115B /* print.png in Resources */,
 				80279AEC1C9FB92D005E0AA9 /* SMAppearancePreferencesViewController.xib in Resources */,
 				801EDEF01BE9EB6700A16E85 /* at_sign.png in Resources */,
-				80F7EA741B8009290000992E /* SMMessageWindowController.xib in Resources */,
+				80F7EA741B8009290000992E /* SMMessageThreadWindowController.xib in Resources */,
 				8036323F1DB0B8A9003B7680 /* bold.png in Resources */,
 				807438251DB1F5820054115B /* reply-all.png in Resources */,
 				807438461DB1FE850054115B /* angle-up.png in Resources */,

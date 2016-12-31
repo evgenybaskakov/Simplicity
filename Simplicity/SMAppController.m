@@ -668,7 +668,7 @@
 
 #pragma mark Message viewer window
 
-- (void)openMessageWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {
+- (void)openMessageThreadWindow:(SMMessageThread*)messageThread localFolder:(id<SMAbstractLocalFolder>)localFolder {
     SMMessageThreadWindowController *messageWindowController = [[SMMessageThreadWindowController alloc] initWithWindowNibName:@"SMMessageThreadWindowController"];
     
     messageWindowController.messageThread = messageThread;
@@ -680,7 +680,7 @@
     [_messageThreadWindowControllers addObject:messageWindowController];
 }
 
-- (void)closeMessageWindow:(SMMessageThreadWindowController*)messageWindowController {
+- (void)unregisterMessageThreadWindow:(SMMessageThreadWindowController*)messageWindowController {
     [_messageThreadWindowControllers removeObject:messageWindowController];
 }
 
@@ -804,6 +804,18 @@
     // eg if a thread becomes empty, its window might be removed
     for(SMMessageThreadWindowController *w in threadWindowControllers) {
         [w.messageThreadViewController updateMessageThread];
+    }
+}
+
+- (void)closeMessageThreadWindowWithController:(SMMessageThreadViewController*)messageThreadViewController {
+    NSMutableArray<SMMessageThreadWindowController*> *threadWindowControllers = _messageThreadWindowControllers.copy;
+    
+    // traverse the copy because the shared container might mutate on thread updates
+    // eg if a thread becomes empty, its window might be removed
+    for(SMMessageThreadWindowController *w in threadWindowControllers) {
+        if(w.messageThreadViewController == messageThreadViewController) {
+            [w close];
+        }
     }
 }
 

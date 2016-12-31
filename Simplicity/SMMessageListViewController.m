@@ -1168,7 +1168,7 @@
     
     // Assume there's no draft, so open the message window in the readonly mode.
     
-    [[appDelegate appController] openMessageWindow:messageThread localFolder:localFolder];
+    [[appDelegate appController] openMessageThreadWindow:messageThread localFolder:localFolder];
 }
 
 - (BOOL)acceptsFirstResponder {

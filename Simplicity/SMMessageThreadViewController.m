@@ -422,8 +422,11 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
 
         [self hideFindContentsPanel];
         [self hideCurrentMessageThread:0];
-        
-        // TODO: if this is a windowized message thread view, close the window
+     
+        // In case if this controller is in a separate window, close it
+        // The app controller will decide itself if this is a windowized mode
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        [[appDelegate appController] closeMessageThreadWindowWithController:self];
     }
 
     [self updateNavigationControls];

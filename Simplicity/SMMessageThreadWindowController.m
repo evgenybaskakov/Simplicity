@@ -57,7 +57,7 @@
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMAppController *appController = appDelegate.appController;
     
-    [appController closeMessageWindow:self];
+    [appController unregisterMessageThreadWindow:self];
 }
 
 @end

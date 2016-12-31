@@ -416,6 +416,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         
         [_messageThreadInfoViewController setMessageThread:nil];
 
+        [self hideFindContentsPanel];
         [self hideCurrentMessageThread:0];
     }
 

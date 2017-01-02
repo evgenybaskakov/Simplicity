@@ -410,7 +410,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
         SM_LOG_DEBUG(@"message thread id %llu is empty", _currentMessageThread.threadId);
         
         if(_messageEditorViewController != nil) {
-            [self makeEditorWindow:_messageEditorViewController];
+            [_messageEditorViewController makeWindow];
         }
         
         [_cells removeAllObjects];

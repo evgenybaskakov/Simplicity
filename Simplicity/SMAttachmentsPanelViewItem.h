@@ -10,7 +10,7 @@
 
 @interface SMAttachmentsPanelViewItem : NSCollectionViewItem
 
-@property IBOutlet NSBox *box;
+@property (weak) IBOutlet NSBox *box;
 
 - (void)setPreviewImage:(NSImage*)image;
 

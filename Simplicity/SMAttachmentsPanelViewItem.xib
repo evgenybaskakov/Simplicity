@@ -9,8 +9,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SMAttachmentsPanelViewItem">
             <connections>
-                <outlet property="box" destination="c9T-fl-rVx" id="mtl-kQ-s05"/>
+                <outlet property="box" destination="c9T-fl-rVx" id="pMK-y0-JOc"/>
                 <outlet property="imageView" destination="a8C-XX-hqV" id="2C0-MD-xeq"/>
+                <outlet property="previewImageView" destination="FZ4-sa-jBy" id="5iK-uU-HOR"/>
                 <outlet property="textField" destination="QcU-Jm-FxW" id="lvv-ch-cVY"/>
                 <outlet property="view" destination="1LG-Qz-wFn" id="rM5-xW-8ld"/>
             </connections>
@@ -21,6 +22,11 @@
             <rect key="frame" x="0.0" y="0.0" width="119" height="91"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="FZ4-sa-jBy" userLabel="Preview Image" customClass="SMRoundedImageView">
+                    <rect key="frame" x="0.0" y="2" width="117" height="87"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="xSQ-Il-dbP"/>
+                </imageView>
                 <box autoresizesSubviews="NO" wantsLayer="YES" boxType="custom" borderType="none" cornerRadius="8" title="Box" titlePosition="noTitle" id="c9T-fl-rVx" userLabel="Selection Box">
                     <rect key="frame" x="2" y="2" width="115" height="87"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,7 +49,7 @@
                         </subviews>
                     </view>
                 </box>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="a8C-XX-hqV" customClass="SMRoundedImageView">
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="a8C-XX-hqV" userLabel="Icon">
                     <rect key="frame" x="34" y="35" width="50" height="50"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="NSApplicationIcon" id="Q1d-GG-4CZ"/>

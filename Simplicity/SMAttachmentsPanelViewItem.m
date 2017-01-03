@@ -15,6 +15,10 @@
 
 static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 
+@interface SMAttachmentsPanelViewItem ()
+@property (weak) IBOutlet SMRoundedImageView *previewImageView;
+@end
+
 @implementation SMAttachmentsPanelViewItem {
     NSTrackingArea *_trackingArea;
     BOOL _hasMouseOver;
@@ -54,6 +58,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     
     self.collectionView.minItemSize = NSMakeSize(self.view.frame.size.width, self.view.frame.size.height);
     self.collectionView.maxItemSize = NSMakeSize(self.view.frame.size.width, self.view.frame.size.height);
+
+    _previewImageView.imageScaling = NSImageScaleNone;
+    _previewImageView.cornerRadius = self.box.cornerRadius;
+    _previewImageView.insetsWidth = 0;
+    _previewImageView.nonOriginalBehavior = YES;
 }
 
 - (SMAttachmentsPanelViewController*)collectionViewController {
@@ -63,18 +72,12 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     return collectionView.attachmentsPanelViewController;
 }
 
-- (void)setPreviewImage:(NSImage *)image {
-    SMRoundedImageView *imageView = (SMRoundedImageView*)self.imageView;
-    
-    imageView.image = image;
-    imageView.frame = self.box.frame;
-    imageView.imageScaling = NSImageScaleNone;
-    imageView.cornerRadius = self.box.cornerRadius;
-    imageView.insetsWidth = 0;
-    imageView.nonOriginalBehavior = YES;
+- (void)setPreviewImage:(NSImage*)image {
+    _previewImageView.image = image;
     
     self.textField.textColor = [NSColor whiteColor];
     self.textField.hidden = YES;
+    self.imageView.hidden = YES;
 
     _hasPreview = YES;
 }

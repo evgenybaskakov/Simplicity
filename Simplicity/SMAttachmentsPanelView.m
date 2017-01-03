@@ -98,6 +98,14 @@
     return YES;
 }
 
+- (BOOL)resignFirstResponder {
+    if([super resignFirstResponder]) {
+        [_attachmentsPanelViewController unselectAllAttachments];
+        return YES;
+    }
+    return NO;
+}
+
 - (void)keyDown:(NSEvent *)theEvent {
     [super keyDown:theEvent];
 

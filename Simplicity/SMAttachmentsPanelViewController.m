@@ -425,6 +425,10 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
+- (void)unselectAllAttachments {
+    [_collectionView deselectAll:self];
+}
+
 #pragma mark Delegate actions
 
 - (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {

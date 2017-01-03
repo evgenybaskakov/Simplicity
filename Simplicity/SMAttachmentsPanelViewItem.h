@@ -11,7 +11,6 @@
 @interface SMAttachmentsPanelViewItem : NSCollectionViewItem
 
 @property IBOutlet NSBox *box;
-@property IBOutlet NSTextField *fileNameField;
 
 - (void)setPreviewImage:(NSImage*)image;
 

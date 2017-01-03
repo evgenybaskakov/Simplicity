@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -10,8 +10,8 @@
         <customObject id="-2" userLabel="File's Owner" customClass="SMAttachmentsPanelViewItem">
             <connections>
                 <outlet property="box" destination="c9T-fl-rVx" id="mtl-kQ-s05"/>
-                <outlet property="fileNameField" destination="QcU-Jm-FxW" id="RSe-2u-5Xk"/>
                 <outlet property="imageView" destination="a8C-XX-hqV" id="2C0-MD-xeq"/>
+                <outlet property="textField" destination="QcU-Jm-FxW" id="lvv-ch-cVY"/>
                 <outlet property="view" destination="1LG-Qz-wFn" id="rM5-xW-8ld"/>
             </connections>
         </customObject>

@@ -11,6 +11,7 @@
 #import "SMImageRegistry.h"
 #import "SMAttachmentsPanelViewController.h"
 #import "SMAttachmentsPanelView.h"
+#import "SMAttachmentItem.h"
 
 @implementation SMAttachmentsPanelView
 
@@ -80,6 +81,15 @@
     if(_attachmentsPanelViewController != nil) {
         [_attachmentsPanelViewController invalidateIntrinsicContentViewSize];
     }
+}
+
+- (NSCollectionViewItem *)newItemForRepresentedObject:(id)object {
+    SMAttachmentItem *attachmentItem = (SMAttachmentItem*)object;
+    
+    NSCollectionViewItem *newItem = [super newItemForRepresentedObject:object];
+    newItem.view.toolTip = attachmentItem.fileName;
+    
+    return newItem;
 }
 
 #pragma mark Key handling

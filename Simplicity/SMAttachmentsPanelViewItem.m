@@ -73,8 +73,8 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     imageView.insetsWidth = 0;
     imageView.nonOriginalBehavior = YES;
     
-    _fileNameField.textColor = [NSColor whiteColor];
-    _fileNameField.hidden = YES;
+    self.textField.textColor = [NSColor whiteColor];
+    self.textField.hidden = YES;
 
     _hasPreview = YES;
 }
@@ -109,10 +109,10 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     }
 
     if(_hasPreview) {
-        _fileNameField.hidden = NO;
+        self.textField.hidden = NO;
     }
     else {
-        _fileNameField.textColor = [NSColor whiteColor];
+        self.textField.textColor = [NSColor whiteColor];
     }
 
     _hasMouseOver = YES;
@@ -127,10 +127,10 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
     }
     
     if(_hasPreview) {
-        _fileNameField.hidden = YES;
+        self.textField.hidden = YES;
     }
     else {
-        _fileNameField.textColor = [NSColor blackColor];
+        self.textField.textColor = [NSColor blackColor];
     }
     
     _hasMouseOver = NO;

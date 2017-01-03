@@ -123,6 +123,13 @@ static NSSize scalePreviewImage(NSSize imageSize) {
         
         [_arrayController addObject:attachmentItem];
 
+        NSImage *icon = [self standardAttachmentIcon:mcoAttachment index:i];
+        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:i];
+
+        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
+        
+        item.imageView.image = icon;
+
         [self loadAttachmentPreview:mcoAttachment index:i];
     }
     
@@ -131,12 +138,25 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
 }
 
+- (NSImage*)standardAttachmentIcon:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
+    NSString *attachmentFilename = mcoAttachment.filename;
+    NSString *attachmentFilenameLowercase = [attachmentFilename lowercaseString];
+    NSString *fileExtension = [attachmentFilenameLowercase pathExtension];
+    
+    NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFileType:fileExtension];
+
+    return icon;
+}
+
 - (void)loadAttachmentPreview:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
     NSString *attachmentFilename = mcoAttachment.filename;
     NSString *attachmentFilenameLowercase = [attachmentFilename lowercaseString];
+    NSString *fileExtension = [attachmentFilenameLowercase pathExtension];
+  
+    CFStringRef cfFileExtension = (__bridge CFStringRef)fileExtension;
+    CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, cfFileExtension, NULL);
     
-    if([attachmentFilenameLowercase hasSuffix:@".jpg"] || [attachmentFilenameLowercase hasSuffix:@".jpeg"] || [attachmentFilenameLowercase hasSuffix:@".png"]) {
-        
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         SMAttachmentsPanelViewController __weak *weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             SMAttachmentsPanelViewController *_self = weakSelf;

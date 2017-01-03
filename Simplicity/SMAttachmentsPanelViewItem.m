@@ -13,7 +13,7 @@
 #import "SMAttachmentsPanelViewController.h"
 #import "SMAttachmentsPanelViewItem.h"
 
-static const CGFloat SELECTION_TRANSPARENCY = 0.5;
+static const CGFloat SELECTION_TRANSPARENCY = 0.3;
 
 @interface SMAttachmentsPanelViewItem ()
 @property (weak) IBOutlet SMRoundedImageView *previewImageView;
@@ -30,11 +30,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.5;
 }
 
 - (NSColor*)selectedColor {
-    return [[NSColor blueColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
+    return [[NSColor selectedTextBackgroundColor] colorWithAlphaComponent:SELECTION_TRANSPARENCY];
 }
 
 - (NSColor*)selectedColorWithMouseOver {
-    return [[self unselectedWithMouseOverColor] blendedColorWithFraction:0.2 ofColor:[self selectedColor]];
+    return [[self unselectedWithMouseOverColor] blendedColorWithFraction:0.5 ofColor:[self selectedColor]];
 }
 
 - (NSColor*)unselectedWithMouseOverColor {

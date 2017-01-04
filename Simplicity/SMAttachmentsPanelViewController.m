@@ -253,7 +253,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
-- (NSUInteger)initAttachmentItem:(SMAttachmentItem*)attachmentItem {
+- (void)initAttachmentItem:(SMAttachmentItem*)attachmentItem {
     [_arrayController addObject:attachmentItem];
     
     NSUInteger attachmentIndex = [(NSArray*)[_arrayController arrangedObjects] count] - 1;
@@ -263,8 +263,6 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
     
     item.imageView.image = icon;
-    
-    return attachmentIndex;
 }
 
 - (void)setMessage:(SMMessage*)message {
@@ -277,7 +275,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     for(MCOAttachment *mcoAttachment in _message.attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        
+
+        [self initAttachmentItem:attachmentItem];
         [self loadMCOAttachmentPreview:mcoAttachment attachmentItem:attachmentItem];
     }
     
@@ -292,6 +291,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     for (MCOAttachment *mcoAttachment in attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
         
+        [self initAttachmentItem:attachmentItem];
         [self loadMCOAttachmentPreview:mcoAttachment attachmentItem:attachmentItem];
         
         [_messageEditorController addAttachmentItem:attachmentItem];
@@ -307,6 +307,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     for (NSURL *url in files) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
         
+        [self initAttachmentItem:attachmentItem];
         [self loadFileAttachmentPreview:url attachmentItem:attachmentItem];
 
         [_messageEditorController addAttachmentItem:attachmentItem];

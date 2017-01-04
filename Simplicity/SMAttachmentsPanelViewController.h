@@ -29,7 +29,7 @@
 - (IBAction)togglePanelAction:(id)sender;
 
 - (void)setMessage:(SMMessage*)message;
-- (void)setToggleTarget:(id)toggleTarget;
+- (void)setToggleTarget:(id)toggleTarget action:(SEL)toggleAction;
 - (void)enableEditing:(SMMessageEditorController*)messageEditorController;
 - (void)addFileAttachments:(NSArray*)files;
 - (void)setMCOAttachments:(NSArray*)attachments;

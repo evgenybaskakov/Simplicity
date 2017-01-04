@@ -54,7 +54,7 @@
 - (void)setTextBackgroundColor;
 - (BOOL)closeEditor:(BOOL)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
-- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender;
+- (void)toggleAttachmentsPanel:(id)sender;
 - (void)makeWindow;
 
 #pragma mark Find contents panel

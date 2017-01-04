@@ -334,7 +334,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _attachmentsPanelViewController = [[SMAttachmentsPanelViewController alloc] initWithNibName:@"SMAttachmentsPanelViewController" bundle:nil];
     
     [_attachmentsPanelViewController enableEditing:_messageEditorController];
-    [_attachmentsPanelViewController setToggleTarget:self];
+    [_attachmentsPanelViewController setToggleTarget:self action:@selector(toggleAttachmentsPanel:)];
     
     [_textAndAttachmentsSplitView insertArrangedSubview:_attachmentsPanelViewController.view atIndex:1];
 }
@@ -1269,7 +1269,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 
 #pragma mark Attachments panel
 
-- (void)toggleAttachmentsPanel:(SMAttachmentsPanelViewController*)sender {
+- (void)toggleAttachmentsPanel:(id)sender {
     NSAssert(sender == _attachmentsPanelViewController, @"bad sender");
     
     [self toggleAttachmentsPanel];

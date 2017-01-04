@@ -24,6 +24,7 @@ static NSUInteger _buttonH;
     SMMessageEditorController *_messageEditorController;
     SMMessage *_message;
     id __weak _toggleTarget;
+    SEL _toggleAction;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -72,8 +73,9 @@ static NSUInteger _buttonH;
     return _togglePanelButton.frame.size.height + _collectionView.frame.size.height;
 }
 
-- (void)setToggleTarget:(id)toggleTarget {
+- (void)setToggleTarget:(id)toggleTarget action:(SEL)toggleAction {
     _toggleTarget = toggleTarget;
+    _toggleAction = toggleAction;
 }
 
 - (void)removeToggleButton {
@@ -83,7 +85,7 @@ static NSUInteger _buttonH;
 
 - (IBAction)togglePanelAction:(id)sender {
     if(_toggleTarget) {
-        [_toggleTarget performSelector:@selector(toggleAttachmentsPanel:) withObject:self];
+        [_toggleTarget performSelector:_toggleAction withObject:self afterDelay:0];
     }
     else {
         SM_LOG_WARNING(@"no toggle target");

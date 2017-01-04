@@ -109,37 +109,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
-- (void)setMessage:(SMMessage*)message {
-    NSAssert(message != nil, @"message is nil");
-    NSAssert(_message == nil, @"_message already set");
-    
-    _message = message;
-
-    NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
-    
-    for(NSUInteger i = 0; i < _message.attachments.count; i++) {
-        MCOAttachment *mcoAttachment = _message.attachments[i];
-        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        
-        [_arrayController addObject:attachmentItem];
-
-        NSImage *icon = [self standardAttachmentIcon:mcoAttachment index:i];
-        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:i];
-
-        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
-        
-        item.imageView.image = icon;
-
-        [self loadAttachmentPreview:mcoAttachment index:i];
-    }
-    
-    [_arrayController setSelectedObjects:[NSArray array]];
-    
-    [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
-}
-
-- (NSImage*)standardAttachmentIcon:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
-    NSString *attachmentFilename = mcoAttachment.filename;
+- (NSImage*)standardAttachmentIcon:(NSString*)attachmentFilename index:(NSUInteger)index {
     NSString *attachmentFilenameLowercase = [attachmentFilename lowercaseString];
     NSString *fileExtension = [attachmentFilenameLowercase pathExtension];
     
@@ -148,15 +118,20 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     return icon;
 }
 
-- (void)loadAttachmentPreview:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
-    NSString *attachmentFilename = mcoAttachment.filename;
-    NSString *attachmentFilenameLowercase = [attachmentFilename lowercaseString];
+- (BOOL)imageFileType:(NSString*)filename {
+    NSString *attachmentFilenameLowercase = [filename lowercaseString];
     NSString *fileExtension = [attachmentFilenameLowercase pathExtension];
-  
+    
     CFStringRef cfFileExtension = (__bridge CFStringRef)fileExtension;
     CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, cfFileExtension, NULL);
     
-    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+    return UTTypeConformsTo(fileUTI, kUTTypeImage)? YES : NO;
+}
+
+- (void)loadMCOAttachmentPreview:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
+    NSString *attachmentFilename = mcoAttachment.filename;
+
+    if([self imageFileType:attachmentFilename]) {
         SMAttachmentsPanelViewController __weak *weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             SMAttachmentsPanelViewController *_self = weakSelf;
@@ -168,24 +143,61 @@ static NSSize scalePreviewImage(NSSize imageSize) {
             NSData *attachmentData = mcoAttachment.data;
             NSImage *image = [[NSImage alloc] initWithData:attachmentData];
             
-            if(image != nil && [image isValid]) {
-                [image setSize:scalePreviewImage(image.size)];
-                
-                // Use the TIFFRepresentation method to pre-load the image data.
-                // Othwerwise, there will be a noticeable lag in the main event processing,
-                // because NSImage:initWithData method does not actually parse the provided data.
-                [image TIFFRepresentation];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_self->_collectionView itemAtIndex:index];
-                    
-                    [item setPreviewImage:image];
-                });
-            }
-            else {
+            if(![_self setPreviewImageAsync:image index:index]) {
                 SM_LOG_ERROR(@"Could not load attachment image '%@'", attachmentFilename);
             }
         });
+    }
+}
+
+- (void)loadFileAttachmentPreview:(NSURL*)fileUrl index:(NSUInteger)index {
+    NSString *attachmentFilename = fileUrl.path;
+    
+    if([self imageFileType:attachmentFilename]) {
+        SMAttachmentsPanelViewController __weak *weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            SMAttachmentsPanelViewController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+            
+            NSImage *image = [[NSImage alloc] initWithContentsOfURL:fileUrl];
+            
+            if(![_self setPreviewImageAsync:image index:index]) {
+                SM_LOG_ERROR(@"Could not load attachment image '%@'", attachmentFilename);
+            }
+        });
+    }
+}
+
+- (BOOL)setPreviewImageAsync:(NSImage*)image index:(NSUInteger)index {
+    if(image != nil && [image isValid]) {
+        [image setSize:scalePreviewImage(image.size)];
+        
+        // Use the TIFFRepresentation method to pre-load the image data.
+        // Othwerwise, there will be a noticeable lag in the main event processing,
+        // because NSImage:initWithData method does not actually parse the provided data.
+        [image TIFFRepresentation];
+
+        SMAttachmentsPanelViewController __weak *weakSelf = self;
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SMAttachmentsPanelViewController *_self = weakSelf;
+            if(!_self) {
+                SM_LOG_WARNING(@"object is gone");
+                return;
+            }
+
+            SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_self->_collectionView itemAtIndex:index];
+            
+            [item setPreviewImage:image];
+        });
+        
+        return TRUE;
+    }
+    else {
+        return FALSE;
     }
 }
 
@@ -233,6 +245,35 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
+- (void)setMessage:(SMMessage*)message {
+    NSAssert(message != nil, @"message is nil");
+    NSAssert(_message == nil, @"_message already set");
+    
+    _message = message;
+    
+    NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
+    
+    for(NSUInteger i = 0; i < _message.attachments.count; i++) {
+        MCOAttachment *mcoAttachment = _message.attachments[i];
+        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        
+        [_arrayController addObject:attachmentItem];
+        
+        NSImage *icon = [self standardAttachmentIcon:mcoAttachment.filename index:i];
+        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:i];
+        
+        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
+        
+        item.imageView.image = icon;
+        
+        [self loadMCOAttachmentPreview:mcoAttachment index:i];
+    }
+    
+    [_arrayController setSelectedObjects:[NSArray array]];
+    
+    [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
+}
+
 - (void)addMCOAttachments:(NSArray*)attachments {
     NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
     
@@ -255,7 +296,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 - (void)addFileAttachments:(NSArray*)files {
     NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
     
-    for (NSURL *url in files) {
+    for (NSUInteger i = 0; i < files.count; i++) {
+        NSURL *url = files[i];
         SM_LOG_INFO(@"attachment: %@", [url path]);
         
         SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
@@ -263,6 +305,19 @@ static NSSize scalePreviewImage(NSSize imageSize) {
         
         [_messageEditorController addAttachmentItem:attachment];
 
+        NSUInteger attachmentIndex = [(NSArray*)[_arrayController arrangedObjects] count] - 1;
+        NSImage *icon = [self standardAttachmentIcon:url.path index:attachmentIndex];
+        
+        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:attachmentIndex];
+        
+        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
+        
+        item.imageView.image = icon;
+        
+        [self loadFileAttachmentPreview:url index:attachmentIndex];
+    }
+    
+    if(files.count != 0) {
         _messageEditorController.hasUnsavedAttachments = YES;
     }
 }

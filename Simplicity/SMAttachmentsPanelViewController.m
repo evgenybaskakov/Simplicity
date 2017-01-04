@@ -245,6 +245,20 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
+- (NSUInteger)addAttachmentItem:(SMAttachmentItem*)attachmentItem {
+    [_arrayController addObject:attachmentItem];
+    
+    NSUInteger attachmentIndex = [(NSArray*)[_arrayController arrangedObjects] count] - 1;
+    NSImage *icon = [self standardAttachmentIcon:attachmentItem.fileName index:attachmentIndex];
+    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:attachmentIndex];
+    
+    [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
+    
+    item.imageView.image = icon;
+    
+    return attachmentIndex;
+}
+
 - (void)setMessage:(SMMessage*)message {
     NSAssert(message != nil, @"message is nil");
     NSAssert(_message == nil, @"_message already set");
@@ -253,25 +267,33 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     NSAssert(_message.attachments.count > 0, @"message has no attachments, the panel should never be shown");
     
-    for(NSUInteger i = 0; i < _message.attachments.count; i++) {
-        MCOAttachment *mcoAttachment = _message.attachments[i];
+    for(MCOAttachment *mcoAttachment in _message.attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        NSUInteger index = [self addAttachmentItem:attachmentItem];
         
-        [_arrayController addObject:attachmentItem];
-        
-        NSImage *icon = [self standardAttachmentIcon:mcoAttachment.filename index:i];
-        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:i];
-        
-        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
-        
-        item.imageView.image = icon;
-        
-        [self loadMCOAttachmentPreview:mcoAttachment index:i];
+        [self loadMCOAttachmentPreview:mcoAttachment index:index];
     }
     
     [_arrayController setSelectedObjects:[NSArray array]];
     
     [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
+}
+
+- (void)addFileAttachments:(NSArray*)files {
+    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
+    
+    for (NSURL *url in files) {
+        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
+        NSUInteger index = [self addAttachmentItem:attachmentItem];
+        
+        [self loadFileAttachmentPreview:url index:index];
+
+        [_messageEditorController addAttachmentItem:attachmentItem];
+    }
+    
+    if(files.count != 0) {
+        _messageEditorController.hasUnsavedAttachments = YES;
+    }
 }
 
 - (void)addMCOAttachments:(NSArray*)attachments {
@@ -290,35 +312,6 @@ static NSSize scalePreviewImage(NSSize imageSize) {
         //       from pre-existing MCO objects
         
         // TODO: think how to fix this mess
-    }
-}
-
-- (void)addFileAttachments:(NSArray*)files {
-    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
-    
-    for (NSUInteger i = 0; i < files.count; i++) {
-        NSURL *url = files[i];
-        SM_LOG_INFO(@"attachment: %@", [url path]);
-        
-        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
-        [_arrayController addObject:attachment];
-        
-        [_messageEditorController addAttachmentItem:attachment];
-
-        NSUInteger attachmentIndex = [(NSArray*)[_arrayController arrangedObjects] count] - 1;
-        NSImage *icon = [self standardAttachmentIcon:url.path index:attachmentIndex];
-        
-        SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_collectionView itemAtIndex:attachmentIndex];
-        
-        [icon setSize:scalePreviewImage(item.imageView.bounds.size)];
-        
-        item.imageView.image = icon;
-        
-        [self loadFileAttachmentPreview:url index:attachmentIndex];
-    }
-    
-    if(files.count != 0) {
-        _messageEditorController.hasUnsavedAttachments = YES;
     }
 }
 

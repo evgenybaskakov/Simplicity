@@ -134,7 +134,9 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         if(newAttachmentsPanelHeight != _attachmentsPanelViewHeightConstraint.constant) {
             [_boxView removeConstraint:_attachmentsPanelViewHeightConstraint];
 
-            _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:_attachmentsPanelViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:newAttachmentsPanelHeight];
+            // TODO: something weird with this - using a strict height equality constraint results
+            //       in unsatisfieable constraint equation
+            _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:_attachmentsPanelViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:newAttachmentsPanelHeight];
             
             [_boxView addConstraint:_attachmentsPanelViewHeightConstraint];
 
@@ -406,7 +408,7 @@ static const NSUInteger MIN_BODY_HEIGHT = 150;
         
         [_attachmentsPanelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:attachmentsView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 
-        _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:[_attachmentsPanelViewController intrinsicContentViewSize].height];
+        _attachmentsPanelViewHeightConstraint = [NSLayoutConstraint constraintWithItem:attachmentsView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:0 multiplier:1.0 constant:[_attachmentsPanelViewController intrinsicContentViewSize].height];
 
         // bind the message with the the attachment panel
         [_attachmentsPanelViewController setMessage:_message];

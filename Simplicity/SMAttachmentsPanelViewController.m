@@ -144,7 +144,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
             NSImage *image = [[NSImage alloc] initWithData:attachmentData];
             
             if(![_self setPreviewImageAsync:image index:index]) {
-                SM_LOG_ERROR(@"Could not load attachment image '%@'", attachmentFilename);
+                SM_LOG_DEBUG(@"Could not load attachment image '%@'", attachmentFilename);
             }
         });
     }
@@ -165,7 +165,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
             NSImage *image = [[NSImage alloc] initWithContentsOfURL:fileUrl];
             
             if(![_self setPreviewImageAsync:image index:index]) {
-                SM_LOG_ERROR(@"Could not load attachment image '%@'", attachmentFilename);
+                SM_LOG_DEBUG(@"Could not load attachment image '%@'", attachmentFilename);
             }
         });
     }

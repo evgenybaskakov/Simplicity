@@ -477,7 +477,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     if(mcoAttachments != nil && mcoAttachments.count > 0) {
         [self ensureAttachmentsPanelCreated];
         
-        [_attachmentsPanelViewController addMCOAttachments:mcoAttachments];
+        [_attachmentsPanelViewController setMCOAttachments:mcoAttachments];
         
         [self showAttachmentsPanel];
     }

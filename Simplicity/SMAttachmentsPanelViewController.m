@@ -245,7 +245,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     }
 }
 
-- (NSUInteger)addAttachmentItem:(SMAttachmentItem*)attachmentItem {
+- (NSUInteger)initAttachmentItem:(SMAttachmentItem*)attachmentItem {
     [_arrayController addObject:attachmentItem];
     
     NSUInteger attachmentIndex = [(NSArray*)[_arrayController arrangedObjects] count] - 1;
@@ -269,7 +269,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     for(MCOAttachment *mcoAttachment in _message.attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        NSUInteger index = [self addAttachmentItem:attachmentItem];
+        NSUInteger index = [self initAttachmentItem:attachmentItem];
         
         [self loadMCOAttachmentPreview:mcoAttachment index:index];
     }
@@ -279,12 +279,28 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     [self performSelector:@selector(invalidateIntrinsicContentViewSize) withObject:nil afterDelay:0];
 }
 
+- (void)setMCOAttachments:(NSArray*)attachments {
+    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
+    
+    for (MCOAttachment *mcoAttachment in attachments) {
+        SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
+        NSUInteger index = [self initAttachmentItem:attachmentItem];
+        
+        [self loadMCOAttachmentPreview:mcoAttachment index:index];
+        
+        [_messageEditorController addAttachmentItem:attachmentItem];
+    }
+
+    // Do not set the unsaved attachments flag because in this case,
+    // it is an initialization from pre-existing MCO objects
+}
+
 - (void)addFileAttachments:(NSArray*)files {
     NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
     
     for (NSURL *url in files) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
-        NSUInteger index = [self addAttachmentItem:attachmentItem];
+        NSUInteger index = [self initAttachmentItem:attachmentItem];
         
         [self loadFileAttachmentPreview:url index:index];
 
@@ -293,25 +309,6 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     if(files.count != 0) {
         _messageEditorController.hasUnsavedAttachments = YES;
-    }
-}
-
-- (void)addMCOAttachments:(NSArray*)attachments {
-    NSAssert(_messageEditorController != nil, @"no messageEditorController, editing disabled");
-    
-    for (MCOAttachment *mcoAttachment in attachments) {
-        SM_LOG_INFO(@"attachment: %@", mcoAttachment.filename);
-        
-        SMAttachmentItem *attachment = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        [_arrayController addObject:attachment];
-        
-        [_messageEditorController addAttachmentItem:attachment];
-        
-        // NOTE: do not set the unsaved attachments flag
-        //       because in this case, it is an initialization
-        //       from pre-existing MCO objects
-        
-        // TODO: think how to fix this mess
     }
 }
 

@@ -114,9 +114,8 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
     if(_hasPreview) {
         self.textField.hidden = NO;
     }
-    else {
-        self.textField.textColor = [NSColor whiteColor];
-    }
+
+    self.textField.textColor = [NSColor whiteColor];
 
     _hasMouseOver = YES;
 }
@@ -132,10 +131,9 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
     if(_hasPreview) {
         self.textField.hidden = YES;
     }
-    else {
-        self.textField.textColor = [NSColor blackColor];
-    }
-    
+
+    self.textField.textColor = [NSColor blackColor];
+
     _hasMouseOver = NO;
 }
 

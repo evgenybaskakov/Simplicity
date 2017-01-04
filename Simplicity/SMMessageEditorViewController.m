@@ -228,7 +228,6 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _innerView = [[SMFlippedView alloc] init];
         _innerView.autoresizingMask = NSViewWidthSizable;
         _innerView.translatesAutoresizingMaskIntoConstraints = YES;
-        _innerView.wantsLayer = YES;
         _innerView.layer.borderWidth = 1;
         _innerView.layer.cornerRadius = 3;
         _innerView.layer.borderColor = [[NSColor lightGrayColor] CGColor];
@@ -241,6 +240,8 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
         _innerView = self.view;
     }
     
+    _innerView.wantsLayer = YES;
+
     if(!_textAndAttachmentsSplitView) {
         _textAndAttachmentsSplitView = [[NSSplitView alloc] init];
         _textAndAttachmentsSplitView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;

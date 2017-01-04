@@ -128,7 +128,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     return UTTypeConformsTo(fileUTI, kUTTypeImage)? YES : NO;
 }
 
-- (void)loadMCOAttachmentPreview:(MCOAttachment*)mcoAttachment index:(NSUInteger)index {
+- (void)loadMCOAttachmentPreview:(MCOAttachment*)mcoAttachment attachmentItem:(SMAttachmentItem*)attachmentItem {
     NSString *attachmentFilename = mcoAttachment.filename;
 
     if([self imageFileType:attachmentFilename]) {
@@ -143,14 +143,14 @@ static NSSize scalePreviewImage(NSSize imageSize) {
             NSData *attachmentData = mcoAttachment.data;
             NSImage *image = [[NSImage alloc] initWithData:attachmentData];
             
-            if(![_self setPreviewImageAsync:image index:index]) {
+            if(![_self setPreviewImageAsync:image attachmentItem:attachmentItem]) {
                 SM_LOG_DEBUG(@"Could not load attachment image '%@'", attachmentFilename);
             }
         });
     }
 }
 
-- (void)loadFileAttachmentPreview:(NSURL*)fileUrl index:(NSUInteger)index {
+- (void)loadFileAttachmentPreview:(NSURL*)fileUrl attachmentItem:(SMAttachmentItem*)attachmentItem {
     NSString *attachmentFilename = fileUrl.path;
     
     if([self imageFileType:attachmentFilename]) {
@@ -164,14 +164,14 @@ static NSSize scalePreviewImage(NSSize imageSize) {
             
             NSImage *image = [[NSImage alloc] initWithContentsOfURL:fileUrl];
             
-            if(![_self setPreviewImageAsync:image index:index]) {
+            if(![_self setPreviewImageAsync:image attachmentItem:attachmentItem]) {
                 SM_LOG_DEBUG(@"Could not load attachment image '%@'", attachmentFilename);
             }
         });
     }
 }
 
-- (BOOL)setPreviewImageAsync:(NSImage*)image index:(NSUInteger)index {
+- (BOOL)setPreviewImageAsync:(NSImage*)image attachmentItem:(SMAttachmentItem*)attachmentItem {
     if(image != nil && [image isValid]) {
         [image setSize:scalePreviewImage(image.size)];
         
@@ -188,10 +188,18 @@ static NSSize scalePreviewImage(NSSize imageSize) {
                 SM_LOG_WARNING(@"object is gone");
                 return;
             }
-
-            SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_self->_collectionView itemAtIndex:index];
             
-            [item setPreviewImage:image];
+            // Find the originally requested item.
+            // Note that as this is an asynchronous call, so the panel contents might be
+            // reordered and hence an index lookup woudn't be accurate.
+            for(NSUInteger i = 0; i < _self->_collectionView.content.count; i++) {
+                if(_self->_collectionView.content[i] == attachmentItem) {
+                    SMAttachmentsPanelViewItem *item = (SMAttachmentsPanelViewItem*)[_self->_collectionView itemAtIndex:i];
+                    
+                    [item setPreviewImage:image];
+                    break;
+                }
+            }
         });
         
         return TRUE;
@@ -269,9 +277,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     for(MCOAttachment *mcoAttachment in _message.attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        NSUInteger index = [self initAttachmentItem:attachmentItem];
         
-        [self loadMCOAttachmentPreview:mcoAttachment index:index];
+        [self loadMCOAttachmentPreview:mcoAttachment attachmentItem:attachmentItem];
     }
     
     [_arrayController setSelectedObjects:[NSArray array]];
@@ -284,9 +291,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     for (MCOAttachment *mcoAttachment in attachments) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithMCOAttachment:mcoAttachment];
-        NSUInteger index = [self initAttachmentItem:attachmentItem];
         
-        [self loadMCOAttachmentPreview:mcoAttachment index:index];
+        [self loadMCOAttachmentPreview:mcoAttachment attachmentItem:attachmentItem];
         
         [_messageEditorController addAttachmentItem:attachmentItem];
     }
@@ -300,9 +306,8 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     
     for (NSURL *url in files) {
         SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:[url path]];
-        NSUInteger index = [self initAttachmentItem:attachmentItem];
         
-        [self loadFileAttachmentPreview:url index:index];
+        [self loadFileAttachmentPreview:url attachmentItem:attachmentItem];
 
         [_messageEditorController addAttachmentItem:attachmentItem];
     }

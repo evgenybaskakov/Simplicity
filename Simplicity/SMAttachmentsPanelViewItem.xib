@@ -23,11 +23,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="FZ4-sa-jBy" userLabel="Preview Image" customClass="SMRoundedImageView">
-                    <rect key="frame" x="0.0" y="2" width="117" height="87"/>
+                    <rect key="frame" x="2" y="2" width="115" height="87"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="xSQ-Il-dbP"/>
                 </imageView>
-                <box autoresizesSubviews="NO" wantsLayer="YES" boxType="custom" borderType="none" cornerRadius="8" title="Box" titlePosition="noTitle" id="c9T-fl-rVx" userLabel="Selection Box">
+                <box autoresizesSubviews="NO" wantsLayer="YES" misplaced="YES" boxType="custom" borderType="none" cornerRadius="8" title="Box" titlePosition="noTitle" id="c9T-fl-rVx" userLabel="Selection Box">
                     <rect key="frame" x="2" y="2" width="115" height="87"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <view key="contentView" id="S0e-y7-hQW">

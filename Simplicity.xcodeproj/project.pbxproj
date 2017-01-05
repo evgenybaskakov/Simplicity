@@ -155,6 +155,7 @@
 		804711C11B7B153B00399942 /* SMMessageListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 804711C01B7B153B00399942 /* SMMessageListTableView.m */; };
 		8048FBCC1C13D0800083954D /* SMInactiveButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBCB1C13D0800083954D /* SMInactiveButton.m */; };
 		8048FBD61C140B510083954D /* SMNotificationsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8048FBD51C140B510083954D /* SMNotificationsController.m */; };
+		804B68BF1E1EF55A00C18EB2 /* SMFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 804B68BE1E1EF55A00C18EB2 /* SMFileUtils.m */; };
 		804F33431BAFDDBA007E600C /* SMFolderDesc.m in Sources */ = {isa = PBXBuildFile; fileRef = 804F33421BAFDDBA007E600C /* SMFolderDesc.m */; };
 		8050689D1B21693C0043CCCD /* SMOpExpungeFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8050689C1B21693C0043CCCD /* SMOpExpungeFolder.m */; };
 		8051B0001C27C53B005E6F7E /* SMOutgoingMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8051AFFF1C27C53B005E6F7E /* SMOutgoingMessage.m */; };
@@ -603,6 +604,8 @@
 		8048FBCB1C13D0800083954D /* SMInactiveButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMInactiveButton.m; sourceTree = "<group>"; };
 		8048FBD41C140B510083954D /* SMNotificationsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMNotificationsController.h; sourceTree = "<group>"; };
 		8048FBD51C140B510083954D /* SMNotificationsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMNotificationsController.m; sourceTree = "<group>"; };
+		804B68BD1E1EF55A00C18EB2 /* SMFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFileUtils.h; sourceTree = "<group>"; };
+		804B68BE1E1EF55A00C18EB2 /* SMFileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFileUtils.m; sourceTree = "<group>"; };
 		804F33411BAFDDBA007E600C /* SMFolderDesc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFolderDesc.h; sourceTree = "<group>"; };
 		804F33421BAFDDBA007E600C /* SMFolderDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFolderDesc.m; sourceTree = "<group>"; };
 		8050689B1B21693C0043CCCD /* SMOpExpungeFolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOpExpungeFolder.h; sourceTree = "<group>"; };
@@ -909,6 +912,7 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				804B68C71E1EF57900C18EB2 /* Utils */,
 				805255501D55B41E00CDCBA2 /* Operations */,
 				80B860111CF97AD400BD0804 /* Search */,
 				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
@@ -984,15 +988,11 @@
 				803A83191BE59059006520DD /* SMPreferencesController.m */,
 				80240E961D658B2C006998B6 /* SMRemoteImageLoadController.h */,
 				80240E971D658B2C006998B6 /* SMRemoteImageLoadController.m */,
-				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
-				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
 				803A29AC1C0246E900FF8D7C /* SMSuggestionProvider.h */,
 				8023F19F1C61D4F700C7AC89 /* SMTextMessage.h */,
 				8023F1A01C61D4F700C7AC89 /* SMTextMessage.m */,
 				80CC6B031BD6058700A8CC6E /* SMThreadSafeOperationQueue.h */,
 				80CC6B041BD6058700A8CC6E /* SMThreadSafeOperationQueue.m */,
-				807EE8261D9E3B01002F4926 /* SMTimeUtils.h */,
-				807EE8271D9E3B01002F4926 /* SMTimeUtils.m */,
 				805613DA1CD87B900055E3E9 /* SMUnifiedAccount.h */,
 				805613DB1CD87B910055E3E9 /* SMUnifiedAccount.m */,
 				80FBF54A1CDDB8B30041E230 /* SMUnifiedLocalFolder.h */,
@@ -1287,6 +1287,19 @@
 				803A29A31C00399B00FF8D7C /* SMSignaturePreferencesViewController.m */,
 			);
 			name = Preferences;
+			sourceTree = "<group>";
+		};
+		804B68C71E1EF57900C18EB2 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				804B68BD1E1EF55A00C18EB2 /* SMFileUtils.h */,
+				804B68BE1E1EF55A00C18EB2 /* SMFileUtils.m */,
+				80F7EA7C1B81B0C80000992E /* SMStringUtils.h */,
+				80F7EA7D1B81B0C80000992E /* SMStringUtils.m */,
+				807EE8261D9E3B01002F4926 /* SMTimeUtils.h */,
+				807EE8271D9E3B01002F4926 /* SMTimeUtils.m */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		805255501D55B41E00CDCBA2 /* Operations */ = {
@@ -1745,6 +1758,7 @@
 				800C679E1B49A89B00272D60 /* MKColorPickerView.m in Sources */,
 				80FAC6E41D939CE5007EEB91 /* SMMessageListToolbarViewController.m in Sources */,
 				805255621D570BB700CDCBA2 /* SMLabelSelectionRow.m in Sources */,
+				804B68BF1E1EF55A00C18EB2 /* SMFileUtils.m in Sources */,
 				80AB99161BE0925200336A55 /* SMMessageBuilder.m in Sources */,
 				80737ED71BFAFF6600E9D58A /* SMRoundedImageView.m in Sources */,
 				008F936A1AC4F8E600C21D62 /* SMOutboxController.m in Sources */,

@@ -12,6 +12,7 @@
 #import "SMPreferencesController.h"
 #import "SMMessage.h"
 #import "SMBox2.h"
+#import "SMFileUtils.h"
 #import "SMAttachmentItem.h"
 #import "SMMessageEditorController.h"
 #import "SMAttachmentsPanelView.h"
@@ -120,20 +121,10 @@ static NSSize scalePreviewImage(NSSize imageSize) {
     return icon;
 }
 
-- (BOOL)imageFileType:(NSString*)filename {
-    NSString *attachmentFilenameLowercase = [filename lowercaseString];
-    NSString *fileExtension = [attachmentFilenameLowercase pathExtension];
-    
-    CFStringRef cfFileExtension = (__bridge CFStringRef)fileExtension;
-    CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, cfFileExtension, NULL);
-    
-    return UTTypeConformsTo(fileUTI, kUTTypeImage)? YES : NO;
-}
-
 - (void)loadMCOAttachmentPreview:(MCOAttachment*)mcoAttachment attachmentItem:(SMAttachmentItem*)attachmentItem {
     NSString *attachmentFilename = mcoAttachment.filename;
 
-    if([self imageFileType:attachmentFilename]) {
+    if([SMFileUtils imageFileType:attachmentFilename]) {
         SMAttachmentsPanelViewController __weak *weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             SMAttachmentsPanelViewController *_self = weakSelf;
@@ -155,7 +146,7 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 - (void)loadFileAttachmentPreview:(NSURL*)fileUrl attachmentItem:(SMAttachmentItem*)attachmentItem {
     NSString *attachmentFilename = fileUrl.path;
     
-    if([self imageFileType:attachmentFilename]) {
+    if([SMFileUtils imageFileType:attachmentFilename]) {
         SMAttachmentsPanelViewController __weak *weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             SMAttachmentsPanelViewController *_self = weakSelf;

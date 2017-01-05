@@ -18,7 +18,6 @@
 @class SMMessageEditorView;
 @class SMInlineButtonPanelViewController;
 @class SMMessageThreadViewController;
-@class SMAttachmentsPanelViewController;
 
 @interface SMMessageEditorViewController : NSViewController
 
@@ -37,7 +36,6 @@
 - (void)makePlainText;
 - (void)sendMessage;
 - (void)deleteEditedDraft;
-- (void)attachDocument;
 - (void)toggleBold;
 - (void)toggleItalic;
 - (void)toggleUnderline;
@@ -54,8 +52,13 @@
 - (void)setTextBackgroundColor;
 - (BOOL)closeEditor:(BOOL)shouldSaveDraft askConfirmationIfNecessary:(BOOL)askConfirmationIfNecessary;
 - (void)saveDocument:(id)sender;
-- (void)toggleAttachmentsPanel:(id)sender;
 - (void)makeWindow;
+
+#pragma mark Attachments
+
+- (void)openAttachmentDialog;
+- (void)toggleAttachmentsPanel:(id)sender;
+- (void)attachFile:(NSURL*)url;
 
 #pragma mark Find contents panel
 

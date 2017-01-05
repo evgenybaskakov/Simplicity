@@ -678,7 +678,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     return TRUE;
 }
 
-- (void)attachDocument {
+- (void)openAttachmentDialog {
     NSOpenPanel *openDlg = [NSOpenPanel openPanel];
     
     [openDlg setCanChooseFiles:YES];
@@ -698,6 +698,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             [self showAttachmentsPanel];
         }
     }
+}
+
+- (void)attachFile:(NSURL*)url {
+    [self ensureAttachmentsPanelCreated];
+    
+    [_attachmentsPanelViewController addFileAttachments:@[url]];
+    
+    [self showAttachmentsPanel];
 }
 
 - (void)createHTMLEditorToolbox {

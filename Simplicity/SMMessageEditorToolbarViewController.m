@@ -35,7 +35,7 @@
 }
 
 - (IBAction)attachAction:(id)sender {
-    [_messageEditorViewController attachDocument];
+    [_messageEditorViewController openAttachmentDialog];
 }
 
 - (IBAction)makeWindowAction:(id)sender {

@@ -9,10 +9,12 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMFileUtils.h"
 #import "SMPreferencesController.h"
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
 #import "SMEditorToolBoxViewController.h"
+#import"SMMessageEditorViewController.h"
 #import "SMHTMLFindContext.h"
 #import "SMHTMLMessageEditorView.h"
 
@@ -300,31 +302,42 @@
 }
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)draggingInfo {
-    SM_LOG_INFO(@"dragging info %@", draggingInfo);
+    SM_LOG_DEBUG(@"dragging info %@", draggingInfo);
 
     if([draggingInfo draggingSource] == nil ) {
         NSPasteboard *pboard = [draggingInfo draggingPasteboard];
-        NSArray *classes = @[ [NSURL class] ];
-        NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES], NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
+        NSArray *classes = @[[NSURL class]];
+        NSDictionary *options = nil;//@{NSPasteboardURLReadingFileURLsOnlyKey:[NSNumber numberWithBool:YES], NSPasteboardURLReadingContentsConformToTypesKey:[NSImage imageTypes]};
         NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
         
         if(fileURLs && fileURLs.count != 0) {
-            NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
+            NSArray* filenames = [pboard propertyListForType:NSFilenamesPboardType];
             NSMutableString* html = [NSMutableString string];
             
             for(NSString* filename in filenames) {
-                [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
+                NSURL *url = [[NSURL alloc] initFileURLWithPath:filename];
+
+                if([SMFileUtils imageFileType:filename]) {
+                    [html appendFormat: @"<img src=\"%@\"/>", url.absoluteURL];
+                }
+                else {
+                    BOOL isDir = NO;
+                    if([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && !isDir) {
+                        [_editorToolBoxViewController.messageEditorViewController attachFile:url];
+                    }
+                }
             }
             
-            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
-            [pboard setString: html forType: NSHTMLPboardType];
+            if(html.length == 0) {
+                return NO;
+            }
+            
+            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner:self];
+            [pboard setString:html forType: NSHTMLPboardType];
         }
         else {
-            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
-            [pboard setString: @"" forType: NSHTMLPboardType];
-//            return YES;
+            return NO;
         }
-        
     }
     
     return [super performDragOperation:draggingInfo];

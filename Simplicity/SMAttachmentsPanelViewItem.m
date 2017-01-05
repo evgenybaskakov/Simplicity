@@ -125,8 +125,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
 
     self.textField.textColor = [NSColor whiteColor];
 
-    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
-    if(panelViewController.enabledEditing) {
+    if([[self collectionViewController] enabledEditing]) {
         _removeButton.hidden = NO;
     }
     

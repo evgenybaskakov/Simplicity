@@ -16,6 +16,7 @@
 static const CGFloat SELECTION_TRANSPARENCY = 0.3;
 
 @interface SMAttachmentsPanelViewItem ()
+@property (weak) IBOutlet NSButton *removeButton;
 @property (weak) IBOutlet SMRoundedImageView *previewImageView;
 @end
 
@@ -63,6 +64,8 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
     _previewImageView.cornerRadius = self.box.cornerRadius;
     _previewImageView.insetsWidth = 0;
     _previewImageView.nonOriginalBehavior = YES;
+
+    _removeButton.hidden = YES;
 }
 
 - (SMAttachmentsPanelViewController*)collectionViewController {
@@ -70,6 +73,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
     NSAssert([collectionView isKindOfClass:[SMAttachmentsPanelView class]], @"bad collection view type: %@", collectionView.class);
     
     return collectionView.attachmentsPanelViewController;
+}
+
+- (IBAction)removeButtonAction:(id)sender {
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    [panelViewController removeAttachment:self.representedObject];
 }
 
 - (void)setPreviewImage:(NSImage*)image {
@@ -117,6 +125,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
 
     self.textField.textColor = [NSColor whiteColor];
 
+    SMAttachmentsPanelViewController *panelViewController = [self collectionViewController];
+    if(panelViewController.enabledEditing) {
+        _removeButton.hidden = NO;
+    }
+    
     _hasMouseOver = YES;
 }
 
@@ -134,10 +147,11 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
 
     self.textField.textColor = [NSColor blackColor];
 
+    _removeButton.hidden = YES;
     _hasMouseOver = NO;
 }
 
--(void)mouseDown:(NSEvent *)theEvent {
+- (void)mouseDown:(NSEvent *)theEvent {
     [super mouseDown:theEvent];
 
     if([theEvent clickCount] == 2) {

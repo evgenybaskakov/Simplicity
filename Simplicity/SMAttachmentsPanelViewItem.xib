@@ -12,6 +12,7 @@
                 <outlet property="box" destination="c9T-fl-rVx" id="pMK-y0-JOc"/>
                 <outlet property="imageView" destination="a8C-XX-hqV" id="2C0-MD-xeq"/>
                 <outlet property="previewImageView" destination="FZ4-sa-jBy" id="5iK-uU-HOR"/>
+                <outlet property="removeButton" destination="nde-c6-Pfp" id="cFW-ZZ-F30"/>
                 <outlet property="textField" destination="QcU-Jm-FxW" id="lvv-ch-cVY"/>
                 <outlet property="view" destination="1LG-Qz-wFn" id="rM5-xW-8ld"/>
             </connections>
@@ -46,6 +47,17 @@
                                     <binding destination="-2" name="value" keyPath="representedObject.fileName" id="ZxW-ev-keW"/>
                                 </connections>
                             </textField>
+                            <button toolTip="Remove attachment" verticalHuggingPriority="750" misplaced="YES" id="nde-c6-Pfp" userLabel="Remove Button">
+                                <rect key="frame" x="96" y="68" width="17" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="recessed" bezelStyle="recessed" image="NSStopProgressTemplate" imagePosition="only" alignment="center" controlSize="small" borderStyle="border" inset="2" id="2lo-Kw-836">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                    <font key="font" metaFont="systemBold" size="12"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="removeButtonAction:" target="-2" id="CdB-Yn-85I"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                 </box>
@@ -61,5 +73,6 @@
     </objects>
     <resources>
         <image name="NSApplicationIcon" width="128" height="128"/>
+        <image name="NSStopProgressTemplate" width="11" height="11"/>
     </resources>
 </document>

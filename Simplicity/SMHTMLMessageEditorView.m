@@ -72,6 +72,7 @@
     [self setPolicyDelegate:self];
     [self setResourceLoadDelegate:self];
     [self setEditingDelegate:self];
+    [self setUIDelegate:self];
     [self setCanDrawConcurrently:YES];
     [self setEditable:YES];
 }
@@ -298,34 +299,35 @@
     return WebDragDestinationActionNone;
 }
 
-- (void)webView:(WebView *)sender willPerformDragDestinationAction:(WebDragDestinationAction)action forDraggingInfo:(id<NSDraggingInfo>)draggingInfo {
-    /*
-     SM_LOG_DEBUG(@"TODO");
-     
-     if ( [draggingInfo draggingSource] == nil )
-     {
-     NSPasteboard *pboard = [draggingInfo draggingPasteboard];
-     NSArray *classes = @[ [NSURL class] ];
-     NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES],
-     NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
-     NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
-     
-     if(fileURLs)
-     {
-     NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
-     NSMutableString* html = [NSMutableString string];
-     
-     for(NSString* filename in filenames) {
-     [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
-     }
-     
-     [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
-     [pboard setString: html forType: NSHTMLPboardType];
-     
-     SM_LOG_DEBUG(@"html: %@", html);
-     }
-     }
-     */
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)draggingInfo {
+    SM_LOG_INFO(@"dragging info %@", draggingInfo);
+
+    if([draggingInfo draggingSource] == nil ) {
+        NSPasteboard *pboard = [draggingInfo draggingPasteboard];
+        NSArray *classes = @[ [NSURL class] ];
+        NSDictionary *options = @{ NSPasteboardURLReadingFileURLsOnlyKey: [NSNumber numberWithBool:YES], NSPasteboardURLReadingContentsConformToTypesKey: [NSImage imageTypes] };
+        NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
+        
+        if(fileURLs && fileURLs.count != 0) {
+            NSArray* filenames = [pboard propertyListForType: NSFilenamesPboardType];
+            NSMutableString* html = [NSMutableString string];
+            
+            for(NSString* filename in filenames) {
+                [html appendFormat: @"<img src=\"%@\"/>", [[[NSURL alloc] initFileURLWithPath: filename] absoluteString]];
+            }
+            
+            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
+            [pboard setString: html forType: NSHTMLPboardType];
+        }
+        else {
+            [pboard declareTypes: [NSArray arrayWithObject: NSHTMLPboardType] owner: self];
+            [pboard setString: @"" forType: NSHTMLPboardType];
+//            return YES;
+        }
+        
+    }
+    
+    return [super performDragOperation:draggingInfo];
 }
 
 - (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {

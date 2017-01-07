@@ -161,7 +161,7 @@
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     if(sender != nil && frame == sender.mainFrame) {
         SM_LOG_INFO(@"editor document main frame loaded");
-
+        
         _findContext = nil;
 
         SMEditorFocusKind focusKind = [SMHTMLMessageEditorView contentKindToFocusKind:_editorKind];
@@ -317,12 +317,15 @@
             for(NSString* filename in filenames) {
                 NSURL *url = [[NSURL alloc] initFileURLWithPath:filename];
 
-                if([SMFileUtils imageFileType:filename]) {
-                    [html appendFormat: @"<img src=\"%@\"/>", url.absoluteURL];
-                }
-                else {
-                    BOOL isDir = NO;
-                    if([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && !isDir) {
+                BOOL isDir = NO;
+                if([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && !isDir) {
+                    if([SMFileUtils imageFileType:filename]) {
+                        NSString *imageSrc = [_editorToolBoxViewController.messageEditorViewController attachInlinedImage:url];
+                        
+                        // TODO: use imageSrc in the img ref
+                        [html appendFormat: @"<img src=\"%@\"/>", url.absoluteURL];
+                    }
+                    else {
                         [_editorToolBoxViewController.messageEditorViewController attachFile:url];
                     }
                 }
@@ -341,6 +344,13 @@
     }
     
     return [super performDragOperation:draggingInfo];
+}
+
+- (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
+
+    SM_LOG_INFO(@"request %@, identifier %@", request, identifier);
+
+    return request;
 }
 
 - (void)webView:(WebView *)sender willPerformDragSourceAction:(WebDragSourceAction)action fromPoint:(NSPoint)point withPasteboard:(NSPasteboard *)pasteboard {

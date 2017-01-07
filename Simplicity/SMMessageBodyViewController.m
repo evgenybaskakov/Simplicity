@@ -17,6 +17,12 @@
 #import <WebKit/WebPreferences.h>
 #import <WebKit/WebScriptObject.h>
 
+#import <WebKit/DOMDocument.h>
+#import <WebKit/DOMElement.h>
+#import <WebKit/DOMNode.h>
+#import <WebKit/DOMNodeList.h>
+#import <WebKit/DOMText.h>
+
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMMessageBodyViewController.h"
@@ -158,22 +164,8 @@
 }
 
 - (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
-    
-//  SM_LOG_DEBUG(@"request %@, identifier %@", request, identifier);
-    
     NSURL *url = [request URL];
     NSString *absoluteUrl = [url absoluteString];
-    
-//  SM_LOG_DEBUG(@"url absoluteString: %@", absoluteUrl);
-    
-    ////
-//  NSScrollView *scrollView = [[[[_view mainFrame] frameView] documentView] enclosingScrollView];
-//  NSRect scrollViewBounds = [[scrollView contentView] bounds];
-//  NSPoint savedScrollPosition = scrollViewBounds.origin;
-//  NSSize savedScrollSize = scrollViewBounds.size;
-//  SM_LOG_DEBUG(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
-//  SM_LOG_DEBUG(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
-    ////
     
     if([absoluteUrl hasPrefix:@"cid:"]) {
         // TODO: handle not completely downloaded attachments
@@ -186,7 +178,8 @@
             return request;
         }
         
-//      SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        
         return [NSURLRequest requestWithURL:attachmentLocation];
     }
     
@@ -239,6 +232,37 @@
             return;
         }
 
+/*
+        CGFloat scale = 0.8; // the scale factor that works for you
+        NSString *jScript = [NSString stringWithFormat:@"document.body.style.zoom = %f;",scale];
+        //@"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+        
+ */
+        WebView *view = (WebView*)[self view];
+/*
+        WebScriptObject *scriptObject = [view windowScriptObject];
+        [scriptObject evaluateWebScript:jScript];
+*/
+        
+//        [[[[[[view mainFrame] frameView] documentView] scale] superview] scaleUnitSquareToSize:NSMakeSize(.5, .5)];
+/*
+        NSString *script = @"document.body.style.zoom";
+        float oldFac = [[view stringByEvaluatingJavaScriptFromString:script] floatValue];
+        if( oldFac==0 ){ oldFac = 1.0; }
+        NSString *res = [view stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"%@='%1.2f';", script, (oldFac*0.5)]];
+        [view setNeedsDisplay:YES];
+*/
+        
+        {
+            DOMDocument* domDocument = [view mainFrameDocument];
+            DOMElement* styleElement = [domDocument createElement:@"style"];
+            [styleElement setAttribute:@"type" value:@"text/css"];
+            DOMText* cssText = [domDocument createTextNode:@"img { max-width: 100%; }"];
+            [styleElement appendChild:cssText];
+            DOMElement* headElement = (DOMElement*)[[domDocument getElementsByTagName:@"head"] item:0];
+            [headElement appendChild:styleElement];
+        }
         _mainFrameLoaded = YES;
         _findContext = nil;
         

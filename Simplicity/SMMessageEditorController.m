@@ -65,6 +65,10 @@
     [_attachmentItems removeObjectsInArray:attachmentItems];
 }
 
+- (NSString*)addInlinedImage:(NSURL*)url {
+    return nil; // TODO
+}
+
 #pragma mark Actions
 
 - (BOOL)sendMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {

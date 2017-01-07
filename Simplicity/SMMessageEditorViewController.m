@@ -708,6 +708,14 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self showAttachmentsPanel];
 }
 
+- (NSString*)attachInlinedImage:(NSURL*)url {
+
+    //_messageEditorController
+    // TODO
+    
+    return nil;
+}
+
 - (void)createHTMLEditorToolbox {
     _editorToolBoxViewController = [[SMEditorToolBoxViewController alloc] initWithNibName:@"SMEditorToolBoxViewController" bundle:nil];
     _editorToolBoxViewController.messageEditorViewController = self;

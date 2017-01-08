@@ -86,7 +86,7 @@
         return @"";
     }
     
-    NSString *checksum = [SMStringUtils md5WithData:fileData];
+    NSString *checksum = [SMStringUtils sha1WithData:fileData];
     SM_LOG_INFO(@"file '%@' checksum %@", url, checksum);
 
     [attachmentItem.mcoAttachment setContentID:checksum];

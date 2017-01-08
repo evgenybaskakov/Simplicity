@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import <CommonCrypto/CommonDigest.h>
+
 #import "SMStringUtils.h"
 
 // Taken from here: http://www.cocoawithlove.com/2009/06/verifying-that-string-is-email-address.html.
@@ -42,6 +44,28 @@ static NSString *emailRegEx =
 // TODO: cache trimmed strings?
 + (NSString*)trimString:(NSString*)str {
     return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+NSString *md5internal(const char *cstr) {
+    unsigned char result[16];
+    CC_MD5(cstr, (CC_LONG)strlen(cstr), result);
+    
+    return [NSString stringWithFormat:
+            @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            result[0], result[1], result[2], result[3],
+            result[4], result[5], result[6], result[7],
+            result[8], result[9], result[10], result[11],
+            result[12], result[13], result[14], result[15]];
+}
+
++ (NSString*)md5:(NSString *)str {
+    const char *cstr = [str UTF8String];
+    return md5internal(cstr);
+}
+
++ (NSString*)md5WithData:(NSData*)data {
+    const char *cstr = [data bytes];
+    return md5internal(cstr);
 }
 
 @end

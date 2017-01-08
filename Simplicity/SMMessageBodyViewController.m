@@ -170,7 +170,7 @@
     if([absoluteUrl hasPrefix:@"cid:"]) {
         // TODO: handle not completely downloaded attachments
         // TODO: implement a precise contentId matching (to handle the really existing imap parts)
-        NSString *contentId = [absoluteUrl substringFromIndex:4];
+        NSString *contentId = [[absoluteUrl substringFromIndex:4] stringByRemovingPercentEncoding];
         NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
@@ -178,7 +178,7 @@
             return request;
         }
         
-        SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
         
         return [NSURLRequest requestWithURL:attachmentLocation];
     }

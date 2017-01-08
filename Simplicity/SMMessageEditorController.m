@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMStringUtils.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMOperationExecutor.h"
@@ -75,9 +76,20 @@
 }
 
 - (NSString*)addInlinedImage:(NSURL*)url {
-    NSString *cachedImageFileName = url.lastPathComponent;
     SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:url.path];
-    [attachmentItem.mcoAttachment setContentID:cachedImageFileName]; // TODO: use file checksum
+    
+    NSData *fileData = [NSData dataWithContentsOfFile:url.path];
+    if(fileData == nil) {
+        SM_LOG_ERROR(@"failed to read file '%@'", url);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    NSString *checksum = [SMStringUtils md5WithData:fileData];
+    SM_LOG_INFO(@"file '%@' checksum %@", url, checksum);
+
+    [attachmentItem.mcoAttachment setContentID:checksum];
     
     [_inlinedImageAttachmentItems addObject:attachmentItem];
     
@@ -96,7 +108,7 @@
         return @"";
     }
     
-    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:cachedImageFileName];
+    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:checksum];
     
     [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
     
@@ -116,8 +128,8 @@
     
     // TODO: why attachments are in this object, not parameters?
     
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems account:account];
-
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
+    
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
@@ -170,7 +182,7 @@
         _saveDraftOp = nil;
     }
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems account:account];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

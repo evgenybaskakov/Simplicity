@@ -11,12 +11,6 @@
 #import "SMPreferencesController.h"
 #import "SMAttachmentStorage.h"
 
-@interface SMAttachmentStorage()
-
-- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId;
-
-@end
-
 @implementation SMAttachmentStorage
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account {
@@ -32,10 +26,10 @@
 - (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
     NSAssert(data, @"bad data");
     
-    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid contentId:contentId];
+    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid];
     
     if(![self createDirectory:attachmentDir]) {
-        SM_LOG_DEBUG(@"cannot create directory '%@' for attachment '%@'", [attachmentDir path], contentId);
+        SM_LOG_DEBUG(@"cannot create directory '%@'", [attachmentDir path]);
         
         return;
     }
@@ -53,13 +47,13 @@
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder {
     NSAssert(contentId != nil, @"contentId is nil");
     
-    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid contentId:contentId];
+    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid];
     NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:contentId];
 
     return attachmentFile;
 }
 
-- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
+- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid {
     NSAssert(!_account.unified, @"current account is unified, attachment storage is stubbed");
     
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];

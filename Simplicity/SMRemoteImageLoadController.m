@@ -68,15 +68,8 @@
     [_webView stopLoading:self];
 }
 
-- (NSURL*)imageCacheDir {
-    NSURL *appDataDir = [SMAppDelegate appDataDir];
-    NSAssert(appDataDir, @"no app data dir");
-    
-    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"ImageCache"] isDirectory:YES];
-}
-
 - (void)saveImageToDisk:(NSString*)imageName image:(NSImage*)image {
-    NSURL *dirUrl = [self imageCacheDir];
+    NSURL *dirUrl = [SMAppDelegate imageCacheDir];
     
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
@@ -110,7 +103,7 @@
 }
 
 - (NSImage*)loadImageFromDisk:(NSString*)imageName fileNeedsReload:(BOOL*)fileNeedsReload {
-    NSURL *dirUrl = [self imageCacheDir];
+    NSURL *dirUrl = [SMAppDelegate imageCacheDir];
     
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");

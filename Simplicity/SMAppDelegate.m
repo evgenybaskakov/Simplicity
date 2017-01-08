@@ -301,4 +301,18 @@
     return [appSupportDir URLByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
 }
 
++ (NSURL*)imageCacheDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"ImageCache"] isDirectory:YES];
+}
+
++ (NSURL*)draftTempDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"DraftTemp"] isDirectory:YES];
+}
+
 @end

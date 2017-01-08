@@ -35,7 +35,8 @@
 #import "SMOpSendMessage.h"
 
 @implementation SMMessageEditorController {
-    NSMutableArray *_attachmentItems;
+    NSMutableArray<SMAttachmentItem*> *_attachmentItems;
+    NSMutableArray<SMAttachmentItem*> *_inlinedImageAttachmentItems;
     MCOMessageBuilder *_saveDraftMessage;
     SMOpAppendMessage *_saveDraftOp;
     MCOMessageBuilder *_prevSaveDraftMessage;
@@ -49,6 +50,7 @@
     
     if(self) {
         _attachmentItems = [NSMutableArray array];
+        _inlinedImageAttachmentItems = [NSMutableArray array];
         _saveDraftUID = draftMessageUid;
     }
     
@@ -65,8 +67,47 @@
     [_attachmentItems removeObjectsInArray:attachmentItems];
 }
 
+- (NSURL*)draftTempDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"DraftTemp"] isDirectory:YES];
+}
+
 - (NSString*)addInlinedImage:(NSURL*)url {
-    return nil; // TODO
+    NSString *cachedImageFileName = url.lastPathComponent;
+    SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:url.path];
+    [attachmentItem.mcoAttachment setContentID:cachedImageFileName]; // TODO: use file checksum
+    
+    [_inlinedImageAttachmentItems addObject:attachmentItem];
+    
+    // TODO: create a uniquely named subdirectory
+
+    NSURL *dirUrl = [self draftTempDir];
+    
+    NSString *dirPath = [dirUrl path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
+    
+    NSError *error = nil;
+    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
+        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:cachedImageFileName];
+    
+    [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
+    
+    if(![[NSFileManager defaultManager] copyItemAtURL:url toURL:cacheFileUrl error:&error]) {
+        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", url, cacheFileUrl, error);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    return attachmentItem.mcoAttachment.contentID;
 }
 
 #pragma mark Actions

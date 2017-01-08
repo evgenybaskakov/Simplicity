@@ -709,11 +709,7 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
 }
 
 - (NSString*)attachInlinedImage:(NSURL*)url {
-
-    //_messageEditorController
-    // TODO
-    
-    return nil;
+    return [_messageEditorController addInlinedImage:url];
 }
 
 - (void)createHTMLEditorToolbox {

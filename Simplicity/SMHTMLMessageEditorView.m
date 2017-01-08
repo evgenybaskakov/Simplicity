@@ -322,8 +322,7 @@
                     if([SMFileUtils imageFileType:filename]) {
                         NSString *imageSrc = [_editorToolBoxViewController.messageEditorViewController attachInlinedImage:url];
                         
-                        // TODO: use imageSrc in the img ref
-                        [html appendFormat: @"<img src=\"%@\"/>", url.absoluteURL];
+                        [html appendFormat: @"<img src=\"cid:%@\"/>", imageSrc];
                     }
                     else {
                         [_editorToolBoxViewController.messageEditorViewController attachFile:url];
@@ -350,6 +349,22 @@
 
     SM_LOG_INFO(@"request %@, identifier %@", request, identifier);
 
+    NSURL *url = [request URL];
+    NSString *absoluteUrl = [url absoluteString];
+    
+    if([absoluteUrl hasPrefix:@"cid:"]) {
+        NSString *contentId = [absoluteUrl substringFromIndex:4];
+        
+        if(contentId.length != 0) {
+            NSString *strippedcontentId = [contentId stringByRemovingPercentEncoding];
+            NSURL *attachmentLocation = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:strippedcontentId];
+            
+            SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, strippedcontentId);
+            
+            return [NSURLRequest requestWithURL:attachmentLocation];
+        }
+    }
+    
     return request;
 }
 

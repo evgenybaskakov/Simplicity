@@ -90,4 +90,13 @@ NSString *sha1internal(const char *cstr) {
     return sha1internal(cstr);
 }
 
++ (BOOL)cidURL:(NSString*)url contentId:(NSString**)contentId {
+    if([url hasPrefix:@"cid:"]) {
+        *contentId = [[url substringFromIndex:4] stringByRemovingPercentEncoding];
+        return YES;
+    }
+    
+    return NO;
+}
+
 @end

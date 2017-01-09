@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMStringUtils.h"
 #import "SMFileUtils.h"
 #import "SMPreferencesController.h"
 #import "SMColorWellWithIcon.h"
@@ -352,9 +353,8 @@
     NSURL *url = [request URL];
     NSString *absoluteUrl = [url absoluteString];
     
-    if([absoluteUrl hasPrefix:@"cid:"]) {
-        NSString *contentId = [absoluteUrl substringFromIndex:4];
-        
+    NSString *contentId = nil;
+    if([SMStringUtils cidURL:absoluteUrl contentId:&contentId]) {
         if(contentId.length != 0) {
             NSString *strippedcontentId = [contentId stringByRemovingPercentEncoding];
             NSURL *attachmentLocation = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:strippedcontentId];

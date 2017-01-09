@@ -22,9 +22,11 @@
 #import <WebKit/DOMNode.h>
 #import <WebKit/DOMNodeList.h>
 #import <WebKit/DOMText.h>
+#import <WebKit/DOMHTMLImageElement.h>
 
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMStringUtils.h"
 #import "SMMessageBodyViewController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
@@ -167,10 +169,10 @@
     NSURL *url = [request URL];
     NSString *absoluteUrl = [url absoluteString];
     
-    if([absoluteUrl hasPrefix:@"cid:"]) {
+    NSString *contentId = nil;
+    if([SMStringUtils cidURL:absoluteUrl contentId:&contentId]) {
         // TODO: handle not completely downloaded attachments
         // TODO: implement a precise contentId matching (to handle the really existing imap parts)
-        NSString *contentId = [[absoluteUrl substringFromIndex:4] stringByRemovingPercentEncoding];
         NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
@@ -285,17 +287,48 @@
 }
 
 - (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems {
-    NSMutableArray *updatedMenuItems = [NSMutableArray arrayWithArray:defaultMenuItems];
-
-    for(NSUInteger i = defaultMenuItems.count; i > 0; i--) {
-        NSMenuItem *item = updatedMenuItems[i-1];
-        
-        if([item.title isEqualToString:@"Reload"]) {
-            [updatedMenuItems removeObjectAtIndex:i-1];
-        }
-    }
+    SM_LOG_DEBUG(@"element: %@", element);
     
-    return updatedMenuItems;
+    DOMNode *node = [element objectForKey: @"WebElementDOMNode"];
+    if(node != nil && [node isKindOfClass:[DOMHTMLImageElement class]]) {
+        NSMenuItem *shareItem = nil;
+        for(NSUInteger i = 0; i < defaultMenuItems.count; i++) {
+            NSMenuItem *item = defaultMenuItems[i];
+            
+            if([item.title isEqualToString:@"Share"]) {
+                shareItem = item;
+                break;
+            }
+        }
+        
+        NSMutableArray *menuItems = [NSMutableArray array];
+
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image" action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image With..." action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[NSMenuItem separatorItem]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image..." action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image To Downloads" action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[NSMenuItem separatorItem]];
+        
+        if(shareItem) {
+            [menuItems addObject:shareItem];
+        }
+        
+        return menuItems;
+    }
+    else {
+        NSMutableArray *updatedMenuItems = [NSMutableArray arrayWithArray:defaultMenuItems];
+
+        for(NSUInteger i = defaultMenuItems.count; i > 0; i--) {
+            NSMenuItem *item = updatedMenuItems[i-1];
+            
+            if([item.title isEqualToString:@"Reload"]) {
+                [updatedMenuItems removeObjectAtIndex:i-1];
+            }
+        }
+        
+        return updatedMenuItems;
+    }
 }
 
 #pragma mark Finding contents

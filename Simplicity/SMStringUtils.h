@@ -17,5 +17,6 @@
 + (NSString*)md5WithData:(NSData*)data;
 + (NSString*)sha1:(NSString *)str;
 + (NSString*)sha1WithData:(NSData*)data;
++ (BOOL)cidURL:(NSString*)url contentId:(NSString**)contentId;
 
 @end

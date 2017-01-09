@@ -12,6 +12,5 @@
 
 + (NSImage*)defaultImage;
 + (NSImage*)promptForImage;
-+ (void)saveImageFile:(NSString*)filePath image:(NSImage*)image;
 
 @end

@@ -12,6 +12,7 @@
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
 #import "SMUserAccount.h"
+#import "SMFileUtils.h"
 #import "SMMailServiceProvider.h"
 #import "SMAccountImageSelection.h"
 #import "SMPreferencesController.h"
@@ -288,9 +289,8 @@ DEFINE_INTEGER_PREFERENCE(messageDownloadServerTimeout,     setMessageDownloadSe
     // Create cache directory.
     NSString *cacheDirPath = [self cacheDirPath:newAccountIdx];
 
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:cacheDirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create cache directory '%@', error: %@", cacheDirPath, error);
+    if(![SMFileUtils createDirectory:cacheDirPath]) {
+        SM_LOG_ERROR(@"failed to create cache directory '%@'", cacheDirPath);
     }
     
     // Save the account image;
@@ -298,7 +298,7 @@ DEFINE_INTEGER_PREFERENCE(messageDownloadServerTimeout,     setMessageDownloadSe
         NSString *accountImagePath = [self accountImagePath:newAccountIdx];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
         
-        [SMAccountImageSelection saveImageFile:accountImagePath image:accountImage];
+        [SMFileUtils saveImageFile:accountImagePath image:accountImage];
     }
 
     [self setUseAddressBookAccountImage:newAccountIdx useAddressBookImage:(accountImage != nil? NO : YES)];

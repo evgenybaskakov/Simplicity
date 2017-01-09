@@ -320,10 +320,11 @@ static NSSize scalePreviewImage(NSSize imageSize) {
 #pragma mark Attachment files manipulations
 
 - (void)openAttachment:(SMAttachmentItem*)attachmentItem {
-    NSString *filePath = [self saveAttachment:attachmentItem toPath:@"/tmp"];
+    NSString *tempDir = [[SMAppDelegate systemTempDir] path];
+    NSString *filePath = [self saveAttachment:attachmentItem toPath:tempDir];
     
     if(filePath == nil) {
-        SM_LOG_DEBUG(@"cannot open attachment");
+        SM_LOG_WARNING(@"cannot open attachment");
         return; // TODO: error popup?
     }
     

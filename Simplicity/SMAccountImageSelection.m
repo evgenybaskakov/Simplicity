@@ -77,16 +77,4 @@ static const CGFloat MAX_ACCOUNT_IMAGE_SIZE = 1024;
     return nil;
 }
 
-+ (void)saveImageFile:(NSString*)filePath image:(NSImage*)image {
-    NSData *imageData = [image TIFFRepresentation];
-    NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imageData];
-    NSDictionary *imageProps = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:1.0] forKey:NSImageCompressionFactor];
-
-    imageData = [imageRep representationUsingType:NSPNGFileType properties:imageProps];
-    
-    if(![imageData writeToFile:filePath atomically:NO]) {
-        SM_LOG_ERROR(@"Could not save account image to '%@'", filePath);
-    }
-}
-
 @end

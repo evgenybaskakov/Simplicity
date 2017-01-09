@@ -33,6 +33,7 @@
 + (NSURL*)appDataDir;
 + (NSURL*)imageCacheDir;
 + (NSURL*)draftTempDir;
++ (NSURL*)systemTempDir;
 
 @property SMAppController *appController;
 

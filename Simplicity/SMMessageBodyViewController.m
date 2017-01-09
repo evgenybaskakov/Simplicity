@@ -27,6 +27,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
+#import "SMFileUtils.h"
 #import "SMMessageBodyViewController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
@@ -68,6 +69,8 @@
     uint64_t _messageId;
     NSString *_folder;
     BOOL _uncollapsed;
+    NSImage *_imageWithContextMenu;
+    NSURL *_imageUrlWithContextMenu;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -176,7 +179,7 @@
         NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
-            SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);
+            SM_LOG_WARNING(@"cannot load attachment for contentId %@", contentId);
             return request;
         }
         
@@ -287,10 +290,22 @@
 }
 
 - (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems {
-    SM_LOG_DEBUG(@"element: %@", element);
+    SM_LOG_INFO(@"element: %@", element);
     
     DOMNode *node = [element objectForKey: @"WebElementDOMNode"];
     if(node != nil && [node isKindOfClass:[DOMHTMLImageElement class]]) {
+        _imageWithContextMenu = [element objectForKey:@"WebElementImage"];
+
+        if(_imageWithContextMenu == nil || ![_imageWithContextMenu isKindOfClass:[NSImage class]]) {
+            return defaultMenuItems;
+        }
+
+        _imageUrlWithContextMenu = [element objectForKey:@"WebElementImageURL"];
+        
+        if(_imageUrlWithContextMenu == nil) {
+            return defaultMenuItems;
+        }
+        
         NSMenuItem *shareItem = nil;
         for(NSUInteger i = 0; i < defaultMenuItems.count; i++) {
             NSMenuItem *item = defaultMenuItems[i];
@@ -303,11 +318,11 @@
         
         NSMutableArray *menuItems = [NSMutableArray array];
 
-        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image" action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
-        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image With..." action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image" action:@selector(openImage) keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image With..." action:@selector(openImageWith) keyEquivalent:@""]];
         [menuItems addObject:[NSMenuItem separatorItem]];
-        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image..." action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
-        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image To Downloads" action:nil/*TODO (nullable SEL)selector*/ keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image..." action:@selector(saveImage) keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image To Downloads" action:@selector(saveImageToDownloads) keyEquivalent:@""]];
         [menuItems addObject:[NSMenuItem separatorItem]];
         
         if(shareItem) {
@@ -329,6 +344,60 @@
         
         return updatedMenuItems;
     }
+}
+
+#pragma mark Attachment manipulations 
+
+- (void)openImage {
+    if(_imageWithContextMenu == nil) {
+        SM_LOG_WARNING(@"no image to load, url %@", _imageUrlWithContextMenu);
+        return;
+    }
+    
+    NSURL *attachmentLocation = nil;
+    
+    NSString *contentId = nil;
+    if([SMStringUtils cidURL:_imageUrlWithContextMenu.absoluteString contentId:&contentId]) {
+        NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        
+        if(!attachmentLocation) {
+            SM_LOG_ERROR(@"cannot load attachment for contentId %@", contentId);
+            return;
+        }
+        
+        SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+    }
+    else {
+        attachmentLocation = [[SMAppDelegate systemTempDir] URLByAppendingPathComponent:_imageUrlWithContextMenu.lastPathComponent];
+        
+        if(![SMFileUtils saveImageFile:attachmentLocation.path image:_imageWithContextMenu]) {
+            SM_LOG_ERROR(@"cannot save image for url %@ to %@", _imageUrlWithContextMenu, attachmentLocation.path);
+            return;
+        }
+    }
+    
+    [[NSWorkspace sharedWorkspace] openFile:attachmentLocation.path];
+}
+
+- (void)openImageWith {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
+}
+
+- (void)saveImage {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
+}
+
+- (void)saveImageToDownloads {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
 }
 
 #pragma mark Finding contents

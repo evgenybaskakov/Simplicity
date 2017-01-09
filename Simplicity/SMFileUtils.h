@@ -11,5 +11,7 @@
 @interface SMFileUtils : NSObject
 
 + (BOOL)imageFileType:(NSString*)filename;
++ (BOOL)saveImageFile:(NSString*)filePath image:(NSImage*)image;
++ (BOOL)createDirectory:(NSString*)dirPath;
 
 @end

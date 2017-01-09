@@ -18,6 +18,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMStringUtils.h"
+#import "SMFileUtils.h"
 #import "SMPreferencesController.h"
 #import "SMRemoteImageLoadController.h"
 
@@ -73,9 +74,8 @@
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
     
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
+    if(![SMFileUtils createDirectory:dirPath]) {
+        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
         return;
     }
     

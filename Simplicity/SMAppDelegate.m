@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMFileUtils.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMMailbox.h"
@@ -52,11 +53,30 @@
         _imageRegistry = [[SMImageRegistry alloc] init];
         _messageThreadAccountProxy = [[SMMessageThreadAccountProxy alloc] init];
         _accounts = [NSMutableArray array];
+        
+        [self ensureAppDirectoriesCreated];
     }
     
     SM_LOG_DEBUG(@"app delegate initialized");
     
     return self;
+}
+
+- (void)ensureAppDirectoriesCreated {
+    NSString *dir = [[SMAppDelegate imageCacheDir] path];
+    if(![SMFileUtils createDirectory:dir]) {
+        SM_LOG_ERROR(@"cannot create directory %@", dir);
+    }
+
+    dir = [[SMAppDelegate draftTempDir] path];
+    if(![SMFileUtils createDirectory:dir]) {
+        SM_LOG_ERROR(@"cannot create directory %@", dir);
+    }
+
+    dir = [[SMAppDelegate systemTempDir] path];
+    if(![SMFileUtils createDirectory:dir]) {
+        SM_LOG_ERROR(@"cannot create directory %@", dir);
+    }
 }
 
 - (id<SMMailbox>)currentMailbox {
@@ -293,7 +313,7 @@
     if([appSupportDirs count] > 0) {
         appSupportDir = (NSURL*)[appSupportDirs objectAtIndex:0];
     } else {
-        SM_LOG_DEBUG(@"cannot get path to app dir");
+        SM_LOG_WARNING(@"cannot get path to app dir");
         
         appSupportDir = [NSURL fileURLWithPath:@"~/Library/Application Support/" isDirectory:YES];
     }
@@ -313,6 +333,13 @@
     NSAssert(appDataDir, @"no app data dir");
     
     return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"DraftTemp"] isDirectory:YES];
+}
+
++ (NSURL*)systemTempDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+
+    return [appDataDir URLByAppendingPathComponent:@"Temp" isDirectory:YES];
 }
 
 @end

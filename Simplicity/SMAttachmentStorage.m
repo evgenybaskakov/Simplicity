@@ -7,6 +7,7 @@
 //
 
 #import "SMLog.h"
+#import "SMFileUtils.h"
 #import "SMAppDelegate.h"
 #import "SMPreferencesController.h"
 #import "SMAttachmentStorage.h"
@@ -28,9 +29,8 @@
     
     NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid];
     
-    if(![self createDirectory:attachmentDir]) {
-        SM_LOG_DEBUG(@"cannot create directory '%@'", [attachmentDir path]);
-        
+    if(![SMFileUtils createDirectory:attachmentDir.path]) {
+        SM_LOG_WARNING(@"cannot create directory '%@'", attachmentDir.path);
         return;
     }
 
@@ -38,7 +38,7 @@
     NSString *attachmentFilePath = [attachmentFile path];
     
     if(![data writeToFile:attachmentFilePath atomically:YES]) {
-        SM_LOG_DEBUG(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
+        SM_LOG_WARNING(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
     } else {
         SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", attachmentFilePath, (unsigned long)[data length]);
     }
@@ -65,20 +65,6 @@
     NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
     
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];
-}
-
-- (BOOL)createDirectory:(NSURL*)dir {
-    NSString *dirPath = [dir path];
-    NSAssert(dirPath != nil, @"dirPath is nil");
-    
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
-        return NO;
-    }
-
-    SM_LOG_DEBUG(@"directory '%@' created successfully", dirPath);
-    return YES;
 }
 
 @end

@@ -11,6 +11,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMFileUtils.h"
 #import "SMStringUtils.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
@@ -100,9 +101,8 @@
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
     
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
+    if(![SMFileUtils createDirectory:dirPath]) {
+        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
         
         // TODO: show alert
         return @"";
@@ -112,6 +112,7 @@
     
     [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
     
+    NSError *error;
     if(![[NSFileManager defaultManager] copyItemAtURL:url toURL:cacheFileUrl error:&error]) {
         SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", url, cacheFileUrl, error);
         

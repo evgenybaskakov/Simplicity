@@ -34,6 +34,10 @@
         return;
     }
 
+    if(filename == nil) {
+        filename = @"attachment-data";
+    }
+    
     NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:filename];
     NSString *attachmentFilePath = attachmentFile.path;
     

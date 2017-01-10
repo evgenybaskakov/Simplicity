@@ -321,9 +321,9 @@
                 BOOL isDir = NO;
                 if([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && !isDir) {
                     if([SMFileUtils imageFileType:filename]) {
-                        NSString *imageSrc = [_editorToolBoxViewController.messageEditorViewController attachInlinedImage:url];
+                        NSString *contentId = [_editorToolBoxViewController.messageEditorViewController attachInlinedImage:url];
                         
-                        [html appendFormat: @"<img src=\"cid:%@\"/>", imageSrc];
+                        [html appendFormat: @"<img src=\"cid:%@\"/>", contentId];
                     }
                     else {
                         [_editorToolBoxViewController.messageEditorViewController attachFile:url];

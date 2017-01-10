@@ -59,6 +59,7 @@
 - (void)openAttachmentDialog;
 - (void)toggleAttachmentsPanel:(id)sender;
 - (void)attachFile:(NSURL*)url;
+- (NSString*)attachInlinedImage:(NSURL*)url;
 
 #pragma mark Find contents panel
 

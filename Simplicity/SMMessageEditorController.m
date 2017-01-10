@@ -11,6 +11,8 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMFileUtils.h"
+#import "SMStringUtils.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
 #import "SMOperationExecutor.h"
@@ -35,7 +37,8 @@
 #import "SMOpSendMessage.h"
 
 @implementation SMMessageEditorController {
-    NSMutableArray *_attachmentItems;
+    NSMutableArray<SMAttachmentItem*> *_attachmentItems;
+    NSMutableArray<SMAttachmentItem*> *_inlinedImageAttachmentItems;
     MCOMessageBuilder *_saveDraftMessage;
     SMOpAppendMessage *_saveDraftOp;
     MCOMessageBuilder *_prevSaveDraftMessage;
@@ -49,6 +52,7 @@
     
     if(self) {
         _attachmentItems = [NSMutableArray array];
+        _inlinedImageAttachmentItems = [NSMutableArray array];
         _saveDraftUID = draftMessageUid;
     }
     
@@ -65,14 +69,68 @@
     [_attachmentItems removeObjectsInArray:attachmentItems];
 }
 
+- (NSURL*)draftTempDir {
+    NSURL *appDataDir = [SMAppDelegate appDataDir];
+    NSAssert(appDataDir, @"no app data dir");
+    
+    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"DraftTemp"] isDirectory:YES];
+}
+
+- (NSString*)addInlinedImage:(NSURL*)url {
+    SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:url.path];
+    
+    NSData *fileData = [NSData dataWithContentsOfFile:url.path];
+    if(fileData == nil) {
+        SM_LOG_ERROR(@"failed to read file '%@'", url);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    NSString *checksum = [SMStringUtils sha1WithData:fileData];
+    SM_LOG_INFO(@"file '%@' checksum %@", url, checksum);
+
+    [attachmentItem.mcoAttachment setContentID:checksum];
+    
+    [_inlinedImageAttachmentItems addObject:attachmentItem];
+    
+    // TODO: create a uniquely named subdirectory
+
+    NSURL *dirUrl = [self draftTempDir];
+    
+    NSString *dirPath = [dirUrl path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
+    
+    if(![SMFileUtils createDirectory:dirPath]) {
+        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:checksum];
+    
+    [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
+    
+    NSError *error;
+    if(![[NSFileManager defaultManager] copyItemAtURL:url toURL:cacheFileUrl error:&error]) {
+        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", url, cacheFileUrl, error);
+        
+        // TODO: show alert
+        return @"";
+    }
+    
+    return attachmentItem.mcoAttachment.contentID;
+}
+
 #pragma mark Actions
 
 - (BOOL)sendMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     
     // TODO: why attachments are in this object, not parameters?
     
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems account:account];
-
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
+    
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
     SMOutgoingMessage *outgoingMessage = [[SMOutgoingMessage alloc] initWithMessageBuilder:messageBuilder];
@@ -125,7 +183,7 @@
         _saveDraftOp = nil;
     }
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems account:account];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

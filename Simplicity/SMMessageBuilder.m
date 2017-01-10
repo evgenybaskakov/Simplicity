@@ -15,11 +15,11 @@
 
 @implementation SMMessageBuilder
 
-+ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
-    return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:attachmentItems];
++ (MCOMessageBuilder*)createMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems inlineAttachmentItems:(NSArray<SMAttachmentItem*>*)inlineAttachmentItems {
+    return [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from.mcoAddress to:[SMAddress addressListToMCOAddresses:to] cc:[SMAddress addressListToMCOAddresses:cc] bcc:[SMAddress addressListToMCOAddresses:bcc] attachmentItems:attachmentItems inlineAttachmentItems:inlineAttachmentItems];
 }
 
-+ (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems {
++ (MCOMessageBuilder*)createMessageInternal:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(MCOAddress*)from to:(NSArray<MCOAddress*>*)to cc:(NSArray<MCOAddress*>*)cc bcc:(NSArray<MCOAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems inlineAttachmentItems:(NSArray<SMAttachmentItem*>*)inlineAttachmentItems {
     MCOMessageBuilder *builder = [[MCOMessageBuilder alloc] init];
     
     if(from != nil) {
@@ -74,30 +74,55 @@
     for(SMAttachmentItem *attachmentItem in attachmentItems) {
         MCOAttachment *mcoAttachment = nil;
         
-        if(attachmentItem.fileData != nil) {
-            mcoAttachment = [MCOAttachment attachmentWithData:attachmentItem.fileData filename:attachmentItem.fileName];
+        if(attachmentItem.mcoAttachment != nil) {
+            mcoAttachment = attachmentItem.mcoAttachment;
         }
         else {
-            NSString *attachmentLocalFilePath = attachmentItem.localFilePath;
-            NSAssert(attachmentLocalFilePath != nil, @"attachmentLocalFilePath is nil");
-            
-            mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentLocalFilePath];
+            if(attachmentItem.fileData != nil) {
+                mcoAttachment = [MCOAttachment attachmentWithData:attachmentItem.fileData filename:attachmentItem.fileName];
+            }
+            else {
+                NSString *attachmentLocalFilePath = attachmentItem.localFilePath;
+                NSAssert(attachmentLocalFilePath != nil, @"attachmentLocalFilePath is nil");
+                
+                mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentLocalFilePath];
+            }
         }
         
         [builder addAttachment:mcoAttachment];
-        // TODO: ???    - (void) addRelatedAttachment:(MCOAttachment *)attachment;
     }
-    
+
+    for(SMAttachmentItem *attachmentItem in inlineAttachmentItems) {
+        MCOAttachment *mcoAttachment = nil;
+        
+        if(attachmentItem.mcoAttachment != nil) {
+            mcoAttachment = attachmentItem.mcoAttachment;
+        }
+        else {
+            if(attachmentItem.fileData != nil) {
+                mcoAttachment = [MCOAttachment attachmentWithData:attachmentItem.fileData filename:attachmentItem.fileName];
+            }
+            else {
+                NSString *attachmentLocalFilePath = attachmentItem.localFilePath;
+                NSAssert(attachmentLocalFilePath != nil, @"attachmentLocalFilePath is nil");
+                
+                mcoAttachment = [MCOAttachment attachmentWithContentsOfFile:attachmentLocalFilePath];
+            }
+        }
+        
+        [builder addRelatedAttachment:mcoAttachment];
+    }
+
     return builder;
 }
 
-- (id)initWithMessageText:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems account:(SMUserAccount*)account {
+- (id)initWithMessageText:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray<SMAddress*>*)to cc:(NSArray<SMAddress*>*)cc bcc:(NSArray<SMAddress*>*)bcc attachmentItems:(NSArray*)attachmentItems inlineAttachmentItems:(NSArray<SMAttachmentItem*>*)inlineAttachmentItems account:(SMUserAccount*)account {
     self = [super init];
     
     if(self) {
         _account = account;
         _plainText = plainText;
-        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _mcoMessageBuilder = [SMMessageBuilder createMessage:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems inlineAttachmentItems:inlineAttachmentItems];
         _attachments = attachmentItems;
         _creationDate = _mcoMessageBuilder.header.date;
         _threadId = (((uint64_t)rand()) << 32) | rand();
@@ -121,13 +146,15 @@
         NSArray *cc = [coder decodeObjectForKey:@"cc"];
         NSArray *bcc = [coder decodeObjectForKey:@"bcc"];
         NSArray *attachmentItems = [coder decodeObjectForKey:@"attachmentItems"];
+        NSArray *inlineAttachmentItems = [coder decodeObjectForKey:@"inlineAttachmentItems"];
         NSDate *creationDate = [coder decodeObjectForKey:@"creationDate"];
         uint64_t threadId = [coder decodeInt64ForKey:@"threadId"];
         uint32_t uid = [coder decodeInt32ForKey:@"uid"];
     
-        _mcoMessageBuilder = [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems];
+        _mcoMessageBuilder = [SMMessageBuilder createMessageInternal:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:attachmentItems inlineAttachmentItems:inlineAttachmentItems];
         _plainText = plainText;
         _attachments = attachmentItems;
+        _inlineAttachments = inlineAttachmentItems;
         _creationDate = creationDate;
         _threadId = threadId;
         _uid = uid;
@@ -145,6 +172,7 @@
     [coder encodeObject:[[_mcoMessageBuilder header] bcc] forKey:@"bcc"];
     [coder encodeBool:_plainText forKey:@"plainText"];
     [coder encodeObject:_attachments forKey:@"attachmentItems"];
+    [coder encodeObject:_inlineAttachments forKey:@"inlineAttachmentItems"];
     [coder encodeObject:_creationDate forKey:@"creationDate"];
     [coder encodeInt64:_threadId forKey:@"threadId"];
     [coder encodeInt32:_uid forKey:@"uid"];

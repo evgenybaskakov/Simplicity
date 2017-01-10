@@ -7,15 +7,10 @@
 //
 
 #import "SMLog.h"
+#import "SMFileUtils.h"
 #import "SMAppDelegate.h"
 #import "SMPreferencesController.h"
 #import "SMAttachmentStorage.h"
-
-@interface SMAttachmentStorage()
-
-- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId;
-
-@end
 
 @implementation SMAttachmentStorage
 
@@ -29,22 +24,25 @@
     return self;
 }
 
-- (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
+- (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId filename:(NSString*)filename {
     NSAssert(data, @"bad data");
     
-    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid contentId:contentId];
+    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid] URLByAppendingPathComponent:contentId isDirectory:YES];
     
-    if(![self createDirectory:attachmentDir]) {
-        SM_LOG_DEBUG(@"cannot create directory '%@' for attachment '%@'", [attachmentDir path], contentId);
-        
+    if(![SMFileUtils createDirectory:attachmentDir.path]) {
+        SM_LOG_ERROR(@"cannot create directory '%@'", attachmentDir.path);
         return;
     }
 
-    NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:contentId];
-    NSString *attachmentFilePath = [attachmentFile path];
+    if(filename == nil) {
+        filename = @"attachment-data";
+    }
+    
+    NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:filename];
+    NSString *attachmentFilePath = attachmentFile.path;
     
     if(![data writeToFile:attachmentFilePath atomically:YES]) {
-        SM_LOG_DEBUG(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
+        SM_LOG_ERROR(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
     } else {
         SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", attachmentFilePath, (unsigned long)[data length]);
     }
@@ -53,13 +51,21 @@
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder {
     NSAssert(contentId != nil, @"contentId is nil");
     
-    NSURL *attachmentDir = [self attachmentDirectoryForFolder:folder uid:uid contentId:contentId];
-    NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:contentId];
+    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid] URLByAppendingPathComponent:contentId isDirectory:YES];
+    
+    NSError *error;
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:attachmentDir.path error:&error];
+    if(dirFiles == nil || dirFiles.count == 0) {
+        SM_LOG_ERROR(@"files not found in '%@'", attachmentDir.path);
+        return nil;
+    }
+    
+    NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:dirFiles[0]];
 
     return attachmentFile;
 }
 
-- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId {
+- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid {
     NSAssert(!_account.unified, @"current account is unified, attachment storage is stubbed");
     
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
@@ -71,20 +77,6 @@
     NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
     
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];
-}
-
-- (BOOL)createDirectory:(NSURL*)dir {
-    NSString *dirPath = [dir path];
-    NSAssert(dirPath != nil, @"dirPath is nil");
-    
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
-        return NO;
-    }
-
-    SM_LOG_DEBUG(@"directory '%@' created successfully", dirPath);
-    return YES;
 }
 
 @end

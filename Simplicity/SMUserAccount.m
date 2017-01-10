@@ -493,6 +493,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     // TODO: fetch inline attachments on demand
     // TODO: refresh current view of the message loaded from DB without attachments
     for(MCOAttachment *attachment in attachments) {
+        // TODO: async operation
         NSString *attachmentContentId = [attachment contentID] != nil? [attachment contentID] : [attachment uniqueID];
         NSData *attachmentData = [attachment data];
         
@@ -507,7 +508,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         }
         
         if(attachmentData) {
-            [_attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId];
+            [_attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId filename:attachment.filename];
         } else {
             MCOAbstractPart *part = [imapMessage partForUniqueID:[attachment uniqueID]];
             
@@ -538,7 +539,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                 if (error.code == MCOErrorNone) {
                     NSAssert(data, @"no data");
                     
-                    [_self->_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID];
+                    [_self->_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID filename:imapPart.filename];
                 } else {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
                 }

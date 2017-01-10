@@ -13,7 +13,7 @@
 @interface SMAttachmentStorage : SMUserAccountDataObject
 
 - (id)initWithUserAccount:(id<SMAbstractAccount>)account;
-- (void)storeAttachment:(NSData*)data folder:(NSString*)folder uid:(uint32_t)uid contentId:(NSString*)contentId;
+- (void)storeAttachment:(NSData*)data folder:(NSString*)folder uid:(uint32_t)uid contentId:(NSString*)contentId filename:(NSString*)filename;
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder;
 
 @end

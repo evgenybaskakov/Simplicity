@@ -178,6 +178,7 @@ static const CGFloat SELECTION_TRANSPARENCY = 0.3;
         }
     }
     else {
+        // TODO: detect that an image is selected and name the menu item accordingly
         [theMenu addItemWithTitle:@"Open" action:@selector(openAttachment) keyEquivalent:@""];
         [theMenu addItemWithTitle:@"Save To Downloads" action:@selector(saveAttachmentToDownloads) keyEquivalent:@""];
         [theMenu addItemWithTitle:@"Save To..." action:@selector(saveAttachment) keyEquivalent:@""];

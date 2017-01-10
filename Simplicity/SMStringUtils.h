@@ -13,5 +13,10 @@
 + (BOOL)string:(NSString *)string hasPrefix:(NSString *)prefix caseInsensitive:(BOOL)caseInsensitive;
 + (BOOL)emailAddressValid:(NSString*)emailAddress;
 + (NSString*)trimString:(NSString*)str;
++ (NSString*)md5:(NSString*)str;
++ (NSString*)md5WithData:(NSData*)data;
++ (NSString*)sha1:(NSString *)str;
++ (NSString*)sha1WithData:(NSData*)data;
++ (BOOL)cidURL:(NSString*)url contentId:(NSString**)contentId;
 
 @end

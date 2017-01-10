@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Evgeny Baskakov. All rights reserved.
 //
 
+#import <CommonCrypto/CommonDigest.h>
+
 #import "SMStringUtils.h"
 
 // Taken from here: http://www.cocoawithlove.com/2009/06/verifying-that-string-is-email-address.html.
@@ -42,6 +44,59 @@ static NSString *emailRegEx =
 // TODO: cache trimmed strings?
 + (NSString*)trimString:(NSString*)str {
     return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+NSString *md5internal(const char *cstr) {
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(cstr, (CC_LONG)strlen(cstr), result);
+    
+    return [NSString stringWithFormat:
+            @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            result[0], result[1], result[2], result[3],
+            result[4], result[5], result[6], result[7],
+            result[8], result[9], result[10], result[11],
+            result[12], result[13], result[14], result[15]];
+}
+
+NSString *sha1internal(const char *cstr) {
+    unsigned char result[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1(cstr, (CC_LONG)strlen(cstr), result);
+    
+    return [NSString stringWithFormat:@"%02x%02x%02x%02x-%02x%02x%02x%02x-%02x%02x%02x%02x-%02x%02x%02x%02x-%02x%02x%02x%02x",
+            result[0], result[1], result[2], result[3],
+            result[4], result[5], result[6], result[7],
+            result[8], result[9], result[10], result[11],
+            result[12], result[13], result[14], result[15],
+            result[16], result[17], result[18], result[19]];
+}
+
++ (NSString*)md5:(NSString *)str {
+    const char *cstr = [str UTF8String];
+    return md5internal(cstr);
+}
+
++ (NSString*)md5WithData:(NSData*)data {
+    const char *cstr = [data bytes];
+    return md5internal(cstr);
+}
+
++ (NSString*)sha1:(NSString *)str {
+    const char *cstr = [str UTF8String];
+    return sha1internal(cstr);
+}
+
++ (NSString*)sha1WithData:(NSData*)data {
+    const char *cstr = [data bytes];
+    return sha1internal(cstr);
+}
+
++ (BOOL)cidURL:(NSString*)url contentId:(NSString**)contentId {
+    if([url hasPrefix:@"cid:"]) {
+        *contentId = [[url substringFromIndex:4] stringByRemovingPercentEncoding];
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end

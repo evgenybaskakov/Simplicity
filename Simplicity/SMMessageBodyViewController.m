@@ -17,8 +17,17 @@
 #import <WebKit/WebPreferences.h>
 #import <WebKit/WebScriptObject.h>
 
+#import <WebKit/DOMDocument.h>
+#import <WebKit/DOMElement.h>
+#import <WebKit/DOMNode.h>
+#import <WebKit/DOMNodeList.h>
+#import <WebKit/DOMText.h>
+#import <WebKit/DOMHTMLImageElement.h>
+
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMStringUtils.h"
+#import "SMFileUtils.h"
 #import "SMMessageBodyViewController.h"
 #import "SMPreferencesController.h"
 #import "SMNotificationsController.h"
@@ -60,6 +69,8 @@
     uint64_t _messageId;
     NSString *_folder;
     BOOL _uncollapsed;
+    NSImage *_imageWithContextMenu;
+    NSURL *_imageUrlWithContextMenu;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -158,35 +169,22 @@
 }
 
 - (NSURLRequest *)webView:(WebView *)sender resource:(id)identifier willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse fromDataSource:(WebDataSource *)dataSource {
-    
-//  SM_LOG_DEBUG(@"request %@, identifier %@", request, identifier);
-    
     NSURL *url = [request URL];
     NSString *absoluteUrl = [url absoluteString];
     
-//  SM_LOG_DEBUG(@"url absoluteString: %@", absoluteUrl);
-    
-    ////
-//  NSScrollView *scrollView = [[[[_view mainFrame] frameView] documentView] enclosingScrollView];
-//  NSRect scrollViewBounds = [[scrollView contentView] bounds];
-//  NSPoint savedScrollPosition = scrollViewBounds.origin;
-//  NSSize savedScrollSize = scrollViewBounds.size;
-//  SM_LOG_DEBUG(@"Current scroll position: %f, %f\n", savedScrollPosition.x, savedScrollPosition.y);
-//  SM_LOG_DEBUG(@"Current scroll size: %f, %f\n", savedScrollSize.width, savedScrollSize.height);
-    ////
-    
-    if([absoluteUrl hasPrefix:@"cid:"]) {
+    NSString *contentId = nil;
+    if([SMStringUtils cidURL:absoluteUrl contentId:&contentId]) {
         // TODO: handle not completely downloaded attachments
         // TODO: implement a precise contentId matching (to handle the really existing imap parts)
-        NSString *contentId = [absoluteUrl substringFromIndex:4];
         NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
-            SM_LOG_DEBUG(@"cannot load attachment for contentId %@", contentId);
+            SM_LOG_WARNING(@"cannot load attachment for contentId %@", contentId);
             return request;
         }
         
-//      SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+        
         return [NSURLRequest requestWithURL:attachmentLocation];
     }
     
@@ -239,6 +237,37 @@
             return;
         }
 
+/*
+        CGFloat scale = 0.8; // the scale factor that works for you
+        NSString *jScript = [NSString stringWithFormat:@"document.body.style.zoom = %f;",scale];
+        //@"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+        
+ */
+        WebView *view = (WebView*)[self view];
+/*
+        WebScriptObject *scriptObject = [view windowScriptObject];
+        [scriptObject evaluateWebScript:jScript];
+*/
+        
+//        [[[[[[view mainFrame] frameView] documentView] scale] superview] scaleUnitSquareToSize:NSMakeSize(.5, .5)];
+/*
+        NSString *script = @"document.body.style.zoom";
+        float oldFac = [[view stringByEvaluatingJavaScriptFromString:script] floatValue];
+        if( oldFac==0 ){ oldFac = 1.0; }
+        NSString *res = [view stringByEvaluatingJavaScriptFromString:
+                         [NSString stringWithFormat:@"%@='%1.2f';", script, (oldFac*0.5)]];
+        [view setNeedsDisplay:YES];
+*/
+        
+        {
+            DOMDocument* domDocument = [view mainFrameDocument];
+            DOMElement* styleElement = [domDocument createElement:@"style"];
+            [styleElement setAttribute:@"type" value:@"text/css"];
+            DOMText* cssText = [domDocument createTextNode:@"img { max-width: 100%; }"];
+            [styleElement appendChild:cssText];
+            DOMElement* headElement = (DOMElement*)[[domDocument getElementsByTagName:@"head"] item:0];
+            [headElement appendChild:styleElement];
+        }
         _mainFrameLoaded = YES;
         _findContext = nil;
         
@@ -261,17 +290,114 @@
 }
 
 - (NSArray *)webView:(WebView *)sender contextMenuItemsForElement:(NSDictionary *)element defaultMenuItems:(NSArray *)defaultMenuItems {
-    NSMutableArray *updatedMenuItems = [NSMutableArray arrayWithArray:defaultMenuItems];
+    SM_LOG_INFO(@"element: %@", element);
+    
+    DOMNode *node = [element objectForKey: @"WebElementDOMNode"];
+    if(node != nil && [node isKindOfClass:[DOMHTMLImageElement class]]) {
+        _imageWithContextMenu = [element objectForKey:@"WebElementImage"];
 
-    for(NSUInteger i = defaultMenuItems.count; i > 0; i--) {
-        NSMenuItem *item = updatedMenuItems[i-1];
+        if(_imageWithContextMenu == nil || ![_imageWithContextMenu isKindOfClass:[NSImage class]]) {
+            return defaultMenuItems;
+        }
+
+        _imageUrlWithContextMenu = [element objectForKey:@"WebElementImageURL"];
         
-        if([item.title isEqualToString:@"Reload"]) {
-            [updatedMenuItems removeObjectAtIndex:i-1];
+        if(_imageUrlWithContextMenu == nil) {
+            return defaultMenuItems;
+        }
+        
+        NSMenuItem *shareItem = nil;
+        for(NSUInteger i = 0; i < defaultMenuItems.count; i++) {
+            NSMenuItem *item = defaultMenuItems[i];
+            
+            if([item.title isEqualToString:@"Share"]) {
+                shareItem = item;
+                break;
+            }
+        }
+        
+        NSMutableArray *menuItems = [NSMutableArray array];
+
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image" action:@selector(openImage) keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Open Image With..." action:@selector(openImageWith) keyEquivalent:@""]];
+        [menuItems addObject:[NSMenuItem separatorItem]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image..." action:@selector(saveImage) keyEquivalent:@""]];
+        [menuItems addObject:[[NSMenuItem alloc] initWithTitle:@"Save Image To Downloads" action:@selector(saveImageToDownloads) keyEquivalent:@""]];
+        [menuItems addObject:[NSMenuItem separatorItem]];
+        
+        if(shareItem) {
+            [menuItems addObject:shareItem];
+        }
+        
+        return menuItems;
+    }
+    else {
+        NSMutableArray *updatedMenuItems = [NSMutableArray arrayWithArray:defaultMenuItems];
+
+        for(NSUInteger i = defaultMenuItems.count; i > 0; i--) {
+            NSMenuItem *item = updatedMenuItems[i-1];
+            
+            if([item.title isEqualToString:@"Reload"]) {
+                [updatedMenuItems removeObjectAtIndex:i-1];
+            }
+        }
+        
+        return updatedMenuItems;
+    }
+}
+
+#pragma mark Attachment manipulations 
+
+- (void)openImage {
+    if(_imageWithContextMenu == nil) {
+        SM_LOG_WARNING(@"no image to load, url %@", _imageUrlWithContextMenu);
+        return;
+    }
+    
+    NSURL *attachmentLocation = nil;
+    
+    NSString *contentId = nil;
+    if([SMStringUtils cidURL:_imageUrlWithContextMenu.absoluteString contentId:&contentId]) {
+        attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        
+        if(!attachmentLocation) {
+            SM_LOG_ERROR(@"cannot load attachment for contentId %@", contentId);
+            return;
+        }
+    }
+    else {
+        attachmentLocation = [[SMAppDelegate systemTempDir] URLByAppendingPathComponent:_imageUrlWithContextMenu.lastPathComponent];
+        
+        if(![SMFileUtils saveImageFile:attachmentLocation.path image:_imageWithContextMenu]) {
+            SM_LOG_ERROR(@"cannot save image for url %@ to %@", _imageUrlWithContextMenu, attachmentLocation.path);
+            return;
         }
     }
     
-    return updatedMenuItems;
+    SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
+    
+    [[NSWorkspace sharedWorkspace] openFile:attachmentLocation.path];
+}
+
+- (void)openImageWith {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
+}
+
+- (void)saveImage {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
+}
+
+- (void)saveImageToDownloads {
+    if(_imageUrlWithContextMenu == nil) {
+        return;
+    }
+
 }
 
 #pragma mark Finding contents

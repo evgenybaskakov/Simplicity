@@ -15,10 +15,10 @@
 #import <WebKit/WebFrameLoadDelegate.h>
 #import <WebKit/WebPolicyDelegate.h>
 
-#import <CommonCrypto/CommonDigest.h>
-
 #import "SMLog.h"
 #import "SMAppDelegate.h"
+#import "SMStringUtils.h"
+#import "SMFileUtils.h"
 #import "SMPreferencesController.h"
 #import "SMRemoteImageLoadController.h"
 
@@ -68,22 +68,14 @@
     [_webView stopLoading:self];
 }
 
-- (NSURL*)imageCacheDir {
-    NSURL *appDataDir = [SMAppDelegate appDataDir];
-    NSAssert(appDataDir, @"no app data dir");
-    
-    return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"ImageCache"] isDirectory:YES];
-}
-
 - (void)saveImageToDisk:(NSString*)imageName image:(NSImage*)image {
-    NSURL *dirUrl = [self imageCacheDir];
+    NSURL *dirUrl = [SMAppDelegate imageCacheDir];
     
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
     
-    NSError *error = nil;
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
-        SM_LOG_ERROR(@"failed to create directory '%@', error: %@", dirPath, error);
+    if(![SMFileUtils createDirectory:dirPath]) {
+        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
         return;
     }
     
@@ -110,7 +102,7 @@
 }
 
 - (NSImage*)loadImageFromDisk:(NSString*)imageName fileNeedsReload:(BOOL*)fileNeedsReload {
-    NSURL *dirUrl = [self imageCacheDir];
+    NSURL *dirUrl = [SMAppDelegate imageCacheDir];
     
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
@@ -161,19 +153,6 @@
     }
 }
 
-- (NSString*)md5:(NSString*)str {
-    const char *cstr = [str UTF8String];
-    unsigned char result[16];
-    CC_MD5(cstr, (CC_LONG)strlen(cstr), result);
-    
-    return [NSString stringWithFormat:
-            @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            result[0], result[1], result[2], result[3],
-            result[4], result[5], result[6], result[7],
-            result[8], result[9], result[10], result[11],
-            result[12], result[13], result[14], result[15]];
-}
-
 - (NSImage*)loadAvatar:(NSString*)email allowWebSiteImage:(BOOL)allowWebSiteImage completionBlock:(void (^)(NSImage*))completionBlock {
     NSString *webSite = [self webSiteFromEmail:email];
 
@@ -214,7 +193,7 @@
             return;
         }
         
-        NSString *emailMD5 = [self md5:email];
+        NSString *emailMD5 = [SMStringUtils md5:email];
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.gravatar.com/avatar/%@?d=404&size=%d", emailMD5, 128]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSession *session = [NSURLSession sharedSession];

@@ -31,6 +31,9 @@
 @interface SMAppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
 + (NSURL*)appDataDir;
++ (NSURL*)imageCacheDir;
++ (NSURL*)draftTempDir;
++ (NSURL*)systemTempDir;
 
 @property SMAppController *appController;
 

@@ -9,6 +9,7 @@
 #import "SMLog.h"
 #import "SMAppDelegate.h"
 #import "SMAppController.h"
+#import "SMFileUtils.h"
 #import "SMConnectionCheck.h"
 #import "SMPreferencesController.h"
 #import "SMPreferencesWindowController.h"
@@ -457,7 +458,7 @@
         NSString *accountImagePath = [appDelegate.preferencesController accountImagePath:selectedAccount];
         NSAssert(accountImagePath != nil, @"accountImagePath is nil");
         
-        [SMAccountImageSelection saveImageFile:accountImagePath image:newAccountImage];
+        [SMFileUtils saveImageFile:accountImagePath image:newAccountImage];
         
         [_useImageFromAddressBook setState:NSOffState];
         [appDelegate.preferencesController setShouldUseAddressBookAccountImage:selectedAccount useAddressBookAccountImage:NO];

@@ -308,8 +308,7 @@
     if([draggingInfo draggingSource] == nil ) {
         NSPasteboard *pboard = [draggingInfo draggingPasteboard];
         NSArray *classes = @[[NSURL class]];
-        NSDictionary *options = nil;//@{NSPasteboardURLReadingFileURLsOnlyKey:[NSNumber numberWithBool:YES], NSPasteboardURLReadingContentsConformToTypesKey:[NSImage imageTypes]};
-        NSArray *fileURLs = [pboard readObjectsForClasses:classes options:options];
+        NSArray *fileURLs = [pboard readObjectsForClasses:classes options:nil];
         
         if(fileURLs && fileURLs.count != 0) {
             NSArray* filenames = [pboard propertyListForType:NSFilenamesPboardType];

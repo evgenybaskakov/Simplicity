@@ -112,6 +112,7 @@
     
     [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
     
+    // TODO: cleanup as soon as the message is sent or saved as a draft
     NSError *error;
     if(![[NSFileManager defaultManager] copyItemAtURL:url toURL:cacheFileUrl error:&error]) {
         SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", url, cacheFileUrl, error);

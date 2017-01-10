@@ -358,14 +358,12 @@
     
     NSString *contentId = nil;
     if([SMStringUtils cidURL:_imageUrlWithContextMenu.absoluteString contentId:&contentId]) {
-        NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
         
         if(!attachmentLocation) {
             SM_LOG_ERROR(@"cannot load attachment for contentId %@", contentId);
             return;
         }
-        
-        SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
     }
     else {
         attachmentLocation = [[SMAppDelegate systemTempDir] URLByAppendingPathComponent:_imageUrlWithContextMenu.lastPathComponent];
@@ -375,6 +373,8 @@
             return;
         }
     }
+    
+    SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, contentId);
     
     [[NSWorkspace sharedWorkspace] openFile:attachmentLocation.path];
 }

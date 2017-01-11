@@ -518,8 +518,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     [self removeAllHighlightedOccurrencesOfString];
 
     NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
+    NSSet<NSString*> *inlineAttachmentContentIDs = [self getInlineAttachmentContentIDs];
     
-    if(![_messageEditorController sendMessage:messageText plainText:_plainText subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account]) {
+    if(![_messageEditorController sendMessage:messageText plainText:_plainText inlineAttachmentContentIDs:inlineAttachmentContentIDs subject:_subjectBoxViewController.textField.objectValue from:[[SMAddress alloc] initWithStringRepresentation:from] to:_toBoxViewController.tokenField.objectValue cc:_ccBoxViewController.tokenField.objectValue bcc:_bccBoxViewController.tokenField.objectValue account:account]) {
         SM_LOG_WARNING(@"Cannot send the message from account %@", from);
         return;
     }
@@ -659,8 +660,9 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
     _lastBcc = bcc;
     
     NSString *messageText = _plainText? [_plainTextEditor.textView string] : [_htmlTextEditor getMessageText];
+    NSSet<NSString*> *inlineAttachmentContentIDs = [self getInlineAttachmentContentIDs];
     
-    [_messageEditorController saveDraft:messageText plainText:_plainText subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
+    [_messageEditorController saveDraft:messageText plainText:_plainText inlineAttachmentContentIDs:inlineAttachmentContentIDs subject:subject from:[[SMAddress alloc] initWithStringRepresentation:from] to:to cc:cc bcc:bcc account:account];
 
     if(_findContentsActive && !_plainText) {
         [self restoreStringOccurrencesHightlighting];
@@ -697,6 +699,15 @@ static const NSUInteger EMBEDDED_MARGIN_W = 5, EMBEDDED_MARGIN_H = 3;
             
             [self showAttachmentsPanel];
         }
+    }
+}
+
+- (NSSet<NSString*>*)getInlineAttachmentContentIDs {
+    if(_plainText) {
+        return nil;
+    }
+    else {
+        return [_htmlTextEditor getInlineAttachmentContentIDs];
     }
 }
 

@@ -79,7 +79,7 @@
 - (NSString*)addInlinedImage:(NSURL*)url {
     SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:url.path];
     
-    NSData *fileData = [NSData dataWithContentsOfFile:url.path];
+    NSData *fileData = [NSData dataWithContentsOfURL:url];
     if(fileData == nil) {
         SM_LOG_ERROR(@"failed to read file '%@'", url);
         
@@ -124,13 +124,30 @@
     return attachmentItem.mcoAttachment.contentID;
 }
 
+- (NSArray<SMAttachmentItem*>*)filterInlineAttachments:(NSSet<NSString*>*)inlineAttachmentContentIDs {
+    NSMutableArray<SMAttachmentItem*> *filter = [NSMutableArray array];
+    
+    for(SMAttachmentItem *item in _inlinedImageAttachmentItems) {
+        if([inlineAttachmentContentIDs containsObject:item.mcoAttachment.contentID]) {
+            SM_LOG_INFO(@"inline attachment %@, content id %@", item.mcoAttachment.filename, item.mcoAttachment.contentID);
+            [filter addObject:item];
+        }
+        else {
+            SM_LOG_INFO(@"drop inline attachment %@: %@", item.mcoAttachment.filename, item.mcoAttachment.contentID);
+        }
+    }
+    
+    return filter;
+}
+
 #pragma mark Actions
 
-- (BOOL)sendMessage:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (BOOL)sendMessage:(NSString*)messageText plainText:(BOOL)plainText inlineAttachmentContentIDs:(NSSet<NSString*>*)inlineAttachmentContentIDs subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     
     // TODO: why attachments are in this object, not parameters?
     
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
+    NSArray<SMAttachmentItem*> *filteredInlineAttachments = [self filterInlineAttachments:inlineAttachmentContentIDs];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:filteredInlineAttachments account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     
@@ -153,7 +170,7 @@
         }}];
 }
 
-- (void)saveDraft:(NSString*)messageText plainText:(BOOL)plainText subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
+- (void)saveDraft:(NSString*)messageText plainText:(BOOL)plainText inlineAttachmentContentIDs:(NSSet<NSString*>*)inlineAttachmentContentIDs subject:(NSString*)subject from:(SMAddress*)from to:(NSArray*)to cc:(NSArray*)cc bcc:(NSArray*)bcc account:(SMUserAccount*)account {
     NSAssert(!_shouldDeleteSavedDraft, @"_shouldDeleteSavedDraft is set (which means that message was already sent and no more savings allowed)");
     
     SMFolder *draftsFolder = [[account mailbox] draftsFolder];
@@ -184,7 +201,8 @@
         _saveDraftOp = nil;
     }
 
-    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:_inlinedImageAttachmentItems account:account];
+    NSArray<SMAttachmentItem*> *filteredInlineAttachments = [self filterInlineAttachments:inlineAttachmentContentIDs];
+    SMMessageBuilder *messageBuilder = [[SMMessageBuilder alloc] initWithMessageText:messageText plainText:plainText subject:subject from:from to:to cc:cc bcc:bcc attachmentItems:_attachmentItems inlineAttachmentItems:filteredInlineAttachments account:account];
     
     SM_LOG_DEBUG(@"'%@'", messageBuilder.mcoMessageBuilder);
     

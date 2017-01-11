@@ -71,4 +71,6 @@ typedef enum {
 - (void)replaceAllOccurrences:(NSString*)replacement;
 - (void)animatedScrollToMarkedOccurrence;
 
+- (NSSet<NSString*>*)getInlineAttachmentContentIDs;
+
 @end

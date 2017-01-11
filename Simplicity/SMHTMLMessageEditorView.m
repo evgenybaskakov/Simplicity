@@ -638,4 +638,34 @@
     }
 }
 
+- (NSSet<NSString*>*)getInlineAttachmentContentIDs {
+    NSMutableArray<DOMNode*> *elems = [NSMutableArray array];
+    DOMNode *element = [[self.mainFrame DOMDocument] documentElement];
+    
+    [elems addObject:element];
+   
+    NSMutableSet<NSString*> *contentIds = [NSMutableSet set];
+    while(elems.count) {
+        DOMNode *element = elems[0];
+        [elems removeObjectAtIndex:0];
+
+        if([element isKindOfClass:[DOMHTMLImageElement class]]) {
+            DOMHTMLImageElement *imageElement = (DOMHTMLImageElement*)element;
+            
+            NSString *contentId = nil;
+            if([SMStringUtils cidURL:imageElement.src contentId:&contentId]) {
+                [contentIds addObject:contentId];
+            }
+        }
+
+        DOMNodeList *childNodes = element.childNodes;
+        for (unsigned i = 0; i < childNodes.length; i++) {
+            DOMNode *node = [childNodes item:i];
+            [elems addObject:node];
+        }
+    }
+    
+    return contentIds;
+}
+
 @end

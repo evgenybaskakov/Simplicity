@@ -912,9 +912,10 @@
 		005B086517D4F3BD00341051 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				804B68C71E1EF57900C18EB2 /* Utils */,
+				8012D9691E25FD2100EB5C76 /* Editor */,
 				805255501D55B41E00CDCBA2 /* Operations */,
 				80B860111CF97AD400BD0804 /* Search */,
+				804B68C71E1EF57900C18EB2 /* Utils */,
 				805613D01CD87A390055E3E9 /* SMAbstractAccount.h */,
 				809CE07D1CDC74D20000A543 /* SMAbstractLocalFolder.h */,
 				80FBF5561CE052AE0041E230 /* SMAbstractMessageStorage.h */,
@@ -969,10 +970,6 @@
 				80AB99151BE0925200336A55 /* SMMessageBuilder.m */,
 				001A41CC199EFB5300AA3AE6 /* SMMessageComparators.h */,
 				001A41CD199EFB5300AA3AE6 /* SMMessageComparators.m */,
-				8043D7E81B537FF700B07469 /* SMMessageEditorBase.h */,
-				8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */,
-				8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */,
-				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
 				00ED317E17F88DA700B04F5B /* SMMessageStorage.h */,
 				00ED317F17F88DA700B04F5B /* SMMessageStorage.m */,
 				803637741E0A638B00C4A21B /* SMMessageStorageUpdateResult.h */,
@@ -1224,6 +1221,17 @@
 				80533AD51B4118B800A0A67F /* TextEditorIcons */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		8012D9691E25FD2100EB5C76 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				8043D7E81B537FF700B07469 /* SMMessageEditorBase.h */,
+				8043D7E91B537FF700B07469 /* SMMessageEditorBase.m */,
+				8000DBFD1B2E2F3700F43961 /* SMMessageEditorController.h */,
+				8000DBFE1B2E2F3700F43961 /* SMMessageEditorController.m */,
+			);
+			name = Editor;
 			sourceTree = "<group>";
 		};
 		801EDED71BE9E6C400A16E85 /* Logos */ = {

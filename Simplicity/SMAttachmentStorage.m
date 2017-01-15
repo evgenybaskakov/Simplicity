@@ -10,24 +10,15 @@
 #import "SMFileUtils.h"
 #import "SMAppDelegate.h"
 #import "SMPreferencesController.h"
+#import "SMUserAccount.h"
 #import "SMAttachmentStorage.h"
 
 @implementation SMAttachmentStorage
 
-- (id)initWithUserAccount:(id<SMAbstractAccount>)account {
-    self = [super initWithUserAccount:account];
-    
-    if(self) {
-        
-    }
-    
-    return self;
-}
-
-- (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId filename:(NSString*)filename {
+- (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId filename:(NSString*)filename account:(SMUserAccount*)account {
     NSAssert(data, @"bad data");
     
-    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid] URLByAppendingPathComponent:contentId isDirectory:YES];
+    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid account:account] URLByAppendingPathComponent:contentId isDirectory:YES];
     
     if(![SMFileUtils createDirectory:attachmentDir.path]) {
         SM_LOG_ERROR(@"cannot create directory '%@'", attachmentDir.path);
@@ -48,35 +39,39 @@
     }
 }
 
-- (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder {
-    NSAssert(contentId != nil, @"contentId is nil");
+- (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account {
+    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid account:account] URLByAppendingPathComponent:contentId isDirectory:YES];
     
-    NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid] URLByAppendingPathComponent:contentId isDirectory:YES];
-    
-    NSError *error;
-    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:attachmentDir.path error:&error];
-    if(dirFiles == nil || dirFiles.count == 0) {
-        SM_LOG_ERROR(@"files not found in '%@'", attachmentDir.path);
-        return nil;
-    }
-    
-    NSURL *attachmentFile = [attachmentDir URLByAppendingPathComponent:dirFiles[0]];
-
-    return attachmentFile;
+    return [self firstFile:attachmentDir];
 }
 
-- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid {
-    NSAssert(!_account.unified, @"current account is unified, attachment storage is stubbed");
-    
+- (NSURL*)attachmentDirectoryForFolder:(NSString *)folder uid:(uint32_t)uid account:(SMUserAccount*)account {
     SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
     SMPreferencesController *preferencesController = [appDelegate preferencesController];
-
-    NSInteger accountIdx = [appDelegate.accounts indexOfObject:(SMUserAccount*)_account];
+    
+    NSInteger accountIdx = [appDelegate.accounts indexOfObject:account];
     
     NSString *accountCacheDirPath = [preferencesController cacheDirPath:accountIdx];
     NSAssert(accountCacheDirPath != nil, @"accountCacheDirPath is nil");
     
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];
+}
+
+- (NSURL*)draftAttachmentLocation:(NSString*)contentId {
+    NSURL *attachmentDir = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:contentId isDirectory:YES];
+
+    return [self firstFile:attachmentDir];
+}
+
+- (NSURL*)firstFile:(NSURL*)url {
+    NSError *error;
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:url.path error:&error];
+    if(dirFiles == nil || dirFiles.count == 0) {
+        SM_LOG_ERROR(@"files not found in '%@'", url.path);
+        return nil;
+    }
+    
+    return [url URLByAppendingPathComponent:dirFiles[0]];
 }
 
 @end

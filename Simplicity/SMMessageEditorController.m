@@ -76,27 +76,25 @@
     return [appDataDir URLByAppendingPathComponent:[NSString stringWithFormat:@"DraftTemp"] isDirectory:YES];
 }
 
-- (NSString*)addInlinedImage:(NSURL*)url {
-    SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:url.path];
+- (NSString*)addInlinedImage:(NSURL*)fileUrl {
+    SMAttachmentItem *attachmentItem = [[SMAttachmentItem alloc] initWithLocalFilePath:fileUrl.path];
     
-    NSData *fileData = [NSData dataWithContentsOfURL:url];
+    NSData *fileData = [NSData dataWithContentsOfURL:fileUrl];
     if(fileData == nil) {
-        SM_LOG_ERROR(@"failed to read file '%@'", url);
+        SM_LOG_ERROR(@"failed to read file '%@'", fileUrl);
         
         // TODO: show alert
         return @"";
     }
     
-    NSString *checksum = [SMStringUtils sha1WithData:fileData];
-    SM_LOG_INFO(@"file '%@' checksum %@", url, checksum);
+    NSString *contentId = [SMStringUtils sha1WithData:fileData];
+    SM_LOG_INFO(@"file '%@' contentId %@", fileUrl, contentId);
 
-    [attachmentItem.mcoAttachment setContentID:checksum];
+    [attachmentItem.mcoAttachment setContentID:contentId];
     
     [_inlinedImageAttachmentItems addObject:attachmentItem];
     
-    // TODO: create a uniquely named subdirectory
-
-    NSURL *dirUrl = [self draftTempDir];
+    NSURL *dirUrl = [[self draftTempDir] URLByAppendingPathComponent:contentId];
     
     NSString *dirPath = [dirUrl path];
     NSAssert(dirPath != nil, @"dirPath is nil");
@@ -108,14 +106,16 @@
         return @"";
     }
     
-    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:checksum];
+    // Copy of the original file.
+    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:fileUrl.lastPathComponent];
     
+    // Remove any existing file, if any (don't check for errors)
     [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
     
     // TODO: cleanup as soon as the message is sent or saved as a draft
     NSError *error;
-    if(![[NSFileManager defaultManager] copyItemAtURL:url toURL:cacheFileUrl error:&error]) {
-        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", url, cacheFileUrl, error);
+    if(![[NSFileManager defaultManager] copyItemAtURL:fileUrl toURL:cacheFileUrl error:&error]) {
+        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", fileUrl, cacheFileUrl, error);
         
         // TODO: show alert
         return @"";

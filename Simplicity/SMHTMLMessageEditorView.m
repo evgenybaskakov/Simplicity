@@ -11,6 +11,7 @@
 #import "SMAppController.h"
 #import "SMStringUtils.h"
 #import "SMFileUtils.h"
+#import "SMAttachmentStorage.h"
 #import "SMPreferencesController.h"
 #import "SMColorWellWithIcon.h"
 #import "SMMessageEditorBase.h"
@@ -355,10 +356,12 @@
     NSString *contentId = nil;
     if([SMStringUtils cidURL:absoluteUrl contentId:&contentId]) {
         if(contentId.length != 0) {
-            NSString *strippedcontentId = [contentId stringByRemovingPercentEncoding];
-            NSURL *attachmentLocation = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:strippedcontentId];
+            NSString *strippedContentId = [contentId stringByRemovingPercentEncoding];
+
+            SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+            NSURL *attachmentLocation = [appDelegate.attachmentStorage draftAttachmentLocation:strippedContentId];
             
-            SM_LOG_DEBUG(@"loading attachment file '%@' for contentId %@", attachmentLocation, strippedcontentId);
+            SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, strippedContentId);
             
             return [NSURLRequest requestWithURL:attachmentLocation];
         }

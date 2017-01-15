@@ -24,6 +24,7 @@
 #import "SMNotificationsController.h"
 #import "SMMessageComparators.h"
 #import "SMImageRegistry.h"
+#import "SMAttachmentStorage.h"
 #import "SMAppController.h"
 #import "SMAppDelegate.h"
 
@@ -52,6 +53,7 @@
         _unifiedAccount = [[SMUnifiedAccount alloc] init];
         _imageRegistry = [[SMImageRegistry alloc] init];
         _messageThreadAccountProxy = [[SMMessageThreadAccountProxy alloc] init];
+        _attachmentStorage = [[SMAttachmentStorage alloc] init];
         _accounts = [NSMutableArray array];
         
         [self ensureAppDirectoriesCreated];

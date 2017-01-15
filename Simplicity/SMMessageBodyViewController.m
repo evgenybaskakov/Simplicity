@@ -176,7 +176,8 @@
     if([SMStringUtils cidURL:absoluteUrl contentId:&contentId]) {
         // TODO: handle not completely downloaded attachments
         // TODO: implement a precise contentId matching (to handle the really existing imap parts)
-        NSURL *attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        NSURL *attachmentLocation = [appDelegate.attachmentStorage attachmentLocation:contentId uid:_uid folder:_folder account:_account];
         
         if(!attachmentLocation) {
             SM_LOG_WARNING(@"cannot load attachment for contentId %@", contentId);
@@ -358,7 +359,8 @@
     
     NSString *contentId = nil;
     if([SMStringUtils cidURL:_imageUrlWithContextMenu.absoluteString contentId:&contentId]) {
-        attachmentLocation = [[_account attachmentStorage] attachmentLocation:contentId uid:_uid folder:_folder];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        attachmentLocation = [appDelegate.attachmentStorage attachmentLocation:contentId uid:_uid folder:_folder account:_account];
         
         if(!attachmentLocation) {
             SM_LOG_ERROR(@"cannot load attachment for contentId %@", contentId);

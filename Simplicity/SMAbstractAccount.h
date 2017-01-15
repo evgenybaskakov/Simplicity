@@ -13,7 +13,6 @@
 @protocol SMAbstractSearchController;
 
 @class SMAddress;
-@class SMAttachmentStorage;
 @class SMFolderColorController;
 @class SMMessageListController;
 @class SMAccountSearchController;
@@ -34,7 +33,6 @@
 @property (readonly) SMOutboxController *outboxController;
 @property (readonly) SMDatabase *database;
 @property (readonly) SMLocalFolderRegistry *localFolderRegistry;
-@property (readonly) SMAttachmentStorage *attachmentStorage;
 @property (readonly) id<SMMailbox> mailbox;
 @property (readonly) id<SMMailboxController> mailboxController;
 @property (readonly) id<SMAbstractSearchController> searchController;

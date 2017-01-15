@@ -58,7 +58,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
 }
 
 @synthesize unified = _unified;
-@synthesize attachmentStorage = _attachmentStorage;
 @synthesize folderColorController = _folderColorController;
 @synthesize messageListController = _messageListController;
 @synthesize searchController = _searchController;
@@ -77,7 +76,6 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
     
     if(self) {
         _preferencesController = preferencesController; // TODO: why?
-        _attachmentStorage = [[SMAttachmentStorage alloc] initWithUserAccount:self];
         _folderColorController = [[SMFolderColorController alloc] initWithUserAccount:self];
         _mailbox = [[SMAccountMailbox alloc] initWithUserAccount:self];
         _localFolderRegistry = [[SMLocalFolderRegistry alloc] initWithUserAccount:self];
@@ -499,7 +497,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         
         SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
         
-        NSURL *attachmentUrl = [_attachmentStorage attachmentLocation:attachmentContentId uid:uid folder:remoteFolder];
+        SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+        NSURL *attachmentUrl = [appDelegate.attachmentStorage attachmentLocation:attachmentContentId uid:uid folder:remoteFolder account:self];
         
         NSError *err;
         if([attachmentUrl checkResourceIsReachableAndReturnError:&err] == YES) {
@@ -508,7 +507,7 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
         }
         
         if(attachmentData) {
-            [_attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId filename:attachment.filename];
+            [appDelegate.attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId filename:attachment.filename account:self];
         } else {
             MCOAbstractPart *part = [imapMessage partForUniqueID:[attachment uniqueID]];
             
@@ -539,7 +538,8 @@ const char *mcoConnectionTypeName(MCOConnectionLogType type) {
                 if (error.code == MCOErrorNone) {
                     NSAssert(data, @"no data");
                     
-                    [_self->_attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID filename:imapPart.filename];
+                    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+                    [appDelegate.attachmentStorage storeAttachment:data folder:remoteFolder uid:uid contentId:imapPart.contentID filename:imapPart.filename account:_self];
                 } else {
                     SM_LOG_ERROR(@"Error downloading message body for msg uid %u, part unique id %@: %@", uid, partId, error);
                 }

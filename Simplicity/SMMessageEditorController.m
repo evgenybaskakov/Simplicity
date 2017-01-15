@@ -43,7 +43,7 @@
     SMOpAppendMessage *_saveDraftOp;
     MCOMessageBuilder *_prevSaveDraftMessage;
     SMOpAppendMessage *_prevSaveDraftOp;
-    uint32_t _saveDraftUID;
+    uint32_t _savedDraftUID;
     BOOL _shouldDeleteSavedDraft;
 }
 
@@ -53,7 +53,7 @@
     if(self) {
         _attachmentItems = [NSMutableArray array];
         _inlinedImageAttachmentItems = [NSMutableArray array];
-        _saveDraftUID = draftMessageUid;
+        _savedDraftUID = draftMessageUid;
     }
     
     return self;
@@ -244,8 +244,8 @@
             _saveDraftOp = nil;
         }
     
-        NSAssert(_saveDraftUID == 0, @"bad _saveDraftUID %u, expected zero", _saveDraftUID);
-        _saveDraftUID = uid;
+        NSAssert(_savedDraftUID == 0, @"bad _savedDraftUID %u, expected zero", _savedDraftUID);
+        _savedDraftUID = uid;
 
         if(_shouldDeleteSavedDraft) {
             // This may happen if, most commonly, while the draft was being saved,
@@ -258,11 +258,11 @@
 }
 
 - (BOOL)hasSavedDraft {
-    return (_saveDraftUID != 0);
+    return (_savedDraftUID != 0);
 }
 
 - (void)deleteSavedDraft:(SMUserAccount*)account {
-    if(_saveDraftUID == 0) {
+    if(_savedDraftUID == 0) {
         SM_LOG_DEBUG(@"No saved message draft");
         return;
     }
@@ -285,11 +285,11 @@
     SMMessageListController *messageListController = [account messageListController];
     NSAssert(messageListController != nil, @"messageListController is nil");
 
-    if([draftsLocalFolder moveMessage:0 uid:_saveDraftUID toRemoteFolder:trashFolder.fullName]) {
+    if([draftsLocalFolder moveMessage:0 uid:_savedDraftUID toRemoteFolder:trashFolder.fullName]) {
         [[[appDelegate appController] messageListViewController] reloadMessageList:YES];
     }
     
-    _saveDraftUID = 0;
+    _savedDraftUID = 0;
 }
 
 @end

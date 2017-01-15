@@ -15,14 +15,14 @@
 
 @implementation SMAttachmentStorage
 
-- (void)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId filename:(NSString*)filename account:(SMUserAccount*)account {
+- (BOOL)storeAttachment:(NSData *)data folder:(NSString *)folder uid:(uint32_t)uid contentId:(NSString *)contentId filename:(NSString*)filename account:(SMUserAccount*)account {
     NSAssert(data, @"bad data");
     
     NSURL *attachmentDir = [[self attachmentDirectoryForFolder:folder uid:uid account:account] URLByAppendingPathComponent:contentId isDirectory:YES];
     
     if(![SMFileUtils createDirectory:attachmentDir.path]) {
         SM_LOG_ERROR(@"cannot create directory '%@'", attachmentDir.path);
-        return;
+        return FALSE;
     }
 
     if(filename == nil) {
@@ -34,9 +34,11 @@
     
     if(![data writeToFile:attachmentFilePath atomically:YES]) {
         SM_LOG_ERROR(@"cannot write file '%@' (%lu bytes)", attachmentFilePath, (unsigned long)[data length]);
-    } else {
-        SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", attachmentFilePath, (unsigned long)[data length]);
+        return FALSE;
     }
+    
+    SM_LOG_DEBUG(@"file %@ (%lu bytes) written successfully", attachmentFilePath, (unsigned long)[data length]);
+    return TRUE;
 }
 
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account {
@@ -57,7 +59,7 @@
     return [NSURL fileURLWithPath:folder relativeToURL:[NSURL fileURLWithPath:accountCacheDirPath isDirectory:YES]];
 }
 
-- (NSURL*)draftAttachmentLocation:(NSString*)contentId {
+- (NSURL*)draftInlineAttachmentLocation:(NSString*)contentId {
     NSURL *attachmentDir = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:contentId isDirectory:YES];
 
     return [self firstFile:attachmentDir];
@@ -72,6 +74,33 @@
     }
     
     return [url URLByAppendingPathComponent:dirFiles[0]];
+}
+
+- (BOOL)storeDraftInlineAttachment:(NSURL *)fileUrl contentId:(NSString *)contentId {
+    NSURL *dirUrl = [[SMAppDelegate draftTempDir] URLByAppendingPathComponent:contentId];
+    
+    NSString *dirPath = [dirUrl path];
+    NSAssert(dirPath != nil, @"dirPath is nil");
+    
+    if(![SMFileUtils createDirectory:dirPath]) {
+        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
+        return FALSE;
+    }
+    
+    // Copy of the original file.
+    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:fileUrl.lastPathComponent];
+    
+    // Remove any existing file, if any (don't check for errors)
+    [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
+    
+    // TODO: cleanup as soon as the message is sent or saved as a draft
+    NSError *error;
+    if(![[NSFileManager defaultManager] copyItemAtURL:fileUrl toURL:cacheFileUrl error:&error]) {
+        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", fileUrl, cacheFileUrl, error);
+        return FALSE;
+    }
+    
+    return TRUE;
 }
 
 @end

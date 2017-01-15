@@ -12,8 +12,10 @@
 
 @interface SMAttachmentStorage : NSObject
 
-- (void)storeAttachment:(NSData*)data folder:(NSString*)folder uid:(uint32_t)uid contentId:(NSString*)contentId filename:(NSString*)filename account:(SMUserAccount*)account;
+- (BOOL)storeAttachment:(NSData*)data folder:(NSString*)folder uid:(uint32_t)uid contentId:(NSString*)contentId filename:(NSString*)filename account:(SMUserAccount*)account;
 - (NSURL*)attachmentLocation:(NSString*)contentId uid:(uint32_t)uid folder:(NSString*)folder account:(SMUserAccount*)account;
-- (NSURL*)draftAttachmentLocation:(NSString*)contentId;
+
+- (BOOL)storeDraftInlineAttachment:(NSURL*)fileUrl contentId:(NSString*)contentId;
+- (NSURL*)draftInlineAttachmentLocation:(NSString*)contentId;
 
 @end

@@ -359,7 +359,7 @@
             NSString *strippedContentId = [contentId stringByRemovingPercentEncoding];
 
             SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-            NSURL *attachmentLocation = [appDelegate.attachmentStorage draftAttachmentLocation:strippedContentId];
+            NSURL *attachmentLocation = [appDelegate.attachmentStorage draftInlineAttachmentLocation:strippedContentId];
             
             SM_LOG_INFO(@"loading attachment file '%@' for contentId %@", attachmentLocation, strippedContentId);
             

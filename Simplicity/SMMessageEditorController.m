@@ -34,6 +34,7 @@
 #import "SMMessageListViewController.h"
 #import "SMMessageThreadViewController.h"
 #import "SMMessageEditorController.h"
+#import "SMAttachmentStorage.h"
 #import "SMOpSendMessage.h"
 
 @implementation SMMessageEditorController {
@@ -94,28 +95,9 @@
     
     [_inlinedImageAttachmentItems addObject:attachmentItem];
     
-    NSURL *dirUrl = [[self draftTempDir] URLByAppendingPathComponent:contentId];
-    
-    NSString *dirPath = [dirUrl path];
-    NSAssert(dirPath != nil, @"dirPath is nil");
-    
-    if(![SMFileUtils createDirectory:dirPath]) {
-        SM_LOG_ERROR(@"failed to create directory '%@'", dirPath);
-        
-        // TODO: show alert
-        return @"";
-    }
-    
-    // Copy of the original file.
-    NSURL *cacheFileUrl = [dirUrl URLByAppendingPathComponent:fileUrl.lastPathComponent];
-    
-    // Remove any existing file, if any (don't check for errors)
-    [[NSFileManager defaultManager] removeItemAtURL:cacheFileUrl error:nil];
-    
-    // TODO: cleanup as soon as the message is sent or saved as a draft
-    NSError *error;
-    if(![[NSFileManager defaultManager] copyItemAtURL:fileUrl toURL:cacheFileUrl error:&error]) {
-        SM_LOG_ERROR(@"failed to copy '%@' to %@: %@", fileUrl, cacheFileUrl, error);
+    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
+    if(![appDelegate.attachmentStorage storeDraftInlineAttachment:fileUrl contentId:contentId]) {
+        SM_LOG_ERROR(@"failed to write file '%@'", fileUrl);
         
         // TODO: show alert
         return @"";

@@ -142,8 +142,7 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     
     [messageThreadCellViewController setMessage:message];
     
-    SMAppDelegate *appDelegate = (SMAppDelegate *)[[NSApplication sharedApplication] delegate];
-    SMMessageListController *messageListController = [appDelegate.currentAccount messageListController];
+    SMMessageListController *messageListController = [_currentMessageThread.account messageListController];
 
     if([messageThreadCellViewController loadMessageBody]) {
         [messageListController fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
@@ -591,13 +590,15 @@ static const CGFloat NEXT_CELL_SCROLL_THRESHOLD = 20;
     if(_currentMessageThread == nil || _currentMessageThread.threadId != threadId)
         return;
     
+    SMMessageListController *messageListController = [_currentMessageThread.account messageListController];
+
     // TODO: optimize search?
     for(NSInteger i = 0; i < _cells.count; i++) {
         SMMessageThreadCell *cell = _cells[i];
         SMMessage *message = cell.message;
         
         if(message.messageId == messageId) {
-            [[_currentMessageThread.account messageListController] fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
+            [messageListController fetchMessageInlineAttachments:message messageThread:_currentMessageThread];
             
             [cell.viewController updateMessage];
             

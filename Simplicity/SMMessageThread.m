@@ -267,7 +267,7 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
     return attributesChanged;
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments inlineAttachments:(NSArray*)inlineAttachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId {
     SMMessage *message = [self getMessageByMessageId:messageId];
         
     if(message != nil) {
@@ -281,7 +281,8 @@ typedef NS_OPTIONS(NSUInteger, ThreadFlags) {
         
         if(attachments != nil) {
             message.attachments = attachments;
-            message.hasAttachments = (attachments.count != 0? YES : NO);
+            message.inlineAttachments = inlineAttachments;
+            message.hasAttachments = (attachments.count != 0 || inlineAttachments.count != 0);
         }
         else {
             message.hasAttachments = hasAttachments;

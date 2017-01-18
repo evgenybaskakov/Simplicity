@@ -36,7 +36,7 @@
         }
         
         _attachments = mcoAttachments;
-        _hasAttachments = _attachments.count > 0;
+        _hasAttachments = _attachments.count != 0 || _inlineAttachments.count != 0;
     }
     
     return self;

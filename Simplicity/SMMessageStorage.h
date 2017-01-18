@@ -51,7 +51,7 @@
 - (NSNumber*)messageThreadByMessageId:(uint64_t)messageId;
 - (SMMessageThread*)messageThreadById:(uint64_t)threadId;
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId;
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments inlineAttachments:inlineAttachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId;
 - (BOOL)messageHasData:(uint64_t)messageId threadId:(uint64_t)threadId;
 
 @end

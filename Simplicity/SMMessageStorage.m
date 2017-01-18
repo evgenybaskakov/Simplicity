@@ -413,10 +413,10 @@
     [messageThread markAsUpdated];
 }
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId {
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments inlineAttachments:inlineAttachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId threadId:(uint64_t)threadId {
     SMMessageThread *thread = [_messageThreadCollection.messageThreads objectForKey:[NSNumber numberWithUnsignedLongLong:threadId]];
     
-    return [thread setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId];
+    return [thread setMessageParser:parser attachments:attachments inlineAttachments:inlineAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId];
 }
 
 - (BOOL)messageHasData:(uint64_t)messageId threadId:(uint64_t)threadId {

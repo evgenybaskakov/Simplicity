@@ -204,14 +204,6 @@ static NSString *unquote(NSString *s) {
     return _localizedDateString;
 }
 
-- (NSArray*)htmlInlineAttachments {
-    if(_msgParser == nil) {
-        return nil;
-    }
-    
-    return _msgParser.htmlInlineAttachments;
-}
-
 - (uint64_t)messageId {
     return _imapMessage.gmailMessageID;
 }

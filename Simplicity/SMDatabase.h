@@ -87,7 +87,7 @@
 - (SMDatabaseOp*)loadMessageHeaderForUIDFromDBFolder:(NSString*)folderName uid:(uint32_t)uid block:(void (^)(SMDatabaseOp*, MCOIMAPMessage*, NSString*, BOOL))getMessageBlock;
 - (SMDatabaseOp*)loadMessageHeadersForUIDsFromDBFolder:(NSString*)folderName uids:(MCOIndexSet *)uid block:(void (^)(SMDatabaseOp*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock;
 - (SMDatabaseOp*)loadMessageHeadersForThreadIdFromDBFolder:(NSString*)folderName threadId:(uint64_t)threadId block:(void (^)(SMDatabaseOp*, NSArray<MCOIMAPMessage*>*, NSArray<NSString*>*, NSArray<NSNumber*>*))getMessagesBlock;
-- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*, NSString*))getMessageBodyBlock;
+- (SMDatabaseOp*)loadMessageBodyForUIDFromDB:(uint32_t)uid folderName:(NSString*)folderName urgent:(BOOL)urgent block:(void (^)(SMDatabaseOp*, MCOMessageParser*, NSArray*, NSArray*, NSString*))getMessageBodyBlock;
 - (void)putMessageToDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;
 - (void)putOutgoingMessageToDBFolder:(SMOutgoingMessage*)outgoingMessage folder:(NSString*)folderName;
 - (void)updateMessageInDBFolder:(MCOIMAPMessage*)imapMessage folder:(NSString*)folderName;

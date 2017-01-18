@@ -108,7 +108,7 @@
     NSString *remoteFolder = message.remoteFolder;
     uint32_t uid = message.uid;
     
-    NSArray *attachments = [message htmlInlineAttachments];
+    NSArray *attachments = message.inlineAttachments;
     if(attachments == nil) {
         SM_LOG_WARNING(@"no inline attachments for message uid %u", uid);
         return;
@@ -125,7 +125,6 @@
     for(MCOAttachment *attachment in attachments) {
         // TODO: async operation
         NSString *attachmentContentId = [attachment contentID] != nil? [attachment contentID] : [attachment uniqueID];
-        NSData *attachmentData = [attachment data];
         
         SM_LOG_DEBUG(@"message uid %u, attachment unique id %@, contentID %@, body %@", uid, [attachment uniqueID], attachmentContentId, attachment);
         
@@ -138,6 +137,8 @@
             continue;
         }
         
+        NSData *attachmentData = [attachment data];
+
         if(attachmentData) {
             [appDelegate.attachmentStorage storeAttachment:attachmentData folder:remoteFolder uid:uid contentId:attachmentContentId filename:attachment.filename account:account];
         } else {

@@ -24,6 +24,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
     @protected NSAttributedString *_htmlMessageBody;
     @protected NSString *_htmlBodyRendering;
     @protected NSArray *_attachments;
+    @protected NSArray *_inlineAttachments;
     @protected BOOL _hasAttachments;
     @protected SMAddress *_fromAddress;
 }
@@ -41,7 +42,6 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (readonly) uint64_t messageId;
 @property (readonly) uint64_t threadId;
 @property (readonly) NSString *htmlBodyRendering;
-@property (readonly) NSArray *htmlInlineAttachments;
 @property (readonly) NSString *remoteFolder;
 @property (readonly) NSArray *labels;
 @property (readonly) NSUInteger messageSize;
@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, SMMessageUpdateStatus) {
 @property (nonatomic) MCOMessageParser *msgParser;
 @property (nonatomic) NSString *plainTextBody;
 @property (nonatomic) NSArray *attachments;
+@property (nonatomic) NSArray *inlineAttachments;
 @property (nonatomic) BOOL hasAttachments;
 
 @property (nonatomic) BOOL unseen;

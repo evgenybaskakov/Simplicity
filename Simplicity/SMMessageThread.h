@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, SMThreadUpdateResult) {
 
 - (void)cancelUpdate;
 
-- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId;
+- (SMMessage*)setMessageParser:(MCOMessageParser*)parser attachments:(NSArray*)attachments inlineAttachments:(NSArray*)inlineAttachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody messageId:(uint64_t)messageId;
 - (BOOL)messageHasData:(uint64_t)messageId;
 - (BOOL)updateThreadAttributesForMessageId:(uint64_t)messageId;
 - (void)removeMessageFromMessageThread:(uint64_t)messageId;

@@ -251,7 +251,7 @@
     //       However, they are not pausable right now. We can live with that.
     SMMessageBodyFetchQueue __weak *weakSelf = self;
     
-    SMDatabaseOp *dbOp = [[opDesc.localFolder.account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.remoteFolder urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSString *plainTextBody) {
+    SMDatabaseOp *dbOp = [[opDesc.localFolder.account database] loadMessageBodyForUIDFromDB:opDesc.uid folderName:opDesc.remoteFolder urgent:opDesc.urgent block:^(SMDatabaseOp *op, MCOMessageParser *parser, NSArray *attachments, NSArray *inlineAttachments, NSString *plainTextBody) {
         SMMessageBodyFetchQueue *_self = weakSelf;
         if(!_self) {
             SM_LOG_WARNING(@"object is gone");
@@ -273,9 +273,9 @@
                 [_self fetchMessageBodyWithUID:opDesc.uid messageId:opDesc.messageId threadId:opDesc.threadId messageDate:opDesc.messageDate urgent:opDesc.urgent tryLoadFromDatabase:NO remoteFolder:opDesc.remoteFolder localFolder:opDesc.localFolder];
             }
             else {
-                BOOL hasAttachments = (attachments.count > 0);
+                BOOL hasAttachments = (attachments.count != 0 || inlineAttachments.count != 0);
                 
-                [_self loadMessageBodyWithMessageId:opDesc.messageId threadId:opDesc.threadId parser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
+                [_self loadMessageBodyWithMessageId:opDesc.messageId threadId:opDesc.threadId parser:parser attachments:attachments inlineAttachments:inlineAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:opDesc.localFolder];
             }
         }
         else {
@@ -387,7 +387,8 @@
                 // Decoding plain text body and attachments can be resource consuming, so do it asynchronously
                 MCOMessageParser *parser = [MCOMessageParser messageParserWithData:data];
                 NSArray *attachments = parser.attachments;
-                BOOL hasAttachments = attachments.count != 0;
+                NSArray *inlineAttachments = parser.htmlInlineAttachments;
+                BOOL hasAttachments = (attachments.count != 0 || inlineAttachments.count != 0);
                 NSString *plainTextBody = parser.plainTextBodyRendering;
                 if(plainTextBody == nil) {
                     plainTextBody = @"";
@@ -416,13 +417,15 @@
                     // They are needed only to decode the HTML part and actually load the files, that is, when the user looks at that message.
                     MCOMessageParser *loadedMessageParser = nil;
                     NSArray *loadedAttachments = nil;
+                    NSArray *loadedInlineAttachments = nil;
                     
                     if(op.urgent || pendingOp.urgent) {
                         loadedMessageParser = parser;
                         loadedAttachments = attachments;
+                        loadedInlineAttachments = inlineAttachments;
                     }
                     
-                    [_self loadMessageBodyWithMessageId:op.messageId threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
+                    [_self loadMessageBodyWithMessageId:op.messageId threadId:op.threadId parser:loadedMessageParser attachments:loadedAttachments inlineAttachments:loadedInlineAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody localFolder:op.localFolder];
                 });
             });
         }
@@ -455,9 +458,9 @@
     }];
 }
 
-- (void)loadMessageBodyWithMessageId:(uint64_t)messageId threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody localFolder:(SMLocalFolder*)localFolder {
+- (void)loadMessageBodyWithMessageId:(uint64_t)messageId threadId:(uint64_t)threadId parser:(MCOMessageParser*)parser attachments:(NSArray*)attachments inlineAttachments:(NSArray*)inlineAttachments hasAttachments:(BOOL)hasAttachments plainTextBody:(NSString*)plainTextBody localFolder:(SMLocalFolder*)localFolder {
     NSAssert([(NSObject*)localFolder.messageStorage isKindOfClass:[SMMessageStorage class]], @"bad local folder message storage type");
-    SMMessage *message = [(SMMessageStorage*)localFolder.messageStorage setMessageParser:parser attachments:attachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId threadId:threadId];
+    SMMessage *message = [(SMMessageStorage*)localFolder.messageStorage setMessageParser:parser attachments:attachments inlineAttachments:inlineAttachments hasAttachments:hasAttachments plainTextBody:plainTextBody messageId:messageId threadId:threadId];
     
     if(message != nil) {
         [SMNotificationsController localNotifyMessageBodyFetched:localFolder messageId:messageId threadId:threadId account:(SMUserAccount*)localFolder.account];

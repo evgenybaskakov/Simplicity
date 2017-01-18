@@ -19,6 +19,7 @@
 #import "SMMessageThreadAccountProxy.h"
 #import "SMUserAccount.h"
 #import "SMPreferencesController.h"
+#import "SMAttachmentStorage.h"
 #import "SMAccountMailbox.h"
 #import "SMMessage.h"
 #import "SMMessageThread.h"
@@ -195,12 +196,10 @@
 // Fetching message data
 
 - (void)fetchMessageInlineAttachments:(SMMessage*)message messageThread:(SMMessageThread*)messageThread {
-    if(_account.unified) {
-        [messageThread.account fetchMessageInlineAttachments:message];
-    }
-    else {
-        [_account fetchMessageInlineAttachments:message];
-    }
+    SMAppDelegate *appDelegate = (SMAppDelegate*)[[NSApplication sharedApplication] delegate];
+    SMUserAccount *account = (SMUserAccount*)(_account.unified ? messageThread.account : _account);
+
+    [appDelegate.attachmentStorage fetchMessageInlineAttachments:message account:account];
 }
 
 - (void)fetchMessageBodyUrgentlyWithUID:(uint32_t)uid messageId:(uint64_t)messageId messageDate:(NSDate*)messageDate remoteFolder:(NSString*)remoteFolderName messageThread:(SMMessageThread*)messageThread {

@@ -40,6 +40,5 @@
 @property BOOL foldersInitialized; // TODO: this is crap
 
 - (void)ensureMainLocalFoldersCreated;
-- (void)fetchMessageInlineAttachments:(SMMessage*)message;
 
 @end

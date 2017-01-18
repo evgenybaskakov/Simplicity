@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class SMMessage;
 @class SMUserAccount;
 
 @interface SMAttachmentStorage : NSObject
@@ -17,5 +18,7 @@
 
 - (BOOL)storeDraftInlineAttachment:(NSURL*)fileUrl contentId:(NSString*)contentId;
 - (NSURL*)draftInlineAttachmentLocation:(NSString*)contentId;
+
+- (void)fetchMessageInlineAttachments:(SMMessage*)message account:(SMUserAccount*)account;
 
 @end

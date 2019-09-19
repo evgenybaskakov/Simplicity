@@ -22,3 +22,5 @@ Features
 - Configurable color schemes;
 - Multiple email accounts;
 - Account migration tool.
+
+![Screenshot](screenshot.png)
